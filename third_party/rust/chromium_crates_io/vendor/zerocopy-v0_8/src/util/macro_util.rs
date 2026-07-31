@@ -946,6 +946,22 @@ pub mod core_reexport {
     }
 }
 
+/// Projects `Self` to itself.
+///
+/// This is used by macros to have the compiler verify that two syntactically
+/// similar types actually resolve to the same type. The blanket implementation
+/// ensures that no other implementation can project a type to anything other
+/// than itself.
+#[doc(hidden)]
+pub trait Identity {
+    /// `Self`.
+    type Type: ?Sized;
+}
+
+impl<T: ?Sized> Identity for T {
+    type Type = T;
+}
+
 #[cfg(test)]
 mod tests {
     use core::num::NonZeroUsize;

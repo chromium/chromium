@@ -87,7 +87,7 @@ use super::*;
 pub trait ByteOrder:
     Copy + Clone + Debug + Display + Eq + PartialEq + Ord + PartialOrd + Hash + private::Sealed
 {
-    #[doc(hidden)]
+    /// A value-level representation of byte order.
     const ORDER: Order;
 }
 
@@ -98,11 +98,12 @@ mod private {
     impl Sealed for super::LittleEndian {}
 }
 
-#[allow(missing_copy_implementations, missing_debug_implementations)]
-#[doc(hidden)]
-#[derive(PartialEq)]
+/// A value-level representation of [`ByteOrder`].
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Order {
+    /// A value-level representation of [`BigEndian`].
     BigEndian,
+    /// A value-level representation of [`LittleEndian`].
     LittleEndian,
 }
 
