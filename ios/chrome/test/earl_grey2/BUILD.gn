@@ -165,6 +165,7 @@ _ui_eg2tests_deps = [
   "//ios/chrome/browser/incognito_interstitial/ui_bundled:eg2_tests",
   "//ios/chrome/browser/infobars/ui_bundled:eg2_tests",
   "//ios/chrome/browser/intelligence/actor/tools/test:eg2_tests",
+  "//ios/chrome/browser/intelligence/actor/ui/test:eg2_tests",
   "//ios/chrome/browser/intelligence/bwg/ui:eg2_tests",
   "//ios/chrome/browser/intelligence/proto_wrappers:eg2_tests",
   "//ios/chrome/browser/keyboard/ui_bundled:eg2_tests",

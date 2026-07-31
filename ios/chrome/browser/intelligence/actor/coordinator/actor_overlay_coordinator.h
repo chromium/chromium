@@ -21,17 +21,25 @@ class Browser;
 @interface ActorOverlayCoordinator : ChromeCoordinator
 
 // Initializes the coordinator with a base view controller, a browser instance,
-// and the web state undergoing actuation. This method must be called on the
-// main thread.
+// the web state undergoing actuation, and the overlay color.
 //
 // `viewController` is the base view controller used to present the actuation
 // UI.
 // `browser` is the browser instance containing the tab.
 // `webState` is the web state of the tab being actuated.
+// `overlayColor` is the color to use for the overlay.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   webState:(web::WebState*)webState
+                              overlayColor:(UIColor*)overlayColor
     NS_DESIGNATED_INITIALIZER;
+
+// Initializes the coordinator with a base `viewController`, a `browser`
+// instance, and the `webState` undergoing actuation, defaulting `overlayColor`
+// to `kBlueColor`.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                  webState:(web::WebState*)webState;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

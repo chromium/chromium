@@ -8,6 +8,9 @@
 
 #import <memory>
 
+#import "ios/chrome/browser/intelligence/actor/ui/actor_overlay_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -26,54 +29,92 @@ class ActorOverlayCoordinatorTest : public PlatformTest {
  protected:
   ActorOverlayCoordinatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    scene_state_ = [[SceneState alloc] init];
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state_ addAgent:layout_guide_scene_agent];
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     base_view_controller_ = [[UIViewController alloc] init];
-    web_state_ = std::make_unique<web::FakeWebState>();
   }
 
   // Task environment that manages the message loops and threads for testing.
   web::WebTaskEnvironment task_environment_;
   // Profile instance used to initialize the browser.
   std::unique_ptr<TestProfileIOS> profile_;
+  // `SceneState` used to attach `LayoutGuideSceneAgent`.
+  SceneState* scene_state_ = nil;
   // Browser instance containing the active tab undergoing test.
   std::unique_ptr<TestBrowser> browser_;
   // Base view controller used to present the coordinator's UI.
   UIViewController* base_view_controller_ = nil;
-  // Fake web state representing the tab being actuated.
-  std::unique_ptr<web::FakeWebState> web_state_;
 };
 
-// Test that the designated initializer successfully sets up the instance.
-TEST_F(ActorOverlayCoordinatorTest, InitializerAndLifecycle) {
+// Test that `start()` and `stop()` correctly add/remove the child view
+// controller and its view.
+TEST_F(ActorOverlayCoordinatorTest, StartAndStopLifecycle) {
+  web::FakeWebState fake_web_state;
   ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                        webState:web_state_.get()];
+                        webState:&fake_web_state];
 
   EXPECT_NE(coordinator, nil);
 
-  // Verify `start()` and `stop()` execute without failure.
+  // Before starting, no child view controllers.
+  EXPECT_EQ(base_view_controller_.childViewControllers.count, 0u);
+
+  // Start the coordinator.
   [coordinator start];
+
+  // Verify that an `ActorOverlayViewController` was added as a child.
+  EXPECT_EQ(base_view_controller_.childViewControllers.count, 1u);
+  UIViewController* child =
+      base_view_controller_.childViewControllers.firstObject;
+  EXPECT_TRUE([child isKindOfClass:[ActorOverlayViewController class]]);
+
+  // Verify that the child's view was added as a subview.
+  EXPECT_EQ(child.view.superview, base_view_controller_.view);
+  EXPECT_TRUE([base_view_controller_.view.subviews containsObject:child.view]);
+
+  // Stop the coordinator.
   [coordinator stop];
+
+  // Verify everything was cleaned up.
+  EXPECT_EQ(base_view_controller_.childViewControllers.count, 0u);
+  EXPECT_EQ(child.view.superview, nil);
+  EXPECT_FALSE([base_view_controller_.view.subviews containsObject:child.view]);
 }
 
-// Test that if the underlying `WebState` is destroyed while the coordinator is
-// running, the coordinator can be stopped safely without crashing.
-TEST_F(ActorOverlayCoordinatorTest, WebStateDestroyedBeforeStop) {
+// Test that calling `start()` multiple times consecutively does not result in
+// duplicate child view controllers or duplicate subviews.
+TEST_F(ActorOverlayCoordinatorTest, StartReentrance) {
+  web::FakeWebState fake_web_state;
   ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                        webState:web_state_.get()];
+                        webState:&fake_web_state];
 
   EXPECT_NE(coordinator, nil);
 
+  // Call `start()` twice.
+  [coordinator start];
   [coordinator start];
 
-  // Destroy the `WebState`.
-  web_state_.reset();
+  // Verify that only a single `ActorOverlayViewController` child and view were
+  // added.
+  EXPECT_EQ(base_view_controller_.childViewControllers.count, 1u);
+  UIViewController* child =
+      base_view_controller_.childViewControllers.firstObject;
+  EXPECT_TRUE([child isKindOfClass:[ActorOverlayViewController class]]);
 
-  // Stopping the coordinator should not crash.
+  EXPECT_EQ(child.view.superview, base_view_controller_.view);
+  EXPECT_TRUE([base_view_controller_.view.subviews containsObject:child.view]);
+
+  // Stop the coordinator.
   [coordinator stop];
+  EXPECT_EQ(base_view_controller_.childViewControllers.count, 0u);
+  EXPECT_EQ(child.view.superview, nil);
+  EXPECT_FALSE([base_view_controller_.view.subviews containsObject:child.view]);
 }
 
 }  // namespace

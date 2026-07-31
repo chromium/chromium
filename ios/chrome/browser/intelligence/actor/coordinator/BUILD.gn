@@ -9,12 +9,11 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/intelligence/actor/model",
-    "//ios/chrome/browser/intelligence/actor/model:tab_helper",
+    "//ios/chrome/browser/intelligence/actor/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/web/public",
+    "//ios/chrome/common/ui/colors",
   ]
 }
 
@@ -25,14 +24,13 @@ source_set("unit_tests") {
     ":coordinator",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/intelligence/actor/model",
-    "//ios/chrome/browser/intelligence/actor/model:tab_helper",
+    "//ios/chrome/browser/intelligence/actor/ui",
+    "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }

@@ -40,6 +40,9 @@ typedef NS_ENUM(NSInteger, ActorAppInterfaceErrorCode) {
 // Waits for page stability in the current main frame.
 + (void)waitForPageStabilityWithCompletion:(void (^)(NSError* error))completion;
 
+// Sets the actuating state on the ActorTabHelper of the WebState at `index`.
++ (void)setActuating:(BOOL)actuating forWebStateAtIndex:(int)index;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_TEST_ACTOR_APP_INTERFACE_H_
