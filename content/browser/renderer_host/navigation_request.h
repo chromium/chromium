@@ -2712,6 +2712,10 @@ class CONTENT_EXPORT NavigationRequest
   // eventually be replaced with the navigation timeline metrics.
   bool ShouldRecordNavigationTimelineUkm() const;
 
+  // Returns true if early navigation failure can be safely recorded without
+  // risking cross-StoragePartition information leakage.
+  bool CanRecordEarlyNavigationFailure() const;
+
   // Given the known destination origin, this updates the view transition state
   // and resources. Namely, it clears it if the view transition state and
   // resources were generated from a different origin with the given origin.

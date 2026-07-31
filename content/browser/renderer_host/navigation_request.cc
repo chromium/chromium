@@ -2245,7 +2245,8 @@ NavigationRequest::~NavigationRequest() {
   }
 
   if (!early_navigation_failure_recorded_ && !response() &&
-      IsInPrimaryMainFrame() && net_error_ == net::ERR_ABORTED) {
+      IsInPrimaryMainFrame() && net_error_ == net::ERR_ABORTED &&
+      CanRecordEarlyNavigationFailure()) {
     DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
         this, GetStoragePartitionWithCurrentSiteInfo(), net::ERR_ABORTED);
   }
@@ -5592,7 +5593,8 @@ void NavigationRequest::OnRequestFailedInternal(
     fast_fetch_manager_->OnRequestFailed(*this, status, skip_throttles);
   }
 
-  if (!response() && IsInPrimaryMainFrame() && status.error_code != net::OK) {
+  if (!response() && IsInPrimaryMainFrame() && status.error_code != net::OK &&
+      CanRecordEarlyNavigationFailure()) {
     DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
         this, GetStoragePartitionWithCurrentSiteInfo(), status.error_code);
     early_navigation_failure_recorded_ = true;
@@ -12570,6 +12572,21 @@ bool NavigationRequest::ShouldRecordNavigationTimelineUkm() const {
          (common_params_->url.SchemeIsHTTPOrHTTPS() ||
           common_params_->url.SchemeIs(content::kChromeUIScheme)) &&
          !IsPrerenderedPageActivation();
+}
+
+bool NavigationRequest::CanRecordEarlyNavigationFailure() const {
+  // `site_info_` reflects the target frame's StoragePartition only after
+  // StartNavigation() has run; before that it holds a default configuration.
+  // To prevent cross-partition leaks from non-default partitions (e.g., guest
+  // <webview>) while keeping metrics for standard primary main frames, require
+  // that StartNavigation() has run (`state_ >= WILL_START_REQUEST`) or that
+  // the current frame already belongs to the default StoragePartition.
+  return state_ >= WILL_START_REQUEST ||
+         frame_tree_node_->current_frame_host()
+             ->GetSiteInstance()
+             ->GetSecurityPrincipal()
+             .GetStoragePartitionConfig()
+             .is_default();
 }
 
 void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
