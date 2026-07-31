@@ -350,8 +350,10 @@ testing/data/pinch-viewport-fixed-pos.html
 testing/data/pinch-viewport-input-field-long-and-wide.html
 testing/data/pinch-viewport-input-field.html
 testing/data/plugin.html
+testing/data/plugin_clip_scroll.html
 testing/data/plugin_container.html
 testing/data/plugin_containing_page.html
+testing/data/plugin_fixed_position_scroll.html
 testing/data/plugin_hidden_before_scroll.html
 testing/data/plugin_scroll.html
 testing/data/png-16bit/2x2_16bit_AdobeRGB_opaque.png

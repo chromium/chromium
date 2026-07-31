@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style type="text/css">
+    body { margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+  <div style="transform: translate(30px, 20px)">
+    <div id="clip-ancestor"
+        style="position: absolute; left: 40px; top: 100px; width: 24px; height: 18px;
+               overflow: hidden">
+      <object id="plugin"
+          border=0
+          style="padding: 4px 6px;"
+          type="application/x-webkit-test-webplugin"
+          width="33"
+          height="44">
+      </object>
+    </div>
+  </div>
+  <!-- Make the view scrollable. -->
+  <div style="width: 10000px; height: 10000px"></div>
+</body>
+</html>
