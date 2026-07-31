@@ -322,17 +322,12 @@ Browser::CreateParams Browser::CreateParams::CreateForDevTools(
 // Browser, Constructors, Creation, Showing:
 
 // static
-BrowserWindowInterface::CreationStatus Browser::GetCreationStatusForProfile(
-    Profile* profile) {
-  return GetBrowserWindowCreationStatusForProfile(*profile);
-}
-
-// static
 Browser* Browser::Create(const CreateParams& params) {
   // If this is failing, a caller is trying to create a browser when creation is
   // not possible, e.g. using the wrong profile or during shutdown. The caller
   // should handle this; see e.g. crbug.com/40154317 and crbug.com/40798999.
-  CHECK_EQ(CreationStatus::kOk, GetCreationStatusForProfile(params.profile));
+  CHECK_EQ(CreationStatus::kOk,
+           GetBrowserWindowCreationStatusForProfile(*params.profile));
 
   std::unique_ptr<Browser> browser = base::WrapUnique(new Browser(params));
   Browser* const browser_ptr = browser.get();
@@ -348,7 +343,8 @@ std::unique_ptr<Browser> Browser::DeprecatedCreateOwnedForTesting(
   // If this is failing, a caller is trying to create a browser when creation is
   // not possible, e.g. using the wrong profile or during shutdown. The caller
   // should handle this; see e.g. crbug.com/40154317 and crbug.com/40798999.
-  CHECK_EQ(CreationStatus::kOk, GetCreationStatusForProfile(params.profile));
+  CHECK_EQ(CreationStatus::kOk,
+           GetBrowserWindowCreationStatusForProfile(*params.profile));
 
   std::unique_ptr<Browser> browser = base::WrapUnique(new Browser(params));
   BrowserManagerServiceFactory::GetForProfile(params.profile)

@@ -125,6 +125,7 @@ static_library("devtools") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/select_file_policy",
     "//components/page_load_metrics/browser",

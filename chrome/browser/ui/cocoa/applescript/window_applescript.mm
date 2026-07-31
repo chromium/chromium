@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #include "chrome/browser/ui/cocoa/applescript/error_applescript.h"
@@ -93,7 +94,7 @@
     // Since AppleScript requests can arrive at any time, including during
     // browser shutdown or profile deletion, we have to check whether it's okay
     // to spawn a new browser for the specified profile or not.
-    if (Browser::GetCreationStatusForProfile(aProfile) !=
+    if (GetBrowserWindowCreationStatusForProfile(*aProfile) !=
         Browser::CreationStatus::kOk) {
       self = nil;
       return nil;

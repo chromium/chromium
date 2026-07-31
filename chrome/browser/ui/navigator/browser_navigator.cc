@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -140,7 +141,7 @@ Browser* GetOrCreateBrowser(Profile* profile, bool user_gesture) {
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
 
-  if (!browser && Browser::GetCreationStatusForProfile(profile) ==
+  if (!browser && GetBrowserWindowCreationStatusForProfile(*profile) ==
                       Browser::CreationStatus::kOk) {
     browser = Browser::Create(Browser::CreateParams(profile, user_gesture));
   }
@@ -342,7 +343,7 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
                                         .empty()) {
         app_name = params.browser->GetBrowserForMigrationOnly()->app_name();
       }
-      if (Browser::GetCreationStatusForProfile(profile) !=
+      if (GetBrowserWindowCreationStatusForProfile(*profile) !=
           Browser::CreationStatus::kOk) {
         return {nullptr, -1};
       }
@@ -366,7 +367,7 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
     case WindowOpenDisposition::NEW_WINDOW: {
       // Make a new normal browser window.
       Browser* browser = nullptr;
-      if (Browser::GetCreationStatusForProfile(profile) ==
+      if (GetBrowserWindowCreationStatusForProfile(*profile) ==
           Browser::CreationStatus::kOk) {
         browser = Browser::Create(
             Browser::CreateParams(profile, params.user_gesture));

@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 
 namespace chrome {
@@ -14,7 +15,7 @@ namespace chrome {
 ScopedTabbedBrowserDisplayer::ScopedTabbedBrowserDisplayer(Profile* profile) {
   browser_ =
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
-  if (!browser_ && Browser::GetCreationStatusForProfile(profile) ==
+  if (!browser_ && GetBrowserWindowCreationStatusForProfile(*profile) ==
                        Browser::CreationStatus::kOk) {
     Browser::CreateParams params(profile, /*user_gesture=*/true);
     browser_ = Browser::Create(params);

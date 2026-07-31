@@ -106,7 +106,7 @@ source_set("launch_utils") {
 
 source_set("impl") {
   sources = []
-  deps = []
+  deps = [ "//chrome/browser/ui/browser_window:create_browser_window" ]
 
   if (!is_android) {
     sources += [ "web_app_dialog_utils.cc" ]

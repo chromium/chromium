@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -53,10 +54,11 @@ GURL GetGoogleURL() {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
-  EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
-            Browser::GetCreationStatusForProfile(Profile::FromBrowserContext(
-                ash::BrowserContextHelper::Get()
-                    ->DeprecatedGetOrCreateSigninBrowserContext())));
+  EXPECT_EQ(
+      Browser::CreationStatus::kErrorProfileUnsuitable,
+      GetBrowserWindowCreationStatusForProfile(*Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()
+              ->DeprecatedGetOrCreateSigninBrowserContext())));
 }
 
 // Verify that page navigation is blocked in locked fullscreen mode.

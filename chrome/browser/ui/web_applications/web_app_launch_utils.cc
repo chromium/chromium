@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -872,7 +873,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
   BrowserWindowInterface* browser = nullptr;
   content::WebContents* web_contents = nullptr;
   // Do not launch anything if the profile is being deleted.
-  if (Browser::GetCreationStatusForProfile(&profile) ==
+  if (GetBrowserWindowCreationStatusForProfile(profile) ==
       Browser::CreationStatus::kOk) {
     // TODO(crbug.com/379136842): This is likely too 'permissive' of a check,
     // and different more restrictive filter should likely be used instead.
@@ -901,7 +902,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
     std::string error_str = base::StringPrintf(
         "Cannot launch app %s without profile creation: %d",
         params.app_id.c_str(),
-        static_cast<int>(Browser::GetCreationStatusForProfile(&profile)));
+        static_cast<int>(GetBrowserWindowCreationStatusForProfile(profile)));
     debug_value.Set("error", error_str);
     DVLOG(1) << error_str;
   }

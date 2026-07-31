@@ -1529,6 +1529,7 @@ source_set("core") {
       "//chrome/browser/renderer_host:delegate_impl",
       "//chrome/browser/renderer_host:history_swiper",
       "//chrome/browser/shortcuts",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/cocoa",
       "//chrome/browser/web_applications/os_integration/mac:web_app_shortcut_copier_lib",
       "//chrome/browser/webshare",

@@ -307,9 +307,6 @@ class Browser : public TabStripModelObserver,
   static std::unique_ptr<Browser> DeprecatedCreateOwnedForTesting(
       const CreateParams& params);
 
-  // Refer to `GetCreationStatusForProfile()`.
-  static CreationStatus GetCreationStatusForProfile(Profile* profile);
-
   Browser(const Browser&) = delete;
   Browser& operator=(const Browser&) = delete;
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -142,7 +143,7 @@ WebAppLaunchProcess::WebAppLaunchProcess(
       web_app_(registrar_->GetAppById(params.app_id)) {}
 
 content::WebContents* WebAppLaunchProcess::Run() {
-  if (Browser::GetCreationStatusForProfile(&profile_.get()) !=
+  if (GetBrowserWindowCreationStatusForProfile(profile_.get()) !=
           Browser::CreationStatus::kOk ||
       !registrar_->AppMatches(params_->app_id,
                               WebAppFilter::IsAppSurfaceableToUser())) {

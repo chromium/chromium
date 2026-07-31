@@ -8,6 +8,7 @@ include_rules = [
   "+chrome/browser/ash/browser_delegate/browser_type_conversion.h",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  "+chrome/browser/ui/browser_window/public/create_browser_window.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/theme_source.h",
   "+chrome/browser/web_applications",

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -47,7 +48,7 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   const bool browser_created = !browser;
   if (!browser) {
-    if (Browser::GetCreationStatusForProfile(profile) !=
+    if (GetBrowserWindowCreationStatusForProfile(*profile) !=
         Browser::CreationStatus::kOk) {
       return nullptr;
     }
@@ -107,7 +108,7 @@ void ChromeWebContentsHandler::AddNewContents(
   if (!browser) {
     // The request can be triggered by Captive portal when browser is not ready
     // (https://crbug.com/40154317).
-    if (Browser::GetCreationStatusForProfile(profile) !=
+    if (GetBrowserWindowCreationStatusForProfile(*profile) !=
         Browser::CreationStatus::kOk) {
       return;
     }

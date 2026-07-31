@@ -171,6 +171,7 @@ source_set("impl") {
     "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/toolbar",

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -200,10 +201,11 @@ TEST_F(BrowserUnitTest, CreateBrowserFailsIfProfileDisallowsBrowserWindows) {
   // Verify creating browser fails in both original and OTR version of the
   // profile.
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
-            Browser::GetCreationStatusForProfile(test_profile.get()));
-  EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
-            Browser::GetCreationStatusForProfile(
-                test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+            GetBrowserWindowCreationStatusForProfile(*test_profile.get()));
+  EXPECT_EQ(
+      Browser::CreationStatus::kErrorProfileUnsuitable,
+      GetBrowserWindowCreationStatusForProfile(
+          *test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 // Tests BrowserCreate() when Incognito mode is disabled.
@@ -214,8 +216,8 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeDisabled) {
   // Creating a browser window in OTR profile should fail if incognito is
   // disabled.
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
-            Browser::GetCreationStatusForProfile(
-                profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+            GetBrowserWindowCreationStatusForProfile(
+                *profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   // Verify creating a browser in the original profile succeeds.
   Browser::CreateParams create_params(profile(), false);
@@ -233,7 +235,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeForced) {
   // Creating a browser window in the original profile should fail if incognito
   // is forced.
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
-            Browser::GetCreationStatusForProfile(profile()));
+            GetBrowserWindowCreationStatusForProfile(*profile()));
 
   // Creating a browser in OTR test profile should succeed.
   Browser::CreateParams off_the_record_create_params(
@@ -284,7 +286,7 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
       SessionState::LOGIN_PRIMARY);
   // Browser should not be created during login session state.
   EXPECT_EQ(Browser::CreationStatus::kErrorLoadingKiosk,
-            Browser::GetCreationStatusForProfile(&profile));
+            GetBrowserWindowCreationStatusForProfile(profile));
 
   Browser::CreateParams create_params = Browser::CreateParams(&profile, false);
   std::unique_ptr<BrowserWindow> window = CreateBrowserWindow();

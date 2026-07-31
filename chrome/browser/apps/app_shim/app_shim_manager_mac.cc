@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -1458,7 +1459,7 @@ void AppShimManager::OpenAppURLInBrowserWindow(
   if (!profile) {
     profile = profile_manager_->GetLastUsedProfile();
   }
-  if (!profile || Browser::GetCreationStatusForProfile(profile) !=
+  if (!profile || GetBrowserWindowCreationStatusForProfile(*profile) !=
                       Browser::CreationStatus::kOk) {
     return;
   }

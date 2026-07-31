@@ -89,6 +89,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/browser/ui/webui:theme_source",

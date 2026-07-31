@@ -887,7 +887,7 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
 
 BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
                                         bool should_trigger_session_restore) {
-  if (Browser::GetCreationStatusForProfile(profile) !=
+  if (GetBrowserWindowCreationStatusForProfile(*profile) !=
       Browser::CreationStatus::kOk) {
     return nullptr;
   }

@@ -1126,6 +1126,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/startup",
       "//chrome/test:test_support",

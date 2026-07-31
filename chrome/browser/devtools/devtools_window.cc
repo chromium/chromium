@@ -30,9 +30,6 @@
 #include "chrome/browser/devtools/aida_client.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_eye_dropper.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/devtools/devtools_policy_dialog.h"
-#endif
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/process_sharing_infobar_delegate.h"
 #include "chrome/browser/file_select_helper.h"
@@ -46,6 +43,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -111,6 +109,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/chrome_jni_headers/DevToolsActivity_jni.h"
 #else
+#include "chrome/browser/devtools/devtools_policy_dialog.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -2046,7 +2045,7 @@ void DevToolsWindow::CreateDevToolsBrowser() {
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
-  if (Browser::GetCreationStatusForProfile(profile_) !=
+  if (GetBrowserWindowCreationStatusForProfile(*profile_) !=
       Browser::CreationStatus::kOk) {
     return;
   }

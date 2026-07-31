@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
@@ -196,7 +197,7 @@ class AuthenticatorRequestWindow
         Profile::FromBrowserContext(caller_web_contents->GetBrowserContext())
             ->GetOriginalProfile();
     // If the profile is shutting down, don't attempt to create a pop-up.
-    if (Browser::GetCreationStatusForProfile(profile) !=
+    if (GetBrowserWindowCreationStatusForProfile(*profile) !=
         Browser::CreationStatus::kOk) {
       return;
     }

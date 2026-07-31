@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -323,7 +324,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // common reason for not being able to create browser is having this call
     // when the browser process is shutting down. This can also fail if the
     // passed profile is of a type that is not suitable for browser creation.
-    if (Browser::GetCreationStatusForProfile(profile_) !=
+    if (GetBrowserWindowCreationStatusForProfile(*profile_) !=
         Browser::CreationStatus::kOk) {
       return nullptr;
     }

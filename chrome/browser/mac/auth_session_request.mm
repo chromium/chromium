@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -279,7 +280,7 @@ Browser* AuthSessionRequest::CreateBrowser(
 
   // Check if browser creation is possible before attempting to create it.
   // This prevents crashes when the profile is in an unsuitable state.
-  if (Browser::GetCreationStatusForProfile(profile) !=
+  if (GetBrowserWindowCreationStatusForProfile(*profile) !=
       Browser::CreationStatus::kOk) {
     return nullptr;
   }

@@ -51,6 +51,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
@@ -1016,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
       otr_profile_id, /*create_if_needed=*/true);
 
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
-            Browser::GetCreationStatusForProfile(otr_profile));
+            GetBrowserWindowCreationStatusForProfile(*otr_profile));
 }
 
 // Tests if profile type returned by |profile_metrics::GetBrowserProfileType| is

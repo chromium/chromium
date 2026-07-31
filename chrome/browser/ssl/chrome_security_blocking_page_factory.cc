@@ -23,6 +23,7 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -467,7 +468,7 @@ void ChromeSecurityBlockingPageFactory::
     BrowserWindowInterface* browser =
         ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
     // Create browser if not exists.
-    if (!browser && Browser::GetCreationStatusForProfile(profile) ==
+    if (!browser && GetBrowserWindowCreationStatusForProfile(*profile) ==
                         Browser::CreationStatus::kOk) {
       Browser::CreateParams params(profile, /*user_gesture=*/true);
       browser = Browser::Create(params);

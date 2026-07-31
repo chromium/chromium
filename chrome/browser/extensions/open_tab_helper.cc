@@ -40,7 +40,7 @@ namespace {
 // creation / initialization is an async process.
 BrowserWindowInterface* CreateAndShowBrowser(Profile* profile,
                                              bool user_gesture) {
-  if (Browser::GetCreationStatusForProfile(profile) !=
+  if (GetBrowserWindowCreationStatusForProfile(*profile) !=
       Browser::CreationStatus::kOk) {
     return nullptr;
   }

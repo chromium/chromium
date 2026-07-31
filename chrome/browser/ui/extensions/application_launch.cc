@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
@@ -260,7 +261,7 @@ WebContents* OpenApplicationTab(Profile* profile,
     browser->GetWindow()->Activate();
   } else {
     // No browser for this profile, need to open a new one.
-    if (Browser::GetCreationStatusForProfile(profile) !=
+    if (GetBrowserWindowCreationStatusForProfile(*profile) !=
         Browser::CreationStatus::kOk) {
       return contents;
     }
@@ -563,7 +564,7 @@ WebContents* NavigateApplicationWindow(Browser* browser,
 WebContents* OpenApplicationWindow(Profile* profile,
                                    const apps::AppLaunchParams& params,
                                    const GURL& url) {
-  if (Browser::GetCreationStatusForProfile(profile) !=
+  if (GetBrowserWindowCreationStatusForProfile(*profile) !=
       Browser::CreationStatus::kOk) {
     return nullptr;
   }
