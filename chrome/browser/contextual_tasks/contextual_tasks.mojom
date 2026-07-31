@@ -241,7 +241,7 @@ interface Page {
   // `lens.ClientToAimMessage` protobuf and using the <webview> postMessage API
   // to send it to the guest content.
   // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
-  PostMessageToWebview(array<uint8> message);
+  PostAimMessage(array<uint8> message);
 
   // Called by the browser process (C++) after receiving a
   // `lens.HandshakeResponse` from the webview to signal that the handshake is

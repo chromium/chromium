@@ -236,7 +236,7 @@ void FinalizeAndSendAimQuery(
   lens::ClientToAimMessage client_to_page_message =
       session_handle->CreateClientToAimRequest(std::move(request_info));
 
-  web_ui_interface->PostMessageToWebview(client_to_page_message);
+  web_ui_interface->PostAimMessage(client_to_page_message);
 }
 
 void SendInjectedInputRemovedUpdate(
@@ -252,7 +252,7 @@ void SendInjectedInputRemovedUpdate(
       lens::InjectedInputUpdatePayload::UpdateType::
           InjectedInputUpdatePayload_UpdateType_REMOVED);
 
-  web_ui_interface->PostMessageToWebview(client_to_aim_message);
+  web_ui_interface->PostAimMessage(client_to_aim_message);
 }
 
 bool ShouldShowSidePanel() {

@@ -82,7 +82,7 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, SetThreadTitle, (const std::string& title), (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
   MOCK_METHOD(void,
-              PostMessageToWebview,
+              PostAimMessage,
               (const std::vector<uint8_t>& message),
               (override));
   MOCK_METHOD(void, OnHandshakeComplete, (), (override));
@@ -295,8 +295,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   // Expect OnSidePanelStateChanged to be called on the page.
   EXPECT_CALL(mock_page, OnSidePanelStateChanged()).Times(1);
 
-  // Expect PostMessageToWebview to be called with the correct display mode.
-  EXPECT_CALL(mock_page, PostMessageToWebview(_))
+  // Expect PostAimMessage to be called with the correct display mode.
+  EXPECT_CALL(mock_page, PostAimMessage(_))
       .WillOnce([&run_loop](const std::vector<uint8_t>& message) {
         lens::ClientToAimMessage client_message;
         ASSERT_TRUE(
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page, OnSidePanelStateChanged()).Times(1);
-  EXPECT_CALL(mock_page, PostMessageToWebview(_))
+  EXPECT_CALL(mock_page, PostAimMessage(_))
       .WillOnce([&run_loop](const std::vector<uint8_t>& message) {
         lens::ClientToAimMessage client_message;
         ASSERT_TRUE(

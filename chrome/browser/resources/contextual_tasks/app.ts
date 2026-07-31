@@ -485,8 +485,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         this.isAiPage_ = isAiPage;
       }),
 
-      callbackRouter.postMessageToWebview.addListener(
-          this.postMessageToWebview.bind(this)),
+      callbackRouter.postAimMessage.addListener(this.postAimMessage.bind(this)),
       callbackRouter.onHandshakeComplete.addListener(
           this.onHandshakeComplete.bind(this)),
       callbackRouter.onCookieSyncCompleted.addListener(
@@ -1454,7 +1453,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     return this.forcedComposeboxBounds_;
   }
 
-  private postMessageToWebview(message: number[]) {
+  private postAimMessage(message: number[]) {
     assert(this.postMessageHandler_);
     this.postMessageHandler_.sendMessage(new Uint8Array(message));
   }

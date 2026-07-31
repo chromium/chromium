@@ -205,7 +205,7 @@ class ContextualTasksUI
   bool IsActiveTabContextSuggestionShowing() const override;
   void MoveTaskUiToNewTab() override;
   bool CanExpandToFullTab() const override;
-  void PostMessageToWebview(const lens::ClientToAimMessage& message) override;
+  void PostAimMessage(const lens::ClientToAimMessage& message) override;
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle() override;
   GURL GetWebUiUrl() override;

@@ -376,7 +376,7 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
     bool is_voice_search) {
   CreateAndSendQueryMessage(query_text, is_voice_search);
   // TODO(crbug.com/469535685): This should reflect the response from the
-  // webview when PostMessageToWebview provides one.
+  // webview when PostAimMessage provides one.
 }
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
