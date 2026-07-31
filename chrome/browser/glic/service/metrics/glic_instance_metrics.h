@@ -282,6 +282,11 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   void RecordSkillsInvokeFunnelStep(SkillsInvokeFunnel invoke_funnel);
   void RecordAndResetAutoOpenPdfMetric();
+  void MaybeRecordOptInImpression();
+
+  // Records the duration and prompt count for the first time the side panel is
+  // closed or the tab is switched.
+  void MaybeRecordFirstSidePanelOpenMetrics(base::TimeDelta duration);
 
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
@@ -332,8 +337,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   bool is_opt_in_pending_ = false;
   bool has_consented_ = false;
 
-  void MaybeRecordOptInImpression();
-
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription tab_pinning_status_subscription_;
   const raw_ref<const metrics::ProfileMetricsService> profile_metrics_service_;
@@ -360,6 +363,11 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   base::flat_set<SafeEmbedderKey> seen_embedders_;
 
   std::vector<std::unique_ptr<GlicCuiTracker>> cui_trackers_;
+
+  // Number of user prompts submitted while the instance is in side panel mode.
+  // Incremented on user input when current_ui_mode_ is kSidePanel, and logged
+  // when the side panel is closed or tab is switched for the first time.
+  size_t side_panel_prompt_count_ = 0;
 };
 
 }  // namespace glic

@@ -1829,6 +1829,39 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Glic.InvocationSource.{InvocationSource}.SidePanelFirstOpenDuration.{PromptStatus}"
+    units="ms" expires_after="2026-12-06">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records the duration that a Glic Side Panel was open when opened via
+    {InvocationSource}, split by whether any user prompts were submitted while
+    open. Recorded when the side panel is closed or tab is switched for the
+    first time.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="PromptStatus">
+    <variant name="NoPrompts"
+        summary="Recorded when 0 prompts were submitted while open."/>
+    <variant name="WithPrompts"
+        summary="Recorded when 1 or more prompts were submitted while open."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Glic.InvocationSource.{InvocationSource}.SidePanelFirstOpenPromptCount"
+    units="prompts" expires_after="2026-12-06">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records the total number of user prompts submitted while the Glic Side Panel
+    is initially open when opened via {InvocationSource}. Recorded when the side
+    panel is closed or tab is switched for the first time.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+</histogram>
+
+<histogram
     name="Glic.InvocationSource.{InvocationSource}.WebUiLoadTime.{Visibility}"
     units="ms" expires_after="2027-01-03">
   <owner>birnie@google.com</owner>

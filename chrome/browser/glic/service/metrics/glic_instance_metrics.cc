@@ -538,16 +538,7 @@ void GlicInstanceMetrics::OnSidePanelClosed(
                                 duration, base::Milliseconds(1), base::Hours(1),
                                 50);
 
-  if (!first_side_panel_close_recorded_) {
-    first_side_panel_close_recorded_ = true;
-    mojom::InvocationSource source = initial_invocation_source_.value_or(
-        mojom::InvocationSource::kUnsupported);
-    base::UmaHistogramCustomTimes(
-        base::StrCat({"Glic.InvocationSource.",
-                      GetInvocationSourceString(source),
-                      ".SidePanelFirstOpenDuration"}),
-        duration, base::Milliseconds(1), base::Hours(1), 50);
-  }
+  MaybeRecordFirstSidePanelOpenMetrics(duration);
 
   if (reason != CloseReason::kTabSwitched) {
     std::erase(tabs_with_side_panel_, tab->GetHandle());
@@ -558,6 +549,34 @@ void GlicInstanceMetrics::OnSidePanelClosed(
     }
   }
   side_panel_open_times_.erase(it);
+}
+
+void GlicInstanceMetrics::MaybeRecordFirstSidePanelOpenMetrics(
+    base::TimeDelta duration) {
+  if (first_side_panel_close_recorded_) {
+    return;
+  }
+  first_side_panel_close_recorded_ = true;
+  mojom::InvocationSource source = initial_invocation_source_.value_or(
+      mojom::InvocationSource::kUnsupported);
+  const std::string source_str = GetInvocationSourceString(source);
+
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Glic.InvocationSource.", source_str,
+                    ".SidePanelFirstOpenDuration"}),
+      duration, base::Milliseconds(1), base::Hours(1), 50);
+
+  const char* variant =
+      (side_panel_prompt_count_ >= 1) ? "WithPrompts" : "NoPrompts";
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Glic.InvocationSource.", source_str,
+                    ".SidePanelFirstOpenDuration.", variant}),
+      duration, base::Milliseconds(1), base::Hours(1), 50);
+
+  base::UmaHistogramCounts100(
+      base::StrCat({"Glic.InvocationSource.", source_str,
+                    ".SidePanelFirstOpenPromptCount"}),
+      side_panel_prompt_count_);
 }
 
 void GlicInstanceMetrics::OnDetach() {
@@ -581,16 +600,7 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
       base::UmaHistogramCustomTimes("Glic.Instance.SidePanel.OpenDuration",
                                     duration, base::Milliseconds(1),
                                     base::Hours(1), 50);
-      if (!first_side_panel_close_recorded_) {
-        first_side_panel_close_recorded_ = true;
-        mojom::InvocationSource source = initial_invocation_source_.value_or(
-            mojom::InvocationSource::kUnsupported);
-        base::UmaHistogramCustomTimes(
-            base::StrCat({"Glic.InvocationSource.",
-                          GetInvocationSourceString(source),
-                          ".SidePanelFirstOpenDuration"}),
-            duration, base::Milliseconds(1), base::Hours(1), 50);
-      }
+      MaybeRecordFirstSidePanelOpenMetrics(duration);
       side_panel_open_times_.erase(it);
     } else {
       base::UmaHistogramEnumeration(
@@ -987,12 +997,16 @@ int GlicInstanceMetrics::GetEventCount(GlicInstanceEvent event) {
 }
 
 void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
-  // Try to attribute the input submission to the currently focused tab for
-  // daisy chain metrics.
-  if (current_ui_mode_ == EmbedderType::kSidePanel && sharing_manager_) {
-    if (auto* tab = sharing_manager_->GetFocusedTabData().focus()) {
-      if (auto* helper = GlicInstanceHelper::From(tab)) {
-        helper->OnDaisyChainAction(DaisyChainFirstAction::kInputSubmitted);
+  if (current_ui_mode_ == EmbedderType::kSidePanel) {
+    side_panel_prompt_count_++;
+
+    // Try to attribute the input submission to the currently focused tab for
+    // daisy chain metrics.
+    if (sharing_manager_) {
+      if (auto* tab = sharing_manager_->GetFocusedTabData().focus()) {
+        if (auto* helper = GlicInstanceHelper::From(tab)) {
+          helper->OnDaisyChainAction(DaisyChainFirstAction::kInputSubmitted);
+        }
       }
     }
   }

@@ -944,4 +944,68 @@ TEST_F(GlicInstanceMetricsTest, ZoomChangeCount) {
   histogram_tester_.ExpectUniqueSample("Glic.Instance.ZoomChangeCount", 3, 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_WithPrompts) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  task_environment_.FastForwardBy(base::Minutes(5));
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration."
+      "WithPrompts",
+      base::Minutes(5), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration."
+      "NoPrompts",
+      0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenPromptCount", 1,
+      1);
+}
+
+TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_NoPrompts) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kAutoOpenedForPdf, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+
+  task_environment_.FastForwardBy(base::Minutes(3));
+  metrics_.OnSidePanelClosed(&mock_tab_,
+                             GlicInstanceMetrics::CloseReason::kTabSwitched);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.InvocationSource.AutoOpenedForPdf.SidePanelFirstOpenDuration."
+      "NoPrompts",
+      base::Minutes(3), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.AutoOpenedForPdf.SidePanelFirstOpenDuration."
+      "WithPrompts",
+      0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.InvocationSource.AutoOpenedForPdf.SidePanelFirstOpenPromptCount", 0,
+      1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       FloatyPromptsDoNotIncrementSidePanelPromptCount) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInFloaty(show_options);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnFloatyClosed();
+
+  // SidePanel metrics should not have been recorded.
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenPromptCount", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration."
+      "WithPrompts",
+      0);
+}
+
 }  // namespace glic
