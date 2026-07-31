@@ -100,6 +100,8 @@ OnDeviceModelEligibilityReason GetBaseModelError(
       return OnDeviceModelEligibilityReason::kModelNotEligible;
     case OnDeviceModelStatus::kInsufficientDiskSpace:
       return OnDeviceModelEligibilityReason::kInsufficientDiskSpace;
+    case OnDeviceModelStatus::kInsufficientDiskSpaceForCaches:
+      return OnDeviceModelEligibilityReason::kInsufficientDiskSpaceForCaches;
     case OnDeviceModelStatus::kInstallNotComplete:
     case OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason:
     case OnDeviceModelStatus::kModelInstalledTooLate:

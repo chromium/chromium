@@ -92,6 +92,9 @@ enum ModelNotSupportedDetailedReason {
   // `kModelAdaptationNotAvailable` is only emitted in certain special cases
   // (e.g. if the requested capability will never be supported by the device).
   kModelAdaptationNotAvailable = 9,
+  // The device does not have enough disk space to build caches for the
+  // on-device model.
+  kInsufficientDiskSpaceForCaches = 10,
 };
 
 // A consumer that needs to the current configs and models for some feature.

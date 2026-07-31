@@ -47,6 +47,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "InsufficientDiskSpace";
     case OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed:
       return out << "NoOnDeviceFeatureUsed";
+    case OnDeviceModelEligibilityReason::kInsufficientDiskSpaceForCaches:
+      return out << "InsufficientDiskSpaceForCaches";
   }
   return out;
 }
@@ -68,6 +70,7 @@ std::optional<mojom::ModelUnavailableReason> AvailabilityFromEligibilityReason(
     case OnDeviceModelEligibilityReason::kValidationFailed:
     case OnDeviceModelEligibilityReason::kModelNotEligible:
     case OnDeviceModelEligibilityReason::kInsufficientDiskSpace:
+    case OnDeviceModelEligibilityReason::kInsufficientDiskSpaceForCaches:
     // This is returned if the device will never support a capability.
     case OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable:
       return mojom::ModelUnavailableReason::kNotSupported;
@@ -109,6 +112,9 @@ NotSupportedDetailedReasonFromEligibilityReason(
       return mojom::ModelNotSupportedDetailedReason::kModelNotEligible;
     case OnDeviceModelEligibilityReason::kInsufficientDiskSpace:
       return mojom::ModelNotSupportedDetailedReason::kInsufficientDiskSpace;
+    case OnDeviceModelEligibilityReason::kInsufficientDiskSpaceForCaches:
+      return mojom::ModelNotSupportedDetailedReason::
+          kInsufficientDiskSpaceForCaches;
     case OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable:
       return mojom::ModelNotSupportedDetailedReason::
           kModelAdaptationNotAvailable;

@@ -505,6 +505,10 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
     There was no on-device feature usage so the model has not been downloaded
     yet.
   </int>
+  <int value="19" label="Insufficient disk space to build caches">
+    The device does not have enough disk space to build caches for the on-device
+    model.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_capability.h:OnDeviceModelEligibilityReason) -->
@@ -535,6 +539,10 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="7" label="No on-device feature used">
     The client is eligible for downloading and installing the model, but there
     was no on-device feature used so the model is not installed yet.
+  </int>
+  <int value="8" label="Insufficient disk space to build caches">
+    The device does not have enough disk space to build caches for the on-device
+    model.
   </int>
 </enum>
 
