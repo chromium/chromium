@@ -108,10 +108,13 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD1(GetUninitializedActiveDownloadsIfAny,
                void(DownloadVector* downloads));
   MOCK_METHOD1(Init, bool(BrowserContext* browser_context));
-  MOCK_METHOD3(RemoveDownloadsByURLAndTime,
-               int(const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-                   base::Time remove_begin,
-                   base::Time remove_end));
+  MOCK_METHOD(void,
+              RemoveDownloadsByURLAndTime,
+              (const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+               base::Time remove_begin,
+               base::Time remove_end,
+               base::OnceClosure callback),
+              (override));
   MOCK_METHOD1(DownloadUrlMock, void(download::DownloadUrlParameters*));
   void DownloadUrl(
       std::unique_ptr<download::DownloadUrlParameters> params) override {

@@ -282,6 +282,7 @@ chromium-metrics-reviews@google.com.
     <variant name="AuthCache" summary="AuthCache"/>
     <variant name="ChannelIds" summary="ChannelIds"/>
     <variant name="CodeCaches" summary="CodeCaches"/>
+    <variant name="Downloads" summary="Downloads"/>
     <variant name="EmbedderData" summary="EmbedderData"/>
     <variant name="HttpAndMediaCaches" summary="HttpAndMediaCaches"/>
     <variant name="HttpCache" summary="HttpCache"/>

@@ -147,7 +147,8 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kSharedDictionary = 17,
     kPrefetchCache = 18,
     kPrerenderCache = 19,
-    kMaxValue = kPrerenderCache,
+    kDownloads = 20,
+    kMaxValue = kDownloads,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/history/enums.xml:BrowsingDataRemoverTasks)
 

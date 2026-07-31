@@ -101,10 +101,11 @@ class CONTENT_EXPORT DownloadManagerImpl
       download::SimpleDownloadManager::DownloadVector* result) override;
   void GetUninitializedActiveDownloadsIfAny(
       download::SimpleDownloadManager::DownloadVector* result) override;
-  int RemoveDownloadsByURLAndTime(
+  void RemoveDownloadsByURLAndTime(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time remove_begin,
-      base::Time remove_end) override;
+      base::Time remove_end,
+      base::OnceClosure callback) override;
   bool CanDownload(download::DownloadUrlParameters* parameters) override;
   void DownloadUrl(
       std::unique_ptr<download::DownloadUrlParameters> parameters) override;
@@ -412,6 +413,9 @@ class CONTENT_EXPORT DownloadManagerImpl
   // Callbacks to run once download ID is determined.
   using IdCallbackVector = std::vector<std::unique_ptr<GetNextIdCallback>>;
   IdCallbackVector id_callbacks_;
+
+  // Callbacks to run once download manager is initialized.
+  std::vector<base::OnceClosure> on_initialized_callbacks_;
 
   // SequencedTaskRunner to check for file existence. A sequence is used so
   // that a large download history doesn't cause a large number of concurrent

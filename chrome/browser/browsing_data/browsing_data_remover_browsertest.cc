@@ -46,6 +46,7 @@
 #include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/download/public/common/download_features.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -388,6 +389,25 @@ class DiceBrowsingDataRemoverBrowserTest
 
 // Test BrowsingDataRemover for downloads.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Download) {
+  DownloadAnItem();
+  RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS);
+  VerifyDownloadCount(0u);
+}
+
+class BrowsingDataRemoverDeferredDownloadHistoryBrowserTest
+    : public BrowsingDataRemoverBrowserTest {
+ public:
+  BrowsingDataRemoverDeferredDownloadHistoryBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        download::features::kDeferredDownloadHistoryLoading);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverDeferredDownloadHistoryBrowserTest,
+                       Download) {
   DownloadAnItem();
   RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS);
   VerifyDownloadCount(0u);
@@ -926,10 +946,11 @@ const char kImplHistogramPrefix[] = "History.ClearBrowsingData.Duration.Task.";
 // Add data types here that support filtering and only delete data that matches
 // the BrowsingDataFilterBuilder.
 const std::vector<std::string> kSupportsOriginFilteringImpl{
-    "AuthCache",           "EmbedderData",   "HttpCache",
-    "NetworkErrorLogging", "PrefetchCache",  "PreflightCache",
-    "PrerenderCache",      "ReportingCache", "SharedDictionary",
-    "StoragePartition",    "Synchronous",    "TrustTokens",
+    "AuthCache",        "Downloads",           "EmbedderData",
+    "HttpCache",        "NetworkErrorLogging", "PrefetchCache",
+    "PreflightCache",   "PrerenderCache",      "ReportingCache",
+    "SharedDictionary", "StoragePartition",    "Synchronous",
+    "TrustTokens",
 };
 const std::vector<std::string> kSupportsOriginFilteringDelegate{
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

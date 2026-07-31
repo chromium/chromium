@@ -820,6 +820,15 @@ class RemoveDownloadsTester {
 
     EXPECT_CALL(*download_manager_, GetBrowserContext())
         .WillRepeatedly(Return(testing_profile));
+    ON_CALL(*download_manager_, RemoveDownloadsByURLAndTime(_, _, _, _))
+        .WillByDefault(
+            [](const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+               base::Time remove_begin, base::Time remove_end,
+               base::OnceClosure callback) {
+              if (callback) {
+                std::move(callback).Run();
+              }
+            });
     EXPECT_CALL(*download_manager_, Shutdown());
   }
 
@@ -2691,7 +2700,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 // ChromeDownloadManagerDelegate is correctly created and shut down.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDownloads) {
   RemoveDownloadsTester tester(GetProfile());
-  EXPECT_CALL(*tester.download_manager(), RemoveDownloadsByURLAndTime(_, _, _));
+  EXPECT_CALL(*tester.download_manager(),
+              RemoveDownloadsByURLAndTime(_, _, _, _));
 
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),

@@ -1216,11 +1216,21 @@ void DownloadManagerImpl::InterceptNavigation(
       mime_type, transition_type, std::move(on_download_checks_done));
 }
 
-int DownloadManagerImpl::RemoveDownloadsByURLAndTime(
+void DownloadManagerImpl::RemoveDownloadsByURLAndTime(
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time remove_begin,
-    base::Time remove_end) {
-  int count = 0;
+    base::Time remove_end,
+    base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!IsManagerInitialized()) {
+    on_initialized_callbacks_.push_back(
+        base::BindOnce(&DownloadManagerImpl::RemoveDownloadsByURLAndTime,
+                       weak_factory_.GetWeakPtr(), url_filter, remove_begin,
+                       remove_end, std::move(callback)));
+    return;
+  }
+
   auto it = downloads_by_guid_.begin();
   while (it != downloads_by_guid_.end()) {
     download::DownloadItemImpl* download = it->second;
@@ -1233,10 +1243,12 @@ int DownloadManagerImpl::RemoveDownloadsByURLAndTime(
         download->GetStartTime() >= remove_begin &&
         (remove_end.is_null() || download->GetStartTime() < remove_end)) {
       download->Remove();
-      count++;
     }
   }
-  return count;
+
+  if (callback) {
+    std::move(callback).Run();
+  }
 }
 
 bool DownloadManagerImpl::CanDownload(
@@ -1452,6 +1464,12 @@ void DownloadManagerImpl::OnDownloadManagerInitialized() {
   in_progress_manager_->OnAllInprogressDownloadsLoaded();
   for (auto& observer : observers_)
     observer.OnManagerInitialized();
+
+  std::vector<base::OnceClosure> callbacks =
+      std::move(on_initialized_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 bool DownloadManagerImpl::IsManagerInitialized() {

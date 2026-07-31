@@ -397,8 +397,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(
       (!embedder_delegate_ || embedder_delegate_->MayRemoveDownloadHistory())) {
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Downloads"));
     DownloadManager* download_manager = browser_context_->GetDownloadManager();
-    download_manager->RemoveDownloadsByURLAndTime(url_filter, delete_begin_,
-                                                  delete_end_);
+    if (download_manager) {
+      download_manager->RemoveDownloadsByURLAndTime(
+          url_filter, delete_begin_, delete_end_,
+          CreateTaskCompletionClosureForMojo(TracingDataType::kDownloads));
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -960,6 +963,8 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "PrefetchCache";
     case TracingDataType::kPrerenderCache:
       return "PrerenderCache";
+    case TracingDataType::kDownloads:
+      return "Downloads";
   }
 }
 

@@ -756,6 +756,10 @@ base::RepeatingCallback<bool(const GURL&)> GetSingleURLFilter(const GURL& url) {
 
 // Confirm that only downloads with the specified URL are removed.
 TEST_F(DownloadManagerTest, RemoveDownloadsByURL) {
+  GetMockDownloadManagerDelegate().set_supports_history_loading(false);
+  OnInProgressDownloadManagerInitialized();
+  EXPECT_TRUE(download_manager_->IsManagerInitialized());
+
   base::Time now(base::Time::Now());
   for (uint32_t i = 0; i < 2; ++i) {
     download::MockDownloadItemImpl& item(AddItemToManager());
@@ -769,9 +773,28 @@ TEST_F(DownloadManagerTest, RemoveDownloadsByURL) {
 
   base::RepeatingCallback<bool(const GURL&)> url_filter =
       GetSingleURLFilter(download_urls_[0]);
-  int remove_count = download_manager_->RemoveDownloadsByURLAndTime(
-      std::move(url_filter), base::Time(), base::Time::Max());
-  EXPECT_EQ(remove_count, 1);
+  bool called = false;
+  download_manager_->RemoveDownloadsByURLAndTime(
+      std::move(url_filter), base::Time(), base::Time::Max(),
+      base::BindOnce([](bool* called) { *called = true; }, &called));
+  EXPECT_TRUE(called);
+}
+
+TEST_F(DownloadManagerTest, RemoveDownloadsByURLUninitialized) {
+  GetMockDownloadManagerDelegate().set_supports_history_loading(false);
+  EXPECT_FALSE(download_manager_->IsManagerInitialized());
+
+  base::RepeatingCallback<bool(const GURL&)> url_filter =
+      GetSingleURLFilter(download_urls_[0]);
+  bool called = false;
+  download_manager_->RemoveDownloadsByURLAndTime(
+      std::move(url_filter), base::Time(), base::Time::Max(),
+      base::BindOnce([](bool* called) { *called = true; }, &called));
+  EXPECT_FALSE(called);
+
+  OnInProgressDownloadManagerInitialized();
+  EXPECT_TRUE(download_manager_->IsManagerInitialized());
+  EXPECT_TRUE(called);
 }
 
 // Confirm that in-progress downloads will be taken and managed by
