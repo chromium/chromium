@@ -816,7 +816,8 @@ bool IsContextualTasksSidePanelRearchitectureEnabled() {
 
 bool IsContextualTasksUIEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSidePanel) ||
-         base::FeatureList::IsEnabled(kContextualTasks);
+         base::FeatureList::IsEnabled(kContextualTasks) ||
+         base::FeatureList::IsEnabled(kContextualTasksRearchitecture);
 }
 
 namespace flag_descriptions {
