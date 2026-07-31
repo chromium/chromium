@@ -425,6 +425,10 @@ class LocationBarMediator
                                 (present) -> updateNavigateButtonVisibility()));
         mFuseboxCoordinator.setOnInteractionCompletedCallback(this::onFuseboxInteractionCompleted);
         mFuseboxCoordinator.setOnFirstPickerInteractionCanceledCallback(this::endInput);
+        mFuseboxCoordinator
+                .getActivationChipVisibilitySupplier()
+                .addSyncObserver(
+                        mCallbackController.makeCancelable(this::updateUrlBarAccessibilityOrder));
         mOmniboxChipManager = omniboxChipManager;
         mHintTextUpdater =
                 new HintTextUpdater(
@@ -1173,6 +1177,18 @@ class LocationBarMediator
             warning = mContext.getString(R.string.page_info_not_secure_description);
         }
         mUrlCoordinator.setAccessibilityWarning(warning);
+    }
+
+    private void updateUrlBarAccessibilityOrder(boolean isChipVisible) {
+        if (isChipVisible) {
+            mLocationBarLayout
+                    .getUrlBar()
+                    .setAccessibilityTraversalBefore(R.id.fusebox_activation_chip);
+        } else {
+            mLocationBarLayout
+                    .getUrlBar()
+                    .setAccessibilityTraversalBefore(R.id.omnibox_suggestions_dropdown);
+        }
     }
 
     /**

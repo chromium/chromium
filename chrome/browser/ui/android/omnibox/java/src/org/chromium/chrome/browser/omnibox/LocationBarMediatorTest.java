@@ -4269,6 +4269,17 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testUrlBarAccessibilityOrder() {
+        mActivationChipVisibilitySupplier.set(true);
+        verify(mUrlBar, atLeastOnce())
+            .setAccessibilityTraversalBefore(R.id.fusebox_activation_chip);
+
+        mActivationChipVisibilitySupplier.set(false);
+        verify(mUrlBar, atLeastOnce())
+            .setAccessibilityTraversalBefore(R.id.omnibox_suggestions_dropdown);
+    }
+
+    @Test
     public void testOnWindowFocusChanged_updatesStandbyRing() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
