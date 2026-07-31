@@ -21,9 +21,13 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -44,6 +48,7 @@ using UserFeedbackDataCallback =
     base::RepeatingCallback<void(UserFeedbackData*)>;
 
 @interface SceneCoordinator (Testing)
+@property(nonatomic, readonly) Browser* currentBrowser;
 - (void)presentReportAnIssueViewController:(UIViewController*)baseViewController
                                     sender:(UserFeedbackSender)sender
                           userFeedbackData:(UserFeedbackData*)userFeedbackData
@@ -225,6 +230,45 @@ TEST_F(SceneCoordinatorTest, PresentViewControllerHidesGeminiFloaty) {
                                     completion:nil];
 
   EXPECT_OCMOCK_VERIFY(mock_delegate);
+}
+
+// Tests that dismissModalDialogsWithCompletion completes without crashing.
+TEST_F(SceneCoordinatorTest, TestDismissModalDialogsWithCompletion) {
+  CommandDispatcher* dispatcher =
+      coordinator_.currentBrowser->GetCommandDispatcher();
+
+  id mockSnackbarHandler = OCMProtocolMock(@protocol(SnackbarCommands));
+  [dispatcher startDispatchingToTarget:mockSnackbarHandler
+                           forProtocol:@protocol(SnackbarCommands)];
+
+  id mockBookmarksHandler = OCMProtocolMock(@protocol(BookmarksCommands));
+  [dispatcher startDispatchingToTarget:mockBookmarksHandler
+                           forProtocol:@protocol(BookmarksCommands)];
+
+  id mockBrowserCoordinatorHandler =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  OCMStub([mockBrowserCoordinatorHandler
+              clearPresentedStateWithCompletion:[OCMArg any]
+                                 dismissOmnibox:YES])
+      .andDo(^(NSInvocation* invocation) {
+        void* ptr = nullptr;
+        [invocation getArgument:&ptr atIndex:2];
+        ProceduralBlock completionBlock = (__bridge ProceduralBlock)ptr;
+        if (completionBlock) {
+          completionBlock();
+        }
+      });
+  [dispatcher startDispatchingToTarget:mockBrowserCoordinatorHandler
+                           forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+  __block bool completed = false;
+  [coordinator_
+      dismissModalDialogsWithCompletion:^{
+        completed = true;
+      }
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES];
+  EXPECT_TRUE(completed);
 }
 
 }  // namespace

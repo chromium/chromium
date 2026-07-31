@@ -567,25 +567,18 @@ inline LayoutStateScenePassKey PassKey() {
 
   id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
       self.currentBrowser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  ProceduralBlock completionWithBVC = ^{
-    DCHECK(!self.isTabGridActive);
+  ProceduralBlock closePresentedViewsCompletion = ^{
     DCHECK(!self.isSigninInProgress);
-    [browserCoordinatorHandler
-        clearPresentedStateWithCompletion:completion
-                           dismissOmnibox:dismissOmnibox];
-  };
-  ProceduralBlock completionWithoutBVC = ^{
-    // The BVC may exist but tab switcher should be active.
-    DCHECK(self.isTabGridActive);
-    DCHECK(!self.isSigninInProgress);
-    [self stopChildCoordinatorsWithCompletion:completion];
+    if (self.isTabGridActive) {
+      [self stopChildCoordinatorsWithCompletion:completion];
+    } else {
+      [browserCoordinatorHandler
+          clearPresentedStateWithCompletion:completion
+                             dismissOmnibox:dismissOmnibox];
+    }
   };
 
-  // Select a completion based on whether the BVC is shown.
-  ProceduralBlock chosenCompletion =
-      self.isTabGridActive ? completionWithoutBVC : completionWithBVC;
-
-  [self closePresentedViews:NO completion:chosenCompletion];
+  [self closePresentedViews:NO completion:closePresentedViewsCompletion];
 
   [_geminiContainerCoordinator stop];
   _geminiContainerCoordinator = nil;
