@@ -29,7 +29,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Tests for {@link BaseSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -89,6 +91,8 @@ public class BaseSuggestionViewTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        var resourceProvider =
+                new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT);
         mContentView = new View(mActivity);
         mContentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);
         mView = new BaseSuggestionViewForTest(mContentView);
@@ -99,20 +103,9 @@ public class BaseSuggestionViewTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_action_button_width);
 
-        mSemicompactSuggestionViewHeight =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
-
-        mCompactSuggestionViewHeight =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_content_height);
-
-        mDecorationIconWidthPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
+        mSemicompactSuggestionViewHeight = resourceProvider.getSuggestionContentHeight();
+        mCompactSuggestionViewHeight = resourceProvider.getSuggestionCompactContentHeight();
+        mDecorationIconWidthPx = resourceProvider.getSuggestionDecorationIconSizeWidth();
         mLargeDecorationIconWidthPx =
                 mActivity
                         .getResources()
@@ -123,6 +116,12 @@ public class BaseSuggestionViewTest {
                         .getResources()
                         .getDimensionPixelSize(
                                 R.dimen.omnibox_suggestion_end_padding_no_action_button);
+
+        mView.setSuggestionDimensions(
+                mDecorationIconWidthPx,
+                mSemicompactSuggestionViewHeight,
+                mCompactSuggestionViewHeight,
+                resourceProvider.getSuggestionContentVerticalPadding());
     }
 
     /**

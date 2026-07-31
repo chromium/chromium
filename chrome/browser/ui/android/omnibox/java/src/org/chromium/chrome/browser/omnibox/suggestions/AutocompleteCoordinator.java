@@ -317,6 +317,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             OmniboxSuggestionsDropdown dropdown =
                     container.findViewById(R.id.omnibox_suggestions_dropdown);
 
+            dropdown.initializeDropdownDimensions();
             dropdown.setModelList(mListItems);
             mHolder = new SuggestionListViewHolder(suggestionsContainer, dropdown);
 

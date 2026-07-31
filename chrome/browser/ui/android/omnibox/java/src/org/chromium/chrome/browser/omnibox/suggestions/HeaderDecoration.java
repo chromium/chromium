@@ -14,13 +14,13 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.Px;
 import androidx.collection.SimpleArrayMap;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -29,24 +29,41 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 @NullMarked
 public class HeaderDecoration extends RecyclerView.ItemDecoration {
     private final int mHeaderHeight;
-    private final int mStartPadding;
     private final TextPaint mTextPaint;
     private final TextPaint mTextPaintIncognito;
     private final SimpleArrayMap<String, CharSequence> mEllipsizedTitleCache =
             new SimpleArrayMap<>();
     private float mLastHeaderAvailableWidth;
+    private @Px int mStartPadding;
+    private boolean mIsIncognito;
 
     public HeaderDecoration(Context context) {
         mHeaderHeight =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
 
-        mStartPadding = OmniboxResourceProvider.getHeaderStartPadding(context);
-
         // Prepare text paints for drawing headers.
         TextView tv = new TextView(context);
         mTextPaint = createTextPaint(tv, false);
         mTextPaintIncognito = createTextPaint(tv, true);
+    }
+
+    /**
+     * Sets the start padding for suggestion group headers.
+     *
+     * @param startPadding Start padding in pixels.
+     */
+    public void setHeaderStartPadding(@Px int startPadding) {
+        mStartPadding = startPadding;
+    }
+
+    /**
+     * Sets whether the header decoration is for an incognito window.
+     *
+     * @param isIncognito Whether the header decoration is for an incognito window.
+     */
+    public void setIsIncognito(boolean isIncognito) {
+        mIsIncognito = isIncognito;
     }
 
     @SuppressWarnings("SetTextColorAndSetTextSizeCheck")
@@ -92,10 +109,7 @@ public class HeaderDecoration extends RecyclerView.ItemDecoration {
             String title = model.get(SuggestionCommonProperties.HEADER_TITLE);
             if (TextUtils.isEmpty(title)) continue;
 
-            boolean isIncognito =
-                    OmniboxResourceProvider.convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(
-                            model.get(SuggestionCommonProperties.COLOR_SCHEME));
-            TextPaint paint = isIncognito ? mTextPaintIncognito : mTextPaint;
+            TextPaint paint = mIsIncognito ? mTextPaintIncognito : mTextPaint;
 
             CharSequence ellipsizedTitle = mEllipsizedTitleCache.get(title);
             if (ellipsizedTitle == null) {

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -76,8 +77,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
 
-    private final int mBaseBottomPadding;
-    private final int mBaseTopPadding;
+    private @Px int mBaseBottomPadding;
+    private @Px int mBaseTopPadding;
+    private final HeaderDecoration mHeaderDecoration;
     private @SelectionController.Mode int mSelectionMode;
 
     /**
@@ -322,7 +324,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             addItemDecoration(new SuggestionHorizontalDivider(context));
 
             addItemDecoration(new GroupSeparatorDecoration(context));
-            addItemDecoration(new HeaderDecoration(context));
+            mHeaderDecoration = new HeaderDecoration(context);
+            addItemDecoration(mHeaderDecoration);
 
             mLayoutScrollListener = suggestionLayoutScrollListener;
             setLayoutManager(mLayoutScrollListener);
@@ -333,10 +336,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             addOnChildAttachStateChangeListener(mSelectionController);
             mResourceProvider =
                     new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT);
-
-            mBaseBottomPadding = mResourceProvider.getDropdownBottomPadding();
-            mBaseTopPadding = mResourceProvider.getDropdownTopPadding();
-            this.setPaddingRelative(0, mBaseTopPadding, 0, mBaseBottomPadding);
 
             // Disable the scrollbar since it causes the hover events happening near the
             // scrollbar not dispatched to the underlying views.
@@ -356,6 +355,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     public void setBrandedColorScheme(@BrandedColorScheme int scheme) {
         mResourceProvider.setBrandedColorScheme(scheme);
+        mHeaderDecoration.setIsIncognito(scheme == BrandedColorScheme.INCOGNITO);
     }
 
     /**
@@ -669,6 +669,35 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @VisibleForTesting
     int getBaseTopPadding() {
         return mBaseTopPadding;
+    }
+
+    /** Initializes dropdown padding and group header start padding on the UI thread. */
+    public void initializeDropdownDimensions() {
+        setVerticalPadding(
+                mResourceProvider.getDropdownTopPadding(),
+                mResourceProvider.getDropdownBottomPadding());
+        setHeaderStartPadding(mResourceProvider.getHeaderStartPadding());
+    }
+
+    /**
+     * Sets the top and bottom padding for the dropdown list.
+     *
+     * @param topPadding Top padding in pixels.
+     * @param bottomPadding Bottom padding in pixels.
+     */
+    public void setVerticalPadding(int topPadding, int bottomPadding) {
+        mBaseTopPadding = topPadding;
+        mBaseBottomPadding = bottomPadding;
+        this.setPaddingRelative(0, mBaseTopPadding, 0, mBaseBottomPadding);
+    }
+
+    /**
+     * Sets the start padding for suggestion group headers.
+     *
+     * @param startPadding Start padding in pixels.
+     */
+    public void setHeaderStartPadding(int startPadding) {
+        mHeaderDecoration.setHeaderStartPadding(startPadding);
     }
 
     @VisibleForTesting

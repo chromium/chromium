@@ -76,6 +76,10 @@ public abstract class BaseSuggestionViewBinder<T extends View>
     private static @Px int sSideSpacing;
     private static @Px int sLargeIconRoundingRadius;
     private static @Px int sSmallIconRoundingRadius;
+    private static @Px int sDecorationIconWidth;
+    private static @Px int sContentHeight;
+    private static @Px int sCompactContentHeight;
+    private static @Px int sContentVerticalPadding;
 
     private final OmniboxResourceProvider mResourceProvider;
 
@@ -90,6 +94,12 @@ public abstract class BaseSuggestionViewBinder<T extends View>
             initializeDimensions(view.getContext(), mResourceProvider);
             sDimensionsInitialized = true;
         }
+
+        view.setSuggestionDimensions(
+                sDecorationIconWidth,
+                sContentHeight,
+                sCompactContentHeight,
+                sContentVerticalPadding);
 
         bindContent(model, view.contentView, propertyKey);
         ActionChipsBinder.bind(model, view.actionChipsView, propertyKey);
@@ -391,6 +401,10 @@ public abstract class BaseSuggestionViewBinder<T extends View>
                 resources.getDimensionPixelSize(R.dimen.omnibox_large_icon_rounding_radius);
         sSmallIconRoundingRadius =
                 resources.getDimensionPixelSize(R.dimen.omnibox_small_icon_rounding_radius);
+        sDecorationIconWidth = resourceProvider.getSuggestionDecorationIconSizeWidth();
+        sCompactContentHeight = resourceProvider.getSuggestionCompactContentHeight();
+        sContentHeight = resourceProvider.getSuggestionContentHeight();
+        sContentVerticalPadding = resourceProvider.getSuggestionContentVerticalPadding();
     }
 
     /**

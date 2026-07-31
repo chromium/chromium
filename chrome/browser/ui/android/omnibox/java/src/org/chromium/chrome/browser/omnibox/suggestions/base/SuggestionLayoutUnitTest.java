@@ -16,6 +16,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.View.MeasureSpec;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams.SuggestionViewType;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /**
  * Tests for {@link SuggestionLayout}.
@@ -45,6 +47,17 @@ public class SuggestionLayoutUnitTest {
     private final View mActionButtonView = new View(mContext);
     private final View mContentView = new View(mContext);
     private SuggestionLayout mLayout = new SuggestionLayout(mContext);
+
+    @Before
+    public void setUp() {
+        var resourceProvider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        mLayout.setSuggestionDimensions(
+                resourceProvider.getSuggestionDecorationIconSizeWidth(),
+                resourceProvider.getSuggestionContentHeight(),
+                resourceProvider.getSuggestionCompactContentHeight(),
+                resourceProvider.getSuggestionContentVerticalPadding());
+    }
 
     @Test
     public void setRoundingEdges_redrawViewOnChange() {

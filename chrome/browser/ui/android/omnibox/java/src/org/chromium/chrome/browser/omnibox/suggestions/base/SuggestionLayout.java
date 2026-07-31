@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams.SuggestionViewType;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
@@ -30,15 +29,15 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 class SuggestionLayout extends ViewGroup {
-    @VisibleForTesting public final @Px int mDecorationIconWidthPx;
     @VisibleForTesting public final @Px int mLargeDecorationIconWidthPx;
-    @VisibleForTesting public final @Px int mContentHeightPx;
-    @VisibleForTesting public final @Px int mCompactContentHeightPx;
     @VisibleForTesting public final RoundedCornerOutlineProvider mOutlineProvider;
+    @VisibleForTesting public @Px int mDecorationIconWidthPx;
+    @VisibleForTesting public @Px int mContentHeightPx;
+    @VisibleForTesting public @Px int mCompactContentHeightPx;
     private final @Px int mActionButtonWidthPx;
-    private final @Px int mContentVerticalPaddingPx;
     private final @Px int mMinimumContentPadding;
     private final @Px int mSuggestionEndPaddingNoActionButtonPx;
+    private @Px int mContentVerticalPaddingPx;
     private boolean mUseLargeDecoration;
     private boolean mShowDecoration;
 
@@ -157,20 +156,12 @@ class SuggestionLayout extends ViewGroup {
         int endSpace = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding);
         setPaddingRelative(0, 0, endSpace, 0);
 
-        mDecorationIconWidthPx =
-                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(context);
         mLargeDecorationIconWidthPx =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size_large);
 
         mActionButtonWidthPx =
                 res.getDimensionPixelSize(R.dimen.omnibox_suggestion_action_button_width);
-        mCompactContentHeightPx =
-                OmniboxResourceProvider.getSuggestionCompactContentHeight(context);
-        mContentHeightPx = OmniboxResourceProvider.getSuggestionContentHeight(context);
-
-        mContentVerticalPaddingPx =
-                OmniboxResourceProvider.getSuggestionContentVerticalPadding(context);
         mMinimumContentPadding = res.getDimensionPixelSize(R.dimen.omnibox_simple_card_lead_in);
 
         mSuggestionEndPaddingNoActionButtonPx =
@@ -182,6 +173,17 @@ class SuggestionLayout extends ViewGroup {
                                 R.dimen.omnibox_suggestion_bg_round_corner_radius));
         setOutlineProvider(mOutlineProvider);
         setRoundingEdges(false, false);
+    }
+
+    void setSuggestionDimensions(
+            @Px int decorationIconWidthPx,
+            @Px int contentHeightPx,
+            @Px int compactContentHeightPx,
+            @Px int contentVerticalPaddingPx) {
+        mDecorationIconWidthPx = decorationIconWidthPx;
+        mContentHeightPx = contentHeightPx;
+        mCompactContentHeightPx = compactContentHeightPx;
+        mContentVerticalPaddingPx = contentVerticalPaddingPx;
     }
 
     public void setRoundingEdges(boolean roundTopEdge, boolean roundBottomEdge) {
