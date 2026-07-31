@@ -575,3 +575,24 @@ if (!is_android) {
     }
   }
 }
+
+if (!is_android) {
+  source_set("devtools_coverage") {
+    testonly = true
+    sources = [
+      "devtools_agent_coverage_observer.cc",
+      "devtools_agent_coverage_observer.h",
+      "devtools_listener.cc",
+      "devtools_listener.h",
+    ]
+    public_deps = [
+      "//base",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//content/test:test_support",
+      "//crypto",
+      "//url",
+    ]
+  }
+}

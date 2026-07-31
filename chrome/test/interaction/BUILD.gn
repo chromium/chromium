@@ -45,6 +45,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/omnibox",
       "//chrome/browser/ui/views/tabs/common",
+      "//chrome/test/base:devtools_coverage",
       "//chrome/test/base:test_switches",
       "//components/feature_engagement",
       "//components/tabs:public",
