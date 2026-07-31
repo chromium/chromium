@@ -83,6 +83,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -289,15 +291,19 @@ void WebFrameSerializerImpl::EncodeAndFlushBuffer(
   client_->DidSerializeDataForFrame(base::ToVector(encoded_content), status);
 }
 
-// TODO(yosin): We should utilize |MarkupFormatter| here to share code,
-// especially escaping attribute values, done by |WebEntities| |m_htmlEntities|
-// and |m_xmlEntities|.
 void WebFrameSerializerImpl::AppendAttribute(StringBuilder& result,
                                              bool is_html_document,
-                                             const String& attr_name,
+                                             const QualifiedName& attr_name,
                                              const String& attr_value) {
+  if (RuntimeEnabledFeatures::FrameSerializerNoWebEntitiesEnabled()) {
+    MarkupFormatter::AppendAttribute(
+        attr_name.Prefix(), attr_name.LocalName(), attr_value,
+        is_html_document ? SerializationType::kHtml : SerializationType::kXml,
+        result);
+    return;
+  }
   result.Append(' ');
-  result.Append(attr_name);
+  result.Append(attr_name.ToString());
   result.Append("=\"");
   if (is_html_document)
     result.Append(html_entities_.ConvertEntitiesInString(attr_value));
@@ -357,8 +363,7 @@ void WebFrameSerializerImpl::OpenTagToString(Element* element,
       }
     }
 
-    AppendAttribute(result, param->is_html_document, attr_name.ToString(),
-                    attr_value);
+    AppendAttribute(result, param->is_html_document, attr_name, attr_value);
   }
 
   // For frames where link rewriting was requested, ensure that src attribute
@@ -366,8 +371,8 @@ void WebFrameSerializerImpl::OpenTagToString(Element* element,
   // (mainly needed for iframes with srcdoc, but with no src attribute).
   if (should_rewrite_frame_src && !did_rewrite_frame_src &&
       IsA<HTMLIFrameElement>(element)) {
-    AppendAttribute(result, param->is_html_document,
-                    html_names::kSrcAttr.ToString(), rewritten_frame_link);
+    AppendAttribute(result, param->is_html_document, html_names::kSrcAttr,
+                    rewritten_frame_link);
   }
 
   // Do post action for open tag.

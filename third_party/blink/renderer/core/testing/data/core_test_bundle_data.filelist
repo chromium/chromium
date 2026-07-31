@@ -151,6 +151,8 @@ testing/data/frameserialization/beautifull.css
 testing/data/frameserialization/broken-image.png
 testing/data/frameserialization/embed_iframe.html
 testing/data/frameserialization/encoding_normalization.html
+testing/data/frameserialization/entities.html
+testing/data/frameserialization/entities.xml
 testing/data/frameserialization/hidden_elements.html
 testing/data/frameserialization/iframe_in_head.html
 testing/data/frameserialization/image_in_plugin.html

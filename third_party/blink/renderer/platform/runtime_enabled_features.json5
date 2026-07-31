@@ -3341,6 +3341,10 @@
       name: "FragmentedOofInCb",
     },
     {
+      name: "FrameSerializerNoWebEntities",
+      status: "stable",
+    },
+    {
       name: "FreezeFramesOnVisibility",
       status: "experimental",
     },

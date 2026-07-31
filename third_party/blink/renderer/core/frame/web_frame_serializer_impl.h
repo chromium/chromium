@@ -165,7 +165,7 @@ class WebFrameSerializerImpl {
   // Appends attrName="escapedAttrValue" to result.
   void AppendAttribute(StringBuilder& result,
                        bool is_html_document,
-                       const String& attr_name,
+                       const QualifiedName& attr_name,
                        const String& attr_value);
 };
 
