@@ -11,18 +11,16 @@ import android.text.TextUtils;
 import android.view.accessibility.AccessibilityManager;
 
 import org.mockito.Mockito;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.Shadows;
-import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowAccessibilityManager;
 
 import java.util.List;
 
-/**
- * Helper for testing AccessibilityState.
- */
-public class AccessibilityStateTestHelper {
+/** Robolectric-specific helper for testing AccessibilityState. */
+public class AccessibilityStateJUnitTestHelper {
     public static class BuilderForTests {
         private String mId = "com.example.google/app.accessibility.AccessibilityService";
         private int mEventTypes;
@@ -118,16 +116,12 @@ public class AccessibilityStateTestHelper {
                 sb.length() > 0 ? sb.toString() : null);
     }
 
-    /**
-     * Updates the cached accessibility services in {@link AccessibilityState}.
-     */
+    /** Updates the cached accessibility services in {@link AccessibilityState}. */
     public static void updateAccessibilityServices() {
         AccessibilityState.getDelegate().updateAccessibilityServices();
     }
 
-    /**
-     * Sets the JNI instance for AccessibilityState.
-     */
+    /** Sets the JNI instance for AccessibilityState. */
     public static void mockAccessibilityStateJni() {
         AccessibilityStateJni.setInstanceForTesting(Mockito.mock(AccessibilityState.Natives.class));
     }

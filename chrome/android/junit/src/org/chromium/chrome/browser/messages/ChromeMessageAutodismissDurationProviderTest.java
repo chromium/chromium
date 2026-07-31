@@ -18,25 +18,25 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
+import org.chromium.ui.accessibility.AccessibilityStateJUnitTestHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for {@link ChromeMessageAutodismissDurationProvider}. */
-@Config(shadows = {AccessibilityStateTestHelper.ShadowAccessibilityServiceInfo.class})
+@Config(shadows = {AccessibilityStateJUnitTestHelper.ShadowAccessibilityServiceInfo.class})
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeMessageAutodismissDurationProviderTest {
     private Context mContext;
 
     @Before
     public void setUp() throws Exception {
-        AccessibilityStateTestHelper.mockAccessibilityStateJni();
+        AccessibilityStateJUnitTestHelper.mockAccessibilityStateJni();
         mContext = RuntimeEnvironment.getApplication();
 
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, new ArrayList<>());
-        AccessibilityStateTestHelper.updateAccessibilityServices();
+        AccessibilityStateJUnitTestHelper.updateAccessibilityServices();
     }
 
     @After
@@ -46,11 +46,12 @@ public class ChromeMessageAutodismissDurationProviderTest {
 
     private void setAccessibilityServices(int capabilities) {
         AccessibilityServiceInfo service =
-                new AccessibilityStateTestHelper.BuilderForTests()
+                new AccessibilityStateJUnitTestHelper.BuilderForTests()
                         .setCapabilities(capabilities)
                         .build();
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(service));
-        AccessibilityStateTestHelper.updateAccessibilityServices();
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(service));
+        AccessibilityStateJUnitTestHelper.updateAccessibilityServices();
     }
 
     @Test

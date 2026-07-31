@@ -39,7 +39,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.ui.accessibility.AccessibilityStateTestHelper.BuilderForTests;
+import org.chromium.ui.accessibility.AccessibilityStateJUnitTestHelper.BuilderForTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {AccessibilityStateTestHelper.ShadowAccessibilityServiceInfo.class})
+@Config(shadows = {AccessibilityStateJUnitTestHelper.ShadowAccessibilityServiceInfo.class})
 public class AccessibilityStateTest {
     private static final String EVENT_TYPE_MASK_ERROR =
             "Conversion of event masks to event types not correct.";
@@ -82,7 +82,8 @@ public class AccessibilityStateTest {
         mDelegate = AccessibilityState.getDelegate();
 
         // Reset all flags to empty/default state.
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, new ArrayList<>());
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
+                mContext, new ArrayList<>());
         mDelegate.updateAccessibilityServices();
     }
 
@@ -208,7 +209,7 @@ public class AccessibilityStateTest {
         String enabledServices = "placeholder:services";
         AccessibilityServiceInfo service1 = new BuilderForTests().setId("placeholder").build();
         AccessibilityServiceInfo service2 = new BuilderForTests().setId("services").build();
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(service1, service2));
 
         Assert.assertEquals(enabledServices, mDelegate.getEnabledServiceString(mContext));
@@ -222,7 +223,8 @@ public class AccessibilityStateTest {
         List<AccessibilityServiceInfo> serviceInfoList = new ArrayList<>();
         serviceInfoList.add(service1);
         serviceInfoList.add(service2);
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, serviceInfoList);
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
+                mContext, serviceInfoList);
 
         List<AccessibilityServiceInfo> runningServices = mDelegate.getRunningServiceInfoList();
         Assert.assertNotNull(runningServices);
@@ -250,19 +252,22 @@ public class AccessibilityStateTest {
         // Convert each mask to a set of eventTypes.
         AccessibilityServiceInfo serviceEmpty =
                 new BuilderForTests().setEventTypes(serviceEventMask_empty).build();
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(serviceEmpty));
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(serviceEmpty));
         mDelegate.updateAccessibilityServices();
         Set<Integer> outcome_empty = AccessibilityState.relevantEventTypesForCurrentServices();
 
         AccessibilityServiceInfo serviceFull =
                 new BuilderForTests().setEventTypes(serviceEventMask_full).build();
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(serviceFull));
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(serviceFull));
         mDelegate.updateAccessibilityServices();
         Set<Integer> outcome_full = AccessibilityState.relevantEventTypesForCurrentServices();
 
         AccessibilityServiceInfo serviceTest =
                 new BuilderForTests().setEventTypes(serviceEventMask_test).build();
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(serviceTest));
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(serviceTest));
         mDelegate.updateAccessibilityServices();
         Set<Integer> outcome_test = AccessibilityState.relevantEventTypesForCurrentServices();
 
@@ -299,7 +304,7 @@ public class AccessibilityStateTest {
         AccessibilityServiceInfo passwordManagerService =
                 createPasswordManagerServiceInfoWithFlags(
                         AccessibilityStateDelegateImpl.PASSWORD_MANAGER_FLAG_TYPE_MASK);
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(passwordManagerService));
         mDelegate.updateAccessibilityServices();
 
@@ -320,7 +325,7 @@ public class AccessibilityStateTest {
 
         AccessibilityServiceInfo passwordManagerService =
                 createPasswordManagerServiceInfoWithFlags(flags_mask);
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(passwordManagerService));
         mDelegate.updateAccessibilityServices();
 
@@ -342,7 +347,7 @@ public class AccessibilityStateTest {
 
         AccessibilityServiceInfo passwordManagerService =
                 createPasswordManagerServiceInfoWithFlags(flags_mask);
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(passwordManagerService));
         mDelegate.updateAccessibilityServices();
 
@@ -430,7 +435,7 @@ public class AccessibilityStateTest {
 
         // Now enable the proper config, and ensure we do not enter an infinite loop and that
         // we now show touch exploration as being enabled.
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(properConfigService));
 
         mDelegate.updateAccessibilityServices();
@@ -566,7 +571,8 @@ public class AccessibilityStateTest {
     private void startTestWithService(AccessibilityServiceInfo newService) {
         Assert.assertNotNull(newService);
         Assert.assertFalse(AccessibilityState.isAnyAccessibilityServiceEnabled());
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(newService));
+        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(newService));
     }
 
     @Implements(Settings.Global.class)
