@@ -115,6 +115,8 @@ _OS_SPECIFIC_FILTER['linux'] = [
 _OS_SPECIFIC_FILTER['mac'] = [
     # Flaky: crbug.com/40651570
     'ChromeDriverTest.testActionsMultiTouchPoint',
+    # Flaky: https://crbug.com/535680157
+    'ChromeDriverTest.testCloseWindowWhileExecutingCommands',
     # Flaky: https://crbug.com/446461733 (consistently times out on first attempt
     # then succeeds on retry)
     'ChromeDriverTest.testDoesntCrashOnClosingBrowserFromAsyncScript',
