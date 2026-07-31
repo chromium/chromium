@@ -714,7 +714,7 @@ void LogNodeDataSizeDistribution(
       kSizeGb, kBucketCount);
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       "Accessibility.Performance.AXObjectCacheImpl.Incremental.IntList",
-      base::saturated_cast<int>(node_data_size.int_list_attribhute_size), 1,
+      base::saturated_cast<int>(node_data_size.int_list_attribute_size), 1,
       kSize10Mb, kBucketCount);
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       "Accessibility.Performance.AXObjectCacheImpl.Incremental.StringList",

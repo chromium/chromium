@@ -28,6 +28,8 @@
 #include "ui/base/cocoa/remote_accessibility_api.h"
 
 using base::apple::CFToNSPtrCast;
+using base::apple::ObjCCast;
+using base::apple::ObjCCastStrict;
 
 namespace {
 
@@ -148,7 +150,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   BrowserAccessibility* wrapper = GetFromAXNode(node);
   DCHECK(wrapper);
   BrowserAccessibilityCocoa* native_node =
-      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+      ObjCCastStrict<BrowserAccessibilityCocoa>(
           wrapper->GetNativeViewAccessible().Get());
 
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
@@ -504,7 +506,7 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
     BrowserAccessibility& node) {
   DCHECK(mac_notification);
   BrowserAccessibilityCocoa* native_node =
-      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+      ObjCCastStrict<BrowserAccessibilityCocoa>(
           node.GetNativeViewAccessible().Get());
   // The native node should not be null, but could theoretically be null if
   // events fire during tree mutations before platform nodes are fully
@@ -546,7 +548,7 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
       if (ancestor) {
         BrowserAccessibility* obj = GetFromAXNode(ancestor);
         const BrowserAccessibilityCocoa* editable_root =
-            base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            ObjCCastStrict<BrowserAccessibilityCocoa>(
                 obj->GetNativeViewAccessible().Get());
         if ([editable_root instanceActive]) {
           changed_editable_roots.insert(editable_root);
@@ -648,7 +650,7 @@ BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
 
   focus_object = focus_object->PlatformGetLowestPlatformAncestor();
   BrowserAccessibilityCocoa* native_focus_object =
-      base::apple::ObjCCast<BrowserAccessibilityCocoa>(
+      ObjCCast<BrowserAccessibilityCocoa>(
           focus_object->GetNativeViewAccessible().Get());
   if (native_focus_object && [native_focus_object instanceActive]) {
     user_info[NSAccessibilityTextChangeElement] = native_focus_object;

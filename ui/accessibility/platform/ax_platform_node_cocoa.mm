@@ -36,6 +36,8 @@
 
 using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 using base::apple::CFToNSPtrCast;
+using base::apple::ObjCCast;
+using base::apple::ObjCCastStrict;
 
 @interface AXAnnouncementSpec ()
 
@@ -706,7 +708,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     }
     gfx::NativeViewAccessible child = childDelegate->GetNativeViewAccessible();
     AXPlatformNodeCocoa* childCocoa =
-        base::apple::ObjCCastStrict<AXPlatformNodeCocoa>(child.Get());
+        ObjCCastStrict<AXPlatformNodeCocoa>(child.Get());
     [childCocoa getTreeItemDescendantNodeIds:treeItemIds];
   }
 }
@@ -1076,7 +1078,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 - (NSString*)getAXValueAsString {
   id value = [self AXValue];
-  return base::apple::ObjCCast<NSString>(value);
+  return ObjCCast<NSString>(value);
 }
 
 - (ax::mojom::Role)internalRole {
@@ -1109,8 +1111,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id {
   ui::AXPlatformNode* cell = _node->GetDelegate()->GetFromNodeID(id);
   if (cell) {
-    return base::apple::ObjCCast<AXPlatformNodeCocoa>(
-        cell->GetNativeViewAccessible().Get());
+    return ObjCCast<AXPlatformNodeCocoa>(cell->GetNativeViewAccessible().Get());
   }
   return nil;
 }
@@ -1955,17 +1956,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if ([attribute isEqualToString:NSAccessibilityValueAttribute]) {
     [self setAccessibilityValue:value];
   } else if ([attribute isEqualToString:NSAccessibilitySelectedTextAttribute]) {
-    [self setAccessibilitySelectedText:base::apple::ObjCCastStrict<NSString>(
-                                           value)];
+    [self setAccessibilitySelectedText:ObjCCastStrict<NSString>(value)];
   } else if ([attribute
                  isEqualToString:NSAccessibilitySelectedTextRangeAttribute]) {
-    [self
-        setAccessibilitySelectedTextRange:base::apple::ObjCCastStrict<NSValue>(
-                                              value)
-                                              .rangeValue];
+    [self setAccessibilitySelectedTextRange:ObjCCastStrict<NSValue>(value)
+                                                .rangeValue];
   } else if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
-    [self setAccessibilityFocused:base::apple::ObjCCastStrict<NSNumber>(value)
-                                      .boolValue];
+    [self setAccessibilityFocused:ObjCCastStrict<NSNumber>(value).boolValue];
   }
 }
 
@@ -2643,7 +2640,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 // Parameterized text-specific attributes.
 
 - (id)AXRangeForLine:(id)parameter {
-  NSNumber* lineNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  NSNumber* lineNumber = ObjCCast<NSNumber>(parameter);
   if (!lineNumber) {
     return nil;
   }
@@ -2661,7 +2658,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXRangeForPosition:(id)parameter {
-  NSValue* positionValue = base::apple::ObjCCast<NSValue>(parameter);
+  NSValue* positionValue = ObjCCast<NSValue>(parameter);
   if (!positionValue) {
     return nil;
   }
@@ -2671,7 +2668,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXRangeForIndex:(id)parameter {
-  NSNumber* indexNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  NSNumber* indexNumber = ObjCCast<NSNumber>(parameter);
   if (!indexNumber) {
     return nil;
   }
@@ -2693,7 +2690,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXStyleRangeForIndex:(id)parameter {
-  NSNumber* indexNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  NSNumber* indexNumber = ObjCCast<NSNumber>(parameter);
   if (!indexNumber) {
     return nil;
   }
@@ -2703,7 +2700,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXAttributedStringForRange:(id)parameter {
-  NSValue* value = base::apple::ObjCCast<NSValue>(parameter);
+  NSValue* value = ObjCCast<NSValue>(parameter);
   if (!value) {
     return nil;
   }
@@ -2980,9 +2977,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   data.action = _node->GetRole() == ax::mojom::Role::kTab
                     ? ax::mojom::Action::kSetSelection
                     : ax::mojom::Action::kSetValue;
-  if (NSString* stringValue = base::apple::ObjCCast<NSString>(value)) {
+  if (NSString* stringValue = ObjCCast<NSString>(value)) {
     data.value = base::SysNSStringToUTF8(stringValue);
-  } else if (NSValue* valueValue = base::apple::ObjCCast<NSValue>(value)) {
+  } else if (NSValue* valueValue = ObjCCast<NSValue>(value)) {
     // TODO(crbug.com/41115917): Is this case actually needed? The
     // NSObject accessibility implementation supported this, but can it actually
     // occur?
@@ -3677,7 +3674,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXLineForIndex:(id)parameter {
-  NSNumber* lineNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  NSNumber* lineNumber = ObjCCast<NSNumber>(parameter);
   if (!lineNumber) {
     return nil;
   }

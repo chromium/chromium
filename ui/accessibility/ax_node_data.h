@@ -408,7 +408,7 @@ struct AX_BASE_EXPORT AXNodeData final {
     size_t float_attribute_size = 0;
     size_t bool_attribute_size = 0;
     size_t string_attribute_size = 0;
-    size_t int_list_attribhute_size = 0;
+    size_t int_list_attribute_size = 0;
     size_t string_list_attribute_size = 0;
     size_t html_attribute_size = 0;
     size_t child_ids_size = 0;

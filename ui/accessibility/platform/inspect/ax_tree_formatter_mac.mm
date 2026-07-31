@@ -73,8 +73,7 @@ base::DictValue AXTreeFormatterMac::BuildTree(
 
 base::DictValue AXTreeFormatterMac::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  base::apple::ScopedCFTypeRef<AXUIElementRef> node;
-  std::tie(node, std::ignore) = FindAXUIElement(selector);
+  auto [node, _] = FindAXUIElement(selector);
   if (!node) {
     return base::DictValue();
   }
@@ -105,10 +104,10 @@ base::DictValue AXTreeFormatterMac::BuildTree(id root) const {
 std::string AXTreeFormatterMac::EvaluateScript(
     const AXTreeSelector& selector,
     const AXInspectScenario& scenario) const {
-  base::apple::ScopedCFTypeRef<AXUIElementRef> root;
-  std::tie(root, std::ignore) = FindAXUIElement(selector);
-  if (!root)
+  auto [root, _] = FindAXUIElement(selector);
+  if (!root) {
     return "";
+  }
 
   std::string result =
       EvaluateScript((__bridge id)root.get(), scenario.script_instructions, 0,
@@ -179,8 +178,7 @@ base::DictValue AXTreeFormatterMac::BuildNode(
 
 base::DictValue AXTreeFormatterMac::BuildNodeForSelector(
     const AXTreeSelector& selector) const {
-  base::apple::ScopedCFTypeRef<AXUIElementRef> node;
-  std::tie(node, std::ignore) = FindAXUIElement(selector);
+  auto [node, _] = FindAXUIElement(selector);
   if (!node) {
     return base::DictValue();
   }

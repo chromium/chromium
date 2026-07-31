@@ -20,8 +20,7 @@ COMPONENT_EXPORT(AX_PLATFORM)
 base::Value AXNSObjectToBaseValue(id, const AXTreeIndexerMac*);
 
 // Returns the base::DictValue representation of the given AXCustomContent.
-base::DictValue AXCustomContentToBaseValue(AXCustomContent*)
-    API_AVAILABLE(macosx(11.0));
+base::DictValue AXCustomContentToBaseValue(AXCustomContent*);
 
 // Returns the base::Value representation of the given NSAccessibilityElement.
 COMPONENT_EXPORT(AX_PLATFORM)

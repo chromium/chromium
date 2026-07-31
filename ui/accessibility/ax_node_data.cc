@@ -1873,7 +1873,7 @@ void AXNodeData::AccumulateSize(
   }
 
   for (const auto& [_, values] : intlist_attributes) {
-    node_data_size.int_list_attribhute_size +=
+    node_data_size.int_list_attribute_size +=
         sizeof(ax::mojom::IntListAttribute) + values.size() * sizeof(int32_t);
   }
 
@@ -1893,7 +1893,7 @@ void AXNodeData::AccumulateSize(
 
 size_t AXNodeData::AXNodeDataSize::ByteSize() const {
   return int_attribute_size + float_attribute_size + bool_attribute_size +
-         string_attribute_size + int_list_attribhute_size +
+         string_attribute_size + int_list_attribute_size +
          string_list_attribute_size + html_attribute_size + child_ids_size;
 }
 
