@@ -352,11 +352,10 @@ DeletionDialogController::DeletionDialogController(
     Profile* profile,
     TabStripModel* tab_strip_model)
     : profile_(CHECK_DEREF(profile)),
-      show_dialog_model_fn_(base::BindRepeating(
-          &DeletionDialogController::CreateDialogFromBrowser,
-          base::Unretained(this),
-          browser)),
       tab_strip_model_(CHECK_DEREF(tab_strip_model)) {
+  show_dialog_model_fn_ =
+      base::BindRepeating(&DeletionDialogController::CreateDialogFromBrowser,
+                          weak_ptr_factory_.GetWeakPtr(), browser);
   tab_strip_model_->AddObserver(this);
 }
 
@@ -382,7 +381,16 @@ bool DeletionDialogController::IsShowingDialog() const {
 void DeletionDialogController::CreateDialogFromBrowser(
     BrowserWindowInterface* browser,
     std::unique_ptr<ui::DialogModel> dialog_model) {
-  widget_ = chrome::ShowBrowserModal(browser, std::move(dialog_model));
+  // Showing a modal dialog can spin a nested run loop on macOS, during which
+  // the owning browser and controller may be torn down. Guard the post-show
+  // write with a weak pointer to avoid a use-after-free write if `this` is
+  // destroyed during ShowBrowserModal.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  views::Widget* widget =
+      chrome::ShowBrowserModal(browser, std::move(dialog_model));
+  if (weak_ptr) {
+    weak_ptr->widget_ = widget;
+  }
 }
 
 bool DeletionDialogController::MaybeShowDialog(
@@ -461,6 +469,15 @@ void DeletionDialogController::OnDialogCancel() {
   state_.reset();
 }
 
+void DeletionDialogController::OnCloseAction() {
+  state_.reset();
+}
+
+void DeletionDialogController::OnDialogDestroying() {
+  widget_ = nullptr;
+  state_.reset();
+}
+
 std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
     const DialogMetadata& metadata) {
   DialogText strings = GetDialogText(GetProfile(), metadata);
@@ -475,25 +492,20 @@ std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
   dialog_builder.SetTitle(strings.title)
       .AddParagraph(ui::DialogModelLabel(strings.body))
       .AddCancelButton(base::BindOnce(&DeletionDialogController::OnDialogCancel,
-                                      base::Unretained(this)),
+                                      weak_ptr_factory_.GetWeakPtr()),
                        cancel_button_params)
       .AddOkButton(base::BindOnce(&DeletionDialogController::OnDialogOk,
-                                  base::Unretained(this)),
+                                  weak_ptr_factory_.GetWeakPtr()),
                    ui::DialogModel::Button::Params()
                        .SetLabel(strings.ok_text)
                        .SetEnabled(true)
                        .SetId(kDeletionDialogOkButtonId))
-      .SetCloseActionCallback(base::BindOnce(
-          [](DeletionDialogController* dialog_controller) {
-            dialog_controller->state_.reset();
-          },
-          base::Unretained(this)))
-      .SetDialogDestroyingCallback(base::BindOnce(
-          [](DeletionDialogController* dialog_controller) {
-            dialog_controller->widget_ = nullptr;
-            dialog_controller->state_.reset();
-          },
-          base::Unretained(this)));
+      .SetCloseActionCallback(
+          base::BindOnce(&DeletionDialogController::OnCloseAction,
+                         weak_ptr_factory_.GetWeakPtr()))
+      .SetDialogDestroyingCallback(
+          base::BindOnce(&DeletionDialogController::OnDialogDestroying,
+                         weak_ptr_factory_.GetWeakPtr()));
   if (IsDialogSkippable(metadata.type)) {
     dialog_builder.AddCheckbox(
         kDeletionDialogDontAskCheckboxId,

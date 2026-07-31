@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -145,6 +146,8 @@ class DeletionDialogController : public TabStripModelObserver {
   // Methods that are bound by the DialogModel to call the callbacks.
   void OnDialogOk();
   void OnDialogCancel();
+  void OnCloseAction();
+  void OnDialogDestroying();
 
   Profile* GetProfile();
 
@@ -162,6 +165,8 @@ class DeletionDialogController : public TabStripModelObserver {
 
   raw_ptr<views::Widget> widget_;
   const raw_ref<TabStripModel> tab_strip_model_;
+
+  base::WeakPtrFactory<DeletionDialogController> weak_ptr_factory_{this};
 };
 
 }  // namespace tab_groups
