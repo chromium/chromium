@@ -2173,6 +2173,25 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateInvalidUniqueId) {
       suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
+// Tests that accepting a manage suggestion on Android keeps the bottom sheet
+// open if triggered from AtMemory.
+TEST_F(AutofillExternalDelegateTest,
+       ManageSuggestion_AtMemory_KeepsBottomSheetOpenOnAndroid) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+  const Suggestion suggestion{SuggestionType::kManageAddress};
+
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+  } else {
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                Eq(std::nullopt)));
+  }
+
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
+}
+
 // Test that the Autofill delegate still allows previewing and filling
 // specifically of the negative ID for SuggestionType::kIbanEntry.
 TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsIbanEntry) {

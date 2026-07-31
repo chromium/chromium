@@ -855,6 +855,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageEnhancedAutofill: {
       manager_->client().ShowAutofillSettings(suggestion.type);
+      // Keep the bottom sheet open on Android if triggered from AtMemory.
+      if constexpr (BUILDFLAG(IS_ANDROID)) {
+        if (IsAtMemoryTriggerSource(trigger_source_)) {
+          return;
+        }
+      }
       break;
     }
     case SuggestionType::kUndoOrClear:
