@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -38,7 +39,7 @@ import org.chromium.chrome.tab_ui.R;
 public class VerticalTabRailLayout extends ConstraintLayout {
     private static final float SCROLL_OFFSET_DIVISOR = 4f;
 
-    private @Nullable Callback<Integer> mExpandOrCollapseOnHoverListener;
+    private @Nullable Callback<@RailCollapseState Integer> mExpandOrCollapseOnHoverListener;
 
     private TabListRecyclerView mRecyclerView;
     private TabListRecyclerView mPinnedTabsRecyclerView;
@@ -144,13 +145,36 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     }
 
     /** Sets the hover listener to be notified when hover state transitions occur. */
-    public void setExpandOrCollapseOnHoverListener(@Nullable Callback<Integer> listener) {
+    public void setExpandOrCollapseOnHoverListener(
+            @Nullable Callback<@RailCollapseState Integer> listener) {
         mExpandOrCollapseOnHoverListener = listener;
     }
 
     /** Updates internal child view styling based on the current rail collapse state. */
     public void setCollapseState(@RailCollapseState int collapseState) {
         updateCollapsedState(collapseState);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (!hasWindowFocus && mExpandOrCollapseOnHoverListener != null) {
+            // If the current state is EXPANDED, this will be ignored safely in
+            // VerticalTabRailCollapseController.
+            mExpandOrCollapseOnHoverListener.onResult(RailCollapseState.COLLAPSED);
+        }
+    }
+
+    @Override
+    public boolean onDragEvent(DragEvent event) {
+        int action = event.getAction();
+        if ((action == DragEvent.ACTION_DRAG_EXITED || action == DragEvent.ACTION_DRAG_ENDED)
+                && mExpandOrCollapseOnHoverListener != null) {
+            // If the current state is EXPANDED, this will be ignored safely in
+            // VerticalTabRailCollapseController.
+            mExpandOrCollapseOnHoverListener.onResult(RailCollapseState.COLLAPSED);
+        }
+        return super.onDragEvent(event);
     }
 
     @Override

@@ -1139,7 +1139,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Verify listener requested collapse, but model is NOT updated yet (deferred).
         verify(mMockRailCollapseListener)
-                .onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
+                .onRailCollapseStateChangeRequestedByUser(
+                        RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
         assertEquals(
                 RailCollapseState.EXPANDED,
                 mCoordinator
@@ -1169,7 +1170,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Verify listener requested expand, but model is still collapsed.
         verify(mMockRailCollapseListener)
-                .onRailCollapseStateChangeRequestedByUser(RailCollapseState.EXPANDED);
+                .onRailCollapseStateChangeRequestedByUser(
+                        RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED);
         assertEquals(
                 RailCollapseState.COLLAPSED,
                 mCoordinator
@@ -1212,7 +1214,7 @@ public class VerticalTabListCoordinatorUnitTest {
         // Attempting click when disabled should be ignored.
         collapseButton.performClick();
         verify(mMockRailCollapseListener, never())
-                .onRailCollapseStateChangeRequestedByUser(anyInt());
+                .onRailCollapseStateChangeRequestedByUser(anyInt(), anyInt());
 
         mCoordinator.setCollapseButtonEnabled(true);
         assertTrue(
@@ -1229,6 +1231,9 @@ public class VerticalTabListCoordinatorUnitTest {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         createCoordinator();
+        mCoordinator
+                .getCollapseController()
+                .setRailCollapseStateByUser(RailCollapseState.COLLAPSED);
         mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
 
         View containerView = mCoordinator.getView();
@@ -1240,7 +1245,8 @@ public class VerticalTabListCoordinatorUnitTest {
         hoverEnter.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverEnter);
         verify(mMockRailCollapseListener)
-                .onRailCollapseStateChangeRequestedByUser(RailCollapseState.EXPANDED_FOR_HOVERING);
+                .onRailCollapseStateChangeRequestedByUser(
+                        RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED_FOR_HOVERING);
 
         // 2. Mouse hover exit (outside container bounds) -> requests COLLAPSED.
         mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
@@ -1249,7 +1255,8 @@ public class VerticalTabListCoordinatorUnitTest {
         hoverExit.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverExit);
         verify(mMockRailCollapseListener)
-                .onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
+                .onRailCollapseStateChangeRequestedByUser(
+                        RailCollapseState.EXPANDED_FOR_HOVERING, RailCollapseState.COLLAPSED);
     }
 
     @Test

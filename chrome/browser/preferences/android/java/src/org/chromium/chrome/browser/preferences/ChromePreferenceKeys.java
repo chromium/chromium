@@ -1110,6 +1110,9 @@ public final class ChromePreferenceKeys {
 
     public static final String VERIFIED_DIGITAL_ASSET_LINKS = "verified_digital_asset_links";
 
+    /** Stores whether the vertical tabs rail is collapsed. */
+    public static final String VERTICAL_TABS_COLLAPSED = "Chrome.VerticalTabs.Collapsed";
+
     /** Stores the user preference for displaying vertical tabs. */
     public static final String VERTICAL_TABS_ENABLED = "Chrome.VerticalTabs.Enabled";
 
@@ -1380,6 +1383,7 @@ public final class ChromePreferenceKeys {
                 UMA_ON_RESUME_COUNTER,
                 USB_NOTIFICATION_IDS,
                 USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
+                VERTICAL_TABS_COLLAPSED,
                 VERTICAL_TABS_ENABLED,
                 VERTICAL_TABS_ENABLED_TIMESTAMP,
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,

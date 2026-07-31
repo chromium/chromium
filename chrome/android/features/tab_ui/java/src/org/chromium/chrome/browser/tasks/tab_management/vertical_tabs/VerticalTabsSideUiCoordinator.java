@@ -229,15 +229,11 @@ public class VerticalTabsSideUiCoordinator
     // 2. determineShowableSize: SideUiCoordinator queries target width for transition bounds.
     // 3. onSideUiSpecsChanged: fired post-specs change (only if width/specs changed) to sync button
     // and rail model state.
-    private void onRailCollapseStateChangeRequestedByUser(@RailCollapseState int newStateByUser) {
-        @RailCollapseState int oldStateByUser = mCollapseController.getRailCollapseStateByUser();
-        if (oldStateByUser == newStateByUser) return;
-
-        mCollapseController.setRailCollapseStateByUser(newStateByUser);
-
+    private void onRailCollapseStateChangeRequestedByUser(
+            @RailCollapseState int currentState, @RailCollapseState int targetState) {
         // TODO(crbug.com/527641177): Remove this if check after expand on hovering UI is done.
-        if (VerticalTabRailCollapseController.isExpanded(oldStateByUser)
-                && VerticalTabRailCollapseController.isExpanded(newStateByUser)) {
+        if (VerticalTabRailCollapseController.isExpanded(currentState)
+                && VerticalTabRailCollapseController.isExpanded(targetState)) {
             updateCollapseButtonAndRailState(isCurrentWindowNarrow());
         } else {
             mSideUiCoordinator.updateUi(
@@ -254,7 +250,7 @@ public class VerticalTabsSideUiCoordinator
     private void updateCollapseButtonAndRailState(boolean isNarrow) {
         mWasNarrow = isNarrow;
         // Apply effective state (COLLAPSED if narrow, or mRailCollapseStateByUser if wide).
-        mTabListCoordinator.setRailCollapseState(
+        mCollapseController.dispatchRailCollapseStateUpdate(
                 mCollapseController.getEffectiveRailCollapseState(isNarrow));
         // Disable the collapse button in narrow windows so users cannot expand beyond bounds.
         mTabListCoordinator.setCollapseButtonEnabled(!isNarrow);

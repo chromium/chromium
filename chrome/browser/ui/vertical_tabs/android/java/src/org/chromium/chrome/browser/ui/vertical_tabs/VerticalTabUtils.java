@@ -115,6 +115,18 @@ public class VerticalTabUtils {
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, enabled);
     }
 
+    /** Returns whether the vertical tabs rail is collapsed as stored in shared preferences. */
+    public static boolean isRailCollapsedFromSharedPref() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED, false);
+    }
+
+    /** Sets whether the vertical tabs rail is collapsed in shared preferences. */
+    public static void setRailCollapsedInSharedPref(boolean collapsed) {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED, collapsed);
+    }
+
     /**
      * Records the layout switch entry point and direction when toggling Vertical Tabs.
      *

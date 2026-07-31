@@ -52,8 +52,10 @@ public class VerticalTabListProperties {
             ON_NEW_TAB_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_COLLAPSE_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<Callback<Integer>>
+    public static final PropertyModel.WritableObjectPropertyKey<
+                    Callback<@RailCollapseState Integer>>
             EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 COLLAPSE_STATE,
