@@ -102,6 +102,7 @@ class FrameNodeImpl
   content::SiteInstanceGroupId GetSiteInstanceGroupId() const override;
   resource_attribution::FrameContext GetResourceContext() const override;
   bool IsMainFrame() const override;
+
   LifecycleState GetLifecycleState() const override;
   bool HasNonemptyBeforeUnload() const override;
   const GURL& GetURL() const override;
@@ -135,6 +136,7 @@ class FrameNodeImpl
 
   // Getters for const properties.
   FrameNodeImpl* parent_frame_node() const;
+  FrameNodeImpl* parent_or_outer_document() const;
   FrameNodeImpl* parent_or_outer_document_or_embedder() const;
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
@@ -216,6 +218,7 @@ class FrameNodeImpl
   // Rest of FrameNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
   const FrameNode* GetParentFrameNode() const override;
+  const FrameNode* GetParentOrOuterDocument() const override;
   const FrameNode* GetParentOrOuterDocumentOrEmbedder() const override;
   const PageNode* GetPageNode() const override;
   const ProcessNode* GetProcessNode() const override;

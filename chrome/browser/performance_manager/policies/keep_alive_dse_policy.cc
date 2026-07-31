@@ -58,7 +58,7 @@ KeepAliveDSEPolicy::KeepAliveDSEPolicy()
 KeepAliveDSEPolicy::~KeepAliveDSEPolicy() = default;
 
 void KeepAliveDSEPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
-  const FrameNode* main_frame_node = page_node->GetMainFrameNode();
+  const FrameNode* main_frame_node = page_node->GetPrimaryMainFrameNode();
   // If there's no main frame (e.g., this can happen during session restore
   // before the main frame is fully initialized), there's nothing to do, as we
   // need it to determine the URL and associated process.
@@ -97,8 +97,7 @@ void KeepAliveDSEPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
     ReleaseDSEKeepAlive();
   }
 
-  SetDSEKeepAlive(page_node->GetMainFrameNode()->GetProcessNode(),
-                  template_url_service);
+  SetDSEKeepAlive(main_frame_node->GetProcessNode(), template_url_service);
 }
 
 void KeepAliveDSEPolicy::OnBeforeProcessNodeRemoved(
@@ -191,8 +190,9 @@ const PageNode* KeepAliveDSEPolicy::FindSuitableDSEPage() const {
 // SetDSEKeepAlive to perform the actual keep-alive operation.
 void KeepAliveDSEPolicy::KeepAliveDSERendererForPage(
     const PageNode* page_node) {
-  const ProcessNode* process_node =
-      page_node->GetMainFrameNode()->GetProcessNode();
+  const FrameNode* main_frame_node = page_node->GetPrimaryMainFrameNode();
+  CHECK(main_frame_node);
+  const ProcessNode* process_node = main_frame_node->GetProcessNode();
   CHECK(process_node);
 
   TemplateURLService* template_url_service = GetTemplateURLService(page_node);
@@ -253,7 +253,7 @@ void KeepAliveDSEPolicy::ReleaseDSEKeepAlive() {
 // 2. The main frame's URL is identified as a search results page from the
 //    default search provider by the TemplateURLService.
 bool KeepAliveDSEPolicy::IsSuitableDSEPage(const PageNode* page_node) const {
-  if (!page_node->GetMainFrameNode()) {
+  if (!page_node->GetPrimaryMainFrameNode()) {
     return false;
   }
 

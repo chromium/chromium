@@ -33,7 +33,7 @@ SidePanelLoadingVoter::SidePanelLoadingVoter() = default;
 SidePanelLoadingVoter::~SidePanelLoadingVoter() = default;
 
 void SidePanelLoadingVoter::MarkAsSidePanel(const PageNode* page_node) {
-  CHECK(page_node->GetMainFrameNode());
+  CHECK(page_node->GetPrimaryMainFrameNode());
 
   // This is possible for a preloaded Side Panel. The navigation has already
   // committed and the page is visible.
@@ -129,13 +129,16 @@ void SidePanelLoadingVoter::SubmitVoteForPage(const PageNode* page_node) {
   CHECK(!page_node->IsVisible());
 
   // We only need to increase the priority of the main frame.
-  const FrameNode* frame_node = page_node->GetMainFrameNode();
+  // TODO(crbug.com/540480785): Subframes should also get increased priority,
+  // otherwise parts of the page wouldn't be boosted.
+  const FrameNode* frame_node = page_node->GetPrimaryMainFrameNode();
+  CHECK(frame_node);
 
   auto [_, inserted] = frames_with_vote_.insert(frame_node);
   CHECK(inserted);
 
   voting_channel_.SubmitVote(
-      GetExecutionContext(page_node->GetMainFrameNode()),
+      GetExecutionContext(frame_node),
       Vote(base::Process::Priority::kUserBlocking, kSidePanelLoadingReason));
 }
 

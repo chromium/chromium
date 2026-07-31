@@ -98,6 +98,16 @@ class FrameNode : public TypedNode<FrameNode> {
 
   // Returns the document owning the frame this RenderFrameHost is located in,
   // which will either be a parent (for <iframe>s) or outer document (for
+  // <fencedframe>). Unlike GetParentOrOuterDocumentOrEmbedder(), this does
+  // not traverse to embedders (e.g. GuestViews). This is a constant over the
+  // lifetime of the frame, except that it will always be null during the
+  // OnBeforeFrameNodeAdded() and OnFrameNodeRemoved() notifications.
+  //
+  // This method is equivalent to RenderFrameHost::GetParentOrOuterDocument().
+  virtual const FrameNode* GetParentOrOuterDocument() const = 0;
+
+  // Returns the document owning the frame this RenderFrameHost is located in,
+  // which will either be a parent (for <iframe>s) or outer document (for
   // <fencedframe> or an embedder (e.g. GuestViews)). This is a constant over
   // the lifetime of the frame, except that it will always be null during the
   // OnBeforeFrameNodeAdded() and OnFrameNodeRemoved() notifications.

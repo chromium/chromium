@@ -42,7 +42,7 @@ void ProcessHostedContentTypesAggregator::OnTypeChanged(
     // TODO(crbug.com/40194583): Change CHECKs to DCHECKs in September 2022 if
     // there are no crash report indicating that expectations are incorrect.
     CHECK_LE(page_node->GetMainFrameNodes().size(), 1U);
-    if (auto* main_frame = page_node->GetMainFrameNode()) {
+    if (auto* main_frame = page_node->GetPrimaryMainFrameNode()) {
       CHECK(main_frame->GetChildFrameNodes().empty());
       FrameNodeImpl::FromNode(main_frame)
           ->process_node()

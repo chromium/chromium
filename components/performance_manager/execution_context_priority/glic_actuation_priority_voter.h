@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_GLIC_ACTUATION_PRIORITY_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_GLIC_ACTUATION_PRIORITY_VOTER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
@@ -13,7 +12,6 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/voting/voting.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace performance_manager::execution_context_priority {
 
@@ -61,15 +59,7 @@ class GlicActuationPriorityVoter
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
-  void SubmitVote(const execution_context::ExecutionContext* execution_context,
-                  const Vote& vote);
-  void InvalidateVote(
-      const execution_context::ExecutionContext* execution_context);
-
   VotingChannel voting_channel_;
-
-  absl::flat_hash_map<raw_ptr<const execution_context::ExecutionContext>, Vote>
-      voted_contexts_;
 
   void UpdateFrameNodeVote(const FrameNode* frame_node,
                            GlicActuationState previous_state,

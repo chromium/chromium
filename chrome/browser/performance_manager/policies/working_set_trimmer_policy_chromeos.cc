@@ -207,7 +207,7 @@ void WorkingSetTrimmerPolicyChromeOS::TrimNodesOnGraph() {
         // now.
 
         // Check that we have a main frame.
-        const FrameNode* frame_node = page_node->GetMainFrameNode();
+        const FrameNode* frame_node = page_node->GetPrimaryMainFrameNode();
         if (!frame_node) {
           continue;
         }

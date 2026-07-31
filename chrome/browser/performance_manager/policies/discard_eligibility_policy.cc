@@ -233,7 +233,7 @@ DiscardEligibilityPolicy::CanDiscardWithCustomRecentVisibilityWindow(
 
   // Don't discard tabs that don't have a main frame (restored tab which is not
   // loaded yet, discarded tab, crashed tab).
-  if (!page_node->GetMainFrameNode()) {
+  if (!page_node->GetPrimaryMainFrameNode()) {
     add_reason(CannotDiscardReason::kNoMainFrame);
     return CanDiscardResult::kDisallowed;
   }
@@ -338,8 +338,8 @@ DiscardEligibilityPolicy::CanDiscardWithCustomRecentVisibilityWindow(
   // discard extensions or other PageNode that don't correspond to a tab.
   //
   // TODO(crbug.com/40910297): Due to a state tracking bug, sometimes there are
-  // two frames marked "current". In that case GetMainFrameNode() returns an
-  // arbitrary one, which may not have the url set correctly. Therefore, use
+  // two frames marked "current". In that case GetPrimaryMainFrameNode() returns
+  // an arbitrary one, which may not have the url set correctly. Therefore, use
   // GetMainFrameUrl() for the url.
   bool is_web_page_or_internal_or_data_page =
       main_frame_url.SchemeIsHTTPOrHTTPS() ||

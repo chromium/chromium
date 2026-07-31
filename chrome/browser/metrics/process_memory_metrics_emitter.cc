@@ -1820,7 +1820,7 @@ namespace {
 // Returns true iff the given |process| is responsible for hosting the
 // main-frame of the given |page|.
 bool HostsMainFrame(const ProcessNode* process, const PageNode* page) {
-  const FrameNode* main_frame = page->GetMainFrameNode();
+  const FrameNode* main_frame = page->GetPrimaryMainFrameNode();
   if (main_frame == nullptr) {
     // |process| can't host a frame that doesn't exist.
     return false;

@@ -84,20 +84,21 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 
   // Navigate to an initial page. Test that PM has a PageNode for it, and
-  // GetMainFrameNode returns its main frame.
+  // GetPrimaryMainFrameNode returns its main frame.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kInitialUrl));
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
 
   ASSERT_TRUE(page_node);
   EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
-  const FrameNode* initial_main_frame_node = page_node->GetMainFrameNode();
+  const FrameNode* initial_main_frame_node =
+      page_node->GetPrimaryMainFrameNode();
   int64_t initial_navigation_id = page_node->GetNavigationID();
   EXPECT_EQ(page_node->GetMainFrameUrl(), kInitialUrl);
   EXPECT_TRUE(initial_main_frame_node->IsCurrent());
 
   // Start prerendering a document. Test that the prerendering frame tree is
-  // added as additional frame nodes, but GetMainFrameNode is unchanged.
+  // added as additional frame nodes, but GetPrimaryMainFrameNode is unchanged.
   prerender_helper_.AddPrerender(kPrerenderingUrl);
   base::WeakPtr<PageNode> page_node2 =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   ASSERT_TRUE(page_node);
   ASSERT_EQ(page_node.get(), page_node2.get());
   EXPECT_EQ(page_node->GetMainFrameNodes().size(), 2U);
-  EXPECT_EQ(page_node->GetMainFrameNode(), initial_main_frame_node);
+  EXPECT_EQ(page_node->GetPrimaryMainFrameNode(), initial_main_frame_node);
   EXPECT_TRUE(initial_main_frame_node->IsCurrent());
 
   // Find the prerendering MainFrameNode.
@@ -124,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   EXPECT_EQ(page_node->GetNavigationID(), initial_navigation_id);
   EXPECT_EQ(page_node->GetMainFrameUrl(), kInitialUrl);
 
-  // Activate the prerendered document. Test that GetMainFrameNode now returns
-  // its main frame, and the original frame tree is gone.
+  // Activate the prerendered document. Test that GetPrimaryMainFrameNode now
+  // returns its main frame, and the original frame tree is gone.
   content::RenderFrameDeletedObserver deleted_observer(
       web_contents()->GetPrimaryMainFrame());
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
@@ -136,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
 
   ASSERT_TRUE(page_node);
   EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
-  EXPECT_EQ(page_node->GetMainFrameNode(), prerender_main_frame_node);
+  EXPECT_EQ(page_node->GetPrimaryMainFrameNode(), prerender_main_frame_node);
   EXPECT_TRUE(prerender_main_frame_node->IsCurrent());
 
   // Now the PageNode should reflect the prerendering navigation.
@@ -151,20 +152,21 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   const GURL kFinalUrl = GetUrl("/empty.html?elsewhere");
 
   // Navigate to an initial page. Test that PM has a PageNode for it, and
-  // GetMainFrameNode returns its main frame.
+  // GetPrimaryMainFrameNode returns its main frame.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kInitialUrl));
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
 
   ASSERT_TRUE(page_node);
   EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
-  const FrameNode* initial_main_frame_node = page_node->GetMainFrameNode();
+  const FrameNode* initial_main_frame_node =
+      page_node->GetPrimaryMainFrameNode();
   int64_t initial_navigation_id = page_node->GetNavigationID();
   EXPECT_EQ(page_node->GetMainFrameUrl(), kInitialUrl);
   EXPECT_TRUE(initial_main_frame_node->IsCurrent());
 
   // Start prerendering a document. Test that the prerendering frame tree is
-  // added as additional frame nodes, but GetMainFrameNode is unchanged.
+  // added as additional frame nodes, but GetPrimaryMainFrameNode is unchanged.
   content::PrerenderHostId prerender_host =
       prerender_helper_.AddPrerender(kPrerenderingUrl);
   base::WeakPtr<PageNode> page_node2 =
@@ -173,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   ASSERT_TRUE(page_node);
   ASSERT_EQ(page_node.get(), page_node2.get());
   EXPECT_EQ(page_node->GetMainFrameNodes().size(), 2U);
-  EXPECT_EQ(page_node->GetMainFrameNode(), initial_main_frame_node);
+  EXPECT_EQ(page_node->GetPrimaryMainFrameNode(), initial_main_frame_node);
   EXPECT_TRUE(initial_main_frame_node->IsCurrent());
 
   // Find the prerendering MainFrameNode.
@@ -208,9 +210,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   // The RenderFrameHost might change after the navigation if RenderDocument
   // is enabled.
   EXPECT_EQ(rfh_should_change,
-            page_node->GetMainFrameNode() != initial_main_frame_node);
+            page_node->GetPrimaryMainFrameNode() != initial_main_frame_node);
   EXPECT_EQ(page_node->GetMainFrameUrl(), kFinalUrl);
-  EXPECT_TRUE(page_node->GetMainFrameNode()->IsCurrent());
+  EXPECT_TRUE(page_node->GetPrimaryMainFrameNode()->IsCurrent());
 }
 
 }  // namespace performance_manager

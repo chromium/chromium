@@ -137,9 +137,9 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleCurrentMainFrames) {
   ASSERT_TRUE(other_frame_node->GetURL().is_empty());
   ASSERT_TRUE(other_frame_node->IsCurrent());
 
-  // An arbitrary "current" frame will be returned by GetMainFrameNode(). Make
-  // sure the page can be discarded even if the one without a url is returned.
-  // Discarding is only blocked if neither have a url.
+  // An arbitrary "current" frame will be returned by GetPrimaryMainFrameNode().
+  // Make sure the page can be discarded even if the one without a url is
+  // returned. Discarding is only blocked if neither have a url.
   ExpectCanDiscardEligibleAllReasons(page_node());
 
   SetPageAndFrameUrl(GURL(), page_node(), frame_node());

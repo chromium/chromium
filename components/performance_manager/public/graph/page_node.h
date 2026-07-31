@@ -185,13 +185,26 @@ class PageNode : public TypedNode<PageNode> {
   // since the last navigation commit.
   virtual base::TimeDelta GetTimeSinceLastNavigation() const = 0;
 
-  // Returns the current main frame node (if there is one), otherwise returns
-  // any of the potentially multiple main frames that currently exist. If there
-  // are no main frames at the moment, returns nullptr.
-  virtual const FrameNode* GetMainFrameNode() const = 0;
+  // Returns the primary main frame node (if there is one), otherwise returns
+  // nullptr. The primary main frame is the outermost main frame of the active
+  // frame tree (i.e. not prerendering, not in the BackForwardCache, and not
+  // an inner/embedded frame tree like a fenced frame).
+  //
+  // Note: If multiple current outermost main frames exist (which can happen
+  // due to a state tracking bug, see crbug.com/40910297), an arbitrary one
+  // is returned.
+  virtual const FrameNode* GetPrimaryMainFrameNode() const = 0;
 
-  // Returns all of the main frame nodes, both current and otherwise. If there
-  // are no main frames at the moment, returns the empty set.
+  // Returns all of the main frame nodes associated with this page, both current
+  // and otherwise. If there are no main frames at the moment, returns the empty
+  // set.
+  //
+  // Note that this includes the main frame of the primary frame tree, but also
+  // main frames of non-primary frame trees (such as prerendered pages or pages
+  // in the BackForwardCache) and inner/embedded frame trees (such as fenced
+  // frames). Because of this, it is not guaranteed that all returned nodes
+  // are "primary" or "outermost". Most callers should prefer
+  // GetPrimaryMainFrameNode().
   virtual NodeSetView<const FrameNode*> GetMainFrameNodes() const = 0;
 
   // Returns the URL the main frame last committed a navigation to, or the

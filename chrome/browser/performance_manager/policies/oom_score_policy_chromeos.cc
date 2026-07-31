@@ -144,7 +144,7 @@ std::vector<base::ProcessId> OomScorePolicyChromeOS::GetUniquePids(
 
   for (const auto& candidate : candidates) {
     const FrameNode* main_frame_node =
-        candidate.page_node()->GetMainFrameNode();
+        candidate.page_node()->GetPrimaryMainFrameNode();
     if (!main_frame_node) {
       continue;
     }

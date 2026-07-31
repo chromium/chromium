@@ -41,7 +41,6 @@ void GlicActuationPriorityVoter::TearDownOnGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
   voting_channel_.Reset();
-  voted_contexts_.clear();
 }
 
 void GlicActuationPriorityVoter::OnGlicActuationStateChanged(
@@ -51,8 +50,8 @@ void GlicActuationPriorityVoter::OnGlicActuationStateChanged(
       PageLiveStateDecorator::Data::FromPageNode(page_node)
           ->GetGlicActuationState();
 
-  auto* main_frame_node = page_node->GetMainFrameNode();
-  if (main_frame_node && main_frame_node->IsCurrent()) {
+  auto* main_frame_node = page_node->GetPrimaryMainFrameNode();
+  if (main_frame_node) {
     UpdateFrameNodeVote(main_frame_node, previous_state, state);
   }
 }
@@ -74,18 +73,34 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeAdded(
     const PageNode* pending_page_node,
     const ProcessNode* pending_process_node,
     const FrameNode* pending_parent_or_outer_document_or_embedder) {
+  // Filter out subframes and fenced frame roots (which share the same PageNode)
+  // while allowing GuestView main frames (whose embedder is on a different
+  // PageNode). Ideally FrameNodeObserver would provide a
+  // `pending_parent_or_outer_document` parameter.
+  if (pending_parent_or_outer_document_or_embedder &&
+      pending_parent_or_outer_document_or_embedder->GetPageNode() ==
+          pending_page_node) {
+    return;
+  }
   const GlicActuationState state =
       PageLiveStateDecorator::Data::FromPageNode(pending_page_node)
           ->GetGlicActuationState();
-  if (state != GlicActuationState::kNone && frame_node->IsMainFrame() &&
-      frame_node->IsCurrent()) {
+  if (state != GlicActuationState::kNone && frame_node->IsCurrent()) {
     UpdateFrameNodeVote(frame_node, GlicActuationState::kNone, state);
   }
 }
 
 void GlicActuationPriorityVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  InvalidateVote(GetExecutionContext(frame_node));
+  if (frame_node->GetParentOrOuterDocument()) {
+    return;
+  }
+  const GlicActuationState state =
+      PageLiveStateDecorator::Data::FromPageNode(frame_node->GetPageNode())
+          ->GetGlicActuationState();
+  if (frame_node->IsCurrent() && state != GlicActuationState::kNone) {
+    voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
+  }
 }
 
 void GlicActuationPriorityVoter::OnCurrentFrameChanged(
@@ -94,7 +109,7 @@ void GlicActuationPriorityVoter::OnCurrentFrameChanged(
   const FrameNode* frame_node =
       current_frame_node ? current_frame_node : previous_frame_node;
   CHECK(frame_node);
-  if (!frame_node->IsMainFrame()) {
+  if (frame_node->GetParentOrOuterDocument()) {
     return;
   }
   GlicActuationState state =
@@ -104,12 +119,11 @@ void GlicActuationPriorityVoter::OnCurrentFrameChanged(
     return;
   }
 
-  // The current frame can change when an actor task navigates the actuated tab.
   if (current_frame_node) {
     UpdateFrameNodeVote(current_frame_node, GlicActuationState::kNone, state);
   }
   if (previous_frame_node) {
-    InvalidateVote(GetExecutionContext(previous_frame_node));
+    voting_channel_.InvalidateVote(GetExecutionContext(previous_frame_node));
   }
 }
 
@@ -118,13 +132,12 @@ void GlicActuationPriorityVoter::UpdateFrameNodeVote(
     GlicActuationState previous_state,
     GlicActuationState new_state) {
   DCHECK_NE(previous_state, new_state);
-  // Only the main frame(s) participate in actuation.
-  if (!frame_node->IsMainFrame()) {
+  if (frame_node->GetParentOrOuterDocument()) {
     return;
   }
 
   if (new_state == GlicActuationState::kNone) {
-    InvalidateVote(GetExecutionContext(frame_node));
+    voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
     return;
   }
 
@@ -135,32 +148,10 @@ void GlicActuationPriorityVoter::UpdateFrameNodeVote(
 
   const Vote vote(priority, kGlicActuationReason);
 
-  SubmitVote(GetExecutionContext(frame_node), vote);
-}
-
-void GlicActuationPriorityVoter::SubmitVote(
-    const execution_context::ExecutionContext* execution_context,
-    const Vote& vote) {
-  if (!execution_context) {
-    return;
-  }
-  auto [it, inserted] = voted_contexts_.try_emplace(execution_context, vote);
-  if (inserted) {
-    voting_channel_.SubmitVote(execution_context, vote);
-  } else if (it->second != vote) {
-    it->second = vote;
-    voting_channel_.ChangeVote(execution_context, vote);
-  }
-}
-
-void GlicActuationPriorityVoter::InvalidateVote(
-    const execution_context::ExecutionContext* execution_context) {
-  if (!execution_context) {
-    return;
-  }
-  size_t removed = voted_contexts_.erase(execution_context);
-  if (removed) {
-    voting_channel_.InvalidateVote(execution_context);
+  if (previous_state != GlicActuationState::kNone) {
+    voting_channel_.ChangeVote(GetExecutionContext(frame_node), vote);
+  } else {
+    voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
   }
 }
 

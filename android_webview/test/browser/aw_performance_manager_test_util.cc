@@ -35,8 +35,8 @@ static bool JNI_AwPerformanceManagerTestUtil_VerifyGraphNodesExist(
   }
 
   const performance_manager::FrameNode* frame_node =
-      page_node->GetMainFrameNode();
-  if (!frame_node || !frame_node->IsMainFrame()) {
+      page_node->GetPrimaryMainFrameNode();
+  if (!frame_node) {
     return false;
   }
 

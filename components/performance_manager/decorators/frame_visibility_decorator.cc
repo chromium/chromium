@@ -153,7 +153,9 @@ void FrameVisibilityDecorator::OnPageUserVisibilityChanged(
   PageNodeImpl* page_node_impl = PageNodeImpl::FromNode(page_node);
 
   // A page can sometimes have no main frame.
-  FrameNodeImpl* main_frame_node = page_node_impl->main_frame_node();
+  // TODO(crbug.com/540481427): Fenced frames aren't handled here since
+  // UpdateFrameTreeVisibility only recurses into child frames.
+  FrameNodeImpl* main_frame_node = page_node_impl->primary_main_frame_node();
   if (!main_frame_node) {
     return;
   }

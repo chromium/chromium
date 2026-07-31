@@ -886,6 +886,9 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
 
   EXPECT_EQ(static_cast<const FrameNode*>(frame_node->parent_frame_node()),
             public_frame_node->GetParentFrameNode());
+  EXPECT_EQ(
+      static_cast<const FrameNode*>(frame_node->parent_or_outer_document()),
+      public_frame_node->GetParentOrOuterDocument());
   EXPECT_EQ(static_cast<const PageNode*>(frame_node->page_node()),
             public_frame_node->GetPageNode());
   EXPECT_EQ(static_cast<const ProcessNode*>(frame_node->process_node()),

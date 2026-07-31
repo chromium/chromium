@@ -374,6 +374,19 @@ FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
   return parent_frame_node_;
 }
 
+FrameNodeImpl* FrameNodeImpl::parent_or_outer_document() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (parent_frame_node_) {
+    return parent_frame_node_;
+  }
+
+  if (outer_document_for_inner_frame_root_) {
+    return outer_document_for_inner_frame_root_;
+  }
+
+  return nullptr;
+}
+
 FrameNodeImpl* FrameNodeImpl::parent_or_outer_document_or_embedder() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (parent_frame_node_) {
@@ -649,7 +662,8 @@ void FrameNodeImpl::OnPrimaryPageAboutToBeDiscarded() {
 
   for (const Node* embedded_page_node : embedded_page_nodes_) {
     if (FrameNodeImpl* main_frame_node =
-            PageNodeImpl::FromNode(embedded_page_node)->main_frame_node()) {
+            PageNodeImpl::FromNode(embedded_page_node)
+                ->primary_main_frame_node()) {
       main_frame_node->OnPrimaryPageAboutToBeDiscarded();
     }
   }
@@ -737,6 +751,12 @@ bool FrameNodeImpl::IsDocumentCoordinationUnitBoundForTesting() const {
 const FrameNode* FrameNodeImpl::GetParentFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return graph()->NodeEdgesArePublic(this) ? parent_frame_node() : nullptr;
+}
+
+const FrameNode* FrameNodeImpl::GetParentOrOuterDocument() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return graph()->NodeEdgesArePublic(this) ? parent_or_outer_document()
+                                           : nullptr;
 }
 
 const FrameNode* FrameNodeImpl::GetParentOrOuterDocumentOrEmbedder() const {

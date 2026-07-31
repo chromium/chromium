@@ -136,73 +136,91 @@ TEST_F(GlicActuationPriorityVoterTest,
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
 }
 
-// Tests that when OnCurrentFrameChanged is called during actuation, if the
-// previous frame node did not have an active vote (e.g., because it was already
-// invalidated or not voted on), the voter does not crash trying to invalidate a
-// non-existent vote.
-TEST_F(GlicActuationPriorityVoterTest,
-       OnCurrentFrameChangedUnvotedPreviousFrame) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
+// Tests that we don't crash when a page has a fenced frame and the outermost
+// main frame is navigated.
+TEST_F(GlicActuationPriorityVoterTest, FencedFrameNavigationNoCrash) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
   auto* page_node = mock_graph.page.get();
-  auto* frame_1 = mock_graph.frame.get();
+  auto* main_frame_node = mock_graph.frame.get();
 
-  auto frame_2 = TestNodeWrapper<FrameNodeImpl>::Create(
+  // Create a fenced frame root. It has no parent frame, but has an outer
+  // document (main_frame_node).
+  auto fenced_frame_node = TestNodeWrapper<FrameNodeImpl>::Create(
       graph(), mock_graph.process.get(), page_node,
       /*parent_frame_node=*/nullptr,
-      /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId(),
-      blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-      content::SiteInstanceGroupId(0), /*is_current=*/false);
-  EXPECT_FALSE(frame_2->IsCurrent());
+      /*outer_document_for_inner_frame_root=*/main_frame_node,
+      performance_manager::NextTestFrameRoutingId());
 
-  // Set page to actuating while frame_1 is current. frame_1 gets a vote.
-  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
-      ->SetGlicActuationStateForTesting(
-          GlicActuationState::kActuatingOnVisibleTab);
-  EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(observer_.HasVote(voter_id(), GetExecutionContext(frame_1)));
-
-  // Simulate frame_1's vote being invalidated prior to current frame change
-  // (e.g., during frame destruction or when unvoted).
-  glic_voter_.OnBeforeFrameNodeRemoved(frame_1);
+  // Initially no votes.
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
 
-  // Now simulate OnCurrentFrameChanged(frame_1, frame_2).
-  // frame_1 is passed as previous_frame_node despite having no active vote.
-  // Before the bug fix, this caused a CHECK failure when invalidating frame_1.
-  FrameNodeImpl::UpdateCurrentFrame(frame_1, frame_2.get(), graph());
-
-  // frame_1 should safely not be invalidated again, and frame_2 should get the
-  // vote.
-  EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_FALSE(observer_.HasVote(voter_id(), GetExecutionContext(frame_1)));
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(frame_2.get())));
-}
-
-// Tests that if a vote is already active on a frame, changing the actuation
-// state safely updates the vote (via ChangeVote) without double-submitting.
-TEST_F(GlicActuationPriorityVoterTest, ChangeVoteWhenAlreadyVoted) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  auto* page_node = mock_graph.page.get();
-  auto* frame_1 = mock_graph.frame.get();
-
+  // Set to Glic actuating.
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->SetGlicActuationStateForTesting(
           GlicActuationState::kActuatingOnVisibleTab);
-  EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(frame_1),
-                        base::Process::Priority::kUserBlocking,
-                        GlicActuationPriorityVoter::kGlicActuationReason));
 
-  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
-      ->SetGlicActuationStateForTesting(
-          GlicActuationState::kActuatingOnBackgroundTab);
+  // Only the primary main frame should have a vote.
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(frame_1),
-                        base::Process::Priority::kUserVisible,
-                        GlicActuationPriorityVoter::kGlicActuationReason));
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_FALSE(observer_.HasVote(voter_id(),
+                                 GetExecutionContext(fenced_frame_node.get())));
+
+  // Simulate navigation of the fenced frame root itself.
+  auto new_fenced_frame_node = TestNodeWrapper<FrameNodeImpl>::Create(
+      graph(), mock_graph.process.get(), page_node,
+      /*parent_frame_node=*/nullptr,
+      /*outer_document_for_inner_frame_root=*/main_frame_node,
+      performance_manager::NextTestFrameRoutingId(),
+      /*frame_token=*/blink::LocalFrameToken(),
+      /*browsing_instance_id=*/content::BrowsingInstanceId(0),
+      /*site_instance_group_id=*/content::SiteInstanceGroupId(0),
+      /*is_current=*/false,
+      /*is_active=*/true);
+  fenced_frame_node->SetIsActive(false);
+
+  // Transition: fenced_frame_node (current -> false), new_fenced_frame_node
+  // (current -> true). This triggers OnCurrentFrameChanged for a non-outermost
+  // main frame.
+  FrameNodeImpl::UpdateCurrentFrame(fenced_frame_node.get(),
+                                    new_fenced_frame_node.get(), graph());
+
+  // Vote should remain unaffected on the primary main frame.
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_FALSE(observer_.HasVote(
+      voter_id(), GetExecutionContext(new_fenced_frame_node.get())));
+
+  // Simulate navigation of the outermost main frame.
+  // Create a new main frame that will replace main_frame_node.
+  auto new_main_frame_node = TestNodeWrapper<FrameNodeImpl>::Create(
+      graph(), mock_graph.process.get(), page_node,
+      /*parent_frame_node=*/nullptr,
+      /*outer_document_for_inner_frame_root=*/nullptr,
+      performance_manager::NextTestFrameRoutingId(),
+      /*frame_token=*/blink::LocalFrameToken(),
+      /*browsing_instance_id=*/content::BrowsingInstanceId(0),
+      /*site_instance_group_id=*/content::SiteInstanceGroupId(0),
+      /*is_current=*/false,
+      /*is_active=*/true);
+  main_frame_node->SetIsActive(false);
+
+  // Transition: main_frame_node (current -> false), new_main_frame_node
+  // (current -> true) This triggers OnCurrentFrameChanged.
+  FrameNodeImpl::UpdateCurrentFrame(main_frame_node, new_main_frame_node.get(),
+                                    graph());
+
+  // The vote should have moved to the new main frame.
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(observer_.HasVote(
+      voter_id(), GetExecutionContext(new_main_frame_node.get())));
+  EXPECT_FALSE(
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+
+  // Clean up.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(GlicActuationState::kNone);
 }
 
 }  // namespace performance_manager::execution_context_priority
