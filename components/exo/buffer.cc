@@ -743,12 +743,10 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   // Zero-copy means using the contents texture directly.
   if (use_zero_copy_) {
     // This binds the latest contents of this buffer to |contents_texture|.
-    viz::TransferableResource::MetadataOverride overrides;
-    overrides.is_overlay_candidate = is_overlay_candidate_;
     auto resource = viz::TransferableResource::Make(
         contents_texture_->shared_image(),
         viz::TransferableResource::ResourceSource::kExoBuffer,
-        contents_texture->sync_token(), overrides);
+        contents_texture->sync_token());
 
     // The contents texture will be released when no longer used by the
     // compositor.
