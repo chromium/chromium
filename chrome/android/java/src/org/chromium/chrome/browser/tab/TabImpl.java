@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
@@ -1790,7 +1791,7 @@ class TabImpl implements Tab, TabInternal {
                     // A transition is starting. Hide the Java view to present that.
                     // Wait until the content/ draws the transition.
                     CompositorViewHolder viewHolder =
-                            assumeNonNull(getActivity()).getCompositorViewHolderSupplier().get();
+                            CompositorViewHolderSupplier.getValueOrNullFrom(getWindowAndroid());
                     assumeNonNull(viewHolder);
                     viewHolder.requestRender(
                             () -> {
@@ -2579,7 +2580,7 @@ class TabImpl implements Tab, TabInternal {
             }
 
             View compositorView =
-                    assumeNonNull(getActivity()).getCompositorViewHolderSupplier().get();
+                    CompositorViewHolderSupplier.getValueOrNullFrom(getWindowAndroid());
             if (compositorView != null) {
                 webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
             }
