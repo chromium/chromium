@@ -63,7 +63,8 @@
   <template is="dom-if" if="[[shouldLinkToAccountSettingsPage_(
       syncStatus.signedInState)]]" restamp>
     <div id="account-card">
-      <cr-link-row id="account-subpage-row" on-click="onAccountClick_">
+      <cr-link-row id="account-subpage-row" class="cr-row first"
+          on-click="onAccountClick_">
         <div id="profile-icon"
             style="background-image: [[getIconImageSet_(
                 primaryAccountIconUrl_)]]">

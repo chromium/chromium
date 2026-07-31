@@ -141,7 +141,8 @@
 </if>
 
         <!-- Shared Elements -->
-        <cr-link-row id="account-subpage-row" on-click="onAccountClick_"
+        <cr-link-row id="account-subpage-row" class="cr-row first"
+            on-click="onAccountClick_"
             label="[[primaryAccountName_]]"
             sub-label="[[getAccountRowSubtitle_(primaryAccountEmail_, syncStatus)]]"
             role-description="$i18n{subpageArrowRoleDescription}"
