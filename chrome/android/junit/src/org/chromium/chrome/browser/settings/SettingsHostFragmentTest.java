@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -22,6 +23,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +33,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -86,11 +89,11 @@ public class SettingsHostFragmentTest {
                 .commitNow();
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     public void testConstructor_SettingsInTabDisabled_ThrowsAssertionError() {
-        // Should throw.
-        new SettingsHostFragment();
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        assertThrows(AssertionError.class, SettingsHostFragment::new);
     }
 
     @Test
