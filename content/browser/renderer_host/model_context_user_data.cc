@@ -240,6 +240,11 @@ void ModelContextUserData::GetScriptTools(
                ->GetFrameTokenForSiteInstanceGroup(site_instance_group);
 
       cloned_tool->tool_owner_frame_token = token;
+
+      // Clear `exposed_origins` to prevent leaking the full list of
+      // authorized origins to the calling renderer process.
+      cloned_tool->exposed_origins.clear();
+
       all_tools.push_back(std::move(cloned_tool));
     }
     return RenderFrameHost::FrameIterationAction::kContinue;
