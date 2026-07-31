@@ -113,7 +113,6 @@ test("components_unittests") {
       "test/data/ad_tagging/",
       "test/data/autofill/",
       "test/data/bookmarks/",
-      "test/data/browsing_topics/",
       "test/data/contextual_tasks/",
       "test/data/crx_file/",
       "test/data/custom_handlers/",
