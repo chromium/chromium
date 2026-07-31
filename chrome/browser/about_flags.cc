@@ -1014,18 +1014,76 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupVariations[] = {
     {"- with Multiline", kWebUIOmniboxFullPopupMultiline, nullptr},
 };
 
-const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageCoBrowse[] = {
-    {"Omnibox_AskGCoBrowse", "true"}};
-const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageCoBrowseWithVisualSelection[] = {
-    {"Omnibox_AskGCoBrowseWithVisualSelection", "true"}};
-const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageComposeBox[] = {
-    {"Omnibox_AskGComposeBox", "true"}};
+const FeatureEntry::FeatureParam
+    kWebUiOmniboxAskGAboutThisPageCobrowseAndLensEntrypoint[] = {
+        {"Omnibox_AskGCoBrowse", "true"},
+        {"Omnibox_AskGCoBrowseWithVisualSelection", "false"},
+        {"Omnibox_AskGComposeBox", "false"},
+        {"Omnibox_AskGLensChipRoute", "true"},
+        {"Omnibox_AskGSwapIcon", "true"},
+        {"Omnibox_AskGCurrentTabChip", "false"},
+        {"Omnibox_AskGLensIcon", "true"},
+        {"Omnibox_AskGLensSearchHintText", "false"},
+        {"Omnibox_AskGComposeboxLensChip", "false"}};
+const FeatureEntry::FeatureParam
+    kWebUiOmniboxAskGAboutThisPageCobrowsePlusVisualSelection[] = {
+        {"Omnibox_AskGCoBrowse", "false"},
+        {"Omnibox_AskGCoBrowseWithVisualSelection", "true"},
+        {"Omnibox_AskGComposeBox", "false"},
+        {"Omnibox_AskGLensChipRoute", "false"},
+        {"Omnibox_AskGSwapIcon", "true"},
+        {"Omnibox_AskGCurrentTabChip", "false"},
+        {"Omnibox_AskGLensIcon", "false"},
+        {"Omnibox_AskGLensSearchHintText", "false"},
+        {"Omnibox_AskGComposeboxLensChip", "false"}};
+const FeatureEntry::FeatureParam
+    kWebUiOmniboxAskGAboutThisPageOmniboxComposebox[] = {
+        {"Omnibox_AskGCoBrowse", "false"},
+        {"Omnibox_AskGCoBrowseWithVisualSelection", "false"},
+        {"Omnibox_AskGComposeBox", "true"},
+        {"Omnibox_AskGLensChipRoute", "true"},
+        {"Omnibox_AskGSwapIcon", "true"},
+        {"Omnibox_AskGCurrentTabChip", "false"},
+        {"Omnibox_AskGLensIcon", "false"},
+        {"Omnibox_AskGLensSearchHintText", "true"},
+        {"Omnibox_AskGComposeboxLensChip", "true"}};
+const FeatureEntry::FeatureParam
+    kWebUiOmniboxAskGAboutThisPageOmniboxComposeboxAndLensEntrypoint[] = {
+        {"Omnibox_AskGCoBrowse", "false"},
+        {"Omnibox_AskGCoBrowseWithVisualSelection", "false"},
+        {"Omnibox_AskGComposeBox", "true"},
+        {"Omnibox_AskGLensChipRoute", "true"},
+        {"Omnibox_AskGSwapIcon", "true"},
+        {"Omnibox_AskGCurrentTabChip", "false"},
+        {"Omnibox_AskGLensIcon", "true"},
+        {"Omnibox_AskGLensSearchHintText", "false"},
+        {"Omnibox_AskGComposeboxLensChip", "false"}};
+const FeatureEntry::FeatureParam
+    kWebUiOmniboxAskGAboutThisPageOmniboxChipComposeboxAndLensEntrypoint[] = {
+        {"Omnibox_AskGCoBrowse", "false"},
+        {"Omnibox_AskGCoBrowseWithVisualSelection", "false"},
+        {"Omnibox_AskGComposeBox", "false"},
+        {"Omnibox_AskGLensChipRoute", "true"},
+        {"Omnibox_AskGSwapIcon", "true"},
+        {"Omnibox_AskGCurrentTabChip", "true"},
+        {"Omnibox_AskGLensIcon", "true"},
+        {"Omnibox_AskGLensSearchHintText", "false"},
+        {"Omnibox_AskGComposeboxLensChip", "false"}};
 
-const FeatureEntry::FeatureVariation kWebUiOmniboxAskGAboutThisPageVariations[] = {
-    {"Open Co-Browse side panel", kWebUiOmniboxAskGAboutThisPageCoBrowse, nullptr},
-    {"Open Co-Browse side panel with visual selection",
-     kWebUiOmniboxAskGAboutThisPageCoBrowseWithVisualSelection, nullptr},
-    {"Open compose box with tab content", kWebUiOmniboxAskGAboutThisPageComposeBox, nullptr}};
+const FeatureEntry::FeatureVariation
+    kWebUiOmniboxAskGAboutThisPageVariations[] = {
+        {"Ask G - Cobrowse and Lens entrypoint",
+         kWebUiOmniboxAskGAboutThisPageCobrowseAndLensEntrypoint, nullptr},
+        {"Ask G -  Cobrowse + Visual Selection",
+         kWebUiOmniboxAskGAboutThisPageCobrowsePlusVisualSelection, nullptr},
+        {"Ask G - Omnibox Composebox",
+         kWebUiOmniboxAskGAboutThisPageOmniboxComposebox, nullptr},
+        {"Ask G - Omnibox Composebox and Lens entrypoint",
+         kWebUiOmniboxAskGAboutThisPageOmniboxComposeboxAndLensEntrypoint,
+         nullptr},
+        {"Ask G - Omnibox Chip Composebox and Lens entrypoint",
+         kWebUiOmniboxAskGAboutThisPageOmniboxChipComposeboxAndLensEntrypoint,
+         nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
