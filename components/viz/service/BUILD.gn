@@ -583,6 +583,12 @@ viz_component("service") {
         "display_embedder/skia_output_device_dawn.h",
       ]
     }
+    if (is_win) {
+      sources += [
+        "display_embedder/skia_output_device_dawn_d3d11_blt_mode.cc",
+        "display_embedder/skia_output_device_dawn_d3d11_blt_mode.h",
+      ]
+    }
     public_deps += [ "//third_party/dawn/include/dawn:headers" ]
 
     deps += [

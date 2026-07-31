@@ -10,8 +10,8 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -22,6 +22,7 @@
 #include "ui/gfx/vsync_provider.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "components/viz/service/display_embedder/skia_output_device_dawn_d3d11_blt_mode.h"
 #include "ui/gl/child_window_win.h"
 #include "ui/gl/vsync_provider_win.h"
 #endif
@@ -100,6 +101,19 @@ std::unique_ptr<SkiaOutputDeviceDawn> SkiaOutputDeviceDawn::Create(
     gpu::SurfaceHandle surface_handle,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback) {
+#if BUILDFLAG(IS_WIN)
+  if (context_state->dawn_context_provider()->backend_type() ==
+      wgpu::BackendType::D3D11) {
+    auto output_device = std::make_unique<SkiaOutputDeviceDawnD3D11BltMode>(
+        context_state, origin, memory_tracker,
+        std::move(did_swap_buffer_complete_callback), PassKey());
+    if (!output_device->Initialize(surface_handle)) {
+      return nullptr;
+    }
+    return output_device;
+  }
+#endif
+
   auto output_device = std::make_unique<SkiaOutputDeviceDawnSwapChain>(
       context_state, origin, memory_tracker,
       std::move(did_swap_buffer_complete_callback), PassKey());
@@ -318,6 +332,7 @@ void SkiaOutputDeviceDawnSwapChain::ReleaseSwapChainTexture() {}
 
 void SkiaOutputDeviceDawnSwapChain::PresentImpl(
     const std::optional<gfx::Rect>& rect) {
+  TRACE_EVENT0("viz", "SkiaOutputDeviceDawnSwapChain::PresentImpl");
   DCHECK(!rect);
   surface_.Present();
 }
