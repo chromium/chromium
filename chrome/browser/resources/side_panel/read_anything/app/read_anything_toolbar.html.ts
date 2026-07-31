@@ -293,6 +293,9 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .settingsPrefs="${this.settingsPrefs}"
       .areFontsLoaded="${this.areFontsLoaded_}"
       .pageLanguage="${this.pageLanguage}"
+      .lineFocusStyle="${this.lineFocusStyle}"
+      .lineFocusEnabled="${this.lineFocusEnabled}"
+      .lineFocusMovement="${this.lineFocusMovement}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </text-menu>
   <media-menu

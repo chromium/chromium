@@ -10,7 +10,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, ToolbarEvent} from '../content/read_anything_types.js';
 import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
@@ -48,6 +48,9 @@ export class TextMenuElement extends TextMenuElementBase implements
       pageLanguage: {type: String},
       groups_: {type: Array},
       isFontMenuExpanded: {type: Boolean},
+      lineFocusStyle: {type: Object},
+      lineFocusEnabled: {type: Boolean},
+      lineFocusMovement: {type: Number},
     };
   }
 
@@ -56,6 +59,9 @@ export class TextMenuElement extends TextMenuElementBase implements
   accessor areFontsLoaded: boolean = false;
   accessor pageLanguage: string = '';
   accessor isFontMenuExpanded: boolean = false;
+  accessor lineFocusStyle: LineFocusStyle|null = null;
+  accessor lineFocusEnabled: boolean = false;
+  accessor lineFocusMovement: LineFocusMovement|null = null;
 
   private fontOptions_: Array<MenuStateItem<string>> = [];
   private lineSpacingOptions_: Array<MenuStateItem<number>> = [
@@ -100,45 +106,111 @@ export class TextMenuElement extends TextMenuElementBase implements
     },
   ];
 
-  protected accessor groups_: Array<MenuGroup<number|string>> = [
+  private toggleOptions_: Array<MenuStateItem<boolean>> = [
     {
-      header: {
-        title: loadTimeData.getString('fontNameTitle'),
-        separator: false,
-      },
-      items: this.fontOptions_,
-      eventName: ToolbarEvent.FONT,
+      title: loadTimeData.getString('lineFocusOffTitle'),
+      data: false,
     },
     {
-      header: {
-        title: loadTimeData.getString('lineSpacingTitle'),
-        separator: true,
-      },
-      items: this.lineSpacingOptions_,
-      eventName: ToolbarEvent.LINE_SPACING,
-    },
-    {
-      header: {
-        title: loadTimeData.getString('letterSpacingTitle'),
-        separator: true,
-      },
-      items: this.letterSpacingOptions_,
-      eventName: ToolbarEvent.LETTER_SPACING,
+      title: loadTimeData.getString('lineFocusOnTitle'),
+      data: true,
     },
   ];
+
+  private styleOptions_: Array<MenuStateItem<LineFocusStyle>> = [
+    {
+      title: loadTimeData.getString('lineFocusUnderlineTitle'),
+      data: LineFocusStyle.UNDERLINE,
+    },
+    {
+      title: loadTimeData.getString('lineFocusOneLineTitle'),
+      data: LineFocusStyle.SMALL_WINDOW,
+    },
+    {
+      title: loadTimeData.getString('lineFocusThreeLineTitle'),
+      data: LineFocusStyle.MEDIUM_WINDOW,
+    },
+    {
+      title: loadTimeData.getString('lineFocusFiveLineTitle'),
+      data: LineFocusStyle.LARGE_WINDOW,
+    },
+  ];
+
+  private movementOptions_: Array<MenuStateItem<LineFocusMovement>> = [
+    {
+      title: loadTimeData.getString('lineFocusStaticTitle'),
+      data: LineFocusMovement.STATIC,
+    },
+    {
+      title: loadTimeData.getString('lineFocusCursorLineTitle'),
+      data: LineFocusMovement.CURSOR,
+    },
+  ];
+
+  private get defaultGroups_():
+      Array<MenuGroup<number|string|boolean|LineFocusStyle|LineFocusMovement>> {
+    return [
+      {
+        header: {
+          title: loadTimeData.getString('fontNameTitle'),
+          separator: false,
+        },
+        items: this.fontOptions_,
+        eventName: ToolbarEvent.FONT,
+      },
+      {
+        header: {
+          title: loadTimeData.getString('lineSpacingTitle'),
+          separator: true,
+        },
+        items: this.lineSpacingOptions_,
+        eventName: ToolbarEvent.LINE_SPACING,
+      },
+      {
+        header: {
+          title: loadTimeData.getString('letterSpacingTitle'),
+          separator: true,
+        },
+        items: this.letterSpacingOptions_,
+        eventName: ToolbarEvent.LETTER_SPACING,
+      },
+    ];
+  }
+
+  protected accessor groups_:
+      Array<MenuGroup<number|string|boolean|LineFocusStyle|LineFocusMovement>> =
+          this.defaultGroups_;
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
+    if (chrome.readingMode.isLineFocusEnabled) {
+      if (changedProperties.has('lineFocusEnabled')) {
+        this.updateOptionsForToggle_(this.lineFocusEnabled);
+      }
+      if (changedProperties.has('lineFocusStyle') &&
+          this.lineFocusStyle !== null) {
+        this.updateOptionsForStyle_(this.lineFocusStyle);
+      }
+      if (changedProperties.has('lineFocusMovement') &&
+          this.lineFocusMovement !== null) {
+        this.updateOptionsForMovement_(this.lineFocusMovement);
+      }
+    }
+
     if (changedProperties.has('settingsPrefs') ||
         changedProperties.has('pageLanguage') ||
         changedProperties.has('areFontsLoaded') ||
-        changedProperties.has('isFontMenuExpanded')) {
+        changedProperties.has('isFontMenuExpanded') ||
+        changedProperties.has('lineFocusEnabled') ||
+        changedProperties.has('lineFocusStyle') ||
+        changedProperties.has('lineFocusMovement')) {
       this.computeFontOptions_();
       this.updateOptionsForFont_();
       this.updateOptionsForLineSpacing_();
       this.updateOptionsForLetterSpacing_();
+      this.computeGroups_();
       this.groups_ = [...this.groups_];
     }
   }
@@ -177,6 +249,21 @@ export class TextMenuElement extends TextMenuElementBase implements
         ReadAnythingSettingsChange.LETTER_SPACING_CHANGE);
   }
 
+  protected onLineFocusStyleChange_() {
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_FOCUS_STYLE_CHANGE);
+  }
+
+  protected onLineFocusToggleChange_() {
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_FOCUS_TOGGLE);
+  }
+
+  protected onLineFocusMovementChange_() {
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE);
+  }
+
   private updateOptionsForFont_() {
     const currentFont = chrome.readingMode.fontName;
     let hasSelected = false;
@@ -205,6 +292,61 @@ export class TextMenuElement extends TextMenuElementBase implements
     this.letterSpacingOptions_.forEach(option => {
       option.selected = option.data === currentSpacing;
     });
+  }
+
+  private updateOptionsForToggle_(isEnabled: boolean) {
+    this.toggleOptions_.forEach(option => {
+      option.selected = option.data === isEnabled;
+    });
+  }
+
+  private updateOptionsForStyle_(newStyle: LineFocusStyle) {
+    this.styleOptions_.forEach(option => {
+      option.selected = option.data === newStyle;
+    });
+  }
+
+  private updateOptionsForMovement_(newMovement: LineFocusMovement) {
+    this.movementOptions_.forEach(option => {
+      option.selected = option.data === newMovement;
+    });
+  }
+
+  private computeGroups_() {
+    const groups = this.defaultGroups_;
+
+    if (chrome.readingMode.isLineFocusEnabled) {
+      groups.push({
+        header: {
+          title: loadTimeData.getString('lineFocusLabel'),
+          separator: true,
+        },
+        items: this.toggleOptions_,
+        eventName: ToolbarEvent.LINE_FOCUS_TOGGLE,
+      });
+
+      if (this.lineFocusEnabled) {
+        groups.push(
+            {
+              header: {
+                title: loadTimeData.getString('lineFocusStyleHeading'),
+                separator: false,
+              },
+              items: this.styleOptions_,
+              eventName: ToolbarEvent.LINE_FOCUS_STYLE,
+            },
+            {
+              header: {
+                title: loadTimeData.getString('lineFocusMovementHeading'),
+                separator: false,
+              },
+              items: this.movementOptions_,
+              eventName: ToolbarEvent.LINE_FOCUS_MOVEMENT,
+            });
+      }
+    }
+
+    this.groups_ = groups;
   }
 
   private computeFontOptions_() {

@@ -63,11 +63,11 @@ cr-icon {
 }
 
 cr-action-menu::part(dialog) {
-  z-index: 9999;
-}
-
-#media-menu-dialog::part(dialog) {
+  /* 90% of side panel height minus 36px toolbar height. */
+  max-height: calc(90% - 36px);
+  overscroll-behavior: contain;
   min-width: 253px;
+  z-index: 9999;
 }
 
 cr-action-menu[non-modal]::part(dialog),

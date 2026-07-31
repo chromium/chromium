@@ -517,6 +517,22 @@ suite('SettingsMenuElement', () => {
         assertTrue(!!menuItems.find(item => item.id === SettingsOption.COLOR));
       });
 
+  test(
+      'LINE_FOCUS is not in top level menu when isReadAnythingImprovedUiEnabled is true',
+      async () => {
+        chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
+        chrome.readingMode.isImmersiveEnabled = true;
+        chrome.readingMode.isLineFocusEnabled = true;
+        settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+        await microtasksFinished();
+
+        const actionMenu = settingsMenu.$.lazyMenu.get();
+        const menuItems = Array.from(
+            actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+        assertFalse(
+            !!menuItems.find(item => item.id === SettingsOption.LINE_FOCUS));
+      });
+
   test('translate action fires event when clicked', async () => {
     chrome.readingMode.isReadAnythingTranslateEntryPointEnabled = true;
     settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};

@@ -287,10 +287,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       SettingsOption.VOICE_HIGHLIGHT,
     ];
 
-    if (chrome.readingMode.isLineFocusEnabled) {
-      optionIDs.push(SettingsOption.LINE_FOCUS);
-    }
-
     if (chrome.readingMode.isReadAnythingTranslateEntryPointEnabled) {
       optionIDs.push(SettingsOption.TRANSLATION_REQUESTED);
     }
