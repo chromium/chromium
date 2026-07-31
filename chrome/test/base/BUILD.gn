@@ -111,6 +111,25 @@ if (!is_android) {
   }
 }
 
+source_set("scoped_metrics_service_for_synthetic_trials") {
+  testonly = true
+  sources = [
+    "scoped_metrics_service_for_synthetic_trials.cc",
+    "scoped_metrics_service_for_synthetic_trials.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_profile",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/prefs",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//content/test:test_support",
+  ]
+}
+
 source_set("in_process_browser_test_mixin") {
   testonly = true
   sources = [
