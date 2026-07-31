@@ -35,6 +35,12 @@ interface PageHandler {
 
   // Sends the current audio volume (0.0 to 1.0) to animate the toolbar button.
   UpdateAudioEnergy(float energy);
+
+  // Closes and dismisses the overlay WebUI dialog widget. Calling this is
+  // equivalent to the user clicking the toolbar microphone button to deactivate
+  // listening, tearing down the active audio listener and session via HideOverlay().
+  // TODO(crbug.com/540858790): Rename HideOverlay() to CloseOverlay() for clarity.
+  Close();
 };
 
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.

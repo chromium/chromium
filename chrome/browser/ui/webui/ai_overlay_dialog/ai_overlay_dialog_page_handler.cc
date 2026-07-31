@@ -161,6 +161,14 @@ void AiOverlayDialogPageHandler::UpdateAudioEnergy(float energy) {
   }
 }
 
+void AiOverlayDialogPageHandler::Close() {
+  if (auto* controller = AiOverlayDialogController::From(browser_)) {
+    // HideOverlay() turns off listening and closes the overlay WebUI dialog interface.
+    // TODO(crbug.com/540858790): Rename HideOverlay() to CloseOverlay() for clarity.
+    controller->HideOverlay();
+  }
+}
+
 void AiOverlayDialogPageHandler::DidChangePage(
     const GURL& url,
     const std::optional<std::u16string>& title,
