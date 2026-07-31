@@ -28,7 +28,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_reader_writer.h"
-#include "components/variations/variations_safe_seed_store_local_state.h"
+#include "components/variations/variations_safe_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
 #include "crypto/keypair.h"
@@ -66,7 +66,7 @@ const uint8_t kPublicKey[] = {
 // seed-related information in a compressed proto.
 const base::FilePath::CharType kSeedFilename[] =
     FILE_PATH_LITERAL("VariationsSeedV2");
-// LINT.ThenChange(/components/variations/variations_safe_seed_store_local_state.cc,
+// LINT.ThenChange(/components/variations/variations_safe_seed_store.cc,
 // /chrome/browser/metrics/variations/variations_safe_mode_end_to_end_browsertest.cc)
 
 // Name of the old seed file. It stores only the seed data gzip-compressed.
@@ -581,7 +581,7 @@ void VariationsSeedStore::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kVariationsSeedSerialNumber,
                                std::string());
 
-  VariationsSafeSeedStoreLocalState::RegisterPrefs(registry);
+  VariationsSafeSeedStore::RegisterPrefs(registry);
 }
 
 // static

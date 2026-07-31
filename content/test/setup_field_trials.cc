@@ -25,7 +25,7 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_ids_provider.h"
-#include "components/variations/variations_safe_seed_store_local_state.h"
+#include "components/variations/variations_safe_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 
@@ -128,7 +128,7 @@ void SetupFieldTrials() {
       std::make_unique<variations::VariationsSeedStore>(
           pref_service.get(), std::move(initial_seed),
           /*signature_verification_enabled=*/true,
-          std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
+          std::make_unique<variations::VariationsSafeSeedStore>(
               pref_service.get(),
               variations_service_client.GetVariationsSeedFileDir(),
               variations_service_client.GetChannelForVariations(),

@@ -56,7 +56,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
-#include "components/variations/variations_safe_seed_store_local_state.h"
+#include "components/variations/variations_safe_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "net/base/features.h"
@@ -266,7 +266,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   auto seed_store = std::make_unique<variations::VariationsSeedStore>(
       local_state_.get(), /*initial_seed=*/std::move(seed),
       /*signature_verification_enabled=*/g_signature_verification_enabled,
-      std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
+      std::make_unique<variations::VariationsSafeSeedStore>(
           local_state_.get(), client_->GetVariationsSeedFileDir(),
           client_->GetChannelForVariations(), /*entropy_providers=*/nullptr),
       client_->GetChannelForVariations(), client_->GetVariationsSeedFileDir(),

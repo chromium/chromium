@@ -53,7 +53,7 @@
 #include "components/variations/seed_response.h"
 #include "components/variations/sticky_activation_manager.h"
 #include "components/variations/study_filtering.h"
-#include "components/variations/variations_safe_seed_store_local_state.h"
+#include "components/variations/variations_safe_seed_store.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_switches.h"
@@ -413,7 +413,7 @@ VariationsService::VariationsService(
               local_state,
               MaybeImportFirstRunSeed(client_.get(), local_state),
               /*signature_verification_enabled=*/true,
-              std::make_unique<VariationsSafeSeedStoreLocalState>(
+              std::make_unique<VariationsSafeSeedStore>(
                   local_state,
                   client_.get()->GetVariationsSeedFileDir(),
                   client_.get()->GetChannelForVariations(),

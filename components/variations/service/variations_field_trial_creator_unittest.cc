@@ -58,7 +58,7 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
-#include "components/variations/variations_safe_seed_store_local_state.h"
+#include "components/variations/variations_safe_seed_store.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
@@ -108,9 +108,9 @@ std::unique_ptr<VariationsSeedStore> CreateSeedStore(
   return std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,
       /*signature_verification_enabled=*/true,
-      std::make_unique<VariationsSafeSeedStoreLocalState>(
-          local_state, seed_file_dir, version_info::Channel::UNKNOWN,
-          /*entropy_providers=*/nullptr),
+      std::make_unique<VariationsSafeSeedStore>(local_state, seed_file_dir,
+                                                version_info::Channel::UNKNOWN,
+                                                /*entropy_providers=*/nullptr),
       version_info::Channel::UNKNOWN, seed_file_dir);
 }
 
@@ -359,7 +359,7 @@ class TestVariationsSeedStore : public VariationsSeedStore {
       : VariationsSeedStore(local_state,
                             /*initial_seed=*/nullptr,
                             /*signature_verification_enabled=*/true,
-                            std::make_unique<VariationsSafeSeedStoreLocalState>(
+                            std::make_unique<VariationsSafeSeedStore>(
                                 local_state,
                                 /*seed_file_dir=*/base::FilePath(),
                                 version_info::Channel::UNKNOWN,
@@ -1173,7 +1173,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state(), std::move(initial_seed),
       /*signature_verification_enabled=*/false,
-      std::make_unique<VariationsSafeSeedStoreLocalState>(
+      std::make_unique<VariationsSafeSeedStore>(
           local_state(),
           /*seed_file_dir=*/base::FilePath(), version_info::Channel::UNKNOWN,
           /*entropy_providers=*/nullptr),
