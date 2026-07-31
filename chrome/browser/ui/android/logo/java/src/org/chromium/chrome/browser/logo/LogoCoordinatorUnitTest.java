@@ -62,7 +62,6 @@ public class LogoCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private LogoContainerView mLogoContainerView;
-    @Mock private LegacyLogoView mLegacyLogoView;
     @Mock private ViewGroup mParentView;
     @Mock private Callback<LoadUrlParams> mLogoClickedCallback;
     @Mock private Callback<Logo> mOnLogoAvailableCallback;
@@ -86,7 +85,6 @@ public class LogoCoordinatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
         when(mParentView.findViewById(R.id.logo_container_view)).thenReturn(mLogoContainerView);
-        when(mParentView.findViewById(R.id.search_provider_logo)).thenReturn(mLegacyLogoView);
         when(mIsInMultiWindowModeSupplier.get()).thenReturn(false);
         ViewStub mockStub = mock(ViewStub.class);
         when(mParentView.findViewById(R.id.logo_view_stub)).thenReturn(mockStub);
@@ -378,84 +376,5 @@ public class LogoCoordinatorUnitTest {
         mLogoCoordinator.updateDoodleOnTablet(showingNonStandardGoogleLogo);
 
         verify(mLogoContainerView).setDoodleSize(expectedDoodleSize);
-    }
-
-    private void verifyDoodleSize_logoViewRefactorFlagDisabled(
-            boolean isInMultiWindowMode,
-            boolean showingNonStandardGoogleLogo,
-            int expectedDoodleSize) {
-        clearInvocations(mLegacyLogoView);
-        when(mIsInMultiWindowModeSupplier.get()).thenReturn(isInMultiWindowMode);
-        mLogoCoordinator.updateDoodleOnTablet(showingNonStandardGoogleLogo);
-
-        verify(mLegacyLogoView).setDoodleSize(expectedDoodleSize);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
-    public void testUpdateDoodleOnTablet_setDoodleSize_logoViewRefactorFlagDisabled() {
-        mLogoCoordinator = createLogoCoordinator();
-        verify(mLegacyLogoView).setDoodleSize(LogoUtils.DoodleSize.REGULAR);
-
-        // Tablet transitions to multi-window mode.
-        verifyDoodleSize_logoViewRefactorFlagDisabled(
-                /* isInMultiWindowMode= */ true,
-                /* showingNonStandardGoogleLogo= */ false,
-                DoodleSize.TABLET_SPLIT_SCREEN);
-
-        // Tablet transitions back to regular mode.
-        verifyDoodleSize_logoViewRefactorFlagDisabled(
-                /* isInMultiWindowMode= */ false,
-                /* showingNonStandardGoogleLogo= */ false,
-                DoodleSize.REGULAR);
-
-        // Tablet transitions to multi-window mode.
-        verifyDoodleSize_logoViewRefactorFlagDisabled(
-                /* isInMultiWindowMode= */ true,
-                /* showingNonStandardGoogleLogo= */ true,
-                DoodleSize.TABLET_SPLIT_SCREEN);
-
-        // Tablet transitions back to regular mode.
-        verifyDoodleSize_logoViewRefactorFlagDisabled(
-                /* isInMultiWindowMode= */ false,
-                /* showingNonStandardGoogleLogo= */ true,
-                DoodleSize.REGULAR);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
-    public void testUpdateDoodleOnTablet_setLayoutParams_logoViewRefactorFlagDisabled() {
-        mLogoCoordinator = createLogoCoordinator();
-        verify(mLegacyLogoView).setDoodleSize(LogoUtils.DoodleSize.REGULAR);
-
-        // Tablet transitions to multi-window mode.
-        clearInvocations(mLegacyLogoView);
-        when(mIsInMultiWindowModeSupplier.get()).thenReturn(true);
-        mLogoCoordinator.updateDoodleOnTablet(/* showingNonStandardGoogleLogo= */ true);
-        verify(mLegacyLogoView).setLogoHeight(anyInt());
-        verify(mLegacyLogoView).setLogoTopMargin(anyInt());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
-    public void testUpdateDoodleOnTablet_sameMode_logoViewRefactorFlagDisabled() {
-        mLogoCoordinator = createLogoCoordinator();
-        verify(mLegacyLogoView).setDoodleSize(LogoUtils.DoodleSize.REGULAR);
-
-        // Tablet mode doesn't change.
-        clearInvocations(mLegacyLogoView);
-        mLogoCoordinator.updateDoodleOnTablet(/* showingNonStandardGoogleLogo= */ false);
-        verify(mLegacyLogoView, never()).setDoodleSize(LogoUtils.DoodleSize.REGULAR);
-
-        // Tablet transitions to multi-window mode.
-        clearInvocations(mLegacyLogoView);
-        when(mIsInMultiWindowModeSupplier.get()).thenReturn(true);
-        mLogoCoordinator.updateDoodleOnTablet(/* showingNonStandardGoogleLogo= */ false);
-        verify(mLegacyLogoView).setDoodleSize(LogoUtils.DoodleSize.TABLET_SPLIT_SCREEN);
-
-        // Tablet mode doesn't change.
-        clearInvocations(mLegacyLogoView);
-        mLogoCoordinator.updateDoodleOnTablet(/* showingNonStandardGoogleLogo= */ false);
-        verify(mLegacyLogoView, never()).setDoodleSize(LogoUtils.DoodleSize.TABLET_SPLIT_SCREEN);
     }
 }

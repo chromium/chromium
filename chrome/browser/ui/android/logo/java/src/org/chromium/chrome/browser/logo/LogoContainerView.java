@@ -122,7 +122,7 @@ public class LogoContainerView extends FrameLayout {
         mLogoView.setAnimationEnabled(enabled);
     }
 
-    void setClickHandler(LogoProperties.ClickHandler handler) {
+    void setClickHandler(LogoView.ClickHandler handler) {
         mLogoView.setClickHandler(handler);
     }
 
@@ -155,7 +155,7 @@ public class LogoContainerView extends FrameLayout {
         return mLogoView.getAnimationEnabledForTesting(); // IN-TEST
     }
 
-    LogoProperties.@Nullable ClickHandler getClickHandlerForTesting() {
+    LogoView.@Nullable ClickHandler getClickHandlerForTesting() {
         return mLogoView.getClickHandlerForTesting(); // IN-TEST
     }
 

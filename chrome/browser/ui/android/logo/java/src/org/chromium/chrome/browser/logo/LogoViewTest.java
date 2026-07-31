@@ -48,7 +48,7 @@ public class LogoViewTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock public TemplateUrlService mTemplateUrlService;
-    @Mock public LogoProperties.ClickHandler mLogoClickHandler;
+    @Mock public LogoView.ClickHandler mLogoClickHandler;
 
     private static final String LOGO_URL = "https://www.google.com";
     private static final String ANIMATED_LOGO_URL =

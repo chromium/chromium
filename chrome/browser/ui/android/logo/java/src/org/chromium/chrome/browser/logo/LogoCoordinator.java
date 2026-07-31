@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
-import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
@@ -21,7 +20,6 @@ import androidx.core.content.ContextCompat;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -45,7 +43,7 @@ public class LogoCoordinator {
     // This supplier is only used when the NTP surface is in tablet mode.
     private final Supplier<Boolean> mIsInMultiWindowModeSupplier;
     private LogoMediator mMediator;
-    private FrameLayout mLogoView;
+    private @Nullable LogoContainerView mLogoView;
     private boolean mIsInMultiWindowModeOnTablet;
     private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
     // The current tint color of logo if the DSE is Google. It is null when the default colorful
@@ -82,19 +80,10 @@ public class LogoCoordinator {
         mIsInMultiWindowModeSupplier = isInMultiWindowModeSupplier;
 
         ViewStub stub = parentView.findViewById(R.id.logo_view_stub);
-        if (!ChromeFeatureList.sLogoViewRefactor.isEnabled()) {
-            stub.setLayoutResource(R.layout.legacy_logo_view_layout);
-        }
         stub.inflate();
 
-        if (ChromeFeatureList.sLogoViewRefactor.isEnabled()) {
-            mLogoView = parentView.findViewById(R.id.logo_container_view);
-            PropertyModelChangeProcessor.create(
-                    mLogoModel, mLogoView, new LogoContainerViewBinder());
-        } else {
-            mLogoView = parentView.findViewById(R.id.search_provider_logo);
-            PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LegacyLogoViewBinder());
-        }
+        mLogoView = parentView.findViewById(R.id.logo_container_view);
+        PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoContainerViewBinder());
 
         Drawable defaultGoogleLogoDrawable = getGoogleLogoDrawable(context);
         mLogoColor =
@@ -187,15 +176,12 @@ public class LogoCoordinator {
     /**
      * @see LogoMediator#destroy
      */
-    @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
-        if (mLogoView instanceof LogoContainerView) {
-            ((LogoContainerView) mLogoView).destroy();
-        } else if (mLogoView instanceof LegacyLogoView) {
-            ((LegacyLogoView) mLogoView).destroy();
+        if (mLogoView != null) {
+            mLogoView.destroy();
+            mLogoView = null;
         }
-        mLogoView = null;
         if (mHomepageStateListener != null) {
             NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
             mHomepageStateListener = null;
@@ -209,6 +195,7 @@ public class LogoCoordinator {
      * @param widthPx The expected width of the logo view.
      */
     public void setLayoutWidth(int widthPx) {
+        if (mLogoView == null) return;
         MarginLayoutParams layoutParams = (MarginLayoutParams) mLogoView.getLayoutParams();
         if (layoutParams.width == widthPx) {
             return;
