@@ -113,9 +113,17 @@ def SetTargetApiIfUnset(manifest_node, target_sdk_version):
 
 
 def OverrideMinSdkVersionIfPresent(manifest_node, min_sdk_version):
+  """Set the minSdkVersion to min(existing, |min_sdk_version|)."""
   uses_sdk_node = manifest_node.find('./uses-sdk')
-  if uses_sdk_node is not None:
+  if uses_sdk_node is None:
+    return False
+  cur_min_version = NamespacedGet(uses_sdk_node, 'minSdkVersion')
+  if cur_min_version is None:
+    return False
+  if int(cur_min_version) > int(min_sdk_version):
     NamespacedSet(uses_sdk_node, 'minSdkVersion', min_sdk_version)
+    return True
+  return False
 
 
 def RemoveUsesSdk(manifest_node):
