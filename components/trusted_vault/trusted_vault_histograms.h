@@ -39,10 +39,6 @@ enum class TrustedVaultRecoveryFactorRegistrationStateForUMA {
   kRegistrationWithConstantKeyNotSupported = 7,
   kMaxValue = kRegistrationWithConstantKeyNotSupported,
 };
-// TODO(crbug.com/369980730): this is used in internals, replace usages with the
-// version above and delete this alias.
-using TrustedVaultDeviceRegistrationStateForUMA =
-    TrustedVaultRecoveryFactorRegistrationStateForUMA;
 // LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultRecoveryFactorRegistrationState)
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -174,11 +170,6 @@ void RecordTrustedVaultRecoveryFlowTriggeredEndpoint(
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason);
-
-// TODO(crbug.com/369980730): this is used in internals, replace usages with the
-// version below and delete this one.
-void RecordTrustedVaultDeviceRegistrationState(
-    TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
 void RecordTrustedVaultRecoveryFactorRegistrationState(
     LocalRecoveryFactorType local_recovery_factor_type,

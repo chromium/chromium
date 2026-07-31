@@ -94,13 +94,6 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
       hint_degraded_recoverability_changed_reason);
 }
 
-void RecordTrustedVaultDeviceRegistrationState(
-    TrustedVaultDeviceRegistrationStateForUMA registration_state) {
-  RecordTrustedVaultRecoveryFactorRegistrationState(
-      LocalRecoveryFactorType::kPhysicalDevice, SecurityDomainId::kChromeSync,
-      registration_state);
-}
-
 void RecordTrustedVaultRecoveryFactorRegistrationState(
     LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
