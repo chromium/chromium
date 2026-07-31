@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/vector_icons/vector_icons.h"
@@ -42,10 +43,6 @@ namespace {
 
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 using PermissionsManager = extensions::PermissionsManager;
-
-// TODO(crbug.com/40916158): Same as permission's ChipController. Pull out to a
-// shared location.
-constexpr base::TimeDelta kConfirmationDisplayDuration = base::Seconds(4);
 
 }  // namespace
 
@@ -1134,7 +1131,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
                 IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
 
   // Force the confirmation to be collapsed.
-  task_environment()->AdvanceClock(kConfirmationDisplayDuration);
+  task_environment()->AdvanceClock(kPermissionConfirmationDisplayDuration);
   base::RunLoop().RunUntilIdle();
   WaitForAnimation();
 
@@ -1195,7 +1192,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
                 IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
 
   // Force the confirmation to be collapsed.
-  task_environment()->AdvanceClock(kConfirmationDisplayDuration);
+  task_environment()->AdvanceClock(kPermissionConfirmationDisplayDuration);
   base::RunLoop().RunUntilIdle();
 
   // Verify the request access button is visible since extension C is now

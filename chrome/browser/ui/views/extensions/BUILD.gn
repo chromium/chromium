@@ -108,6 +108,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/toolbar:test_support",
     "//chrome/browser/ui/views/controls",
     "//chrome/browser/ui/views/frame:test_with_browser_view",
+    "//chrome/browser/ui/views/permissions/chip",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support",
     "//chrome/test/views",

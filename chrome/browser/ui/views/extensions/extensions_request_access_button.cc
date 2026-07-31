@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_constants.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -35,15 +36,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
-
-namespace {
-
-// TODO(crbug.com/40916158): Same as permission's ChipController. Pull out to a
-// shared location.
-constexpr auto kConfirmationDisplayDuration = base::Seconds(4);
-
-
-}  // namespace
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
     BrowserWindowInterface* browser,
@@ -244,9 +236,9 @@ void ExtensionsRequestAccessButton::OnButtonPressed(const ui::Event& event) {
                color);
   SetEnabled(false);
 
-  base::TimeDelta collapse_duration = remove_confirmation_for_testing_
-                                          ? base::Seconds(0)
-                                          : kConfirmationDisplayDuration;
+  base::TimeDelta collapse_duration =
+      remove_confirmation_for_testing_ ? base::Seconds(0)
+                                       : kPermissionConfirmationDisplayDuration;
   // base::Unretained() below is safe because this view is tied to the
   // lifetime of `extensions_toolbar_view_model_`.
   collapse_timer_.Start(

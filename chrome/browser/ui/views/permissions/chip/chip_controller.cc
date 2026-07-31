@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_constants.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
@@ -44,12 +45,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/widget/widget.h"
-
-namespace {
-
-constexpr auto kConfirmationDisplayDuration = base::Seconds(4);
-
-}  // namespace
 
 ChipController::ChipController(
     LocationBar* location_bar,
@@ -159,8 +154,8 @@ void ChipController::RestartTimersOnMouseHover() {
   }
 
   if (is_confirmation_showing_) {
-    collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
-                          &ChipController::CollapseConfirmation);
+    collapse_timer_.Start(FROM_HERE, kPermissionConfirmationDisplayDuration,
+                          this, &ChipController::CollapseConfirmation);
   } else if (chip_->IsFullyCollapsed()) {
     // Quiet chip can collapse from a verbose state to an icon state. After it
     // is collapsed, it should be dismissed.
@@ -548,8 +543,8 @@ void ChipController::HandleConfirmation(
         permission_prompt_model_->GetAccessibilityChipText());
 
     if (!do_no_collapse_for_testing_) {
-      collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
-                            &ChipController::CollapseConfirmation);
+      collapse_timer_.Start(FROM_HERE, kPermissionConfirmationDisplayDuration,
+                            this, &ChipController::CollapseConfirmation);
     }
   } else {
     ResetPermissionPromptChip();
