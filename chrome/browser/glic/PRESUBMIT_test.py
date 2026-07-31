@@ -127,6 +127,71 @@ class CheckHeaderOrderingTest(unittest.TestCase):
             if os.path.exists(tmp_file_path):
                 os.remove(tmp_file_path)
 
+    def testCppFileWithoutIncludeChangesIgnored(self):
+        # Create a temporary C++ file with unsorted headers on disk, but
+        # simulate modifying only non-include lines.
+        repo_root = PRESUBMIT_test_mocks._REPO_ROOT
+        glic_dir = os.path.join(repo_root, 'chrome', 'browser', 'glic')
+        tmp_file_path = os.path.join(glic_dir, 'test_no_include_change.cc')
+        rel_path = os.path.relpath(tmp_file_path, repo_root)
+
+        unsorted_content = ('#include <vector>\n'
+                            '#include "base/logging.h"\n'
+                            '#include <string>\n')
+        with open(tmp_file_path, 'w', encoding='utf-8') as f:
+            f.write(unsorted_content)
+
+        try:
+            mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+            mock_input_api.presubmit_local_path = glic_dir
+            mock_input_api.InitFiles([
+                PRESUBMIT_test_mocks.MockFile(
+                    rel_path,
+                    ['void SomeFunction() {}'],
+                ),
+            ])
+            mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+            results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                    mock_output_api)
+            self.assertEqual(results, [])
+        finally:
+            if os.path.exists(tmp_file_path):
+                os.remove(tmp_file_path)
+
+    def testIndentedIncludeTrigger(self):
+        # Create a temporary C++ file with unsorted indented headers.
+        repo_root = PRESUBMIT_test_mocks._REPO_ROOT
+        glic_dir = os.path.join(repo_root, 'chrome', 'browser', 'glic')
+        tmp_file_path = os.path.join(glic_dir, 'test_indented_include.cc')
+        rel_path = os.path.relpath(tmp_file_path, repo_root)
+        unix_rel_path = rel_path.replace('\\', '/')
+
+        unsorted_content = ('#   include <vector>\n'
+                            '#   include "base/logging.h"\n'
+                            '#   include <string>\n')
+        with open(tmp_file_path, 'w', encoding='utf-8') as f:
+            f.write(unsorted_content)
+
+        try:
+            mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+            mock_input_api.presubmit_local_path = glic_dir
+            mock_input_api.InitFiles([
+                PRESUBMIT_test_mocks.MockFile(
+                    rel_path,
+                    unsorted_content.splitlines(),
+                ),
+            ])
+            mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+            results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
+                                                    mock_output_api)
+            self.assertEqual(len(results), 1)
+            self.assertEqual(results[0].type, 'warning')
+            self.assertIn('not properly sorted', results[0].message)
+            self.assertIn(unix_rel_path, results[0].items)
+        finally:
+            if os.path.exists(tmp_file_path):
+                os.remove(tmp_file_path)
+
 
 if __name__ == '__main__':
     unittest.main()

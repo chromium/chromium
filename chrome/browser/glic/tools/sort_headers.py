@@ -20,7 +20,8 @@ import shutil
 import subprocess
 import sys
 
-_INCLUDE_RE = re.compile(r'^\s*#(include|import)\s+([<"].+?[">])\s*(?://.*)?$')
+_INCLUDE_RE = re.compile(
+    r'^\s*#\s*(include|import)\s+([<"].+?[">])\s*(?://.*)?$')
 _IF_RE = re.compile(r'^\s*#\s*if\s+(.+)$')
 _IFDEF_RE = re.compile(r'^\s*#\s*ifdef\s+(.+)$')
 _IFNDEF_RE = re.compile(r'^\s*#\s*ifndef\s+(.+)$')

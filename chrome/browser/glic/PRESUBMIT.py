@@ -11,12 +11,17 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def _CheckHeaderOrdering(input_api, output_api):
+    include_pattern = input_api.re.compile(r'^\s*#\s*(?:include|import)\b')
 
     def file_filter(affected_file):
-        return input_api.FilterSourceFile(
-            affected_file,
-            files_to_check=[r'^chrome/browser/glic/.*\.(cc|h|mm)$'],
-        )
+        if not input_api.FilterSourceFile(
+                affected_file,
+                files_to_check=[r'^chrome/browser/glic/.*\.(cc|h|mm)$'],
+        ):
+            return False
+        return any(
+            include_pattern.match(line)
+            for _, line in affected_file.ChangedContents())
 
     affected_files = list(
         input_api.AffectedFiles(include_deletes=False,
