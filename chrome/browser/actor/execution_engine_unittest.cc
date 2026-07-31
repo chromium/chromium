@@ -1155,15 +1155,6 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
                 base::BindOnce(
                     &ExecutionEngineUrlGatingTest::CreateOptimizationService)));
 
-    ON_CALL(*mock_optimization_guide_keyed_service_,
-            CanApplyOptimization(
-                testing::_, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
-                testing::An<
-                    optimization_guide::OptimizationGuideDecisionCallback>()))
-        .WillByDefault(base::test::RunOnceCallback<2>(
-            optimization_guide::OptimizationGuideDecision::kTrue,
-            optimization_guide::OptimizationMetadata{}));
-
     // Simulate the component loading, as the implementation checks it, but the
     // actual outcomes are determined by the mock.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -1379,7 +1370,10 @@ TEST_F(ExecutionEngineUrlGatingTest, AllowSubdomain) {
 }
 
 TEST_F(ExecutionEngineUrlGatingTest, AllowIfNotBlocked) {
-  CheckUrl(GURL("https://c.test/"), true);
+  const GURL url("https://c.test/");
+  SetExpectedOptimizationGuideCall(
+      url, optimization_guide::OptimizationGuideDecision::kTrue);
+  CheckUrl(url, true);
 }
 
 TEST_F(ExecutionEngineUrlGatingTest, BlockIfInBlocklist) {
@@ -1390,11 +1384,13 @@ TEST_F(ExecutionEngineUrlGatingTest, BlockIfInBlocklist) {
 }
 
 TEST_F(ExecutionEngineUrlGatingTest, AllowIfNotBlockedForOriginGating) {
+  const GURL url("https://c.test/");
+  SetExpectedOptimizationGuideCall(
+      url, optimization_guide::OptimizationGuideDecision::kTrue);
   base::test::TestFuture<bool> got_may_act;
-  EXPECT_THAT(
-      MaybeCheckOptimizationGuideForSensitiveUrl(
-          GURL("https://c.test/"), profile(), got_may_act.GetCallback()),
-      base::test::HasValue());
+  EXPECT_THAT(MaybeCheckOptimizationGuideForSensitiveUrl(
+                  url, profile(), got_may_act.GetCallback()),
+              base::test::HasValue());
   EXPECT_TRUE(got_may_act.Get());
 }
 
@@ -1420,11 +1416,12 @@ TEST_F(ExecutionEngineUrlGatingTest, AllowedOriginsFromNavigationGating) {
       .Times(2)
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kFalse,
+          optimization_guide::OptimizationMetadata{}))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
           optimization_guide::OptimizationMetadata{}));
 
-  {
-    CheckUrl(url, false);
-  }
+  CheckUrl(url, false);
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
