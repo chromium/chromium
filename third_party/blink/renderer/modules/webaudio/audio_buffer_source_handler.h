@@ -12,6 +12,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
@@ -24,7 +25,8 @@ namespace blink {
 class AudioBufferSourceOptions;
 class BaseAudioContext;
 
-class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
+class MODULES_EXPORT AudioBufferSourceHandler final
+    : public AudioScheduledSourceHandler {
  public:
   static scoped_refptr<AudioBufferSourceHandler> Create(
       AudioNode&,
@@ -62,6 +64,8 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   double LoopEnd() const { return loop_end_; }
   void SetLoopStart(double loop_start);
   void SetLoopEnd(double loop_end);
+
+  double GetVirtualReadIndexForTesting() const { return virtual_read_index_; }
 
   // If we are no longer playing, propagate silence ahead to downstream nodes.
   bool PropagatesSilence() const override;
