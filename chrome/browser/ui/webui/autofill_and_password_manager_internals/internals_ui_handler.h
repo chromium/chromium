@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_INTERNALS_UI_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_INTERNALS_UI_HANDLER_H_
 
+#include <deque>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +16,7 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -60,9 +63,11 @@ class AutofillCacheResetter : public content::BrowsingDataRemover::Observer {
 // UI handler for chrome://password-manager-internals and
 // chrome://autofill-internals that takes care of subscribing to the autofill
 // logging instance.
-class InternalsUIHandler : public content::WebUIMessageHandler,
-                           public LogReceiver,
-                           public EntityDataManager::Observer {
+class InternalsUIHandler
+    : public content::WebUIMessageHandler,
+      public LogReceiver,
+      public EntityDataManager::Observer,
+      public AutofillAiPersonalContextAccessManager::Observer {
  public:
   using GetLogRouterFunction =
       base::RepeatingCallback<LogRouter*(content::BrowserContext*)>;
@@ -93,7 +98,13 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   // EntityDataManager::Observer:
   void OnEntityInstancesChanged() override;
 
+  // AutofillAiPersonalContextAccessManager::Observer:
+  void OnPrefetchContextComplete(
+      const AutofillAiPersonalContextAccessManager& manager,
+      std::optional<base::span<const EntityInstance>> entities) override;
+
   void SendAutofillAiEntitiesToWebUI();
+  void FetchNextPersonalContextType();
 
   // JavaScript call handler.
   void OnDeleteAutofillAiCacheEntry(const base::ListValue& args);
@@ -120,8 +131,13 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   // Whether |this| is registered as a log receiver with the LogRouter.
   bool registered_with_log_router_ = false;
 
+  std::deque<EntityType> pending_prefetch_types_;
+  std::optional<EntityType> current_prefetch_type_;
   base::ScopedObservation<EntityDataManager, EntityDataManager::Observer>
       entity_data_observation_{this};
+  base::ScopedObservation<AutofillAiPersonalContextAccessManager,
+                          AutofillAiPersonalContextAccessManager::Observer>
+      pcontext_observation_{this};
 
   std::optional<AutofillCacheResetter> autofill_cache_resetter_;
 };

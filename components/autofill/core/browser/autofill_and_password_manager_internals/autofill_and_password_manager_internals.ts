@@ -790,7 +790,7 @@ function onTabShown(tabId: string) {
   if (tabId === 'tab-autofill-ai-cache') {
     chrome.send('getAutofillAiCache');
   } else if (tabId === 'tab-autofill-ai-entities') {
-    getRequiredElement('tab-autofill-ai-entities').innerText =
+    getRequiredElement('autofill-ai-entities-content').innerText =
         'Loading entities';
     chrome.send('getAutofillAiEntities');
   }
@@ -868,8 +868,17 @@ interface AutofillAiEntityEntry {
   attributes: AutofillAiAttributeEntry[];
 }
 
+function displayAutofillAiLoadingStatus(status: string) {
+  const statusDiv = document.getElementById('autofill-ai-loading-status');
+  if (!statusDiv) {
+    return;
+  }
+  statusDiv.innerText = status;
+  statusDiv.style.display = status ? 'block' : 'none';
+}
+
 function displayAutofillAiEntities(entries: AutofillAiEntityEntry[]) {
-  const container = getRequiredElement('tab-autofill-ai-entities');
+  const container = getRequiredElement('autofill-ai-entities-content');
   if (entries.length === 0) {
     container.innerText = 'No entities found.';
     return;
@@ -948,6 +957,8 @@ document.addEventListener('DOMContentLoaded', () => {
   addWebUiListener('add-structured-log', addStructuredLog);
   addWebUiListener('display-autofill-ai-cache', displayAutofillAiCache);
   addWebUiListener('display-autofill-ai-entities', displayAutofillAiEntities);
+  addWebUiListener(
+      'display-autofill-ai-loading-status', displayAutofillAiLoadingStatus);
   addWebUiListener('setup-autofill-internals', setUpAutofillInternals);
   addWebUiListener(
       'setup-password-manager-internals', setUpPasswordManagerInternals);
