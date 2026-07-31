@@ -1314,3 +1314,11 @@ void BrowserWebContentsDelegate::CapturePaintPreviewOfSubframe(
     client->CaptureSubframePaintPreview(guid, rect, render_frame_host);
   }
 }
+
+bool BrowserWebContentsDelegate::IsPrivileged() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return web_app::GetSystemWebAppType(&*browser_).has_value();
+#else
+  return false;
+#endif
+}

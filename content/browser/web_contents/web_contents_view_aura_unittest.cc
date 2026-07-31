@@ -44,6 +44,13 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/pickle.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #endif
@@ -160,6 +167,28 @@ class DeferredVirtualFileProvider : public ui::OSExchangeDataProviderWin {
   mutable TempFilesCallback pending_callback_;
 };
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS)
+std::unique_ptr<ui::OSExchangeData> MakeExchangeDataWithFilesAppCustomTypes(
+    const GURL& source_url) {
+  std::unordered_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"fs/tag"] = u"filemanager-data";
+  custom_data[u"fs/sources"] =
+      u"filesystem:chrome://file-manager/external/Downloads-hash/a.txt";
+  custom_data[u"fs/sourceRootURL"] =
+      u"filesystem:chrome://file-manager/external/Downloads-hash/";
+  custom_data[u"text/custom"] = u"other";
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(custom_data, &pickle);
+
+  auto data = std::make_unique<ui::OSExchangeData>(
+      std::make_unique<ui::OSExchangeDataProviderNonBacked>());
+  data->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
+                       pickle);
+  data->SetSource(std::make_unique<ui::DataTransferEndpoint>(source_url));
+  return data;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -974,6 +1003,41 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
   EXPECT_TRUE(exchange_data->GetSource());
   EXPECT_TRUE(exchange_data->GetSource()->IsUrlType());
   EXPECT_EQ(*(exchange_data->GetSource()->GetURL()), GURL(kGmailUrl));
+}
+
+TEST_F(WebContentsViewAuraTest, DragEnterFromNonprivilegedToPrivileged) {
+  WebContentsViewAura* view = GetView();
+  PrivilegedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  auto data =
+      MakeExchangeDataWithFilesAppCustomTypes(GURL("https://www.example.com/"));
+
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_COPY);
+  // The 'fs/*' DataTransfer custom-data types are used by the ChromeOS Files
+  // app to carry filesystem URLs between its own windows. When a non-privileged
+  // app tries to add them, they must be stripped.
+  EXPECT_EQ(nullptr, view->current_drag_data_);
+  view->OnDragEntered(event);
+  ASSERT_EQ(nullptr, view->current_drag_data_);
+}
+
+TEST_F(WebContentsViewAuraTest, DragEnterFromNonprivilegedToNonprivileged) {
+  WebContentsViewAura* view = GetView();
+  auto data =
+      MakeExchangeDataWithFilesAppCustomTypes(GURL("chrome://file-manager/"));
+
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_COPY);
+  EXPECT_EQ(nullptr, view->current_drag_data_);
+  view->OnDragEntered(event);
+  ASSERT_NE(nullptr, view->current_drag_data_);
+
+  const auto& custom_data = view->current_drag_data_->custom_data;
+  EXPECT_NE(custom_data.end(), custom_data.find(u"fs/tag"));
+  EXPECT_NE(custom_data.end(), custom_data.find(u"fs/sources"));
+  EXPECT_NE(custom_data.end(), custom_data.find(u"fs/sourceRootURL"));
+  EXPECT_NE(custom_data.end(), custom_data.find(u"text/custom"));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

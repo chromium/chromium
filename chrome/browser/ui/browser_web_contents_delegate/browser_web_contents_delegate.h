@@ -254,6 +254,7 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
       const gfx::Rect& rect,
       const base::UnguessableToken& guid,
       content::RenderFrameHost* render_frame_host) override;
+  bool IsPrivileged() override;
 
  private:
   const base::ElapsedTimer creation_timer_;
