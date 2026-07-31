@@ -273,17 +273,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/input/mouse_event_manager.h:DragAndDropToolType) -->
 
-<enum name="EventResultType">
-  <int value="0" label="Passive"/>
-  <int value="1" label="Uncancelable"/>
-  <int value="2" label="Suppressed"/>
-  <int value="3" label="Cancelable and not canceled"/>
-  <int value="4" label="Cancelable and canceled"/>
-  <int value="5" label="Forced Non-Blocking Due to Fling"/>
-  <int value="6"
-      label="Forced Non-Blocking Due to Unresponsive Main Thread (deprecated)"/>
-</enum>
-
 <!-- LINT.IfChange(FrameStageScrollIdBasedCalculationIssues) -->
 
 <enum name="FrameStageScrollIdBasedCalculationIssues">

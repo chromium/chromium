@@ -454,21 +454,6 @@ TEST_F(WebFrameWidgetImplRemoteFrameSimTest,
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
 }
 
-const char EVENT_LISTENER_RESULT_HISTOGRAM[] = "Event.PassiveListeners";
-
-// Keep in sync with enum defined in
-// RenderWidgetInputHandler::LogPassiveEventListenersUma.
-enum {
-  PASSIVE_LISTENER_UMA_ENUM_PASSIVE,
-  PASSIVE_LISTENER_UMA_ENUM_UNCANCELABLE,
-  PASSIVE_LISTENER_UMA_ENUM_SUPPRESSED,
-  PASSIVE_LISTENER_UMA_ENUM_CANCELABLE,
-  PASSIVE_LISTENER_UMA_ENUM_CANCELABLE_AND_CANCELED,
-  PASSIVE_LISTENER_UMA_ENUM_FORCED_NON_BLOCKING_DUE_TO_FLING,
-  PASSIVE_LISTENER_UMA_ENUM_FORCED_NON_BLOCKING_DUE_TO_MAIN_THREAD_RESPONSIVENESS_DEPRECATED,
-  PASSIVE_LISTENER_UMA_ENUM_COUNT
-};
-
 // Since std::unique_ptr<InputHandlerProxy::DidOverscrollParams> isn't copyable
 // we can't use the MockCallback template.
 class MockHandledEventCallback {
@@ -565,13 +550,6 @@ class WebFrameWidgetImplSimTest : public SimTest {
 #endif  // BUILDFLAG(IS_WIN)
         base::DoNothing());
   }
-
-  const base::HistogramTester& histogram_tester() const {
-    return histogram_tester_;
-  }
-
- private:
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WebFrameWidgetImplSimTest, CursorChange) {
@@ -599,69 +577,6 @@ TEST_F(WebFrameWidgetImplSimTest, CursorChange) {
   MockMainFrameWidget()->SetCursor(cursor);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(widget_host.CursorSetCount(), 2u);
-}
-
-TEST_F(WebFrameWidgetImplSimTest, RenderWidgetInputEventUmaMetrics) {
-  SyntheticWebTouchEvent touch;
-  touch.PressPoint(10, 10);
-  touch.touch_start_or_first_touch_move = true;
-
-  EXPECT_CALL(*MockMainFrameWidget(), HandleInputEvent(_))
-      .Times(5)
-      .WillRepeatedly(::testing::Return(WebInputEventResult::kNotHandled));
-  EXPECT_CALL(*MockMainFrameWidget(), DispatchBufferedTouchEvents())
-      .Times(5)
-      .WillRepeatedly(::testing::Return(WebInputEventResult::kNotHandled));
-  SendInputEvent(touch, base::DoNothing());
-  histogram_tester().ExpectBucketCount(EVENT_LISTENER_RESULT_HISTOGRAM,
-                                       PASSIVE_LISTENER_UMA_ENUM_CANCELABLE, 1);
-
-  touch.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
-  SendInputEvent(touch, base::DoNothing());
-  histogram_tester().ExpectBucketCount(EVENT_LISTENER_RESULT_HISTOGRAM,
-                                       PASSIVE_LISTENER_UMA_ENUM_UNCANCELABLE,
-                                       1);
-
-  touch.dispatch_type =
-      WebInputEvent::DispatchType::kListenersNonBlockingPassive;
-  SendInputEvent(touch, base::DoNothing());
-  histogram_tester().ExpectBucketCount(EVENT_LISTENER_RESULT_HISTOGRAM,
-                                       PASSIVE_LISTENER_UMA_ENUM_PASSIVE, 1);
-
-  touch.dispatch_type =
-      WebInputEvent::DispatchType::kListenersForcedNonBlockingDueToFling;
-  SendInputEvent(touch, base::DoNothing());
-  histogram_tester().ExpectBucketCount(
-      EVENT_LISTENER_RESULT_HISTOGRAM,
-      PASSIVE_LISTENER_UMA_ENUM_FORCED_NON_BLOCKING_DUE_TO_FLING, 1);
-
-  touch.MovePoint(0, 10, 10);
-  touch.touch_start_or_first_touch_move = true;
-  touch.dispatch_type =
-      WebInputEvent::DispatchType::kListenersForcedNonBlockingDueToFling;
-  SendInputEvent(touch, base::DoNothing());
-  histogram_tester().ExpectBucketCount(
-      EVENT_LISTENER_RESULT_HISTOGRAM,
-      PASSIVE_LISTENER_UMA_ENUM_FORCED_NON_BLOCKING_DUE_TO_FLING, 2);
-
-  EXPECT_CALL(*MockMainFrameWidget(), HandleInputEvent(_))
-      .WillOnce(::testing::Return(WebInputEventResult::kNotHandled));
-  EXPECT_CALL(*MockMainFrameWidget(), DispatchBufferedTouchEvents())
-      .WillOnce(::testing::Return(WebInputEventResult::kHandledSuppressed));
-  touch.dispatch_type = WebInputEvent::DispatchType::kBlocking;
-  SendInputEvent(touch, base::DoNothing());
-  histogram_tester().ExpectBucketCount(EVENT_LISTENER_RESULT_HISTOGRAM,
-                                       PASSIVE_LISTENER_UMA_ENUM_SUPPRESSED, 1);
-
-  EXPECT_CALL(*MockMainFrameWidget(), HandleInputEvent(_))
-      .WillOnce(::testing::Return(WebInputEventResult::kNotHandled));
-  EXPECT_CALL(*MockMainFrameWidget(), DispatchBufferedTouchEvents())
-      .WillOnce(::testing::Return(WebInputEventResult::kHandledApplication));
-  touch.dispatch_type = WebInputEvent::DispatchType::kBlocking;
-  SendInputEvent(touch, base::DoNothing());
-  histogram_tester().ExpectBucketCount(
-      EVENT_LISTENER_RESULT_HISTOGRAM,
-      PASSIVE_LISTENER_UMA_ENUM_CANCELABLE_AND_CANCELED, 1);
 }
 
 // Ensures that the compositor thread gets sent the gesture event & overscroll

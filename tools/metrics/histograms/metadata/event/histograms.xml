@@ -545,17 +545,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Event.PassiveListeners" enum="EventResultType"
-    expires_after="2025-02-10">
-  <owner>dtapuska@chromium.org</owner>
-  <summary>
-    The result of handling of MouseWheel, TouchStart, TouchMove, TouchEnd events
-    in the renderer.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
 <histogram name="Event.Scroll.{ScrollInputType}" units="ms"
     expires_after="2027-01-03">
   <owner>kraskevich@google.com</owner>
