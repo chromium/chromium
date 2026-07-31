@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -448,18 +449,24 @@ void ContextHubPageHandler::AskGeminiWithContext(
     AskGeminiWithContextCallback callback) {
   context_hub::ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(profile_);
-  auto response = browser::context_hub::mojom::ChatMessage::New();
-  response->role = browser::context_hub::mojom::ChatRole::kAssistant;
-
   if (!service) {
+    auto response = browser::context_hub::mojom::ChatMessage::New();
+    response->role = browser::context_hub::mojom::ChatRole::kAssistant;
     response->content = "Service unavailable.";
     std::move(callback).Run(std::move(response));
     return;
   }
 
-  // TODO(crbug.com/537894637): Integrate with llm service.
-  response->content = base::StringPrintf(
-      "Gemini response for prompt: \"%s\"\n\nUsing %zu selected memory ID(s).",
-      user_command.c_str(), memory_bank_entry_ids.size());
-  std::move(callback).Run(std::move(response));
+  service->ExecuteMemoryBankChat(
+      memory_bank_entry_ids, user_command,
+      base::BindOnce(
+          [](AskGeminiWithContextCallback callback,
+             std::optional<std::string> response_text) {
+            auto response = browser::context_hub::mojom::ChatMessage::New();
+            response->role = browser::context_hub::mojom::ChatRole::kAssistant;
+            response->content =
+                response_text.value_or("Failed to generate response.");
+            std::move(callback).Run(std::move(response));
+          },
+          std::move(callback)));
 }

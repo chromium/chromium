@@ -121,11 +121,24 @@ class ContextHubService : public KeyedService {
   // Deletes all stored tab groups.
   void DeleteAllTabGroups(base::OnceClosure callback);
 
+  using MemoryBankChatCallback =
+      base::OnceCallback<void(std::optional<std::string> response)>;
+  // Executes a memory bank chat request for the specified memory bank entry
+  // IDs.
+  void ExecuteMemoryBankChat(base::span<const int64_t> entry_ids,
+                             const std::string& user_command,
+                             MemoryBankChatCallback callback);
+
   base::WeakPtr<ContextHubService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
+  // Callback invoked when memory bank entries are fetched for a chat request.
+  void OnMemoryBankEntriesFetched(const std::string& user_command,
+                                  MemoryBankChatCallback callback,
+                                  std::vector<MemoryBankEntry> entries);
+
   // Generates tab groups based on the provided `tabs` and invokes `callback`
   // with the resulting groups and any ungrouped tabs.
   void GenerateTabGroups(std::vector<TabData> tabs,
@@ -137,9 +150,15 @@ class ContextHubService : public KeyedService {
                           personal_context::FetchContextResult result);
 
   // Handles the result of the model execution from `GenerateTabGroups`.
-  void HandleModelExecutionResult(
+  void HandleTabGroupModelExecutionResult(
       std::vector<TabData> tabs,
       GroupTabsCallback callback,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // Handles the result of the model execution from `ExecuteMemoryBankChat`.
+  void HandleMemoryBankChatModelExecutionResult(
+      MemoryBankChatCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

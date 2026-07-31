@@ -33,6 +33,35 @@
 
 namespace context_hub {
 
+namespace {
+
+optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
+    const MemoryBankEntry& entry) {
+  optimization_guide::proto::MemoryBankEntry mb_proto;
+  mb_proto.set_id(entry.id);
+  switch (entry.type) {
+    case MemoryBankType::kTab:
+      mb_proto.set_type(optimization_guide::proto::MEMORY_BANK_TYPE_TAB);
+      break;
+    case MemoryBankType::kTextSelection:
+      mb_proto.set_type(
+          optimization_guide::proto::MEMORY_BANK_TYPE_TEXT_SELECTION);
+      break;
+  }
+  mb_proto.set_timestamp_ms(entry.timestamp.InMillisecondsSinceUnixEpoch());
+  mb_proto.set_url(entry.url.spec());
+  mb_proto.set_tab_title(entry.tab_title);
+  if (entry.selected_text.has_value()) {
+    mb_proto.set_selected_text(*entry.selected_text);
+  }
+  for (const auto& tag : entry.tags) {
+    mb_proto.add_tags(tag);
+  }
+  return mb_proto;
+}
+
+}  // namespace
+
 ContextHubService::ContextHubService(
     personal_context::PersonalContextService* personal_context_service,
     optimization_guide::RemoteModelExecutor*
@@ -224,12 +253,71 @@ void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
       optimization_guide::ModelExecutionOptions(),
-      base::BindOnce(&ContextHubService::HandleModelExecutionResult,
+      base::BindOnce(&ContextHubService::HandleTabGroupModelExecutionResult,
                      weak_factory_.GetWeakPtr(), std::move(tabs),
                      std::move(callback)));
 }
 
-void ContextHubService::HandleModelExecutionResult(
+void ContextHubService::ExecuteMemoryBankChat(
+    base::span<const int64_t> entry_ids,
+    const std::string& user_command,
+    MemoryBankChatCallback callback) {
+  std::string_view trimmed_command =
+      base::TrimWhitespaceASCII(user_command, base::TRIM_ALL);
+  if (trimmed_command.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  GetEntriesByIds(
+      entry_ids,
+      base::BindOnce(&ContextHubService::OnMemoryBankEntriesFetched,
+                     weak_factory_.GetWeakPtr(), std::string(trimmed_command),
+                     std::move(callback)));
+}
+
+void ContextHubService::OnMemoryBankEntriesFetched(
+    const std::string& user_command,
+    MemoryBankChatCallback callback,
+    std::vector<MemoryBankEntry> entries) {
+  optimization_guide::proto::ContextHubRequest request;
+  request.set_request_type(
+      optimization_guide::proto::CONTEXT_HUB_REQUEST_TYPE_MEMORY_BANK_CHAT);
+
+  for (const MemoryBankEntry& entry : entries) {
+    *request.add_entry_items()->mutable_memory_bank_entry() =
+        ToMemoryBankEntryProto(entry);
+  }
+
+  request.set_user_command(user_command);
+
+  optimization_guide_remote_model_executor_->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
+      optimization_guide::ModelExecutionOptions(),
+      base::BindOnce(
+          &ContextHubService::HandleMemoryBankChatModelExecutionResult,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContextHubService::HandleMemoryBankChatModelExecutionResult(
+    MemoryBankChatCallback callback,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  std::optional<optimization_guide::proto::ContextHubResponse> response;
+  if (result.response.has_value()) {
+    response = optimization_guide::ParsedAnyMetadata<
+        optimization_guide::proto::ContextHubResponse>(*result.response);
+  }
+  if (!response || !response->has_memory_bank_chat_response()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(
+      response->memory_bank_chat_response().text_response());
+}
+
+void ContextHubService::HandleTabGroupModelExecutionResult(
     std::vector<TabData> tabs,
     GroupTabsCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult result,
