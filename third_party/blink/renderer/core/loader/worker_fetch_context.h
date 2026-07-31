@@ -6,12 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WORKER_FETCH_CONTEXT_H_
 
 #include <memory>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -35,7 +37,7 @@ enum class ResourceType : uint8_t;
 // Separate WorkerFetchContext objects (and separate ResourceFetcher objects)
 // are used for each of insideSettings fetch and outsideSettings fetches.
 // For more details, see core/workers/README.md.
-class WorkerFetchContext final : public BaseFetchContext {
+class CORE_EXPORT WorkerFetchContext final : public BaseFetchContext {
  public:
   WorkerFetchContext(const DetachableResourceFetcherProperties&,
                      WorkerOrWorkletGlobalScope&,

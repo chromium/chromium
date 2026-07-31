@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -158,17 +159,29 @@ bool WorkerFetchContext::ShouldBlockFetchByMixedContentCheck(
 bool WorkerFetchContext::ShouldBlockFetchAsCredentialedSubresource(
     const ResourceRequest& resource_request,
     const KURL& url) const {
-  if ((!url.User().empty() || !url.Pass().empty()) &&
-      resource_request.GetRequestContext() !=
-          mojom::blink::RequestContextType::XML_HTTP_REQUEST) {
-    if (Url().User() != url.User() || Url().Pass() != url.Pass()) {
-      CountDeprecation(
-          WebFeature::kRequestedSubresourceWithEmbeddedCredentials);
-
-      return true;
-    }
+  // URLs with no embedded credentials should load correctly.
+  if (url.User().empty() && url.Pass().empty()) {
+    return false;
   }
-  return false;
+
+  if (resource_request.GetRequestContext() ==
+      mojom::blink::RequestContextType::XML_HTTP_REQUEST) {
+    return false;
+  }
+
+  // Relative URLs on worker scripts that were loaded with embedded credentials
+  // should load correctly if same-origin.
+  if (Url().User() == url.User() && Url().Pass() == url.Pass() &&
+      SecurityOrigin::Create(url)->IsSameOriginWith(
+          GetResourceFetcherProperties()
+              .GetFetchClientSettingsObject()
+              .GetSecurityOrigin())) {
+    return false;
+  }
+
+  CountDeprecation(WebFeature::kRequestedSubresourceWithEmbeddedCredentials);
+
+  return true;
 }
 
 const KURL& WorkerFetchContext::Url() const {
