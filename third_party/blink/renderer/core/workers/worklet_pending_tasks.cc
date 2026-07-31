@@ -46,13 +46,17 @@ void WorkletPendingTasks::Abort(
   if (counter_ > 0 || counter_ == -2) {
     counter_ = -1;
     worklet_->FinishPendingTasks(this);
-    if (error_to_rethrow) {
-      ScriptState::Scope scope(resolver_->GetScriptState());
-      resolver_->Reject(error_to_rethrow->Deserialize(
-          resolver_->GetScriptState()->GetIsolate()));
-    } else {
-      resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, "Unable to load a worklet's module."));
+    ScriptState* script_state = resolver_->GetScriptState();
+    if (script_state->ContextIsValid()) {
+      if (error_to_rethrow) {
+        ScriptState::Scope scope(script_state);
+        resolver_->Reject(
+            error_to_rethrow->Deserialize(script_state->GetIsolate()));
+      } else {
+        resolver_->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError,
+            "Unable to load a worklet's module."));
+      }
     }
   }
 }

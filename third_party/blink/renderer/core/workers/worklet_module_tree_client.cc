@@ -8,15 +8,21 @@
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -74,9 +80,11 @@ void AugmentExceptionWithSourceLocation(ScriptState* script_state,
 
 WorkletModuleTreeClient::WorkletModuleTreeClient(
     ScriptState* script_state,
+    const KURL& module_url,
     scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner,
     WorkletPendingTasks* pending_tasks)
     : script_state_(script_state),
+      module_url_(module_url),
       outside_settings_task_runner_(std::move(outside_settings_task_runner)),
       pending_tasks_(pending_tasks) {}
 
@@ -111,12 +119,62 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
   // Step 3: "If script is null, then queue a task on outsideSettings's
   // responsible event loop to run these steps:"
   if (!module_script) {
-    // Null |error_to_rethrow| will be replaced with AbortError.
+    ScriptState::Scope scope(script_state_);
+    auto* global_scope =
+        To<WorkletGlobalScope>(ExecutionContext::From(script_state_));
+    std::optional<WorkletModuleError> error =
+        global_scope->GetModuleResponsesMap()->GetEntryError(
+            module_url_, ModuleType::kJavaScriptOrWasm);
+
+    StringBuilder message_builder;
+    message_builder.Append("Failed to load worklet module script: ");
+    message_builder.Append(
+        KURL(module_url_.StrippedForUseAsHref()).ElidedString());
+
+    if (error) {
+      if (error->is_cross_origin) {
+        message_builder.Append(
+            " (a dependency or cross-origin script failed to load)");
+      } else {
+        switch (error->type) {
+          case WorkletModuleError::Type::kHttp:
+            message_builder.Append(" (HTTP status: ");
+            message_builder.AppendNumber(error->http_status_code);
+            message_builder.Append(")");
+            break;
+          case WorkletModuleError::Type::kCors:
+            message_builder.Append(" (CORS or access check error)");
+            break;
+          case WorkletModuleError::Type::kNetwork:
+            message_builder.Append(" (Network error)");
+            break;
+          case WorkletModuleError::Type::kMime:
+            message_builder.Append(" (MIME type mismatch)");
+            break;
+          case WorkletModuleError::Type::kIntegrity:
+            message_builder.Append(" (SRI integrity check failed)");
+            break;
+          case WorkletModuleError::Type::kUnknown:
+          case WorkletModuleError::Type::kDisposed:
+            break;
+        }
+      }
+    }
+
+    DOMException* dom_exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, message_builder.ToString());
+    v8::Local<v8::Value> exception_value = dom_exception->ToV8(script_state_);
+
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
+    scoped_refptr<SerializedScriptValue> serialized_error =
+        SerializedScriptValue::SerializeAndSwallowExceptions(
+            script_state_->GetIsolate(), exception_value);
+
     PostCrossThreadTask(
         *outside_settings_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&WorkletPendingTasks::Abort,
                             WrapCrossThreadPersistent(pending_tasks_.Get()),
-                            /*error_to_rethrow=*/nullptr));
+                            std::move(serialized_error)));
     return;
   }
 

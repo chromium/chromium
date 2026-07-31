@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_pending_tasks.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -21,6 +22,7 @@ class WorkletModuleTreeClient final : public ModuleTreeClient {
  public:
   WorkletModuleTreeClient(
       ScriptState*,
+      const KURL& module_url,
       scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner,
       WorkletPendingTasks*);
 
@@ -31,6 +33,7 @@ class WorkletModuleTreeClient final : public ModuleTreeClient {
 
  private:
   Member<ScriptState> script_state_;
+  KURL module_url_;
   scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner_;
   CrossThreadPersistent<WorkletPendingTasks> pending_tasks_;
 };
