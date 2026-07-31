@@ -103,10 +103,9 @@ public class ActorBackgroundActuationManagerTest {
 
         // Verify setup failed notification was sent to native
         verify(mActorKeyedService).notifyBackgroundSetupFailed(MESSAGE_ID_FAIL);
-        // Verify cleanup destroyed the tab and stopped offscreen rendering
+        // Verify cleanup stopped offscreen rendering
         verify(mTab).removeObserver(observer);
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
-        verify(mTab).destroy();
     }
 
     @Test
@@ -124,7 +123,6 @@ public class ActorBackgroundActuationManagerTest {
         verify(mActorKeyedService).notifyBackgroundSetupFailed(MESSAGE_ID_CRASH);
         verify(mTab).removeObserver(observer);
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
-        verify(mTab).destroy();
     }
 
     @Test
@@ -139,8 +137,7 @@ public class ActorBackgroundActuationManagerTest {
         // Cancel/Cleanup before load finished
         mManager.cleanupContext(MESSAGE_ID_CANCELLED);
 
-        // Verify cleanup immediately destroyed the tab
-        verify(mTab).destroy();
+        // Verify cleanup stopped offscreen rendering
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
 
         // Simulate native destruction triggering onDestroyed

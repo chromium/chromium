@@ -32,64 +32,6 @@ public class ActorBackgroundActuationManager {
     /** Constant representing an invalid task ID. */
     public static final int INVALID_TASK_ID = -1;
 
-    /**
-     * Represents a background session (either provisioned or transitioned). It owns the offscreen
-     * {@link Tab} and manages its lifecycle.
-     */
-    // TODO(crbug.com/540473733): Deprecate BackgroundSession in favor of
-    // org.chromium.chrome.browser.actor.BackgroundSession.
-    public static class BackgroundSession {
-        private final Tab mTab;
-        private final int mTaskId;
-        private final @Nullable String mGlicTriggerMessageId;
-
-        /**
-         * Constructor for a transitioned session (Scenario 1).
-         *
-         * @param tab The tab being transitioned.
-         * @param taskId The ID of the task associated with the tab.
-         */
-        public BackgroundSession(Tab tab, int taskId) {
-            mTab = tab;
-            mTaskId = taskId;
-            mGlicTriggerMessageId = null;
-        }
-
-        /**
-         * Constructor for a provisioned session (Scenario 2).
-         *
-         * @param tab The newly provisioned tab.
-         * @param glicTriggerMessageId The ID of the triggering message.
-         */
-        public BackgroundSession(Tab tab, String glicTriggerMessageId) {
-            mTab = tab;
-            mTaskId = INVALID_TASK_ID;
-            mGlicTriggerMessageId = glicTriggerMessageId;
-        }
-
-        /** Returns the offscreen tab owned by this session. */
-        public Tab getTab() {
-            return mTab;
-        }
-
-        /** Returns the task ID associated with this session, or {@link #INVALID_TASK_ID}. */
-        public int getTaskId() {
-            return mTaskId;
-        }
-
-        /** Returns the triggering message ID associated with this session, or null. */
-        public @Nullable String getGlicTriggerMessageId() {
-            return mGlicTriggerMessageId;
-        }
-
-        void destroy() {
-            OffscreenRenderingManager.getInstance().stopOffscreenRendering(mTab);
-            if (!mTab.isDestroyed()) {
-                mTab.destroy();
-            }
-        }
-    }
-
     // List of active background sessions.
     private final List<BackgroundSession> mBackgroundSessions = new ArrayList<>();
 
@@ -162,7 +104,10 @@ public class ActorBackgroundActuationManager {
         BackgroundSession session = findSessionByMessageId(glicTriggerMessageId);
         if (session != null) {
             mBackgroundSessions.remove(session);
-            session.destroy();
+            Tab lastActiveTab = session.getLastActiveTab();
+            if (lastActiveTab != null) {
+                OffscreenRenderingManager.getInstance().stopOffscreenRendering(lastActiveTab);
+            }
         }
     }
 
@@ -173,7 +118,10 @@ public class ActorBackgroundActuationManager {
         List<BackgroundSession> sessions = new ArrayList<>(mBackgroundSessions);
         mBackgroundSessions.clear();
         for (BackgroundSession session : sessions) {
-            session.destroy();
+            Tab lastActiveTab = session.getLastActiveTab();
+            if (lastActiveTab != null) {
+                OffscreenRenderingManager.getInstance().stopOffscreenRendering(lastActiveTab);
+            }
         }
     }
 
