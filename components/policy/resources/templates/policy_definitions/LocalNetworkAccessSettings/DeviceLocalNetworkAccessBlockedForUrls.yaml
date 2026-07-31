@@ -3,17 +3,16 @@ owners:
 - cthomp@chromium.org
 - chrome-secure-web-and-net@chromium.org
 
-caption: Allow sites to make network requests to local devices and local network endpoints.
+caption: Block sites from making network requests to local devices and local network endpoints on the device
 
 desc: |-
-  List of URL patterns. Network requests initiated from websites served by matching origins are not subject to <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> checks.
+  List of URL patterns. Network requests initiated from websites served by matching origins are blocked from issuing <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> requests across all sessions on the device.
 
-  For origins not covered by the patterns specified here, the user's personal configuration will apply.
+  For origins not covered by the patterns specified here, session or profile configuration will apply.
 
   For detailed information on valid URL patterns, please see https://chromeenterprise.google/policies/url-patterns/.
 
-  See https://wicg.github.io/local-network-access/ for <ph
-  name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
+  See https://wicg.github.io/local-network-access/ for <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
 
   There are multiple policies listing origins that impact requests to local device and local network endpoints. If an origin is matched by more than one of the following policies, the policies take precedence in the following order:
 
@@ -26,19 +25,20 @@ desc: |-
     - DeviceLocalNetworkAccessBlockedForUrls
     - DeviceLocalNetworkAccessAllowedForUrls
 
+device_only: true
+generate_device_proto: true
+
 example_value:
 - http://www.example.com:8080
 - '[*.]example.edu'
 - '*'
 
 supported_on:
-- chrome.*:139-
-- chrome_os:139-
-- android:140-
+- chrome_os:152-
 
 features:
   dynamic_refresh: true
-  per_profile: true
+  per_profile: false
 
 type: list
 

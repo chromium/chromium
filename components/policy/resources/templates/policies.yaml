@@ -1476,6 +1476,9 @@ policies:
   1475: OnNetworkRequestEnterpriseConnector
   1476: EnterprisePublishedSkills
   1477: OnDataCopiedEnterpriseConnector
+  1478: DeviceLocalNetworkAccessAllowedForUrls
+  1479: DeviceLocalNetworkAccessBlockedForUrls
+  1480: DeviceLocalNetworkAccessIpAddressSpaceOverrides
 
 atomic_groups:
   1: Homepage

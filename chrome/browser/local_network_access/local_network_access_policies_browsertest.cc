@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -33,7 +34,16 @@ constexpr char kServiceWorkerHtmlPath[] =
     "/local_network_access/request-from-service-worker.html";
 
 class LocalNetworkAccessPoliciesBrowserTest
-    : public LocalNetworkAccessBrowserTestBase {};
+    : public LocalNetworkAccessBrowserTestBase {
+ protected:
+  static void SetDevicePolicy(policy::PolicyMap* policies,
+                              const char* key,
+                              std::optional<base::Value> value) {
+    policies->Set(key, policy::POLICY_LEVEL_MANDATORY,
+                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                  std::move(value), nullptr);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
                        CheckEnterprisePolicyOptOut) {
@@ -210,6 +220,126 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
       content::JsReplace("fetch($1).then(response => response.ok)",
                          https_server().GetURL("b.com", kLnaPath))));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
+                       DeviceLocalNetworkAccessAllowedForUrlsPolicy) {
+  policy::PolicyMap policies;
+  base::ListValue allowlist;
+  allowlist.Append(base::Value("*"));
+  SetDevicePolicy(&policies,
+                  policy::key::kDeviceLocalNetworkAccessAllowedForUrls,
+                  base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_public_server().GetURL(
+                          "a.com", "/local_network_access/no-favicon.html")));
+
+  // LNA fetch should pass.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kLnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
+                       DeviceLocalNetworkAccessBlockedForUrlsPolicy) {
+  // Set both device policies. Block should override Allow
+  policy::PolicyMap policies;
+  base::ListValue allowlist;
+  allowlist.Append(base::Value("*"));
+  SetDevicePolicy(&policies,
+                  policy::key::kDeviceLocalNetworkAccessAllowedForUrls,
+                  base::Value(std::move(allowlist)));
+  base::ListValue blocklist;
+  blocklist.Append(base::Value("*"));
+  SetDevicePolicy(&policies,
+                  policy::key::kDeviceLocalNetworkAccessBlockedForUrls,
+                  base::Value(std::move(blocklist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_public_server().GetURL(
+                          "a.com", "/local_network_access/no-favicon.html")));
+
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  EXPECT_FALSE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("fetch($1).then(response => response.ok)",
+                         https_server().GetURL("b.com", kLnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
+                       UserAllowlistOverridesDeviceAllowlist) {
+  // Set device allowlist to b.com and user allowlist to a.com. Verifies
+  // that the user policy overrides the device policy.
+  policy::PolicyMap policies;
+  base::ListValue device_allowlist;
+  device_allowlist.Append(base::Value("https://b.com"));
+  SetDevicePolicy(&policies,
+                  policy::key::kDeviceLocalNetworkAccessAllowedForUrls,
+                  base::Value(std::move(device_allowlist)));
+
+  base::ListValue user_allowlist;
+  user_allowlist.Append(base::Value("https://a.com"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(user_allowlist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_public_server().GetURL(
+                          "a.com", "/local_network_access/no-favicon.html")));
+
+  // LNA fetch should succeed because the user allowlist overrides the device
+  // allowlist.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("c.com", kLnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
+                       UserBlocklistOverridesDeviceBlocklist) {
+  // Set device blocklist to all (*) and user blocklist to only b.com. Verifies
+  // that the user policy overrides the device policy.
+  policy::PolicyMap policies;
+  base::ListValue device_blocklist;
+  device_blocklist.Append(base::Value("*"));
+  SetDevicePolicy(&policies,
+                  policy::key::kDeviceLocalNetworkAccessBlockedForUrls,
+                  base::Value(std::move(device_blocklist)));
+
+  base::ListValue user_blocklist;
+  user_blocklist.Append(base::Value("https://b.com"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessBlockedForUrls,
+            base::Value(std::move(user_blocklist)));
+
+  // Allowlist "https://a.com" so the fetch can succeed without prompting if it
+  // is not blocked by the blocklist.
+  base::ListValue user_allowlist;
+  user_allowlist.Append(base::Value("https://a.com"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(user_allowlist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_public_server().GetURL(
+                          "a.com", "/local_network_access/no-favicon.html")));
+
+  // LNA fetch should succeed because the user blocklist overrides the wildcard
+  // device blocklist.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("c.com", kLnaPath))));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class LocalNetworkAccessPoliciesIPOverrideBrowserTest
     : public LocalNetworkAccessPoliciesBrowserTest {

@@ -1,12 +1,12 @@
 owners:
 - cthomp@chromium.org
 - hchao@chromium.org
-- chrome-swan@google.com
+- chrome-secure-web-and-net@chromium.org
 
-caption: Override IP address space mappings
+caption: Override IP address space mappings on the device
 
 desc: |-
-  This can be used to treat certain internal address ranges as "public" and thus not subject to <ph name="LOCAL_NETWORK_ACCES">Local Network Access</ph> checks. Conversely, this can be used to treat certain public address ranges that might be used internally as "local" so that they are protected by <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> checks.
+  This can be used to treat certain internal address ranges as "public" across the entire device and thus not subject to <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> checks. Conversely, this can be used to treat certain public address ranges that might be used internally as "local" so that they are protected by <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> checks.
 
   IP address space overrides have two forms:
 
@@ -20,9 +20,12 @@ desc: |-
 
   For more information on <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph>, see https://wicg.github.io/local-network-access/ and https://developer.chrome.com/blog/local-network-access.
 
-  Overrides from this policy take precedence over overrides set by DeviceLocalNetworkAccessIpAddressSpaceOverrides.
+  Overrides from the policy LocalNetworkAccessIpAddressSpaceOverrides take precedence over overrides set by this policy.
 
   Overrides from the command-line switch --ip-address-space-overrides take precedence over overrides set by policies.
+
+device_only: true
+generate_device_proto: true
 
 example_value:
 - '100.64.0.0/10=public'
@@ -31,9 +34,7 @@ example_value:
 - '[2001:DB8::8:800:200C:417A]:8080=local'
 
 supported_on:
-- chrome.*:146-
-- chrome_os:146-
-- android:146-
+- chrome_os:152-
 
 features:
   dynamic_refresh: false

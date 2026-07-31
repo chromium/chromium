@@ -19,10 +19,12 @@ desc: |-
 
     - LocalNetworkBlockedForUrls
     - LocalNetworkAllowedForUrls
-    - LoopbackNetworkAccessBlockedForUrls
-    - LoopbackNetworkAccessAllowedForUrls
+    - LoopbackNetworkBlockedForUrls
+    - LoopbackNetworkAllowedForUrls
     - LocalNetworkAccessBlockedForUrls
     - LocalNetworkAccessAllowedForUrls
+    - DeviceLocalNetworkAccessBlockedForUrls
+    - DeviceLocalNetworkAccessAllowedForUrls
 
 example_value:
 - http://www.example.com:8080

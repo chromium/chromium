@@ -6,16 +6,15 @@
 
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 
 namespace policy {
 
 LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler::
-    LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler()
-    : ListPolicyHandler(key::kLocalNetworkAccessIpAddressSpaceOverrides,
-                        base::Value::Type::STRING) {}
+    LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler(
+        const char* policy_name)
+    : ListPolicyHandler(policy_name, base::Value::Type::STRING) {}
 
 LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler::
     ~LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler() = default;

@@ -5,10 +5,12 @@
 #include "chrome/browser/policy/local_network_access_ip_address_space_overrides_policy_handler.h"
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_value_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -20,7 +22,8 @@ namespace policy {
 // components/policy/test/data/pref_mapping/LocalNetworkAccessIpAddressSpaceOverrides.json
 
 TEST(LocalNetworkAccessIpAddressSpaceOverridesPolicyHandlerTest, ValidValues) {
-  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler handler;
+  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler handler(
+      key::kLocalNetworkAccessIpAddressSpaceOverrides);
   PolicyMap policies;
   PolicyErrorMap errors;
   base::ListValue list;
@@ -38,7 +41,8 @@ TEST(LocalNetworkAccessIpAddressSpaceOverridesPolicyHandlerTest, ValidValues) {
 
 TEST(LocalNetworkAccessIpAddressSpaceOverridesPolicyHandlerTest,
      InvalidSingleValue) {
-  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler handler;
+  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler handler(
+      key::kLocalNetworkAccessIpAddressSpaceOverrides);
   PolicyMap policies;
   PolicyErrorMap errors;
   base::ListValue list;
@@ -57,7 +61,8 @@ TEST(LocalNetworkAccessIpAddressSpaceOverridesPolicyHandlerTest,
 
 TEST(LocalNetworkAccessIpAddressSpaceOverridesPolicyHandlerTest,
      SomeInvalidValues) {
-  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler handler;
+  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler handler(
+      key::kLocalNetworkAccessIpAddressSpaceOverrides);
   PolicyMap policies;
   PolicyErrorMap errors;
   base::ListValue list;
@@ -83,5 +88,60 @@ TEST(LocalNetworkAccessIpAddressSpaceOverridesPolicyHandlerTest,
   EXPECT_EQ(kExpected, errors.GetErrorMessages(
                            "LocalNetworkAccessIpAddressSpaceOverrides"));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(LocalNetworkAccessIpAddressSpaceOverridesPolicyHandlerTest,
+     DevicePolicyValidValues) {
+  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler handler(
+      key::kDeviceLocalNetworkAccessIpAddressSpaceOverrides);
+  PolicyMap policies;
+  PolicyErrorMap errors;
+  base::ListValue list;
+  list.Append("100.64.0.0/10=public");
+  list.Append("[2001:db8::]/32=local");
+  policies.Set(key::kDeviceLocalNetworkAccessIpAddressSpaceOverrides,
+               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+               POLICY_SOURCE_CLOUD, base::Value(std::move(list)), nullptr);
+
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_EQ(0U, errors.size());
+}
+
+TEST(LocalNetworkAccessIpAddressSpaceOverridesPolicyHandlerTest,
+     UserPolicyOverridesDevicePolicy) {
+  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler device_handler(
+      key::kDeviceLocalNetworkAccessIpAddressSpaceOverrides);
+  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler user_handler(
+      key::kLocalNetworkAccessIpAddressSpaceOverrides);
+  PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::ListValue device_list;
+  device_list.Append("100.64.0.0/10=public");
+  policies.Set(key::kDeviceLocalNetworkAccessIpAddressSpaceOverrides,
+               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+               POLICY_SOURCE_CLOUD, base::Value(std::move(device_list)),
+               nullptr);
+
+  base::ListValue user_list;
+  user_list.Append("192.168.0.1:8000=public");
+  policies.Set(key::kLocalNetworkAccessIpAddressSpaceOverrides,
+               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(std::move(user_list)), nullptr);
+
+  ASSERT_TRUE(device_handler.CheckPolicySettings(policies, &errors));
+  device_handler.ApplyPolicySettings(policies, &prefs);
+  ASSERT_TRUE(user_handler.CheckPolicySettings(policies, &errors));
+  user_handler.ApplyPolicySettings(policies, &prefs);
+
+  base::Value* result_value = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      prefs::kManagedLocalNetworkAccessIpAddressSpaceOverrides, &result_value));
+  ASSERT_TRUE(result_value->is_list());
+  EXPECT_EQ(1u, result_value->GetList().size());
+  EXPECT_EQ("192.168.0.1:8000=public", result_value->GetList()[0].GetString());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

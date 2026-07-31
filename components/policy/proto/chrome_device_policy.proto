@@ -2133,4 +2133,9 @@ message ChromeDeviceSettingsProto {
   optional StringPolicyProto DeviceLoginScreenPreferSlowCiphers = 1415;
   optional IntegerPolicyProto DeviceWeeklyScheduledResuspendDelayMs = 1461;
   optional IntegerPolicyProto DeviceOnlinePasswordMismatchBehavior = 1470;
+  optional StringListPolicyProto DeviceLocalNetworkAccessAllowedForUrls = 1478;
+  optional StringListPolicyProto DeviceLocalNetworkAccessBlockedForUrls = 1479;
+  optional StringListPolicyProto
+      DeviceLocalNetworkAccessIpAddressSpaceOverrides = 1480;
+
 }

@@ -1059,4 +1059,68 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceLoginScreenPreferSlowCiphers) {
                                std::move(deviceloginscreenpreferslowciphers));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceLocalNetworkAccessAllowedForUrls) {
+  em::ChromeDeviceSettingsProto device_policy;
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceLocalNetworkAccessAllowedForUrls);
+
+  em::StringList* list =
+      device_policy.mutable_devicelocalnetworkaccessallowedforurls()
+          ->mutable_value();
+
+  base::ListValue list_items;
+  list_items.Append("http://www.example.com:8080");
+  list_items.Append("[*.]example.edu");
+  for (auto& item : list_items) {
+    list->add_entries(item.GetString());
+  }
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceLocalNetworkAccessAllowedForUrls,
+                               base::Value(std::move(list_items)));
+}
+
+TEST_F(DevicePolicyDecoderTest,
+       DeviceLocalNetworkAccessIpAddressSpaceOverrides) {
+  em::ChromeDeviceSettingsProto device_policy;
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceLocalNetworkAccessIpAddressSpaceOverrides);
+
+  em::StringList* list =
+      device_policy.mutable_devicelocalnetworkaccessipaddressspaceoverrides()
+          ->mutable_value();
+
+  base::ListValue list_items;
+  list_items.Append("100.64.0.0/10=public");
+  list_items.Append("192.168.0.1:8000=public");
+  for (auto& item : list_items) {
+    list->add_entries(item.GetString());
+  }
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLocalNetworkAccessIpAddressSpaceOverrides,
+      base::Value(std::move(list_items)));
+}
+
+TEST_F(DevicePolicyDecoderTest, DeviceLocalNetworkAccessBlockedForUrls) {
+  em::ChromeDeviceSettingsProto device_policy;
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceLocalNetworkAccessBlockedForUrls);
+
+  em::StringList* list =
+      device_policy.mutable_devicelocalnetworkaccessblockedforurls()
+          ->mutable_value();
+
+  base::ListValue list_items;
+  list_items.Append("http://www.example.com:8080");
+  list_items.Append("[*.]example.edu");
+  for (auto& item : list_items) {
+    list->add_entries(item.GetString());
+  }
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceLocalNetworkAccessBlockedForUrls,
+                               base::Value(std::move(list_items)));
+}
+
 }  // namespace policy
