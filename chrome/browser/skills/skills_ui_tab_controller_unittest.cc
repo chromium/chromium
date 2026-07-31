@@ -197,6 +197,24 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_SkillNotFound_LogsMetric) {
       "Skills.Invoke.Result", skills::SkillsInvokeResult::kSkillNotFound, 1);
 }
 
+TEST_F(SkillsUiTabControllerTest, SendPrompt_CallsInvokeWithAutoSubmit) {
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .WillOnce([](glic::InvokeWithAutoSubmitPasskey,
+                   const glic::GlicInvokeOptions& options)
+                    -> base::WeakPtr<glic::GlicInstance> {
+        EXPECT_EQ(options.prompts.size(), 1u);
+        EXPECT_EQ(options.prompts[0], "Test Prompt");
+        EXPECT_EQ(options.GetInvocationSource(),
+                  glic::mojom::InvocationSource::kSkills);
+        return base::WeakPtr<glic::GlicInstance>();
+      });
+
+  controller_->SendPrompt("Test Prompt");
+}
+
 class SkillsUiTabControllerV2Test : public SkillsUiTabControllerTest {
  public:
   SkillsUiTabControllerV2Test() {
@@ -224,6 +242,24 @@ TEST_F(SkillsUiTabControllerV2Test, InvokeSkill_SkipsPrompt) {
       });
 
   controller_->InvokeSkill(kTestSkillId, "", "");
+}
+
+TEST_F(SkillsUiTabControllerV2Test, SendPrompt_CallsInvokeWithAutoSubmit) {
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .WillOnce([](glic::InvokeWithAutoSubmitPasskey,
+                   const glic::GlicInvokeOptions& options)
+                    -> base::WeakPtr<glic::GlicInstance> {
+        EXPECT_EQ(options.prompts.size(), 1u);
+        EXPECT_EQ(options.prompts[0], "Test Prompt");
+        EXPECT_EQ(options.GetInvocationSource(),
+                  glic::mojom::InvocationSource::kSkills);
+        return base::WeakPtr<glic::GlicInstance>();
+      });
+
+  controller_->SendPrompt("Test Prompt");
 }
 
 }  // namespace skills

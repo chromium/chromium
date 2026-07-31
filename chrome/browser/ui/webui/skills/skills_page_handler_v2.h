@@ -50,6 +50,7 @@ class SkillsPageHandlerV2 : public ::skills::mojom::SkillsPageHandler {
   void InvokeSkill(const std::string& skill_id,
                    const std::string& skill_name,
                    const std::string& skill_icon) override;
+  void SendPrompt(const std::string& prompt) override;
   void CloseDialog() override;
 
  private:

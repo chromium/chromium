@@ -47,6 +47,9 @@ class SkillsUiTabControllerInterface {
                            std::string_view skill_name,
                            std::string_view skill_icon) = 0;
 
+  // Sends a prompt to the side panel.
+  virtual void SendPrompt(std::string_view prompt) = 0;
+
  private:
   ::ui::ScopedUnownedUserData<SkillsUiTabControllerInterface>
       scoped_unowned_user_data_;

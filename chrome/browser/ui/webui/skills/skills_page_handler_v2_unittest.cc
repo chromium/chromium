@@ -51,6 +51,7 @@ class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
                std::string_view skill_name,
                std::string_view skill_icon),
               (override));
+  MOCK_METHOD(void, SendPrompt, (std::string_view prompt), (override));
 };
 
 class SkillsPageHandlerV2Test : public ChromeRenderViewHostTestHarness {
@@ -97,6 +98,23 @@ TEST_F(SkillsPageHandlerV2Test, InvokeSkill) {
       .Times(1);
 
   remote_handler_->InvokeSkill("test_skill_id", "test_name", "test_icon");
+  remote_handler_.FlushForTesting();
+}
+
+TEST_F(SkillsPageHandlerV2Test, SendPrompt) {
+  tabs::MockTabInterface mock_tab;
+  ::ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(user_data_host));
+
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  MockSkillsUiTabController mock_tab_controller(mock_tab);
+
+  EXPECT_CALL(mock_tab_controller, SendPrompt("test_prompt")).Times(1);
+
+  remote_handler_->SendPrompt("test_prompt");
   remote_handler_.FlushForTesting();
 }
 

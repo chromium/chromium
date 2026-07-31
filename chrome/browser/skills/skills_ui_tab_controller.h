@@ -62,6 +62,7 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   void InvokeSkill(std::string_view skill_id,
                    std::string_view skill_name,
                    std::string_view skill_icon) override;
+  void SendPrompt(std::string_view prompt) override;
 
   // SkillsDialogDelegate override:
   void CloseDialog() override;

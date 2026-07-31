@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -151,6 +152,33 @@ class SkillsInvocationInteractiveUiTestV2 : public SkillsInteractiveUiTestBase {
     });
   }
 
+  ui::test::InteractiveTestApi::StepBuilder SendPromptDirectlyV2(
+      const std::string& prompt) {
+    return Do([this, prompt]() {
+      if (auto* active_tab = browser()->GetActiveTabInterface()) {
+        if (auto* tab_controller =
+                skills::SkillsUiTabControllerInterface::From(active_tab)) {
+          tab_controller->SendPrompt(prompt);
+        }
+      }
+    });
+  }
+
+  ui::test::InteractiveTestApi::MultiStep VerifyPromptInWebUI(
+      const std::string& expected_prompt) {
+    return Steps(Log("Verifying Glic Panel Received Prompt (V2)"),
+                 WaitForShow(glic::kGlicHostElementId),
+                 WaitForJsResult(
+                     glic::kGlicContentsElementId,
+                     base::StringPrintf(
+                         "() => {"
+                         "  const promptInput = "
+                         "document.getElementById('skillPromptInput');"
+                         "  return !!promptInput && promptInput.value === '%s';"
+                         "}",
+                         expected_prompt.c_str())));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -162,6 +190,12 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTestV2, InvokeSkillV2) {
       OpenGlicAndInstrument(),
       InvokeSkillDirectlyV2(skill.id, skill.name, skill.icon),
       VerifyInvocationInWebUI(/*expected_prompt=*/"", skill.name, skill.icon));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTestV2, SendPromptV2) {
+  std::string test_prompt = "Test Prompt";
+  RunTestSequence(OpenGlicAndInstrument(), SendPromptDirectlyV2(test_prompt),
+                  VerifyPromptInWebUI(test_prompt));
 }
 
 }  // namespace skills

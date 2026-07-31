@@ -76,6 +76,17 @@ void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id,
   }
 }
 
+void SkillsPageHandlerV2::SendPrompt(const std::string& prompt) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(&web_contents_.get());
+  if (!tab) {
+    return;
+  }
+  if (auto* tab_controller = SkillsUiTabControllerInterface::From(tab)) {
+    tab_controller->SendPrompt(prompt);
+  }
+}
+
 void SkillsPageHandlerV2::CloseDialog() {
   if (delegate_) {
     delegate_->CloseDialog();

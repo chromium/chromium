@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ToastType} from '../skills.mojom-webui.js';
 
-import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_URL, SKILLS_SHOW_TOAST} from './skills_webview_bridge_constants.js';
+import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST} from './skills_webview_bridge_constants.js';
 /**
  * Returns a URLPattern given an origin pattern string that has the syntax:
  * <protocol>://<hostname>[:<port>]
@@ -62,6 +62,7 @@ export interface SkillsWebviewBridgeDelegate {
   onUrlChanged(url: URL): void;
   onCloseDialog(): void;
   onHandshakeComplete(): void;
+  onSendPrompt(prompt: string): void;
 }
 
 /**
@@ -217,6 +218,8 @@ export class SkillsWebviewBridge {
       this.handleLogMetricMessage(e.data);
     } else if (e.data.type === SKILLS_OPEN_URL) {
       this.handleOpenUrlMessage(e.data);
+    } else if (e.data.type === SKILLS_SEND_PROMPT) {
+      this.handleSendPromptMessage(e.data);
     }
   }
 
@@ -283,6 +286,12 @@ export class SkillsWebviewBridge {
 
   private handleOpenUrlMessage(data: {url: string}) {
     window.open(data.url, '_blank');
+  }
+
+  private handleSendPromptMessage(data: {prompt: string}) {
+    if (data.prompt) {
+      this.delegate_.onSendPrompt(data.prompt);
+    }
   }
 
   sendGeminiPrompt(prompt: string) {

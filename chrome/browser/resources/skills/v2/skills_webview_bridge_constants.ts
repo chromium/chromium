@@ -21,6 +21,9 @@ export const SKILLS_CLOSE_DIALOG = 'close-dialog';
 /** Message type used by the guest to open a URL in a new tab. */
 export const SKILLS_OPEN_URL = 'open-url';
 
+/** Message type used by the guest to send a prompt to the host. */
+export const SKILLS_SEND_PROMPT = 'send-prompt';
+
 /** Message type used by the host to send the Gemini prompt. */
 export const SKILLS_GEMINI_PROMPT_TYPE = 'skills-gemini-prompt';
 

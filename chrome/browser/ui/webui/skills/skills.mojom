@@ -152,6 +152,9 @@ interface SkillsPageHandler {
   // Glic WebUI and not used or stored in the browser.
   InvokeSkill(string skill_id, string skill_name, string skill_icon);
 
+  // Sends a prompt to the side panel.
+  SendPrompt(string prompt);
+
   // Closes the skills dialog.
   CloseDialog();
 };

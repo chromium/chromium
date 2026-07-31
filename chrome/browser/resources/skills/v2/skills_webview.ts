@@ -101,6 +101,7 @@ export class SkillsWebview {
       onUrlChanged: (url: URL) => this.handleUrlChanged(url),
       onCloseDialog: () => this.handler.closeDialog(),
       onHandshakeComplete: () => this.recordTotalInitLatencyMetric(),
+      onSendPrompt: (prompt: string) => this.handler.sendPrompt(prompt),
     };
 
     // Initiate handshake. Show error page on failure.
