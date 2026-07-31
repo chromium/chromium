@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.DragHandlerDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
@@ -859,6 +860,13 @@ public class VerticalTabListCoordinator {
         TabSwitcherDragHandler dragHandler =
                 createTabSwitcherDragHandler(activity, tabModelSelector);
         recyclerView.setOnDragListener(dragHandler);
+        if (recyclerView == mRecyclerView) {
+            mContainerView.setOnDragListener(dragHandler);
+            View newTabButton = mContainerView.findViewById(R.id.new_tab_button);
+            if (newTabButton != null) {
+                newTabButton.setOnDragListener(dragHandler);
+            }
+        }
 
         touchHelperCallback.setOnDragOutListener(
                 (viewHolder, dX, dY) -> {
@@ -883,12 +891,6 @@ public class VerticalTabListCoordinator {
 
                         Token tabGroupId =
                                 assumeNonNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
-
-                        // Do not allow dragging out a tab group if it contains all tabs in the
-                        // window.
-                        if (tabModel.getCount() == tabModel.getTabsInGroup(tabGroupId).size()) {
-                            return;
-                        }
 
                         itemTouchHelper.setExternalDragItem(viewHolder);
                         dragHandler.setDragHandlerDelegate(
@@ -977,19 +979,23 @@ public class VerticalTabListCoordinator {
         return dragHandler;
     }
 
-    private TabSwitcherDragHandler.DragHandlerDelegate createDragHandlerDelegate(
+    private DragHandlerDelegate createDragHandlerDelegate(
             ItemTouchHelper2 itemTouchHelper, @Nullable PropertyModel model) {
-        return new TabSwitcherDragHandler.DragHandlerDelegate() {
+        return new DragHandlerDelegate() {
             @Override
             public boolean handleDragStart(float xPx, float yPx) {
                 mTabHoverCardController.hideHoverCard();
                 itemTouchHelper.onExternalDragStart(xPx, yPx, /* hideItemWhileDragging= */ true);
 
+                moveDraggedPinnedTabToEndIfNeeded(model);
+                // Keep a minimum height during external drag so a single-item list does not
+                // collapse to 0px.
+                updateSingleTabListMinHeight(model, /* useMinHeight= */ true);
+
                 // Since the OS-level drag-and-drop only initiates after the cursor has moved
                 // outside the bounds of the RecyclerView, we will never receive an
                 // ACTION_DRAG_EXITED event. Therefore, we must explicitly trigger the collapse of
                 // the drag gap right away.
-                moveDraggedPinnedTabToEndIfNeeded(model);
                 itemTouchHelper.clearExternalDragItemVisibility();
                 return true;
             }
@@ -1002,6 +1008,7 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDragEnter() {
+                updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
                 itemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
                 return true;
             }
@@ -1009,12 +1016,16 @@ public class VerticalTabListCoordinator {
             @Override
             public boolean handleDragExit() {
                 moveDraggedPinnedTabToEndIfNeeded(model);
+                // Keep a minimum height during external drag so a single-item list does not
+                // collapse to 0px.
+                updateSingleTabListMinHeight(model, /* useMinHeight= */ true);
                 itemTouchHelper.clearExternalDragItemVisibility();
                 return true;
             }
 
             @Override
             public boolean handleExternalDragEnd(float xPx, float yPx, boolean isOSNewWindowDrop) {
+                updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
                 itemTouchHelper.restoreExternalDragItemVisibility(isOSNewWindowDrop);
                 itemTouchHelper.onExternalDragStop(/* recoverItem= */ false);
 
@@ -1033,6 +1044,7 @@ public class VerticalTabListCoordinator {
 
             @Override
             public int handleInternalDragEnd() {
+                updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
                 itemTouchHelper.stopInternalDrag();
                 mLastDraggedGroupId = null;
                 return BackPressHandler.BackPressResult.SUCCESS;
@@ -1043,6 +1055,24 @@ public class VerticalTabListCoordinator {
                 return itemTouchHelper.isDragInProcess();
             }
         };
+    }
+
+    private void updateSingleTabListMinHeight(@Nullable PropertyModel model, boolean useMinHeight) {
+        if (model == null) return;
+
+        boolean isSinglePinned =
+                TabProperties.isPinnedTab(model) && mPinnedTabsModelList.size() <= 1;
+        boolean isSingleRegular = !TabProperties.isPinnedTab(model) && mModelList.size() <= 1;
+        if (!isSinglePinned && !isSingleRegular) return;
+
+        TabListRecyclerView recyclerView = isSinglePinned ? mPinnedTabsRecyclerView : mRecyclerView;
+        int minHeight =
+                useMinHeight
+                        ? recyclerView
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_favicon_height)
+                        : 0;
+        recyclerView.setMinimumHeight(minHeight);
     }
 
     private void moveDraggedPinnedTabToEndIfNeeded(@Nullable PropertyModel model) {
