@@ -652,8 +652,12 @@ bool Rule::AddUnsupportedAttributeErrors(
         return map;
       }());
 
+  const bool url_regex_and_size_attributes_enabled =
+      base::FeatureList::GetInstance() &&
+      base::FeatureList::IsEnabled(kDataControlsUrlRegexAndSizeAttributes);
+
   const auto& active_supported_attributes =
-      base::FeatureList::IsEnabled(kDataControlsUrlRegexAndSizeAttributes)
+      url_regex_and_size_attributes_enabled
           ? (IsDestinationCondition(error_path)
                  ? *kDestinationSupportedAttributes
                  : *kSourceSupportedAttributes)
