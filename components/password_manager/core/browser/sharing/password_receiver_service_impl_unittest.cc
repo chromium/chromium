@@ -31,6 +31,8 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -708,5 +710,63 @@ TEST_F(PasswordReceiverServiceImplTest,
           kInvalidInvitation,
       1);
 }
+
+struct IconUrlTestCase {
+  std::string test_name;
+  std::string input_url;
+  std::string expected_url;
+};
+
+class PasswordReceiverServiceImplIconUrlTest
+    : public PasswordReceiverServiceImplTest,
+      public testing::WithParamInterface<IconUrlTestCase> {};
+
+TEST_P(PasswordReceiverServiceImplIconUrlTest, ProcessInvitation) {
+  base::HistogramTester histogram_tester;
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
+      CreateIncomingSharingInvitation();
+
+  invitation.mutable_client_only_unencrypted_data()
+      ->mutable_password_group_data()
+      ->mutable_element_data(0)
+      ->set_avatar_url(GetParam().input_url);
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+  RunUntilIdle();
+
+  ASSERT_TRUE(GetAllLoginsSync(&expected_password_store_for_syncing())
+                  .contains(GetInvitationOrigin(invitation)));
+  EXPECT_THAT(GetAllLoginsSync(&expected_password_store_for_syncing())
+                  .at(GetInvitationOrigin(invitation)),
+              ElementsAre(AllOf(
+                  Field(&PasswordForm::signon_realm, kUrl),
+                  Field(&PasswordForm::username_value, kUsername),
+                  Field(&PasswordForm::password_value, kPassword),
+                  Field(&PasswordForm::icon_url, GURL(GetParam().expected_url)))));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kInvitationAutoApproved,
+      1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordReceiverServiceImplIconUrlTest,
+    testing::Values(
+        IconUrlTestCase{
+            .test_name = "AcceptSameOrigin",
+            .input_url = "https://www.test.com/favicon.ico",
+            .expected_url = "https://www.test.com/favicon.ico"},
+        IconUrlTestCase{.test_name = "ClearCrossOrigin",
+                        .input_url = "https://attacker-beacon.test/track.png",
+                        .expected_url = ""},
+        IconUrlTestCase{.test_name = "ClearInvalid",
+                        .input_url = "javascript:alert(1)",
+                        .expected_url = ""}),
+    [](const testing::TestParamInfo<IconUrlTestCase>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace password_manager

@@ -90,5 +90,6 @@ source_set("unit_tests") {
     "//components/sync/protocol",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }

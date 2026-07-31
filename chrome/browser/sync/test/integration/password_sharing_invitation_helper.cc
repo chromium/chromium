@@ -21,7 +21,7 @@ constexpr char kOrigin[] = "http://abc.com/";
 constexpr char kUsernameElement[] = "username_element";
 constexpr char kPasswordElement[] = "password_element";
 constexpr char kPasswordDisplayName[] = "password_display_name";
-constexpr char kPasswordAvatarUrl[] = "http://avatar.url/";
+constexpr char kPasswordAvatarUrl[] = "http://abc.com/avatar.png";
 
 constexpr char kSenderEmail[] = "sender@gmail.com";
 constexpr char kSenderDisplayName[] = "Sender Name";
