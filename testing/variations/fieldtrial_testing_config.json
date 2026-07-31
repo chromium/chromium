@@ -17478,6 +17478,29 @@
             ]
         }
     ],
+    "NoopRuntimeMutableStudy1": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260731",
+                    "enable_features": [
+                        "NoopRuntimeMutable1"
+                    ],
+                    "disable_features": [
+                        "NoopRuntimeMutable2"
+                    ]
+                }
+            ]
+        }
+    ],
     "NotificationTrampolineNoNewTask": [
         {
             "platforms": [
