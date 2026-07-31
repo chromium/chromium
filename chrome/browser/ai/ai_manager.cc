@@ -237,6 +237,27 @@ bool HasInvalidOutputTypes(
   return false;
 }
 
+bool IsSpeculativeDecodingCompatibleWithSampling(
+    const blink::mojom::AILanguageModelCreateOptionsPtr& options) {
+  if (!base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelSpeculativeDecoding)) {
+    return true;
+  }
+  if (!options) {
+    return true;
+  }
+  if (options->sampling_params && options->sampling_params->top_k > 1 &&
+      options->sampling_params->temperature > 0.0f) {
+    return false;
+  }
+  if (options->sampling_mode.has_value() &&
+      options->sampling_mode.value() !=
+          blink::mojom::AILanguageModelSamplingMode::kMostPredictable) {
+    return false;
+  }
+  return true;
+}
+
 on_device_model::Capabilities GetExpectedInputCapabilities(
     base::optional_ref<
         const std::vector<blink::mojom::AILanguageModelExpectedPtr>>
@@ -767,6 +788,12 @@ void AIManager::CanCreateLanguageModel(
       }
       input_capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
     }
+    if (!IsSpeculativeDecodingCompatibleWithSampling(options)) {
+      std::move(callback).Run(
+          blink::mojom::ModelAvailabilityCheckResult::
+              kUnavailableIncompatibleSpeculativeDecodingOptions);
+      return;
+    }
   }
 
   if (!CheckAndFixLanguages(
@@ -813,6 +840,11 @@ void AIManager::CreateLanguageModel(
     on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    return;
+  }
+
+  if (!IsSpeculativeDecodingCompatibleWithSampling(options)) {
+    receivers_.ReportBadMessage("Incompatible speculative decoding options");
     return;
   }
 

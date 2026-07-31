@@ -15,6 +15,7 @@
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
@@ -402,6 +403,14 @@ bool ParseConstraint(
     on_device_model::mojom::blink::ResponseConstraintPtr& constraint) {
   if (!options->hasResponseConstraint()) {
     return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelSpeculativeDecoding)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        kExceptionMessageSpeculativeDecodingConstraintConflict);
+    return false;
   }
 
   if (!RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled(

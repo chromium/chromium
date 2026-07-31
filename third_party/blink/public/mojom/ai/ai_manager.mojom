@@ -74,6 +74,8 @@ enum ModelAvailabilityCheckResult {
   // The specified options are not supported with the requested performance
   // preference.
   kUnavailableIncompatiblePreferenceOptions = 21,
+  // The specified options are not supported with speculative decoding (MTP).
+  kUnavailableIncompatibleSpeculativeDecodingOptions = 22,
 
   // Append new line here
 };

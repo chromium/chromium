@@ -48,6 +48,8 @@ Availability ConvertModelAvailabilityCheckResult(
     case ModelAvailabilityCheckResult::kUnavailableEnterprisePolicyDisabled:
     case ModelAvailabilityCheckResult::
         kUnavailableIncompatiblePreferenceOptions:
+    case ModelAvailabilityCheckResult::
+        kUnavailableIncompatibleSpeculativeDecodingOptions:
       return Availability::kUnavailable;
   }
 }

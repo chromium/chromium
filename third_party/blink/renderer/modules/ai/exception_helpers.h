@@ -33,6 +33,8 @@ extern const char kExceptionMessageIncompatiblePreferenceOptions[];
 extern const char kExceptionMessageInvalidResponseJsonSchema[];
 extern const char kExceptionMessagePermissionPolicy[];
 extern const char kExceptionMessageUserActivationRequired[];
+extern const char kExceptionMessageSpeculativeDecodingSamplingConflict[];
+extern const char kExceptionMessageSpeculativeDecodingConstraintConflict[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);
 void ThrowDocumentNotActiveException(ExceptionState& exception_state);
