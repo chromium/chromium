@@ -120,7 +120,7 @@ ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetNamePath() {
   return GetStringPath(kName);
 }
 
-//static
+// static
 std::string
 ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetDeviceFqdnPath() {
   return GetStringPath(kDeviceFqdn);
@@ -341,7 +341,7 @@ ReportingJobConfigurationBase::ReportingJobConfigurationBase(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     DMAuth auth_data,
     const std::string& server_url,
-    UploadCompleteCallback callback)
+    UploadCompleteCallbackDeprecated callback)
     : JobConfigurationBase(type,
                            std::move(auth_data),
                            /*oauth_token=*/std::nullopt,

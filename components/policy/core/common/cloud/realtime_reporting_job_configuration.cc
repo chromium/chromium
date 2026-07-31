@@ -49,6 +49,24 @@ RealtimeReportingJobConfiguration::RealtimeReportingJobConfiguration(
     const std::string& server_url,
     bool include_device_info,
     UploadCompleteCallback callback)
+    : ReportingJobConfigurationBase(
+          TYPE_UPLOAD_REAL_TIME_REPORT,
+          client->GetURLLoaderFactory(),
+          DMAuth::FromDMToken(client->dm_token()),
+          server_url,
+          base::BindOnce(&RealtimeReportingJobConfiguration::OnUploadComplete,
+                         base::Unretained(this))),
+      complete_callback_(std::move(callback)) {
+  DCHECK(
+      base::FeatureList::IsEnabled(kUploadRealtimeReportingEventsUsingProto));
+  InitializeUploadRequest(client, include_device_info);
+}
+
+RealtimeReportingJobConfiguration::RealtimeReportingJobConfiguration(
+    CloudPolicyClient* client,
+    const std::string& server_url,
+    bool include_device_info,
+    UploadCompleteCallbackDeprecated callback)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_REAL_TIME_REPORT,
                                     client->GetURLLoaderFactory(),
                                     DMAuth::FromDMToken(client->dm_token()),
@@ -58,6 +76,17 @@ RealtimeReportingJobConfiguration::RealtimeReportingJobConfiguration(
     InitializeUploadRequest(client, include_device_info);
   } else {
     InitializePayloadInternal(client, include_device_info);
+  }
+}
+
+void RealtimeReportingJobConfiguration::OnUploadComplete(
+    DeviceManagementService::Job* job,
+    DeviceManagementStatus status,
+    int response_code,
+    std::optional<base::DictValue> response) {
+  if (complete_callback_) {
+    std::move(complete_callback_)
+        .Run(job, status, response_code, std::move(response), upload_request_);
   }
 }
 

@@ -48,6 +48,10 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
                                     const std::string& server_url,
                                     bool include_device_info,
                                     UploadCompleteCallback callback);
+  RealtimeReportingJobConfiguration(CloudPolicyClient* client,
+                                    const std::string& server_url,
+                                    bool include_device_info,
+                                    UploadCompleteCallbackDeprecated callback);
   RealtimeReportingJobConfiguration(const RealtimeReportingJobConfiguration&) =
       delete;
   RealtimeReportingJobConfiguration& operator=(
@@ -93,9 +97,16 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   void InitializePayloadInternal(CloudPolicyClient* client,
                                  bool include_device_info);
 
+  void OnUploadComplete(DeviceManagementService::Job* job,
+                        DeviceManagementStatus status,
+                        int response_code,
+                        std::optional<base::DictValue> response);
+
   // The request to be sent to the server, use this instead of |payload_| for
   // realtime reporting.
   ::chrome::cros::reporting::proto::UploadEventsRequest upload_request_;
+
+  UploadCompleteCallback complete_callback_;
 
   // Gathers the ids of the uploads that failed
   std::set<std::string> GetFailedUploadIds(

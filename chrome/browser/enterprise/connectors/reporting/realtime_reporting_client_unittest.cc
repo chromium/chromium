@@ -27,6 +27,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -269,6 +270,60 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
       "Enterprise.ReportingEventUploadSuccess",
       EnterpriseReportingEventType::kExtensionInstallEvent, 1);
   histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
+}
+
+TEST_P(RealtimeReportingClientUmaTest,
+       TestUploadCallbackReceivesEnrichedRequest) {
+// Profile reporting is not supported on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (is_profile_reporting()) {
+    return;
+  }
+#endif
+
+  SetUpReportingClient(is_profile_reporting());
+
+  ReportingSettings settings;
+  settings.per_profile = is_profile_reporting();
+  ::chrome::cros::reporting::proto::Event extension_install_event;
+  extension_install_event.mutable_browser_extension_install_event()->set_id(
+      "extension_id");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
+      .WillOnce(
+          [&](bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            upload_callback_ = std::move(callback);
+            run_loop.Quit();
+          });
+  reporting_client_->ReportEvent(std::move(extension_install_event),
+                                 std::move(settings));
+  run_loop.Run();
+
+  ASSERT_TRUE(upload_callback_);
+
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->ClearReportingEvents();
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddListenerForTesting();
+
+  ::chrome::cros::reporting::proto::UploadEventsRequest enriched_request;
+  enriched_request.mutable_device()->set_client_id("test_enriched_client_id");
+  enriched_request.mutable_browser()->set_chrome_version("100.0.0.0");
+
+  std::move(upload_callback_)
+      .Run(policy::CloudPolicyClient::Result::CreateForRealtimeUpload(
+          policy::DM_STATUS_SUCCESS, /*response_code=*/200, enriched_request));
+
+  const auto& requests = safe_browsing::WebUIContentInfoSingleton::GetInstance()
+                             ->upload_event_requests();
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ("test_enriched_client_id", requests[0].first.device().client_id());
+  EXPECT_EQ("100.0.0.0", requests[0].first.browser().chrome_version());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->ClearListenerForTesting();
 }
 
 TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {

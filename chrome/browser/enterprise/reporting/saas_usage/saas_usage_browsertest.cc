@@ -133,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(SaasUsageBrowserLevelTest, RecordsUsage) {
       .WillOnce(testing::WithArgs<1, 2>(
           [&run_loop](
               ::chrome::cros::reporting::proto::UploadEventsRequest request,
-              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                  callback) {
+              policy::CloudPolicyClient::ResultCallback callback) {
             EXPECT_EQ(request.events_size(), 1);
             const auto& event = request.events(0);
             EXPECT_TRUE(event.has_saas_usage_report_event());
@@ -142,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(SaasUsageBrowserLevelTest, RecordsUsage) {
             EXPECT_EQ(saas_event.domain_metrics_size(), 1);
             EXPECT_EQ(saas_event.domain_metrics(0).domain(), "example.com");
             EXPECT_EQ(saas_event.domain_metrics(0).visit_count(), 1u);
-            EXPECT_TRUE(saas_event.domain_metrics(0).start_time_millis() > 0);
-            EXPECT_TRUE(saas_event.domain_metrics(0).end_time_millis() > 0);
+            EXPECT_GT(saas_event.domain_metrics(0).start_time_millis(), 0u);
+            EXPECT_GT(saas_event.domain_metrics(0).end_time_millis(), 0u);
 
             std::move(callback).Run(
                 policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
@@ -245,8 +244,7 @@ IN_PROC_BROWSER_TEST_F(SaasUsageProfileLevelTest, RecordsUsage) {
       .WillOnce(testing::WithArgs<1, 2>(
           [&run_loop](
               ::chrome::cros::reporting::proto::UploadEventsRequest request,
-              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                  callback) {
+              policy::CloudPolicyClient::ResultCallback callback) {
             EXPECT_EQ(request.events_size(), 1);
             const auto& event = request.events(0);
             EXPECT_TRUE(event.has_saas_usage_report_event());
@@ -254,8 +252,8 @@ IN_PROC_BROWSER_TEST_F(SaasUsageProfileLevelTest, RecordsUsage) {
             EXPECT_EQ(saas_event.domain_metrics_size(), 1);
             EXPECT_EQ(saas_event.domain_metrics(0).domain(), "example.com");
             EXPECT_EQ(saas_event.domain_metrics(0).visit_count(), 1u);
-            EXPECT_TRUE(saas_event.domain_metrics(0).start_time_millis() > 0);
-            EXPECT_TRUE(saas_event.domain_metrics(0).end_time_millis() > 0);
+            EXPECT_GT(saas_event.domain_metrics(0).start_time_millis(), 0u);
+            EXPECT_GT(saas_event.domain_metrics(0).end_time_millis(), 0u);
 
             std::move(callback).Run(
                 policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));

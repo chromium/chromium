@@ -364,7 +364,7 @@ void RealtimeReportingClientBase::FinishUploadSecurityEvent(
   request.add_events()->Swap(&event);
 
   auto upload_callback = base::BindOnce(
-      &RealtimeReportingClientBase::UploadCallback, AsWeakPtr(), request,
+      &RealtimeReportingClientBase::UploadCallback, AsWeakPtr(),
       settings.per_profile, client, event_type, base::TimeTicks::Now());
 
   client->UploadSecurityEvent(ShouldIncludeDeviceInfo(settings.per_profile),

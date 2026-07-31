@@ -149,7 +149,6 @@ class RealtimeReportingClientBase : public KeyedService,
       policy::CloudPolicyClient::Result upload_result) = 0;
 
   virtual void UploadCallback(
-      ::chrome::cros::reporting::proto::UploadEventsRequest request,
       bool per_profile,
       policy::CloudPolicyClient* client,
       EnterpriseReportingEventType event_type,

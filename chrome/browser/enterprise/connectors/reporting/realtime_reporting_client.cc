@@ -420,7 +420,10 @@ base::DictValue RealtimeReportingClient::ReportErrorDetails(
   base::DictValue event_wrapper = base::DictValue();
   event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
   if (!upload_result.IsSuccess()) {
-    event_wrapper.Set("error_code", upload_result.GetNetError());
+    int error_code = upload_result.GetResponseCode() != 0
+                         ? upload_result.GetResponseCode()
+                         : upload_result.GetNetError();
+    event_wrapper.Set("error_code", error_code);
     event_wrapper.Set("error_message", upload_result.GetResponse().Clone());
   }
   return event_wrapper;
@@ -470,14 +473,13 @@ void RealtimeReportingClient::UploadCallbackDeprecated(
 }
 
 void RealtimeReportingClient::UploadCallback(
-    ::chrome::cros::reporting::proto::UploadEventsRequest request,
     bool per_profile,
     policy::CloudPolicyClient* client,
     EnterpriseReportingEventType event_type,
     base::TimeTicks upload_started_at,
     policy::CloudPolicyClient::Result upload_result) {
   safe_browsing::WebUIContentInfoSingleton::GetInstance()->AddToReportingEvents(
-      std::move(request), ReportErrorDetails(upload_result));
+      upload_result.upload_events_request(), ReportErrorDetails(upload_result));
 
   if (upload_result.IsSuccess()) {
     base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",

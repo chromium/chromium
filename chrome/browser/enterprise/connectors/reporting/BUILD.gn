@@ -161,6 +161,7 @@ source_set("unit_tests") {
     "//components/enterprise/common/proto:chrome_reporting_entity",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/connectors/core:test_support",
+    "//components/safe_browsing/content/browser/web_ui",
     "//testing/gtest",
   ]
 }

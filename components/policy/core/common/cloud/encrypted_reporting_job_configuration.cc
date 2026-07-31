@@ -41,7 +41,7 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
     const std::string& dm_token,
     const std::string& client_id,
     UploadResponseCallback response_cb,
-    UploadCompleteCallback complete_cb)
+    UploadCompleteCallbackDeprecated complete_cb)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_ENCRYPTED_REPORT,
                                     factory,
                                     GetAuthData(dm_token),
