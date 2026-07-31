@@ -35547,6 +35547,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabPage.Realbox.Paste">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    Recorded when the user pastes clipboard contents into the New Tab Page
+    realbox.
+  </description>
+</action>
+
 <action name="NewTabPage.SearchBox.Lens">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>

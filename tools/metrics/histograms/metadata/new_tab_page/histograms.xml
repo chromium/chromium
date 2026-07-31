@@ -2322,6 +2322,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Realbox.Paste" units="count"
+    expires_after="2027-08-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Counts the number of paste actions performed in the New Tab Page realbox.
+    Recorded every time the user pastes into the realbox.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.SuggestionsImpression{NewTabPageIconTypes}"
     enum="MostVisitedTileIndex" expires_after="2026-11-29">
   <owner>romanarora@chromium.org</owner>

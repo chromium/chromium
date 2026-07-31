@@ -244,4 +244,19 @@ suite('SearchboxInputTest', () => {
     await input.updateComplete;
     assertEquals('', input.inputElement.placeholder);
   });
+
+  test('Fires searchbox-input-pasted event on paste', async () => {
+    input = await createInput();
+
+    let pasteEventCount = 0;
+    input.addEventListener('searchbox-input-pasted', () => {
+      pasteEventCount++;
+    });
+
+    const pasteEvent = createClipboardEvent('paste');
+    input.inputElement.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+
+    assertEquals(1, pasteEventCount);
+  });
 });

@@ -305,6 +305,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   protected onInputPaste_(e: ClipboardEvent) {
+    this.fire('searchbox-input-pasted');
     if (this.allowFilePaste && e.clipboardData?.files &&
         e.clipboardData.files.length > 0) {
       e.preventDefault();

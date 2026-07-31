@@ -795,6 +795,11 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     this.setInputText('');
   }
 
+  protected onSearchboxInputPasted_() {
+    chrome.histograms.recordCount('NewTabPage.Realbox.Paste', 1);
+    chrome.histograms.recordUserAction('NewTabPage.Realbox.Paste');
+  }
+
   protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {
     this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
   }
