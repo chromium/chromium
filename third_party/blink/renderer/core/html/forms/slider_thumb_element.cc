@@ -396,12 +396,12 @@ SliderContainerElement::Direction SliderContainerElement::GetDirection(
 }
 
 bool SliderContainerElement::CanSlide() {
-  if (!HostInput() || !HostInput()->GetLayoutObject() ||
-      !HostInput()->GetLayoutObject()->Style()) {
+  if (!HostInput() || !HostInput()->GetLayoutObject()) {
     return false;
   }
-  const ComputedStyle* slider_style = HostInput()->GetLayoutObject()->Style();
-  const TransformOperations& transforms = slider_style->Transform();
+  const ComputedStyle& slider_style =
+      HostInput()->GetLayoutObject()->StyleRef();
+  const TransformOperations& transforms = slider_style.Transform();
   int transform_size = transforms.size();
   if (transform_size > 0) {
     for (int i = 0; i < transform_size; ++i) {
