@@ -34,6 +34,10 @@ interface PageHandler {
   // Returns information about installed dev mode IWAs.
   GetInstalledAppsInfo() => (array<IwaDevModeAppInfo> apps);
 
+  // Installs an IWA from a local proxy server.
+  // Returns an error message if installation failed, or null on success.
+  InstallAppFromDevProxy(url.mojom.Url url) => (string? error);
+
   // Uninstalls an IWA with a given ID.
   UninstallApp(string app_id) => (bool success);
 };

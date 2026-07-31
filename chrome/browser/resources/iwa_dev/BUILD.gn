@@ -13,12 +13,18 @@ build_webui("build") {
 
   css_files = [
     "app.css",
+    "install_dialog.css",
     "installed_app_list_item.css",
   ]
 
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "install_dev_proxy_tab.html.ts",
+    "install_dev_proxy_tab.ts",
+    "install_dialog.html.ts",
+    "install_dialog.ts",
+    "install_tab.ts",
     "installed_app_list_item.html.ts",
     "installed_app_list_item.ts",
   ]

@@ -14,7 +14,9 @@
 #include "base/notreached.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -82,6 +84,12 @@ iwa_dev::mojom::IwaDevModeAppInfoPtr MapToMojomIwaDevModeAppInfo(
       isolation_data.version().GetString());
 }
 
+std::optional<std::string> MapToInstallError(
+    web_app::IsolatedWebAppDevInstallManager::
+        MaybeInstallIsolatedWebAppCommandSuccess result) {
+  return result.has_value() ? std::nullopt : std::make_optional(result.error());
+}
+
 }  // namespace
 
 IwaDevPageHandler::IwaDevPageHandler(
@@ -124,6 +132,15 @@ void IwaDevPageHandler::UninstallApp(const std::string& app_id,
       app_id, webapps::WebappUninstallSource::kAppsPage,
       web_contents_->GetTopLevelNativeWindow(),
       base::BindOnce(&webapps::UninstallSucceeded).Then(std::move(callback)));
+}
+
+void IwaDevPageHandler::InstallAppFromDevProxy(
+    const GURL& url,
+    InstallAppFromDevProxyCallback callback) {
+  provider_->isolated_web_app_dev_install_manager()
+      .InstallIsolatedWebAppFromDevModeProxy(
+          url, web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
+          base::BindOnce(&MapToInstallError).Then(std::move(callback)));
 }
 
 void IwaDevPageHandler::OnWebAppInstalled(const webapps::AppId& app_id) {

@@ -159,6 +159,12 @@ class IwaDevHandlerBrowserTest
     return future.Get();
   }
 
+  std::optional<std::string> CallInstallAppFromDevProxy(const GURL& url) {
+    base::test::TestFuture<const std::optional<std::string>&> future;
+    GetHandler()->InstallAppFromDevProxy(url, future.GetCallback());
+    return future.Take();
+  }
+
   web_app::IsolatedWebAppUrlInfo InstallBundle(std::string_view name,
                                                std::string_view version) {
     std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
@@ -195,6 +201,46 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
   EXPECT_EQ(app->installed_version, kAppBaseVersion);
   ASSERT_TRUE(app->source->is_proxy_origin());
   EXPECT_EQ(app->source->get_proxy_origin(), server()->GetOrigin());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
+                       InstallAppFromDevProxy_Success) {
+  auto server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+
+  auto error = CallInstallAppFromDevProxy(server->GetURL("/"));
+  EXPECT_FALSE(error.has_value());
+
+  auto apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  EXPECT_EQ(apps[0]->name, kProxyAppName);
+  ASSERT_TRUE(apps[0]->source->is_proxy_origin());
+  EXPECT_EQ(apps[0]->source->get_proxy_origin(), server->GetOrigin());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
+                       InstallAppFromDevProxy_Error_NonOriginUrl) {
+  auto server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+
+  auto error = CallInstallAppFromDevProxy(server->GetURL("/invalid_path"));
+
+  ASSERT_TRUE(error.has_value());
+  EXPECT_THAT(*error, testing::HasSubstr("Non-origin URL provided"));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
+                       InstallAppFromDevProxy_Error_MissingManifest) {
+  // Point to a directory that does not contain a valid IWA manifest.
+  auto empty_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/empty_dir"));
+
+  auto error = CallInstallAppFromDevProxy(empty_server->GetURL("/"));
+
+  ASSERT_TRUE(error.has_value());
+  EXPECT_THAT(*error,
+              testing::HasSubstr(
+                  "App is not installable: The manifest could not be fetched"));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,

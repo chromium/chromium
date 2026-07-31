@@ -9,7 +9,10 @@ assert(!is_android)
 build_webui_tests("build") {
   cc_test_files = [ "iwa_dev_browsertest.cc" ]
 
-  files = [ "app_test.ts" ]
+  files = [
+    "app_test.ts",
+    "install_dialog_test.ts",
+  ]
 
   ts_path_mappings =
       [ "chrome://iwa-dev/*|" +

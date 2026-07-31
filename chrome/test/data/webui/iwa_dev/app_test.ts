@@ -245,4 +245,55 @@ suite('<iwa-dev-app>', () => {
     const appId = await handler.whenCalled('uninstallApp');
     assertEquals('test-app-id', appId);
   });
+
+  test('opens install dialog on install button click', async () => {
+    handler.setResultFor('getInstalledAppsInfo', Promise.resolve({apps: []}));
+
+    createApp(/*devModeEnabled=*/ true);
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    const dialog = app.$.installDialog;
+    assertTrue(!!dialog);
+
+    const crDialog = dialog.$.dialog;
+    assertTrue(!!crDialog);
+    assertFalse(crDialog.open);
+
+    const installButton = app.$.installButton;
+    assertTrue(!!installButton);
+    installButton.click();
+    await microtasksFinished();
+
+    assertTrue(crDialog.open);
+  });
+
+  test(
+      'calls installAppFromDevProxy when dialog requests ' +
+          'install from dev proxy',
+      async () => {
+        handler.setResultFor(
+            'getInstalledAppsInfo', Promise.resolve({apps: []}));
+        handler.setResultFor(
+            'installAppFromDevProxy', Promise.resolve({error: null}));
+
+        createApp(/*devModeEnabled=*/ true);
+        await handler.whenCalled('getInstalledAppsInfo');
+        await microtasksFinished();
+
+        const dialog = app.$.installDialog;
+        assertTrue(!!dialog);
+
+        const devProxyUrl = 'http://localhost:8080';
+        dialog.dispatchEvent(new CustomEvent('request-install-from-dev-proxy', {
+          detail: {url: devProxyUrl},
+        }));
+        const url = await handler.whenCalled('installAppFromDevProxy');
+        assertEquals(devProxyUrl, url);
+
+        await microtasksFinished();
+        assertTrue(app.$.toast.open);
+        assertEquals(
+            'Installation successful!', app.$.toast.textContent?.trim());
+      });
 });

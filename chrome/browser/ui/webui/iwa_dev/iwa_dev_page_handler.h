@@ -43,6 +43,8 @@ class IwaDevPageHandler : public iwa_dev::mojom::PageHandler,
 
   // iwa_dev::mojom::PageHandler:
   void GetInstalledAppsInfo(GetInstalledAppsInfoCallback callback) override;
+  void InstallAppFromDevProxy(const GURL& url,
+                              InstallAppFromDevProxyCallback callback) override;
   void UninstallApp(const std::string& app_id,
                     UninstallAppCallback callback) override;
 

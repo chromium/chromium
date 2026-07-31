@@ -19,6 +19,13 @@ h1 {
   font-size: 1.75rem;
 }
 
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
 h2 {
   font-size: 1.5rem;
 }

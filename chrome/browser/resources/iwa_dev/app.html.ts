@@ -22,9 +22,15 @@ ${!this.devModeEnabled_ ? html`
 ` : html`
   <div id="content">
     ${!this.hasFetchedApps_ ? '' : html`
-      <h2>
-        Installed Applications (${this.installedApps_.length})
-      </h2>
+      <div class="header-row">
+        <h2 class="title">
+          Installed Applications (${this.installedApps_.length})
+        </h2>
+        <cr-button class="action-button" id="installButton"
+            @click="${this.onOpenInstallDialogClick_}">
+          Install IWA
+        </cr-button>
+      </div>
       ${this.installedApps_.length === 0 ? html`
         <div id="iwa-list-message">
           No Isolated Web Apps installed in developer mode.
@@ -35,11 +41,18 @@ ${!this.devModeEnabled_ ? html`
           <installed-app-list-item
               .app="${item}"
               role="listitem"
-              @request-uninstall="${this.onRequestUninstall}">
+              @request-uninstall="${this.onRequestUninstall_}">
           </installed-app-list-item>
         `)}
         </div>
       `}
+      <iwa-dev-install-dialog id="installDialog"
+          @request-install-from-dev-proxy="${
+            this.onRequestInstallFromDevProxy_}">
+      </iwa-dev-install-dialog>
+      <cr-toast id="toast" duration="3000">
+        <div>${this.toastMessage_}</div>
+      </cr-toast>
     `}
   </div>
 `}
