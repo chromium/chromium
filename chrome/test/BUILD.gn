@@ -3676,6 +3676,7 @@ if (!is_android) {
     if (toolkit_views) {
       deps += [
         "//chrome/browser/ui/views:external_protocol_dialog_test_support",
+        "//chrome/browser/ui/views:hung_renderer_view",
         "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
         "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
         "//chrome/browser/web_applications/isolated_web_apps/window_management:browser_tests",

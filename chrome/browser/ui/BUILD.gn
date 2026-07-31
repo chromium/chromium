@@ -4083,8 +4083,6 @@ static_library("ui") {
       "views/frame/web_contents_close_handler_delegate.h",
       "views/global_error_bubble_view.cc",
       "views/global_error_bubble_view.h",
-      "views/hung_renderer_view.cc",
-      "views/hung_renderer_view.h",
       "views/idle_bubble.cc",
       "views/incognito_clear_browsing_data_dialog.cc",
       "views/incognito_clear_browsing_data_dialog.h",
@@ -5301,7 +5299,10 @@ static_library("ui") {
   }
 
   if (toolkit_views) {
-    deps += [ "//chrome/browser/ui/views/frame:top_controls_slide_controller" ]
+    deps += [
+      "//chrome/browser/ui/views:hung_renderer_view",
+      "//chrome/browser/ui/views/frame:top_controls_slide_controller",
+    ]
   }
 }
 

@@ -194,3 +194,33 @@ if (is_win) {
     ]
   }
 }
+
+source_set("hung_renderer_view") {
+  public = [ "hung_renderer_view.h" ]
+  sources = [ "hung_renderer_view.cc" ]
+  public_deps = [
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/hang_monitor",
+    "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/hung_renderer",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/constrained_window",
+    "//components/favicon/content",
+    "//components/web_modal",
+    "//ui/gfx",
+  ]
+}
