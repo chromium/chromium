@@ -46,6 +46,15 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     notifications_.emplace(notification->id(), *notification);
   }
 
+  void UpdateNotification(
+      const std::string& old_id,
+      std::unique_ptr<message_center::Notification> new_notification) override {
+    if (notifications_.contains(old_id)) {
+      notifications_.erase(old_id);
+      notifications_.emplace(new_notification->id(), *new_notification);
+    }
+  }
+
   void RemoveNotification(const std::string& id, bool by_user) override {
     if (!notifications_.contains(id)) {
       return;
@@ -57,6 +66,14 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
   }
 
   message_center::Notification* FindVisibleNotificationById(
+      const std::string& id) override {
+    if (notifications_.contains(id)) {
+      return &notifications_.at(id);
+    }
+    return nullptr;
+  }
+
+  message_center::Notification* FindNotificationById(
       const std::string& id) override {
     if (notifications_.contains(id)) {
       return &notifications_.at(id);
@@ -211,6 +228,26 @@ TEST_F(BocaNotificationHandlerTest, HandleShareEndedShouldRemoveNotification) {
   auto* notification = test_message_center_.FindVisibleNotificationById(
       handler_.kScreenShareNotificationId);
   EXPECT_FALSE(notification);
+}
+
+TEST_F(BocaNotificationHandlerTest, HandleShareStartShouldUpdateNotification) {
+  handler_.HandleScreenShareStartedNotification(&test_message_center_,
+                                                "receiver1");
+  auto* notification = test_message_center_.FindVisibleNotificationById(
+      handler_.kScreenShareNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(u"Class Tools is sharing your screen to receiver1",
+            notification->message());
+
+  // Start sharing to another receiver without explicitly ending the first one.
+  handler_.HandleScreenShareStartedNotification(&test_message_center_,
+                                                "receiver2");
+  notification = test_message_center_.FindVisibleNotificationById(
+      handler_.kScreenShareNotificationId);
+  EXPECT_TRUE(notification);
+  // This expectation will fail on vulnerable code because of the early return.
+  EXPECT_EQ(u"Class Tools is sharing your screen to receiver2",
+            notification->message());
 }
 }  // namespace
 }  // namespace ash::boca
