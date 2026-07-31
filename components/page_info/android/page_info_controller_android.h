@@ -39,7 +39,7 @@ class PageInfoControllerAndroid : public PageInfoUI {
 
   void OnSuspiciousSiteBackToSafety(JNIEnv* env);
   void OnSuspiciousSiteMarkAsSafe(JNIEnv* env);
-  void OpenUrl(JNIEnv* env, const base::android::JavaRef<jstring>& jurl);
+  void OpenSafeBrowsingHelpCenter(JNIEnv* env);
   void SetIsSuspiciousSite(JNIEnv* env, bool is_suspicious_site);
 
   // PageInfoUI implementations.

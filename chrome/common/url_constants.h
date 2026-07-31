@@ -480,6 +480,10 @@ inline constexpr char kResetProfileSettingsLearnMoreURL[] =
 inline constexpr char kSafeBrowsingHelpCenterURL[] =
     "https://support.google.com/chrome?p=cpn_safe_browsing";
 
+// "Learn more" URL for unsafe site warnings.
+inline constexpr char kUnsafeSiteWarningHelpCenterURL[] =
+    "https://support.google.com/chrome?p=cpn_safe_browsing_wv";
+
 // Updated "Info icon" URL for Safebrowsing
 inline constexpr char kSafeBrowsingHelpCenterUpdatedURL[] =
     "https://support.google.com/chrome?p=safe_browsing_preferences";

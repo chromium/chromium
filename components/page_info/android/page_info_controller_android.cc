@@ -166,19 +166,10 @@ void PageInfoControllerAndroid::OnSuspiciousSiteMarkAsSafe(JNIEnv* env) {
   }
 }
 
-void PageInfoControllerAndroid::OpenUrl(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& jurl) {
-  if (web_contents_) {
-    GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));
-    if (!url.is_valid()) {
-      return;
-    }
-    content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  ui::PAGE_TRANSITION_LINK,
-                                  /*is_renderer_initiated=*/false);
-    web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
+void PageInfoControllerAndroid::OpenSafeBrowsingHelpCenter(JNIEnv* env) {
+  if (presenter_) {
+    presenter_->OpenSafeBrowsingHelpCenterPage(/*event=*/nullptr,
+                                               is_suspicious_site_);
   }
 }
 

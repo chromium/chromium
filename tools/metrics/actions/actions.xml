@@ -38966,6 +38966,12 @@ should be able to be added at any place in this file.
   <description>Store info subpage opened from PageInfo.</description>
 </action>
 
+<action name="PageInfo.UnsafeSite.HelpOpened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Help opened from Unsafe Site PageInfo warning.</description>
+</action>
+
 <action name="PageLoad" not_user_triggered="true">
   <obsolete>
     Deprecated. Not a good representation of user behaviour for page loads.

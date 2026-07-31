@@ -28050,6 +28050,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="39" label="(Deprecated) Incognito settings opened"/>
   <int value="40" label="(Deprecated) Tracking protections reenabled"/>
   <int value="41" label="(Deprecated) Tracking protections paused"/>
+  <int value="42" label="Unsafe site help opened"/>
 </enum>
 
 <!--LINT.ThenChange(//components/page_info/core/page_info_action.h:PageInfoAction) -->

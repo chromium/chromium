@@ -429,11 +429,15 @@ void ChromePageInfoDelegate::OnUIClosing() {
 #endif
 
 void ChromePageInfoDelegate::OpenSafeBrowsingHelpCenterPage(
-    const ui::Event* event) {
+    const ui::Event* event,
+    bool is_suspicious_site) {
   int event_flags = event ? event->flags() : 0;
+  const char* const url = is_suspicious_site
+                              ? chrome::kUnsafeSiteWarningHelpCenterURL
+                              : chrome::kSafeBrowsingHelpCenterURL;
   web_contents_->OpenURL(
       content::OpenURLParams(
-          GURL(chrome::kSafeBrowsingHelpCenterURL), content::Referrer(),
+          GURL(url), content::Referrer(),
           ui::DispositionFromEventFlags(
               event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB),
           ui::PAGE_TRANSITION_LINK, false),

@@ -99,7 +99,8 @@ class PageInfoDelegate {
   virtual void OnUIClosing() = 0;
 #endif
 
-  virtual void OpenSafeBrowsingHelpCenterPage(const ui::Event* event) = 0;
+  virtual void OpenSafeBrowsingHelpCenterPage(const ui::Event* event,
+                                              bool is_suspicious_site) = 0;
 
   virtual std::u16string GetSubjectName(const GURL& url) = 0;
 

@@ -629,6 +629,10 @@ void PageInfo::RecordPageInfoAction(page_info::PageInfoAction action) {
       base::RecordAction(
           base::UserMetricsAction("PageInfo.SafeBrowsing.HelpOpened"));
       break;
+    case page_info::PAGE_INFO_UNSAFE_SITE_HELP_OPENED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.UnsafeSite.HelpOpened"));
+      break;
     case page_info::PAGE_INFO_SYNC_SETTINGS_OPENED:
       base::RecordAction(base::UserMetricsAction(
           "PageInfo.CookiesSubpage.SyncSettingsLinkClicked"));
@@ -974,9 +978,14 @@ void PageInfo::OpenConnectionHelpCenterPage(const ui::Event& event) {
 #endif
 }
 
-void PageInfo::OpenSafeBrowsingHelpCenterPage(const ui::Event* event) {
-  RecordPageInfoAction(page_info::PAGE_INFO_SAFE_BROWSING_HELP_OPENED);
-  delegate_->OpenSafeBrowsingHelpCenterPage(event);
+void PageInfo::OpenSafeBrowsingHelpCenterPage(const ui::Event* event,
+                                              bool is_suspicious_site) {
+  if (is_suspicious_site) {
+    RecordPageInfoAction(page_info::PAGE_INFO_UNSAFE_SITE_HELP_OPENED);
+  } else {
+    RecordPageInfoAction(page_info::PAGE_INFO_SAFE_BROWSING_HELP_OPENED);
+  }
+  delegate_->OpenSafeBrowsingHelpCenterPage(event, is_suspicious_site);
 }
 
 void PageInfo::OnSuspiciousSiteBackToSafety() {
