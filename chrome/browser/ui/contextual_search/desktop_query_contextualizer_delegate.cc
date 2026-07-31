@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -116,7 +120,8 @@ void DesktopQueryContextualizerDelegate::GetRelevantTabsForQuery(
   service_->GetRelevantTabsForConversationThread(
       tab_selection_options, conversation_thread, attached_context_urls,
       base::BindOnce(
-          [](base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)>
+          [](base::WeakPtr<BrowserWindowInterface> browser_window_interface,
+             base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)>
                  cb,
              std::vector<base::WeakPtr<content::WebContents>> relevant_tabs) {
             std::vector<QueryContextualizer::TabId> tab_ids;
@@ -129,9 +134,26 @@ void DesktopQueryContextualizerDelegate::GetRelevantTabsForQuery(
                 }
               }
             }
+#if !BUILDFLAG(IS_ANDROID)
+            if (browser_window_interface) {
+              auto* controller = ContextualTasksPanelController::From(
+                  browser_window_interface.get());
+              if (controller && controller->IsPanelOpenForContextualTask()) {
+                tabs::TabInterface* active_tab =
+                    browser_window_interface->GetActiveTabInterface();
+                if (active_tab) {
+                  QueryContextualizer::TabId active_tab_id =
+                      active_tab->GetHandle().raw_value();
+                  if (!std::ranges::contains(tab_ids, active_tab_id)) {
+                    tab_ids.push_back(active_tab_id);
+                  }
+                }
+              }
+            }
+#endif  // !BUILDFLAG(IS_ANDROID)
             std::move(cb).Run(std::move(tab_ids));
           },
-          std::move(callback)));
+          browser_window_interface->GetWeakPtr(), std::move(callback)));
 }
 
 tabs::TabInterface* DesktopQueryContextualizerDelegate::GetTab(
