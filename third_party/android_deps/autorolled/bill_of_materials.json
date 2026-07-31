@@ -32,12 +32,12 @@
     {
         "name": "appcompat",
         "group": "androidx.appcompat",
-        "version": "1.8.0-alpha01"
+        "version": "1.8.0-rc01"
     },
     {
         "name": "appcompat-resources",
         "group": "androidx.appcompat",
-        "version": "1.8.0-alpha01"
+        "version": "1.8.0-rc01"
     },
     {
         "name": "appsearch",
@@ -342,7 +342,7 @@
     {
         "name": "concurrent-futures",
         "group": "androidx.concurrent",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.4.0-alpha01"
     },
     {
         "name": "concurrent-futures-ktx",
@@ -407,7 +407,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.7.0-alpha02"
+        "version": "1.7.0-alpha03"
     },
     {
         "name": "credentials-play-services-auth",
@@ -437,12 +437,12 @@
     {
         "name": "datastore-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha09"
+        "version": "1.3.0-alpha10"
     },
     {
         "name": "datastore-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha09"
+        "version": "1.3.0-alpha10"
     },
     {
         "name": "datastore-core-android",
@@ -462,7 +462,7 @@
     {
         "name": "datastore-preferences",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha09"
+        "version": "1.3.0-alpha10"
     },
     {
         "name": "datastore-preferences-android",
@@ -527,7 +527,7 @@
     {
         "name": "fragment",
         "group": "androidx.fragment",
-        "version": "1.9.0-alpha02"
+        "version": "1.9.0-rc01"
     },
     {
         "name": "fragment-compose",
@@ -787,7 +787,7 @@
     {
         "name": "loader",
         "group": "androidx.loader",
-        "version": "1.2.0-rc01"
+        "version": "1.2.0"
     },
     {
         "name": "localbroadcastmanager",
@@ -887,7 +887,7 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-alpha02"
+        "version": "1.2.0-alpha03"
     },
     {
         "name": "navigationevent-android",
@@ -1122,17 +1122,17 @@
     {
         "name": "uiautomator",
         "group": "androidx.test.uiautomator",
-        "version": "2.4.0"
+        "version": "2.5.0-SNAPSHOT"
     },
     {
         "name": "uiautomator-shell",
         "group": "androidx.test.uiautomator",
-        "version": "2.4.0"
+        "version": "2.5.0-SNAPSHOT"
     },
     {
         "name": "uiautomator-shell-android",
         "group": "androidx.test.uiautomator",
-        "version": "2.4.0"
+        "version": "2.5.0-SNAPSHOT"
     },
     {
         "name": "annotation",
@@ -1162,7 +1162,7 @@
     {
         "name": "tracing",
         "group": "androidx.tracing",
-        "version": "2.0.0-beta01"
+        "version": "2.0.0-rc01"
     },
     {
         "name": "tracing-android",
