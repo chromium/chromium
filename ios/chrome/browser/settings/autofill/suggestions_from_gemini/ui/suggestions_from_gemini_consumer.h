@@ -10,7 +10,8 @@
 // Consumer for the Suggestions from Gemini settings.
 @protocol SuggestionsFromGeminiConsumer <NSObject>
 
-// TODO(crbug.com/509479601): Implement setting toggle updates.
+// Tells the consumer to update the state of the Suggestions from Gemini switch.
+- (void)setSuggestionsFromGeminiSwitchOn:(BOOL)on;
 
 @end
 

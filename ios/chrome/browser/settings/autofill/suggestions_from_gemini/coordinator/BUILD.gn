@@ -11,12 +11,15 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/personal_context/core:prefs",
     "//components/prefs",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public/navigation",
     "//url",
@@ -32,9 +35,11 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base/test:test_support",
+    "//components/personal_context/core:prefs",
     "//components/prefs:test_support",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",

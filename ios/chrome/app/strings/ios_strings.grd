@@ -5976,6 +5976,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY" desc="Navigational text or description appearing under the 'Enhanced autofill' section in settings. It directs users to manage how the underlying AI model retrieves and fills data. 'Gemini' is a proper Google product name and must remain unlocalized. [iOS only]">
         Manage finding and filling info with Gemini
       </message>
+      <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY" desc="Description text under the 'Find and fill with Gemini' setting explaining the functionality and data sources. 'Gmail', 'Photos', and 'Personal Intelligence' are proper Google product and feature names that must adhere to standard branding guidelines.">
+        Autofill info from apps such as Gmail and Photos. Powered by Personal Intelligence.
+      </message>
+      <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE" desc="Section header or toggle label in Chrome settings for enabling AI-driven autofill suggestions. 'Gemini' is a proper Google product name and must remain unlocalized.">
+        Find and fill with Gemini
+      </message>
       <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE" desc="Page title in Chrome settings for the advanced, AI-powered form-filling features. 'Autofill' refers to the browser's ability to automatically populate form fields. [iOS only]">
         Enhanced autofill
       </message>

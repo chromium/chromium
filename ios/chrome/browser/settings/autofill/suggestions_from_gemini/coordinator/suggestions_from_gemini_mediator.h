@@ -11,7 +11,7 @@
 
 @protocol SuggestionsFromGeminiConsumer;
 @class SuggestionsFromGeminiMediator;
-class PrefService;
+@class PrefBackedBoolean;
 
 // Delegate for SuggestionsFromGeminiMediator.
 @protocol SuggestionsFromGeminiMediatorDelegate <NSObject>
@@ -32,8 +32,8 @@ class PrefService;
 // The delegate for this mediator.
 @property(nonatomic, weak) id<SuggestionsFromGeminiMediatorDelegate> delegate;
 
-- (instancetype)initWithPrefService:(PrefService*)prefService
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrefBackedBoolean:
+    (PrefBackedBoolean*)personalContextSwitchEnabled NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

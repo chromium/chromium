@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
 
+#import "components/personal_context/core/personal_context_prefs.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_mediator.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -40,8 +43,15 @@
 
 - (void)start {
   _viewController = [[SuggestionsFromGeminiTableViewController alloc] init];
+
+  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
+  PrefBackedBoolean* personalContextSwitchEnabled = [[PrefBackedBoolean alloc]
+      initWithPrefService:prefService
+                 prefName:personal_context::prefs::
+                              kPersonalContextInAutofillSettingsToggleStatus];
+
   _mediator = [[SuggestionsFromGeminiMediator alloc]
-      initWithPrefService:self.browser->GetProfile()->GetPrefs()];
+      initWithPrefBackedBoolean:personalContextSwitchEnabled];
 
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;

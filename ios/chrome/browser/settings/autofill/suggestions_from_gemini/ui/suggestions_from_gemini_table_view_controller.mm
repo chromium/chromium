@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -19,13 +20,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeManageConnectedApps = kItemTypeEnumZero,
+  ItemTypeFindAndFillSwitch = kItemTypeEnumZero,
+  ItemTypeManageConnectedApps,
 };
 
 }  // namespace
 
 @implementation SuggestionsFromGeminiTableViewController {
   BOOL _settingsAreDismissed;
+  // Tracks whether the Suggestions from Gemini setting switch is toggled on.
+  BOOL _suggestionsFromGeminiSwitchOn;
 }
 
 - (instancetype)init {
@@ -51,17 +55,34 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
 
-  TableViewDetailTextItem* item = [[TableViewDetailTextItem alloc]
-      initWithType:ItemTypeManageConnectedApps];
-  item.text = l10n_util::GetNSString(
-      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_TITLE);
-  item.detailText = l10n_util::GetNSString(
-      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY);
-  item.accessorySymbol = TableViewDetailTextCellAccessorySymbolExternalLink;
-  item.accessibilityTraits |= UIAccessibilityTraitLink;
-
-  [model addItem:item
+  [model addItem:[self findAndFillSwitchItem]
       toSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+
+  [model addItem:[self manageConnectedAppsItem]
+      toSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+}
+
+#pragma mark - SuggestionsFromGeminiConsumer
+
+- (void)setSuggestionsFromGeminiSwitchOn:(BOOL)on {
+  if (_suggestionsFromGeminiSwitchOn == on) {
+    return;
+  }
+
+  _suggestionsFromGeminiSwitchOn = on;
+
+  [self updateSwitchItemState:on];
+  if (self.isViewLoaded) {
+    TableViewModel* model = self.tableViewModel;
+    if ([model hasItemForItemType:ItemTypeFindAndFillSwitch
+                sectionIdentifier:SectionIdentifierSuggestionsFromGemini]) {
+      NSIndexPath* indexPath =
+          [model indexPathForItemType:ItemTypeFindAndFillSwitch
+                    sectionIdentifier:SectionIdentifierSuggestionsFromGemini];
+      [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -79,10 +100,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeManageConnectedApps:
       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       [self.mutator didSelectManageConnectedApps];
-      break;
-    default:
-      NOTREACHED();
+      return;
+    case ItemTypeFindAndFillSwitch:
+      [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+      return;
   }
+  NOTREACHED();
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -97,6 +120,65 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)settingsWillBeDismissed {
   _settingsAreDismissed = YES;
+}
+
+#pragma mark - Switch Callbacks
+
+// Callback invoked when the Suggestions from Gemini setting switch is toggled.
+- (void)personalContextSwitchChanged:(UISwitch*)switchView {
+  _suggestionsFromGeminiSwitchOn = switchView.isOn;
+
+  [self updateSwitchItemState:switchView.isOn];
+  [self.mutator didToggleSuggestionsFromGeminiSwitch:switchView.isOn];
+}
+
+#pragma mark - Private
+
+// Updates the switch item's state in the table view model if the view is
+// loaded.
+- (void)updateSwitchItemState:(BOOL)on {
+  if (!self.isViewLoaded) {
+    return;
+  }
+
+  TableViewModel* model = self.tableViewModel;
+  if ([model hasItemForItemType:ItemTypeFindAndFillSwitch
+              sectionIdentifier:SectionIdentifierSuggestionsFromGemini]) {
+    NSIndexPath* indexPath =
+        [model indexPathForItemType:ItemTypeFindAndFillSwitch
+                  sectionIdentifier:SectionIdentifierSuggestionsFromGemini];
+    TableViewSwitchItem* switchItem =
+        base::apple::ObjCCastStrict<TableViewSwitchItem>(
+            [model itemAtIndexPath:indexPath]);
+    switchItem.on = on;
+  }
+}
+
+// Returns a configured switch item for the "Suggestions from Gemini" setting.
+- (TableViewSwitchItem*)findAndFillSwitchItem {
+  TableViewSwitchItem* switchItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeFindAndFillSwitch];
+  switchItem.text = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE);
+  switchItem.detailText = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY);
+  switchItem.on = _suggestionsFromGeminiSwitchOn;
+  switchItem.target = self;
+  switchItem.selector = @selector(personalContextSwitchChanged:);
+  return switchItem;
+}
+
+// Returns a configured detail text item for the "Manage connected apps" link.
+- (TableViewDetailTextItem*)manageConnectedAppsItem {
+  TableViewDetailTextItem* item = [[TableViewDetailTextItem alloc]
+      initWithType:ItemTypeManageConnectedApps];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_TITLE);
+  item.detailText = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY);
+  item.accessorySymbol = TableViewDetailTextCellAccessorySymbolExternalLink;
+  item.accessibilityTraits |= UIAccessibilityTraitLink;
+  return item;
 }
 
 @end

@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +15,10 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+
+@interface SuggestionsFromGeminiTableViewController (Testing)
+- (void)personalContextSwitchChanged:(UISwitch*)switchView;
+@end
 
 namespace {
 
@@ -25,18 +30,28 @@ class SuggestionsFromGeminiTableViewControllerTest
   }
 };
 
-// Tests that the SuggestionsFromGemini subpage displays the Manage Connected
-// Apps row.
+// Tests that the SuggestionsFromGemini subpage displays the switch and the
+// Manage Connected Apps row.
 TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestInitialization) {
   CreateController();
   CheckController();
 
   EXPECT_EQ(1, NumberOfSections());
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(2, NumberOfItemsInSection(0));
+
+  TableViewSwitchItem* switchItem =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(0, 0));
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE),
+              switchItem.text);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY),
+              switchItem.detailText);
+  EXPECT_FALSE(switchItem.on);
 
   TableViewDetailTextItem* item =
       base::apple::ObjCCastStrict<TableViewDetailTextItem>(
-          GetTableViewItem(0, 0));
+          GetTableViewItem(0, 1));
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE),
       controller().title);
@@ -52,6 +67,22 @@ TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestInitialization) {
             item.accessorySymbol);
 }
 
+// Tests that setting the switch state via the consumer interface updates the
+// switch cell.
+TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestConsumerSetsSwitchOn) {
+  CreateController();
+  CheckController();
+
+  SuggestionsFromGeminiTableViewController* geminiController =
+      base::apple::ObjCCastStrict<SuggestionsFromGeminiTableViewController>(
+          controller());
+  [geminiController setSuggestionsFromGeminiSwitchOn:YES];
+
+  TableViewSwitchItem* switchItem =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(0, 0));
+  EXPECT_TRUE(switchItem.on);
+}
+
 // Tests that view controller actions correctly invoke mutators.
 TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestMutatorInteraction) {
   CreateController();
@@ -63,9 +94,22 @@ TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestMutatorInteraction) {
           controller());
   geminiController.mutator = mockMutator;
 
+  // Verify switch change triggers mutator.
+  OCMExpect([mockMutator didToggleSuggestionsFromGeminiSwitch:NO]);
+  TableViewSwitchItem* switchItem =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(0, 0));
+  EXPECT_EQ(switchItem.target, controller());
+  EXPECT_NSEQ(NSStringFromSelector(switchItem.selector),
+              NSStringFromSelector(@selector(personalContextSwitchChanged:)));
+
+  UISwitch* switchView = [[UISwitch alloc] init];
+  switchView.on = NO;
+  [geminiController personalContextSwitchChanged:switchView];
+  EXPECT_OCMOCK_VERIFY(mockMutator);
+
   // Verify selecting row triggers didSelectManageConnectedApps on mutator.
   OCMExpect([mockMutator didSelectManageConnectedApps]);
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
   [geminiController tableView:geminiController.tableView
       didSelectRowAtIndexPath:indexPath];
   EXPECT_OCMOCK_VERIFY(mockMutator);

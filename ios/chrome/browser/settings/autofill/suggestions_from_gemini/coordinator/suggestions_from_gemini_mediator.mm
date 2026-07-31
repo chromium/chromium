@@ -5,30 +5,60 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_mediator.h"
 
 #import "base/check.h"
-#import "base/memory/raw_ptr.h"
-#import "components/prefs/pref_service.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_consumer.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
+
+@interface SuggestionsFromGeminiMediator () <BooleanObserver>
+@end
 
 @implementation SuggestionsFromGeminiMediator {
-  raw_ptr<PrefService> _prefs;
+  // The observable boolean backing the preference status of the Suggestions
+  // from Gemini toggle.
+  PrefBackedBoolean* _personalContextSwitchEnabled;
 }
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithPrefBackedBoolean:
+    (PrefBackedBoolean*)personalContextSwitchEnabled {
   self = [super init];
   if (self) {
-    CHECK(prefService);
-    _prefs = prefService;
+    CHECK(personalContextSwitchEnabled);
+    _personalContextSwitchEnabled = personalContextSwitchEnabled;
+    _personalContextSwitchEnabled.observer = self;
   }
   return self;
 }
 
+- (void)setConsumer:(id<SuggestionsFromGeminiConsumer>)consumer {
+  _consumer = consumer;
+  if (_consumer) {
+    [_consumer
+        setSuggestionsFromGeminiSwitchOn:_personalContextSwitchEnabled.value];
+  }
+}
+
 - (void)disconnect {
-  _prefs = nullptr;
+  _personalContextSwitchEnabled.observer = nil;
+  _personalContextSwitchEnabled = nil;
 }
 
 #pragma mark - SuggestionsFromGeminiMutator
 
+- (void)didToggleSuggestionsFromGeminiSwitch:(BOOL)on {
+  _personalContextSwitchEnabled.value = on;
+}
+
 - (void)didSelectManageConnectedApps {
   [self.delegate suggestionsFromGeminiMediatorOpenConnectedApps:self];
+}
+
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(PrefBackedBoolean*)boolean {
+  CHECK_EQ(boolean, _personalContextSwitchEnabled);
+  [self.consumer
+      setSuggestionsFromGeminiSwitchOn:_personalContextSwitchEnabled.value];
 }
 
 @end
