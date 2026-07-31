@@ -8,6 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_id.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/worker_id.h"
@@ -181,15 +182,27 @@ void ServiceWorkerState::DidStartWorkerForScope(
   const WorkerId worker_id = {extension_id, process_id, version_id, thread_id,
                               token};
 
-  // The content layer should not deliver this callback for a stale worker
-  // instance (see DidStartWorker() in service_worker_context_wrapper.cc).
-  // TODO(crbug.com/536945271): Remove this check if the dump is never hit in
-  // production.
   if (!service_worker_context_->IsLiveServiceWorkerWithToken(version_id,
                                                              token)) {
     // Drop the IPC message. It is from a stale worker instance.
-    // TODO(andreaorru): remove once it's verified it's never hit.
+    return;
+  }
+
+  // HACK: The service worker layer might invoke this callback with an ID for a
+  // RenderProcessHost that has already terminated. This isn't the right fix for
+  // this, because it results in the internal state here stalling out - we'll
+  // wait on the browser side to be ready, which will never happen. This should
+  // be cleaned up on the next activation sequence, but this still isn't good.
+  // The proper fix here is that the service worker layer shouldn't be invoking
+  // this callback with stale processes.
+  // https://crbug.com/1335821.
+  if (!content::RenderProcessHost::FromID(worker_id.render_process_id)) {
+    // The IsLiveServiceWorkerWithToken() check above *should* have caught
+    // this instance.
     base::debug::DumpWithoutCrashing();
+    // TODO(crbug.com/40913640): Investigate and fix.
+    LOG(ERROR) << "Received bad DidStartWorkerForScope() message. "
+                  "No corresponding RenderProcessHost.";
     return;
   }
 
