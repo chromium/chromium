@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       CreateSidePanelEntry(entry_key, browser_));
 
   // Arrange: Make the space insufficient.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
 
   // Act: Try to show.
   coordinator_->SidePanelUIBase::Show(
@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(coordinator_->IsSidePanelShowing());
 
   // Make the space insufficient. This will auto-close the panel.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
@@ -1698,7 +1698,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       OnWillAutoRestore_RestoresTabScopedSidePanels) {
+                       TestAutoRestore_RestoresTabScopedSidePanels) {
   // Arrange
   tabs::TabInterface* tab_1 = tab_list_->GetActiveTab();
   tabs::TabInterface* tab_2 =
@@ -1727,7 +1727,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_TRUE(coordinator_->IsSidePanelShowing());
 
   // Make the space insufficient.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
 
   // Tab 2's side panel is hidden (here we'll clear the active entry in Tab 2's
@@ -1743,7 +1743,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
   // Now make the space sufficient.
-  coordinator_->OnWillAutoRestore();
+  coordinator_->SimulateAutoRestoreConditionForTesting();
   WaitUntilOpened(coordinator_);
 
   // Tab 1's side panel should appear (note that this is not the side panel
@@ -1762,7 +1762,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       OnWillAutoRestore_RestoresMixedScopedSidePanels) {
+                       TestAutoRestore_RestoresMixedScopedSidePanels) {
   // Arrange
   tabs::TabInterface* tab_1 = tab_list_->GetActiveTab();
   tabs::TabInterface* tab_2 =
@@ -1796,7 +1796,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   WaitUntilOpened(coordinator_);
 
   // Make the space insufficient.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
@@ -1805,7 +1805,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
   // Make the space sufficient.
-  coordinator_->OnWillAutoRestore();
+  coordinator_->SimulateAutoRestoreConditionForTesting();
   WaitUntilOpened(coordinator_);
 
   // Tab 2’s window-scoped panel should appear.
@@ -1814,7 +1814,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       OnWillAutoClose_ClosesSidePanel) {
+                       TestAutoClose_ClosesSidePanel) {
   // Arrange:
 
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
@@ -1833,7 +1833,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 
   // Act:
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
 
   // Assert:
@@ -1846,20 +1846,20 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       OnWillAutoRestore_NoActiveEntry_DoesNothing) {
+                       TestAutoRestore_NoActiveEntry_DoesNothing) {
   // Arrange: Make the space insufficient first.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
   // Act: Make the space sufficient again.
-  coordinator_->OnWillAutoRestore();
+  coordinator_->SimulateAutoRestoreConditionForTesting();
 
   // Assert: Panel should stay closed.
   EXPECT_FALSE(coordinator_->IsSidePanelShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       OnWillAutoRestore_RestoresPreviousEntry) {
+                       TestAutoRestore_RestoresPreviousEntry) {
   // Arrange:
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
   SidePanelRegistry::From(browser_)->Register(
@@ -1871,12 +1871,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                                       /*suppress_animations=*/true);
   WaitUntilOpened(coordinator_);
   ASSERT_TRUE(coordinator_->IsSidePanelShowing());
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
   // Act:
-  coordinator_->OnWillAutoRestore();
+  coordinator_->SimulateAutoRestoreConditionForTesting();
   WaitUntilOpened(coordinator_);
 
   // Assert:
@@ -1886,7 +1886,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    OnWillAutoRestore_TabIsolation_DoesNotRestoreOnDifferentTab) {
+    TestAutoRestore_TabIsolation_DoesNotRestoreOnDifferentTab) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* tab_with_entry = tab_list_->GetActiveTab();
   tabs::TabInterface* empty_tab =
@@ -1905,7 +1905,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(coordinator_->IsSidePanelShowing());
 
   // Hide the panel due to insufficient space.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
@@ -1913,7 +1913,7 @@ IN_PROC_BROWSER_TEST_F(
   tab_list_->ActivateTab(empty_tab->GetHandle());
 
   // Act: Try to restore visibility while on the wrong tab.
-  coordinator_->OnWillAutoRestore();
+  coordinator_->SimulateAutoRestoreConditionForTesting();
 
   // Assert: The panel should NOT restore on the empty tab.
   EXPECT_FALSE(coordinator_->IsSidePanelShowing());
@@ -1931,7 +1931,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    OnWillAutoRestore_TabIsolation_SameEntryKeyOnMultipleTabs) {
+    TestAutoRestore_TabIsolation_SameEntryKeyOnMultipleTabs) {
   // Arrange: Open 2 tabs, both with the SAME entry key registered.
   tabs::TabInterface* tab_1 = tab_list_->GetActiveTab();
   tabs::TabInterface* tab_2 =
@@ -1951,7 +1951,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(coordinator_->IsSidePanelShowing());
 
   // 2. Hide due to insufficient space.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
@@ -1959,7 +1959,7 @@ IN_PROC_BROWSER_TEST_F(
   tab_list_->ActivateTab(tab_2->GetHandle());
 
   // 4. Make space sufficient.
-  coordinator_->OnWillAutoRestore();
+  coordinator_->SimulateAutoRestoreConditionForTesting();
 
   // Assert: Entry should NOT show in Tab 2 even though it has the same key.
   // This proves that UniqueKey (tab-aware) is used for restoration.
@@ -2397,6 +2397,267 @@ IN_PROC_BROWSER_TEST_F(
       SidePanelEntryKey(SidePanelEntryId::kReadingList)));
 }
 
+// Setup:
+// Source window: reparent a tab with a tab-scoped panel
+// Source window (pre-reparenting): the window becomes narrow enough for side
+// panel to auto-close.
+// Target window (pre-reparenting): the window is wide enough for side panel to
+// appear.
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    ReparentTabWithTabScopedEntry_SrcWindowHasInsufficientSpace_DstWindowHasSufficientSpace) {
+  // Arrange: Set up the source window and a tab with a tab-scoped panel.
+  BrowserWindowInterface* src_window = GetLastActiveBrowser();
+  auto* src_coordinator = SidePanelCoordinatorAndroid::From(src_window);
+  const SidePanelDeferredEntryTracker& src_deferred_entry_tracker =
+      src_coordinator->GetDeferredEntryTrackerForTesting();
+  auto* src_tab_list = TabListInterface::From(src_window);
+  SetUpSidePanelEntriesForWindow(
+      src_window, /*window_scoped_entry_id=*/std::nullopt,
+      /*tab_scoped_entry_ids=*/{std::nullopt, SidePanelEntryId::kGlic},
+      /*active_tab_index=*/1);
+  tabs::TabHandle side_panel_tab_handle = src_tab_list->GetTab(1)->GetHandle();
+  ASSERT_TRUE(src_coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kGlic)));
+
+  // Arrange: Simulate that the source window becomes narrow enough so the side
+  // panel auto-closes and its entry is tracked by
+  // SidePanelDeferredEntryTracker.
+  src_coordinator->SimulateAutoCloseConditionForTesting();
+  WaitUntilClosed(src_coordinator);
+  ASSERT_FALSE(src_coordinator->IsSidePanelShowing());
+  std::optional<SidePanelUIBase::UniqueKey> src_deferred_entry =
+      src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
+          side_panel_tab_handle);
+  ASSERT_TRUE(src_deferred_entry.has_value());
+  EXPECT_EQ(src_deferred_entry->tab_handle, side_panel_tab_handle);
+  EXPECT_EQ(src_deferred_entry->key,
+            SidePanelEntryKey(SidePanelEntryId::kGlic));
+
+  // Arrange: Create the destination window.
+  BrowserWindowInterface* dst_window =
+      CreateBrowserWindowAsync(src_window->GetProfile());
+  auto* dst_coordinator = SidePanelCoordinatorAndroid::From(dst_window);
+
+  // Act: Reparent the tab.
+  src_tab_list->MoveTabToWindow(side_panel_tab_handle,
+                                dst_window->GetSessionID(),
+                                /*destination_index=*/0);
+
+  // Assert: Side panel is shown in the destination window.
+  WaitUntilOpened(dst_coordinator);
+  EXPECT_TRUE(dst_coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kGlic)));
+
+  // Assert: The source window's SidePanelDeferredEntryTracker should no longer
+  // track the SidePanelEntry that's moved to the destination window.
+  src_deferred_entry = src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
+      side_panel_tab_handle);
+  EXPECT_FALSE(src_deferred_entry.has_value());
+}
+
+// Setup:
+// Source window: reparent a tab with a window-scoped panel
+// Source window (pre-reparenting): the window becomes narrow enough for side
+// panel to auto-close.
+// Target window (pre-reparenting): the window is wide enough for side panel to
+// appear.
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    ReparentTabWithWindowScopedEntry_SrcWindowHasInsufficientSpace_DstWindowHasSufficientSpace) {
+  // Arrange: Set up the source window and two tabs so that we can reparent one
+  // tab without closing the window.
+  BrowserWindowInterface* src_window = GetLastActiveBrowser();
+  auto* src_coordinator = SidePanelCoordinatorAndroid::From(src_window);
+  const SidePanelDeferredEntryTracker& src_deferred_entry_tracker =
+      src_coordinator->GetDeferredEntryTrackerForTesting();
+  auto* src_tab_list = TabListInterface::From(src_window);
+  src_tab_list->OpenTab(GURL("about:blank"), src_tab_list->GetTabCount());
+  tabs::TabHandle tab_to_reparent_handle = src_tab_list->GetTab(0)->GetHandle();
+
+  // Arrange: Set up a window-scoped panel.
+  auto side_panel_entry_key = SidePanelEntryKey(SidePanelEntryId::kBookmarks);
+  SidePanelRegistry::From(src_window)
+      ->Register(CreateSidePanelEntry(side_panel_entry_key, src_window));
+  src_coordinator->SidePanelUIBase::Show(side_panel_entry_key,
+                                         SidePanelOpenTrigger::kToolbarButton,
+                                         /*suppress_animations=*/true);
+  WaitUntilOpened(src_coordinator);
+  ASSERT_TRUE(src_coordinator->IsSidePanelEntryShowing(side_panel_entry_key));
+
+  // Arrange: Simulate that the source window becomes narrow enough so the side
+  // panel auto-closes and its entry is tracked by
+  // SidePanelDeferredEntryTracker.
+  src_coordinator->SimulateAutoCloseConditionForTesting();
+  WaitUntilClosed(src_coordinator);
+  ASSERT_FALSE(src_coordinator->IsSidePanelShowing());
+  std::optional<SidePanelUIBase::UniqueKey> src_deferred_entry =
+      src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
+          tab_to_reparent_handle);
+  ASSERT_TRUE(src_deferred_entry.has_value());
+  EXPECT_FALSE(src_deferred_entry->tab_handle.has_value());
+  EXPECT_EQ(src_deferred_entry->key, side_panel_entry_key);
+
+  // Arrange: Create the destination window.
+  BrowserWindowInterface* dst_window =
+      CreateBrowserWindowAsync(src_window->GetProfile());
+  auto* dst_coordinator = SidePanelCoordinatorAndroid::From(dst_window);
+  const SidePanelDeferredEntryTracker& dst_deferred_entry_tracker =
+      dst_coordinator->GetDeferredEntryTrackerForTesting();
+
+  // Act: Reparent the tab.
+  src_tab_list->MoveTabToWindow(tab_to_reparent_handle,
+                                dst_window->GetSessionID(),
+                                /*destination_index=*/0);
+
+  // Assert: Side panel is not shown in the destination window or tracked by its
+  // SidePanelDeferredEntryTracker.
+  WaitUntilClosed(dst_coordinator);
+  EXPECT_FALSE(dst_coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(dst_deferred_entry_tracker
+                   .GetTabOrWindowScopedEntry(tab_to_reparent_handle)
+                   .has_value());
+
+  // Assert: The source window's SidePanelDeferredEntryTracker should still
+  // track the window-scoped SidePanelEntry.
+  src_deferred_entry = src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
+      tab_to_reparent_handle);
+  EXPECT_TRUE(src_deferred_entry.has_value());
+  EXPECT_FALSE(src_deferred_entry->tab_handle.has_value());
+  EXPECT_EQ(src_deferred_entry->key, side_panel_entry_key);
+}
+
+// Setup:
+// Source window: reparent a tab with a tab-scoped panel
+// Source window (pre-reparenting): the window is wide enough for side panel to
+// appear.
+// Target window (pre-reparenting): the window is too narrow for side panel.
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    ReparentTabWithTabScopedEntry_SrcWindowHasSufficientSpace_DstWindowHasInsufficientSpace) {
+  // Arrange: Set up the source window and a tab with a tab-scoped panel.
+  BrowserWindowInterface* src_window = GetLastActiveBrowser();
+  auto* src_coordinator = SidePanelCoordinatorAndroid::From(src_window);
+  auto* src_tab_list = TabListInterface::From(src_window);
+  SetUpSidePanelEntriesForWindow(
+      src_window, /*window_scoped_entry_id=*/std::nullopt,
+      /*tab_scoped_entry_ids=*/{std::nullopt, SidePanelEntryId::kGlic},
+      /*active_tab_index=*/1);
+  tabs::TabHandle side_panel_tab_handle = src_tab_list->GetTab(1)->GetHandle();
+  ASSERT_TRUE(src_coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kGlic)));
+
+  // Arrange: Create the destination window.
+  BrowserWindowInterface* dst_window =
+      CreateBrowserWindowAsync(src_window->GetProfile());
+
+  // Arrange: Configure the destination window to have insufficient space so
+  // side panel cannot show.
+  auto* dst_coordinator = SidePanelCoordinatorAndroid::From(dst_window);
+  dst_coordinator->SimulateAutoCloseConditionForTesting();
+
+  // Act: Reparent the tab.
+  src_tab_list->MoveTabToWindow(side_panel_tab_handle,
+                                dst_window->GetSessionID(),
+                                /*destination_index=*/0);
+
+  // Assert: Side panel is not shown in the destination window, but is tracked
+  // by DeferredEntryTracker.
+  EXPECT_FALSE(dst_coordinator->IsSidePanelShowing());
+  std::optional<SidePanelUIBase::UniqueKey> dst_deferred_entry =
+      dst_coordinator->GetDeferredEntryTrackerForTesting()
+          .GetTabOrWindowScopedEntry(side_panel_tab_handle);
+  ASSERT_TRUE(dst_deferred_entry.has_value());
+  EXPECT_EQ(dst_deferred_entry->tab_handle, side_panel_tab_handle);
+  EXPECT_EQ(dst_deferred_entry->key,
+            SidePanelEntryKey(SidePanelEntryId::kGlic));
+
+  // Act: Simulate auto-restore in the destination window.
+  dst_coordinator->SimulateAutoRestoreConditionForTesting();
+
+  // Assert: Side panel is shown in the destination window.
+  WaitUntilOpened(dst_coordinator);
+  EXPECT_TRUE(dst_coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kGlic)));
+}
+
+// Setup:
+// Source window: reparent a tab with a tab-scoped panel
+// Source window (pre-reparenting): the window is too narrow for side panel.
+// Target window (pre-reparenting): the window is too narrow for side panel.
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    ReparentTabWithTabScopedEntry_SrcWindowHasInsufficientSpace_DstWindowHasInsufficientSpace) {
+  // Arrange: Set up the source window and a tab with a tab-scoped panel.
+  BrowserWindowInterface* src_window = GetLastActiveBrowser();
+  auto* src_coordinator = SidePanelCoordinatorAndroid::From(src_window);
+  const SidePanelDeferredEntryTracker& src_deferred_entry_tracker =
+      src_coordinator->GetDeferredEntryTrackerForTesting();
+  auto* src_tab_list = TabListInterface::From(src_window);
+  SetUpSidePanelEntriesForWindow(
+      src_window, /*window_scoped_entry_id=*/std::nullopt,
+      /*tab_scoped_entry_ids=*/{std::nullopt, SidePanelEntryId::kGlic},
+      /*active_tab_index=*/1);
+  tabs::TabHandle side_panel_tab_handle = src_tab_list->GetTab(1)->GetHandle();
+  ASSERT_TRUE(src_coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kGlic)));
+
+  // Arrange: Simulate that the source window becomes narrow enough so the side
+  // panel auto-closes and its entry is tracked by
+  // SidePanelDeferredEntryTracker.
+  src_coordinator->SimulateAutoCloseConditionForTesting();
+  WaitUntilClosed(src_coordinator);
+  ASSERT_FALSE(src_coordinator->IsSidePanelShowing());
+  std::optional<SidePanelUIBase::UniqueKey> src_deferred_entry =
+      src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
+          side_panel_tab_handle);
+  ASSERT_TRUE(src_deferred_entry.has_value());
+  EXPECT_EQ(src_deferred_entry->tab_handle, side_panel_tab_handle);
+  EXPECT_EQ(src_deferred_entry->key,
+            SidePanelEntryKey(SidePanelEntryId::kGlic));
+
+  // Arrange: Create the destination window.
+  BrowserWindowInterface* dst_window =
+      CreateBrowserWindowAsync(src_window->GetProfile());
+
+  // Arrange: Configure the destination window to have insufficient space so
+  // side panel cannot show.
+  auto* dst_coordinator = SidePanelCoordinatorAndroid::From(dst_window);
+  dst_coordinator->SimulateAutoCloseConditionForTesting();
+
+  // Act: Reparent the tab.
+  src_tab_list->MoveTabToWindow(side_panel_tab_handle,
+                                dst_window->GetSessionID(),
+                                /*destination_index=*/0);
+
+  // Assert: Side panel is not shown in the destination window.
+  EXPECT_FALSE(dst_coordinator->IsSidePanelShowing());
+
+  // Assert: The source window's SidePanelDeferredEntryTracker should no longer
+  // track the SidePanelEntry that's moved to the destination window.
+  src_deferred_entry = src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
+      side_panel_tab_handle);
+  EXPECT_FALSE(src_deferred_entry.has_value());
+
+  // Assert: The destination window's SidePanelDeferredEntryTracker should track
+  // the SidePanelEntry.
+  std::optional<SidePanelUIBase::UniqueKey> dst_deferred_entry =
+      dst_coordinator->GetDeferredEntryTrackerForTesting()
+          .GetTabOrWindowScopedEntry(side_panel_tab_handle);
+  ASSERT_TRUE(dst_deferred_entry.has_value());
+  EXPECT_EQ(dst_deferred_entry->tab_handle, side_panel_tab_handle);
+  EXPECT_EQ(dst_deferred_entry->key,
+            SidePanelEntryKey(SidePanelEntryId::kGlic));
+
+  // Act: Simulate auto-restore in the destination window.
+  dst_coordinator->SimulateAutoRestoreConditionForTesting();
+
+  // Assert: Side panel is shown in the destination window.
+  WaitUntilOpened(dst_coordinator);
+  EXPECT_TRUE(dst_coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kGlic)));
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                        TabClosure_ClearsDeferredEntryTracker) {
   // Arrange
@@ -2414,14 +2675,14 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_TRUE(coordinator_->IsSidePanelShowing());
 
   // Make the space insufficient. This defers the entry.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
   ASSERT_FALSE(coordinator_->IsSidePanelShowing());
 
   const SidePanelDeferredEntryTracker& tracker =
       coordinator_->GetDeferredEntryTrackerForTesting();
   tabs::TabHandle tab_1_handle = tab_1->GetHandle();
-  ASSERT_TRUE(tracker.GetEntry(tab_1_handle).has_value());
+  ASSERT_TRUE(tracker.GetTabOrWindowScopedEntry(tab_1_handle).has_value());
 
   // Open Tab 2.
   tabs::TabInterface* tab_2 =
@@ -2432,7 +2693,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   tab_list_->CloseTab(tab_1_handle);
 
   // Assert: The tracker should no longer hold an entry for Tab 1.
-  EXPECT_FALSE(tracker.GetEntry(tab_1_handle).has_value());
+  EXPECT_FALSE(tracker.GetTabOrWindowScopedEntry(tab_1_handle).has_value());
 }
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                        TabSwitch_DefersEntry_ClearsRegistry) {
@@ -2461,7 +2722,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_TRUE(SidePanelRegistry::From(tab_1)->GetActiveEntry().has_value());
 
   // 3. Make the space insufficient.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
 
   // 4. Switch back to Tab A.
   // This triggers MaybeShowEntryOnTabStripModelChanged -> Show() -> AddEntry().
@@ -2473,7 +2734,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   // Assert: The entry should have been successfully deferred into the tracker.
   const SidePanelDeferredEntryTracker& tracker =
       coordinator_->GetDeferredEntryTrackerForTesting();
-  EXPECT_TRUE(tracker.GetEntry(tab_1->GetHandle()).has_value());
+  EXPECT_TRUE(
+      tracker.GetTabOrWindowScopedEntry(tab_1->GetHandle()).has_value());
 
   // Because the entry is now deferred, it should not be active in the registry
   // anymore. If AddEntry() didn't have ResetActiveEntry(), this expectation
@@ -2569,7 +2831,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Arrange: Make the space insufficient, which will create a deferred entry
   // and close the side panel.
-  coordinator_->OnWillAutoClose();
+  coordinator_->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(coordinator_);
 
   // Assert:

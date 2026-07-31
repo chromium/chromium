@@ -86,6 +86,7 @@ final class SidePanelContainerCoordinatorImpl
     private boolean mIsPreparingForAutoRestore;
 
     private boolean mEnableDeferredViewReplacementForTesting;
+    private boolean mSimulateAutoCloseConditionForTesting;
 
     /**
      * Constructs a concrete implementation of the SidePanelContainerCoordinator interface.
@@ -115,6 +116,15 @@ final class SidePanelContainerCoordinatorImpl
         mSideUiCoordinator.registerSideUiContainer(this);
         mSidePanelCoordinatorAndroid = sidePanelCoordinatorAndroid;
         mSidePanelCoordinatorAndroid.init();
+    }
+
+    @Override
+    public boolean canShow() {
+        ThreadUtils.assertOnUiThread();
+        boolean canShow = mSideUiCoordinator.canShowSideUi(SideUiId.SIDE_PANEL);
+
+        log(TAG, "canShow", canShow);
+        return canShow;
     }
 
     @Override
@@ -274,6 +284,28 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public void simulateAutoCloseConditionForTesting() {
+        mSimulateAutoCloseConditionForTesting = true;
+
+        // Don't pass a SideUiId in UiUpdateRequest. In production, auto-close is triggered by
+        // events outside the side panel container, such as a Configuration change. The side panel
+        // container will never _request_ to be auto-closed.
+        mSideUiCoordinator.updateUi(
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+    }
+
+    @Override
+    public void simulateAutoRestoreConditionForTesting() {
+        mSimulateAutoCloseConditionForTesting = false;
+
+        // Don't pass a SideUiId in UiUpdateRequest. In production, auto-restore is triggered by
+        // events outside the side panel container, such as a Configuration change. The side panel
+        // container will never _request_ to be auto-restored.
+        mSideUiCoordinator.updateUi(
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+    }
+
+    @Override
     public View getViewForTesting() {
         log(TAG, "getViewForTesting");
         ThreadUtils.assertOnUiThread();
@@ -313,6 +345,10 @@ final class SidePanelContainerCoordinatorImpl
             @Px int availableWidth, @Px int windowWidth, boolean isFullscreen) {
         log(TAG, "determineShowableSize", availableWidth, windowWidth, isFullscreen);
         ThreadUtils.assertOnUiThread();
+
+        if (mSimulateAutoCloseConditionForTesting) {
+            return new SideUiSize(0, HeightType.NOT_APPLICABLE);
+        }
 
         int availableWidthDp = ViewUtils.pxToDp(mParentActivity, availableWidth);
         int windowWidthDp = ViewUtils.pxToDp(mParentActivity, windowWidth);

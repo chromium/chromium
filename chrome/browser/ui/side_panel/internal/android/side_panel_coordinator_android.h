@@ -78,8 +78,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Called when a tab is closed (destroyed).
   void OnTabClosed(TabAndroid* tab);
 
-  // Called when a tab is detached from this window's tab strip for reparenting
-  // into another window.
+  // Called when the given `tab` is removed from this window's TabModel and
+  // _has_ become the active tab of another window.
   void OnTabReparented(TabAndroid* tab);
 
   /////////////////////////////////////////////////////////////////
@@ -96,6 +96,16 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // `SidePanelContainerCoordinator#configDeferredViewReplacementForTesting`
   // for detailed documentation.
   void ConfigDeferredViewReplacementForTesting(bool enable);
+
+  // See the Java
+  // `SidePanelContainerCoordinator#simulateAutoCloseConditionForTesting`
+  // for documentation.
+  void SimulateAutoCloseConditionForTesting();
+
+  // See the Java
+  // `SidePanelContainerCoordinator#simulateAutoRestoreConditionForTesting`
+  // for documentation.
+  void SimulateAutoRestoreConditionForTesting();
 
   SidePanelState GetStateForTesting();
   int GetContainerWidthForTesting();
@@ -130,8 +140,6 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // `SidePanelRegistry` instances accessible from this class, including
   // the window-scoped registry and all contextual (tab-scoped) registries.
   void ClearCachedEntryViews(bool include_active_entry = false);
-
-  void ClearDeferredEntryForTab(const tabs::TabHandle& tab_handle);
 
   UniqueKey GetCurrentKeyNonNull() const;
   SidePanelEntry* GetEntryForCurrentKeyNonNull() const;

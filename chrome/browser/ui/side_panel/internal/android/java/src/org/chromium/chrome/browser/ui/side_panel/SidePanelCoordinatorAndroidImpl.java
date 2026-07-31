@@ -151,6 +151,11 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     }
 
     @CalledByNative
+    private boolean canShow() {
+        return mSidePanelContainerCoordinator.canShow();
+    }
+
+    @CalledByNative
     private void startOpeningPanel(
             View sidePanelNativeView,
             @JniType("std::u16string_view") String title,
@@ -200,6 +205,18 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     private void configDeferredViewReplacementForTesting(boolean enable) {
         log(TAG, "configDeferredViewReplacementForTesting", enable);
         mSidePanelContainerCoordinator.configDeferredViewReplacementForTesting(enable); // IN-TEST
+    }
+
+    @CalledByNativeForTesting
+    private void simulateAutoCloseConditionForTesting() {
+        log(TAG, "simulateAutoCloseConditionForTesting");
+        mSidePanelContainerCoordinator.simulateAutoCloseConditionForTesting(); // IN-TEST
+    }
+
+    @CalledByNativeForTesting
+    private void simulateAutoRestoreConditionForTesting() {
+        log(TAG, "simulateAutoRestoreConditionForTesting");
+        mSidePanelContainerCoordinator.simulateAutoRestoreConditionForTesting(); // IN-TEST
     }
 
     @CalledByNativeForTesting
