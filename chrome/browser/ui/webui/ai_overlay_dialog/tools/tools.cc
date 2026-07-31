@@ -833,6 +833,53 @@ void AiOverlayTools::SetText(int32_t dom_node_id,
           std::move(chrome_render_frame), std::move(callback)));
 }
 
+void AiOverlayTools::ClickElement(int32_t dom_node_id,
+                                  ClickElementCallback callback) {
+  RecordToolCallInvoked("ClickElement");
+  content::WebContents* contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!contents) {
+    std::move(callback).Run(base::unexpected("No active tab"));
+    return;
+  }
+
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
+  if (!rfh) {
+    std::move(callback).Run(base::unexpected("No main frame"));
+    return;
+  }
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  rfh->GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame);
+
+  auto click_action = actor::mojom::ClickAction::New();
+  click_action->type = actor::mojom::ClickType::kLeft;
+  click_action->count = actor::mojom::ClickCount::kSingle;
+
+  auto invocation = actor::mojom::ToolInvocation::New();
+  invocation->task_id = actor::TaskId();
+  invocation->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
+  invocation->action =
+      actor::mojom::ToolAction::NewClick(std::move(click_action));
+
+  auto* raw_frame = chrome_render_frame.get();
+  raw_frame->InvokeTool(
+      std::move(invocation),
+      base::BindOnce(
+          [](mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> remote,
+             ClickElementCallback cb, actor::mojom::ActionResultPtr res) {
+            if (res && res->code == actor::mojom::ActionResultCode::kOk) {
+              std::move(cb).Run(base::ok(std::monostate()));
+            } else {
+              std::move(cb).Run(base::unexpected(
+                  (res && !res->message.empty())
+                      ? res->message
+                      : "Element not found or non-clickable"));
+            }
+          },
+          std::move(chrome_render_frame), std::move(callback)));
+}
+
 void AiOverlayTools::GetToolDefinitions(GetToolDefinitionsCallback callback) {
   std::move(callback).Run(kBuiltInToolDefinitionsJson);
 }

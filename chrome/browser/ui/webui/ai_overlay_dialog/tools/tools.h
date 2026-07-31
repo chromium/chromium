@@ -68,6 +68,8 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   void SetText(int32_t dom_node_id,
                const std::string& text,
                SetTextCallback callback) override;
+  void ClickElement(int32_t dom_node_id,
+                    ClickElementCallback callback) override;
   void InvokeGlic(const std::string& prompt,
                   InvokeGlicCallback callback) override;
   void GetToolDefinitions(GetToolDefinitionsCallback callback) override;

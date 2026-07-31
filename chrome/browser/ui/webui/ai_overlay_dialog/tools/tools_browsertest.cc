@@ -814,5 +814,45 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SetTextNotFound) {
 
   EXPECT_FALSE(future.Get().has_value());
 }
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, ClickElementCheckbox) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL("data:text/html,<html><body><input type='checkbox' id='test_check' "
+           "/></body></html>")));
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  int dom_node_id =
+      content::GetDOMNodeId(*contents->GetPrimaryMainFrame(), "#test_check")
+          .value();
+
+  base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+  tools()->ClickElement(dom_node_id, future.GetCallback());
+
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ(true,
+            content::EvalJs(contents, "document.getElementById('test_check').checked"));
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, ClickElementRadioButton) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL("data:text/html,<html><body><input type='radio' id='test_radio' "
+           "/></body></html>")));
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  int dom_node_id =
+      content::GetDOMNodeId(*contents->GetPrimaryMainFrame(), "#test_radio")
+          .value();
+
+  base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+  tools()->ClickElement(dom_node_id, future.GetCallback());
+
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ(true,
+            content::EvalJs(contents, "document.getElementById('test_radio').checked"));
+}
 }  // namespace
 }  // namespace ttc
