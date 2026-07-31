@@ -84,42 +84,47 @@ class Parser final {
   // |Node| and |offset|. The |node| is removed from container when |node|
   // contains only selection markers.
   void HandleCharacterData(CharacterData* node) {
-    int anchor_offset = -1;
-    int focus_offset = -1;
+    std::optional<wtf_size_t> anchor_offset;
+    std::optional<wtf_size_t> focus_offset;
     StringBuilder builder;
-    for (unsigned i = 0; i < node->length(); ++i) {
+    for (wtf_size_t i = 0; i < node->length(); ++i) {
       const UChar char_code = node->data()[i];
       if (char_code == '^') {
-        DCHECK_EQ(anchor_offset, -1) << node->data();
-        anchor_offset = static_cast<int>(builder.length());
+        DCHECK(!anchor_offset) << node->data();
+        anchor_offset = builder.length();
         continue;
       }
       if (char_code == '|') {
-        DCHECK_EQ(focus_offset, -1) << node->data();
-        focus_offset = static_cast<int>(builder.length());
+        DCHECK(!focus_offset) << node->data();
+        focus_offset = builder.length();
         continue;
       }
       builder.Append(char_code);
     }
-    if (anchor_offset == -1 && focus_offset == -1)
+    if (!anchor_offset && !focus_offset) {
       return;
+    }
     node->setData(builder.ToString());
     if (node->length() == 0) {
       // Remove |node| if it contains only selection markers.
       ContainerNode* const parent_node = node->parentNode();
       DCHECK(parent_node) << node;
-      const int offset_in_parent = node->NodeIndex();
-      if (anchor_offset >= 0)
+      const wtf_size_t offset_in_parent = node->NodeIndex();
+      if (anchor_offset.has_value()) {
         RecordSelectionAnchor(parent_node, offset_in_parent);
-      if (focus_offset >= 0)
+      }
+      if (focus_offset.has_value()) {
         RecordSelectionFocus(parent_node, offset_in_parent);
+      }
       parent_node->removeChild(node);
       return;
     }
-    if (anchor_offset >= 0)
-      RecordSelectionAnchor(node, anchor_offset);
-    if (focus_offset >= 0)
-      RecordSelectionFocus(node, focus_offset);
+    if (anchor_offset.has_value()) {
+      RecordSelectionAnchor(node, *anchor_offset);
+    }
+    if (focus_offset.has_value()) {
+      RecordSelectionFocus(node, *focus_offset);
+    }
   }
 
   void HandleElementNode(Element* element) {
@@ -138,14 +143,14 @@ class Parser final {
     }
   }
 
-  void RecordSelectionAnchor(Node* node, int offset) {
+  void RecordSelectionAnchor(Node* node, wtf_size_t offset) {
     DCHECK(!anchor_node_) << "Found more than one '^' in " << *anchor_node_
                           << " and " << *node;
     anchor_node_ = node;
     anchor_offset_ = offset;
   }
 
-  void RecordSelectionFocus(Node* node, int offset) {
+  void RecordSelectionFocus(Node* node, wtf_size_t offset) {
     DCHECK(!focus_node_) << "Found more than one '|' in " << *focus_node_
                          << " and " << *node;
     focus_node_ = node;
@@ -168,8 +173,8 @@ class Parser final {
 
   Node* anchor_node_ = nullptr;
   Node* focus_node_ = nullptr;
-  int anchor_offset_ = 0;
-  int focus_offset_ = 0;
+  wtf_size_t anchor_offset_ = 0;
+  wtf_size_t focus_offset_ = 0;
 };
 
 // Serialize DOM/Flat tree to selection text.
@@ -195,9 +200,10 @@ class Serializer final {
     }
     const Node& anchor_node = *selection_.Anchor().ComputeContainerNode();
     const Node& focus_node = *selection_.Focus().ComputeContainerNode();
-    const int anchor_offset =
+    const wtf_size_t anchor_offset =
         selection_.Anchor().ComputeOffsetInContainerNode();
-    const int focus_offset = selection_.Focus().ComputeOffsetInContainerNode();
+    const wtf_size_t focus_offset =
+        selection_.Focus().ComputeOffsetInContainerNode();
     if (anchor_node == node && focus_node == node) {
       if (anchor_offset == focus_offset) {
         builder_.Append(text.subview(0, anchor_offset));

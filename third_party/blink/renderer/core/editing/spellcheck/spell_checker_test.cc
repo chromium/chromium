@@ -42,7 +42,7 @@ class SpellCheckerTest : public SpellCheckTestBase,
     }
   }
 
-  unsigned LayoutCount() const {
+  wtf_size_t LayoutCount() const {
     return Page().GetFrameView().LayoutCountForTesting();
   }
   DummyPageHolder& Page() const { return GetDummyPageHolder(); }
@@ -116,7 +116,7 @@ TEST_P(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
 
   EXPECT_TRUE(GetSpellChecker().IsSpellCheckingEnabled());
   ForceLayout();
-  unsigned start_count = LayoutCount();
+  wtf_size_t start_count = LayoutCount();
   GetSpellChecker().RespondToChangedSelection();
   EXPECT_EQ(start_count, LayoutCount());
 }

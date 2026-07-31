@@ -1036,7 +1036,7 @@ TEST(BackspaceStateMachineTest, EmojiUnicode17) {
       "\U0001FAEF"             // Unicode 17 Emoji
       "\u200D"                 // ZWJ
       "\U0001F468\U0001F3FB";  // Man with EMOJI MODIFIER FITZPATRICK TYPE-1-2
-  for (unsigned i = text.length(); i;) {
+  for (wtf_size_t i = text.length(); i;) {
     const UChar code_unit = text[--i];
     EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(code_unit))
         << String::Format("%u: %04X", i, code_unit);

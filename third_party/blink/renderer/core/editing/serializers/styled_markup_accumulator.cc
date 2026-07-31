@@ -78,8 +78,8 @@ void StyledMarkupAccumulator::AppendEndMarkup(const Element& element,
 
 void StyledMarkupAccumulator::AppendText(Text& text) {
   const String& str = text.data();
-  unsigned length = str.length();
-  unsigned start = 0;
+  wtf_size_t length = str.length();
+  wtf_size_t start = 0;
   if (end_.IsNotNull()) {
     if (text == end_.GetText())
       length = end_.Offset();

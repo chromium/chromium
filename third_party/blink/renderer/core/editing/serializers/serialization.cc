@@ -471,8 +471,8 @@ static void TrimFragment(DocumentFragment* fragment,
 DocumentFragment* CreateFragmentFromMarkupWithContext(
     Document& document,
     const String& markup,
-    unsigned fragment_start,
-    unsigned fragment_end,
+    wtf_size_t fragment_start,
+    wtf_size_t fragment_end,
     const String& base_url,
     ParserContentPolicy parser_content_policy) {
   // FIXME: Need to handle the case where the markup already contains these
@@ -856,15 +856,15 @@ static bool StripSvgUseNonLocalHrefs(Node& node) {
 
 namespace {
 
-constexpr unsigned kMaxSanitizationIterations = 16;
+constexpr wtf_size_t kMaxSanitizationIterations = 16;
 
 }  // namespace
 
 String CreateStrictlyProcessedMarkupWithContext(
     Document& document,
     const String& raw_markup,
-    unsigned fragment_start,
-    unsigned fragment_end,
+    wtf_size_t fragment_start,
+    wtf_size_t fragment_end,
     const String& base_url,
     ChildrenOnly children_only,
     ResolveUrls should_resolve_urls,
@@ -879,7 +879,7 @@ String CreateStrictlyProcessedMarkupWithContext(
   // stable, or if we have exceeded the maximum allowed number of iterations.
   String last_markup;
   String markup = raw_markup;
-  for (unsigned iteration = 0;
+  for (wtf_size_t iteration = 0;
        iteration < kMaxSanitizationIterations && last_markup != markup;
        ++iteration) {
     last_markup = markup;
@@ -937,8 +937,8 @@ String CreateStrictlyProcessedMarkupWithContext(
 DocumentFragment* CreateStrictlyProcessedFragmentFromMarkupWithContext(
     Document& document,
     const String& raw_markup,
-    unsigned fragment_start,
-    unsigned fragment_end,
+    wtf_size_t fragment_start,
+    wtf_size_t fragment_end,
     const String& base_url) {
   String sanitized_markup = CreateStrictlyProcessedMarkupWithContext(
       document, raw_markup, fragment_start, fragment_end, NullUrl());

@@ -433,7 +433,7 @@ const char* IdleSpellCheckController::GetStateAsString() const {
 #undef V
   });
 
-  unsigned index = static_cast<unsigned>(state_);
+  auto index = std::to_underlying(state_);
   if (index < std::size(kTexts)) {
     return kTexts[index];
   }

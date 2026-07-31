@@ -41,7 +41,7 @@ class TextSuggestionControllerTest : public EditingTestBase {
   EphemeralRangeInFlatTree ComputeRangeSurroundingCaret(
       const PositionInFlatTree& caret_position) {
     const Node* const position_node = caret_position.ComputeContainerNode();
-    const unsigned position_offset_in_node =
+    const wtf_size_t position_offset_in_node =
         caret_position.ComputeOffsetInContainerNode();
     // See ComputeRangeSurroundingCaret() in TextSuggestionController.
     return EphemeralRangeInFlatTree(

@@ -46,19 +46,19 @@ String ConvertHtmlTextToInterchangeFormat(const String& in, const Text& node) {
 
   StringBuilder s;
 
-  unsigned i = 0;
-  unsigned consumed = 0;
+  wtf_size_t i = 0;
+  wtf_size_t consumed = 0;
   while (i < in.length()) {
     consumed = 1;
     if (IsCollapsibleWhitespace(in[i])) {
       // count number of adjoining spaces
-      unsigned j = i + 1;
+      wtf_size_t j = i + 1;
       while (j < in.length() && IsCollapsibleWhitespace(in[j]))
         j++;
-      unsigned count = j - i;
+      wtf_size_t count = j - i;
       consumed = count;
       while (count) {
-        unsigned add = count % 3;
+        wtf_size_t add = count % 3;
         switch (add) {
           case 0:
             s.Append(kConvertedSpaceString);
