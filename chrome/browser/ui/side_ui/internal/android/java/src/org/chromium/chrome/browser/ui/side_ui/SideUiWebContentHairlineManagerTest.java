@@ -23,7 +23,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
@@ -36,6 +39,7 @@ import java.util.Map;
 
 /** Unit tests for {@link SideUiWebContentHairlineManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID)
 public class SideUiWebContentHairlineManagerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -218,5 +222,23 @@ public class SideUiWebContentHairlineManagerTest {
         assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopRightRoundedCorner.getVisibility());
         assertEquals(View.VISIBLE, mBottomLeftRoundedCorner.getVisibility());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID)
+    public void testTopHairlineHiddenWhenFeatureDisabled() {
+        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
+                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
+        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
+        BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
+
+        // Even with non-zero offset and side UI showing, if the feature is disabled,
+        // the top hairline must remain INVISIBLE.
+        when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
+        when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
+        observer.onTopControlsHeightChanged(100, 0);
+
+        assertEquals("Top margin should still be updated.", 100, mLayoutParams.topMargin);
+        assertEquals(View.INVISIBLE, mTopHairline.getVisibility());
     }
 }

@@ -13074,6 +13074,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAndroidSidePanelLogsName,
      flag_descriptions::kEnableAndroidSidePanelLogsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEnableAndroidSidePanelLogs)},
+    {"side-panel-top-hairline-refactor-android",
+     flag_descriptions::kSidePanelTopHairlineRefactorAndroidName,
+     flag_descriptions::kSidePanelTopHairlineRefactorAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSidePanelTopHairlineRefactorAndroid)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

@@ -274,6 +274,7 @@ BASE_DECLARE_FEATURE(kShareCustomActionsInCCT);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
 BASE_DECLARE_FEATURE(kShortCircuitUnfocusAnimation);
 BASE_DECLARE_FEATURE(kShowTabListAnimations);
+BASE_DECLARE_FEATURE(kSidePanelTopHairlineRefactorAndroid);
 BASE_DECLARE_FEATURE(kSmallerTabStripTitleLimit);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kSubmenusInAppMenu);

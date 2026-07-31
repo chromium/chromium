@@ -5647,6 +5647,11 @@ inline constexpr char kNtpVisionName[] = "New tab page vision";
 inline constexpr char kNtpVisionDescription[] =
     "Enable the new vision of the new tab page";
 
+inline constexpr char kSidePanelTopHairlineRefactorAndroidName[] =
+    "Side Panel Top Hairline Refactor Android";
+inline constexpr char kSidePanelTopHairlineRefactorAndroidDescription[] =
+    "Enables the Side Panel top hairline refactor on Android.";
+
 inline constexpr char kTextHighlightFullLinkName[] = "Text Highlight Full Link";
 inline constexpr char kTextHighlightFullLinkDescription[] =
     "In the share sheet, use the full URL instead of canonical URL for "

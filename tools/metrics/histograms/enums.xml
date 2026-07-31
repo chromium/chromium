@@ -15875,6 +15875,7 @@ from previous Chrome versions.
   <int value="427945554" label="StrictExtensionIsolation:enabled"/>
   <int value="428554364" label="OffsetParentNewSpecBehavior:disabled"/>
   <int value="428631746" label="BackGestureActivityTabProvider:disabled"/>
+  <int value="430526292" label="SidePanelTopHairlineRefactorAndroid:enabled"/>
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
   <int value="431610096" label="SearchEngineUnconditionalDialog:enabled"/>
@@ -17716,6 +17717,7 @@ from previous Chrome versions.
   <int value="1025089469" label="GlicTabGroups:disabled"/>
   <int value="1025383624" label="FilesLocalImageSearch:enabled"/>
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
+  <int value="1026805166" label="SidePanelTopHairlineRefactorAndroid:disabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
   <int value="1027183966" label="CrossDeviceSigninFromDesktop:disabled"/>
   <int value="1027252926" label="SyncSupportSecondaryAccount:enabled"/>

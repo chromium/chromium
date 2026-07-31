@@ -654,6 +654,8 @@ public abstract class ChromeFeatureList {
     public static final String SHOW_TAB_LIST_ANIMATIONS = "ShowTabListAnimations";
     public static final String SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS =
             "ShowWarningsForSuspiciousNotifications";
+    public static final String SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID =
+            "SidePanelTopHairlineRefactorAndroid";
     public static final String SITE_ISOLATION_ENABLE_MEMORY_THRESHOLD_ANDROID =
             "SiteIsolationEnableMemoryThresholdAndroid";
     public static final String SMALLER_TAB_STRIP_TITLE_LIMIT = "SmallerTabStripTitleLimit";
@@ -1544,6 +1546,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID, false);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
+    public static final MutableFlagWithSafeDefault sSidePanelTopHairlineRefactorAndroid =
+            newMutableFlagWithSafeDefault(SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabAndroidGracefulShutdown =
             newMutableFlagWithSafeDefault(TAB_ANDROID_GRACEFUL_SHUTDOWN, false);
     public static final MutableFlagWithSafeDefault sTabBottomSheet =

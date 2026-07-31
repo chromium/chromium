@@ -14,6 +14,7 @@ import com.google.errorprone.annotations.DoNotMock;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -114,7 +115,9 @@ import java.util.Set;
             int topVisibleContentOffset =
                     (int) mBrowserControlsStateProvider.getTopVisibleContentOffset();
             boolean hideTopHairline =
-                    topVisibleContentOffset == 0 || !mSideUiStateProvider.isAnySideUiShowing();
+                    !ChromeFeatureList.sSidePanelTopHairlineRefactorAndroid.isEnabled()
+                            || topVisibleContentOffset == 0
+                            || !mSideUiStateProvider.isAnySideUiShowing();
             mSideUiWebContentHairlineContainer
                     .getTopHairline()
                     .setVisibility(hideTopHairline ? View.INVISIBLE : View.VISIBLE);

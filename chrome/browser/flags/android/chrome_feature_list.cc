@@ -450,6 +450,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShareCustomActionsInCCT,
     &kShortCircuitUnfocusAnimation,
     &kShowTabListAnimations,
+    &kSidePanelTopHairlineRefactorAndroid,
     &kSmallerTabStripTitleLimit,
     &kStartSurfaceReturnTime,
     &kSubmenusInAppMenu,
@@ -838,6 +839,7 @@ BASE_FEATURE(kSettingsSingleActivity, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShareCustomActionsInCCT, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShortCircuitUnfocusAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowTabListAnimations, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSidePanelTopHairlineRefactorAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSmallerTabStripTitleLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kStartSurfaceReturnTime, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSubmenusInAppMenu, base::FEATURE_DISABLED_BY_DEFAULT);
