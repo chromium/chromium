@@ -2749,6 +2749,8 @@ public class AwContents implements SmartClipProvider {
         // "fixing".  See also https://crbug.com/1145717.
         params.setUrl(UrlFormatter.fixupUrl(params.getUrl()).getPossiblyInvalidSpec());
 
+        AwLoadUrlMetricsObserver.setPendingLoadUrlTimestamp(
+                SystemClock.uptimeMillis(), mWebContents);
         NavigationHandle result = mNavigationController.loadUrl(params);
         RecordHistogram.recordBooleanHistogram("Android.WebView.LoadUrl.Success", result != null);
 

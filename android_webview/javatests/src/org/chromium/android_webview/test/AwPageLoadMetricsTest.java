@@ -50,8 +50,8 @@ public class AwPageLoadMetricsTest extends AwParameterizedTest {
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        AwContents mAwContents = mTestContainerView.getAwContents();
-        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        AwContents awContents = mTestContainerView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         mWebServer = TestWebServer.start();
     }
 
@@ -93,7 +93,7 @@ public class AwPageLoadMetricsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @RequiresRestart(
             "NavigationToFirstPaint is only recorded once, making the test fail "
-                    + "when run in a batch and being the first test.")
+                    + "when run in a batch and not being the first test.")
     public void testHeartbeatMetrics() throws Throwable {
         final String data = "<html><head></head><body><p>Hello World</p></body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
@@ -111,6 +111,25 @@ public class AwPageLoadMetricsTest extends AwParameterizedTest {
                         .expectAnyRecord("PageLoad.PaintTiming.NavigationToLargestContentfulPaint2")
                         .build();
         loadUrlSync("about:blank");
+        histograms.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    /** This test covers WebView LoadUrl to first paint/network start metrics. */
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @RequiresRestart(
+            "LoadUrlToFirstContentfulPaint is only recorded once, making the test fail "
+                    + "when run in a batch and not being the first test.")
+    public void testAwLoadUrlMetrics() throws Throwable {
+        final String data = "<html><head></head><body><p>Hello World</p></body></html>";
+        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.WebView.PageLoad.LoadUrlToCommit")
+                        .expectAnyRecord("Android.WebView.PageLoad.LoadUrlToFirstContentfulPaint")
+                        .build();
+        loadUrlSync(url);
         histograms.pollInstrumentationThreadUntilSatisfied();
     }
 
