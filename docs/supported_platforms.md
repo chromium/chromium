@@ -187,9 +187,6 @@ policy](https://support.google.com/chrome/a/answer/6220366).
 [This page](https://support.google.com/chrome/a/answer/7100626) details
 minimum operating system and hardware requirements.
 
-As of March 2026, official support on ARM64 is
-[upcoming](https://blog.chromium.org/2026/03/bringing-chrome-to-arm64-linux-devices.html).
-
 Many more platforms/distributions are community-supported (per the definition
 in the [definitions of terms](#definitions-of-terms)), including Flatpak
 (alternative packaging format), Arch Linux (via AUR), and downstream Chromium
