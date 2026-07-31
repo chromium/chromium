@@ -425,6 +425,23 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    // Regression test for crbug.com/539883315 - removing account should not cause a crash.
+    public void testCentralAccountCardPreferenceWhenAccountRemovedNoCrash() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        startManageSyncPreferences();
+
+        ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
+
+        mSyncTestRule
+                .getSigninTestRule()
+                .removeAccount(mSyncTestRule.getSigninTestRule().getPrimaryAccount().getId());
+
+        ApplicationTestUtils.waitForActivityState(mSettingsActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/529758544
     public void testRemoveAccountFromDeviceShouldClearSyncPrefs() {
         SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();

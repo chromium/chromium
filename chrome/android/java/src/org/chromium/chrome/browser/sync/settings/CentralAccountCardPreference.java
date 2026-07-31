@@ -17,6 +17,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -71,7 +72,13 @@ public class CentralAccountCardPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        DisplayableProfileData profileData = mProfileDataCache.getById(mAccountInfo.getId());
+        @Nullable DisplayableProfileData profileData =
+                mProfileDataCache.tryGetById(mAccountInfo.getId());
+        if (profileData == null) {
+            // onBindViewHolder can be triggered after the account has been removed but before the
+            // preference page is closed. Skip the binding to avoid crashes in the meantime.
+            return;
+        }
 
         ImageView imageView = (ImageView) holder.findViewById(R.id.central_account_image);
         imageView.setImageDrawable(profileData.getImage());

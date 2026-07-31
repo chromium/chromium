@@ -178,6 +178,24 @@ public class ProfileDataCache implements IdentityManager.Observer {
     }
 
     /**
+     * Returns cached {@link DisplayableProfileData} for the given account ID, or null if missing.
+     *
+     * <p>Method is synchronous and does not trigger any account info fetches. First it checks if
+     * the {@link DisplayableProfileData} is in the cache, then it updates the cache if the account
+     * is missing.
+     *
+     * @param accountId The account ID for which to get the profile data.
+     * @return The {@link DisplayableProfileData} for the given account ID, or null if not found.
+     */
+    public @Nullable DisplayableProfileData tryGetById(CoreAccountId accountId) {
+        if (!mAccountsCache.isLoaded() || !mAccountsCache.contains(accountId)) {
+            updateCache();
+        }
+
+        return mAccountsCache.getByAccountId(accountId);
+    }
+
+    /**
      * Returns cached {@link DisplayableProfileData} for the given account ID.
      *
      * <p>Method is synchronous and does not trigger any account info fetches. First it checks if
@@ -189,11 +207,7 @@ public class ProfileDataCache implements IdentityManager.Observer {
      * @return The {@link DisplayableProfileData} for the given account ID.
      */
     public DisplayableProfileData getById(CoreAccountId accountId) {
-        if (!mAccountsCache.isLoaded() || !mAccountsCache.contains(accountId)) {
-            updateCache();
-        }
-
-        var profileData = mAccountsCache.getByAccountId(accountId);
+        var profileData = tryGetById(accountId);
         if (profileData != null) {
             return profileData;
         }

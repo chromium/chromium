@@ -386,6 +386,22 @@ public class ProfileDataCacheUnitTest {
     }
 
     @Test
+    public void givenUnknownAccountIdWhenTryGetByIdThenShouldReturnNull() {
+        Assert.assertNull(mProfileDataCache.tryGetById(TestAccounts.ACCOUNT1.getId()));
+    }
+
+    @Test
+    public void givenCachedAccountWhenTryGetByIdThenReturnCachedAccount() {
+        var accountInfo = TestAccounts.ACCOUNT1;
+        mAccountManagerTestRule.addAccount(accountInfo);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        DisplayableProfileData profileData = mProfileDataCache.tryGetById(accountInfo.getId());
+        Assert.assertNotNull(profileData);
+        Assert.assertEquals(accountInfo.getEmail(), profileData.getAccountEmail());
+    }
+
+    @Test
     public void testOnProfileDataUpdatedIsEmittedIfAccountsAreNotReadyDuringInitialization() {
         var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate();
         mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
