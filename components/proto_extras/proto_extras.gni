@@ -117,11 +117,6 @@ template("proto_extras") {
   if (defined(invoker.proto_in_dir)) {
     _proto_in_dir = invoker.proto_in_dir
   }
-  _custom_serialization_deps = []
-  if (defined(invoker.custom_serialization_deps)) {
-    _custom_serialization_deps = invoker.custom_serialization_deps
-  }
-
   assert(
       !_generate_ostream || _generate_to_value,
       "Stream operator generation currently depends on ToValue " +
@@ -137,8 +132,13 @@ template("proto_extras") {
   }
 
   _all_targets = []
-  _to_value_target_name = "${target_name}_to_value"
   if (_generate_to_value) {
+    _custom_serialization_deps = []
+    if (defined(invoker.custom_serialization_deps)) {
+      _custom_serialization_deps = invoker.custom_serialization_deps
+    }
+
+    _to_value_target_name = "${target_name}_to_value"
     _all_targets += [ _to_value_target_name ]
     proto_library(_to_value_target_name) {
       proto_in_dir = _proto_in_dir

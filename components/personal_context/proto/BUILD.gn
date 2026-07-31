@@ -22,4 +22,6 @@ proto_extras("personal_context_proto_extras") {
     "features/common_data.proto",
   ]
   deps = [ ":personal_context_proto" ]
+  omit_to_value_serialization = true
+  omit_stream_operators = true
 }
