@@ -61,6 +61,11 @@ class LevelUpService : public KeyedService {
   // Returns all available tasks.
   const std::map<TaskType, std::unique_ptr<TaskInfo>>& GetTasks() const;
 
+  // Returns a map of user action strings to stat types that trigger stat
+  // increments.
+  const std::map<std::string, LevelUpTaskStatType>& GetStatTriggerUserActions()
+      const;
+
   // KeyedService implementation.
   void Shutdown() override;
 
@@ -96,6 +101,7 @@ class LevelUpService : public KeyedService {
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<LevelUpTabGroupObserver> tab_group_observer_;
   std::map<TaskType, std::unique_ptr<TaskInfo>> tasks_;
+  std::map<std::string, LevelUpTaskStatType> stat_trigger_user_actions_;
   // Set of completed task identifiers. Stored as strings rather than TaskType
   // enums to support storing unknown tasks received via sync from newer
   // versions of the app.

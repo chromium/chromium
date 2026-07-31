@@ -26742,6 +26742,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.LensOverlay.CameraSearch.Performed">
+  <owner>rkgibson@google.com</owner>
+  <description>
+    Recorded when a camera or photo search is performed via Lens Overlay.
+  </description>
+</action>
+
 <action name="Mobile.LensOverlay.Closed">
   <owner>christianxu@google.com</owner>
   <owner>stkhapugin@google.com</owner>

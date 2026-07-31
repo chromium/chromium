@@ -243,13 +243,13 @@
   int photoSearchesPerformed = _levelUpService->GetStatValue(
       LevelUpTaskStatType::kPhotoSearchesPerformed);
   NSString* title4 = l10n_util::GetPluralNSStringF(
-      IDS_IOS_LEVEL_UP_STAT_SEARCHES_SKIPPED, photoSearchesPerformed);
-  NSString* subtitle4 =
-      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_SEARCHES_SKIPPED);
+      IDS_IOS_LEVEL_UP_STAT_PHOTO_SEARCHES_PERFORMED, photoSearchesPerformed);
+  NSString* subtitle4 = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PHOTO_SEARCHES_PERFORMED);
   LevelUpStat* stat4 = [[LevelUpStat alloc]
         initWithTitle:title4
              subtitle:subtitle4
-      imageLottieName:@"searches_skipped"
+      imageLottieName:@"photo_searches_performed"
                  type:LevelUpTaskStatType::kPhotoSearchesPerformed];
   [stats addObject:stat4];
 

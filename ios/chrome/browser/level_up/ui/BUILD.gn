@@ -49,7 +49,7 @@ source_set("ui") {
 bundle_data("lottie_resources") {
   sources = [
     "resources/passwords_verified.json",
-    "resources/searches_skipped.json",
+    "resources/photo_searches_performed.json",
     "resources/tabs_decluttered.json",
     "resources/typing_saved.json",
   ]

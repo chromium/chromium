@@ -272,6 +272,11 @@ const std::map<TaskType, std::unique_ptr<TaskInfo>>& LevelUpService::GetTasks()
   return tasks_;
 }
 
+const std::map<std::string, LevelUpTaskStatType>&
+LevelUpService::GetStatTriggerUserActions() const {
+  return stat_trigger_user_actions_;
+}
+
 void LevelUpService::PopulateTasks() {
   tasks_[TaskType::kTabGroups] = CreateTabGroupsTaskInfo();
   tasks_[TaskType::kAutofill] = CreateAutofillTaskInfo();
@@ -285,6 +290,9 @@ void LevelUpService::PopulateTasks() {
   tasks_[TaskType::kLensSearch] = CreateLensSearchTaskInfo();
   tasks_[TaskType::kAISearch] = CreateAISearchTaskInfo();
   tasks_[TaskType::kCameraSearch] = CreateCameraSearchTaskInfo();
+
+  stat_trigger_user_actions_["Mobile.LensOverlay.CameraSearch.Performed"] =
+      LevelUpTaskStatType::kPhotoSearchesPerformed;
 }
 
 void LevelUpService::LoadPrefs() {

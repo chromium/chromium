@@ -8,17 +8,21 @@
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -32,11 +36,17 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -47,11 +57,14 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +80,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @interface LensOverlayCoordinator ()
 - (BOOL)isUICreated;
 - (BOOL)isLensOverlayVisible;
+- (void)loadResultsURL:(GURL)url
+           httpHeaders:(NSDictionary<NSString*, NSString*>*)httpHeaders;
 @end
 
 namespace {
@@ -115,6 +130,15 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     scene_state_.profileState = profile_state_;
     Browser* browser =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+
+    id mockLayoutGuideSceneAgent = OCMClassMock([LayoutGuideSceneAgent class]);
+    OCMStub(
+        ClassMethod([mockLayoutGuideSceneAgent agentFromScene:scene_state_]))
+        .andReturn(mockLayoutGuideSceneAgent);
+    LayoutGuideCenter* testLayoutGuideCenter = [[LayoutGuideCenter alloc] init];
+    OCMStub([mockLayoutGuideSceneAgent regularLayoutGuideCenter])
+        .andReturn(testLayoutGuideCenter);
+
     dispatcher_ = [[CommandDispatcher alloc] init];
 
     profile_->GetPrefs()->SetInteger(
@@ -124,6 +148,9 @@ class LensOverlayCoordinatorTest : public PlatformTest {
 
     base_view_controller_ = [[UIViewController alloc] init];
 
+    AutocompleteBrowserAgent::CreateForBrowser(browser);
+    TabInsertionBrowserAgent::CreateForBrowser(browser);
+    WebStateDelegateBrowserAgent::CreateForBrowser(browser);
     OmniboxFocusBrowserAgent::CreateForBrowser(browser);
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
     // must be created first. Please maintain this order.
@@ -172,6 +199,31 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     [browser->GetCommandDispatcher()
         startDispatchingToTarget:fullscreen_handler_
                      forProtocol:@protocol(FullscreenCommands)];
+
+    snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:snackbar_handler_
+                     forProtocol:@protocol(SnackbarCommands)];
+
+    qr_scanner_handler_ = OCMProtocolMock(@protocol(QRScannerCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:qr_scanner_handler_
+                     forProtocol:@protocol(QRScannerCommands)];
+
+    settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:settings_handler_
+                     forProtocol:@protocol(SettingsCommands)];
+
+    quick_delete_handler_ = OCMProtocolMock(@protocol(QuickDeleteCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:quick_delete_handler_
+                     forProtocol:@protocol(QuickDeleteCommands)];
+
+    help_handler_ = OCMProtocolMock(@protocol(HelpCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:help_handler_
+                     forProtocol:@protocol(HelpCommands)];
 
     // Tab helper
     std::unique_ptr<LensOverlayFakeWebState> web_state =
@@ -277,6 +329,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   id<ToolbarCommands> toolbar_commands_handler_;
   id<GeminiCommands> gemini_handler_;
   id<FullscreenCommands> fullscreen_handler_;
+  id<SnackbarCommands> snackbar_handler_;
+  id<QRScannerCommands> qr_scanner_handler_;
+  id<SettingsCommands> settings_handler_;
+  id<QuickDeleteCommands> quick_delete_handler_;
+  id<HelpCommands> help_handler_;
 
   void DeliverMemoryWarningNotification() {
     [[NSNotificationCenter defaultCenter]
@@ -585,6 +642,70 @@ TEST_F(LensOverlayCoordinatorTest, TimingMetricsRecorded) {
                                     /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.SessionForegroundDuration",
                                     /*expected_count=*/1);
+}
+
+// Tests that Mobile.LensOverlay.CameraSearch.Performed user action is recorded
+// for camera searches.
+TEST_F(LensOverlayCoordinatorTest, CameraSearchUserActionRecorded) {
+  [coordinator_ start];
+
+  base::UserActionTester user_action_tester;
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Mobile.LensOverlay.CameraSearch.Performed"));
+
+  id<LensOverlayCommands> lens_overlay_handler =
+      HandlerForProtocol(dispatcher_, LensOverlayCommands);
+
+  // 1. Trigger Lens Search (via LocationBar entrypoint - webpage search)
+  __block BOOL presentation_success = NO;
+  [lens_overlay_handler createAndShowLensUI:NO
+                                 entrypoint:LensOverlayEntrypoint::kLocationBar
+                                 completion:^(BOOL success) {
+                                   presentation_success = success;
+                                   run_loop_.Quit();
+                                 }];
+  run_loop_.Run();
+  ASSERT_TRUE(presentation_success);
+
+  // Simulate loading results URL
+  [coordinator_ loadResultsURL:GURL("https://google.com/search")
+                   httpHeaders:nil];
+
+  // Verify action is NOT recorded for webpage search
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Mobile.LensOverlay.CameraSearch.Performed"));
+
+  [lens_overlay_handler
+      destroyLensUI:NO
+             reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
+
+  // 2. Trigger Camera Search (via LVFCameraCapture entrypoint)
+  base::RunLoop run_loop2;
+  base::RepeatingClosure quit_closure2 = run_loop2.QuitClosure();
+  presentation_success = NO;
+  id mockMetadata =
+      [OCMockObject niceMockForProtocol:@protocol(LensImageMetadata)];
+  [[[mockMetadata stub] andReturnValue:@YES] isCameraImage];
+
+  [lens_overlay_handler
+      searchWithLensImageMetadata:mockMetadata
+                       entrypoint:LensOverlayEntrypoint::kLVFCameraCapture
+          initialPresentationBase:nil
+                       completion:^(BOOL success) {
+                         presentation_success = success;
+                         quit_closure2.Run();
+                       }];
+  run_loop2.Run();
+  ASSERT_TRUE(presentation_success);
+
+  // Verify action IS recorded for camera search
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Mobile.LensOverlay.CameraSearch.Performed"));
+
+  [lens_overlay_handler
+      destroyLensUI:NO
+             reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
 }
 
 }  // namespace

@@ -4490,16 +4490,16 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
           =1 {1 password instantly verified}
           other {# passwords instantly verified}}
       </message>
-      <message name="IDS_IOS_LEVEL_UP_STAT_SEARCHES_SKIPPED" desc="Title for the manual searches skipped statistic card. [iOS only]">
+      <message name="IDS_IOS_LEVEL_UP_STAT_PHOTO_SEARCHES_PERFORMED" desc="Title for the manual searches skipped statistic card. [iOS only]">
         {count, plural,
-          =1 {1 manual search skipped}
-          other {# manual searches skipped}}
+          =1 {You used 1 photo to search}
+          other {You used # photos to search}}
       </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_VERIFIED" desc="Statistic card subtitle displaying the source task for passwords verified. [iOS only]">
         since using Password checkup
       </message>
-      <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_SEARCHES_SKIPPED" desc="Statistic card subtitle displaying the source task for manual searches skipped. [iOS only]">
-        since using Google Lens
+      <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PHOTO_SEARCHES_PERFORMED" desc="Statistic card subtitle displaying the source task for manual searches skipped. [iOS only]">
+        since completing "Use a photo to search with Google Lens"
       </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TABS_DECLUTTERED" desc="Statistic card subtitle displaying the source task for tabs decluttered. [iOS only]">
         since learning about Tab Groups
