@@ -453,7 +453,8 @@ BrowserFrameViewMac::GetCaptionButtonBounds() const {
   // of the client area.
   if (GetBrowserView()->browser()->GetType() ==
           BrowserWindowInterface::Type::TYPE_POPUP ||
-      GetBrowserView()->browser()->is_type_devtools()) {
+      GetBrowserView()->browser()->GetType() ==
+          BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
     return result;
   }
 

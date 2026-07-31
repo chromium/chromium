@@ -233,7 +233,7 @@ void AppInfoDialogClosedCallback(SessionID session_id,
 }
 
 bool CanOpenFile(Browser* browser) {
-  if (browser->is_type_devtools() ||
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) {
     return false;
@@ -2376,7 +2376,8 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_->UpdateCommandEnabled(
       IDC_SHOW_AS_TAB,
       browser_->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL &&
-          !is_fullscreen && !browser_->is_type_devtools() &&
+          !is_fullscreen &&
+          browser_->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS &&
           browser_->GetType() !=
               BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
 
@@ -2402,7 +2403,9 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_->UpdateCommandEnabled(kDeveloperMenuId, show_main_ui);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   command_updater_->UpdateCommandEnabled(
-      IDC_FEEDBACK, show_main_ui || browser_->is_type_devtools());
+      IDC_FEEDBACK,
+      show_main_ui ||
+          browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS);
   command_updater_->UpdateCommandEnabled(IDC_REPORT_UNSAFE_SITE, show_main_ui);
 #endif
 
@@ -2630,9 +2633,11 @@ void BrowserCommandController::UpdateCommandsForFind() {
     }
   }
 
-  bool enabled = active_index != TabStripModel::kNoTab &&
-                 !model->IsTabBlocked(active_index) &&
-                 !browser_->is_type_devtools() && !is_actor_overlay_visible;
+  bool enabled =
+      active_index != TabStripModel::kNoTab &&
+      !model->IsTabBlocked(active_index) &&
+      browser_->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS &&
+      !is_actor_overlay_visible;
 
   command_updater_->UpdateCommandEnabled(IDC_FIND, enabled);
   command_updater_->UpdateCommandEnabled(IDC_FIND_NEXT, enabled);

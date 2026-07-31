@@ -179,7 +179,7 @@ void BrowserWidget::InitBrowserWidget() {
 
   if (browser_native_widget_->ShouldRestorePreviousBrowserWidgetState()) {
     if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-        browser->is_type_devtools() ||
+        browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS ||
         browser->GetType() == BrowserWindowInterface::Type::TYPE_APP) {
       // Typed panel/popup can only return a size once the widget has been
       // created.

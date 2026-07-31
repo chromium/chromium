@@ -314,7 +314,7 @@ bool UnloadController::RunUnloadEventsHelper(content::WebContents* contents) {
   // Special case for when we quit an application. The devtools window can
   // close if it's beforeunload event has already fired which will happen due
   // to the interception of it's content's beforeunload.
-  if (browser_->is_type_devtools() &&
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS &&
       DevToolsWindow::HasFiredBeforeUnloadEventForDevToolsBrowser(browser_)) {
     return false;
   }
@@ -411,7 +411,7 @@ UnloadController::GetBrowserClosingStatus() {
   // Special case for when we quit an application. The devtools window can
   // close if it's beforeunload event has already fired which will happen due
   // to the interception of it's content's beforeunload.
-  if (browser_->is_type_devtools() &&
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS &&
       DevToolsWindow::HasFiredBeforeUnloadEventForDevToolsBrowser(browser_)) {
     return BrowserWindowInterface::ClosingStatus::kPermitted;
   }
@@ -455,7 +455,8 @@ bool UnloadController::TryToCloseWindow(
   // The devtools browser gets its beforeunload events as the results of
   // intercepting events from the inspected tab, so don't send them here as
   // well.
-  if (browser_->is_type_devtools() || HasCompletedUnloadProcessing()) {
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS ||
+      HasCompletedUnloadProcessing()) {
     return false;
   }
 

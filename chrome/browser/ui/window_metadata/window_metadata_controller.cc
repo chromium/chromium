@@ -237,7 +237,7 @@ std::u16string WindowMetadataController::GetWindowTitleFromWebContents(
   if (title.empty() &&
       (browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
        browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP ||
-       browser_->is_type_devtools()) &&
+       browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) &&
       include_app_name) {
     auto* const app_browser_controller =
         web_app::AppBrowserController::From(browser_);

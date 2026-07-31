@@ -115,7 +115,7 @@ bool SavedBoundsAreContentBounds(const Browser* browser) {
   // Web apps, on the other hand, have the same behavior as popups, and save
   // their content bounds.
   return browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL &&
-         !browser->is_type_devtools() &&
+         browser->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS &&
          !WindowFeatureController::From(browser)->IsTrustedSource();
 }
 

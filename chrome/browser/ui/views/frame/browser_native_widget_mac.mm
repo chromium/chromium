@@ -298,7 +298,7 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       // window.
       result->new_hidden_state =
           browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-          browser->is_type_devtools();
+          browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS;
       break;
     }
     case IDC_ROUTE_MEDIA: {

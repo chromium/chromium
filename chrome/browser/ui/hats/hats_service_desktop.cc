@@ -696,7 +696,7 @@ bool HatsServiceDesktop::IsRightBrowserType(
     hats::SurveyConfig::RequestedBrowserType requested_browser_type) const {
   if (!browser ||
       (browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL &&
-       !browser->is_type_devtools())) {
+       browser->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS)) {
     return false;
   }
 

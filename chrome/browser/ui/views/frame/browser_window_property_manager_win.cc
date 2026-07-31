@@ -56,7 +56,8 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
               browser->GetType() ==
                   BrowserWindowInterface::Type::TYPE_APP_POPUP ||
-              browser->is_type_devtools() ||
+              browser->GetType() ==
+                  BrowserWindowInterface::Type::TYPE_DEVTOOLS ||
               (browser->GetType() ==
                    BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE &&
                !browser->app_name().empty())

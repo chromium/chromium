@@ -332,7 +332,9 @@ void LocationBarView::Init() {
 
   const bool is_web_app =
       browser_ && web_app::AppBrowserController::IsWebApp(browser_);
-  const bool is_devtools = browser_ && browser_->is_type_devtools();
+  const bool is_devtools =
+      browser_ &&
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS;
 
   // Skip creating the WebUI presenters/views for web apps and devtools windows
   // since they're not supported there and will result in extra Omnibox

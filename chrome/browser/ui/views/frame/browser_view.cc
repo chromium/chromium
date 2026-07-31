@@ -3815,7 +3815,7 @@ void BrowserView::EnsureFocusOrder() {
 
 bool BrowserView::CanChangeWindowIcon() const {
   // The logic of this function needs to be same as GetWindowIcon().
-  if (browser_->is_type_devtools()) {
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
     return false;
   }
   if (web_app::AppBrowserController::From(browser_)) {
@@ -3857,7 +3857,7 @@ ui::ImageModel BrowserView::GetWindowAppIcon() {
 
 ui::ImageModel BrowserView::GetWindowIcon() {
   // Use the default icon for devtools.
-  if (browser_->is_type_devtools()) {
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
     return ui::ImageModel();
   }
 
