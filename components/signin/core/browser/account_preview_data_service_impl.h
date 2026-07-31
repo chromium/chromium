@@ -66,6 +66,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       const override;
 
   // Retrieves the cached preview data. Exposed specifically for testing.
+  // Note: This may not be available if the browser restarted and no fetch has
+  // happened, which may wait until the timer is activated.
   std::optional<AccountPreviewData> GetAccountPreviewData(
       const GaiaId& gaia_id) const;
 
@@ -94,10 +96,14 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void StartFetch(const GaiaId& gaia_id);
   void OnSingleFetchCompleted(const GaiaId& gaia_id,
                               std::optional<AccountPreviewData> data);
+  bool HaveAccountsMutatedSinceLastFetch(
+      const std::vector<CoreAccountInfo>& accounts) const;
+  void RecordAccountsUsedForLastFetch();
   void OnAllFetchesCompleted(bool should_reset_periodic_timer);
   void CreateAndStartRepeatingTimer();
   void ResetTimer();
   std::optional<AccountPreviewPreference> ComputePreferredAccount() const;
+  void ClearAllDataAndResults();
 
   std::optional<AccountPreviewPreference> ReadPreferredAccountFromPrefs() const;
   // Writing `std::nullopt` as `preference` clears the pref.
