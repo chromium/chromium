@@ -142,7 +142,7 @@ public class NativePageFactoryTest {
         }
 
         @Override
-        public NativePage buildSettingsPage(Tab tab) {
+        public NativePage buildSettingsPage(Tab tab, String url) {
             return new MockNativePage(NativePageType.SETTINGS);
         }
     }

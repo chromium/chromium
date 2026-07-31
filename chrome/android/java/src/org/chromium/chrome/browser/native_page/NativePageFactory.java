@@ -432,7 +432,7 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier));
         }
 
-        protected NativePage buildSettingsPage(Tab tab) {
+        protected NativePage buildSettingsPage(Tab tab, String url) {
             assert ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IN_TAB);
             // The fragment delegate acts both as a delegate and as a back press handler.
             var fragmentDelegate =
@@ -444,7 +444,7 @@ public class NativePageFactory {
                             mSnackbarManagerSupplier.get(),
                             mBottomSheetController,
                             mModalDialogManagerSupplier.get(),
-                            tab.getId());
+                            tab);
             return new SettingsPage(
                     mActivity,
                     tab.getProfile(),
@@ -455,7 +455,8 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier),
                     /* fragmentDelegate= */ fragmentDelegate,
                     /* backPressHandler= */ fragmentDelegate,
-                    mBackPressManager);
+                    mBackPressManager,
+                    url);
         }
     }
 
@@ -530,7 +531,7 @@ public class NativePageFactory {
                 page = getBuilder().buildBricksPage(tab, url);
                 break;
             case NativePageType.SETTINGS:
-                page = getBuilder().buildSettingsPage(tab);
+                page = getBuilder().buildSettingsPage(tab, url);
                 break;
             default:
                 assert false;

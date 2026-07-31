@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.TestActivity;
 
 /**
@@ -68,7 +69,8 @@ public class SettingsPageUnitTest {
                         mNativePageHost,
                         mFragmentDelegate,
                         mBackPressHandler,
-                        mBackPressHandlerRegistry);
+                        mBackPressHandlerRegistry,
+                        UrlConstants.SETTINGS_URL);
     }
 
     @Test
@@ -80,7 +82,7 @@ public class SettingsPageUnitTest {
     @Test
     public void testInitSettings() {
         // initSettings() should be called once, in the constructor.
-        verify(mFragmentDelegate).initSettings(any(ViewGroup.class));
+        verify(mFragmentDelegate).initSettings(any(ViewGroup.class), eq(UrlConstants.SETTINGS_URL));
     }
 
     @Test
@@ -96,7 +98,13 @@ public class SettingsPageUnitTest {
         BackPressHandler handler = mock(BackPressHandler.class);
         SettingsPage page =
                 new SettingsPage(
-                        mActivity, mProfile, mNativePageHost, mFragmentDelegate, handler, registry);
+                        mActivity,
+                        mProfile,
+                        mNativePageHost,
+                        mFragmentDelegate,
+                        handler,
+                        registry,
+                        UrlConstants.SETTINGS_URL);
         mActivity.setContentView(page.getView());
         verify(registry).addHandler(eq(handler), eq(BackPressHandler.Type.NATIVE_PAGE));
     }

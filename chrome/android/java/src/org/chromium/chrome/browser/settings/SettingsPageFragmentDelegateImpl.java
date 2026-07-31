@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
-import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
@@ -84,6 +84,9 @@ public class SettingsPageFragmentDelegateImpl
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier;
     private final String mFragmentTag;
 
+    @SuppressWarnings("unused")
+    private final Tab mTab;
+
     private @Nullable SettingsHostFragment mSettingsHostFragment;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mTitleUpdaterLifecycleCallbacks;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mSettingsMetricsReporter;
@@ -92,6 +95,7 @@ public class SettingsPageFragmentDelegateImpl
     private @Nullable SettingsSearchCoordinator mSearchCoordinator;
     private @Nullable ComponentCallbacks mComponentCallbacks;
     private @Nullable List<SettingsIndexData.Entry> mInitialBreadcrumbPath;
+    private @Nullable String mPendingUrl;
 
     public SettingsPageFragmentDelegateImpl(
             Activity activity,
@@ -101,7 +105,7 @@ public class SettingsPageFragmentDelegateImpl
             SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
-            @TabId int tabId) {
+            Tab tab) {
         assert ChromeFeatureList.sSettingsInTab.isEnabled()
                 : "SettingsInTab feature must be enabled to use this class.";
         mActivity = activity;
@@ -114,14 +118,19 @@ public class SettingsPageFragmentDelegateImpl
         mModalDialogSupplier = ObservableSuppliers.<ModalDialogManager>createMonotonic();
         mModalDialogSupplier.set(mModalDialogManager);
         mBackPressStateSupplier = ObservableSuppliers.createNonNull(false);
+        mTab = tab;
         // Ensure fragment has a globally unique tag so new settings tabs don't collide with
         // existing settings tabs (or closing tabs in the undo close tab snackbar queue). Use
-        // tabId because it is stable across Activity restarts (e.g. theme changes).
-        mFragmentTag = SETTINGS_NATIVE_PAGE_TAG + "_" + tabId;
+        // tab.getId() because it is stable across Activity restarts (e.g. theme changes).
+        mFragmentTag = SETTINGS_NATIVE_PAGE_TAG + "_" + tab.getId();
     }
 
     @Override
-    public void initSettings(ViewGroup containerView) {
+    public void initSettings(ViewGroup containerView, String initialUrl) {
+        if (!initialUrl.isEmpty()) {
+            mPendingUrl = initialUrl;
+        }
+
         FragmentManager fragmentManager =
                 ((FragmentActivity) mActivity).getSupportFragmentManager();
 
@@ -271,6 +280,13 @@ public class SettingsPageFragmentDelegateImpl
             fragmentManager.registerFragmentLifecycleCallbacks(
                     mTitleUpdaterLifecycleCallbacks, /* recursive= */ true);
         }
+    }
+
+    @Override
+    public void updateForUrl(String url) {
+        // TODO(crbug.com/531873184): Called when the tab's URL changes, so handle
+        // mPendingUrl state, as well as showing the corresponding fragment
+        // via mSettingsHostFragment.
     }
 
     @Override
@@ -539,7 +555,7 @@ public class SettingsPageFragmentDelegateImpl
         mBackPressStateSupplier.set(canHandle);
     }
 
-    /** Utility class to handle creating the title updater. */
+    /** Utility class to handle creating the title updater and deferred URL navigation. */
     private class TitleUpdaterLifecycleCallbacks
             extends FragmentManager.FragmentLifecycleCallbacks {
         @Override
@@ -561,6 +577,12 @@ public class SettingsPageFragmentDelegateImpl
                 assert mTitleUpdaterLifecycleCallbacks == this;
                 fm.unregisterFragmentLifecycleCallbacks(mTitleUpdaterLifecycleCallbacks);
                 mTitleUpdaterLifecycleCallbacks = null;
+
+                if (mPendingUrl != null) {
+                    String pendingUrl = mPendingUrl;
+                    mPendingUrl = null;
+                    updateForUrl(pendingUrl);
+                }
             }
         }
     }
