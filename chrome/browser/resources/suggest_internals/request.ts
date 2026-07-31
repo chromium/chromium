@@ -181,13 +181,13 @@ export class SuggestRequestElement extends CrLitElement {
         return this.webuiRoundedIconsEnabled_ ? 'suggest:lock-filled' :
                                                 'suggest:lock-old';
       case RequestStatus.kCreated:
-        return 'cr:create';
+        return 'cr:edit-filled';
       case RequestStatus.kSent:
         return 'cr:schedule';
       case RequestStatus.kSucceeded:
         return 'cr:check-circle';
       case RequestStatus.kFailed:
-        return 'cr:cancel';
+        return 'cr:cancel-filled';
       default:
         return '';
     }

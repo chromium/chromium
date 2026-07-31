@@ -72,8 +72,8 @@ export class CrExpandButtonElement extends CrLitElement {
   accessor expanded: boolean = false;
   accessor disabled: boolean = false;
   override accessor ariaLabel: string = '';
-  accessor expandIcon: string = 'cr:expand-more';
-  accessor collapseIcon: string = 'cr:expand-less';
+  accessor expandIcon: string = 'cr:keyboard-arrow-down';
+  accessor collapseIcon: string = 'cr:keyboard-arrow-up';
   accessor expandTitle: string|undefined;
   accessor collapseTitle: string|undefined;
   override accessor tabIndex: number = 0;

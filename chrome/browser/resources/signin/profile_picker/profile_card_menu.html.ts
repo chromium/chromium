@@ -15,7 +15,7 @@ export function getHtml(this: ProfileCardMenuElement) {
 
 <cr-action-menu id="actionMenu" role-description="$i18n{menu}">
   <button class="dropdown-item" @click="${this.onCustomizeButtonClick_}">
-    <cr-icon icon="cr:create" aria-hidden="true"></cr-icon>
+    <cr-icon icon="cr:edit-filled" aria-hidden="true"></cr-icon>
     $i18n{profileMenuCustomizeText}
   </button>
   <button class="dropdown-item" @click="${this.onRemoveButtonClick_}">

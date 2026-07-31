@@ -24,7 +24,7 @@ export function getHtml(this: LanguageMenuElement) {
       <cr-icon slot="inline-prefix" alt="" icon="cr:search"></cr-icon>
       ${this.languageSearchValue_ ? html`
         <cr-icon-button id="clearLanguageSearch"
-          iron-icon="cr:cancel"
+          iron-icon="cr:cancel-filled"
           slot="inline-suffix"
           @click="${this.onClearSearchClick_}"
           title="$i18n{readingModeLanguageMenuSearchClear}">

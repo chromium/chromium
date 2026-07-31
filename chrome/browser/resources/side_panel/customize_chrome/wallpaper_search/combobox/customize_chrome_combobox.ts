@@ -178,8 +178,8 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
   }
 
   protected getGroupIcon_(groupIndex: number): string {
-    return this.expandedGroups_[groupIndex] ? 'cr:expand-less' :
-                                              'cr:expand-more';
+    return this.expandedGroups_[groupIndex] ? 'cr:keyboard-arrow-up' :
+                                              'cr:keyboard-arrow-down';
   }
 
   protected getInputLabel_(): string {

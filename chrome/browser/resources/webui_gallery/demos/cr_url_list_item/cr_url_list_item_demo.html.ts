@@ -44,7 +44,7 @@ export function getHtml(this: CrUrlListItemDemoElement) {
         title="Google"
         description="google.com">
     <div class="badge" slot="badges">
-      <cr-icon icon="cr:error-outline"></cr-icon> Badge 1
+      <cr-icon icon="cr:error"></cr-icon> Badge 1
     </div>
     <div class="badge" slot="badges">
       <cr-icon icon="cr:draft-filled"></cr-icon> Badge 2
@@ -77,7 +77,7 @@ export function getHtml(this: CrUrlListItemDemoElement) {
   <cr-url-list-item url="http://www.google.com" size="compact"
       title="Google" description="google.com">
     <div class="badge" slot="badges">
-      <cr-icon icon="cr:error-outline"></cr-icon> Badge 1
+      <cr-icon icon="cr:error"></cr-icon> Badge 1
     </div>
     <div class="badge" slot="badges">
       <cr-icon icon="cr:draft-filled"></cr-icon> Badge 2
@@ -105,7 +105,7 @@ export function getHtml(this: CrUrlListItemDemoElement) {
   <cr-url-list-item url="http://www.google.com" size="large"
       title="Google" description="google.com" description-meta="2 mins">
     <div class="badge" slot="badges">
-      <cr-icon icon="cr:error-outline"></cr-icon> Badge 1
+      <cr-icon icon="cr:error"></cr-icon> Badge 1
     </div>
     <div class="badge" slot="badges">
       <cr-icon icon="cr:draft-filled"></cr-icon> Badge 2

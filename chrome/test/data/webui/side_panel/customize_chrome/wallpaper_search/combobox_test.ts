@@ -373,7 +373,7 @@ suite('ComboboxTest', () => {
     const groupLabel = getGroup(0).querySelector('label')!;
     const groupLabelIcon = groupLabel.querySelector('cr-icon')!;
     assertEquals('false', groupLabel.ariaExpanded);
-    assertEquals('cr:expand-more', groupLabelIcon.icon);
+    assertEquals('cr:keyboard-arrow-down', groupLabelIcon.icon);
 
     // Clicking on a group expands the dropdown items below it.
     toggleGroupExpand(0);
@@ -383,14 +383,14 @@ suite('ComboboxTest', () => {
     assertEquals(3, options.filter(option => isVisible(option)).length);
 
     assertEquals('true', groupLabel.ariaExpanded);
-    assertEquals('cr:expand-less', groupLabelIcon.icon);
+    assertEquals('cr:keyboard-arrow-up', groupLabelIcon.icon);
 
     // Clicking on the group again hides the dropdown items below it.
     toggleGroupExpand(0);
     await microtasksFinished();
     assertEquals(1, options.filter(option => isVisible(option)).length);
     assertEquals('false', groupLabel.ariaExpanded);
-    assertEquals('cr:expand-more', groupLabelIcon.icon);
+    assertEquals('cr:keyboard-arrow-down', groupLabelIcon.icon);
   });
 
   test('CheckmarksSelectedOption', async () => {

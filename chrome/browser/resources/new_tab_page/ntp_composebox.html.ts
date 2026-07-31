@@ -92,7 +92,7 @@ export function getHtml(this: NtpComposeboxElement) {
           ${this.shouldShowVoiceSearch() ? html`
             <cr-icon-button id="voiceSearchButton" class="voice-icon"
                 slot="action-buttons"
-                part="voice-icon" iron-icon="cr:mic"
+                part="voice-icon" iron-icon="cr:mic-filled"
                 @click="${this.onVoiceSearchButtonClick}"
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </cr-icon-button>

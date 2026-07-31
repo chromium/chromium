@@ -57,7 +57,7 @@ export function getHtml(this: UserEducationInternalsElement) {
   <div id="main">
     <cr-toast id="errorMessageToast" duration="5000">
       <cr-icon id="errorMessageIcon" class="error-outline"
-          icon="cr:error-outline">
+          icon="cr:error">
       </cr-icon>
       <span id="errorMessage">${this.featurePromoErrorMessage_}</span>
     </cr-toast>

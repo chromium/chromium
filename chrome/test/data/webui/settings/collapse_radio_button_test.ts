@@ -208,7 +208,7 @@ suite('CrCollapseRadioButton', function() {
   test('iconVisibleWhenSet', function() {
     assertFalse(isChildVisible(collapseRadioButton, '#buttonIcon'));
 
-    collapseRadioButton.set('icon', 'cr:location-on');
+    collapseRadioButton.set('icon', 'cr:location-on-filled');
     assertTrue(isChildVisible(collapseRadioButton, '#buttonIcon'));
   });
 });

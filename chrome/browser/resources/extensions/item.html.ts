@@ -59,7 +59,7 @@ export function getHtml(this: ItemElement) {
       </div>
       ${this.showSevereWarnings() ? html`
         <div id="warnings">
-          <cr-icon class="message-icon" icon="cr:error-outline"></cr-icon>
+          <cr-icon class="message-icon" icon="cr:error"></cr-icon>
           <span id="runtime-warnings" class="cr-secondary-text"
               aria-describedby="a11yAssociation"
               ?hidden="${!this.data.runtimeWarnings.length}">
@@ -91,7 +91,7 @@ export function getHtml(this: ItemElement) {
         </div>` : ''}
       ${this.showMv2DeprecationWarning_() ? html`
         <div id="warnings">
-          <cr-icon class="message-icon" icon="cr:error-outline"></cr-icon>
+          <cr-icon class="message-icon" icon="cr:error"></cr-icon>
           <span id="mv2-deprecation-warning" class="cr-secondary-text"
               aria-describedby="a11yAssociation">
             $i18n{mv2DeprecationUnsupportedExtensionOffText}

@@ -25,7 +25,7 @@ export function getHtml(this: ProfileCustomizationAppElement) {
           ` : ''}
           ${this.isLocalProfileCreation_ ? html`
             <div class="avatar-badge">
-              <cr-icon-button id="customizeAvatarIcon" iron-icon="cr:create"
+              <cr-icon-button id="customizeAvatarIcon" iron-icon="cr:edit-filled"
                   @click="${this.onCustomizeAvatarClick_}"
                   title="$i18n{profileCustomizationCustomizeAvatarLabel}"
                   aria-label="$i18n{profileCustomizationCustomizeAvatarLabel}">

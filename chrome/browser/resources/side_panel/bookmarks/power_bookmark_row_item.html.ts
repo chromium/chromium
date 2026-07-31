@@ -32,7 +32,7 @@ return html`<!--_html_template_start_-->
         .expanded="${this.expanded}"
         aria-expanded="${this.expanded}"
         tab-index="-1"
-        collapse-icon="cr:expand-more"
+        collapse-icon="cr:keyboard-arrow-down"
         expand-icon="cr:chevron-right"
         @expanded-changed="${this.onExpandedChanged_}">
     </cr-expand-button>` : ''}

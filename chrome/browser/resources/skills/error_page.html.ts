@@ -13,7 +13,7 @@ export function getHtml(this: ErrorPageElement) {
 <div id="mainContent">
   <div id="header">
     ${this.isGlicDisabled_() || this.isSkillsDisabled_() ? html`
-      <cr-icon icon="cr:error-outline"></cr-icon>` : ''}
+      <cr-icon icon="cr:error"></cr-icon>` : ''}
     <h1 class="headline">${this.errorTitle()}</h1>
   </div>
   <p class="body-text">${this.errorDescription()}</p>

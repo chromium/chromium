@@ -2892,7 +2892,8 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
                 assertTrue(!!voiceSearchButton);
                 assertTrue(voiceSearchButton.part.contains('voice-icon'));
                 assertEquals(
-                    'cr:mic', voiceSearchButton.getAttribute('iron-icon'));
+                    'cr:mic-filled',
+                    voiceSearchButton.getAttribute('iron-icon'));
                 assertEquals(
                     loadTimeData.getString('voiceSearchButtonLabel'),
                     voiceSearchButton.title);

@@ -187,7 +187,7 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
   }
 
   protected getCollapseIcon_(): string {
-    return this.opened ? 'cr:expand-less' : 'cr:expand-more';
+    return this.opened ? 'cr:keyboard-arrow-up' : 'cr:keyboard-arrow-down';
   }
 
   protected getCollapseTitle_(): string {

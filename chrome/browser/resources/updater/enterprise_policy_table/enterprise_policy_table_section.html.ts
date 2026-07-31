@@ -47,8 +47,8 @@ export function getHtml(this: EnterprisePolicyTableSectionElement) {
           ${this.canExpand(item) ? html`
             <cr-icon-button class="expand-icon"
                 data-index="${index}"
-                iron-icon="${item.isExpanded ? 'cr:expand-less' :
-                    'cr:expand-more'}"
+                iron-icon="${item.isExpanded ? 'cr:keyboard-arrow-up' :
+                    'cr:keyboard-arrow-down'}"
                 aria-expanded="${item.isExpanded}"
                 aria-controls="expanded-section-${index}"
                 @click="${this.onExpandButtonClick}">

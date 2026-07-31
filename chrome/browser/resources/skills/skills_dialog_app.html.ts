@@ -146,7 +146,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
           </div>
         </div>
       <div id="saveErrorContainer" ?hidden="${!this.hasSaveError_}">
-        <cr-icon icon="cr:error-outline" class="icon-error"></cr-icon>
+        <cr-icon icon="cr:error" class="icon-error"></cr-icon>
         <div id="saveErrorMessage" class="error-message">$i18n{saveError}</div>
       </div>
       <div class="buttons-group">

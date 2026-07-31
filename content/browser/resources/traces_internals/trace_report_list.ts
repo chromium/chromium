@@ -107,7 +107,7 @@ export class TraceReportListElement extends CrLitElement {
       case NotificationType.ANNOUNCEMENT:
         return 'cr:info';
       case NotificationType.ERROR:
-        return 'cr:error-outline';
+        return 'cr:error';
       case NotificationType.UPDATE:
         return 'cr:sync';
       default:
