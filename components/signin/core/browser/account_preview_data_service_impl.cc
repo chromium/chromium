@@ -277,8 +277,20 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
       (cause != FetchTriggerCause::kPeriodicRefresh) &&
       (gaia_ids_to_fetch.size() == accounts.size());
 
+  // The barrier count must match the total number of active fetchers that will
+  // exist in `active_fetchers_` (including pre-existing in-flight fetchers that
+  // are not in `gaia_ids_to_fetch`), ensuring `all_accounts_fetched_barrier_`
+  // remains valid until all active fetchers complete or are removed.
+  size_t target_fetcher_count = active_fetchers_.size();
+  for (const auto& gaia_id : gaia_ids_to_fetch) {
+    if (!active_fetchers_.contains(gaia_id)) {
+      target_fetcher_count++;
+    }
+  }
+
+  CHECK_GT(target_fetcher_count, 0u);
   all_accounts_fetched_barrier_ = base::BarrierClosure(
-      gaia_ids_to_fetch.size(),
+      target_fetcher_count,
       base::BindOnce(&AccountPreviewDataServiceImpl::OnAllFetchesCompleted,
                      weak_ptr_factory_.GetWeakPtr(),
                      should_reset_periodic_timer));
