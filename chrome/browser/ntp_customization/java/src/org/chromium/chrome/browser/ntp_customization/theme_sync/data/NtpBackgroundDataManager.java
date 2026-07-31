@@ -222,24 +222,23 @@ public class NtpBackgroundDataManager {
         if (fileIdHash == null) return;
 
         if (isLocalSelected) {
-            // Checks the fileIdHash from remote groups.
+            // If the data comes from the local history list, checks if the fileIdHash exists in
+            // any remote groups.
             for (int i = PlatformType.ANDROID + 1; i < PlatformType.MAX_COUNT; i++) {
                 NtpBackgroundDataGroup remoteGroup = getBackgroundDataGroupFromSharedPreference(i);
                 if (isImageStillInUse(remoteGroup, fileIdHash)) return;
             }
         } else {
-            // Checks local and other remote groups which are different from the data's platform
-            // type.
-            NtpBackgroundDataGroup localGroup =
-                    getBackgroundDataGroupFromSharedPreference(PlatformType.ANDROID);
-            if (isImageStillInUse(localGroup, fileIdHash)) return;
-
+            // If the data comes from a remote platform list, checks local group and other remote
+            // groups which are different from the data's platform type.
             int ownRemotePlatform = imageBaseData.getPlatformType();
-            for (int i = PlatformType.ANDROID + 1; i < PlatformType.MAX_COUNT; i++) {
+            assert ownRemotePlatform != PlatformType.ANDROID;
+
+            for (int i = PlatformType.ANDROID; i < PlatformType.MAX_COUNT; i++) {
                 if (i == ownRemotePlatform) continue;
 
-                NtpBackgroundDataGroup remoteGroup = getBackgroundDataGroupFromSharedPreference(i);
-                if (isImageStillInUse(remoteGroup, fileIdHash)) return;
+                NtpBackgroundDataGroup group = getBackgroundDataGroupFromSharedPreference(i);
+                if (isImageStillInUse(group, fileIdHash)) return;
             }
         }
 
