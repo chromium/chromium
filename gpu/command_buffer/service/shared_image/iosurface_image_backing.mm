@@ -33,7 +33,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "third_party/angle/include/EGL/eglext_angle.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
@@ -991,8 +990,6 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
       weak_factory_(this) {
   CHECK(io_surface_);
-  CHECK(!is_thread_safe ||
-        base::FeatureList::IsEnabled(features::kIOSurfaceMultiThreading));
 
   // Set the color space for the underlying IOSurface when it's used as overlay.
   gfx::IOSurfaceSetColorSpace(io_surface_.get(), si_info.color_space);
