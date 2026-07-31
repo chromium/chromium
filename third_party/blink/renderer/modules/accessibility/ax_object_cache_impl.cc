@@ -3701,6 +3701,9 @@ bool AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       relation_cache_->ProcessUpdatesWithCleanLayout();
 
       EnsureFocusedObject();
+      if (active_aria_modal_dialog_) {
+        UpdateActiveAriaModalDialog(FocusedNode());
+      }
       if (mark_all_dirty_) {
         // In some cases, EnsureFocusedObject() causes bad aria-hidden subtrees
         // to be removed, if they contained the focus. This can in turn lead to
@@ -6123,15 +6126,6 @@ Element* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
 }
 
 Element* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
-  if (!active_aria_modal_dialog_) {
-    return nullptr;
-  }
-  if (const AXObject* ax_dialog = Get(active_aria_modal_dialog_)) {
-    if (ax_dialog->IsIgnored() || !ax_dialog->IsVisible() ||
-        !ax_dialog->IsModal()) {
-      return nullptr;
-    }
-  }
   return active_aria_modal_dialog_;
 }
 
