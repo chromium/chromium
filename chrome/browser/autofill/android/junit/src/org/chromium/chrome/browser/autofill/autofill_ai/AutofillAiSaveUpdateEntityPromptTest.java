@@ -15,6 +15,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSaveUpdateEntityPrompt.ENTITY_EDITOR_OPENED_HISTOGRAM;
+
 import android.app.Activity;
 import android.graphics.Paint;
 import android.text.SpannableString;
@@ -39,6 +41,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -157,6 +160,9 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     @Test
     @SmallTest
     public void promptDismissed() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newSingleRecordWatcher(ENTITY_EDITOR_OPENED_HISTOGRAM, false);
+
         mPrompt.show();
         assertNotNull(mModalDialogManager.getShownDialogModel());
 
@@ -164,6 +170,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertNull(mModalDialogManager.getShownDialogModel());
         verify(mPromptControllerJni)
                 .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
+        histogram.assertExpected();
     }
 
     @Test
@@ -388,6 +395,11 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT)
     public void editButtonNotVisibleWhenFeatureDisabled() {
+        // The metric should not be logged when the feature is disabled.
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ENTITY_EDITOR_OPENED_HISTOGRAM)
+                        .build();
         final EntityAttributeUpdateDetails passportNumber =
                 new EntityAttributeUpdateDetails(
                         /* attributeName= */ "Passport number",
@@ -412,11 +424,20 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 /* oldAttributeValue= */ "");
         // The edit button should not be shown if the feature is disabled.
         assertNull(attributeList.getChildAt(0).findViewById(R.id.edit_button));
+
+        mPrompt.dismiss();
+        assertNull(mModalDialogManager.getShownDialogModel());
+        verify(mPromptControllerJni, times(1))
+                .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
+
+        histogram.assertExpected();
     }
 
     @Test
     @SmallTest
     public void clickEditButton() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newSingleRecordWatcher(ENTITY_EDITOR_OPENED_HISTOGRAM, true);
         final EntityAttributeUpdateDetails passportNumber =
                 new EntityAttributeUpdateDetails(
                         /* attributeName= */ "Passport number",
@@ -449,6 +470,8 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         when(mEntityEditor.isShowing()).thenReturn(true);
         mPrompt.dismiss();
         verify(mEntityEditor, times(0)).dismiss();
+
+        histogram.assertExpected();
     }
 
     @Test
