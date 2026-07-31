@@ -1147,6 +1147,143 @@ TEST_F(PreloadingDeciderTest,
       /*100*(75-0/500)=*/15, 1);
 }
 
+// The renderer only sends EnactCandidate when a speculation candidate matches,
+// so with renderer-side heuristics enabled and nothing on standby the browser
+// is still responsible for the pointerdown preconnect and its prediction.
+TEST_F(PreloadingDeciderTest,
+       PointerDownPreconnectsWhenRendererHasNoCandidate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSpeculationRulesRendererSideHeuristics);
+
+  MockContentBrowserClient browser_client;
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider != nullptr);
+  auto* preconnect_delegate = browser_client.GetDelegate();
+  ASSERT_TRUE(preconnect_delegate != nullptr);
+  auto* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
+
+  // No speculation rules at all, as on an ordinary page with a plain anchor.
+  const GURL url = GetSameOriginUrl("/no_rules.html");
+  preloading_decider->OnPointerDown(url);
+
+  ASSERT_TRUE(preconnect_delegate->Target().has_value());
+  EXPECT_EQ(preconnect_delegate->Target().value(), url);
+  EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 1u);
+}
+
+// Conversely, when a candidate matches, the renderer enacts it and
+// EnactRendererSelectedCandidate records the prediction, so the browser must
+// not preconnect or predict as well.
+TEST_F(PreloadingDeciderTest, PointerDownDefersToRendererWhenCandidateMatches) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSpeculationRulesRendererSideHeuristics);
+
+  MockContentBrowserClient browser_client;
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider != nullptr);
+  auto* preconnect_delegate = browser_client.GetDelegate();
+  ASSERT_TRUE(preconnect_delegate != nullptr);
+  auto* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
+
+  const GURL url = GetSameOriginUrl("/candidate.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kConservative));
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  preloading_decider->OnPointerDown(url);
+
+  EXPECT_FALSE(preconnect_delegate->Target().has_value());
+  EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 0u);
+}
+
+// Hover has no preconnect fallback, but its prediction is still the browser's
+// responsibility when the renderer won't enact anything.
+TEST_F(PreloadingDeciderTest, PointerHoverPredictsWhenRendererHasNoCandidate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSpeculationRulesRendererSideHeuristics);
+
+  MockContentBrowserClient browser_client;
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider != nullptr);
+  auto* preconnect_delegate = browser_client.GetDelegate();
+  ASSERT_TRUE(preconnect_delegate != nullptr);
+  auto* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
+
+  const GURL url = GetSameOriginUrl("/no_rules.html");
+  preloading_decider->OnPointerHover(
+      url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
+      blink::mojom::SpeculationEagerness::kModerate);
+
+  EXPECT_FALSE(preconnect_delegate->Target().has_value());
+  EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 1u);
+}
+
+// The renderer still notifies the browser of the viewport heuristic so the
+// prediction is recorded, so the browser must not also enact the candidate.
+TEST_F(PreloadingDeciderTest,
+       ModerateViewportHeuristicDefersEnactmentToRenderer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kPreloadingModerateViewportHeuristics,
+        {{"enact_candidates", "true"}}},
+       {blink::features::kSpeculationRulesRendererSideHeuristics, {}}},
+      {});
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider != nullptr);
+  auto* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
+
+  const GURL url = GetSameOriginUrl("/candidate.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kModerate));
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+
+  // The renderer enacts this one, and records the prediction when it does.
+  EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
+  EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 0u);
+}
+
+// With nothing on standby the renderer stays silent, so the browser records the
+// prediction for the heuristic itself.
+TEST_F(PreloadingDeciderTest,
+       ModerateViewportHeuristicPredictsWhenRendererHasNoCandidate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kPreloadingModerateViewportHeuristics,
+        {{"enact_candidates", "true"}}},
+       {blink::features::kSpeculationRulesRendererSideHeuristics, {}}},
+      {});
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider != nullptr);
+  auto* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
+
+  const GURL url = GetSameOriginUrl("/no_rules.html");
+  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+
+  EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
+  EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 1u);
+}
+
 TEST_F(PreloadingDeciderTest,
        ModerateViewportHeuristicPredictionIsNotEnactedIfDisabled) {
   base::test::ScopedFeatureList feature_list;

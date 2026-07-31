@@ -205,6 +205,24 @@ class CONTENT_EXPORT PreloadingDecider
   FRIEND_TEST_ALL_PREFIXES(PreloadingDeciderTest,
                            SpeculationRulesTagsMergingForNVSMatchWithNullTags);
 
+  // Returns true if a candidate is on standby that the renderer's heuristic for
+  // `enacting_predictor` will enact, meaning the renderer (not the browser)
+  // owns the preloading attempt for `url`.
+  bool HasCandidateForRendererHeuristic(
+      const GURL& url,
+      const PreloadingPredictor& enacting_predictor,
+      EagernessSet eagerness_to_exclude) const;
+
+  // Handles a link-selection heuristic whose candidate enactment has moved to
+  // the renderer (kSpeculationRulesRendererSideHeuristics). The renderer only
+  // enacts when a speculation candidate matches, so this records the preloading
+  // prediction, and optionally preconnects, for the cases it leaves untouched.
+  void HandleRendererOwnedHeuristic(
+      const GURL& url,
+      const PreloadingPredictor& enacting_predictor,
+      bool fallback_to_preconnect,
+      EagernessSet eagerness_to_exclude);
+
   // This helper function encapsulates the shared logic for finding all
   // suitable candidates matching a lookup key, including No-Vary-Search logic.
   std::vector<

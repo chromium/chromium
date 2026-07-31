@@ -1158,6 +1158,48 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
   EXPECT_EQ(moderate_viewport_call_it->type, PointerEventType::kNone);
 }
 
+// With renderer-side heuristics the renderer enacts the matching candidate
+// itself, but the browser must still be told the heuristic fired so it can
+// record the preloading prediction for it.
+class AnchorElementInteractionViewportHeuristicsRendererSideTest
+    : public AnchorElementInteractionViewportHeuristicsTest {
+ public:
+  AnchorElementInteractionViewportHeuristicsRendererSideTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kSpeculationRulesRendererSideHeuristics);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AnchorElementInteractionViewportHeuristicsRendererSideTest,
+       BrowserIsStillNotified) {
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 100px"></div>
+      <a href="https://example.com/foo"
+        style="display: block; height: 40px;">foo</a>
+      <a href="https://example.com/bar"
+        style="display: block; height: 20px;">bar</a>
+      <div style="height: 400px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 150),
+                       .scroll_delta = -25});
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  const auto moderate_viewport_call_it = std::ranges::find_if(
+      hosts_[0]->calls_,
+      [](const MockAnchorElementInteractionHost::Call& call) {
+        return call.type == PointerEventType::kNone &&
+               call.is_eager.has_value() && !call.is_eager.value();
+      });
+  ASSERT_NE(moderate_viewport_call_it, hosts_[0]->calls_.end());
+  EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/foo"));
+}
+
 TEST_F(AnchorElementInteractionViewportHeuristicsTest, MultipleAnchors) {
   String body = R"HTML(
     <body style="margin: 0px">

@@ -791,35 +791,30 @@ void AnchorElementInteractionTracker::ModerateViewportHeuristicTimerFired(
     return;
   }
 
-  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics) does not
-  // use `interaction_host_`; the legacy path still requires it.
-  // interaction_host_ might become unbound: Android's low memory detector
-  // sometimes call NotifyContextDestroyed to save memory. This unbinds mojo
-  // pipes using that ExecutionContext even if those pages can still navigate.
-  const bool renderer_side_heuristics = base::FeatureList::IsEnabled(
-      features::kSpeculationRulesRendererSideHeuristics);
-  if (!renderer_side_heuristics && !interaction_host_.is_bound()) {
-    return;
-  }
-
   if (!IsPreloadingEligible()) {
     return;
   }
 
   const KURL& url = largest_anchor_element_in_viewport_->Url();
-  if (renderer_side_heuristics) {
-    // Enact the matching moderate candidate via DocumentSpeculationRules
-    // instead of forwarding the signal to the browser's PreloadingDecider, and
-    // only when configured to enact (mirrors
-    // PreloadingDecider::OnModerateViewportHeuristicTriggered).
-    if (!features::kPreloadingModerateViewportHeuristicsEnactCandidates.Get()) {
-      return;
-    }
+  // With renderer-driven enactment (SpeculationRulesRendererSideHeuristics) the
+  // matching moderate candidate is enacted via DocumentSpeculationRules rather
+  // than the browser's PreloadingDecider, and only when configured to enact
+  // (mirrors PreloadingDecider::OnModerateViewportHeuristicTriggered).
+  if (base::FeatureList::IsEnabled(
+          features::kSpeculationRulesRendererSideHeuristics) &&
+      features::kPreloadingModerateViewportHeuristicsEnactCandidates.Get()) {
     if (auto* rules = DocumentSpeculationRules::FromIfExists(*GetDocument())) {
       rules->OnViewportHeuristic(url,
                                  mojom::blink::SpeculationEagerness::kModerate);
     }
-  } else {
+  }
+
+  // Notify the browser regardless: it records the preloading prediction for
+  // this heuristic (and enacts the candidate on the legacy path).
+  // interaction_host_ might become unbound: Android's low memory detector
+  // sometimes call NotifyContextDestroyed to save memory. This unbinds mojo
+  // pipes using that ExecutionContext even if those pages can still navigate.
+  if (interaction_host_.is_bound()) {
     interaction_host_->OnModerateViewportHeuristicTriggered(url);
   }
 }
@@ -844,16 +839,12 @@ void AnchorElementInteractionTracker::EagerViewportHeuristicTimerFired(
     next_fire_time = std::min(next_fire_time, candidate.timestamp);
   }
 
-  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics) does
-  // not use `interaction_host_`; the legacy path still requires it.
-  const bool renderer_side_heuristics = base::FeatureList::IsEnabled(
-      features::kSpeculationRulesRendererSideHeuristics);
-  if (!renderer_side_heuristics && !interaction_host_.is_bound()) {
-    return;
-  }
-
   if (!fired_candidates.empty() && IsPreloadingEligible()) {
-    if (renderer_side_heuristics) {
+    // With renderer-driven enactment (SpeculationRulesRendererSideHeuristics)
+    // the candidates are enacted via DocumentSpeculationRules rather than the
+    // browser's PreloadingDecider.
+    if (base::FeatureList::IsEnabled(
+            features::kSpeculationRulesRendererSideHeuristics)) {
       if (Document* document = GetDocument()) {
         if (auto* rules = DocumentSpeculationRules::FromIfExists(*document)) {
           for (const KURL& url : fired_candidates) {
@@ -862,7 +853,10 @@ void AnchorElementInteractionTracker::EagerViewportHeuristicTimerFired(
           }
         }
       }
-    } else {
+    }
+    // Notify the browser regardless: it records the preloading predictions for
+    // this heuristic (and enacts the candidates on the legacy path).
+    if (interaction_host_.is_bound()) {
       interaction_host_->OnEagerViewportHeuristicTriggered(fired_candidates);
     }
   }
