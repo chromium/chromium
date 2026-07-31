@@ -8,6 +8,7 @@ import './toolbar_divider.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
 
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './extensions.css.js';
 import {getHtml} from './extensions.html.js';
 import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
@@ -35,6 +36,32 @@ export class ExtensionsElement extends ExtensionsElementBase {
   // ToolbarActionContainerMixin override
   override getKey(state: ExtensionActionInfo): string {
     return state.id;
+  }
+
+  override moveItem(id: string, index: number) {
+    BrowserProxyImpl.getInstance().toolbarUIHandler.moveExtensionAction(
+        id, index);
+  }
+
+  override moveItemBy(id: string, delta: number) {
+    BrowserProxyImpl.getInstance().toolbarUIHandler.moveExtensionActionBy(
+        id, delta);
+  }
+
+  override getMimeType() {
+    return 'application/x-webui-extension-action';
+  }
+
+  override getBroadcastChannelName() {
+    return 'extension-action-drag';
+  }
+
+  override get childTagName() {
+    return 'webui-toolbar-extension';
+  }
+
+  override isDivider(_key: string): boolean {
+    return false;
   }
 }
 

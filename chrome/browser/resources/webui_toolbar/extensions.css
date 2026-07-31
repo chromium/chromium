@@ -45,6 +45,10 @@ toolbar-divider:last-child {
   opacity: 0 !important;
 }
 
+webui-toolbar-extension.drag-placeholder {
+  opacity: 0;
+}
+
 @keyframes slide-in {
   from {
     width: 0;

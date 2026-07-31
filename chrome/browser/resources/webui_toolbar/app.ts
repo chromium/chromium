@@ -62,6 +62,7 @@ import {INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import {AppMenuButtonElement} from './app_menu_button.js';
 import {ContentSettingIconElement} from './content_setting_icon.js';
 import {ContentSettingsIconsElement} from './content_settings_icons.js';
+import type {ExtensionsElement} from './extensions.js';
 import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
 import {PageActionIconElement} from './page_action_icon.js';
@@ -129,6 +130,7 @@ export {
   TrackedElementManager,
 };
 export type {
+  ExtensionsElement,
   IconFromTableElement,
   KeyedActionState,
   LocationBarState,

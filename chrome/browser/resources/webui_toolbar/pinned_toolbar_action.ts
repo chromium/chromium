@@ -89,51 +89,7 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
         this.state.action);
   }
 
-  // Delegate focus to the internal button element. Custom elements do not
-  // automatically delegate focus to their shadow DOM content unless configured
-  // with delegatesFocus, which Lit doesn't do by default for wrapper elements.
-  override focus() {
-    this.$.button.focus();
-  }
 
-  protected onDragstart_(e: DragEvent) {
-    if (!this.state.enabled || !e.dataTransfer) {
-      e.preventDefault();
-      return;
-    }
-    const payload = JSON.stringify({
-      actionId: this.state.action,
-    });
-    e.dataTransfer.setData('application/x-webui-pinned-action', payload);
-    e.dataTransfer.effectAllowed = 'move';
-
-    this.fire('pinned-action-drag-start', {action: this.state.action});
-  }
-
-  protected onDragend_(e: DragEvent) {
-    this.fire('pinned-action-drag-end', {
-      action: this.state.action,
-      dropEffect: e.dataTransfer?.dropEffect,
-    });
-  }
-
-
-  protected onKeydown_(e: KeyboardEvent) {
-    const isModifier = e.ctrlKey || e.metaKey;
-    if (!isModifier || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) {
-      return;
-    }
-    e.preventDefault();
-    e.stopPropagation();
-    const delta = e.key === 'ArrowLeft' ? -1 : 1;
-    // Notify the parent container that a keyboard reorder is occurring.
-    // The container will use this to lock and restore focus to this action
-    // button after the DOM updates with the new order.
-    this.fire('pinned-action-keyboard-reorder', {action: this.state.action});
-
-    this.browserProxy_.toolbarUIHandler.movePinnedToolbarActionBy(
-        this.state.action, delta);
-  }
 
   private getContextMenuType_(): ContextMenuType {
     switch (this.state.action) {
@@ -203,6 +159,25 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
 
   protected getTooltip_(): string {
     return this.adjustTooltipForHelpBubble(this.state.tooltip);
+  }
+
+  override getMimeType() {
+    return 'application/x-webui-pinned-action';
+  }
+
+  override getItemId() {
+    return this.state.action.toString();
+  }
+
+  override isDraggable() {
+    return this.state.enabled &&
+        this.state.action !== PinnedToolbarAction.kDivider &&
+        this.state.action !== PinnedToolbarAction.kUnspecified;
+  }
+
+  override moveItemBy(delta: number) {
+    this.browserProxy_.toolbarUIHandler.movePinnedToolbarActionBy(
+        this.state.action, delta);
   }
 
   protected onContextmenu_(e: Event) {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '//resources/js/assert.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_interface.js';
 
@@ -18,6 +19,13 @@ export interface ToolbarActionMixinInterface<T> extends
   trackedHighlighted: boolean;
   getElementId(state: T): string|undefined;
   getSecondaryElementId(): string|undefined;
+  getMimeType(): string;
+  getItemId(): string;
+  isDraggable(): boolean;
+  moveItemBy(delta: number): void;
+  onDragstart(e: DragEvent): void;
+  onDragend(e: DragEvent): void;
+  onKeydown(e: KeyboardEvent): void;
 }
 
 /**
@@ -135,6 +143,73 @@ export const ToolbarActionMixin =
             onHelpBubbleHidden: () => setHasHelpBubble(this, false),
           });
           this.registerHelpBubbleController_ = null;
+        }
+
+        // Delegate focus to the internal button element. Custom elements do not
+        // automatically delegate focus to their shadow DOM content unless
+        // configured with delegatesFocus, which Lit doesn't do by default for
+        // wrapper elements.
+        override focus() {
+          const button = this.shadowRoot?.querySelector(
+                             'cr-icon-button, cr-button') as HTMLElement;
+          if (button) {
+            button.focus();
+          }
+        }
+
+        getMimeType(): string {
+          assertNotReached();
+        }
+
+        getItemId(): string {
+          assertNotReached();
+        }
+
+        isDraggable(): boolean {
+          return assertNotReached();
+        }
+
+        moveItemBy(_delta: number) {
+          assertNotReached();
+        }
+
+        onDragstart(e: DragEvent) {
+          if (!this.isDraggable() || !e.dataTransfer) {
+            e.preventDefault();
+            return;
+          }
+          const payload = JSON.stringify({
+            itemId: this.getItemId(),
+          });
+          e.dataTransfer.setData(this.getMimeType(), payload);
+          e.dataTransfer.effectAllowed = 'move';
+
+          this.fire('toolbar-action-drag-start', {itemId: this.getItemId()});
+        }
+
+        onDragend(e: DragEvent) {
+          this.fire('toolbar-action-drag-end', {
+            itemId: this.getItemId(),
+            dropEffect: e.dataTransfer?.dropEffect,
+          });
+        }
+
+        onKeydown(e: KeyboardEvent) {
+          const isModifier = e.ctrlKey || e.metaKey;
+          if (!isModifier ||
+              (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) {
+            return;
+          }
+          e.preventDefault();
+          e.stopPropagation();
+          const delta = e.key === 'ArrowLeft' ? -1 : 1;
+
+          // Notify the parent container that a keyboard reorder is occurring.
+          // The container will use this to lock and restore focus to this
+          // action button after the DOM updates with the new order.
+          this.fire(
+              'toolbar-action-keyboard-reorder', {itemId: this.getItemId()});
+          this.moveItemBy(delta);
         }
       }
 

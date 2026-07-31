@@ -4686,6 +4686,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   container->MoveExtensionAction(first_id, 1);
   std::vector<std::string> expected_order = {second_id, first_id};
   EXPECT_EQ(expected_order, model->pinned_action_ids());
+
+  // Test 8: Valid MoveBy should work.
+  container->MoveExtensionActionBy(second_id, 1);
+  std::vector<std::string> expected_order2 = {first_id, second_id};
+  EXPECT_EQ(expected_order2, model->pinned_action_ids());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,

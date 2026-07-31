@@ -27,8 +27,8 @@ ${repeat(
                    ${keyedState.exiting ? 'exiting' : ''}
                    ${keyedState.dragPlaceholder ? 'drag-placeholder' : ''}"
             data-key="${keyedState.key}"
-            @dragover="${this.onActionDragover_}"
-            @drop="${this.onActionDrop_}">
+            @dragover="${this.onActionDragover}"
+            @drop="${this.onActionDrop}">
         </pinned-toolbar-action>
       `}
     `,

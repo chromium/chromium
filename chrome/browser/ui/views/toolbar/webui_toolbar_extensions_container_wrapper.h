@@ -106,6 +106,8 @@ class WebUIToolbarExtensionsContainerWrapper
   std::map<std::string, extensions_bar::mojom::ExtensionActionInfoPtr>
       cached_actions_;
 
+  std::vector<std::string> last_sent_extension_ids_;
+
   std::list<PendingAnchorRequest> pending_anchor_requests_;
 
   // Only for use by GetExtensionsButton(). Update by calling

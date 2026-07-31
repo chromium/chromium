@@ -57,6 +57,23 @@ export class ExtensionElement extends ExtensionElementBase {
     this.browserProxy_.toolbarUIHandler.showExtensionContextMenu(
         this.state.id, getContextMenuSourceType(e));
   }
+
+  override getMimeType() {
+    return 'application/x-webui-extension-action';
+  }
+
+  override getItemId() {
+    return this.state.id;
+  }
+
+  override isDraggable() {
+    return this.state.id !== '';
+  }
+
+  override moveItemBy(delta: number) {
+    this.browserProxy_.toolbarUIHandler.moveExtensionActionBy(
+        this.state.id, delta);
+  }
 }
 
 declare global {

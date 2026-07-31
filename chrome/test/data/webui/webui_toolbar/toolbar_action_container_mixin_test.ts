@@ -90,6 +90,21 @@ class TestContainerElement extends TestContainerBase {
     }
     return super.isInitialUpdate(newStates);
   }
+
+  override moveItem(_id: string, _index: number) {}
+  override moveItemBy(_id: string, _delta: number) {}
+  override getMimeType(): string {
+    return 'application/x-test';
+  }
+  override getBroadcastChannelName(): string {
+    return 'test-channel';
+  }
+  override get childTagName(): string {
+    return 'div';
+  }
+  override isDivider(_key: string): boolean {
+    return false;
+  }
 }
 
 customElements.define(TestContainerElement.is, TestContainerElement);

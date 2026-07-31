@@ -57,6 +57,10 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PinnedToolbarActions) {
   RunTest("webui_toolbar/pinned_toolbar_actions_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, Extensions) {
+  RunTest("webui_toolbar/extensions_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, LocationBar) {
   RunTest("webui_toolbar/location_bar_test.js", "mocha.run();");
 }

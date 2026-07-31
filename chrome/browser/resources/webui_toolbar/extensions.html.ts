@@ -16,8 +16,11 @@ ${repeat(
       <webui-toolbar-extension
           .state="${keyedState.state}"
           class="${keyedState.animateIn ? 'animate-in' : ''}
-                 ${keyedState.exiting ? 'exiting' : ''}"
-          data-key="${keyedState.key}">
+                 ${keyedState.exiting ? 'exiting' : ''}
+                 ${keyedState.dragPlaceholder ? 'drag-placeholder' : ''}"
+          data-key="${keyedState.key}"
+          @dragover="${this.onActionDragover}"
+          @drop="${this.onActionDrop}">
       </webui-toolbar-extension>
     `,
 )}
