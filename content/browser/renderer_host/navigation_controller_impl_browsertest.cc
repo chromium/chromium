@@ -2903,6 +2903,94 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 }
 
+// Same-URL navigation of a subframe whose current document is an error page
+// should not do replacement when the initiator is cross-origin to the URL that
+// failed to load. The replacement decision must not depend on whether the new
+// URL matches the failed URL, otherwise the initiator could observe a
+// difference in history.length between matching and non-matching navigations.
+// However, an initiator that is same-origin to the failed URL should still get
+// replacement, so that retrying a failed load doesn't leave the error page in
+// the back/forward list.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ErrorPageReplacementSubframeCrossOriginInitiator) {
+  NavigationController& controller = shell()->web_contents()->GetController();
+  // Navigate to a page on a.com with a same-origin iframe.
+  GURL main_url = embedded_test_server()->GetURL(
+      "a.com", "/navigation_controller/page_with_iframe_simple.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* subframe = root->child_at(0);
+
+  // 1) The parent navigates the subframe to a cross-origin (b.com) URL that is
+  // blocked by X-Frame-Options. This commits an error page and adds a new
+  // entry.
+  GURL blocked_url_b =
+      embedded_test_server()->GetURL("b.com", "/x-frame-options-deny.html");
+  {
+    FrameNavigateParamsCapturer capturer(subframe);
+    EXPECT_TRUE(
+        NavigateIframeToURL(shell()->web_contents(), "frame", blocked_url_b));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_TRUE(subframe->current_frame_host()->IsErrorDocument());
+    EXPECT_EQ(blocked_url_b,
+              subframe->current_frame_host()->GetLastCommittedURL());
+  }
+
+  // 2) The parent navigates the subframe to the same b.com URL again. The
+  // initiator (a.com) is cross-origin to the failed URL (b.com), so this must
+  // not replace the current entry even though the URLs match. The result must
+  // be the same as if the parent had navigated to a different b.com URL.
+  {
+    FrameNavigateParamsCapturer capturer(subframe);
+    EXPECT_TRUE(
+        NavigateIframeToURL(shell()->web_contents(), "frame", blocked_url_b));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_TRUE(subframe->current_frame_host()->IsErrorDocument());
+  }
+
+  // 3) The parent navigates the subframe to a same-origin (a.com) URL that is
+  // also blocked by X-Frame-Options. This adds a new entry.
+  GURL blocked_url_a =
+      embedded_test_server()->GetURL("a.com", "/x-frame-options-deny.html");
+  {
+    FrameNavigateParamsCapturer capturer(subframe);
+    EXPECT_TRUE(
+        NavigateIframeToURL(shell()->web_contents(), "frame", blocked_url_a));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(4, controller.GetEntryCount());
+    EXPECT_TRUE(subframe->current_frame_host()->IsErrorDocument());
+    EXPECT_EQ(blocked_url_a,
+              subframe->current_frame_host()->GetLastCommittedURL());
+  }
+
+  // 4) The parent navigates the subframe to the same a.com URL again. The
+  // initiator (a.com) is same-origin to the failed URL, so this still does
+  // replacement.
+  {
+    FrameNavigateParamsCapturer capturer(subframe);
+    EXPECT_TRUE(
+        NavigateIframeToURL(shell()->web_contents(), "frame", blocked_url_a));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_EQ(4, controller.GetEntryCount());
+    EXPECT_TRUE(subframe->current_frame_host()->IsErrorDocument());
+  }
+}
+
 // Various tests for navigation type classifications. TODO(avi): It's rather
 // bogus that the same info is in two different enums; http://crbug.com/453555.
 

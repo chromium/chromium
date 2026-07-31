@@ -11619,15 +11619,9 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
     return false;
 
   // If the initiating frame is cross-origin to the target frame, do not
-  // replace. Replacing in this case can be used to guess the exact current url
-  // of a cross-origin frame, see https://crbug.com/1208614. Exempt error pages
-  // from this rule so that we don't leave an error page in the back/forward
-  // list if a cross-origin iframe happens to successfully re-naivgate a frame
-  // that had previously failed.
-  if (!frame_tree_node_->current_frame_host()->IsErrorDocument() &&
-      common_params_->initiator_origin &&
-      !common_params_->initiator_origin->IsSameOriginWith(
-          frame_tree_node_->current_origin())) {
+  // replace the history entry for same-URL navigations to prevent observable
+  // differences in session history length.
+  if (!InitiatorMayObserveSameUrlReplacement()) {
     return false;
   }
 
@@ -11705,13 +11699,42 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
   //   navigations to reload or replacement), those compare against the initial
   //   URL instead of the final URL, which is what we're using here. Also, this
   //   is using the "loading URL", since that is the URL that was used in the
-  //   renderer before we moved the replacement conversion here.
+  //   renderer before we moved the replacement conversion here. As in
+  //   ShouldReplaceCurrentEntryForSameUrlNavigation(), only replace for the
+  //   same-URL case when the initiator is same-origin to the target frame.
   // TODO(crbug.com/40755155): Reconsider whether these two cases should
   // do replacement or not, since we're just preserving old behavior here.
   return is_reload_or_history ||
          (common_params_->url ==
-          GetLastLoadingURLInRendererForNavigationReplacement(
-              frame_tree_node_->current_frame_host()));
+              GetLastLoadingURLInRendererForNavigationReplacement(
+                  frame_tree_node_->current_frame_host()) &&
+          InitiatorMayObserveSameUrlReplacement());
+}
+
+bool NavigationRequest::InitiatorMayObserveSameUrlReplacement() const {
+  if (!common_params_->initiator_origin) {
+    return true;
+  }
+
+  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
+  if (common_params_->initiator_origin->IsSameOriginWith(
+          current_rfh->GetLastCommittedOrigin())) {
+    return true;
+  }
+
+  // If the current document is an error page, its origin is opaque, so the
+  // comparison above will fail even when the initiator would have been
+  // same-origin to the document had it loaded successfully. To allow such an
+  // initiator to retry the failed load without leaving the error page in the
+  // back/forward list, also compare against the origin derived from the URL
+  // that failed to load.
+  if (current_rfh->IsErrorDocument() &&
+      common_params_->initiator_origin->IsSameOriginWith(
+          url::Origin::Create(current_rfh->GetLastCommittedURL()))) {
+    return true;
+  }
+
+  return false;
 }
 
 const std::optional<FencedFrameProperties>&
