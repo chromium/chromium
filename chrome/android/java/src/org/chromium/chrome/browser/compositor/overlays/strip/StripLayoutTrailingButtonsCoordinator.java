@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicButtonStateController;
 import org.chromium.chrome.browser.glic.GlicButtonStateController.ButtonState;
@@ -441,7 +442,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                         }
                     });
 
-            mGlicButtonContextMenuCoordinator = new GlicButtonContextMenuCoordinator(mContext);
+            mGlicButtonContextMenuCoordinator =
+                    new GlicButtonContextMenuCoordinator(mContext, TabStripLayoutType.HORIZONTAL);
 
             mGlicButton.setDrawY(getDimensionDp(R.dimen.tab_strip_button_y_offset));
             mGlicButton.setVisible(false);
