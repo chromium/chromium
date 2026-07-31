@@ -13,7 +13,6 @@ import "skia/public/mojom/image_info.mojom";
 // shared memory however.
 struct BitmapInSharedMemory {
   skia.mojom.ImageInfo image_info;
-  uint64 row_bytes;
   // Null indicates SkBitmap does not have pixels allocated.
   mojo_base.mojom.WritableSharedMemoryRegion? pixels;
 };
