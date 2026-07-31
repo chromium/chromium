@@ -1684,4 +1684,102 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testDeferredRequestBackgroundTabPrepared) {
+  // Enable the background triggering feature flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicBackgroundTriggering);
+
+  OptIn();
+
+  auto message = CreateTriggeringMessage(101);
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  triggering->set_context_id("test-context-id");
+  triggering->mutable_request()->mutable_trigger_actuation_request();
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+
+  // Send the message. Since kGlicBackgroundTriggering is enabled, it should
+  // add the observer, save the request, and call
+  // EnsureForegroundServiceStarted. It returns early and does NOT call
+  // done_callback yet.
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+
+  // Verify that no response was sent yet (done_future is not ready).
+  EXPECT_FALSE(done_future.IsReady());
+
+  // Get the active tab to act as the prepared tab.
+  tabs::TabInterface* prepared_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(prepared_tab);
+
+  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
+                         components_sharing_message::SharingMessage>
+      sender_future;
+  SetupMessageSenderMock(&sender_future);
+
+  // Trigger OnBackgroundTabPrepared via ActorKeyedService. This should resume
+  // the deferred request.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  actor_service->NotifyBackgroundTabReady(prepared_tab, "test-context-id");
+
+  // Verify that the request is completed.
+  EXPECT_TRUE(done_future.Wait());
+  auto response = done_future.Take();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(
+      response->glic_experimental_triggering().response().task_update().state(),
+      components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringResponse::TaskUpdate::STARTING);
+
+  // Verify that the updates handler was created.
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testDeferredRequestBackgroundSetupFailed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicBackgroundTriggering);
+
+  OptIn();
+
+  auto message = CreateTriggeringMessage(101);
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  triggering->set_context_id("test-context-id");
+  triggering->mutable_request()->mutable_trigger_actuation_request();
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+  EXPECT_FALSE(done_future.IsReady());
+
+  // Trigger OnBackgroundSetupFailed via ActorKeyedService.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  actor_service->NotifyBackgroundSetupFailed("test-context-id");
+
+  // Verify that the request is completed with a failure response.
+  EXPECT_TRUE(done_future.Wait());
+  auto response = done_future.Take();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(
+      response->glic_experimental_triggering().response().task_update().state(),
+      components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+  EXPECT_EQ(
+      response->glic_experimental_triggering().response().task_update().data(),
+      "Background setup failed.");
+
+  // Handler map should be empty.
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+#endif
+
 }  // namespace glic
