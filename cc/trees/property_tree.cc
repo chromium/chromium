@@ -650,6 +650,18 @@ gfx::Vector2dF TransformTree::AnchorPositionOffset(
   // anchor position in chrome ui.
   CHECK(update_data);
 
+  auto get_transformed_offset = [&](gfx::Vector2dF offset,
+                                    int container_transform_id) {
+    if (offset.IsZero()) {
+      return offset;
+    }
+    gfx::Transform mapper = ToScreen(container_transform_id);
+    mapper.PostConcat(FromScreen(node.parent_id));
+    gfx::PointF transformed_offset =
+        mapper.MapPoint(gfx::PointF(offset.x(), offset.y()));
+    return transformed_offset - mapper.MapPoint(gfx::PointF());
+  };
+
   gfx::Vector2dF accumulated_offset(0, 0);
   for (ElementId container_id : data->adjustment_container_ids) {
     int container_transform_id = kInvalidNodeId;
@@ -661,20 +673,22 @@ gfx::Vector2dF TransformTree::AnchorPositionOffset(
       // We don't ever expect that an anchor node or any of its scrolling
       // containers should have an invalid transform_id.
       DCHECK(container_transform_id != kInvalidPropertyNodeId);
-      accumulated_offset += transform_node.scroll_offset().OffsetFromOrigin();
+      accumulated_offset += get_transformed_offset(
+          transform_node.scroll_offset().OffsetFromOrigin(),
+          transform_node.parent_id);
       // TODO(crbug.com/325613705): Should we consider snap_amount here?
     } else if (TransformNode* container_transform =
                    property_trees()
                        ->transform_tree_mutable()
                        .MutableFindNodeFromElementId(container_id)) {
       container_transform_id = container_transform->id;
-      accumulated_offset -= StickyPositionOffset(*container_transform);
-      // Adjust for chained anchor positioned offset. Note that "-=" here is
-      // different from the blink version in anchor_position_scroll_data.cc
-      // because AnchorPositionOffset() is the opposite of
-      // blink::AnchorPositionScrollData::AccmulatedOffset().
-      accumulated_offset -= AnchorPositionOffset(
+      gfx::Vector2dF adjustment = StickyPositionOffset(*container_transform);
+      // Adjust for chained anchor positioned offset.
+      adjustment += AnchorPositionOffset(
           *container_transform, max_updated_node_id, update_data, visited);
+
+      accumulated_offset -=
+          get_transformed_offset(adjustment, container_transform_id);
     }
     if (container_transform_id > max_updated_node_id) {
       // The adjustment depends on a later transform node that may contain
