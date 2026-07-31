@@ -238,4 +238,55 @@ TEST_F(DelegatedTaskRunnerMockTimeTest, Timeout) {
             DelegatedTaskStatus::kTaskTimeout);
 }
 
+TEST_F(DelegatedTaskRunnerTest, RunnerDestroyedBeforeTaskCompletion) {
+  auto mock_launcher = std::make_unique<MockPehLauncher>();
+  EXPECT_CALL(*mock_launcher, GetBinaryPath())
+      .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
+
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
+  base::test::TestFuture<DelegatedTaskResult> future;
+
+  runner->Run(std::move(task), future.GetCallback());
+  runner.reset();
+
+  auto result = future.Get();
+  EXPECT_FALSE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.error(),
+            DelegatedTaskStatus::kRunnerDestroyedBeforeTaskCompletion);
+}
+
+TEST_F(DelegatedTaskRunnerTest, RunnerDestroyedWhileProcessLaunchInFlight) {
+  auto mock_launcher = std::make_unique<MockPehLauncher>();
+  EXPECT_CALL(*mock_launcher, GetBinaryPath())
+      .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(*mock_launcher, LaunchProcess(_, _))
+      .WillOnce([quit_closure = run_loop.QuitClosure()](
+                    const base::CommandLine& cmd_line,
+                    const base::LaunchOptions& options) {
+        quit_closure.Run();
+        return base::Process();
+      });
+
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
+  base::test::TestFuture<DelegatedTaskResult> future;
+
+  runner->Run(std::move(task), future.GetCallback());
+
+  // Process main thread tasks until LaunchProcess is invoked.
+  run_loop.Run();
+
+  // Destroy the runner while LaunchProcess completion is in-flight.
+  runner.reset();
+
+  auto result = future.Get();
+  EXPECT_FALSE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.error(),
+            DelegatedTaskStatus::kRunnerDestroyedBeforeTaskCompletion);
+}
+
 }  // namespace platform_experience

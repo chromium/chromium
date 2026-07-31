@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/win/object_watcher.h"
@@ -53,6 +54,9 @@ class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
                    DelegatedTaskCompletionCallback callback);
 
  private:
+  void OnProcessLaunched(base::Process process);
+  void OnBinaryPathRetrieved(const base::FilePath& peh_binary_path);
+
   void CleanupAndReturnResult(
       DelegatedTaskExitCodeOrStatus exit_code_or_status);
 
@@ -65,7 +69,7 @@ class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
   DelegatedTaskCompletionCallback completion_callback_;
 
   std::unique_ptr<DelegatedTask> task_;
-  std::unique_ptr<PehLauncher> peh_launcher_;
+  base::SequenceBound<std::unique_ptr<PehLauncher>> peh_launcher_;
 
   base::WeakPtrFactory<DelegatedTaskRunner> weak_factory_{this};
 };
