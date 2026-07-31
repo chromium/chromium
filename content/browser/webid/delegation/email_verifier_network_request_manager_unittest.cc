@@ -71,7 +71,7 @@ TEST_F(EmailVerifierNetworkRequestManagerTest, SendTokenRequestDestination) {
       });
   test_url_loader_factory_.SetInterceptor(interceptor);
   manager_->SendTokenRequest(GURL("https://idp.example/token"), "data",
-                             base::DoNothing());
+                             net::HttpRequestHeaders(), base::DoNothing());
   run_loop.Run();
   EXPECT_TRUE(called);
 }

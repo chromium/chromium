@@ -195,11 +195,13 @@ void EmailVerifierNetworkRequestManager::FetchWellKnown(
 void EmailVerifierNetworkRequestManager::SendTokenRequest(
     const GURL& token_url,
     const std::string& url_encoded_post_data,
+    const net::HttpRequestHeaders& extra_headers,
     TokenRequestCallback callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
           token_url, CredentialedResourceRequestType::kNoOrigin);
   resource_request->request_initiator = url::Origin();
+  resource_request->headers.MergeFrom(extra_headers);
 
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,

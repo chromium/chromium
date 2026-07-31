@@ -10,8 +10,11 @@
 #include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
@@ -24,19 +27,205 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
+#include "crypto/hash.h"
 #include "crypto/keypair.h"
-#include "crypto/sha2.h"
 #include "net/base/schemeful_site.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/structured_headers.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/origin.h"
 
 namespace content::webid {
+
+namespace {
 
 using AccountsOrError = EmailVerificationRequest::AccountsOrError;
 using JwksResultOrError = EmailVerificationRequest::JwksResultOrError;
 using TokenResultOrError = EmailVerificationRequest::TokenResultOrError;
 using WellKnownOrError = EmailVerificationRequest::WellKnownOrError;
 using blink::mojom::EmailVerificationRequestResult;
+
+std::string CreateContentDigestHeader(const std::string& post_data) {
+  std::array<uint8_t, 32> digest = crypto::hash::Sha256(post_data);
+  net::structured_headers::Dictionary dict;
+  dict["sha-256"] = net::structured_headers::ParameterizedMember(
+      net::structured_headers::Item(
+          std::string(base::as_string_view(digest)),
+          net::structured_headers::Item::kByteSequenceType),
+      {});
+  std::optional<std::string> val =
+      net::structured_headers::SerializeDictionary(dict);
+  CHECK(val);
+  return *val;
+}
+
+std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
+  net::structured_headers::Parameters params;
+  for (const auto [key, value] : public_key.ToDict()) {
+    if (key == "alg" || key == "d" || !value.is_string()) {
+      continue;
+    }
+    params.emplace_back(key, net::structured_headers::Item(value.GetString()));
+  }
+
+  net::structured_headers::ParameterizedMember member;
+  member.member.emplace_back(
+      net::structured_headers::Item("hwk",
+                                    net::structured_headers::Item::kTokenType),
+      params);
+  member.member_is_inner_list = false;
+
+  net::structured_headers::Dictionary dict;
+  dict["sig"] = std::move(member);
+
+  std::optional<std::string> signature_key_val_opt =
+      net::structured_headers::SerializeDictionary(dict);
+  CHECK(signature_key_val_opt);
+  return *signature_key_val_opt;
+}
+
+net::structured_headers::ParameterizedMember CreateMessageSignatureParams(
+    base::Time created_time) {
+  std::vector<net::structured_headers::ParameterizedItem> list_items;
+  list_items.emplace_back(
+      net::structured_headers::Item("@method",
+                                    net::structured_headers::Item::kStringType),
+      net::structured_headers::Parameters());
+  list_items.emplace_back(
+      net::structured_headers::Item("@authority",
+                                    net::structured_headers::Item::kStringType),
+      net::structured_headers::Parameters());
+  list_items.emplace_back(
+      net::structured_headers::Item("@path",
+                                    net::structured_headers::Item::kStringType),
+      net::structured_headers::Parameters());
+  list_items.emplace_back(
+      net::structured_headers::Item("content-digest",
+                                    net::structured_headers::Item::kStringType),
+      net::structured_headers::Parameters());
+  list_items.emplace_back(
+      net::structured_headers::Item("signature-key",
+                                    net::structured_headers::Item::kStringType),
+      net::structured_headers::Parameters());
+
+  net::structured_headers::Parameters params_input;
+  params_input.emplace_back("created",
+                            net::structured_headers::Item(
+                                static_cast<int64_t>(created_time.ToTimeT())));
+
+  net::structured_headers::ParameterizedMember member_input(
+      std::move(list_items), std::move(params_input));
+  member_input.member_is_inner_list = true;
+  return member_input;
+}
+
+std::string SerializeSignatureInput(
+    const net::structured_headers::ParameterizedMember& params) {
+  net::structured_headers::Dictionary dict_input;
+  dict_input["sig"] = params;
+  std::optional<std::string> signature_input_val_opt =
+      net::structured_headers::SerializeDictionary(dict_input);
+  CHECK(signature_input_val_opt);
+  return *signature_input_val_opt;
+}
+
+std::string CreateMessageSignature(
+    const GURL& issuance_endpoint,
+    const std::string& content_digest_val,
+    const std::string& signature_key_val,
+    const net::structured_headers::ParameterizedMember& signature_params,
+    const crypto::keypair::PrivateKey& private_key) {
+  std::string authority = std::string(issuance_endpoint.host());
+  // RFC 9421 Section 2.2.3 specifies that the @authority component must be
+  // normalized and therefore that the port MUST be omitted if it is the default
+  // port for the scheme.
+  if (issuance_endpoint.has_port() &&
+      issuance_endpoint.EffectiveIntPort() !=
+          url::DefaultPortForScheme(issuance_endpoint.scheme())) {
+    authority += ":";
+    authority += issuance_endpoint.port();
+  }
+
+  // We should include the cookie header, but it is not available at this point
+  // in time.
+  // https://github.com/dickhardt/email-verification/issues/11
+  std::string signature_base;
+  for (const net::structured_headers::ParameterizedItem& param :
+       signature_params.member) {
+    std::string component_name = param.item.GetString();
+    std::string component_value;
+    if (component_name == "@method") {
+      component_value = "POST";
+    } else if (component_name == "@authority") {
+      component_value = authority;
+    } else if (component_name == "@path") {
+      component_value = issuance_endpoint.path();
+    } else if (component_name == "content-digest") {
+      component_value = content_digest_val;
+    } else if (component_name == "signature-key") {
+      component_value = signature_key_val;
+    } else {
+      NOTREACHED();
+    }
+    base::StringAppendF(&signature_base, "\"%s\": %s\n", component_name.c_str(),
+                        component_value.c_str());
+  }
+
+  net::structured_headers::List list_wrapper;
+  list_wrapper.push_back(signature_params);
+  std::optional<std::string> serialized_params =
+      net::structured_headers::SerializeList(list_wrapper);
+  CHECK(serialized_params);
+  // Note that per the spec, the signature-params line does not include a
+  // trailing newline:
+  // https://datatracker.ietf.org/doc/html/rfc9421#create-sig-input
+  base::StringAppendF(&signature_base, "\"@signature-params\": %s",
+                      serialized_params->c_str());
+
+  sdjwt::Signer http_signer = sdjwt::CreateJwtSigner(private_key);
+  std::optional<std::vector<uint8_t>> signature_opt =
+      std::move(http_signer).Run(signature_base);
+  CHECK(signature_opt);
+
+  net::structured_headers::Dictionary dict;
+  dict["sig"] = net::structured_headers::ParameterizedMember(
+      net::structured_headers::Item(
+          std::string(signature_opt->begin(), signature_opt->end()),
+          net::structured_headers::Item::kByteSequenceType),
+      net::structured_headers::Parameters());
+  std::optional<std::string> signature_val_opt =
+      net::structured_headers::SerializeDictionary(dict);
+  CHECK(signature_val_opt);
+  return *signature_val_opt;
+}
+
+net::HttpRequestHeaders CreateMessageSignatureHeaders(
+    const GURL& issuance_endpoint,
+    const std::string& post_data,
+    const crypto::keypair::PrivateKey& private_key) {
+  base::Time created_time = base::Time::Now();
+
+  std::optional<sdjwt::Jwk> public_key = sdjwt::ExportPublicKey(private_key);
+  CHECK(public_key);
+
+  std::string content_digest_val = CreateContentDigestHeader(post_data);
+  std::string signature_key_val = CreateMessageSignatureKey(*public_key);
+  net::structured_headers::ParameterizedMember signature_params =
+      CreateMessageSignatureParams(created_time);
+  std::string signature_input_val = SerializeSignatureInput(signature_params);
+  std::string signature_val =
+      CreateMessageSignature(issuance_endpoint, content_digest_val,
+                             signature_key_val, signature_params, private_key);
+
+  net::HttpRequestHeaders extra_headers;
+  extra_headers.SetHeader("Content-Digest", content_digest_val);
+  extra_headers.SetHeader("Signature-Key", signature_key_val);
+  extra_headers.SetHeader("Signature-Input", signature_input_val);
+  extra_headers.SetHeader("Signature", signature_val);
+  return extra_headers;
+}
+
+}  // namespace
 
 std::optional<std::string> GetDomainFromEmail(const std::string& email) {
   auto parts = base::RSplitStringOnce(email, "@");
@@ -419,18 +608,29 @@ void EmailVerificationRequest::Verify(
   sdjwt::Jwt jwt = CreateRequestToken(
       result.email, *public_key, url::Origin::Create(result.issuance_endpoint));
 
-  auto signer = sdjwt::CreateJwtSigner(*private_key);
+  sdjwt::Signer signer = sdjwt::CreateJwtSigner(*private_key);
   CHECK(jwt.Sign(std::move(signer)));
 
-  auto request_token = jwt.Serialize();
+  sdjwt::JSONString request_token = jwt.Serialize();
   CHECK(!request_token->empty());
 
+  // We pass the request_token for backwards compatibility, and the email
+  // address for spec compliance.
+  std::string post_data =
+      "request_token=" + request_token.value() +
+      "&email=" + base::EscapeUrlEncodedData(result.email, /*use_plus=*/true);
+
   // Create shared objects to hold the results
-  auto token = base::MakeRefCounted<TokenResultOrError>();
-  auto jwks = base::MakeRefCounted<JwksResultOrError>();
+  scoped_refptr<TokenResultOrError> token =
+      base::MakeRefCounted<TokenResultOrError>();
+  scoped_refptr<JwksResultOrError> jwks =
+      base::MakeRefCounted<JwksResultOrError>();
+  net::HttpRequestHeaders message_signature_headers =
+      CreateMessageSignatureHeaders(result.issuance_endpoint, post_data,
+                                    *private_key);
 
   // Create BarrierClosure to wait for both requests.
-  auto done_closure = base::BarrierClosure(
+  base::RepeatingClosure done_closure = base::BarrierClosure(
       2, base::BindOnce(&EmailVerificationRequest::OnTokenAndKeysFetchComplete,
                         weak_ptr_factory_.GetWeakPtr(), token, jwks,
                         url::Origin::Create(result.issuance_endpoint), nonce,
@@ -438,9 +638,9 @@ void EmailVerificationRequest::Verify(
                         std::move(callback)));
 
   // Step 3.5: finally, the browser sends a POST request to the
-  // issuance_endpoint with the request_token as a form parameter.
+  // issuance_endpoint, passing the signature headers.
   network_manager_->SendTokenRequest(
-      result.issuance_endpoint, "request_token=" + request_token.value(),
+      result.issuance_endpoint, post_data, message_signature_headers,
       base::BindOnce(
           [](scoped_refptr<TokenResultOrError> token,
              base::RepeatingClosure closure, FetchStatus status,
@@ -501,7 +701,7 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
     return;
   }
 
-  auto parsed_token =
+  std::optional<base::ListValue> parsed_token =
       sdjwt::SdJwt::Parse(token->data.value().token->GetString());
 
   // Step 5.1: The browser parses and verifies if the SD-JWT
@@ -518,7 +718,7 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
     return;
   }
 
-  auto sd_jwt = sdjwt::SdJwt::From(*parsed_token);
+  std::optional<sdjwt::SdJwt> sd_jwt = sdjwt::SdJwt::From(*parsed_token);
 
   if (!sd_jwt) {
     CompleteVerifyRequest(std::move(callback), std::nullopt,
@@ -546,8 +746,8 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
   payload.nonce = nonce;
   payload.iat = base::Time::Now();
 
-  std::string sd_jwt_sha256 =
-      crypto::SHA256HashString(token->data.value().token->GetString());
+  std::array<uint8_t, 32> sd_jwt_sha256 =
+      crypto::hash::Sha256(token->data.value().token->GetString());
   std::string sd_hash;
   base::Base64UrlEncode(sd_jwt_sha256,
                         base::Base64UrlEncodePolicy::OMIT_PADDING, &sd_hash);

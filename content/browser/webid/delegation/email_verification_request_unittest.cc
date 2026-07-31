@@ -7,7 +7,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,7 +28,9 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
 #include "crypto/sha2.h"
+#include "crypto/sign.h"
 #include "net/base/schemeful_site.h"
+#include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,10 +44,212 @@ namespace content::webid {
 using ParseJsonCallback = EmailVerifierNetworkRequestManager::ParseJsonCallback;
 using blink::mojom::EmailVerificationRequestResult;
 using testing::_;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::WithArgs;
+
+void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
+                            const std::string& authority,
+                            const std::string& path,
+                            const std::string& post_data = "",
+                            sdjwt::Jwk* out_jwk = nullptr) {
+  // 1. Verify Content-Digest
+  std::optional<std::string> content_digest_header =
+      extra_headers.GetHeader("Content-Digest");
+  ASSERT_TRUE(content_digest_header.has_value())
+      << "Missing Content-Digest header";
+  auto parsed_digest_dict =
+      net::structured_headers::ParseDictionary(*content_digest_header);
+  ASSERT_TRUE(parsed_digest_dict.has_value())
+      << "Failed to parse Content-Digest header";
+  auto sha256_it = parsed_digest_dict->find("sha-256");
+  ASSERT_NE(sha256_it, parsed_digest_dict->end())
+      << "Missing 'sha-256' in Content-Digest header";
+  const auto& sha256_member = sha256_it->second;
+  ASSERT_FALSE(sha256_member.member_is_inner_list)
+      << "Invalid sha-256 format in Content-Digest header";
+  ASSERT_EQ(sha256_member.member.size(), 1u)
+      << "Invalid sha-256 format in Content-Digest header";
+  const auto& sha256_item = sha256_member.member[0].item;
+  ASSERT_TRUE(sha256_item.is_byte_sequence())
+      << "sha-256 in Content-Digest header is not a byte sequence";
+  if (!post_data.empty()) {
+    std::string expected_hash = crypto::SHA256HashString(post_data);
+    ASSERT_EQ(sha256_item.GetString(), expected_hash)
+        << "Content-Digest hash mismatch with post_data";
+  }
+
+  // 2. Verify Signature-Key
+  std::optional<std::string> signature_key_header =
+      extra_headers.GetHeader("Signature-Key");
+  ASSERT_TRUE(signature_key_header.has_value())
+      << "Missing Signature-Key header";
+
+  // Parse Signature-Key to get public key for verification
+  auto parsed_key_dict =
+      net::structured_headers::ParseDictionary(*signature_key_header);
+  ASSERT_TRUE(parsed_key_dict.has_value())
+      << "Failed to parse Signature-Key header";
+  auto sig_member_it = parsed_key_dict->find("sig");
+  ASSERT_NE(sig_member_it, parsed_key_dict->end())
+      << "Missing 'sig' member in Signature-Key";
+  const net::structured_headers::ParameterizedMember& sig_member =
+      sig_member_it->second;
+  ASSERT_EQ(sig_member.member.size(), 1u) << "Invalid 'sig' member size";
+
+  // Parse kty
+  auto kty_it = std::ranges::find_if(
+      sig_member.params, [](const auto& pair) { return pair.first == "kty"; });
+  ASSERT_NE(kty_it, sig_member.params.end())
+      << "Missing 'kty' parameter in Signature-Key";
+  const net::structured_headers::Item& kty_item = kty_it->second;
+  ASSERT_TRUE(kty_item.is_string()) << "'kty' parameter is not a string";
+  std::string kty = kty_item.GetString();
+
+  std::optional<crypto::keypair::PublicKey> public_key;
+  crypto::sign::SignatureKind sig_kind;
+  sdjwt::Jwk jwk;
+  jwk.kty = kty;
+
+  if (kty == "OKP") {
+    auto crv_it = std::ranges::find_if(sig_member.params, [](const auto& pair) {
+      return pair.first == "crv";
+    });
+    ASSERT_NE(crv_it, sig_member.params.end())
+        << "Missing 'crv' parameter in Signature-Key";
+    jwk.crv = crv_it->second.GetString();
+
+    auto x_it = std::ranges::find_if(
+        sig_member.params, [](const auto& pair) { return pair.first == "x"; });
+    ASSERT_NE(x_it, sig_member.params.end())
+        << "Missing 'x' parameter in Signature-Key";
+    std::string base64url_x = x_it->second.GetString();
+    jwk.x = base64url_x;
+
+    std::string x_bytes;
+    ASSERT_TRUE(base::Base64UrlDecode(
+        base64url_x, base::Base64UrlDecodePolicy::IGNORE_PADDING, &x_bytes))
+        << "Failed to decode 'x' parameter";
+    ASSERT_EQ(x_bytes.size(), 32u) << "Invalid 'x' length";
+    std::array<uint8_t, 32> public_key_array;
+    std::copy(x_bytes.begin(), x_bytes.end(), public_key_array.begin());
+    public_key =
+        crypto::keypair::PublicKey::FromEd25519PublicKey(public_key_array);
+    sig_kind = crypto::sign::SignatureKind::ED25519;
+  } else if (kty == "RSA") {
+    auto n_it = std::ranges::find_if(
+        sig_member.params, [](const auto& pair) { return pair.first == "n"; });
+    ASSERT_NE(n_it, sig_member.params.end())
+        << "Missing 'n' parameter in Signature-Key";
+    std::string base64url_n = n_it->second.GetString();
+    jwk.n = base64url_n;
+
+    auto e_it = std::ranges::find_if(
+        sig_member.params, [](const auto& pair) { return pair.first == "e"; });
+    ASSERT_NE(e_it, sig_member.params.end())
+        << "Missing 'e' parameter in Signature-Key";
+    std::string base64url_e = e_it->second.GetString();
+    jwk.e = base64url_e;
+
+    std::string n_bytes, e_bytes;
+    ASSERT_TRUE(base::Base64UrlDecode(
+        base64url_n, base::Base64UrlDecodePolicy::IGNORE_PADDING, &n_bytes))
+        << "Failed to decode 'n' parameter";
+    ASSERT_TRUE(base::Base64UrlDecode(
+        base64url_e, base::Base64UrlDecodePolicy::IGNORE_PADDING, &e_bytes))
+        << "Failed to decode 'e' parameter";
+    public_key = crypto::keypair::PublicKey::FromRsaPublicKeyComponents(
+        base::as_byte_span(n_bytes), base::as_byte_span(e_bytes));
+    sig_kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA256;
+  } else {
+    FAIL() << "Unsupported kty: " << kty;
+  }
+
+  ASSERT_TRUE(public_key.has_value()) << "Failed to create public key";
+
+  // 3. Verify Signature-Input
+  std::optional<std::string> signature_input_header =
+      extra_headers.GetHeader("Signature-Input");
+  ASSERT_TRUE(signature_input_header.has_value())
+      << "Missing Signature-Input header";
+  auto parsed_input_dict =
+      net::structured_headers::ParseDictionary(*signature_input_header);
+  ASSERT_TRUE(parsed_input_dict.has_value())
+      << "Failed to parse Signature-Input header";
+  auto input_sig_it = parsed_input_dict->find("sig");
+  ASSERT_NE(input_sig_it, parsed_input_dict->end())
+      << "Missing 'sig' member in Signature-Input";
+  const net::structured_headers::ParameterizedMember& input_sig_member =
+      input_sig_it->second;
+
+  // Verify sig components in Signature-Input
+  ASSERT_TRUE(input_sig_member.member_is_inner_list)
+      << "'sig' member in Signature-Input is not an inner list";
+  ASSERT_EQ(input_sig_member.member.size(), 5u)
+      << "'sig' member in Signature-Input has incorrect size";
+  std::vector<std::string> expected_components = {
+      "@method", "@authority", "@path", "content-digest", "signature-key"};
+  for (size_t i = 0; i < expected_components.size(); ++i) {
+    const auto& item = input_sig_member.member[i].item;
+    ASSERT_TRUE(item.is_string())
+        << "Component in Signature-Input is not a string";
+    ASSERT_EQ(item.GetString(), expected_components[i])
+        << "Component in Signature-Input mismatch. Expected "
+        << expected_components[i] << ", got " << item.GetString();
+  }
+
+  auto created_it = std::ranges::find_if(
+      input_sig_member.params,
+      [](const auto& pair) { return pair.first == "created"; });
+  ASSERT_NE(created_it, input_sig_member.params.end())
+      << "Missing 'created' parameter in Signature-Input";
+  const net::structured_headers::Item& created_item = created_it->second;
+  ASSERT_TRUE(created_item.is_integer())
+      << "'created' parameter is not an integer";
+  int64_t created_time = created_item.GetInteger();
+
+  // 4. Verify Signature
+  std::optional<std::string> signature_header =
+      extra_headers.GetHeader("Signature");
+  ASSERT_TRUE(signature_header.has_value()) << "Missing Signature header";
+  auto parsed_sig_dict =
+      net::structured_headers::ParseDictionary(*signature_header);
+  ASSERT_TRUE(parsed_sig_dict.has_value())
+      << "Failed to parse Signature header";
+  auto sig_it = parsed_sig_dict->find("sig");
+  ASSERT_NE(sig_it, parsed_sig_dict->end())
+      << "Missing 'sig' member in Signature";
+  const net::structured_headers::ParameterizedMember& sig_member_val =
+      sig_it->second;
+  ASSERT_FALSE(sig_member_val.member_is_inner_list)
+      << "Invalid Signature format";
+  ASSERT_EQ(sig_member_val.member.size(), 1u) << "Invalid Signature format";
+  const net::structured_headers::Item& sig_item = sig_member_val.member[0].item;
+  ASSERT_TRUE(sig_item.is_byte_sequence())
+      << "Signature item is not a byte sequence";
+  std::string signature_bytes = sig_item.GetString();
+
+  std::string signature_base = base::StringPrintf(
+      "\"@method\": POST\n"
+      "\"@authority\": %s\n"
+      "\"@path\": %s\n"
+      "\"content-digest\": %s\n"
+      "\"signature-key\": %s\n"
+      "\"@signature-params\": (\"@method\" \"@authority\" \"@path\" "
+      "\"content-digest\" \"signature-key\");created=%s",
+      authority.c_str(), path.c_str(), content_digest_header->c_str(),
+      signature_key_header->c_str(),
+      base::NumberToString(created_time).c_str());
+
+  ASSERT_TRUE(crypto::sign::Verify(sig_kind, *public_key,
+                                   base::as_byte_span(signature_base),
+                                   base::as_byte_span(signature_bytes)))
+      << "Signature verification failed";
+
+  if (out_jwk) {
+    *out_jwk = std::move(jwk);
+  }
+}
 
 // Mock DnsRequest for testing
 class MockDnsRequest : public DnsRequest {
@@ -76,7 +282,10 @@ class MockEmailVerifierNetworkRequestManager
               (override));
   MOCK_METHOD(void,
               SendTokenRequest,
-              (const GURL&, const std::string&, TokenRequestCallback),
+              (const GURL&,
+               const std::string&,
+               const net::HttpRequestHeaders&,
+               TokenRequestCallback),
               (override));
   MOCK_METHOD(void,
               DownloadAndParseUncredentialedUrl,
@@ -123,7 +332,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   const std::string kToken = "test_token";
 
   // Generate issuer key pair for signing and verification.
-  auto issuer_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+  auto issuer_key = crypto::keypair::PrivateKey::GenerateEd25519();
 
   // Construct JWKS.
   base::DictValue jwks;
@@ -150,7 +359,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
             well_known.jwks_uri = kJwksUri;
-            well_known.signing_alg_values_supported.push_back("RS256");
+            well_known.signing_alg_values_supported.push_back("EdDSA");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
           }));
@@ -188,17 +397,22 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
             return true;
           }));
 
-  EXPECT_CALL(*mock_network_manager, SendTokenRequest(kIssuanceEndpoint, _, _))
-      .WillOnce(WithArgs<1, 2>(
-          [&](const std::string& url_encoded_post_data,
+  EXPECT_CALL(*mock_network_manager,
+              SendTokenRequest(kIssuanceEndpoint, _, _, _))
+      .WillOnce(
+          [&](const GURL& url, const std::string& url_encoded_post_data,
+              const net::HttpRequestHeaders& extra_headers,
               EmailVerifierNetworkRequestManager::TokenRequestCallback
                   callback) {
             base::StringPairs params;
             EXPECT_TRUE(base::SplitStringIntoKeyValuePairs(
                 url_encoded_post_data, '=', '&', &params));
-            EXPECT_EQ(params.size(), 1u);
+            EXPECT_EQ(params.size(), 2u);
             EXPECT_EQ(params[0].first, "request_token");
             EXPECT_FALSE(params[0].second.empty());
+            EXPECT_EQ(params[1].first, "email");
+            EXPECT_EQ(params[1].second,
+                      base::EscapeUrlEncodedData(kEmail, /*use_plus=*/true));
 
             auto jwt_json = sdjwt::Jwt::Parse(params[0].second);
             EXPECT_TRUE(jwt_json);
@@ -210,9 +424,14 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                 jwt->header.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
             EXPECT_TRUE(header);
             EXPECT_EQ(header->typ, "JWT");
-            EXPECT_EQ(header->alg, "RS256");
+            EXPECT_EQ(header->alg, "EdDSA");
             // Asserts that the JWK is present in the header.
             EXPECT_TRUE(header->jwk);
+
+            sdjwt::Jwk verified_public_key;
+            ASSERT_NO_FATAL_FAILURE(VerifyMessageSignature(
+                extra_headers, "issuer.example.com", "/token",
+                url_encoded_post_data, &verified_public_key));
 
             auto payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
                 jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
@@ -224,17 +443,18 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
             sdjwt::SdJwt token;
             sdjwt::Header h;
             h.typ = "evt+jwt";
-            h.alg = "RS256";
             h.kid = "test_kid";
+            h.alg = "EdDSA";
             sdjwt::Payload p;
             p.iss = url::Origin::Create(kIssuerUrl).Serialize();
             p.email = kEmail;
             p.email_verified = true;
             p.iat = base::Time::Now();
             sdjwt::ConfirmationKey cnf;
-            cnf.jwk = *(header->jwk);
+            cnf.jwk = verified_public_key;
             p.cnf = cnf;
 
+            auto key = crypto::keypair::PrivateKey::GenerateEd25519();
             auto signer = sdjwt::CreateJwtSigner(issuer_key);
 
             sdjwt::Jwt issued_jwt;
@@ -248,7 +468,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
             result.token = base::Value(token.Serialize());
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     std::move(result));
-          }));
+          });
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> is_verifiable;
   std::string nonce = kNonce;
@@ -395,17 +615,22 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
             return true;
           }));
 
-  EXPECT_CALL(*mock_network_manager, SendTokenRequest(kIssuanceEndpoint, _, _))
-      .WillOnce(WithArgs<1, 2>(
+  EXPECT_CALL(*mock_network_manager,
+              SendTokenRequest(kIssuanceEndpoint, _, _, _))
+      .WillOnce(WithArgs<1, 2, 3>(
           [&](const std::string& url_encoded_post_data,
+              const net::HttpRequestHeaders& extra_headers,
               EmailVerifierNetworkRequestManager::TokenRequestCallback
                   callback) {
             base::StringPairs params;
             EXPECT_TRUE(base::SplitStringIntoKeyValuePairs(
                 url_encoded_post_data, '=', '&', &params));
-            EXPECT_EQ(params.size(), 1u);
+            EXPECT_EQ(params.size(), 2u);
             EXPECT_EQ(params[0].first, "request_token");
             EXPECT_FALSE(params[0].second.empty());
+            EXPECT_EQ(params[1].first, "email");
+            EXPECT_EQ(params[1].second,
+                      base::EscapeUrlEncodedData(kEmail, /*use_plus=*/true));
 
             auto jwt_json = sdjwt::Jwt::Parse(params[0].second);
             EXPECT_TRUE(jwt_json);
@@ -419,6 +644,11 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
             EXPECT_EQ(header->typ, "JWT");
             EXPECT_EQ(header->alg, "RS256");
             EXPECT_TRUE(header->jwk);
+
+            sdjwt::Jwk verified_public_key;
+            ASSERT_NO_FATAL_FAILURE(VerifyMessageSignature(
+                extra_headers, "issuer.example.com", "/token",
+                url_encoded_post_data, &verified_public_key));
 
             auto payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
                 jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
@@ -437,7 +667,7 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
             p.iat = base::Time::Now();
             p.email_verified = true;
             sdjwt::ConfirmationKey cnf;
-            cnf.jwk = *(header->jwk);
+            cnf.jwk = verified_public_key;
             p.cnf = cnf;
 
             auto signer = sdjwt::CreateJwtSigner(issuer_key);
@@ -505,7 +735,7 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
                   callback) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kCrossOriginIssuanceEndpoint;
-            well_known.signing_alg_values_supported.push_back("RS256");
+            well_known.signing_alg_values_supported.push_back("EdDSA");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
           }));
@@ -590,7 +820,7 @@ TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
                   callback) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
-            well_known.signing_alg_values_supported.push_back("RS256");
+            well_known.signing_alg_values_supported.push_back("EdDSA");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
           }));
@@ -671,7 +901,7 @@ TEST_F(EmailVerificationRequestTest, AccountsListEmpty) {
                   callback) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
-            well_known.signing_alg_values_supported.push_back("RS256");
+            well_known.signing_alg_values_supported.push_back("EdDSA");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
           }));
@@ -840,7 +1070,7 @@ TEST_F(EmailVerificationRequestTest, WebIdentityWellKnownHttpNotFound) {
                   callback) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
-            well_known.signing_alg_values_supported.push_back("RS256");
+            well_known.signing_alg_values_supported.push_back("EdDSA");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
           }));
@@ -1063,7 +1293,7 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
             well_known.jwks_uri = GURL("https://issuer.example.com/jwks");
-            well_known.signing_alg_values_supported.push_back("RS256");
+            well_known.signing_alg_values_supported.push_back("EdDSA");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
           }));
@@ -1095,8 +1325,9 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
             return true;
           }));
 
-  EXPECT_CALL(*mock_network_manager, SendTokenRequest(kIssuanceEndpoint, _, _))
-      .WillOnce(WithArgs<2>(
+  EXPECT_CALL(*mock_network_manager,
+              SendTokenRequest(kIssuanceEndpoint, _, _, _))
+      .WillOnce(WithArgs<3>(
           [&](EmailVerifierNetworkRequestManager::TokenRequestCallback
                   callback) {
             std::move(callback).Run(
