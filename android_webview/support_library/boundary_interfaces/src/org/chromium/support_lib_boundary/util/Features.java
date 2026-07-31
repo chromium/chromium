@@ -508,4 +508,7 @@ public class Features {
     // Profile.getCrossOriginIsolatedAllowList
     public static final String CROSS_ORIGIN_ISOLATED_ALLOW_LIST =
             "CROSS_ORIGIN_ISOLATED_ALLOW_LIST";
+
+    // Navigation.getResponseHeaders
+    public static final String NAVIGATION_GET_RESPONSE_HEADERS = "NAVIGATION_GET_RESPONSE_HEADERS";
 }

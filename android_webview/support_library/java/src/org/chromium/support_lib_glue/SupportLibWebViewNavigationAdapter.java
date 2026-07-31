@@ -17,6 +17,7 @@ import org.chromium.support_lib_callback_glue.SupportLibWebResourceError;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -151,6 +152,15 @@ class SupportLibWebViewNavigationAdapter implements WebViewNavigationBoundaryInt
             }
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                     new SupportLibWebResourceError(mNavigation.getWebResourceError()));
+        }
+    }
+
+    @Override
+    public @Nullable Map<String, String> getResponseHeaders() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_GET_RESPONSE_HEADERS")) {
+            recordApiCall(ApiCall.NAVIGATION_GET_RESPONSE_HEADERS);
+            return mNavigation.getResponseHeaders();
         }
     }
 

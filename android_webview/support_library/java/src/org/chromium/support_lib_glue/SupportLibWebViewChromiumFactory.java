@@ -151,6 +151,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.HTTP_CACHE_MANAGER,
                 Features.CROSS_ORIGIN_ISOLATED_ALLOW_LIST + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE,
+                Features.NAVIGATION_GET_RESPONSE_HEADERS + Features.DEV_SUFFIX,
                 Features.WEB_CONTENT + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
@@ -379,6 +380,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.HTTP_CACHE_GET_QUOTA_BYTES,
         ApiCall.HTTP_CACHE_SET_QUOTA_BYTES,
         ApiCall.ENQUEUE_PRECONNECT,
+        ApiCall.SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
+        ApiCall.GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
+        ApiCall.NAVIGATION_GET_RESPONSE_HEADERS,
         ApiCall.BUILD_WEB_CONTENT,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
@@ -593,9 +597,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int ENQUEUE_PRECONNECT = 203;
         int SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 204;
         int GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 205;
-        int BUILD_WEB_CONTENT = 206;
+        int NAVIGATION_GET_RESPONSE_HEADERS = 206;
+        int BUILD_WEB_CONTENT = 207;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 207;
+        int COUNT = 208;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
