@@ -543,7 +543,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   // device coordinates. Virtual to support testing.
   virtual void OnTextOrLinkAreaClick(const gfx::PointF& point, int click_count);
 
-  const std::map<InkModeledShapeId, FPDF_PAGEOBJECT>&
+  const std::map<InkModeledShapeId,
+                 base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&
   ink_modeled_shape_map_for_testing() const {
     return ink_modeled_shape_map_;
   }
@@ -1186,7 +1187,10 @@ class PDFiumEngine : public DocumentLoader::Client,
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
   struct InkTextData {
-    InkTextData(int page_index, std::vector<FPDF_PAGEOBJECT> page_objects);
+    InkTextData(
+        int page_index,
+        std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+            page_objects);
     InkTextData(InkTextData&&) noexcept;
     InkTextData& operator=(InkTextData&&) noexcept;
     ~InkTextData();
@@ -1196,7 +1200,8 @@ class PDFiumEngine : public DocumentLoader::Client,
     // The handles for text page objects within the PDF document.
     // `edited_pages_unload_preventers_` protects these handles from going
     // stale.
-    std::vector<FPDF_PAGEOBJECT> page_objects;
+    std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+        page_objects;
   };
 
   // Returns the next available textbox ID, avoiding collisions with
@@ -1477,7 +1482,10 @@ class PDFiumEngine : public DocumentLoader::Client,
       edited_pages_unload_preventers_;
 
   struct InkStrokeData {
-    InkStrokeData(int page_index, std::vector<FPDF_PAGEOBJECT> page_objects);
+    InkStrokeData(
+        int page_index,
+        std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+            page_objects);
     InkStrokeData(InkStrokeData&&) noexcept;
     InkStrokeData& operator=(InkStrokeData&&) noexcept;
     ~InkStrokeData();
@@ -1487,7 +1495,8 @@ class PDFiumEngine : public DocumentLoader::Client,
     // The handles for stroke path page objects within the PDF document.
     // `edited_pages_unload_preventers_` protects these handles from going
     // stale.
-    std::vector<FPDF_PAGEOBJECT> page_objects;
+    std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+        page_objects;
   };
 
   // Data associated for Ink strokes, keyed by stroke IDs.
@@ -1510,7 +1519,9 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Key: ID to identify a shape.
   // Value: The PDFium page object associated with the shape.
-  std::map<InkModeledShapeId, FPDF_PAGEOBJECT> ink_modeled_shape_map_;
+  std::map<InkModeledShapeId,
+           base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+      ink_modeled_shape_map_;
 
   // Key: ID to identify the font.
   // Value: The associated PDFium font objects.

@@ -42,7 +42,7 @@ NoticeApi* NoticeCatalogImpl::RegisterAndRetrieveNewApi() {
   return api;
 }
 
-base::span<NoticeApi*> NoticeCatalogImpl::GetNoticeApis() {
+base::span<raw_ptr<NoticeApi>> NoticeCatalogImpl::GetNoticeApis() {
   return apis_ptrs_;
 }
 
@@ -71,7 +71,7 @@ void NoticeCatalogImpl::RegisterNoticeGroup(
   }
 }
 
-base::span<Notice*> NoticeCatalogImpl::GetNotices() {
+base::span<raw_ptr<Notice>> NoticeCatalogImpl::GetNotices() {
   return notice_ptrs_;
 }
 
@@ -141,7 +141,7 @@ void NoticeCatalogImpl::Populate() {
       {measurement});
 
   // Validate against the deprecated notices list.
-  for (Notice* notice : notice_ptrs_) {
+  for (auto& notice : notice_ptrs_) {
     for (const auto& dead_notice : kDeprecatedNotices) {
       CHECK(notice->notice_id() != dead_notice.notice_id)
           << "NoticeId reused from deprecated notices!";

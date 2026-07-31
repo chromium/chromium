@@ -151,9 +151,9 @@ void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
 
 }  // namespace
 
-std::vector<FPDF_PAGEOBJECT> WriteStrokeToPage(FPDF_PAGE page,
-                                               const ink::Stroke& stroke) {
-  std::vector<FPDF_PAGEOBJECT> results;
+std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+WriteStrokeToPage(FPDF_PAGE page, const ink::Stroke& stroke) {
+  std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>> results;
   if (!page) {
     return results;
   }

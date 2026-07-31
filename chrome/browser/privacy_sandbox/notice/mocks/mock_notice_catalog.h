@@ -16,8 +16,8 @@ class MockNoticeCatalog : public NoticeCatalog {
   MockNoticeCatalog();
   ~MockNoticeCatalog() override;
 
-  MOCK_METHOD(base::span<NoticeApi*>, GetNoticeApis, (), (override));
-  MOCK_METHOD(base::span<Notice*>, GetNotices, (), (override));
+  MOCK_METHOD(base::span<raw_ptr<NoticeApi>>, GetNoticeApis, (), (override));
+  MOCK_METHOD(base::span<raw_ptr<Notice>>, GetNotices, (), (override));
   MOCK_METHOD(Notice*, GetNotice, (NoticeId), (override));
 };
 

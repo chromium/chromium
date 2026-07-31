@@ -850,9 +850,12 @@ class WrappedVulkanCompoundImageRepresentation
     return static_cast<CompoundImageBacking*>(backing());
   }
 
-  bool BeginAccess(AccessMode access_mode,
-                   std::vector<VkSemaphore>& begin_semaphores,
-                   std::vector<VkSemaphore>& end_semaphores) override {
+  bool BeginAccess(
+      AccessMode access_mode,
+      std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
+          begin_semaphores,
+      std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
+          end_semaphores) override {
     if (!compound_backing()->NotifyBeginAccess(
             wrapped_->backing(), access_mode,
             SharedImageAccessStream::kVulkan)) {

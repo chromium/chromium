@@ -44,7 +44,7 @@ int CompareNoticeGroups(base::span<Notice*> lhs, base::span<Notice*> rhs) {
   return 0;
 }
 
-std::set<NoticeApi*> GetEligibleApis(base::span<NoticeApi*> apis) {
+std::set<NoticeApi*> GetEligibleApis(base::span<raw_ptr<NoticeApi>> apis) {
   // Consider only APIs that are Enabled, have some level of
   // eligibility, and weren't already fulfilled in the past.
   std::set<NoticeApi*> filtered_apis;
@@ -73,7 +73,7 @@ std::set<NoticeApi*> GetEligibleApis(base::span<NoticeApi*> apis) {
 std::map<GroupKey, std::vector<Notice*>> GetEligibleNotices(
     SurfaceType surface,
     std::set<NoticeApi*> filtered_apis,
-    base::span<Notice*> notices) {
+    base::span<raw_ptr<Notice>> notices) {
   // From all of the available Notices, keep only ones that
   //    - Target the requested surface
   //    - Haven't yet been fulfilled

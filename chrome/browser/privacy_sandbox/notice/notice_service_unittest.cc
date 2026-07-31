@@ -155,9 +155,9 @@ class PrivacySandboxNoticeServiceTest : public Test {
   }
 
   void TearDown() override {
-    internal_storage_.clear();
-    notice_ptrs_.clear();
     api_ptrs_.clear();
+    notice_ptrs_.clear();
+    internal_storage_.clear();
   }
 
   void CreateNoticeService() {
@@ -176,8 +176,8 @@ class PrivacySandboxNoticeServiceTest : public Test {
   content::BrowserTaskEnvironment& task_environment() {
     return browser_task_environment_;
   }
-  base::span<Notice*> notice_ptrs() { return base::span(notice_ptrs_); }
-  base::span<NoticeApi*> api_ptrs() { return base::span(api_ptrs_); }
+  base::span<raw_ptr<Notice>> notice_ptrs() { return notice_ptrs_; }
+  base::span<raw_ptr<NoticeApi>> api_ptrs() { return api_ptrs_; }
 
  private:
   template <typename Arg>
@@ -202,8 +202,8 @@ class PrivacySandboxNoticeServiceTest : public Test {
   // Notices
   std::vector<std::variant<std::unique_ptr<NoticeApi>, std::unique_ptr<Notice>>>
       internal_storage_;
-  std::vector<Notice*> notice_ptrs_;
-  std::vector<NoticeApi*> api_ptrs_;
+  std::vector<raw_ptr<Notice>> notice_ptrs_;
+  std::vector<raw_ptr<NoticeApi>> api_ptrs_;
 };
 
 TEST_F(PrivacySandboxNoticeServiceTest,

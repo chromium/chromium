@@ -19,6 +19,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -83,7 +84,8 @@ class SkiaVkOzoneImageRepresentation : public SkiaGaneshImageRepresentation {
   int surface_msaa_count_ = 0;
   std::vector<sk_sp<SkSurface>> surfaces_;
   scoped_refptr<SharedContextState> context_state_;
-  std::vector<VkSemaphore> begin_access_semaphores_;
+  std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>
+      begin_access_semaphores_;
   VkSemaphore end_access_semaphore_ = VK_NULL_HANDLE;
   bool need_end_fence_;
 };

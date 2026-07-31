@@ -28,8 +28,10 @@ VulkanOzoneImageRepresentation::~VulkanOzoneImageRepresentation() = default;
 
 bool VulkanOzoneImageRepresentation::BeginAccess(
     AccessMode access_mode,
-    std::vector<VkSemaphore>& begin_semaphores,
-    std::vector<VkSemaphore>& end_semaphores) {
+    std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
+        begin_semaphores,
+    std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
+        end_semaphores) {
   std::vector<gfx::GpuFenceHandle> fences;
   bool need_end_fence;
   if (!ozone_backing()->BeginAccess(access_mode == AccessMode::kRead,

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "pdf/buildflags.h"
 #include "third_party/pdfium/public/fpdfview.h"
 
@@ -26,8 +27,8 @@ namespace chrome_pdf {
 // - If `page` is null, then return an empty vector.
 // - If the operation fails, then `page` is left unchanged.
 // - If the provided `stroke` is empty, then return an empty vector.
-std::vector<FPDF_PAGEOBJECT> WriteStrokeToPage(FPDF_PAGE page,
-                                               const ink::Stroke& stroke);
+std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+WriteStrokeToPage(FPDF_PAGE page, const ink::Stroke& stroke);
 
 }  // namespace chrome_pdf
 

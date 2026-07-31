@@ -2836,8 +2836,7 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
   ASSERT_EQ(1u, ink_shapes.size());
   const auto ink_shapes_it = ink_shapes.begin();
 
-  const std::map<InkModeledShapeId, FPDF_PAGEOBJECT>& pdf_shapes =
-      engine->ink_modeled_shape_map_for_testing();
+  const auto& pdf_shapes = engine->ink_modeled_shape_map_for_testing();
   ASSERT_EQ(1u, pdf_shapes.size());
   const auto pdf_shapes_it = pdf_shapes.begin();
 

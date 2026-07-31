@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_text.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
@@ -46,8 +47,10 @@ std::optional<ink::Mesh> CreateInkMeshFromPolylineForTesting(
     base::span<const ink::Point> polyline);
 
 struct ReadInkTextResult {
-  ReadInkTextResult(InkTextBox textbox,
-                    std::vector<FPDF_PAGEOBJECT> text_objects);
+  ReadInkTextResult(
+      InkTextBox textbox,
+      std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+          text_objects);
   ReadInkTextResult(const ReadInkTextResult&) = delete;
   ReadInkTextResult& operator=(const ReadInkTextResult&) = delete;
   ReadInkTextResult(ReadInkTextResult&&) noexcept;
@@ -55,7 +58,8 @@ struct ReadInkTextResult {
   ~ReadInkTextResult();
 
   InkTextBox textbox;
-  std::vector<FPDF_PAGEOBJECT> text_objects;
+  std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+      text_objects;
 };
 
 // Returns whether the given `page` contains any text annotations.

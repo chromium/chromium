@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_constants.h"
@@ -318,8 +319,10 @@ std::optional<ink::Mesh> CreateInkMeshFromPolylineForTesting(  // IN-TEST
   return CreateInkMeshFromPolyline(polyline);
 }
 
-ReadInkTextResult::ReadInkTextResult(InkTextBox textbox,
-                                     std::vector<FPDF_PAGEOBJECT> text_objects)
+ReadInkTextResult::ReadInkTextResult(
+    InkTextBox textbox,
+    std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+        text_objects)
     : textbox(std::move(textbox)), text_objects(std::move(text_objects)) {}
 
 ReadInkTextResult::ReadInkTextResult(ReadInkTextResult&&) noexcept = default;
@@ -346,7 +349,8 @@ bool PageContainsInkTextAnnotation(FPDF_PAGE page) {
 std::vector<ReadInkTextResult> ReadInkTextAnnotationsFromPage(FPDF_PAGE page) {
   struct TextboxData {
     std::optional<InkTextBoxAttributes> attributes;
-    std::vector<FPDF_PAGEOBJECT> page_objects;
+    std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
+        page_objects;
     FPDF_PAGEOBJECTMARK mark = nullptr;
   };
 

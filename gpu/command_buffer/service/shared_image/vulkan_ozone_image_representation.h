@@ -31,9 +31,12 @@ class GPU_GLES2_EXPORT VulkanOzoneImageRepresentation
                                  gpu::VulkanImplementation& vulkan_impl);
   ~VulkanOzoneImageRepresentation() override;
 
-  bool BeginAccess(AccessMode access_mode,
-                   std::vector<VkSemaphore>& begin_semaphores,
-                   std::vector<VkSemaphore>& end_semaphores) override;
+  bool BeginAccess(
+      AccessMode access_mode,
+      std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
+          begin_semaphores,
+      std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
+          end_semaphores) override;
 
   void EndAccess(bool is_read_only, VkSemaphore end_semaphore) override;
 

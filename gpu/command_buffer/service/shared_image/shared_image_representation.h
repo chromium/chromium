@@ -1284,7 +1284,8 @@ class GPU_GLES2_EXPORT VulkanImageRepresentation
    public:
     ScopedAccess(VulkanImageRepresentation* representation,
                  AccessMode access_mode,
-                 std::vector<VkSemaphore> begin_semaphores,
+                 std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>
+                     begin_semaphores,
                  VkSemaphore end_semaphore);
     ~ScopedAccess();
 
@@ -1292,7 +1293,8 @@ class GPU_GLES2_EXPORT VulkanImageRepresentation
 
    private:
     bool is_read_only_;
-    std::vector<VkSemaphore> begin_semaphores_;
+    std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>
+        begin_semaphores_;
     VkSemaphore end_semaphore_;
   };
 
@@ -1301,9 +1303,12 @@ class GPU_GLES2_EXPORT VulkanImageRepresentation
       std::vector<VkSemaphore>& begin_semaphores,
       std::vector<VkSemaphore>& end_semaphores);
 
-  virtual bool BeginAccess(AccessMode access_mode,
-                           std::vector<VkSemaphore>& begin_semaphores,
-                           std::vector<VkSemaphore>& end_semaphores) = 0;
+  virtual bool BeginAccess(
+      AccessMode access_mode,
+      std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
+          begin_semaphores,
+      std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>&
+          end_semaphores) = 0;
 
   virtual void EndAccess(bool is_read_only, VkSemaphore end_semaphore) = 0;
 

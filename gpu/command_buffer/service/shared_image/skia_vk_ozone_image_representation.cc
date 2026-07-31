@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -245,7 +246,8 @@ void SkiaVkOzoneImageRepresentation::EndAccess(bool readonly) {
   ozone_backing()->EndAccess(readonly, OzoneImageBacking::AccessStream::kVulkan,
                              std::move(fence));
 
-  std::vector<VkSemaphore> semaphores = std::move(begin_access_semaphores_);
+  std::vector<VkSemaphore> semaphores =
+      base::ToVector<VkSemaphore>(begin_access_semaphores_);
   begin_access_semaphores_.clear();
   if (end_access_semaphore_ != VK_NULL_HANDLE) {
     semaphores.emplace_back(end_access_semaphore_);
