@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/modules/serial/serial_connection_event.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -351,4 +352,38 @@ TEST(SerialTest, GCedPortIsRecreated) {
   EXPECT_EQ(SerialTestHelper::CacheSizeForWorld(serial, main_world), 1U);
 }
 
+// Verifies that SerialConnectionEvent correctly restricts dispatch
+// to its originating world, and allows dispatch to all worlds if created
+// with a null world.
+TEST(SerialTest, SerialConnectionEvent_WorldDispatch) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  // Create main world
+  ScriptState* main_script_state = scope.GetScriptState();
+  DOMWrapperWorld& main_world = main_script_state->World();
+
+  // Create isolated world
+  DOMWrapperWorld* isolated_world =
+      DOMWrapperWorld::EnsureIsolatedWorld(isolate, 1);
+
+  // 1. Event created for main world
+  auto* event_main = MakeGarbageCollected<SerialConnectionEvent>(
+      event_type_names::kConnect, &main_world);
+  EXPECT_TRUE(event_main->CanBeDispatchedInWorld(main_world));
+  EXPECT_FALSE(event_main->CanBeDispatchedInWorld(*isolated_world));
+
+  // 2. Event created for isolated world
+  auto* event_isolated = MakeGarbageCollected<SerialConnectionEvent>(
+      event_type_names::kConnect, isolated_world);
+  EXPECT_FALSE(event_isolated->CanBeDispatchedInWorld(main_world));
+  EXPECT_TRUE(event_isolated->CanBeDispatchedInWorld(*isolated_world));
+
+  // 3. Event created with null world (legacy/shared behavior)
+  auto* event_null = MakeGarbageCollected<SerialConnectionEvent>(
+      event_type_names::kConnect, nullptr);
+  EXPECT_TRUE(event_null->CanBeDispatchedInWorld(main_world));
+  EXPECT_TRUE(event_null->CanBeDispatchedInWorld(*isolated_world));
+}
 }  // namespace blink

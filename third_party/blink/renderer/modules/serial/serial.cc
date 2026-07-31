@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
+#include "third_party/blink/renderer/modules/serial/serial_connection_event.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -171,7 +172,8 @@ void Serial::OnPortConnectedStateChanged(
         if (window_proxy && !window_proxy->ContextIfInitialized().IsEmpty()) {
           SerialPort* port = GetOrCreatePort(*world, port_info->Clone());
           port->set_connected(connected);
-          port->DispatchEvent(*Event::CreateBubble(event_type));
+          port->DispatchEvent(
+              *MakeGarbageCollected<SerialConnectionEvent>(event_type, world));
         }
       }
     } else if (context->IsWorkerGlobalScope()) {
@@ -192,7 +194,8 @@ void Serial::OnPortConnectedStateChanged(
           DOMWrapperWorld& world = script_state->World();
           SerialPort* port = GetOrCreatePort(world, std::move(port_info));
           port->set_connected(connected);
-          port->DispatchEvent(*Event::CreateBubble(event_type));
+          port->DispatchEvent(
+              *MakeGarbageCollected<SerialConnectionEvent>(event_type, &world));
         }
       }
     }
@@ -202,7 +205,8 @@ void Serial::OnPortConnectedStateChanged(
     // This block can be safely removed when the feature flag is cleaned up.
     SerialPort* port = GetOrCreatePort(std::move(port_info));
     port->set_connected(connected);
-    port->DispatchEvent(*Event::CreateBubble(event_type));
+    port->DispatchEvent(*MakeGarbageCollected<SerialConnectionEvent>(
+        event_type, /*world=*/nullptr));
   }
 }
 
