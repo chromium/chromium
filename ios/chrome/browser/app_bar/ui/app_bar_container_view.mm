@@ -77,11 +77,11 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   [self updatePositioning];
 }
 
-- (void)setAppBarLockedInFullscreen:(BOOL)appBarLockedInFullscreen {
-  if (_appBarLockedInFullscreen == appBarLockedInFullscreen) {
+- (void)setAssistantContainerInvoked:(BOOL)assistantContainerInvoked {
+  if (_assistantContainerInvoked == assistantContainerInvoked) {
     return;
   }
-  _appBarLockedInFullscreen = appBarLockedInFullscreen;
+  _assistantContainerInvoked = assistantContainerInvoked;
   [self updatePositioning];
 }
 
@@ -131,7 +131,7 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
       appBarWidth = windowSize.width;
       heightInAppCoordinates = windowSize.height;
       CGFloat minHeight =
-          (IsAppBarHiddenInFullscreen() && !self.appBarLockedInFullscreen)
+          (IsAppBarHiddenInFullscreen() && !self.assistantContainerInvoked)
               ? 0
               : kAppBarHeightFullscreen;
       extraOffset =

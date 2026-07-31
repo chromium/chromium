@@ -54,7 +54,7 @@
 }
 
 - (void)layoutState:(LayoutState*)layoutState
-    didChangeAppBarLockedInFullscreen:(BOOL)appBarLockedInFullscreen {
+    didChangeAssistantContainerInvoked:(BOOL)assistantContainerInvoked {
   [self updateAndApplyLayout];
 }
 
@@ -115,7 +115,7 @@
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
-  if (self.layoutState.appBarLockedInFullscreen) {
+  if (self.layoutState.assistantContainerInvoked) {
     return;
   }
   [self updateAndApplyLayout];
@@ -147,7 +147,8 @@
 }
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
-  if (self.layoutState.appBarLockedInFullscreen) {
+  if (self.layoutState.assistantContainerInvoked &&
+      !IsAppBarHiddenInFullscreen()) {
     _fullscreenProgress = agent->bottom_progress();
     agent->AddObscuredInset(UIRectEdgeBottom, kAppBarHeightFullscreen);
     return;
@@ -214,11 +215,12 @@
 
   self.view.transform = CGAffineTransformMakeRotation(angle);
   CGFloat progress = _fullscreenProgress;
-  if (self.layoutState.appBarLockedInFullscreen) {
+  if (self.layoutState.assistantContainerInvoked &&
+      !IsAppBarHiddenInFullscreen()) {
     progress = 0.0;
   }
-  self.view.appBarLockedInFullscreen =
-      self.layoutState.appBarLockedInFullscreen;
+  self.view.assistantContainerInvoked =
+      self.layoutState.assistantContainerInvoked;
   self.view.fullscreenProgress = progress;
   self.view.appBarPosition = position;
   [_appBar updateForAngle:-angle];

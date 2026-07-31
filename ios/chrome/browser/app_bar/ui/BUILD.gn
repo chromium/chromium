@@ -9,6 +9,7 @@ source_set("constants") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/public/features",
   ]
 }

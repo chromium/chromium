@@ -165,17 +165,17 @@ TEST_F(LayoutStateTest, CutoutRadius) {
   [mock_observer verify];
 }
 
-// Tests that appBarLockedInFullscreen updates observers.
-TEST_F(LayoutStateTest, AppBarLockedInFullscreen) {
+// Tests that assistantContainerInvoked updates observers.
+TEST_F(LayoutStateTest, AssistantContainerInvoked) {
   id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer layoutState:layout_state_
-      didChangeAppBarLockedInFullscreen:YES]);
+      didChangeAssistantContainerInvoked:YES]);
 
-  [layout_state_ setAppBarLockedInFullscreen:YES passKey:AssistantPassKey()];
+  [layout_state_ setAssistantContainerInvoked:YES passKey:AssistantPassKey()];
 
-  EXPECT_TRUE(layout_state_.appBarLockedInFullscreen);
+  EXPECT_TRUE(layout_state_.assistantContainerInvoked);
 
   [mock_observer verify];
 }

@@ -338,8 +338,8 @@ inline LayoutStateAssistantPassKey PassKey() {
       isSheetPresented ? (_bottomCornerRadius + _bottomMargin) : 0.0;
   [self.layoutState setAssistantContainerCutoutRadius:targetRadius
                                               passKey:PassKey()];
-  [self.layoutState setAppBarLockedInFullscreen:isSheetPresented
-                                        passKey:PassKey()];
+  [self.layoutState setAssistantContainerInvoked:isSheetPresented
+                                         passKey:PassKey()];
 }
 
 - (BOOL)isGrabberHidden {
@@ -385,7 +385,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 
   if (_presentationContext != AssistantPresentationContext::kSheet) {
     [self.layoutState setAssistantContainerCutoutRadius:0.0 passKey:PassKey()];
-    [self.layoutState setAppBarLockedInFullscreen:NO passKey:PassKey()];
+    [self.layoutState setAssistantContainerInvoked:NO passKey:PassKey()];
   }
 
   if ([self.delegate respondsToSelector:@selector(assistantContainer:

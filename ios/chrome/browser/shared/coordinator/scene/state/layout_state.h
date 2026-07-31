@@ -56,9 +56,9 @@ enum class ToolbarPosition {
     didChangeAssistantContainerCutoutRadius:
         (CGFloat)assistantContainerCutoutRadius;
 
-// Called when the App Bar locked in fullscreen state changes.
+// Called when the Assistant container invoked state changes.
 - (void)layoutState:(LayoutState*)layoutState
-    didChangeAppBarLockedInFullscreen:(BOOL)appBarLockedInFullscreen;
+    didChangeAssistantContainerInvoked:(BOOL)assistantContainerInvoked;
 
 // Called when the toolbar position changes.
 - (void)layoutState:(LayoutState*)layoutState
@@ -92,8 +92,8 @@ enum class ToolbarPosition {
 // The cutout corner radius of the App Bar matching the assistant container.
 @property(nonatomic, readonly) CGFloat assistantContainerCutoutRadius;
 
-// Indicates whether the App Bar should be locked in fullscreen mode.
-@property(nonatomic, readonly) BOOL appBarLockedInFullscreen;
+// Indicates whether the Assistant container is currently invoked.
+@property(nonatomic, readonly) BOOL assistantContainerInvoked;
 
 // The position of the toolbar (omnibox).
 @property(nonatomic, readonly) ToolbarPosition toolbarPosition;
@@ -112,8 +112,8 @@ enum class ToolbarPosition {
                 passKey:(LayoutStateScenePassKey)passKey;
 - (void)setAssistantContainerCutoutRadius:(CGFloat)radius
                                   passKey:(LayoutStateAssistantPassKey)passKey;
-- (void)setAppBarLockedInFullscreen:(BOOL)locked
-                            passKey:(LayoutStateAssistantPassKey)passKey;
+- (void)setAssistantContainerInvoked:(BOOL)invoked
+                             passKey:(LayoutStateAssistantPassKey)passKey;
 - (void)setGeminiFloatyInvoked:(BOOL)invoked
                        passKey:(LayoutStateAssistantPassKey)passKey;
 - (void)setToolbarPosition:(ToolbarPosition)position

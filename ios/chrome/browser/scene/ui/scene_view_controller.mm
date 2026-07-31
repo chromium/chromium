@@ -678,8 +678,9 @@ inline LayoutStateScenePassKey PassKey() {
     case AppBarPosition::kBottom: {
       CGFloat minHeight =
           IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
-      CGFloat portraitHeight =
-          CurrentAppBarHeightPortrait(self.layoutState.geminiFloatyInvoked);
+      CGFloat portraitHeight = CurrentAppBarHeightPortrait(
+          self.layoutState.geminiFloatyInvoked,
+          self.layoutState.assistantContainerInvoked);
       CGFloat appBarHeight =
           minHeight - _fullscreenProgress * (minHeight - portraitHeight);
       insets.bottom += appBarHeight;

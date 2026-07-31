@@ -11,8 +11,9 @@
 CGFloat AppBarHeightPortrait();
 
 // Returns the height of the app bar in portrait, accounting for whether the
-// Gemini floaty is invoked.
-CGFloat CurrentAppBarHeightPortrait(BOOL gemini_floaty_invoked);
+// Gemini floaty is invoked and whether the app bar is locked in fullscreen.
+CGFloat CurrentAppBarHeightPortrait(BOOL gemini_floaty_invoked,
+                                    BOOL app_bar_locked_in_fullscreen);
 
 // The height of the app bar when in fullscreen (portrait).
 extern const CGFloat kAppBarHeightFullscreen;

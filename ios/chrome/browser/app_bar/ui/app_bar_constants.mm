@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
@@ -20,7 +21,12 @@ CGFloat AppBarHeightPortrait() {
   return kAppBarHeightDefault;
 }
 
-CGFloat CurrentAppBarHeightPortrait(BOOL gemini_floaty_invoked) {
+CGFloat CurrentAppBarHeightPortrait(BOOL gemini_floaty_invoked,
+                                    BOOL app_bar_locked_in_fullscreen) {
+  if (IsIOSGeminiBottomSheetMigrationEnabled() &&
+      app_bar_locked_in_fullscreen) {
+    return kAppBarHeightFullscreen;
+  }
   if (gemini_floaty_invoked && IsAppBarHiddenInFullscreen()) {
     return kAppBarHeightFullscreen;
   }
