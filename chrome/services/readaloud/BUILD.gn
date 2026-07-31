@@ -4,11 +4,13 @@
 
 source_set("readaloud") {
   public = [
+    "audio_segment_queue.h",
     "chunking/text_chunker.h",
     "decoded_audio_segment.h",
     "read_aloud_playback_controller.h",
   ]
   sources = [
+    "audio_segment_queue.cc",
     "chunking/text_chunker.cc",
     "decoded_audio_segment.cc",
     "read_aloud_playback_controller.cc",
@@ -29,6 +31,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "audio_segment_queue_unittest.cc",
     "chunking/text_chunker_unittest.cc",
     "decoded_audio_segment_unittest.cc",
     "read_aloud_playback_controller_unittest.cc",
