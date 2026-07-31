@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -143,6 +144,8 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
  private:
   friend class IpcDesktopEnvironmentTest;
 
+  class Core;
+
   struct DesktopConnection {
     DesktopConnection(DesktopSessionProxy* desktop_session_proxy,
                       std::string_view client_id);
@@ -153,7 +156,16 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
 
     // If `persist_desktop_sessions_` is true, this will be nullptr whenever
     // the client has disconnected.
-    raw_ptr<DesktopSessionProxy> desktop_session_proxy;
+    //
+    // DisableDanglingPtrDetection is needed because `DesktopSessionProxy` is
+    // owned by `IpcDesktopEnvironment` (destructed on the UI thread), whereas
+    // `DesktopConnection` lives in `Core` (destructed on the network thread
+    // via `OnTaskRunnerDeleter`). During teardown, `DesktopSessionProxy` may
+    // be freed before `~Core()` destroys `connections_`. This is safe because
+    // `desktop_session_proxy` is never dereferenced after
+    // `IpcDesktopEnvironment` is torn down.
+    raw_ptr<DesktopSessionProxy, DisableDanglingPtrDetection>
+        desktop_session_proxy;
 
     // The identifier of the CRD client to ensure the correct desktop session
     // is reused in case the host is configured to accept connections from
@@ -164,39 +176,17 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
     mojo::ScopedMessagePipeHandle pending_desktop_pipe;
   };
 
-  // List of DesktopEnvironment instances we've told the daemon process about.
-  using ConnectionsList = absl::flat_hash_map<int, DesktopConnection>;
-
-  ConnectionsList::iterator FindConnection(const DesktopSessionProxy* proxy);
-
-  // If `persist_desktop_sessions_` is true, instead of closing the desktop
-  // session when the client disconnects, the session will remain active while
-  // the pipe to the desktop process is disconnected. When the client with
-  // the same email address reconnects, the desktop session will be reused and
-  // the desktop process will be requested to send a new desktop pipe.
-  // TODO: yuweih - see if it makes sense to enable it on Windows.
-#if BUILDFLAG(IS_LINUX)
-  bool persist_desktop_sessions_ = true;
-#else
-  bool persist_desktop_sessions_ = false;
-#endif
+  void set_persist_desktop_sessions_for_testing(bool persistent);
+  size_t active_desktop_sessions_count_for_testing() const;
+  const DesktopConnection* GetConnectionForTesting(int terminal_id) const;
 
   // Task runner on which DesktopEnvironmentFactory methods should be called.
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
 
   // Task runner used for running background I/O.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  ConnectionsList connections_;
 
-  // Next desktop session ID. IDs are allocated sequentially starting from 0.
-  // This gives us more than 67 years of unique IDs assuming a new ID is
-  // allocated every second.
-  int next_id_ = 0;
-
-  // See DesktopSessionConnector::SetRequiredUsername().
-  std::string required_username_;
-
-  mojo::AssociatedRemote<mojom::DesktopSessionManager> desktop_session_manager_;
+  std::unique_ptr<Core, base::OnTaskRunnerDeleter> core_;
 
   mojo::AssociatedReceiver<mojom::DesktopSessionConnectionEvents>
       desktop_session_connection_events_{this};

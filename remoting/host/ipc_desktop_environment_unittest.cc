@@ -607,20 +607,18 @@ void IpcDesktopEnvironmentTest::QuitSetupRunLoop() {
 }
 
 void IpcDesktopEnvironmentTest::SetPersistentDesktopSessions(bool persistent) {
-  desktop_environment_factory_->persist_desktop_sessions_ = persistent;
+  desktop_environment_factory_->set_persist_desktop_sessions_for_testing(
+      persistent);
 }
 
 size_t IpcDesktopEnvironmentTest::ActiveDesktopSessionsCount() const {
-  return desktop_environment_factory_->connections_.size();
+  return desktop_environment_factory_
+      ->active_desktop_sessions_count_for_testing();
 }
 
 const IpcDesktopEnvironmentFactory::DesktopConnection*
 IpcDesktopEnvironmentTest::GetConnection(int terminal_id) const {
-  auto it = desktop_environment_factory_->connections_.find(terminal_id);
-  if (it == desktop_environment_factory_->connections_.end()) {
-    return nullptr;
-  }
-  return &it->second;
+  return desktop_environment_factory_->GetConnectionForTesting(terminal_id);
 }
 
 // Runs until the desktop is attached and exits immediately after that.
