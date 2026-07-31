@@ -481,7 +481,7 @@ struct MEDIA_EXPORT AC4SpecificBox : Box {
 };
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
-#if BUILDFLAG(ENABLE_IAMF_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || BUILDFLAG(ENABLE_IAMF_TOOLS)
 struct MEDIA_EXPORT IamfSpecificBox : Box {
   DECLARE_BOX_METHODS(IamfSpecificBox);
   bool ReadOBU(BufferReader* reader);
@@ -495,7 +495,7 @@ struct MEDIA_EXPORT IamfSpecificBox : Box {
 
   std::vector<uint8_t> ia_descriptors;
 };
-#endif  // BUILDFLAG(ENABLE_IAMF_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || ...
 
 struct MEDIA_EXPORT AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
@@ -521,9 +521,9 @@ struct MEDIA_EXPORT AudioSampleEntry : Box {
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
   AC4SpecificBox ac4;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
-#if BUILDFLAG(ENABLE_IAMF_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || BUILDFLAG(ENABLE_IAMF_TOOLS)
   IamfSpecificBox iacb;
-#endif  // BUILDFLAG(ENABLE_IAMF_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || ...
 };
 
 struct MEDIA_EXPORT SampleDescription : Box {

@@ -76,11 +76,11 @@ MEDIA_EXPORT bool ParseDolbyAc4CodecId(const std::string& codec_id,
                                        uint8_t* presentation_version,
                                        uint8_t* presentation_level);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
-#if BUILDFLAG(ENABLE_IAMF_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || BUILDFLAG(ENABLE_IAMF_TOOLS)
 MEDIA_EXPORT bool ParseIamfCodecId(std::string_view codec_id,
                                    uint8_t* primary_profilec,
                                    uint8_t* additional_profilec);
-#endif  // BUILDFLAG(ENABLE_IAMF_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || ...
 
 }  // namespace media
 
