@@ -199,6 +199,11 @@ void DictationKeyedService::ContextMenuHandler(
   }
 }
 
+void DictationKeyedService::OnDictationHotkeyPressed() {
+  // TODO: Implement this in follow-up CL.
+  VT_LOG() << "Dictation hotkey pressed (Not implemented yet)";
+}
+
 bool DictationKeyedService::IsEnabledAndReady() const {
   CHECK(profile_);
   bool disabled_by_policy =

@@ -4,11 +4,13 @@
 
 source_set("dictation") {
   public = [
+    "application_registration_delegate.h",
     "connector_component_extension.h",
     "dictation_keyed_service.h",
     "dictation_keyed_service_factory.h",
     "dictation_multiplexer.h",
     "features.h",
+    "local_hotkey_manager.h",
     "logging.h",
     "metrics.h",
     "onboarding_manager.h",
@@ -34,6 +36,7 @@ source_set("dictation") {
 
 source_set("impl") {
   sources = [
+    "application_registration_delegate.cc",
     "connector_component_extension.cc",
     "dictation_context.cc",
     "dictation_context.h",
@@ -45,6 +48,7 @@ source_set("impl") {
     "features.cc",
     "listener_stream_provider.cc",
     "listener_stream_provider.h",
+    "local_hotkey_manager.cc",
     "metrics.cc",
     "onboarding_manager.cc",
     "session_controller.cc",
@@ -112,6 +116,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "dictation_keyed_service_unittest.cc",
+    "local_hotkey_manager_unittest.cc",
     "session_controller_unittest.cc",
     "target_unittest.cc",
   ]

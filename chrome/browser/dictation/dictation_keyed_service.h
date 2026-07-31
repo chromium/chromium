@@ -79,6 +79,9 @@ class DictationKeyedService : public KeyedService,
   // Handles the context menu item click.
   void ContextMenuHandler(const TargetDetails& target_details);
 
+  // Handles the dictation hotkey press.
+  virtual void OnDictationHotkeyPressed();
+
   // Returns null when no session is in progress.
   SessionController* session_controller() {
     return session_ ? &session_->controller_ : nullptr;
