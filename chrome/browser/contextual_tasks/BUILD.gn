@@ -69,9 +69,11 @@ source_set("contextual_tasks") {
 
   if (enable_extensions_core) {
     sources += [
+      "contextual_tasks_extension_binder_provider.h",
       "contextual_tasks_extension_bridge.h",
       "contextual_tasks_extension_bridge_factory.h",
     ]
+    public_deps += [ "//extensions/browser" ]
   }
 
   if (!is_android) {
@@ -110,6 +112,20 @@ source_set("impl") {
     "site_exclusion_detail.cc",
     "site_exclusion_detail.h",
   ]
+
+  if (enable_extensions_core) {
+    sources += [
+      "contextual_tasks_extension_binder_provider.cc",
+      "contextual_tasks_extension_bridge.cc",
+      "contextual_tasks_extension_bridge_factory.cc",
+    ]
+    if (!is_android) {
+      sources += [
+        "contextual_tasks_extension_handler.cc",
+        "contextual_tasks_extension_handler.h",
+      ]
+    }
+  }
 
   if (is_android) {
     sources += [
@@ -170,6 +186,13 @@ source_set("impl") {
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
 
+  if (enable_extensions_core) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
+
   if (is_android) {
     deps += [
       ":jni_headers",
@@ -181,17 +204,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui:browser_actions",
       "//components/policy/core/browser",
-    ]
-  }
-
-  if (enable_extensions_core) {
-    sources += [
-      "contextual_tasks_extension_bridge.cc",
-      "contextual_tasks_extension_bridge_factory.cc",
-    ]
-    deps += [
-      "//extensions/browser",
-      "//extensions/common",
     ]
   }
 }
@@ -453,6 +465,7 @@ source_set("ui_impl") {
       "//components/guest_view/browser/slim_web_view",
     ]
   }
+
 }
 
 source_set("mojom_traits") {
