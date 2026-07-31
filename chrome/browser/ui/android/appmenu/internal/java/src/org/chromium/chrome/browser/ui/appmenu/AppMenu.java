@@ -52,12 +52,10 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
@@ -393,6 +391,13 @@ class AppMenu implements OnKeyListener {
         mIsByPermanentButton = isByPermanentButton;
 
         View contentView = createAppMenuContentView(context, addTopPaddingBeforeFirstRow);
+        mListView = contentView.findViewById(R.id.app_menu_list);
+
+        if (mDisableVerticalScrollbar) {
+            // TODO(crbug.com/465107697) Move code to xml file once the feature is launched.
+            // Cleanup AppMenuDelegate too.
+            mListView.setVerticalScrollBarEnabled(false);
+        }
 
         if (SysUtils.isLowEndDevice()) {
             var sharedDrawable = AppCompatResources.getDrawable(context, R.drawable.popup_bg_8dp);
@@ -407,12 +412,18 @@ class AppMenu implements OnKeyListener {
         Rect bgPadding = new Rect();
         contentView.getBackground().getPadding(bgPadding);
 
-        int menuWidth;
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            menuWidth = AttrUtils.getDimensionPixelSize(context, R.attr.appMenuWidth);
-        } else {
-            menuWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width);
-        }
+        assert mAdapter != null;
+        int itemWidth = UiUtils.computeListAdapterContentDimensions(mAdapter, mListView)[0];
+        int contentWidth = itemWidth + bgPadding.left + bgPadding.right;
+        int minWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width_min);
+        int menuMaxWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width_max);
+        int margin = context.getResources().getDimensionPixelSize(R.dimen.menu_horizontal_margin);
+        int windowSpaceWidth = visibleDisplayFrame.width() - 2 * margin;
+        int maxWidth = Math.min(menuMaxWidth, windowSpaceWidth);
+        // We deliberately don't use Math.clamp because maxWidth might end up being smaller than
+        // minWidth because of a very narrow window.
+        int menuWidth = Math.min(Math.max(contentWidth, minWidth), maxWidth);
+
         int popupWidth = menuWidth + bgPadding.left + bgPadding.right;
 
         popup.setWidth(popupWidth);
@@ -435,13 +446,6 @@ class AppMenu implements OnKeyListener {
         }
         padding.top += innerContainer.getPaddingTop();
         padding.bottom += innerContainer.getPaddingBottom();
-
-        mListView = contentView.findViewById(R.id.app_menu_list);
-        if (mDisableVerticalScrollbar) {
-            // TODO(crbug.com/465107697) Move code to xml file once the feature is launched.
-            // Cleanup AppMenuDelegate too.
-            mListView.setVerticalScrollBarEnabled(false);
-        }
 
         int footerHeight = attachFooter(footer, (ViewGroup) contentView, menuWidth);
         int headerHeight = attachHeader(header, menuWidth);

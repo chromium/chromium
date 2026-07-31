@@ -172,9 +172,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="glicTaskMenuEndIconWidth">@dimen/glic_menu_end_icon_width</item>
         <item name="glicTaskMenuMaxWidth">@dimen/glic_task_menu_max_width</item>
 
-        <!-- App menu -->
-        <item name="appMenuWidth">@dimen/menu_width_lff</item>
-
         <!-- Button attributes -->
         <item name="iconRowButtonSizeOverlay">@style/SizeOverlay.BrowserUI.IconRowButton</item>
         <item name="colorButtonSizeOverlay">@style/SizeOverlay.BrowserUI.ColorButton</item>
@@ -385,9 +382,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <!-- Glic task menu attributes -->
         <item name="glicTaskMenuEndIconWidth">@dimen/glic_menu_end_icon_width_desktop</item>
         <item name="glicTaskMenuMaxWidth">@dimen/glic_task_menu_max_width_desktop</item>
-
-        <!-- App menu -->
-        <item name="appMenuWidth">@dimen/menu_width_lff_desktop</item>
 
         <!-- Button attributes -->
         <item name="iconRowButtonSizeOverlay">@style/SizeOverlay.BrowserUI.IconRowButton.DesktopDensity</item>

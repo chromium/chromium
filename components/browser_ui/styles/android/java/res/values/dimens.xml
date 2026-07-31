@@ -6,10 +6,11 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Standard width for overflow menu in Chrome. -->
+    <!-- Standard menu dimensions -->
     <dimen name="menu_width">258dp</dimen>
-    <dimen name="menu_width_lff">292dp</dimen>
-    <dimen name="menu_width_lff_desktop">280dp</dimen>
+    <dimen name="menu_width_min">188dp</dimen>
+    <dimen name="menu_width_max">800dp</dimen>
+    <dimen name="menu_horizontal_margin">16dp</dimen>
     <dimen name="tab_group_menu_with_icons_width">225dp</dimen>
     <dimen name="overflow_menu_item_lateral_padding">16dp</dimen>
 
