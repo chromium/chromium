@@ -5112,6 +5112,24 @@
             ]
         }
     ],
+    "ChromeDarkNeutrals26": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeDarkNeutrals26"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeEnableDnsPlatform": [
         {
             "platforms": [
