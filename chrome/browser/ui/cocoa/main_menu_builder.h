@@ -132,7 +132,7 @@ class MenuItemBuilder {
     return *this;
   }
 
-  // Gives the item a symbol from SF Symbols on macOS 26.
+  // Gives the item a symbol from SF Symbols.
   MenuItemBuilder& sf_symbol(NSString* symbol_name) {
     sf_symbol_name_ = symbol_name;
     return *this;
