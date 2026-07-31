@@ -2281,6 +2281,27 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             stripBottomPxSupplier = stripLayoutHelperManager.getStripBottomPxSupplier();
         }
 
+        if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
+            ViewGroup tabSearchParent =
+                    anchorContainerParent != null
+                            ? anchorContainerParent
+                            : assumeNonNull(mCoordinator);
+            mTabSearchOverlayCoordinator =
+                    new TabSearchOverlayCoordinator(
+                            mActivity,
+                            tabSearchParent,
+                            mWindowAndroid,
+                            mProfileSupplier,
+                            assumeNonNull(mSnackbarManagerSupplier.get()),
+                            mModalDialogManagerSupplier,
+                            mActivityLifecycleDispatcher,
+                            mTabModelSelectorSupplier,
+                            mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper(),
+                            mBackPressManager,
+                            mCompositorViewHolderSupplier,
+                            mTabGroupUiActionHandlerSupplier);
+        }
+
         mSideUiCoordinator =
                 SideUiCoordinatorFactory.create(
                         mActivity,
@@ -2389,23 +2410,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         View secondaryUiContainer = mActivity.findViewById(R.id.secondary_ui_container);
         mSecondaryUiContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(secondaryUiContainer);
         mSideUiCoordinator.addObserver(mSecondaryUiContainerMarginAdjuster);
-
-        if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
-            mTabSearchOverlayCoordinator =
-                    new TabSearchOverlayCoordinator(
-                            mActivity,
-                            anchorContainerParent,
-                            mWindowAndroid,
-                            mProfileSupplier,
-                            assumeNonNull(mSnackbarManagerSupplier.get()),
-                            mModalDialogManagerSupplier,
-                            mActivityLifecycleDispatcher,
-                            mTabModelSelectorSupplier,
-                            mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper(),
-                            mBackPressManager,
-                            mCompositorViewHolderSupplier,
-                            mTabGroupUiActionHandlerSupplier);
-        }
     }
 
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
