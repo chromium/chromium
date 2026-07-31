@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -39,6 +40,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -520,15 +522,95 @@ public class DownloadUtils {
     }
 
     /**
-     * Infers the MIME type from the file name or file path when the original MIME type
-     * might be incorrect. This is used as a fallback when opening files fails with the
-     * original MIME type.
+     * Creates an {@link Intent} to view a downloaded file based on the {@link DownloadOpenRequest}.
+     *
+     * @param req The {@link DownloadOpenRequest} containing file path, MIME, and origin URLs.
+     * @return The {@link Intent} that can be used to view the file.
+     */
+    @VisibleForTesting
+    static Intent createViewIntent(DownloadOpenRequest req) {
+        Uri uri =
+                ContentUriUtils.isContentUri(req.mFilePath)
+                        ? Uri.parse(req.mFilePath)
+                        : getUriForOtherApps(req.mFilePath);
+        return MediaViewerUtils.createViewIntentForUri(
+                uri, req.mMimeType, req.mOriginalUrl, req.mReferrer);
+    }
+
+    /**
+     * Checks if the resolved activity for the intent is a system disambiguation resolver.
+     *
+     * @param context The context to get the {@link PackageManager} from.
+     * @param intent The {@link Intent} to resolve.
+     * @return True if the resolved activity is the system resolver; false otherwise.
+     */
+    @VisibleForTesting
+    static boolean isSystemResolver(Context context, Intent intent) {
+        ResolveInfo info =
+                PackageManagerUtils.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        if (info == null || info.activityInfo == null) return true;
+        String pkg = info.activityInfo.packageName;
+        String name = info.activityInfo.name;
+        return "android".equals(pkg) || (name != null && name.contains("ResolverActivity"));
+    }
+
+    /**
+     * Opens downloaded file internally within Chrome (PDF viewer, new tab, or media viewer CCT).
+     *
+     * @param req The {@link DownloadOpenRequest} containing file URI, MIME type, and context.
+     * @return Whether Chrome was able to successfully open the {@link DownloadOpenRequest}.
+     */
+    @VisibleForTesting
+    static boolean openInChromeInternal(DownloadOpenRequest req) {
+        // 1. PDF inline viewing in Chrome tab
+        if (MimeTypeUtils.PDF_MIME_TYPE.equalsIgnoreCase(req.mMimeType)) {
+            String fileUri = getUriForItem(req.mFilePath).toString();
+            String encodedPdfUrl = PdfUtils.encodePdfPageUrl(fileUri);
+            if (encodedPdfUrl != null) {
+                LoadUrlParams params = new LoadUrlParams(encodedPdfUrl);
+                ChromeAsyncTabLauncher delegate =
+                        new ChromeAsyncTabLauncher(OtrProfileId.isOffTheRecord(req.mOtrProfileId));
+                delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
+                return true;
+            }
+            return false;
+        }
+
+        // 2. Media / Web MIME types
+        Uri contentUri = getUriForItem(req.mFilePath);
+        Uri fileUri = contentUri;
+        if (!ContentUriUtils.isContentUri(req.mFilePath)) {
+            File file = new File(req.mFilePath);
+            fileUri = Uri.fromFile(file);
+        }
+        String normalizedMimeType = Intent.normalizeMimeType(req.mMimeType);
+
+        // Sharing for media files is disabled on automotive.
+        boolean isAutomotive = DeviceInfo.isAutomotive();
+        Intent intent =
+                MediaViewerUtils.getMediaViewerIntent(
+                        /* displayUri= */ fileUri,
+                        /* contentUri= */ contentUri,
+                        normalizedMimeType,
+                        !isAutomotive,
+                        !isAutomotive,
+                        req.mContext);
+        if (intent != null) {
+            IntentHandler.startActivityForTrustedIntent(req.mContext, intent);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Infers the MIME type from the file name or file path when the original MIME type might be
+     * incorrect. This is used as a fallback when opening files fails with the original MIME type.
      *
      * @param fileName The file name (preferred) to extract extension from.
      * @param filePath The file path to use if fileName is empty.
      * @param originalMimeType The original MIME type to compare against.
-     * @return The inferred MIME type if it differs from the original, or null if no
-     *         different MIME type can be inferred.
+     * @return The inferred MIME type if it differs from the original, or null if no different MIME
+     *     type can be inferred.
      */
     @VisibleForTesting
     public static @Nullable String inferMimeTypeFromExtension(
