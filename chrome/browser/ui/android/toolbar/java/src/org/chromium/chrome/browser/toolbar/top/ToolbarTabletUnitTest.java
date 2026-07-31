@@ -252,13 +252,14 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setTabStackButtonCoordinatorForTesting(mTabSwitcherButtonCoordinator);
         mToolbarTablet.setIncognitoIndicatorCoordinatorForTesting(mIncognitoIndicatorCoordinator);
         mToolbarTablet.ensureOptionalButtonWidthConsumerForTesting();
-        mToolbarTablet.ensurePaddingWidthConsumer();
         mToolbarTablet.ensureLocationBarMidWidthConsumer();
         mToolbarTabletLayout =
                 spy((LinearLayout) mToolbarTablet.findViewById(R.id.toolbar_tablet_layout));
         doReturn(mToolbarTabletLayout)
                 .when(mToolbarTablet)
                 .findViewById(R.id.toolbar_tablet_layout);
+        mToolbarTablet.setToolbarTabletLayoutForTesting(mToolbarTabletLayout);
+        mToolbarTablet.ensurePaddingWidthConsumer();
 
         mHomeButton = mToolbarTablet.findViewById(R.id.home_button);
         mBackButton = mToolbarTablet.findViewById(R.id.back_button);
@@ -1582,11 +1583,11 @@ public final class ToolbarTabletUnitTest {
                 mToolbarTablet.getOptionalButtonViewForTesting().getVisibility());
 
         if (visibleComponents.contains(PADDING)) {
-            assertEquals(padding, mToolbarTablet.getPaddingStart());
-            assertEquals(padding, mToolbarTablet.getPaddingEnd());
+            assertEquals(padding, mToolbarTabletLayout.getPaddingStart());
+            assertEquals(padding, mToolbarTabletLayout.getPaddingEnd());
         } else {
-            assertEquals(0, mToolbarTablet.getPaddingStart());
-            assertEquals(0, mToolbarTablet.getPaddingEnd());
+            assertEquals(0, mToolbarTabletLayout.getPaddingStart());
+            assertEquals(0, mToolbarTabletLayout.getPaddingEnd());
         }
     }
 
