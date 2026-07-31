@@ -65,6 +65,26 @@ source_set("tab_modal_confirm_dialog_delegate") {
   ]
 }
 
+source_set("tab_modal_confirm_dialog") {
+  public = [ "tab_modal_confirm_dialog.h" ]
+  public_deps = [
+    ":tab_modal_confirm_dialog_delegate",
+    "//content/public/browser",
+  ]
+  if (toolkit_views) {
+    public += [ "views/tab_modal_confirm_dialog_views.h" ]
+    sources = [ "views/tab_modal_confirm_dialog_views.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser/ui/views:layout_provider",
+      "//chrome/common:constants",
+      "//components/constrained_window",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+}
+
 if (!is_android) {
   source_set("chrome_web_modal_dialog_manager_delegate") {
     public = [ "chrome_web_modal_dialog_manager_delegate.h" ]
@@ -476,7 +496,6 @@ static_library("ui") {
     "tab_dialogs.h",
     "tab_helpers.cc",
     "tab_helpers.h",
-    "tab_modal_confirm_dialog.h",
     "tab_ui_helper.cc",
     "tab_ui_helper.h",
   ]
@@ -499,6 +518,7 @@ static_library("ui") {
     ":crypto_module_password_dialog",
     ":enterprise_startup_dialog",
     ":simple_message_box_headers",
+    ":tab_modal_confirm_dialog",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/feedback",
@@ -4196,8 +4216,6 @@ static_library("ui") {
       "views/tab_dialogs_views.h",
       "views/tab_icon_view.cc",
       "views/tab_icon_view.h",
-      "views/tab_modal_confirm_dialog_views.cc",
-      "views/tab_modal_confirm_dialog_views.h",
       "views/tab_search_bubble_host.cc",
       "views/tab_search_bubble_host.h",
       "views/tabs/browser_tab_strip_controller.cc",

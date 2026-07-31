@@ -267,6 +267,7 @@ static_library("devtools") {
       "//chrome/browser/infobars",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:tab_modal_confirm_dialog",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/tabs:tab_strip",

@@ -51,7 +51,10 @@ source_set("impl") {
     ]
   } else {
     sources += [ "javascript_tab_modal_dialog_manager_delegate_desktop.cc" ]
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+    deps += [
+      "//chrome/browser/ui:tab_modal_confirm_dialog",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
