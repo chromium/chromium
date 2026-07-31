@@ -308,15 +308,6 @@
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are blocked.">
         Blocked
       </message>
-      <!-- Privacy UX WebUI -->
-
-      <!--Ad measurement page - Ads API UX Enhancement-->
-      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_DISCLAIMER" desc="This string appears at the bottom of the “Ad measurement” settings page.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
-        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" id="$4" target="_blank"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
-      </message>
-      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_DISCLAIMER_CLANK" desc="This string appears at the bottom of the “Ad measurement” settings page.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
-        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
 
       <!-- 3PC Settings -->
       <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_ONE" desc="This text is for a bullet that provides detail about the first setting option. It describes the primary privacy and content impacts of selecting the “Allow third-party cookies” option." formatter_data="android_java">
