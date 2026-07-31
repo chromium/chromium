@@ -22,6 +22,10 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/compositor_switches.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/display_server_utils.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/test/ui_controls_ash.h"
 #elif BUILDFLAG(IS_WIN)
@@ -58,6 +62,11 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     // Notifies the platform that test config is needed. For Wayland, for
     // example, makes it possible to use emulated input.
     ui::test::EnableTestConfigForPlatformWindows();
+
+#if BUILDFLAG(IS_LINUX)
+    ui::SetOzonePlatformForLinuxIfNeeded(
+        *base::CommandLine::ForCurrentProcess());
+#endif
 
     ui::OzonePlatform::InitParams params;
     params.single_process = true;

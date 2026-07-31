@@ -93,6 +93,10 @@ test("glic_internal_e2e_interactive_ui_tests") {
     ]
   }
 
+  if (is_linux) {
+    deps += [ "//ui/linux:display_server_utils" ]
+  }
+
   deps += [
     "//chrome:browser_tests_pak",
     "//chrome:packed_resources",

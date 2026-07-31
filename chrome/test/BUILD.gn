@@ -8369,6 +8369,10 @@ if (!is_android) {
         "//ui/web_dialogs:test_support",
       ]
 
+      if (is_linux) {
+        deps += [ "//ui/linux:display_server_utils" ]
+      }
+
       if (enable_extensions) {
         deps += [
           "//google_apis/common:test_support",
@@ -8760,6 +8764,10 @@ if (!is_android && !is_chromeos_device) {
       "//ui/views",
       "//ui/web_dialogs:test_support",
     ]
+
+    if (is_linux) {
+      deps += [ "//ui/linux:display_server_utils" ]
+    }
 
     if (is_win) {
       deps += [ "//chrome/browser/ui/webui/default_browser:pixel_tests" ]
@@ -9700,6 +9708,10 @@ if (!is_android) {
 
     if (use_aura) {
       deps += [ "//ui/aura:test_support" ]
+    }
+
+    if (is_linux) {
+      deps += [ "//ui/linux:display_server_utils" ]
     }
 
     if (is_linux || is_chromeos) {

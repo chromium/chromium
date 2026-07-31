@@ -64,7 +64,9 @@ WaylandInputEmulate::WaylandInputEmulate(
   // Roundtrip one time to get the ui_controls global.
   wayland_proxy->RoundTripQueue();
   if (!ui_controls_) {
-    LOG(FATAL) << "ui-controls protocol extension is not available.";
+    LOG(FATAL)
+        << "ui-controls protocol extension is not available. Please use "
+           "--ozone-platform=x11 to run interactive tests in this environment.";
   }
 
   static constexpr zcr_ui_controls_v2_listener kUiControlsListener = {
