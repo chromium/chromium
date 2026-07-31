@@ -812,9 +812,36 @@ WithPrefetchRearchParam::~WithPrefetchRearchParam() = default;
 
 // static
 std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
+  // Write parameter combinations declaratively instead of using `for` loops.
   return {
-      PrefetchRearchParam{.force_off_the_main_thread = false},
-      PrefetchRearchParam{.force_off_the_main_thread = true},
+      PrefetchRearchParam{
+          .force_off_the_main_thread = false,
+          .unblock_async_policy = std::nullopt,
+      },
+      PrefetchRearchParam{
+          .force_off_the_main_thread = false,
+          .unblock_async_policy =
+              features::PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlocked,
+      },
+      PrefetchRearchParam{
+          .force_off_the_main_thread = false,
+          .unblock_async_policy = features::
+              PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlockedUnmatch,
+      },
+      PrefetchRearchParam{
+          .force_off_the_main_thread = true,
+          .unblock_async_policy = std::nullopt,
+      },
+      PrefetchRearchParam{
+          .force_off_the_main_thread = true,
+          .unblock_async_policy =
+              features::PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlocked,
+      },
+      PrefetchRearchParam{
+          .force_off_the_main_thread = true,
+          .unblock_async_policy = features::
+              PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlockedUnmatch,
+      },
   };
 }
 
@@ -824,6 +851,25 @@ void WithPrefetchRearchParam::InitRearchFeatures() {
         {features::kPrefetchOffTheMainThread,
          features::kPrefetchOffTheMainThreadForceForTesting},
         {});
+  }
+  if (param_.unblock_async_policy.has_value()) {
+    const char* policy_str = nullptr;
+    switch (*param_.unblock_async_policy) {
+      case features::PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlocked:
+        policy_str = "AsyncBlocked";
+        break;
+      case features::PrefetchMatchResolverUnblockAsyncPolicy::
+          kAsyncBlockedUnmatch:
+        policy_str = "AsyncBlockedUnmatch";
+        break;
+    }
+    feature_list_unblock_async_.InitWithFeaturesAndParameters(
+        {{features::kPrefetchMatchResolverUnblockAsync,
+          {{"unblock_async_policy", policy_str}}}},
+        {});
+  } else {
+    feature_list_unblock_async_.InitWithFeatures(
+        {}, {features::kPrefetchMatchResolverUnblockAsync});
   }
 }
 

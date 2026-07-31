@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/preloading_test_util.h"
@@ -357,6 +358,8 @@ struct PrefetchRearchParam final {
   static std::vector<PrefetchRearchParam> Params();
 
   bool force_off_the_main_thread;
+  std::optional<features::PrefetchMatchResolverUnblockAsyncPolicy>
+      unblock_async_policy;
 };
 
 class WithPrefetchRearchParam {
@@ -371,6 +374,7 @@ class WithPrefetchRearchParam {
  private:
   PrefetchRearchParam param_;
   base::test::ScopedFeatureList feature_list_force_off_the_main_thread_;
+  base::test::ScopedFeatureList feature_list_unblock_async_;
 };
 
 // A wrapper for `PrefetchService::SetInjectedEligibilityCheckForTesting`.

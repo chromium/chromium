@@ -278,8 +278,8 @@ std::ostream& operator<<(
 
 void PrefetchMatchResolver::FindPrefetchInternal2(
     PrefetchService& prefetch_service) {
-  TRACE_EVENT_BEGIN("loading", "PrefetchMatchResolver::FindPrefetch", flow_,
-                    perfetto::Flow::FromPointer(this));
+  TRACE_EVENT_BEGIN("loading", "PrefetchMatchResolver::FindPrefetchInternal2",
+                    flow_, perfetto::Flow::FromPointer(this));
 
   // We can't use `prefetch_ahead_of_prerender_for_metrics` as it is set in
   // `RegisterCandidate()` and we'll miss
@@ -402,6 +402,21 @@ void PrefetchMatchResolver::FindPrefetchInternal2(
     }
   }
 
+  if (candidates_.size() == 0) {
+    if (is_nav_prerender_ && prerender_host_for_metrics_ &&
+        prefetch_container_ahead_of_prerender) {
+      base::UmaHistogramEnumeration(
+          "Prefetch.PrefetchMatchResolver.ExistsPaopThen."
+          "PrefetchPotentialCandidateCollectResult",
+          collect_result_ahead_of_prerender_for_metrics_);
+    }
+
+    TRACE_EVENT_END("loading");
+
+    UnblockForNoCandidates();
+    return;
+  }
+
   // There is no matching and servable prefetch at this point. We should wait
   // remaining ones.
 
@@ -415,18 +430,6 @@ void PrefetchMatchResolver::FindPrefetchInternal2(
   }
 
   TRACE_EVENT_END("loading");
-
-  if (candidates_.size() == 0) {
-    if (is_nav_prerender_ && prerender_host_for_metrics_ &&
-        prefetch_container_ahead_of_prerender) {
-      base::UmaHistogramEnumeration(
-          "Prefetch.PrefetchMatchResolver.ExistsPaopThen."
-          "PrefetchPotentialCandidateCollectResult",
-          collect_result_ahead_of_prerender_for_metrics_);
-    }
-
-    UnblockForNoCandidates();
-  }
 }
 
 void PrefetchMatchResolver::RegisterCandidate(
@@ -842,12 +845,51 @@ void PrefetchMatchResolver::UnblockForCookiesChanged(const PrefetchKey& key) {
 
 void PrefetchMatchResolver::UnblockInternal(
     PrefetchServingHandle serving_handle) {
-  TRACE_EVENT_BEGIN("loading", "PrefetchMatchResolver::FindPrefetch",
+  TRACE_EVENT_BEGIN("loading", "PrefetchMatchResolver::UnblockInternal",
                     perfetto::Flow::FromPointer(this), flow_);
 
   // Postcondition: This resolver waits for no `PrefetchContainer`s when it has
   // been unblocking.
   CHECK_EQ(candidates_.size(), 0u);
+
+  const bool should_unblock_async = [&]() {
+    if (!base::FeatureList::IsEnabled(
+            features::kPrefetchMatchResolverUnblockAsync)) {
+      return false;
+    }
+
+    switch (features::kPrefetchMatchResolverUnblockAsyncPolicy.Get()) {
+      case features::PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlocked:
+        if (auto* prefetch_container = serving_handle.GetPrefetchContainer()) {
+          // If blocked, the matching is unblocked by callback of
+          // `PrefetchContainer`. If not blocked, we expect that all
+          // `PrefetchContainer` is not in notification at the timing that
+          // `FindPrefetch()` is called.
+          CHECK_EQ(wait_started_at_.has_value(),
+                   prefetch_container->during_observer_notification());
+        }
+        return wait_started_at_.has_value();
+      case features::PrefetchMatchResolverUnblockAsyncPolicy::
+          kAsyncBlockedUnmatch:
+        return wait_started_at_.has_value() &&
+               !serving_handle.GetPrefetchContainer();
+    }
+  }();
+
+  if (should_unblock_async) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PrefetchMatchResolver::UnblockInternal2,
+                       base::Unretained(this), std::move(serving_handle)));
+  } else {
+    UnblockInternal2(std::move(serving_handle));
+  }
+}
+
+void PrefetchMatchResolver::UnblockInternal2(
+    PrefetchServingHandle serving_handle) {
+  TRACE_EVENT_BEGIN("loading", "PrefetchMatchResolver::UnblockInternal2",
+                    perfetto::Flow::FromPointer(this), flow_);
 
   PrefetchContainer* prefetch_container = serving_handle.GetPrefetchContainer();
   prefetch_match_metrics_->prefetch_container_metrics =

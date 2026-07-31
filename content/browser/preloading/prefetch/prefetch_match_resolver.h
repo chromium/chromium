@@ -248,7 +248,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // Helpers of `FindPrefetch()`.
   //
   // Control flow starts with `FindPrefetchInternal()` and ends with
-  // `UnblockInternal()`.
+  // `UnblockInternal2()`.
   //
   // Actually, it is different from
   // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
@@ -281,6 +281,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchPotentialCandidateServingResult serving_result);
   void UnblockForCookiesChanged(const PrefetchKey& key);
   void UnblockInternal(PrefetchServingHandle serving_handle);
+  void UnblockInternal2(PrefetchServingHandle serving_handle);
 
   // Lifetime of this class is from the call of `FindPrefetch()` to calling
   // `callback_`. Note that

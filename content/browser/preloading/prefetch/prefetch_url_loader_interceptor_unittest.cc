@@ -1403,6 +1403,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   CreateInterceptor(MainDocumentToken());
   MaybeCreateLoader(kTestUrl);
+  // Wait asynchronous `PrefetchMatchResolver::UnblockInternal()` call.
+  task_environment()->RunUntilIdle();
 
   // A decision on whether the navigation should be intercepted shouldn't be
   // made until the origin probe is complete.

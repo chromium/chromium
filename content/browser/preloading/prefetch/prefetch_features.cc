@@ -115,7 +115,25 @@ const base::FeatureParam<PrefetchCancelUnrelatedPrefetchCancelPolicy>
         PrefetchCancelUnrelatedPrefetchCancelPolicy::kNotServable,
         &kPrefetchCancelUnrelatedPrefetchCancelPolicyOptions};
 
+constexpr base::FeatureParam<PrefetchMatchResolverUnblockAsyncPolicy>::Option
+    kPrefetchMatchResolverUnblockAsyncPolicyOptions[] = {
+        {PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlocked,
+         "AsyncBlocked"},
+        {PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlockedUnmatch,
+         "AsyncBlockedUnmatch"},
+};
+
+const base::FeatureParam<PrefetchMatchResolverUnblockAsyncPolicy>
+    kPrefetchMatchResolverUnblockAsyncPolicy{
+        &kPrefetchMatchResolverUnblockAsync, "unblock_async_policy",
+        PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlocked,
+        &kPrefetchMatchResolverUnblockAsyncPolicyOptions};
+
 BASE_FEATURE(kPrefetchAsyncPrefetchHandleCallback,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrefetchMatchResolverUnblockAsync,
+             "PrefetchMatchResolverUnblockAsync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
