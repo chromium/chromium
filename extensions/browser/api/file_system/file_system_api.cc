@@ -230,9 +230,9 @@ base::FilePath GenerateUniqueSavePath(const base::FilePath& path) {
       // Try a timestamp suffix.
       // Generate an ISO8601 compliant local timestamp suffix that avoids
       // reserved characters that are forbidden on some OSes like Windows.
-      unique_path = path.InsertBeforeExtensionASCII(
-          base::UnlocalizedTimeFormatWithPattern(base::Time::Now(),
-                                                 " - yyyy-MM-dd'T'HHmmss.SSS"));
+      std::string timestamp = base::TimeFormatAsIso8601(base::Time::Now());
+      base::ReplaceChars(timestamp, ":", "", &timestamp);
+      unique_path = path.InsertBeforeExtensionASCII(" - " + timestamp);
     }
     if (!filename_generation::TruncateFilename(&unique_path, limit))
       return base::FilePath();

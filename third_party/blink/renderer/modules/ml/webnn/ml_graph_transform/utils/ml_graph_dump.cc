@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/utils/ml_graph_dump.h"
 
-#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "fp16/fp16.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
@@ -1033,8 +1034,11 @@ wtf_size_t MLGraphDumper::NodeIdMapper::NextNewId() {
 MLGraphDumper::MLGraphDumper() {
   node_id_mapper_ = MakeGarbageCollected<NodeIdMapper>();
 
-  std::string collection_id = base::UnlocalizedTimeFormatWithPattern(
-      base::Time::Now(), "'webnn_graph_'yyyyMMdd-HHmmss");
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  std::string collection_id = base::StringPrintf(
+      "webnn_graph_%04d%02d%02d-%02d%02d%02d", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second);
 
   root_.Set("label", collection_id);
   root_.Set("graphs", base::ListValue());

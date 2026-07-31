@@ -11,9 +11,9 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -91,8 +91,13 @@ DumpInfo::~DumpInfo() {}
 base::Value DumpInfo::GetAsValue() const {
   base::DictValue result;
 
-  result.Set(kDumpTimeKey, base::UnlocalizedTimeFormatWithPattern(
-                               dump_time_, "yyyy-MM-dd HH:mm:ss"));
+  base::Time::Exploded exploded;
+  dump_time_.LocalExplode(&exploded);
+  result.Set(
+      kDumpTimeKey,
+      base::StringPrintf("%04d-%02d-%02d %02d:%02d:%02d", exploded.year,
+                         exploded.month, exploded.day_of_month, exploded.hour,
+                         exploded.minute, exploded.second));
 
   result.Set(kDumpKey, crashed_process_dump_);
   std::string uptime = base::NumberToString(params_.process_uptime);
