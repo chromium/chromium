@@ -7,11 +7,17 @@ package org.chromium.chrome.browser.ui.vertical_tabs;
 import android.content.Context;
 import android.util.TypedValue;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.base.DeviceFormFactor;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Helper utilities for Vertical Tabs eligibility and preferences. */
 @NullMarked
@@ -27,6 +33,41 @@ public class VerticalTabUtils {
      * enable collapse button.
      */
     public static final int MIN_EXPAND_WINDOW_WIDTH_DP = 652;
+
+    @IntDef({
+        LayoutSwitchEntryPoint.APP_MENU,
+        LayoutSwitchEntryPoint.TAB_CONTEXT_MENU,
+        LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LayoutSwitchEntryPoint {
+        int APP_MENU = 0;
+        int TAB_CONTEXT_MENU = 1;
+        int TAB_STRIP_CONTEXT_MENU = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.IfChange(AndroidVerticalTabsLayoutToggleSourceAndDirection)
+    @IntDef({
+        LayoutToggleSourceAndDirection.ENABLE_APP_MENU,
+        LayoutToggleSourceAndDirection.ENABLE_TAB_CONTEXT_MENU,
+        LayoutToggleSourceAndDirection.ENABLE_TAB_STRIP_CONTEXT_MENU,
+        LayoutToggleSourceAndDirection.DISABLE_APP_MENU,
+        LayoutToggleSourceAndDirection.DISABLE_TAB_CONTEXT_MENU,
+        LayoutToggleSourceAndDirection.DISABLE_TAB_STRIP_CONTEXT_MENU,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LayoutToggleSourceAndDirection {
+        int ENABLE_APP_MENU = 0;
+        int ENABLE_TAB_CONTEXT_MENU = 1;
+        int ENABLE_TAB_STRIP_CONTEXT_MENU = 2;
+        int DISABLE_APP_MENU = 3;
+        int DISABLE_TAB_CONTEXT_MENU = 4;
+        int DISABLE_TAB_STRIP_CONTEXT_MENU = 5;
+        int COUNT = 6;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsLayoutToggleSourceAndDirection)
 
     /**
      * Returns whether the current device is eligible for Vertical Tabs. Vertical Tabs require the
@@ -44,6 +85,20 @@ public class VerticalTabUtils {
         }
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+    }
+
+    /**
+     * Records the layout switch entry point and direction when toggling Vertical Tabs.
+     *
+     * @param entryPoint The entry point from which the layout toggle was triggered.
+     * @param isEnabling Whether the user is enabling Vertical Tabs (true) or horizontal (false).
+     */
+    public static void recordLayoutToggle(
+            @LayoutSwitchEntryPoint int entryPoint, boolean isEnabling) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.VerticalTabs.LayoutToggleSourceAndDirection",
+                getLayoutToggleSourceAndDirection(entryPoint, isEnabling),
+                LayoutToggleSourceAndDirection.COUNT);
     }
 
     /** Loads a float resource value (e.g. for alpha) from the given dimen resource id. */
@@ -66,5 +121,30 @@ public class VerticalTabUtils {
     public static boolean isGroupHeaderDragEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, GROUP_HEADER_DRAG_PARAM, false);
+    }
+
+    private static @LayoutToggleSourceAndDirection int getLayoutToggleSourceAndDirection(
+            @LayoutSwitchEntryPoint int entryPoint, boolean isEnabling) {
+        if (isEnabling) {
+            switch (entryPoint) {
+                case LayoutSwitchEntryPoint.APP_MENU:
+                    return LayoutToggleSourceAndDirection.ENABLE_APP_MENU;
+                case LayoutSwitchEntryPoint.TAB_CONTEXT_MENU:
+                    return LayoutToggleSourceAndDirection.ENABLE_TAB_CONTEXT_MENU;
+                case LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU:
+                    return LayoutToggleSourceAndDirection.ENABLE_TAB_STRIP_CONTEXT_MENU;
+            }
+        } else {
+            switch (entryPoint) {
+                case LayoutSwitchEntryPoint.APP_MENU:
+                    return LayoutToggleSourceAndDirection.DISABLE_APP_MENU;
+                case LayoutSwitchEntryPoint.TAB_CONTEXT_MENU:
+                    return LayoutToggleSourceAndDirection.DISABLE_TAB_CONTEXT_MENU;
+                case LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU:
+                    return LayoutToggleSourceAndDirection.DISABLE_TAB_STRIP_CONTEXT_MENU;
+            }
+        }
+        assert false : "Invalid entry point or direction";
+        return LayoutToggleSourceAndDirection.ENABLE_APP_MENU;
     }
 }

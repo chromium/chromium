@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabStripReorderingHelper
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutSwitchEntryPoint;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -384,6 +385,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         activityResultTracker,
                         modalDialogManager);
             } else if (menuId == R.id.toggle_tab_layout_menu_id) {
+                boolean isEnablingVerticalTabs = tabStripLayout == TabStripLayoutType.HORIZONTAL;
+                VerticalTabUtils.recordLayoutToggle(
+                        LayoutSwitchEntryPoint.TAB_CONTEXT_MENU, isEnablingVerticalTabs);
                 if (activity instanceof MenuOrKeyboardActionController controller) {
                     controller.onMenuOrKeyboardAction(
                             R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);
