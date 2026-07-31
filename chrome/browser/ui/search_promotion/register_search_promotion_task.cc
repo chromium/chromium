@@ -67,25 +67,3 @@ RegisterSearchPromotionTask::FromCommandLine(
   return std::make_unique<RegisterSearchPromotionTask>(post_install_url,
                                                        extension_id);
 }
-
-// static.
-std::optional<SearchPromotionExitCode>
-RegisterSearchPromotionTask::ParseExitCode(int exit_code) {
-  SearchPromotionExitCode typed_exit_code =
-      static_cast<SearchPromotionExitCode>(exit_code);
-
-  switch (typed_exit_code) {
-    case SearchPromotionExitCode::kInvalidExtensionId:
-    case SearchPromotionExitCode::kInvalidPostInstallUrl:
-    case SearchPromotionExitCode::kForegroundFallbackLaunchFailed:
-    case SearchPromotionExitCode::kTimeout:
-    case SearchPromotionExitCode::kSuccessBackground:
-    case SearchPromotionExitCode::kSuccessWithForegroundFallback:
-      return typed_exit_code;
-  }
-
-  // Handling invalid values after the switch block, instead of in a `default`
-  // case allows us to assert at compile time that new enum values added to
-  // `SearchPromotionExitCode` are added here as well.
-  return std::nullopt;
-}

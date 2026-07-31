@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
@@ -246,8 +246,13 @@ void SearchPromotionManager::RunRegisterTask(
 
   task_runner_ = create_task_runner_callback_.Run();
   task_runner_->Run(std::move(task),
-                    base::BindOnce(&SearchPromotionManager::HandleTaskResult,
+                    base::BindOnce(&SearchPromotionManager::OnTaskCompleted,
                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SearchPromotionManager::OnTaskCompleted(
+    platform_experience::DelegatedTaskResult result) {
+  task_runner_.reset();
 }
 
 void SearchPromotionManager::PerformArmA() {
@@ -272,42 +277,4 @@ void SearchPromotionManager::PerformArmB() {
   }
   RunRegisterTask(std::make_unique<RegisterSearchPromotionTask>(
       /*post_install_url=*/instructions_url, /*extension_id=*/extension_id));
-}
-
-void SearchPromotionManager::HandleTaskResult(
-    platform_experience::DelegatedTaskResult task_result) {
-  task_runner_.reset();
-
-  // TODO(crbug.com/535186625): Implement handling of exit codes and metrics.
-  if (!task_result.exit_code_or_status.has_value()) {
-    // Handle why task was not executed successfully.
-    platform_experience::DelegatedTaskStatus task_status =
-        task_result.exit_code_or_status.error();
-    switch (task_status) {
-      case platform_experience::DelegatedTaskStatus::kPehNotFound:
-      case platform_experience::DelegatedTaskStatus::kTaskTimeout:
-      case platform_experience::DelegatedTaskStatus::kInvalidArgs:
-      default:
-        break;
-    }
-    return;
-  }
-
-  // Handle exit code from task.
-  std::optional<SearchPromotionExitCode> exit_code =
-      RegisterSearchPromotionTask::ParseExitCode(
-          *task_result.exit_code_or_status);
-  if (!exit_code.has_value()) {
-    // Handle invalid exit code.
-  }
-
-  switch (*exit_code) {
-    case SearchPromotionExitCode::kInvalidExtensionId:
-    case SearchPromotionExitCode::kInvalidPostInstallUrl:
-    case SearchPromotionExitCode::kForegroundFallbackLaunchFailed:
-    case SearchPromotionExitCode::kTimeout:
-    case SearchPromotionExitCode::kSuccessBackground:
-    case SearchPromotionExitCode::kSuccessWithForegroundFallback:
-      break;
-  }
 }

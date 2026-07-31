@@ -541,19 +541,12 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, PerformArmASuccess) {
       .WillOnce(
           [&](std::unique_ptr<platform_experience::DelegatedTask> task,
               platform_experience::DelegatedTaskCompletionCallback callback) {
-            platform_experience::DelegatedTaskResult result;
-            result.exit_code_or_status =
-                std::to_underlying(SearchPromotionExitCode::kSuccessBackground);
-            std::move(callback).Run(result);
-
+            std::move(callback).Run({});
             future.GetCallback().Run();
           });
 
   manager()->OnPromoAccepted();
   EXPECT_TRUE(future.Wait());
-
-  // TODO(crbug.com/535186625): Verify task result once result handling is
-  // implemented.
 }
 
 TEST_F(SearchPromotionManagerTaskRunnerTest, PerformArmBSuccess) {
@@ -569,19 +562,12 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, PerformArmBSuccess) {
       .WillOnce(
           [&](std::unique_ptr<platform_experience::DelegatedTask> task,
               platform_experience::DelegatedTaskCompletionCallback callback) {
-            platform_experience::DelegatedTaskResult result;
-            result.exit_code_or_status =
-                std::to_underlying(SearchPromotionExitCode::kSuccessBackground);
-            std::move(callback).Run(result);
-
+            std::move(callback).Run({});
             future.GetCallback().Run();
           });
 
   manager()->OnPromoAccepted();
   EXPECT_TRUE(future.Wait());
-
-  // TODO(crbug.com/535186625): Verify task result once result handling is
-  // implemented.
 }
 
 TEST_F(SearchPromotionManagerTaskRunnerTest, InvalidAndEmptyPostInstallUrl) {
