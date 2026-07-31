@@ -6,8 +6,10 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,29 +96,53 @@ std::string ResolveTargetTitle(const std::string& target_title,
                       : std::string();
 }
 
+std::vector<base::WeakPtr<content::WebContents>> GetWeakWebContentsList(
+    base::span<content::WebContents* const> web_contents_list) {
+  std::vector<base::WeakPtr<content::WebContents>> list;
+  list.reserve(web_contents_list.size());
+  for (content::WebContents* web_contents : web_contents_list) {
+    if (web_contents) {
+      list.push_back(web_contents->GetWeakPtr());
+    }
+  }
+  return list;
+}
+
 }  // namespace
 
 SendTabToSelfContextMenuDelegate::SendTabToSelfContextMenuDelegate(
-    content::WebContents* web_contents,
+    content::WebContents* primary_web_contents,
     ShareEntryPoint entry_point,
     const GURL& target_url,
     const std::string& target_title)
-    : web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
+    : primary_web_contents_(
+          primary_web_contents ? primary_web_contents->GetWeakPtr() : nullptr),
       devices_(GetDevicesForDisplay()),
       entry_point_(entry_point),
-      target_url_(ResolveTargetUrl(target_url, web_contents)),
-      target_title_(ResolveTargetTitle(target_title, web_contents)) {}
+      target_url_(target_url),
+      target_title_(target_title) {
+  web_contents_list_ =
+      GetWeakWebContentsList(base::span_from_ref(primary_web_contents));
+}
+
+SendTabToSelfContextMenuDelegate::SendTabToSelfContextMenuDelegate(
+    content::WebContents* primary_web_contents,
+    base::span<content::WebContents* const> web_contents_list,
+    ShareEntryPoint entry_point)
+    : SendTabToSelfContextMenuDelegate(primary_web_contents, entry_point) {
+  web_contents_list_ = GetWeakWebContentsList(web_contents_list);
+}
 
 SendTabToSelfContextMenuDelegate::~SendTabToSelfContextMenuDelegate() = default;
 
 std::vector<TargetDeviceInfo>
 SendTabToSelfContextMenuDelegate::GetDevicesForDisplay() const {
-  if (!web_contents_) {
+  if (!primary_web_contents_) {
     return {};
   }
 
   Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+      Profile::FromBrowserContext(primary_web_contents_->GetBrowserContext());
   SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   if (!service) {
@@ -170,13 +196,13 @@ bool SendTabToSelfContextMenuDelegate::IsCommandIdEnabled(
 
 void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
                                                       int event_flags) {
-  if (!web_contents_) {
+  if (!primary_web_contents_) {
     return;
   }
 
   if (command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES) {
     NavigateParams params(
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+        Profile::FromBrowserContext(primary_web_contents_->GetBrowserContext()),
         GURL(chrome::kGoogleAccountDeviceActivityURL),
         ui::PAGE_TRANSITION_LINK);
     params.disposition = ui::DispositionFromEventFlags(
@@ -187,7 +213,7 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
 
   if (command_id >= IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1 &&
       command_id <= IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST) {
-    // The command IDs are allocated sequentially. We can calculate the array
+    // The command IDs are allocated sequentially. Calculate the array
     // index of the selected device by offsetting the command ID by the base ID.
     size_t device_index =
         command_id - IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1;
@@ -204,29 +230,42 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
             : send_tab_to_self::kSendTabToSelfEnhancedDesktopUI;
 
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-        web_contents_->GetBrowserContext(), stts_feature);
+        primary_web_contents_->GetBrowserContext(), stts_feature);
 
     RecordEntryPointInvoked(entry_point_);
 
-    SendTabToSelfPageHandler* handler =
-        SendTabToSelfPageHandler::GetOrCreateForWebContents(
-            web_contents_.get());
-    handler->SendTabToDevice(
-        devices_[device_index].cache_guid, target_url_, target_title_,
-        base::BindOnce(&OnSendTabToDeviceComplete, web_contents_,
-                       devices_[device_index].device_name,
-                       devices_[device_index].form_factor),
-        entry_point_);
+    for (const base::WeakPtr<content::WebContents>& web_contents :
+         web_contents_list_) {
+      if (!web_contents) {
+        continue;
+      }
+      SendTabToSelfPageHandler* handler =
+          SendTabToSelfPageHandler::GetOrCreateForWebContents(
+              web_contents.get());
+
+      auto callback = (web_contents.get() == primary_web_contents_.get())
+                          ? base::BindOnce(&OnSendTabToDeviceComplete,
+                                           primary_web_contents_,
+                                           devices_[device_index].device_name,
+                                           devices_[device_index].form_factor)
+                          : base::DoNothing();
+
+      handler->SendTabToDevice(
+          devices_[device_index].cache_guid,
+          ResolveTargetUrl(target_url_, web_contents.get()),
+          ResolveTargetTitle(target_title_, web_contents.get()),
+          std::move(callback), entry_point_);
+    }
   }
 }
 
 void SendTabToSelfContextMenuDelegate::OnMenuWillShow(
     ui::SimpleMenuModel* source) {
-  if (!web_contents_) {
+  if (!primary_web_contents_) {
     return;
   }
   Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+      Profile::FromBrowserContext(primary_web_contents_->GetBrowserContext());
   SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   if (!service) {

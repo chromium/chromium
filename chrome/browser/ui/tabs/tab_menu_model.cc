@@ -138,10 +138,17 @@ void TabMenuModel::BuildForWebApp(int index) {
   }
 }
 
-void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
+void TabMenuModel::BuildSendTabToSelfSubmenu(int index,
+                                             const std::vector<int>& indices) {
+  std::vector<content::WebContents*> web_contents_list;
+  web_contents_list.reserve(indices.size());
+  for (int i : indices) {
+    web_contents_list.push_back(tab_strip_->GetWebContentsAt(i));
+  }
+
   send_tab_to_self_submenu_delegate_ =
       std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
-          tab_strip_->GetWebContentsAt(index),
+          tab_strip_->GetWebContentsAt(index), web_contents_list,
           send_tab_to_self::ShareEntryPoint::kTabMenu);
   send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
       send_tab_to_self_submenu_delegate_.get());
@@ -488,7 +495,7 @@ void TabMenuModel::Build(int index) {
             send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) &&
         send_tab_to_self_reason ==
             send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
-      BuildSendTabToSelfSubmenu(index);
+      BuildSendTabToSelfSubmenu(index, indices);
     } else {
       if (send_tab_to_self_reason !=
           send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {

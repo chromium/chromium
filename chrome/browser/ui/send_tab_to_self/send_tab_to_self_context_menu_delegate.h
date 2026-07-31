@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -31,11 +32,21 @@ inline constexpr int IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST =
 // Acts as the ui::SimpleMenuModel::Delegate for the submenu.
 class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
  public:
+  // Single-tab flow (e.g., page or hyperlink context menu).
+  // Accepts optional `target_url` and `target_title` (e.g., link anchor text).
   SendTabToSelfContextMenuDelegate(
       content::WebContents* web_contents,
       ShareEntryPoint entry_point,
       const GURL& target_url = GURL(),
       const std::string& target_title = std::string());
+
+  // Multi-tab flow (e.g., tab strip context menu for multiple selected tabs).
+  // Target URL/title are not applicable here as each tab resolves its own
+  // URL/title.
+  SendTabToSelfContextMenuDelegate(
+      content::WebContents* primary_web_contents,
+      base::span<content::WebContents* const> web_contents_list,
+      ShareEntryPoint entry_point);
 
   SendTabToSelfContextMenuDelegate(const SendTabToSelfContextMenuDelegate&) =
       delete;
@@ -61,7 +72,8 @@ class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
   // Returns the label to show for a device in the context menu.
   static std::u16string GetDeviceItemLabel(const TargetDeviceInfo& device);
 
-  base::WeakPtr<content::WebContents> web_contents_;
+  base::WeakPtr<content::WebContents> primary_web_contents_;
+  std::vector<base::WeakPtr<content::WebContents>> web_contents_list_;
   const std::vector<TargetDeviceInfo> devices_;
   const ShareEntryPoint entry_point_;
   const GURL target_url_;

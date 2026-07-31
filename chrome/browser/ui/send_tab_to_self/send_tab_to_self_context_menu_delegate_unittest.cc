@@ -29,6 +29,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -39,6 +40,7 @@ namespace {
 
 using testing::ElementsAre;
 using testing::Field;
+using testing::UnorderedElementsAre;
 
 class SendTabToSelfContextMenuDelegateTest
     : public ChromeRenderViewHostTestHarness {
@@ -238,6 +240,110 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, OnMenuWillShowRecordsMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.TargetDeviceCount",
       static_cast<int>(SendTabToSelfDeviceCount::kTwoDevices), 1);
+}
+
+TEST_F(SendTabToSelfContextMenuDelegateTest,
+       ExecuteCommandSendsMultipleTabsToDevice) {
+  base::Time now = base::Time::Now();
+  std::vector<TargetDeviceInfo> devices;
+  devices.emplace_back("Device 0", "guid0",
+                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  model()->SetTargetDeviceInfoSortedList(devices);
+
+  // Set up first tab (default web_contents()).
+  const GURL kUrl1("https://example1.com");
+  const std::u16string kTitle1 = u"Title 1";
+  NavigateAndCommit(kUrl1);
+  content::NavigationEntry* entry1 =
+      web_contents()->GetController().GetLastCommittedEntry();
+  web_contents()->UpdateTitleForEntry(entry1, kTitle1);
+
+  // Set up second tab.
+  std::unique_ptr<content::WebContents> web_contents2 =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  const GURL kUrl2("https://example2.com");
+  const std::u16string kTitle2 = u"Title 2";
+  content::WebContentsTester::For(web_contents2.get())
+      ->NavigateAndCommit(kUrl2);
+  content::NavigationEntry* entry2 =
+      web_contents2->GetController().GetLastCommittedEntry();
+  web_contents2->UpdateTitleForEntry(entry2, kTitle2);
+
+  std::vector<content::WebContents*> web_contents_list = {web_contents(),
+                                                          web_contents2.get()};
+
+  SendTabToSelfContextMenuDelegate delegate(web_contents(), web_contents_list,
+                                            ShareEntryPoint::kContentMenu);
+  ui::SimpleMenuModel menu_model(&delegate);
+  delegate.PopulateSubmenu(&menu_model);
+
+  delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+
+  std::vector<std::tuple<std::string, GURL, std::string>> sent_entries;
+  for (const std::string& guid : model()->GetAllGuids()) {
+    const SendTabToSelfEntry* entry = model()->GetEntryByGUID(guid);
+    sent_entries.emplace_back(entry->GetTargetDeviceSyncCacheGuid(),
+                              entry->GetURL(), entry->GetTitle());
+  }
+  EXPECT_THAT(sent_entries,
+              UnorderedElementsAre(
+                  std::make_tuple("guid0", kUrl1, base::UTF16ToUTF8(kTitle1)),
+                  std::make_tuple("guid0", kUrl2, base::UTF16ToUTF8(kTitle2))));
+}
+
+TEST_F(SendTabToSelfContextMenuDelegateTest,
+       ExecuteCommandSkipsDestroyedWebContents) {
+  base::Time now = base::Time::Now();
+  std::vector<TargetDeviceInfo> devices;
+  devices.emplace_back("Device 0", "guid0",
+                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  model()->SetTargetDeviceInfoSortedList(devices);
+
+  const GURL kUrl1("https://example1.com");
+  NavigateAndCommit(kUrl1);
+
+  // Create a second tab and then immediately destroy it.
+  auto web_contents2 =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  const GURL kUrl2("https://example2.com");
+  content::WebContentsTester::For(web_contents2.get())
+      ->NavigateAndCommit(kUrl2);
+
+  std::vector<content::WebContents*> web_contents_list = {web_contents(),
+                                                          web_contents2.get()};
+
+  SendTabToSelfContextMenuDelegate delegate(web_contents(), web_contents_list,
+                                            ShareEntryPoint::kContentMenu);
+
+  // Destroy the second tab.
+  web_contents2.reset();
+
+  // Executing command should not crash and should send only the valid first
+  // tab.
+  delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+
+  std::vector<std::string> guids = model()->GetAllGuids();
+  ASSERT_EQ(guids.size(), 1u);
+  const SendTabToSelfEntry* sent_entry = model()->GetEntryByGUID(guids[0]);
+  EXPECT_EQ(sent_entry->GetURL(), kUrl1);
+}
+
+TEST_F(SendTabToSelfContextMenuDelegateTest, IsCommandIdEnabled) {
+  SendTabToSelfContextMenuDelegate delegate(web_contents(),
+                                            ShareEntryPoint::kContentMenu);
+
+  // Command IDs handled by the Send Tab to Self submenu delegate.
+  EXPECT_TRUE(delegate.IsCommandIdEnabled(
+      IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1));
+  EXPECT_TRUE(delegate.IsCommandIdEnabled(
+      IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST));
+  EXPECT_TRUE(delegate.IsCommandIdEnabled(
+      IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES));
+
+  // Examples of command IDs not handled by this delegate.
+  EXPECT_FALSE(delegate.IsCommandIdEnabled(IDC_COPY));
+  EXPECT_FALSE(
+      delegate.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SHARING_SUBMENU));
 }
 }  // namespace
 

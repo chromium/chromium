@@ -736,6 +736,8 @@ if (!is_android) {
       "//components/policy/core/common:test_support",
       "//components/saved_tab_groups/public:features",
       "//components/saved_tab_groups/test_support",
+      "//components/send_tab_to_self",
+      "//components/send_tab_to_self:test_support",
       "//components/tab_groups",
       "//components/webapps/common",
       "//content/public/browser",
