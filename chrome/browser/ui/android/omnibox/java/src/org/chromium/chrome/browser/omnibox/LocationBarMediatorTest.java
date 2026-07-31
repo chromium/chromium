@@ -2745,7 +2745,7 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
         mMediator.zoomButtonClicked(null);
-        verify(mPageZoomIndicatorCoordinator).show(mWebContents);
+        verify(mPageZoomIndicatorCoordinator).show();
     }
 
     @Test
