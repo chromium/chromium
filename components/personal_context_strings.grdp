@@ -52,25 +52,25 @@
 
   <!-- Desktop Autofill Settings Personal Context preferences strings. -->
   <if expr="not is_android and not is_ios">
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE" desc="" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE" desc="Section header or page title in Chrome settings for the advanced, AI-powered form-filling features. 'Autofill' refers to the browser's ability to automatically populate form fields.">
       Enhanced autofill
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUMMARY" desc="" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUMMARY" desc="A subheader for a settings section for AI powered autofill. 'Personal Intelligence' and 'Gemini' are brand names and should match standard branding guidelines across languages." >
       Powered by Personal Intelligence
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY" desc="" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY" desc="Description appearing under the 'Enhanced autofill ' section in settings. It directs users to manage how the underlying AI model retrieves and fills data. 'Gemini' is a proper Google product name and must remain unlocalized." >
       Manage finding and filling info with Gemini
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE" desc="" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE" desc="Toggle label in Chrome settings for enabling AI-driven autofill suggestions. 'Gemini' is a proper Google product name and must remain unlocalized.">
       Find and fill with Gemini
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY" desc="" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY" desc="Description text under the 'Find and fill with Gemini' setting explaining the functionality and data sources. 'Gmail', 'Photos', and 'Personal Intelligence' are proper Google product and feature names that must adhere to standard branding guidelines.">
       Autofill info from apps such as Gmail and Photos. Powered by Personal Intelligence.
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_TITLE" desc="" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_TITLE" desc="Linkout text in Chrome settings. It navigates the user to a Gemini page where they can manage which third-party or Google ecosystem applications are linked to the enhanced autofill feature.">
       Manage Connected Apps
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY" desc="" translateable="false">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY" desc="Subtext or description beneath the 'Manage Connected Apps' entry point, explaining its purpose. 'Gemini' is a proper product name and must remain unlocalized.">
       Choose which apps Gemini connects to
     </message>
   </if>
