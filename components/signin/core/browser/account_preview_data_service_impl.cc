@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
@@ -27,6 +28,48 @@ namespace signin {
 namespace {
 constexpr char kPreferredAccountDictGaiaIdKey[] = "gaia_id";
 constexpr char kPreferredAccountDictDataTypesKey[] = "data_types";
+
+void RecordNonPeriodicFetchesUntilNextPeriodicRefresh(int count) {
+  base::UmaHistogramCounts100(
+      "Signin.AccountPreview.NonPeriodicFetchesUntilNextPeriodicRefresh",
+      count);
+}
+
+void RecordSuccessfulFetchingMetrics(
+    PrefService* pref_service,
+    size_t account_count_total,
+    size_t account_count_to_fetch,
+    AccountPreviewDataServiceImpl::FetchTriggerCause cause) {
+  base::UmaHistogramEnumeration(
+      "Signin.AccountPreview.SuccessfulFetchTriggerCause", cause);
+
+  CHECK_NE(account_count_total, 0u);
+  CHECK_NE(account_count_to_fetch, 0u);
+
+  int percent = (account_count_to_fetch * 100) / account_count_total;
+  base::UmaHistogramPercentage("Signin.AccountPreview.PercentAccountsToFetch",
+                               percent);
+
+  switch (cause) {
+    case AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenUpdated:
+    case AccountPreviewDataServiceImpl::FetchTriggerCause::
+        kRefreshTokenRemoved: {
+      int count = pref_service->GetInteger(
+          prefs::kAccountPreviewNonPeriodicFetchCountPref);
+      pref_service->SetInteger(prefs::kAccountPreviewNonPeriodicFetchCountPref,
+                               count + 1);
+      break;
+    }
+    case AccountPreviewDataServiceImpl::FetchTriggerCause::kPeriodicRefresh: {
+      int count = pref_service->GetInteger(
+          prefs::kAccountPreviewNonPeriodicFetchCountPref);
+      RecordNonPeriodicFetchesUntilNextPeriodicRefresh(count);
+      pref_service->ClearPref(prefs::kAccountPreviewNonPeriodicFetchCountPref);
+      break;
+    }
+  }
+}
+
 }  // namespace
 
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
@@ -74,7 +117,7 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
   // fetching requests. Startup should only rely on the repeating timer and
   // refresh all accounts preview data.
   if (identity_manager_->AreRefreshTokensLoaded()) {
-    EnsureAllAccountsFetched(/*is_periodic_refresh=*/false);
+    EnsureAllAccountsFetched(FetchTriggerCause::kRefreshTokenUpdated);
   }
 }
 
@@ -100,7 +143,7 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
 
   auto preferred_account = GetPreferredAccountForPromo();
   if (preferred_account && preferred_account->gaia_id == gaia_id) {
-    EnsureAllAccountsFetched(/*is_periodic_refresh=*/false);
+    EnsureAllAccountsFetched(FetchTriggerCause::kRefreshTokenRemoved);
   }
 }
 
@@ -149,21 +192,41 @@ void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
 
 void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
   cached_data_.clear();
-  EnsureAllAccountsFetched(/*is_periodic_refresh=*/true);
+  EnsureAllAccountsFetched(FetchTriggerCause::kPeriodicRefresh);
 }
 
 void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
-    bool is_periodic_refresh) {
+    FetchTriggerCause cause) {
   CHECK(identity_manager_);
   if (!identity_manager_->AreRefreshTokensLoaded()) {
     deferred_fetch_on_loaded_tokens_callback_ =
         base::BindOnce(&AccountPreviewDataServiceImpl::EnsureAllAccountsFetched,
-                       weak_ptr_factory_.GetWeakPtr(), is_periodic_refresh);
+                       weak_ptr_factory_.GetWeakPtr(), cause);
     return;
   }
 
-  std::vector<GaiaId> gaia_ids_to_fetch;
   auto accounts = identity_manager_->GetAccountsWithRefreshTokens();
+  // If there are no accounts, there is no need to fetch any data.
+  if (accounts.empty()) {
+    if (cause == FetchTriggerCause::kPeriodicRefresh) {
+      // Treat `prefs::kAccountPreviewNonPeriodicFetchCountPref` pref.
+      int count = pref_service_->GetInteger(
+          prefs::kAccountPreviewNonPeriodicFetchCountPref);
+      // Only record when previous non-periodic fetches occurred (meaning there
+      // were some valid accounts) to ensure we do not record when a profile
+      // remains with no accounts for a long time.
+      if (count > 0) {
+        RecordNonPeriodicFetchesUntilNextPeriodicRefresh(count);
+      }
+      pref_service_->ClearPref(prefs::kAccountPreviewNonPeriodicFetchCountPref);
+    }
+    return;
+  }
+
+  base::UmaHistogramEnumeration("Signin.AccountPreview.AllFetchTriggerCause",
+                                cause);
+
+  std::vector<GaiaId> gaia_ids_to_fetch;
   for (const auto& account : accounts) {
     account_id_to_gaia_id_[account.account_id] = account.gaia;
     if (!cached_data_.contains(account.gaia)) {
@@ -172,15 +235,22 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   }
 
   if (gaia_ids_to_fetch.empty()) {
+    base::UmaHistogramEnumeration(
+        "Signin.AccountPreview.TriggerCauseWithAllCachesAvailable", cause);
+
     all_accounts_fetched_barrier_.Reset();
     OnAllFetchesCompleted(/*should_reset_periodic_timer=*/false);
     return;
   }
 
+  RecordSuccessfulFetchingMetrics(pref_service_, accounts.size(),
+                                  gaia_ids_to_fetch.size(), cause);
+
   // Reset the periodic timer if all data was fetched and this refresh was not
   // triggered by the periodic timer.
   bool should_reset_periodic_timer =
-      !is_periodic_refresh && (gaia_ids_to_fetch.size() == accounts.size());
+      (cause != FetchTriggerCause::kPeriodicRefresh) &&
+      (gaia_ids_to_fetch.size() == accounts.size());
 
   all_accounts_fetched_barrier_ = base::BarrierClosure(
       gaia_ids_to_fetch.size(),

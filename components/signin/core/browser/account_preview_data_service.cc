@@ -15,6 +15,8 @@ void AccountPreviewDataService::RegisterProfilePrefs(
   registry->RegisterTimePref(prefs::kAccountPreviewDataLastUpdatePref,
                              base::Time());
   registry->RegisterDictionaryPref(prefs::kAccountPreviewPreference);
+  registry->RegisterIntegerPref(prefs::kAccountPreviewNonPeriodicFetchCountPref,
+                                0);
 }
 
 }  // namespace signin

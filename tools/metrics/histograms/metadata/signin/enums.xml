@@ -213,6 +213,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/core/browser/account_preview_data_fetcher.h:AccountPreviewDataFetchState) -->
 
+<!-- LINT.IfChange(AccountPreviewFetchTriggerCause) -->
+
+<enum name="AccountPreviewFetchTriggerCause">
+  <int value="0" label="PeriodicRefresh"/>
+  <int value="1" label="RefreshTokenUpdated"/>
+  <int value="2" label="RefreshTokenRemoved"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/account_preview_data_service_impl.h:FetchTriggerCause) -->
+
 <!-- LINT.IfChange(AccountProfileStartupState) -->
 
 <enum name="AccountProfileStartupState">

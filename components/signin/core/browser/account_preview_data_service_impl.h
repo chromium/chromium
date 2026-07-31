@@ -37,6 +37,15 @@ class AccountPreviewDataFetcher;
 class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
                                       public IdentityManager::Observer {
  public:
+  // LINT.IfChange(FetchTriggerCause)
+  enum class FetchTriggerCause {
+    kPeriodicRefresh = 0,
+    kRefreshTokenUpdated = 1,
+    kRefreshTokenRemoved = 2,
+    kMaxValue = kRefreshTokenRemoved,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewFetchTriggerCause)
+
   AccountPreviewDataServiceImpl(
       IdentityManager* identity_manager,
       PrefService* pref_service,
@@ -76,7 +85,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
 
  private:
   void RefreshAllAccountPreviewData();
-  void EnsureAllAccountsFetched(bool is_periodic_refresh);
+  void EnsureAllAccountsFetched(FetchTriggerCause cause);
   void FetchAccountPreviewData(const GaiaId& gaia_id);
   void StartFetch(const GaiaId& gaia_id);
   void OnSingleFetchCompleted(const GaiaId& gaia_id,

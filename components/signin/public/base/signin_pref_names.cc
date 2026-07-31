@@ -26,6 +26,11 @@ const char kAccountPreviewPreference[] = "signin.account_preview_preference";
 const char kAccountPreviewDataLastUpdatePref[] =
     "signin.account_preview_data_last_update";
 
+// Integer pref that tracks the number of non-periodic full fetches until the
+// next periodic fetch.
+const char kAccountPreviewNonPeriodicFetchCountPref[] =
+    "signin.account_preview_non_periodic_fetch_count";
+
 // A hash of the GAIA accounts present in the content area. Order does not
 // affect the hash, but signed in/out status will. Stored as the Base64 string.
 const char kGaiaCookieHash[] = "gaia_cookie.hash";

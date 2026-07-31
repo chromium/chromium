@@ -628,6 +628,55 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Signin.AccountPreview.NonPeriodicFetchesUntilNextPeriodicRefresh"
+    units="count" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of non-periodic full fetch triggers that resulted in at
+    least one fetch request, logged and reset once every 24 hours (when a
+    periodic refresh is triggered).
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountPreview.PercentAccountsToFetch" units="%"
+    expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the percentage of signed-in accounts that required a network fetch
+    relative to the total number of signed-in accounts during a fetch trigger.
+    Recorded for triggers where at least one account required fetching.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountPreview.TriggerCauseWithAllCachesAvailable"
+    enum="AccountPreviewFetchTriggerCause" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the initial trigger cause of a fetch cycle that did not result in
+    any actual network fetches because the data for all accounts was already
+    fully cached.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountPreview.{State}FetchTriggerCause"
+    enum="AccountPreviewFetchTriggerCause" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the trigger cause for a sync preview data fetch cycles. Recorded for
+    {State} fetches.
+  </summary>
+  <token key="State">
+    <variant name="All" summary="all initiated"/>
+    <variant name="Successful"
+        summary="successful (that lead to a network call)"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.AccountPreviewData.FetchState"
     enum="AccountPreviewDataFetchState" expires_after="2027-06-01">
   <owner>rsult@google.com</owner>
