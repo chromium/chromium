@@ -103,6 +103,14 @@ if (is_chrome_branded && (is_mac || is_win || is_linux)) {
   }
 }
 
+if (!is_android) {
+  source_set("platform_browser_test") {
+    testonly = true
+    sources = [ "platform_browser_test.h" ]
+    public_deps = [ "//chrome/test/base:in_process_browser_test" ]
+  }
+}
+
 source_set("in_process_browser_test_mixin") {
   testonly = true
   sources = [
