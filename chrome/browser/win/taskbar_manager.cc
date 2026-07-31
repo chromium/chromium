@@ -12,11 +12,16 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/task/thread_pool.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
@@ -63,12 +68,97 @@ constexpr std::array kChannels = {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/windows/histograms.xml:PinAppToTaskbarChannel)
 
+// Every taskbar pin flow runs on this sequence, and in particular every update
+// of the process-wide App User Model ID (AUMI) happens here.
+// `::SetCurrentProcessExplicitAppUserModelID()` frees and replaces a string
+// owned by the shell without any internal synchronization, so overlapping
+// calls from two threads corrupt the process heap. Confining every update to a
+// single sequence makes them mutually exclusive.
+//
+// This sequence also runs the `ITaskbarManager` eligibility getters, which
+// issue synchronous, blocking cross-process RPCs to the shell (explorer.exe)
+// and therefore must not run on the UI thread.
+base::LazyThreadPoolSequencedTaskRunner g_pin_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE));
+
+// A pin flow waiting for the process App User Model ID to become available.
+struct QueuedPinFlow {
+  std::wstring app_user_model_id;
+  internal::PinFlowCallback flow;
+};
+
+// Whether a pin flow currently owns the process App User Model ID. Only
+// accessed on the pin sequence.
+bool g_app_user_model_id_owned = false;
+
+// Flows waiting for the process App User Model ID. Only accessed on the pin
+// sequence.
+base::circular_deque<QueuedPinFlow>& GetQueuedPinFlows() {
+  static base::NoDestructor<base::circular_deque<QueuedPinFlow>> queued_flows;
+  return *queued_flows;
+}
+
+// The one and only place that updates the process-wide App User Model ID. See
+// `g_pin_task_runner` for why this is restricted to the pin sequence.
+void SetProcessAppUserModelId(const std::wstring& app_user_model_id) {
+  CHECK(g_pin_task_runner.Get()->RunsTasksInCurrentSequence());
+  ::SetCurrentProcessExplicitAppUserModelID(app_user_model_id.c_str());
+}
+
+void ReleaseProcessAppUserModelId();
+
+// Gives `flow` exclusive ownership of the process App User Model ID and runs
+// it.
+void StartPinFlow(const std::wstring& app_user_model_id,
+                  internal::PinFlowCallback flow) {
+  CHECK(g_pin_task_runner.Get()->RunsTasksInCurrentSequence());
+  CHECK(!g_app_user_model_id_owned);
+  g_app_user_model_id_owned = true;
+
+  // Chrome doesn't otherwise set a process App User Model ID, so it is cleared
+  // again once the flow is done. ITaskbarManager requires it to match the app
+  // requesting the pin, and `get_IsPinningAllowed()` only returns true when
+  // there is a Start Menu shortcut with this ID, so it must be set before the
+  // eligibility query and stay set for the rest of the flow.
+  SetProcessAppUserModelId(app_user_model_id);
+
+  // `base::BindPostTask()` makes the release hop back to the pin sequence, so
+  // that the App User Model ID is still only ever updated there no matter which
+  // thread ends up destroying the runner.
+  std::move(flow).Run(base::ScopedClosureRunner(base::BindPostTask(
+      g_pin_task_runner.Get(), base::BindOnce(&ReleaseProcessAppUserModelId))));
+}
+
+// Clears the process App User Model ID and hands it to the next queued flow, if
+// any.
+void ReleaseProcessAppUserModelId() {
+  CHECK(g_pin_task_runner.Get()->RunsTasksInCurrentSequence());
+  CHECK(g_app_user_model_id_owned);
+
+  SetProcessAppUserModelId(std::wstring());
+  g_app_user_model_id_owned = false;
+
+  if (GetQueuedPinFlows().empty()) {
+    return;
+  }
+  QueuedPinFlow next = std::move(GetQueuedPinFlows().front());
+  GetQueuedPinFlows().pop_front();
+  StartPinFlow(next.app_user_model_id, std::move(next.flow));
+}
+
 // Returns whether pinning is allowed or not. If it returns std::nullopt, an
 // ITaskbarManager method returned an error.
 std::optional<bool> IsPinningAllowed(
     const ComPtr<ITaskbarManager>& taskbar_manager) {
-  // Windows requires that this is run on the UI thread.
-  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  // `get_IsSupported()` and `get_IsPinningAllowed()` issue synchronous,
+  // blocking cross-process RPCs to the shell (explorer.exe), so they must not
+  // run on the UI thread. The TaskbarManager WinRT object is agile
+  // (MarshalingBehavior=Agile, ThreadingModel=Both), so these queries are safe
+  // to call from the pin sequence, which is also where the object was created.
+  // Only `RequestPinCurrentAppAsync()`, which displays a confirmation dialog,
+  // requires the UI thread.
+  CHECK(g_pin_task_runner.Get()->RunsTasksInCurrentSequence());
   boolean supported;
   HRESULT hr = taskbar_manager->get_IsSupported(&supported);
   if (FAILED(hr)) {
@@ -88,7 +178,6 @@ std::optional<bool> IsPinningAllowed(
 void PinnedRequestResult(ComPtr<ITaskbarManager> taskbar_manager,
                          ResultMetricCallback callback,
                          boolean pin_request_result) {
-  ::SetCurrentProcessExplicitAppUserModelID(L"");
   std::move(callback).Run(pin_request_result
                               ? PinResultMetric::kSuccess
                               : PinResultMetric::kPinCurrentAppFailed);
@@ -147,28 +236,16 @@ void OnIsCurrentAppPinnedResult(ComPtr<ITaskbarManager> taskbar_manager,
   }
 }
 
-void PinToTaskbarIfAllowedOnUIThread(
+// Checks whether the current app is already pinned and, if not (and
+// `check_only` is false), requests that it be pinned. This runs on the UI
+// thread because `RequestPinCurrentAppAsync()` displays a confirmation dialog.
+// Pinning eligibility has already been verified on the pin sequence by the
+// caller, which also still owns the process App User Model ID.
+void PinCurrentAppOnUIThread(
     ComPtr<ITaskbarManager> taskbar_manager,
-    const std::wstring& app_user_model_id,
     bool check_only,
     base::OnceCallback<void(PinResultMetric)> callback) {
-  // Chrome doesn't currently set this, so it will be cleared when the
-  // pinning process is done. ITaskbarManager requires that this be set to the
-  // same value as the window requesting the pinning.
-  ::SetCurrentProcessExplicitAppUserModelID(app_user_model_id.c_str());
-
-  // There must be a shortcut with AUMI `app_user_model_id` in the start menu
-  // for this to return true.
-  auto is_pinning_allowed = IsPinningAllowed(taskbar_manager);
-  if (!is_pinning_allowed.has_value()) {
-    std::move(callback).Run(PinResultMetric::kTaskbarManagerError);
-    return;
-  }
-  if (!*is_pinning_allowed) {
-    std::move(callback).Run(PinResultMetric::kPinningNotAllowed);
-    return;
-  }
-
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   ComPtr<IAsyncOperation<bool>> is_pinned_operation = nullptr;
   HRESULT hr = taskbar_manager->IsCurrentAppPinnedAsync(&is_pinned_operation);
   if (FAILED(hr)) {
@@ -192,12 +269,29 @@ void PinToTaskbarIfAllowedOnUIThread(
   }
 }
 
-// Attempts to pin a shortcut with AUMI `app_user_model_id` to the taskbar.
-// Pinning is done on the UI thread, asynchronously.
-void PinWithLimitedAccessFeature(const std::wstring& app_user_model_id,
-                                 bool check_only,
-                                 ResultMetricCallback callback) {
+// Attempts to pin a shortcut with the process App User Model ID to the taskbar.
+// Runs on the pin sequence, where the process App User Model ID is already set;
+// `release_app_user_model_id` keeps it set until this flow completes.
+//
+// The early-out paths below run `callback` from the pin sequence. That is safe:
+// `ShouldOfferToPin()` and `PinAppToTaskbar()` bind the caller's callback with
+// `base::BindPostTaskToCurrentDefault()`, so it is still delivered on the
+// sequence that requested the pin, and the metrics recorded in between are
+// thread-safe.
+void PinWithLimitedAccessFeature(
+    bool check_only,
+    ResultMetricCallback callback,
+    base::ScopedClosureRunner release_app_user_model_id) {
+  CHECK(g_pin_task_runner.Get()->RunsTasksInCurrentSequence());
   base::win::AssertComInitialized();
+
+  // Bind the release into `callback` so that the process App User Model ID
+  // stays set until the flow produces a result, and is released even if the
+  // callback chain is dropped without ever running.
+  callback = base::BindOnce(
+      [](base::ScopedClosureRunner release, ResultMetricCallback callback,
+         PinResultMetric result) { std::move(callback).Run(result); },
+      std::move(release_app_user_model_id), std::move(callback));
 
   ComPtr<IInspectable> taskbar_statics_inspectable;
 
@@ -226,31 +320,46 @@ void PinWithLimitedAccessFeature(const std::wstring& app_user_model_id,
     return;
   }
 
+  // There must be a shortcut with the process App User Model ID in the start
+  // menu for this to return true. This is a blocking shell RPC, which is why it
+  // runs here rather than on the UI thread.
+  std::optional<bool> is_pinning_allowed = IsPinningAllowed(taskbar_manager);
+  if (!is_pinning_allowed.has_value()) {
+    std::move(callback).Run(PinResultMetric::kTaskbarManagerError);
+    return;
+  }
+  if (!*is_pinning_allowed) {
+    std::move(callback).Run(PinResultMetric::kPinningNotAllowed);
+    return;
+  }
+
+  // The remaining work uses the WinRT async machinery and, for
+  // `RequestPinCurrentAppAsync()`, displays a confirmation dialog, so it runs
+  // on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&PinToTaskbarIfAllowedOnUIThread, taskbar_manager,
-                     app_user_model_id, check_only, std::move(callback)));
+      base::BindOnce(&PinCurrentAppOnUIThread, std::move(taskbar_manager),
+                     check_only, std::move(callback)));
 }
 
 void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
                              PinAppToTaskbarChannel channel,
                              bool check_only,
                              PinResultCallback callback) {
-  // Do the initial work, which does a lot of COM stuff, on a background thread.
-  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::ThreadPool::PostTask(
+  // Do the initial work, which does a lot of COM stuff and issues blocking
+  // shell RPCs, on the pin sequence.
+  if (!g_pin_task_runner.Get()->RunsTasksInCurrentSequence()) {
+    g_pin_task_runner.Get()->PostTask(
         FROM_HERE, base::BindOnce(&PinAppToTaskbarInternal, app_user_model_id,
                                   channel, check_only, std::move(callback)));
     return;
   }
 
-  // Wrap `callback` in a separate closure to make sure the current process's
-  // App User Model Id is cleared, and to record detailed success and failure
-  // metrics.
+  // Wrap `callback` in a separate closure to record detailed success and
+  // failure metrics.
   ResultMetricCallback pin_result_callback(base::BindOnce(
       [](PinResultCallback pin_callback, PinAppToTaskbarChannel channel,
          bool check_only, PinResultMetric result) {
-        ::SetCurrentProcessExplicitAppUserModelID(L"");
         base::UmaHistogramEnumeration(check_only
                                           ? kShouldPinToTaskbarResultHistogram
                                           : kTaskbarPinResultHistogram,
@@ -265,12 +374,17 @@ void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
       },
       std::move(callback), channel, check_only));
 
-  if (PinLimitedAccessFeatureAvailable()) {
-    PinWithLimitedAccessFeature(app_user_model_id, check_only,
-                                std::move(pin_result_callback));
-  } else {
+  if (!PinLimitedAccessFeatureAvailable()) {
     std::move(pin_result_callback).Run(PinResultMetric::kFeatureNotAvailable);
+    return;
   }
+
+  // The rest of the flow needs the process App User Model ID set to
+  // `app_user_model_id`, and only one flow may own it at a time.
+  internal::RunWithProcessAppUserModelId(
+      app_user_model_id,
+      base::BindOnce(&PinWithLimitedAccessFeature, check_only,
+                     std::move(pin_result_callback)));
 }
 
 }  // namespace
@@ -305,5 +419,28 @@ void PinAppToTaskbar(const std::wstring& app_user_model_id,
   PinAppToTaskbarInternal(app_user_model_id, channel, /*check_only=*/false,
                           std::move(callback_on_current_thread));
 }
+
+namespace internal {
+
+void RunWithProcessAppUserModelId(const std::wstring& app_user_model_id,
+                                  PinFlowCallback flow) {
+  if (!g_pin_task_runner.Get()->RunsTasksInCurrentSequence()) {
+    g_pin_task_runner.Get()->PostTask(
+        FROM_HERE, base::BindOnce(&RunWithProcessAppUserModelId,
+                                  app_user_model_id, std::move(flow)));
+    return;
+  }
+
+  // Another flow still owns the process App User Model ID. Wait for it rather
+  // than overwriting the ID it is using.
+  if (g_app_user_model_id_owned) {
+    GetQueuedPinFlows().push_back({app_user_model_id, std::move(flow)});
+    return;
+  }
+
+  StartPinFlow(app_user_model_id, std::move(flow));
+}
+
+}  // namespace internal
 
 }  // namespace browser_util

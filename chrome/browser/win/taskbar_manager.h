@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 
 namespace browser_util {
 
@@ -29,9 +30,12 @@ enum class PinAppToTaskbarChannel {
 // LINT.ThenChange(//chrome/browser/win/taskbar_manager.cc:PinAppToTaskbarChannel)
 
 // Functions to pin an icon for a Chrome window to the Windows taskbar, and to
-// check if Chrome should offer to pin. These functions do most of their work on
-// a background thread, but have to finish the work on the UI thread.
-// The result callback will be called from the thread that called them.
+// check if Chrome should offer to pin. These functions do their work on a
+// dedicated background sequence, because the shell APIs they use issue
+// blocking cross-process RPCs; they hop to the UI thread only for the part that
+// displays the Windows pin confirmation dialog.
+// The result callback is always run on the sequence that called them, however
+// far the flow got before producing a result.
 
 // Returns true if the com.microsoft.windows.taskbar.pin feature can be used.
 bool PinLimitedAccessFeatureAvailable();
@@ -87,6 +91,36 @@ enum class PinResultMetric {
   kPinCurrentAppFailed = 7,
   kMaxValue = kPinCurrentAppFailed,
 };
+
+namespace internal {
+
+// Callback run once a taskbar pin flow exclusively owns the process-wide App
+// User Model ID. Destroying the `base::ScopedClosureRunner` it is passed
+// releases that ownership, so the flow must keep the runner alive until it is
+// done with the App User Model ID.
+using PinFlowCallback = base::OnceCallback<void(base::ScopedClosureRunner)>;
+
+// Sets the process-wide App User Model ID to `app_user_model_id` and runs
+// `flow` once it exclusively owns that ID.
+//
+// The process-wide App User Model ID is global mutable state:
+// `::SetCurrentProcessExplicitAppUserModelID()` replaces a string owned by the
+// shell without any internal synchronization, so overlapping updates from two
+// threads corrupt the process heap. It also has to remain set for the entire
+// duration of a pin flow, which spans several thread hops, because it gates
+// both `ITaskbarManager::get_IsPinningAllowed()` and
+// `ITaskbarManager::RequestPinCurrentAppAsync()`.
+//
+// This function therefore serializes pin flows: every update of the process
+// App User Model ID happens on a single dedicated sequence, `flow` runs on that
+// same sequence, and a flow requested while another one still owns the ID is
+// queued until the other one releases it.
+//
+// Exposed for testing; production code should use the functions above.
+void RunWithProcessAppUserModelId(const std::wstring& app_user_model_id,
+                                  PinFlowCallback flow);
+
+}  // namespace internal
 
 }  // namespace browser_util
 
