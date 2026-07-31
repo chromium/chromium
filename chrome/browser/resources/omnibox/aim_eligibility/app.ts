@@ -284,7 +284,7 @@ export class AimEligibilityAppElement extends CrLitElement {
   }
 
   private getProtoshopUrl_(base64Proto: string): string {
-    const protoType = 'gws.searchbox.chrome.AimEligibilityResponse';
+    const protoType = 'com.google.gws.plugins.aim.AimEligibilityResponse';
     if (!base64Proto) {
       return `http://protoshop/${protoType}`;
     }
