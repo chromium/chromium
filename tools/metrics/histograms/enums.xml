@@ -22491,7 +22491,7 @@ Called by update_net_error_codes.py.-->
   <int value="53" label="Session Length Timeout"/>
   <int value="54" label="Locale Update"/>
   <int value="55" label="Tracing"/>
-  <int value="56" label="Pcie Billboard Device"/>
+  <int value="56" label="(deprecated) Pcie Billboard Device"/>
   <int value="57" label="Pcie Limited Performance"/>
   <int value="58" label="Pcie Guest Mode"/>
   <int value="59" label="Pcie Peripheral Blocked"/>
