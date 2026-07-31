@@ -122,6 +122,9 @@ message SourceReference {
 message GmailReference {
   // URL to the email message.
   string message_url = 1;
+
+  // Subject of the email message.
+  string subject = 2;
 }
 
 // Represents a reference to a Photos item.
