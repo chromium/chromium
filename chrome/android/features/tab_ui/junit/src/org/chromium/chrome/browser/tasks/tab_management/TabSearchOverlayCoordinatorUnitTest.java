@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
@@ -638,5 +639,31 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
         downEvent.recycle();
         cancelEvent.recycle();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void testSystemGestureExclusionRects_ShowAndHide() {
+        showOverlay();
+        View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        View closeButton = panelView.findViewById(R.id.tab_search_close_button);
+
+        // Mock layout bounds for close button.
+        closeButton.setLeft(228);
+        closeButton.setTop(4);
+        closeButton.setRight(260);
+        closeButton.setBottom(36);
+
+        // Trigger layout pass on panelView.
+        panelView.layout(0, 0, 264, 500);
+
+        // Verify exclusion rect matches close button bounds.
+        List<Rect> exclusionRects = panelView.getSystemGestureExclusionRects();
+        assertEquals(1, exclusionRects.size());
+        assertEquals(new Rect(228, 4, 260, 36), exclusionRects.get(0));
+
+        // Hide overlay and verify exclusion rect is cleared.
+        mCoordinator.hide();
+        assertTrue(panelView.getSystemGestureExclusionRects().isEmpty());
     }
 }

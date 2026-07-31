@@ -10,7 +10,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -75,6 +77,9 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Coordinator that hosts SearchUiCoordinator in a floating Tab Search panel positioned overlaying
@@ -202,6 +207,10 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
                                         false);
         final LinearLayout panelContainer = mPanelContainer;
         View panelView = panelContainer.findViewById(R.id.tab_search_overlay_panel);
+        panelView.addOnLayoutChangeListener(
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    updateExclusionRects();
+                });
         View searchActivityView = panelContainer.findViewById(R.id.search_activity_container);
         mParentContainer.addView(panelContainer);
 
@@ -437,6 +446,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         mBackPressStateSupplier.set(true);
         assumeNonNull(mSearchUiCoordinator)
                 .beginQuery(IntentOrigin.HUB, SearchType.TEXT, /* query= */ null, mWindowAndroid);
+        updateExclusionRects();
     }
 
     /** Hides the tab search overlay and clears the focus from the search box. */
@@ -447,11 +457,44 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
             var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
             locationBar.clearOmniboxFocus();
         }
+        updateExclusionRects();
     }
 
     /** Returns whether the tab search overlay is currently visible. */
     public boolean isVisible() {
         return mModel.get(TabSearchOverlayProperties.VISIBLE);
+    }
+
+    /**
+     * Updates the system gesture exclusion rects for the overlay panel.
+     *
+     * <p>#setSystemGestureExclusionRects allows Chrome to receive touch events on the header area
+     * of the panel when it is drawn under the system gesture area so that it remains accessible.
+     * The exclusion rect gets removed when the panel is no longer visible.
+     */
+    private void updateExclusionRects() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || mPanelContainer == null) {
+            return;
+        }
+
+        View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        if (panelView == null) return;
+
+        List<Rect> rects = new ArrayList<>();
+        if (mModel.get(TabSearchOverlayProperties.VISIBLE)) {
+            // Exclude the close button's interactive area to ensure it remains clickable even
+            // when under the system gesture area.
+            View closeButton = panelView.findViewById(R.id.tab_search_close_button);
+            if (closeButton != null && closeButton.getWidth() > 0) {
+                Rect rect = new Rect();
+                rect.left = closeButton.getLeft();
+                rect.top = closeButton.getTop();
+                rect.right = closeButton.getRight();
+                rect.bottom = closeButton.getBottom();
+                rects.add(rect);
+            }
+        }
+        panelView.setSystemGestureExclusionRects(rects);
     }
 
     /**
