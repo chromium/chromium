@@ -132,8 +132,6 @@ void LayViewsHorizontally(NSArray<UIView*>* views,
 
 }  // namespace
 
-const CGFloat kCellMargin = 16;
-
 CGFloat GetHorizontalSpacingBetweenChips() {
   return kSmallSpacingBetweenViews;
 }

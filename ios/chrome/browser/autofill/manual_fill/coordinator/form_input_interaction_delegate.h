@@ -13,7 +13,7 @@
 
 // Indicates that the focus has been changed to a field with the filling product
 // to `fillingProduct`.
-- (void)focusDidChangedWithFillingProduct:
+- (void)focusDidChangeWithFillingProduct:
     (autofill::FillingProduct)fillingProduct;
 
 @end

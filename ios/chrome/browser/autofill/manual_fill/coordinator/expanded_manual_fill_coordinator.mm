@@ -138,7 +138,7 @@ using manual_fill::ManualFillDataType;
 
 #pragma mark - FormInputInteractionDelegate
 
-- (void)focusDidChangedWithFillingProduct:
+- (void)focusDidChangeWithFillingProduct:
     (autofill::FillingProduct)fillingProduct {
   ManualFillDataType previousFocusedFieldDataType = _focusedFieldDataType;
   _focusedFieldDataType =

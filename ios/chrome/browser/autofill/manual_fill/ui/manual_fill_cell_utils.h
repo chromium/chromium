@@ -14,10 +14,7 @@
 @class LegacyTableViewCell;
 
 // Margins of the cell content.
-extern const CGFloat kCellMargin;
-
-// Left and right margins for the chips.
-extern const CGFloat kChipsHorizontalMargin;
+inline constexpr CGFloat kCellMargin = 16.0;
 
 // Options for `AppendHorizontalConstraintsForViews`.
 typedef NS_OPTIONS(NSUInteger, AppendConstraints) {

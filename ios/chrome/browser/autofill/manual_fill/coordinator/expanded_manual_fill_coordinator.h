@@ -23,7 +23,7 @@ enum class ManualFillDataType;
 // Delegate for the ExpandedManualFillCoordinator.
 @protocol ExpandedManualFillCoordinatorDelegate
 
-// Called when the ExpandedManaualFillCoordinator needs to be stopped.
+// Called when the ExpandedManualFillCoordinator needs to be stopped.
 - (void)stopExpandedManualFillCoordinator:
     (ExpandedManualFillCoordinator*)coordinator;
 

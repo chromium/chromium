@@ -805,7 +805,7 @@ bool IsStateless() {
   if (!self.suggestionsEnabled) {
     if (self.formInputInteractionDelegate) {
       [self.formInputInteractionDelegate
-          focusDidChangedWithFillingProduct:mainFillingProduct];
+          focusDidChangeWithFillingProduct:mainFillingProduct];
     }
     return;
   }
