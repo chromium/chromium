@@ -141,6 +141,8 @@ ManagePasswordsStateTest::CreateFormManager(
           base::span<const StoredCredential>(federated_matches_storage_)));
   EXPECT_CALL(*form_manager, GetURL())
       .WillOnce(testing::ReturnRef(saved_match_.url));
+  EXPECT_CALL(*form_manager, IsFetchCompleted())
+      .WillOnce(testing::Return(true));
   return form_manager;
 }
 
@@ -638,6 +640,7 @@ TEST_F(ManagePasswordsStateTest, AutofillCausedByInternalFormManager) {
     base::span<const StoredCredential> GetBestMatches() const override {
       return best_matches;
     }
+    bool IsFetchCompleted() const override { return true; }
     base::span<const StoredCredential> GetFederatedMatches() const override {
       return federated_matches;
     }

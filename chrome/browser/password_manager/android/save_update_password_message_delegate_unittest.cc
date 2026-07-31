@@ -321,6 +321,7 @@ SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
           Return(base::span<const password_manager::StoredCredential>()));
   ON_CALL(*form_manager, GetMetricsRecorder())
       .WillByDefault(Return(metrics_recorder_.get()));
+  ON_CALL(*form_manager, IsFetchCompleted()).WillByDefault(Return(true));
   ON_CALL(*form_manager, Save()).WillByDefault([this]() {
     RecordPasswordSaved();
   });

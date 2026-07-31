@@ -127,6 +127,8 @@ GeneratedPasswordSavedMessageDelegateTest::CreateFormManager(
       .WillByDefault(testing::ReturnRef(form_));
   ON_CALL(*form_manager, GetURL())
       .WillByDefault(testing::ReturnRef(password_form_url_));
+  ON_CALL(*form_manager, IsFetchCompleted())
+      .WillByDefault(testing::Return(true));
   return form_manager;
 }
 

@@ -212,6 +212,7 @@ std::unique_ptr<password_manager::PasswordFormManagerForUI> WrapFormInManager(
       std::make_unique<password_manager::MockPasswordFormManagerForUI>();
   ON_CALL(*submitted_manager, GetPendingCredentials)
       .WillByDefault(ReturnRef(*form));
+  ON_CALL(*submitted_manager, IsFetchCompleted).WillByDefault(Return(true));
   return submitted_manager;
 }
 
