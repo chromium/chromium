@@ -17,6 +17,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.view.Gravity;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -392,7 +394,10 @@ public class BaseSuggestionProcessorUnitTest {
                         R.string.accessibility_omnibox_remove_suggestion,
                         mSuggestion.getFillIntoEdit());
         assertEquals(expectedDescription, action.accessibilityDescription);
-        assertEquals(R.drawable.btn_close, shadowOf(action.icon.drawable).getCreatedFromResId());
+        var layerDrawable = (LayerDrawable) action.icon.drawable;
+        assertEquals(
+                R.drawable.btn_close, shadowOf(layerDrawable.getDrawable(0)).getCreatedFromResId());
+        assertEquals(Gravity.CENTER, layerDrawable.getLayerGravity(0));
 
         var monitor = new UserActionTester();
         action.callback.run();
@@ -412,7 +417,10 @@ public class BaseSuggestionProcessorUnitTest {
                         R.string.accessibility_omnibox_remove_suggestion,
                         mSuggestion.getFillIntoEdit());
         assertEquals(expectedDescription, action.accessibilityDescription);
-        assertEquals(R.drawable.btn_close, shadowOf(action.icon.drawable).getCreatedFromResId());
+        var layerDrawable = (LayerDrawable) action.icon.drawable;
+        assertEquals(
+                R.drawable.btn_close, shadowOf(layerDrawable.getDrawable(0)).getCreatedFromResId());
+        assertEquals(Gravity.CENTER, layerDrawable.getLayerGravity(0));
 
         UserActionTester monitor = new UserActionTester();
         action.callback.run();

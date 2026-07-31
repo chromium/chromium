@@ -149,6 +149,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_icon_area_size_modern">52dp</dimen>
     <dimen name="omnibox_suggestion_icon_area_size_large">72dp</dimen>
     <dimen name="omnibox_suggestion_action_button_width">48dp</dimen>
+    <dimen name="omnibox_suggestion_remove_button_icon_size">18dp</dimen>
     <dimen name="omnibox_suggestion_end_padding">
         @dimen/omnibox_suggestion_dropdown_side_spacing
     </dimen>

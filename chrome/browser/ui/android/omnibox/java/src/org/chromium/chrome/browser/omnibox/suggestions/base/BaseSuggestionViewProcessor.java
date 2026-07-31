@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.graphics.drawable.LayerDrawable;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.view.Gravity;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -54,6 +58,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     private final int mDecorationImageSizePx;
     private final int mSuggestionSizePx;
     private final boolean mShouldShowRemoveButton;
+    private @Nullable ConstantState mRemoveButtonDrawableState;
 
     /**
      * @param uiContext Context object containing common UI dependencies.
@@ -156,8 +161,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                         model,
                         List.of(
                                 new Action(
-                                        OmniboxDrawableState.forSmallIcon(
-                                                mContext, R.drawable.btn_close, true),
+                                        getRemoveButtonIconState(),
                                         OmniboxResourceProvider.getString(
                                                 mContext,
                                                 R.string.accessibility_omnibox_remove_suggestion),
@@ -197,6 +201,34 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                                 OmniboxDrawableState.forSmallIcon(mContext, icon, true),
                                 iconString,
                                 action)));
+    }
+
+    /**
+     * Returns the icon state for the remove suggestion button. Wraps the standard close button icon
+     * in a LayerDrawable to scale it as needed while keeping it centered within the button view.
+     */
+    private OmniboxDrawableState getRemoveButtonIconState() {
+        Drawable layerDrawable;
+        if (mRemoveButtonDrawableState == null) {
+            int sizePx =
+                    mContext.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.omnibox_suggestion_remove_button_icon_size);
+            Drawable baseIcon = OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_close);
+            LayerDrawable drawable = new LayerDrawable(new Drawable[] {baseIcon});
+            drawable.setLayerGravity(0, Gravity.CENTER);
+            drawable.setLayerWidth(0, sizePx);
+            drawable.setLayerHeight(0, sizePx);
+            mRemoveButtonDrawableState = drawable.getConstantState();
+            layerDrawable = drawable;
+        } else {
+            layerDrawable = mRemoveButtonDrawableState.newDrawable();
+        }
+        return new OmniboxDrawableState(
+                layerDrawable,
+                /* useRoundedCorners= */ false,
+                /* isLarge= */ false,
+                /* allowTint= */ true);
     }
 
     /**
