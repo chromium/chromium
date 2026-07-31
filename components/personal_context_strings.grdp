@@ -3,7 +3,7 @@
 <grit-part>
   <!-- Android Autofill Settings Personal Context preferences strings. -->
   <if expr="is_android">
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE_ANDROID" desc="The title of the preference that opens the settings fragment containing controls to manage data sharing with connected applications." formatter_data="android_java">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE_ANDROID" desc="Section header or page title in Chrome settings for the advanced, AI-powered form-filling features. 'Autofill' refers to the browser's ability to automatically populate form fields." formatter_data="android_java">
       Enhanced autofill
     </message>
     <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUMMARY_ANDROID" desc="Navigational text or description appearing under the 'Enhanced autofill' section in settings. It directs users to manage how the underlying AI model retrieves and fills data. 'Gemini' is a proper Google product name and must remain unlocalized." formatter_data="android_java">
