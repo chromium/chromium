@@ -121,6 +121,8 @@ namespace {
 
 constexpr char kSafetyListPredicateName[] = "actor_safety_list_check";
 constexpr char kSensitiveUrlPredicateName[] = "actor_sensitive_url_check";
+constexpr char kSensitiveUrlPromptsDisabledPredicateName[] =
+    "actor_sensitive_url_prompts_disabled_check";
 constexpr char kLookalikeUrlPredicateName[] = "actor_lookalike_url_check";
 constexpr char kActionAllowlistPredicateName[] = "actor_action_allowlist_check";
 constexpr char kSafeBrowsingPredicateName[] =
@@ -214,24 +216,32 @@ CustomPredicate CreateSafetyListPredicate() {
       kSafetyListPredicateName);
 }
 
+void IsNonSensitiveUrl(Profile* profile,
+                       const origin_gating::GatingDecisionContext* context,
+                       const GURL& source,
+                       const GURL& destination,
+                       base::OnceCallback<void(bool)> callback) {
+  base::expected<void, base::OnceCallback<void(bool)>> sensitive_check_result =
+      MaybeCheckOptimizationGuideForSensitiveUrl(destination, profile,
+                                                 std::move(callback));
+  if (!sensitive_check_result.has_value()) {
+    // Optimization guide is unavailable; assume the URL is non-sensitive.
+    std::move(sensitive_check_result).error().Run(/*not_sensitive=*/true);
+  }
+}
+
 void BlockSensitiveUrl(
     Profile* profile,
     const origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination,
     base::OnceCallback<void(origin_gating::Decision)> callback) {
-  base::expected<void, base::OnceCallback<void(bool)>> sensitive_check_result =
-      MaybeCheckOptimizationGuideForSensitiveUrl(
-          destination, profile,
-          base::BindOnce([](bool not_sensitive) {
-            return not_sensitive ? origin_gating::Decision::kNoDecision
+  IsNonSensitiveUrl(profile, context, source, destination,
+                    base::BindOnce([](bool not_sensitive) {
+                      return not_sensitive
+                                 ? origin_gating::Decision::kNoDecision
                                  : origin_gating::Decision::kBlocked;
-          }).Then(std::move(callback)));
-  if (!sensitive_check_result.has_value()) {
-    // Optimization guide is unavailable; fail open by deferring to the
-    // no-verdict handler.
-    std::move(sensitive_check_result).error().Run(/*not_sensitive=*/true);
-  }
+                    }).Then(std::move(callback)));
 }
 
 void BlockSensitiveUrlWhenNavigationGatingDisabled(
@@ -241,6 +251,20 @@ void BlockSensitiveUrlWhenNavigationGatingDisabled(
     const GURL& destination,
     base::OnceCallback<void(origin_gating::Decision)> callback) {
   if (IsNavigationGatingEnabled()) {
+    std::move(callback).Run(origin_gating::Decision::kNoDecision);
+    return;
+  }
+
+  BlockSensitiveUrl(profile, context, source, destination, std::move(callback));
+}
+
+void BlockSensitiveUrlWhenPromptsDisabled(
+    Profile* profile,
+    const origin_gating::GatingDecisionContext* context,
+    const GURL& source,
+    const GURL& destination,
+    base::OnceCallback<void(origin_gating::Decision)> callback) {
+  if (kGlicPromptUserForSensitiveNavigations.Get()) {
     std::move(callback).Run(origin_gating::Decision::kNoDecision);
     return;
   }
@@ -428,6 +452,9 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
                    ? ExecutionEngine::GatingDecision::kAllowByStaticList
                    : ExecutionEngine::GatingDecision::kBlockByStaticList;
       }
+      if (decision.attribution == kSensitiveUrlPromptsDisabledPredicateName) {
+        return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
+      }
       NOTREACHED() << "Unrecognized custom predicate attribution: "
                    << decision.attribution.CustomPredicateName();
   }
@@ -467,6 +494,9 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
         return MayActOnUrlBlockReason::kBlockedByStaticList;
       }
       if (decision.attribution == kSensitiveUrlPredicateName) {
+        return MayActOnUrlBlockReason::kOptimizationGuideBlock;
+      }
+      if (decision.attribution == kSensitiveUrlPromptsDisabledPredicateName) {
         return MayActOnUrlBlockReason::kOptimizationGuideBlock;
       }
       if (decision.attribution == kLookalikeUrlPredicateName) {
@@ -647,6 +677,12 @@ ExecutionEngine::ExecutionEngine(
                    {GateableEvent::kNavigationRequest}},
                   {DecisionSource::kCacheWithoutUserConfirmation,
                    {GateableEvent::kNavigationResponse}},
+                  {CustomPredicate(base::BindRepeating(
+                                       &BlockSensitiveUrlWhenPromptsDisabled,
+                                       task_->GetProfile()),
+                                   kSensitiveUrlPromptsDisabledPredicateName),
+                   {GateableEvent::kNavigationResponse,
+                    GateableEvent::kPageAction}},
               },
               kGlicNavigationGatingUseSiteNotOrigin.Get())),
       dark_launch_origin_gating_cache_(
@@ -839,15 +875,10 @@ void ExecutionEngine::DoesOriginRequireUserConfirmation(
     return;
   }
 
-  base::expected<void, base::OnceCallback<void(bool)>> sensitive_check_result =
-      MaybeCheckOptimizationGuideForSensitiveUrl(
-          destination, task_->GetProfile(),
-          base::BindOnce([](bool not_sensitive) {
-            return !not_sensitive;
-          }).Then(std::move(callback)));
-  if (!sensitive_check_result.has_value()) {
-    std::move(sensitive_check_result).error().Run(/*not_sensitive=*/true);
-  }
+  IsNonSensitiveUrl(task_->GetProfile(), context, source, destination,
+                    base::BindOnce([](bool not_sensitive) {
+                      return !not_sensitive;
+                    }).Then(std::move(callback)));
 }
 
 void ExecutionEngine::EvaluateEnterprisePolicy(
@@ -904,11 +935,6 @@ void ExecutionEngine::OnNoVerdict(
     HandleNavigationToNewOrigin(
         destination_origin, navigation_response_context->ukm_source_id,
         std::move(navigation_response_context->timer), std::move(callback));
-    return;
-  }
-
-  if (!kGlicPromptUserForSensitiveNavigations.Get()) {
-    std::move(callback).Run({.is_allowed = false, .did_prompt_user = false});
     return;
   }
 
