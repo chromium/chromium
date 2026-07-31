@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_actions.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
@@ -174,11 +175,6 @@ namespace {
 
 int IncrementalMinimumWidth(const views::View* view) {
   return (view && view->GetVisible()) ? view->GetMinimumSize().width() : 0;
-}
-
-LocationBarView* GetLocationBarViewForActions(Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  return browser_view ? browser_view->GetLocationBarView() : nullptr;
 }
 
 // The padding between the content setting icons and other trailing decorations.
@@ -486,7 +482,8 @@ void LocationBarView::Init() {
 
   hover_animation_.SetSlideDuration(base::Milliseconds(200));
 
-  RegisterOmniboxActions();
+  RegisterOmniboxActions(
+      base::BindRepeating(&LocationBarView::GetPresenterDelegate), browser_);
 
   is_initialized_ = true;
 }
@@ -2052,6 +2049,12 @@ content::WebContents* LocationBarView::GetWrappedWebContents() {
       ->GetWrappedWebContents();
 }
 
+// static
+OmniboxPopupPresenterDelegate* LocationBarView::GetPresenterDelegate(
+    LocationBar* location_bar) {
+  return static_cast<LocationBarView*>(location_bar);
+}
+
 void LocationBarView::OnLocationIconGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::EventType::kGestureTap:
@@ -2277,231 +2280,6 @@ void LocationBarView::OnAppShimChanged(const webapps::AppId& app_id) {
 }
 #endif
 
-void LocationBarView::RegisterOmniboxActions() {
-  if (!browser_) {
-    return;
-  }
-
-  auto* browser_actions = browser_->GetFeatures().browser_actions();
-  if (!browser_actions) {
-    return;
-  }
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(&LocationBarView::AddFileOrImageToOmnibox,
-                              base::Unretained(browser_), /*is_image=*/true))
-          .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_IMAGE))
-          .SetTooltipText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_IMAGE))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kAddPhotoAlternateIcon
-                                                : kAddPhotoAlternateOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-          .SetActionId(kActionOmniboxContextAddImage)
-          .Build());
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(&LocationBarView::AddFileOrImageToOmnibox,
-                              base::Unretained(browser_), /*is_image=*/false))
-          .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_FILE))
-          .SetTooltipText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_FILE))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kAttachFileIcon
-                                                : kAttachFileOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-          .SetActionId(kActionOmniboxContextAddFile)
-          .Build());
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(&LocationBarView::SetOmniboxToolModeAndOpenAi,
-                              base::Unretained(browser_),
-                              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN))
-          .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CREATE_IMAGES))
-          .SetTooltipText(
-              l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CREATE_IMAGES))
-          .SetImage(ui::ImageModel::FromResourceId(
-              IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG))
-          .SetActionId(kActionOmniboxContextCreateImages)
-          .Build());
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(&LocationBarView::SetOmniboxToolModeAndOpenAi,
-                              base::Unretained(browser_),
-                              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH))
-          .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_DEEP_SEARCH))
-          .SetTooltipText(
-              l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_DEEP_SEARCH))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kTravelExploreIcon
-                                                : kTravelExploreOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-          .SetActionId(kActionOmniboxContextDeepResearch)
-          .Build());
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(&LocationBarView::SetOmniboxToolModeAndOpenAi,
-                              base::Unretained(browser_),
-                              omnibox::ToolMode::TOOL_MODE_CANVAS))
-          .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CANVAS))
-          .SetTooltipText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CANVAS))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kDraftSparkIcon
-                                                : kDraftSparkOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-          .SetActionId(kActionOmniboxContextCanvas)
-          .Build());
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              &LocationBarView::SetOmniboxModelModeAndOpenAi,
-              base::Unretained(browser_),
-              omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE))
-          .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_AUTO_MODEL))
-          .SetTooltipText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_AUTO_MODEL))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kAutorenewIcon
-                                                : kAutorenewOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-          .SetActionId(kActionOmniboxContextSetModelAuto)
-          .Build());
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(&LocationBarView::SetOmniboxModelModeAndOpenAi,
-                              base::Unretained(browser_),
-                              omnibox::ModelMode::MODEL_MODE_GEMINI_PRO))
-          .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_THINKING_3_PRO))
-          .SetTooltipText(
-              l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_THINKING_3_PRO))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kTimerIcon : kTimerOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-          .SetActionId(kActionOmniboxContextSetModelThinking)
-          .Build());
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(&LocationBarView::SetOmniboxModelModeAndOpenAi,
-                              base::Unretained(browser_),
-                              omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kBoltIcon : kBoltOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-          .SetActionId(kActionOmniboxContextSetModelRegular)
-          .Build());
-
-  browser_actions->RegisterAction(
-      actions::ActionItem::Builder(
-          base::BindRepeating(&LocationBarView::ExecutePasteAndGo,
-                              base::Unretained(browser_)))
-          .SetActionId(kActionPasteAndGo)
-          .Build());
-}
-
-void LocationBarView::AddFileOrImageToOmnibox(
-    Browser* browser,
-    bool is_image,
-    actions::ActionItem* item,
-    actions::ActionInvocationContext context) {
-  LocationBarView* const location_bar = GetLocationBarViewForActions(browser);
-  if (!location_bar) {
-    return;
-  }
-  content::WebContents* const web_contents = location_bar->GetWebContents();
-  OmniboxController* const controller = location_bar->GetOmniboxController();
-  OmniboxEditModel* const edit_model =
-      controller ? controller->edit_model() : nullptr;
-  if (!web_contents || !edit_model) {
-    return;
-  }
-  const bool is_aim_popup_open =
-      controller->popup_state_manager()->popup_state() ==
-      OmniboxPopupState::kAim;
-  OmniboxPopupFileSelector* const file_selector =
-      location_bar->GetOmniboxPopupFileSelector();
-  if (file_selector) {
-    file_selector->OpenFileUploadDialog(
-        web_contents, is_image, edit_model,
-        OmniboxPopupFileSelector::CreateImageEncodingOptions(),
-        /*was_ai_mode_open=*/is_aim_popup_open);
-  }
-}
-
-void LocationBarView::SetOmniboxToolModeAndOpenAi(
-    Browser* browser,
-    omnibox::ToolMode tool_mode,
-    actions::ActionItem* item,
-    actions::ActionInvocationContext context) {
-  LocationBarView* const location_bar = GetLocationBarViewForActions(browser);
-  if (!location_bar) {
-    return;
-  }
-  OmniboxController* const controller = location_bar->GetOmniboxController();
-  OmniboxEditModel* const edit_model =
-      controller ? controller->edit_model() : nullptr;
-  if (!edit_model) {
-    return;
-  }
-  OmniboxPopupUI* const omnibox_popup_ui = location_bar->GetOmniboxPopupUI();
-  ContextualSearchboxHandler* const composebox_handler =
-      omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
-  if (composebox_handler) {
-    composebox_handler->SetActiveToolMode(tool_mode);
-    composebox_handler->RecordToolSelectionAction(tool_mode);
-  }
-  edit_model->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
-}
-
-void LocationBarView::SetOmniboxModelModeAndOpenAi(
-    Browser* browser,
-    omnibox::ModelMode model_mode,
-    actions::ActionItem* item,
-    actions::ActionInvocationContext context) {
-  LocationBarView* const location_bar = GetLocationBarViewForActions(browser);
-  if (!location_bar) {
-    return;
-  }
-  OmniboxController* const controller = location_bar->GetOmniboxController();
-  OmniboxEditModel* const edit_model =
-      controller ? controller->edit_model() : nullptr;
-  if (!edit_model) {
-    return;
-  }
-  OmniboxPopupUI* const omnibox_popup_ui = location_bar->GetOmniboxPopupUI();
-  ContextualSearchboxHandler* const composebox_handler =
-      omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
-  if (composebox_handler) {
-    composebox_handler->SetActiveModelMode(model_mode);
-    composebox_handler->RecordModelSelectionAction(model_mode);
-  }
-  edit_model->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
-}
-
-void LocationBarView::ExecutePasteAndGo(
-    Browser* browser,
-    actions::ActionItem* item,
-    actions::ActionInvocationContext context) {
-  LocationBarView* const location_bar = GetLocationBarViewForActions(browser);
-  if (!location_bar || !location_bar->omnibox_view_) {
-    return;
-  }
-  GetClipboardText(
-      /*notify_if_restricted=*/true,
-      base::BindOnce(
-          [](base::WeakPtr<LocationBarView> self, std::u16string text) {
-            if (self && self->omnibox_view_) {
-              if (auto* controller = self->GetOmniboxController()) {
-                controller->edit_model()->PasteAndGo(text);
-              }
-            }
-          },
-          location_bar->weak_factory_.GetWeakPtr()));
-}
 
 BEGIN_METADATA(LocationBarView)
 ADD_READONLY_PROPERTY_METADATA(int, BorderRadius)

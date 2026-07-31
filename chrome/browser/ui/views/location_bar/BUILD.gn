@@ -68,6 +68,7 @@ source_set("location_bar") {
 
 source_set("impl") {
   sources = []
+  public = []
   deps = [
     ":icon_label_bubble",
     ":location_bar",
@@ -77,10 +78,15 @@ source_set("impl") {
   ]
 
   if (toolkit_views) {
+    public += [
+      "location_bar_actions.h",
+      "zoom_bubble_manager_views.h",
+    ]
     sources += [
       "content_setting_image_view.cc",
       "custom_tab_bar_view.cc",
       "lens_overlay_homework_page_action_controller.cc",
+      "location_bar_actions.cc",
       "location_bar_bubble_delegate_view.cc",
       "location_bar_layout.cc",
       "location_bar_view.cc",
@@ -94,7 +100,6 @@ source_set("impl") {
       "webui_location_bar.cc",
       "zoom_bubble_coordinator.cc",
       "zoom_bubble_manager_views.cc",
-      "zoom_bubble_manager_views.h",
       "zoom_bubble_view.cc",
     ]
 

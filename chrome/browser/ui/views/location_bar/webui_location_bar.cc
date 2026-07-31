@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_actions.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -41,6 +43,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -158,6 +161,9 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
       omnibox_controller_->popup_state_manager()->AddPopupStateChangedCallback(
           base::BindRepeating(&WebUILocationBar::OnPopupStateChanged,
                               base::Unretained(this)));
+
+  RegisterOmniboxActions(
+      base::BindRepeating(&WebUILocationBar::GetPresenterDelegate), browser_);
 
   is_initialized_ = true;
 }
@@ -678,6 +684,12 @@ void WebUILocationBar::ShowPageInfoBubble() {
   bubble->SetHighlightedElement(kLocationIconElementId);
   bubble->GetWidget()->Show();
   page_info_reopen_suppressor_.Observe(bubble->GetWidget());
+}
+
+// static
+OmniboxPopupPresenterDelegate* WebUILocationBar::GetPresenterDelegate(
+    LocationBar* location_bar) {
+  return static_cast<WebUILocationBar*>(location_bar);
 }
 
 void WebUILocationBar::SetSuppressionThresholdForTesting(

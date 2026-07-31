@@ -52,16 +52,6 @@
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
-namespace actions {
-class ActionItem;
-class ActionInvocationContext;
-}  // namespace actions
-
-namespace omnibox {
-enum ToolMode : int;
-enum ModelMode : int;
-}  // namespace omnibox
-
 class Browser;
 class BrowserWindowInterface;
 class CommandUpdater;
@@ -508,6 +498,9 @@ class LocationBarView
 
   content::WebContents* GetWrappedWebContents();
 
+  static OmniboxPopupPresenterDelegate* GetPresenterDelegate(
+      LocationBar* location_bar);
+
 #if BUILDFLAG(IS_MAC)
   // Called when app shims change.
   void OnAppShimChanged(const webapps::AppId& app_id);
@@ -637,27 +630,6 @@ class LocationBarView
   bool in_popup_state_transition_ = false;
 
   void OnMiddleClickPaste(base::TimeTicks event_timestamp, std::u16string text);
-
-  void RegisterOmniboxActions();
-
-  // Helper functions for omnibox actions.
-  static void AddFileOrImageToOmnibox(Browser* browser,
-                                      bool is_image,
-                                      actions::ActionItem* item,
-                                      actions::ActionInvocationContext context);
-  static void SetOmniboxToolModeAndOpenAi(
-      Browser* browser,
-      omnibox::ToolMode tool_mode,
-      actions::ActionItem* item,
-      actions::ActionInvocationContext context);
-  static void SetOmniboxModelModeAndOpenAi(
-      Browser* browser,
-      omnibox::ModelMode model_mode,
-      actions::ActionItem* item,
-      actions::ActionInvocationContext context);
-  static void ExecutePasteAndGo(Browser* browser,
-                                actions::ActionItem* item,
-                                actions::ActionInvocationContext context);
 
   base::WeakPtrFactory<LocationBarView> weak_factory_{this};
 };
