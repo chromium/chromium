@@ -6,7 +6,7 @@
 
 namespace enterprise_custom_headers {
 
-BASE_FEATURE(kHttpHeadersInjection, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHttpHeadersInjection, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsHttpHeaderInjectionEnabled() {
   return base::FeatureList::IsEnabled(kHttpHeadersInjection);
