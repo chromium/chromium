@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/context_menus.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -234,6 +235,12 @@ void VerifyItems(const ExtensionContextMenuModel& model,
   }
   EXPECT_EQ(item_number.size(), j);
 }
+
+// A stub popup delegate to use with the ExtensionContextMenuModel.
+class TestPopupDelegate : public ExtensionContextMenuModel::PopupDelegate {
+ public:
+  void InspectPopup() override {}
+};
 
 }  // namespace
 
@@ -712,41 +719,70 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
   }
 }
 
-// TODO(emiliapaz): Currently, the test scenarios always have "inspect popup"
-// hidden since the context menu doesn't have a popup delegate and the developer
-// mode pref is not set. Add a popup delegate and developer mode pref to
-// properly test the "inspect popup" entry visibility.
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
                        ExtensionContextMenuInspectPopupEntryVisibility) {
+  TestPopupDelegate popup_delegate;
+
+  // TODO(https://crbug.com/40804030): Update the test extensions in this suite
+  // to MV3.
+  const Extension* action =
+      AddExtension("browser_action", manifest_keys::kBrowserAction,
+                   ManifestLocation::kInternal);
+  ASSERT_TRUE(action);
+
+  const Extension* no_action =
+      AddExtension("no_action", nullptr, ManifestLocation::kInternal);
+  ASSERT_TRUE(no_action);
+
+  // 1. Developer mode is NOT enabled and no PopupDelegate provided.
   {
-    const Extension* page_action = AddExtension(
-        "page_action", manifest_keys::kPageAction, ManifestLocation::kInternal);
-    ASSERT_TRUE(page_action);
-    ExtensionContextMenuModel menu(page_action, browser_window_interface(),
+    ExtensionContextMenuModel menu(action, browser_window_interface(),
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
     EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::INSPECT_POPUP),
               CommandState::kAbsent);
   }
 
+  // 2. Developer mode is NOT enabled, but PopupDelegate IS provided.
   {
-    const Extension* browser_action =
-        AddExtension("browser_action", manifest_keys::kBrowserAction,
-                     ManifestLocation::kInternal);
-    ExtensionContextMenuModel menu(browser_action, browser_window_interface(),
+    ExtensionContextMenuModel menu(action, browser_window_interface(),
+                                   /*is_pinned=*/true, &popup_delegate, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::INSPECT_POPUP),
+              CommandState::kAbsent);
+  }
+
+  // Enable developer mode.
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+
+  // 3. Developer mode IS enabled, but NO PopupDelegate provided.
+  {
+    ExtensionContextMenuModel menu(action, browser_window_interface(),
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
     EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::INSPECT_POPUP),
+              CommandState::kAbsent);
+  }
+
+  // 4. Developer mode IS enabled AND PopupDelegate IS provided.
+  {
+    ExtensionContextMenuModel menu(action, browser_window_interface(),
+                                   /*is_pinned=*/true, &popup_delegate, true,
+                                   ContextMenuSource::kToolbarAction);
+    // NOTE: Ideally, we'd verify this were CommandState::kEnabled. However,
+    // the model only allows that if there's an associated active web contents,
+    // which isn't the case in these dynamically-constructed menus. As such, we
+    // just verify its presence in the menu (i.e., != kAbsent); since this test
+    // exercises its visibility, that's sufficient for our use case.
+    EXPECT_NE(GetCommandState(menu, ExtensionContextMenuModel::INSPECT_POPUP),
               CommandState::kAbsent);
   }
 
   {
     // An extension with no specified action has one synthesized. However,
     // there will never be a popup to inspect, so we shouldn't add a menu item.
-    const Extension* no_action =
-        AddExtension("no_action", nullptr, ManifestLocation::kInternal);
     ExtensionContextMenuModel menu(no_action, browser_window_interface(),
-                                   /*is_pinned=*/true, nullptr, true,
+                                   /*is_pinned=*/true, &popup_delegate, true,
                                    ContextMenuSource::kToolbarAction);
     EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::INSPECT_POPUP),
               CommandState::kAbsent);

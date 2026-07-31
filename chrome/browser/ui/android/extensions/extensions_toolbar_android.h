@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/android/extensions/extension_keybinding_registry_android.h"
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -30,7 +31,8 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
 
   // Triggers the display of an extension popup in the Java UI.
   void TriggerPopup(const ToolbarActionsModel::ActionId& action_id,
-                    std::unique_ptr<ExtensionViewHost> host);
+                    std::unique_ptr<ExtensionViewHost> host,
+                    PopupShowAction show_action);
 
   // Shows the context menu for the given action ID.
   void ShowContextMenu(const ToolbarActionsModel::ActionId& action_id);

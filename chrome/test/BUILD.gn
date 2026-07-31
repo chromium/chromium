@@ -1726,6 +1726,7 @@ if (is_android) {
         "//chrome/browser/extensions:browser_tests",
         "//chrome/browser/omnibox",
         "//chrome/browser/ui:view_ids",
+        "//chrome/browser/ui/android/extensions",
         "//chrome/browser/ui/extensions",
         "//chrome/browser/ui/extensions:browser_tests",
         "//chrome/browser/ui/omnibox",

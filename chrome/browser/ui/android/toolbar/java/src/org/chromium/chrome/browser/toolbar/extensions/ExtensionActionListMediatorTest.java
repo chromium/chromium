@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -166,7 +167,7 @@ public class ExtensionActionListMediatorTest {
 
         // Add the JNI mock for ExtensionActionPopupContents:
         ExtensionActionPopupContentsJni.setInstanceForTesting(mPopupContentsJniMock);
-        when(mPopupContentsJniMock.create(anyLong())).thenReturn(mPopupContentsMock);
+        when(mPopupContentsJniMock.create(anyLong(), anyBoolean())).thenReturn(mPopupContentsMock);
 
         // Mock JNI for Context Menu Bridge.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
@@ -453,10 +454,12 @@ public class ExtensionActionListMediatorTest {
 
         // Trigger a popup.
         long nativeHostPtr = 123L;
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION1_ID, nativeHostPtr);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION1_ID, nativeHostPtr, /* inspectWithDevTools= */ false);
 
         // Verify the native contents were created.
-        verify(mPopupContentsJniMock).create(nativeHostPtr);
+        verify(mPopupContentsJniMock).create(nativeHostPtr, /* inspectWithDevTools= */ false);
 
         // Simulate a dialog being added.
         observerCaptor.getValue().onDialogAdded(null);
@@ -466,12 +469,27 @@ public class ExtensionActionListMediatorTest {
     }
 
     @Test
+    public void testTriggerPopup_InspectWithDevTools() {
+        long nativeHostPtr = 456L;
+
+        // Trigger a popup for inspection.
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION1_ID, nativeHostPtr, /* inspectWithDevTools= */ true);
+
+        // Verify native contents were created with inspectWithDevTools = true.
+        verify(mPopupContentsJniMock).create(nativeHostPtr, /* inspectWithDevTools= */ true);
+    }
+
+    @Test
     public void testPopOutAction_Unpinned_Popup() {
         // Action 3 is initially not in the model (unpinned).
         assertEquals(2, mModels.size());
 
         // Trigger a popup for Action 3 via the bridge delegate.
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION3_ID, 123L);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION3_ID, 123L, /* inspectWithDevTools= */ false);
         mMediator.reconcileActionItems();
 
         // Action 3 should now be present in the models (popped out).
@@ -509,7 +527,9 @@ public class ExtensionActionListMediatorTest {
         assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
 
         // Execute: Trigger a popup for Action 2 (pinned but hidden).
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION2_ID, 123L);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION2_ID, 123L, /* inspectWithDevTools= */ false);
         mMediator.reconcileActionItems();
 
         // Verify: Action 2 is temporarily added to the list (popped out).
@@ -524,7 +544,9 @@ public class ExtensionActionListMediatorTest {
         assertEquals(2, mModels.size());
 
         // Trigger popup for Action 3 via the bridge delegate.
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION3_ID, 123L);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION3_ID, 123L, /* inspectWithDevTools= */ false);
         mMediator.reconcileActionItems();
 
         // The action is popped out (added to the list).
@@ -553,7 +575,9 @@ public class ExtensionActionListMediatorTest {
         assertEquals("Should return 0 when no action is popped out", 0, reservedWidth);
 
         // Trigger a popup for an unpinned action (Action 3).
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION3_ID, 123L);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION3_ID, 123L, /* inspectWithDevTools= */ false);
         mMediator.reconcileActionItems();
 
         // Now it should reserve the width of one button.
@@ -568,10 +592,12 @@ public class ExtensionActionListMediatorTest {
     public void testPendingPopup_DestroyedOnCancellation() {
         // Trigger a popup.
         long nativeHostPtr = 123L;
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION1_ID, nativeHostPtr);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION1_ID, nativeHostPtr, /* inspectWithDevTools= */ false);
 
         // Verify the native contents were created.
-        verify(mPopupContentsJniMock).create(nativeHostPtr);
+        verify(mPopupContentsJniMock).create(nativeHostPtr, /* inspectWithDevTools= */ false);
 
         // Simulate a cancellation by opening a context menu for another action.
         mBridgeDelegateCaptor.getValue().showContextMenu(ACTION2_ID);
@@ -584,7 +610,9 @@ public class ExtensionActionListMediatorTest {
     public void testPendingPopup_DestroyedOnMediatorTeardown() {
         // Trigger a popup to enter the PopupPending state.
         long nativeHostPtr = 123L;
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION1_ID, nativeHostPtr);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION1_ID, nativeHostPtr, /* inspectWithDevTools= */ false);
 
         // Destroy the mediator before the UI animation finishes.
         mMediator.destroy();
@@ -691,7 +719,9 @@ public class ExtensionActionListMediatorTest {
         verify(action, never()).getHoverCardState();
 
         // Simulate a popup request to immediately move out of the Idle state without side effects.
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION1_ID, 123L);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION1_ID, 123L, /* inspectWithDevTools= */ false);
 
         // Advance timer.
         shadowOf(Looper.getMainLooper())
@@ -721,7 +751,9 @@ public class ExtensionActionListMediatorTest {
         verify(mRecyclerViewDelegate).addOnAnimationsFinishedRunnable(runnableCaptor.capture());
 
         // Before the runnable executes, state changes to non-Idle (e.g. PopupPending).
-        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION2_ID, 123L);
+        mBridgeDelegateCaptor
+                .getValue()
+                .triggerPopup(ACTION2_ID, 123L, /* inspectWithDevTools= */ false);
 
         // Execute the queued context menu callback while state is not Idle.
         // With the fix, this safely returns without throwing an AssertionError.

@@ -4,11 +4,17 @@
 
 #include <memory>
 
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -98,6 +104,61 @@ IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
       content::DevToolsAgentHost::GetOrCreateForTab(popup_contents);
   ASSERT_TRUE(tab_agent);
   EXPECT_EQ(content::DevToolsAgentHost::kTypeTab, tab_agent->GetType());
+}
+
+// Tests that executing "Inspect Popup" from the action context menu opens the
+// popup host and attaches DevTools inspecting the popup page.
+IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
+                       InspectPopupFromContextMenu) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Inspect Popup Context Menu Test Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" }
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
+                     "<html><body>Popup</body></html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Enable developer mode so "Inspect popup" option is enabled in context menu.
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+
+  ExtensionHostTestHelper host_helper(profile(), extension->id());
+  host_helper.RestrictToType(mojom::ViewType::kExtensionPopup);
+
+  auto* container = ExtensionsContainer::From(*browser_window_interface());
+  ASSERT_TRUE(container);
+  ToolbarActionViewModel* action_model =
+      container->GetActionForId(extension->id());
+  ASSERT_TRUE(action_model);
+
+  ExtensionContextMenuModel* context_menu =
+      static_cast<ExtensionContextMenuModel*>(action_model->GetContextMenu(
+          ExtensionContextMenuModel::ContextMenuSource::kToolbarAction));
+  ASSERT_TRUE(context_menu);
+
+  std::optional<size_t> inspect_index = context_menu->GetIndexOfCommandId(
+      ExtensionContextMenuModel::INSPECT_POPUP);
+  ASSERT_TRUE(inspect_index.has_value());
+  EXPECT_TRUE(context_menu->IsEnabledAt(inspect_index.value()));
+
+  // Execute "Inspect popup" from the context menu.
+  context_menu->ActivatedAt(inspect_index.value());
+
+  ExtensionHost* popup_host = host_helper.WaitForHostCompletedFirstLoad();
+  ASSERT_TRUE(popup_host);
+  content::WebContents* popup_contents = popup_host->host_contents();
+  ASSERT_TRUE(popup_contents);
+
+  DevToolsWindow* devtools_window =
+      DevToolsWindow::GetInstanceForInspectedWebContents(popup_contents);
+  ASSERT_TRUE(devtools_window);
 }
 
 }  // namespace extensions

@@ -5,9 +5,17 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
+#include "chrome/browser/extensions/extension_view_host.h"
+#include "chrome/browser/extensions/extension_view_host_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/extensions/extension_action_context_menu_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -476,6 +484,71 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest, MessagePassing) {
   listener.Reply("done");
 
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Tests that the "Inspect Popup" entry appears in the extension context menu on
+// Android when Developer Mode is enabled. Regression test for
+// https://crbug.com/537818864.
+// TODO(devlin): This doesn't belong here, but currently,
+// chrome/browser/extensions/extension_context_menu_model_browsertest.cc is
+// omitted from the Android build. Investigate porting that and move this test
+// there (or delete if superfluous) when done.
+IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
+                       ContextMenuInspectPopup) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Inspect Popup Test Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" }
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
+                     "<html><body>Popup</body></html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtensionFromDirectory(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  Profile* profile = GetProfile();
+  ASSERT_TRUE(profile);
+
+  // Ensure Developer Mode is initially disabled.
+  profile->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, false);
+
+  {
+    ExtensionActionContextMenuBridge bridge(
+        GetBrowserWindowInterface(), extension->id(), GetActiveWebContents(),
+        ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
+    ExtensionContextMenuModel* menu_model =
+        bridge.extension_context_menu_model_for_testing();
+    ASSERT_TRUE(menu_model);
+
+    // Verify "Inspect Popup" is NOT present when Developer Mode is off.
+    EXPECT_FALSE(
+        menu_model
+            ->GetIndexOfCommandId(ExtensionContextMenuModel::INSPECT_POPUP)
+            .has_value());
+  }
+
+  // Enable Developer Mode.
+  profile->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+
+  {
+    ExtensionActionContextMenuBridge bridge(
+        GetBrowserWindowInterface(), extension->id(), GetActiveWebContents(),
+        ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
+    ExtensionContextMenuModel* menu_model =
+        bridge.extension_context_menu_model_for_testing();
+    ASSERT_TRUE(menu_model);
+
+    // Verify "Inspect Popup" IS present when Developer Mode is on.
+    EXPECT_TRUE(
+        menu_model
+            ->GetIndexOfCommandId(ExtensionContextMenuModel::INSPECT_POPUP)
+            .has_value());
+  }
 }
 
 }  // namespace extensions

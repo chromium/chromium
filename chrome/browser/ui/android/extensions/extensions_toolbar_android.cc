@@ -77,10 +77,12 @@ bool ExtensionsToolbarAndroid::HasActivePopup() {
 
 void ExtensionsToolbarAndroid::TriggerPopup(
     const ToolbarActionsModel::ActionId& action_id,
-    std::unique_ptr<ExtensionViewHost> host) {
+    std::unique_ptr<ExtensionViewHost> host,
+    PopupShowAction show_action) {
   Java_ExtensionsToolbarBridge_triggerPopup(
       AttachCurrentThread(), java_object_, action_id,
-      reinterpret_cast<int64_t>(host.release()));
+      reinterpret_cast<int64_t>(host.release()),
+      show_action == PopupShowAction::kShowAndInspect);
 }
 
 void ExtensionsToolbarAndroid::ShowContextMenu(

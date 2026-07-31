@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/android/extensions/extension_action_popup_contents.h"
 
 #include "base/android/jni_string.h"
+#include "chrome/browser/devtools/devtools_toggle_action.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
@@ -37,8 +40,9 @@ constexpr gfx::Size kMaxSize = {800, 600};
 }  // namespace
 
 ExtensionActionPopupContents::ExtensionActionPopupContents(
-    std::unique_ptr<ExtensionViewHost> host)
-    : host_(std::move(host)) {
+    std::unique_ptr<ExtensionViewHost> host,
+    bool inspect_with_devtools)
+    : host_(std::move(host)), inspect_with_devtools_(inspect_with_devtools) {
   java_object_ = Java_ExtensionActionPopupContents_Constructor(
       AttachCurrentThread(), reinterpret_cast<int64_t>(this),
       host_->host_contents());
@@ -108,6 +112,11 @@ bool ExtensionActionPopupContents::HandleKeyboardEvent(
 }
 
 void ExtensionActionPopupContents::OnLoaded() {
+  if (inspect_with_devtools_) {
+    DevToolsWindow::OpenDevToolsWindow(
+        host_->host_contents(), DevToolsToggleAction::ShowConsolePanel(),
+        DevToolsOpenedByAction::kContextMenuInspect);
+  }
   Java_ExtensionActionPopupContents_onLoaded(AttachCurrentThread(),
                                              java_object_);
 }
@@ -137,7 +146,8 @@ void ExtensionActionPopupContents::HandleCloseExtensionHost(
 // popup.
 static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
     JNIEnv* env,
-    int64_t extension_view_host_ptr) {
+    int64_t extension_view_host_ptr,
+    bool inspect_with_devtools) {
   std::unique_ptr<ExtensionViewHost> host(
       reinterpret_cast<extensions::ExtensionViewHost*>(
           extension_view_host_ptr));
@@ -151,7 +161,7 @@ static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
   // of this C++ object. Therefore, 'new' is used here, and ownership is
   // effectively passed to the Java-controlled lifecycle.
   ExtensionActionPopupContents* popup =
-      new ExtensionActionPopupContents(std::move(host));
+      new ExtensionActionPopupContents(std::move(host), inspect_with_devtools);
   return popup->GetJavaObject();
 }
 

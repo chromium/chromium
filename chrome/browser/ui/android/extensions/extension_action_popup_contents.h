@@ -36,8 +36,8 @@ class ExtensionViewHost;
 class ExtensionActionPopupContents : public content::WebContentsObserver,
                                      public ExtensionView {
  public:
-  explicit ExtensionActionPopupContents(
-      std::unique_ptr<ExtensionViewHost> popup_host);
+  ExtensionActionPopupContents(std::unique_ptr<ExtensionViewHost> popup_host,
+                               bool inspect_with_devtools);
   ExtensionActionPopupContents(const ExtensionActionPopupContents&) = delete;
   ExtensionActionPopupContents& operator=(const ExtensionActionPopupContents&) =
       delete;
@@ -70,6 +70,7 @@ class ExtensionActionPopupContents : public content::WebContentsObserver,
   void HandleCloseExtensionHost(extensions::ExtensionHost* host);
 
   std::unique_ptr<ExtensionViewHost> host_;
+  const bool inspect_with_devtools_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 

@@ -102,7 +102,8 @@ class ExtensionActionPopup implements Destroyable {
             ExtensionActionPopupContents contents,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            boolean inspectWithDevTools) {
         mActivity = activity;
         mActionId = actionId;
         mContents = contents;
@@ -158,7 +159,12 @@ class ExtensionActionPopup implements Destroyable {
                         new ViewRectProvider(anchorView));
 
         mPopupWindow.setHorizontalOverlapAnchor(true);
-        mPopupWindow.setOutsideTouchable(true);
+
+        // The popup should close on focus loss only if it's not being inspected. Otherwise,
+        // opening the devtools window would automatically close the popup.
+        // Note: calling setDismissOnTouchInteraction() implicitly also calls setOutsideTouchable().
+        mPopupWindow.setDismissOnTouchInteraction(!inspectWithDevTools);
+        mPopupWindow.setDismissOnScreenSizeChange(!inspectWithDevTools);
         mPopupWindow.setAllowNonTouchableSize(true);
 
         Resources resources = mActivity.getResources();
@@ -169,16 +175,15 @@ class ExtensionActionPopup implements Destroyable {
         mPopupWindow.setDesiredContentSize(
                 resources.getDimensionPixelSize(R.dimen.extension_action_popup_min_width),
                 resources.getDimensionPixelSize(R.dimen.extension_action_popup_min_height));
-        mPopupWindow.setFocusable(true);
+        mPopupWindow.setFocusable(!inspectWithDevTools);
 
         mTabModelSelector = tabModelSelector;
         mCurrentTabObserver =
                 tab -> {
                     if (mPopupWindow.isShowing()) {
                         // Due to inherent differences between platforms on focus handling, we
-                        // explicitly observe tab changes and dismiss, unlike on Desktop where
-                        // the popup is automatically dismissed as it loses focus due to the tab
-                        // change.
+                        // explicitly observe tab changes and dismiss, matching Desktop's
+                        // OnTabStripModelChanged behavior.
                         mPopupWindow.dismiss();
                     }
                 };

@@ -51,8 +51,10 @@ public class ExtensionActionPopupContents implements Destroyable {
     }
 
     /** Creates an {@link ExtensionActionPopupContents} instance. */
-    public static ExtensionActionPopupContents create(long extensionViewHostPtr) {
-        return ExtensionActionPopupContentsJni.get().create(extensionViewHostPtr);
+    public static ExtensionActionPopupContents create(
+            long extensionViewHostPtr, boolean inspectWithDevTools) {
+        return ExtensionActionPopupContentsJni.get()
+                .create(extensionViewHostPtr, inspectWithDevTools);
     }
 
     /**
@@ -157,7 +159,7 @@ public class ExtensionActionPopupContents implements Destroyable {
          * @param extensionViewHostPtr The address of a native {@code ExtensionViewHost}.
          * @return The Java {@link ExtensionActionPopupContents} object, or {@code null} on failure.
          */
-        ExtensionActionPopupContents create(long extensionViewHostPtr);
+        ExtensionActionPopupContents create(long extensionViewHostPtr, boolean inspectWithDevTools);
 
         /**
          * Destroys the native ExtensionActionPopupContents object.
