@@ -96,4 +96,21 @@
   <message name="IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN" desc="Generic text displayed in a toast telling the user their action is blocked by their administrator.">
       Blocked by <ph name="DOMAIN">$1<ex>google.com</ex></ph>
   </message>
+
+  <!-- Enterprise Content Analysis dialog strings -->
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_BLOCKED_MESSAGE" desc="The text displayed in a dialog telling users that their paste action is blocked by their administrator.">
+    Content couldn't be pasted due to your organization's policies
+  </message>
+
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before pasting to a site.">
+    Continue
+  </message>
+
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_LABEL" desc="Text displayed at the top of a dialog telling the user that pasting the content is not recommended.">
+    Based on your organization's policies, this content may contain sensitive information
+  </message>
+
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that pasting the content is not recommended.">
+    Pasting not recommended
+  </message>
 </grit-part>

@@ -79,6 +79,16 @@ WarningDialog GetWarningDialog(DialogType type,
           IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON);
       dialog.cancel_button_id = l10n_util::GetNSString(IDS_CANCEL);
       break;
+
+    case DialogType::kPastedContentWarn:
+      dialog.title = l10n_util::GetNSString(
+          IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_TITLE);
+      dialog.label = l10n_util::GetNSString(
+          IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_LABEL);
+      dialog.ok_button_id = l10n_util::GetNSString(
+          IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_CONTINUE_BUTTON);
+      dialog.cancel_button_id = l10n_util::GetNSString(IDS_CANCEL);
+      break;
   }
 
   return dialog;

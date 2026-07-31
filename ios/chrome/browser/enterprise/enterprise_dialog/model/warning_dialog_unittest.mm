@@ -175,4 +175,20 @@ TEST_F(WarningDialogTest, GetWarningDialog_Download_Share) {
       isEqualToString:l10n_util::GetNSString(IDS_CANCEL)]);
 }
 
+TEST_F(WarningDialogTest, GetWarningDialog_PastedContent) {
+  WarningDialog dialog = GetWarningDialog(DialogType::kPastedContentWarn, "");
+  EXPECT_TRUE([dialog.title
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_TITLE)]);
+  EXPECT_TRUE([dialog.label
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_LABEL)]);
+  EXPECT_TRUE([dialog.ok_button_id
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_CONTINUE_BUTTON)]);
+  EXPECT_TRUE([dialog.cancel_button_id
+      isEqualToString:l10n_util::GetNSString(IDS_CANCEL)]);
+}
+
 }  // namespace enterprise
