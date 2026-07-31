@@ -6,11 +6,12 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/origin_gating/core/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace origin_gating {
 namespace {
@@ -18,11 +19,8 @@ namespace {
 TEST(OriginGatingConfigurationTest, StoresPredicatesInOrder) {
   CustomPredicate custom1(
       base::BindRepeating([](const GatingDecisionContext*, const GURL&,
-                             const GURL&,
-                             base::OnceCallback<void(Decision)> callback) {
-        std::move(callback).Run(Decision::kNoDecision);
-      }),
-      "custom_1");
+                             const GURL&) { return Decision::kNoDecision; }),
+      "sync predicate");
 
   CustomPredicate custom2(
       base::BindRepeating([](const GatingDecisionContext*, const GURL&,
@@ -30,7 +28,7 @@ TEST(OriginGatingConfigurationTest, StoresPredicatesInOrder) {
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),
-      "custom_2");
+      "async predicate");
 
   OriginGatingConfiguration config(
       {
@@ -48,11 +46,11 @@ TEST(OriginGatingConfigurationTest, StoresPredicatesInOrder) {
                   testing::Property(
                       &PredicateConfiguration::predicate,
                       testing::VariantWith<CustomPredicate>(testing::Property(
-                          &CustomPredicate::name, "custom_1"))),
+                          &CustomPredicate::name, "sync predicate"))),
                   testing::Property(
                       &PredicateConfiguration::predicate,
                       testing::VariantWith<CustomPredicate>(testing::Property(
-                          &CustomPredicate::name, "custom_2")))));
+                          &CustomPredicate::name, "async predicate")))));
 }
 
 TEST(OriginGatingConfigurationTest, CheckFails_NoVerdict) {

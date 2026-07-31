@@ -228,15 +228,35 @@ void OriginGatingChecker::EvaluatePredicates(
             [&](const CustomPredicate& custom_predicate)
                 VALID_CONTEXT_REQUIRED(sequence_checker_) {
                   GatingDecisionContext* raw_context = context.get();
-                  custom_predicate.Run(
-                      raw_context, input.source, input.destination,
-                      base::BindOnce(
-                          &OriginGatingChecker::OnEvaluatedAsyncPredicate,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(context),
-                          pending_predicates.subspan(/*offset=*/i + 1),
-                          DecisionAttribution(custom_predicate.name()), input,
-                          std::move(callback)));
-                  return true;
+                  DecisionAttribution attribution(custom_predicate.name());
+                  return std::visit(
+                      absl::Overload{
+                          [&](const CustomPredicate::AsyncPredicate& predicate)
+                              VALID_CONTEXT_REQUIRED(sequence_checker_) {
+                                GURL source = input.source;
+                                GURL destination = input.destination;
+                                predicate.Run(
+                                    raw_context, source, destination,
+                                    base::BindOnce(
+                                        &OriginGatingChecker::
+                                            OnEvaluatedAsyncPredicate,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        std::move(context),
+                                        pending_predicates.subspan(
+                                            /*offset=*/i + 1),
+                                        std::move(attribution),
+                                        std::move(input), std::move(callback)));
+                                return true;
+                              },
+                          [&](const CustomPredicate::SyncPredicate& predicate) {
+                            return ProcessDecision(
+                                context, std::move(attribution),
+                                predicate.Run(raw_context, input.source,
+                                              input.destination),
+                                callback);
+                          },
+                      },
+                      custom_predicate.predicate());
                 }},
         predicate_config.predicate());
     if (consumed) {
