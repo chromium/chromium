@@ -266,6 +266,10 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     }
 
     bool is_disk_space_too_low_for_caches() const {
+      if (!base::FeatureList::IsEnabled(
+              features::kOnDeviceModelCachesDiskSpaceCheck)) {
+        return false;
+      }
       if (!disk_space_free) {
         // TODO(https://crbug.com/438265416): Handle failure to get free disk
         // space.
