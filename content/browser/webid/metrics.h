@@ -83,7 +83,11 @@ enum class RequestIdTokenStatus {
   kLoginPopupClosedWithoutSignin = 51,
   kSuppressedBySegmentationPlatform = 52,
   kSuccessUsingRedirectTo = 53,
-  kMaxValue = kSuccessUsingRedirectTo
+  kWellKnownBlockedByConnectionAllowlist = 54,
+  kConfigBlockedByConnectionAllowlist = 55,
+  kAccountsBlockedByConnectionAllowlist = 56,
+  kIdTokenBlockedByConnectionAllowlist = 57,
+  kMaxValue = kIdTokenBlockedByConnectionAllowlist
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmRequestIdTokenStatus)
@@ -123,7 +127,8 @@ enum class IdpSigninMatchStatus {
   kMismatchWithNoContent = 5,
   kMismatchWithInvalidResponse = 6,
   kMismatchWithUnexpectedAccounts = 7,
-  kMaxValue = kMismatchWithUnexpectedAccounts
+  kMismatchWithConnectionAllowlistBlock = 8,
+  kMaxValue = kMismatchWithConnectionAllowlistBlock
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmIdpSigninMatchStatus)
@@ -172,7 +177,10 @@ enum class DisconnectStatus {
   kWellKnownInvalidContentType = 17,
   kConfigInvalidContentType = 18,
   kIdpNotPotentiallyTrustworthy = 19,
-  kMaxValue = kIdpNotPotentiallyTrustworthy
+  kWellKnownBlockedByConnectionAllowlist = 20,
+  kConfigBlockedByConnectionAllowlist = 21,
+  kDisconnectBlockedByConnectionAllowlist = 22,
+  kMaxValue = kDisconnectBlockedByConnectionAllowlist
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmDisconnectStatus)

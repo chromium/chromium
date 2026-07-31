@@ -218,7 +218,8 @@ class DisconnectRequestTest : public RenderViewHostImplTestHarness {
       rfh = static_cast<RenderFrameHost*>(main_test_rfh());
     }
     if (expected_disconnect_status !=
-        blink::mojom::DisconnectStatus::kSuccess) {
+            blink::mojom::DisconnectStatus::kSuccess &&
+        config.disconnect_fetch_status.parse_status == ParseStatus::kSuccess) {
       EXPECT_CALL(*permission_delegate_, RevokeSharingPermission(_, _, _, _))
           .Times(0);
     }
@@ -540,6 +541,32 @@ TEST_F(DisconnectRequestTest, SuccessDespiteEmbargo) {
   ExpectDisconnectMetricsAndConsoleError(DisconnectStatus::kSuccess,
                                          RequesterFrameType::kMainFrame,
                                          /*should_record_duration=*/true);
+}
+
+TEST_F(DisconnectRequestTest, DisconnectBlockedByConnectionAllowlist) {
+  Config config = kValidConfig;
+  config.disconnect_fetch_status = {ParseStatus::kBlockedByConnectionAllowlist,
+                                    net::ERR_NETWORK_ACCESS_REVOKED};
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::GRANTED));
+  EXPECT_CALL(
+      *permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrl)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*permission_delegate_,
+              RevokeSharingPermission(OriginFromString(kRpUrl),
+                                      OriginFromString(kRpUrl),
+                                      OriginFromString(kProviderUrl), _));
+
+  RunDisconnectTest(config, blink::mojom::DisconnectStatus::kError);
+  EXPECT_TRUE(DidFetchAllEndpoints());
+
+  ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatus::kDisconnectBlockedByConnectionAllowlist,
+      RequesterFrameType::kMainFrame,
+      /*should_record_duration=*/true);
 }
 
 }  // namespace content::webid

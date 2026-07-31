@@ -48,6 +48,10 @@ constexpr int maxResponseSizeInKiB = 1024;
 ParseStatus GetResponseError(base::optional_ref<std::string> response_body,
                              int response_code,
                              const std::string& mime_type) {
+  if (response_code == net::ERR_NETWORK_ACCESS_REVOKED) {
+    return ParseStatus::kBlockedByConnectionAllowlist;
+  }
+
   if (response_code == net::HTTP_NOT_FOUND) {
     return ParseStatus::kHttpNotFoundError;
   }

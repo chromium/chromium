@@ -33,6 +33,7 @@ enum class ParseStatus {
   // the response is empty.
   kEmptyListError,
   kInvalidContentTypeError,
+  kBlockedByConnectionAllowlist,
 };
 
 struct FetchStatus {

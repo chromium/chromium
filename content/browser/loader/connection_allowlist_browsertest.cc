@@ -37,6 +37,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/email_verifier.h"
+#include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_type.h"
@@ -136,6 +137,10 @@ constexpr char kConfigFileStr[] = "config file";
 constexpr char kWellKnownFileStr[] = "well-known file";
 constexpr char kTokenStr[] = "id assertion endpoint";
 constexpr char kAccountStr[] = "accounts endpoint";
+constexpr char kRequestWillBeSent[] = "Network.requestWillBeSent";
+constexpr char kRequestIdTokenHistogram[] = "Blink.FedCm.Status.RequestIdToken";
+constexpr char kIdpSigninMatchHistogram[] = "Blink.FedCm.Status.IdpSigninMatch";
+constexpr char kDisconnectHistogram[] = "Blink.FedCm.Status.Disconnect";
 
 Matcher<WebContentsConsoleObserver::Message> HasConsoleMessage(
     const std::string& expected_substr) {
@@ -3866,6 +3871,7 @@ class ConnectionAllowlistFedCmTest : public ConnectionAllowlistTest,
 // FedCM API's fetch of the well-known file is blocked by the connection
 // allowlist.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmWellKnownBlocked) {
+  base::HistogramTester histogram_tester;
   // FedCM API initiates the fetch of well-known file and the config file in
   // parallel. The connection allowlist allows the config file URL but not the
   // well-known file URL. This ensures the console error from the fetch of
@@ -3886,7 +3892,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmWellKnownBlocked) {
   // Observe the console errors.
   auto fedcm_console_observer =
       CreateConsoleObserver(webid::GetConsoleErrorMessageFromResult(
-          FederatedRequestResult::kWellKnownNoResponse));
+          FederatedRequestResult::kWellKnownBlockedByConnectionAllowlist));
   auto network_console_observer =
       CreateConsoleObserver(well_known_response_error.value());
 
@@ -3907,10 +3913,11 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmWellKnownBlocked) {
     const std::string* method = params.FindStringByDottedPath("request.method");
     return url && *url == expected_url && method && *method == "GET";
   };
-  base::DictValue notification = WaitForMatchingNotification(
-      "Network.requestWillBeSent",
-      base::BindRepeating(matches_well_known_get, WellKnownURL().spec()));
-  EXPECT_FALSE(notification.empty());
+  EXPECT_FALSE(
+      WaitForMatchingNotification(
+          kRequestWillBeSent,
+          base::BindRepeating(matches_well_known_get, WellKnownURL().spec()))
+          .empty());
 
   DetachProtocolClient();
 
@@ -3926,6 +3933,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmWellKnownBlocked) {
   // There should be console errors on the fetch of the well-known file.
   EXPECT_TRUE(fedcm_console_observer->Wait());
   EXPECT_TRUE(network_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kRequestIdTokenHistogram,
+      webid::RequestIdTokenStatus::kWellKnownBlockedByConnectionAllowlist, 1);
 }
 
 // Similar to the test `FedCmWellKnownBlocked`, but runs the FedCM API in a
@@ -3934,6 +3945,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmWellKnownBlocked) {
 // which does not allow the request URL.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
                        FedCmCrossOriginIframeWellKnownBlocked) {
+  base::HistogramTester histogram_tester;
   // FedCM API initiates the fetch of well-known file and the config file in
   // parallel. The connection allowlist allows the config file URL but not the
   // well-known file URL. This ensures the console error from the fetch of
@@ -3968,7 +3980,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
   // Observe the console errors.
   auto fedcm_console_observer =
       CreateConsoleObserver(webid::GetConsoleErrorMessageFromResult(
-          FederatedRequestResult::kWellKnownNoResponse));
+          FederatedRequestResult::kWellKnownBlockedByConnectionAllowlist));
   auto network_console_observer =
       CreateConsoleObserver(well_known_response_error.value());
 
@@ -3993,6 +4005,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
   // There should be console errors on the fetch of the well-known file.
   EXPECT_TRUE(fedcm_console_observer->Wait());
   EXPECT_TRUE(network_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kRequestIdTokenHistogram,
+      webid::RequestIdTokenStatus::kWellKnownBlockedByConnectionAllowlist, 1);
 }
 
 // FedCM API's fetch of the well-known file is redirected, and redirects are
@@ -4067,11 +4083,14 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
       webid::ComputeConsoleMessageForHttpResponseCode(
           kWellKnownFileStr, net::ERR_NETWORK_ACCESS_REVOKED);
   ASSERT_TRUE(well_known_response_error);
-  EXPECT_THAT(console_observer.messages(),
-              Not(Contains(AnyOf(
-                  HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
-                      FederatedRequestResult::kWellKnownNoResponse)),
-                  HasConsoleMessage(well_known_response_error.value())))));
+  EXPECT_THAT(
+      console_observer.messages(),
+      Not(Contains(AnyOf(
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kWellKnownNoResponse)),
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kWellKnownBlockedByConnectionAllowlist)),
+          HasConsoleMessage(well_known_response_error.value())))));
 }
 
 // FedCM API's fetch of the well-known file is redirected, but redirects are
@@ -4080,6 +4099,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
 // follow redirects.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
                        FedCmWellKnownRedirectBlocked) {
+  base::HistogramTester histogram_tester;
   net::test_server::ControllableHttpResponse controllable_response(
       &embedded_https_test_server(), kWellKnownPath);
 
@@ -4114,7 +4134,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
                                                       net::ERR_FAILED);
   ASSERT_TRUE(well_known_response_error);
 
-  // Observe the console errors.
+  // Observe the console errors. Note for redirects, the connection allowlist
+  // blocks with the error code `net::ERR_FAILED` instead of
+  // `net::ERR_NETWORK_ACCESS_REVOKED`. So the `FederatedRequestResult` will be
+  // the generic `kWellKnownNoResponse` instead of
+  // `kWellKnownBlockedByConnectionAllowlist` which is specific to connection
+  // allowlist.
   auto fedcm_console_observer =
       CreateConsoleObserver(webid::GetConsoleErrorMessageFromResult(
           FederatedRequestResult::kWellKnownNoResponse));
@@ -4163,10 +4188,15 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
   // There should be console errors on the fetch of the well-known file.
   EXPECT_TRUE(fedcm_console_observer->Wait());
   EXPECT_TRUE(network_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kRequestIdTokenHistogram,
+      webid::RequestIdTokenStatus::kWellKnownNoResponse, 1);
 }
 
 // FedCM API's fetch of the config file is blocked by the connection allowlist.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmConfigBlocked) {
+  base::HistogramTester histogram_tester;
   // FedCM API initiates the fetch of well-known file and the config file in
   // parallel. The connection allowlist allows the well-known file URL but not
   // the config file URL. This ensures the console error from the fetch of
@@ -4185,7 +4215,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmConfigBlocked) {
   // Observe the console errors.
   auto fedcm_console_observer =
       CreateConsoleObserver(webid::GetConsoleErrorMessageFromResult(
-          FederatedRequestResult::kConfigNoResponse));
+          FederatedRequestResult::kConfigBlockedByConnectionAllowlist));
   auto network_console_observer =
       CreateConsoleObserver(config_response_error.value());
 
@@ -4210,6 +4240,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmConfigBlocked) {
   // There should be console errors on the fetch of the config file.
   EXPECT_TRUE(fedcm_console_observer->Wait());
   EXPECT_TRUE(network_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kRequestIdTokenHistogram,
+      webid::RequestIdTokenStatus::kConfigBlockedByConnectionAllowlist, 1);
 }
 
 // FedCM API's fetch of the well-known file and the config file are allowed by
@@ -4256,14 +4290,19 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
           kConfigFileStr, net::ERR_NETWORK_ACCESS_REVOKED);
   ASSERT_TRUE(well_known_response_error);
   ASSERT_TRUE(config_response_error);
-  EXPECT_THAT(console_observer.messages(),
-              Not(Contains(AnyOf(
-                  HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
-                      FederatedRequestResult::kWellKnownNoResponse)),
-                  HasConsoleMessage(well_known_response_error.value()),
-                  HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
-                      FederatedRequestResult::kConfigNoResponse)),
-                  HasConsoleMessage(config_response_error.value())))));
+  EXPECT_THAT(
+      console_observer.messages(),
+      Not(Contains(AnyOf(
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kWellKnownNoResponse)),
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kWellKnownBlockedByConnectionAllowlist)),
+          HasConsoleMessage(well_known_response_error.value()),
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kConfigNoResponse)),
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kConfigBlockedByConnectionAllowlist)),
+          HasConsoleMessage(config_response_error.value())))));
 }
 
 // FedCM API's fetch of the accounts is allowed by the connection allowlist.
@@ -4301,16 +4340,20 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmAccountsAllowed) {
       webid::ComputeConsoleMessageForHttpResponseCode(
           kAccountStr, net::ERR_NETWORK_ACCESS_REVOKED);
   ASSERT_TRUE(accounts_response_error);
-  EXPECT_THAT(console_observer.messages(),
-              Not(Contains(AnyOf(
-                  HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
-                      FederatedRequestResult::kAccountsNoResponse)),
-                  HasConsoleMessage(accounts_response_error.value())))));
+  EXPECT_THAT(
+      console_observer.messages(),
+      Not(Contains(AnyOf(
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kAccountsNoResponse)),
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kAccountsBlockedByConnectionAllowlist)),
+          HasConsoleMessage(accounts_response_error.value())))));
 }
 
 // FedCM API's fetch of the accounts file is blocked by the connection
 // allowlist.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmAccountsBlocked) {
+  base::HistogramTester histogram_tester;
   // Allow required request URLs but not accounts.
   RegisterConnectionAllowlistResponse(R"(
                (
@@ -4335,7 +4378,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmAccountsBlocked) {
   // Observe the console errors.
   auto fedcm_console_observer =
       CreateConsoleObserver(webid::GetConsoleErrorMessageFromResult(
-          FederatedRequestResult::kAccountsNoResponse));
+          FederatedRequestResult::kAccountsBlockedByConnectionAllowlist));
   auto network_console_observer =
       CreateConsoleObserver(accounts_response_error.value());
 
@@ -4359,6 +4402,74 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmAccountsBlocked) {
   // There should be console errors on the request to the accounts URL.
   EXPECT_TRUE(fedcm_console_observer->Wait());
   EXPECT_TRUE(network_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kRequestIdTokenHistogram,
+      webid::RequestIdTokenStatus::kAccountsBlockedByConnectionAllowlist, 1);
+  histogram_tester.ExpectUniqueSample(
+      kIdpSigninMatchHistogram,
+      webid::IdpSigninMatchStatus::kUnknownStatusWithoutAccounts, 1);
+}
+
+// Same as test `FedCmAccountsBlocked`, but invokes `SetIdpSigninStatus` and
+// verifies histogram `Blink.FedCm.Status.IdpSigninMatch`.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest,
+                       FedCmAccountsBlockedWithSigninStatus) {
+  base::HistogramTester histogram_tester;
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/fedcm.json"
+                 "*://b.test:*/client_metadata*"
+                 "*://b.test:*/token"
+                 "*://b.test:*/avatar.png"
+                 "*://b.test:*/login"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  FederatedIdentityPermissionContextDelegate* delegate =
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetFederatedIdentityPermissionContext();
+  ASSERT_TRUE(delegate);
+  delegate->SetIdpSigninStatus(url::Origin::Create(ConfigURL()), true,
+                               std::nullopt);
+
+  std::optional<std::string> accounts_response_error =
+      webid::ComputeConsoleMessageForHttpResponseCode(
+          kAccountStr, net::ERR_NETWORK_ACCESS_REVOKED);
+  ASSERT_TRUE(accounts_response_error);
+
+  auto network_console_observer =
+      CreateConsoleObserver(accounts_response_error.value());
+  URLLoaderMonitor monitor(
+      {WellKnownURL(), ConfigURL(), AccountsURL(), TokenURL()});
+
+  // The failure dialog will remain open. The promise never resolves or rejects.
+  // So here `ExecuteScriptAsync` is used.
+  ExecuteScriptAsync(shell()->web_contents(),
+                     JsReplace(kFedCmScript, ConfigURL()));
+
+  // The request to accounts should be blocked, then the token will not be
+  // requested.
+  ExpectRequestsSucceeded(monitor, {WellKnownURL(), ConfigURL()});
+  EXPECT_FALSE(monitor.GetRequestInfo(AccountsURL()).has_value());
+  EXPECT_FALSE(monitor.GetRequestInfo(TokenURL()).has_value());
+
+  // There should be console errors on the request to the accounts URL.
+  EXPECT_TRUE(network_console_observer->Wait());
+
+  // Since IDP sign-in status is true but the account fetch failed with
+  // `ParseStatus::kBlockedByConnectionAllowlist`, a mismatch is logged to the
+  // histogram.
+  histogram_tester.ExpectUniqueSample(
+      kIdpSigninMatchHistogram,
+      webid::IdpSigninMatchStatus::kMismatchWithConnectionAllowlistBlock, 1);
 }
 
 // FedCM API's fetch of the token is allowed by the connection allowlist.
@@ -4395,15 +4506,19 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmTokenAllowed) {
       webid::ComputeConsoleMessageForHttpResponseCode(
           kTokenStr, net::ERR_NETWORK_ACCESS_REVOKED);
   ASSERT_TRUE(token_response_error);
-  EXPECT_THAT(console_observer.messages(),
-              Not(Contains(AnyOf(
-                  HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
-                      FederatedRequestResult::kIdTokenNoResponse)),
-                  HasConsoleMessage(token_response_error.value())))));
+  EXPECT_THAT(
+      console_observer.messages(),
+      Not(Contains(AnyOf(
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kIdTokenNoResponse)),
+          HasConsoleMessage(webid::GetConsoleErrorMessageFromResult(
+              FederatedRequestResult::kIdTokenBlockedByConnectionAllowlist)),
+          HasConsoleMessage(token_response_error.value())))));
 }
 
 // FedCM API's fetch of the token is blocked by the connection allowlist.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmTokenBlocked) {
+  base::HistogramTester histogram_tester;
   RegisterConnectionAllowlistResponse(R"(
               (
                 response-origin
@@ -4428,7 +4543,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmTokenBlocked) {
   // Observe the console errors.
   auto fedcm_console_observer =
       CreateConsoleObserver(webid::GetConsoleErrorMessageFromResult(
-          FederatedRequestResult::kIdTokenNoResponse));
+          FederatedRequestResult::kIdTokenBlockedByConnectionAllowlist));
   auto network_console_observer =
       CreateConsoleObserver(token_response_error.value());
 
@@ -4449,10 +4564,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmTokenBlocked) {
     const std::string* method = params.FindStringByDottedPath("request.method");
     return url && *url == expected_url && method && *method == "POST";
   };
-  base::DictValue notification = WaitForMatchingNotification(
-      "Network.requestWillBeSent",
-      base::BindRepeating(matches_token_post, TokenURL().spec()));
-  EXPECT_FALSE(notification.empty());
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kRequestWillBeSent,
+                   base::BindRepeating(matches_token_post, TokenURL().spec()))
+                   .empty());
 
   DetachProtocolClient();
 
@@ -4466,6 +4581,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmTokenBlocked) {
   // There should be console errors on the fetch of the token.
   EXPECT_TRUE(fedcm_console_observer->Wait());
   EXPECT_TRUE(network_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kRequestIdTokenHistogram,
+      webid::RequestIdTokenStatus::kIdTokenBlockedByConnectionAllowlist, 1);
 }
 
 // FedCM API's fetch of the account picture is allowed by the connection
@@ -4761,11 +4880,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmDisconnectAllowed) {
   EXPECT_THAT(
       console_observer.messages(),
       Not(Contains(HasConsoleMessage(webid::GetDisconnectConsoleErrorMessage(
-          webid::DisconnectStatus::kDisconnectFailedOnServer)))));
+          webid::DisconnectStatus::kDisconnectBlockedByConnectionAllowlist)))));
 }
 
 // FedCM API's disconnect request is blocked by the connection allowlist.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmDisconnectBlocked) {
+  base::HistogramTester histogram_tester;
   // Allow login flow, but not disconnect.
   RegisterConnectionAllowlistResponse(R"(
                (
@@ -4786,7 +4906,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmDisconnectBlocked) {
   // Observe the console errors.
   auto disconnect_console_observer =
       CreateConsoleObserver(webid::GetDisconnectConsoleErrorMessage(
-          webid::DisconnectStatus::kDisconnectFailedOnServer));
+          webid::DisconnectStatus::kDisconnectBlockedByConnectionAllowlist));
 
   URLLoaderMonitor monitor({WellKnownURL(), ConfigURL(), AccountsURL(),
                             TokenURL(), DisconnectURL()});
@@ -4806,6 +4926,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmDisconnectBlocked) {
 
   // There should be a console error on the disconnect request.
   EXPECT_TRUE(disconnect_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kDisconnectHistogram,
+      webid::DisconnectStatus::kDisconnectBlockedByConnectionAllowlist, 1);
 }
 
 // The request for cached account pictures requires enabling FedCM lightweight
@@ -5407,7 +5531,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
   // Verify that DevTools received Network.requestWillBeSent for the blocked
   // email verification well-known request and that its method is "GET".
   base::DictValue notification = WaitForMatchingNotification(
-      "Network.requestWillBeSent",
+      kRequestWillBeSent,
       base::BindRepeating(&MatchesNetworkRequest,
                           EmailVerificationWellKnownURL().spec(), "GET"));
   EXPECT_FALSE(notification.empty());
@@ -5590,7 +5714,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
   // Verify that DevTools received Network.requestWillBeSent for the blocked
   // token request and that its method is "POST".
   base::DictValue notification = WaitForMatchingNotification(
-      "Network.requestWillBeSent",
+      kRequestWillBeSent,
       base::BindRepeating(&MatchesNetworkRequest, TokenURL().spec(), "POST"));
   EXPECT_FALSE(notification.empty());
 

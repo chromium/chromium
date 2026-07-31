@@ -116,6 +116,13 @@ void ConfigFetcher::OnWellKnownFetched(
                 additional_console_error_message);
         return;
       }
+      case ParseStatus::kBlockedByConnectionAllowlist: {
+        OnError(fetch_result,
+                FederatedRequestResult::kWellKnownBlockedByConnectionAllowlist,
+                TokenStatus::kWellKnownBlockedByConnectionAllowlist,
+                additional_console_error_message);
+        return;
+      }
       case ParseStatus::kInvalidResponseError: {
         OnError(fetch_result, FederatedRequestResult::kWellKnownInvalidResponse,
                 TokenStatus::kWellKnownInvalidResponse,
@@ -164,6 +171,13 @@ void ConfigFetcher::OnConfigFetched(
       case ParseStatus::kHttpNotFoundError: {
         OnError(fetch_result, FederatedRequestResult::kConfigHttpNotFound,
                 TokenStatus::kConfigHttpNotFound,
+                additional_console_error_message);
+        return;
+      }
+      case ParseStatus::kBlockedByConnectionAllowlist: {
+        OnError(fetch_result,
+                FederatedRequestResult::kConfigBlockedByConnectionAllowlist,
+                TokenStatus::kConfigBlockedByConnectionAllowlist,
                 additional_console_error_message);
         return;
       }

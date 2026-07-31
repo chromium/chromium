@@ -146,6 +146,10 @@ void DisconnectRequest::OnAllConfigAndWellKnownFetched(
         status = DisconnectStatus::kWellKnownNoResponse;
         break;
       }
+      case FederatedRequestResult::kWellKnownBlockedByConnectionAllowlist: {
+        status = DisconnectStatus::kWellKnownBlockedByConnectionAllowlist;
+        break;
+      }
       case FederatedRequestResult::kWellKnownInvalidResponse: {
         status = DisconnectStatus::kWellKnownInvalidResponse;
         break;
@@ -164,6 +168,10 @@ void DisconnectRequest::OnAllConfigAndWellKnownFetched(
       }
       case FederatedRequestResult::kConfigNoResponse: {
         status = DisconnectStatus::kConfigNoResponse;
+        break;
+      }
+      case FederatedRequestResult::kConfigBlockedByConnectionAllowlist: {
+        status = DisconnectStatus::kConfigBlockedByConnectionAllowlist;
         break;
       }
       case FederatedRequestResult::kConfigInvalidResponse: {
@@ -224,8 +232,11 @@ void DisconnectRequest::OnDisconnectResponse(FetchStatus fetch_status,
     // (`origin_`, `embedding_origin`, `idp_origin`).
     permission_delegate_->RevokeSharingPermission(
         origin_, embedding_origin_, idp_origin, /*account_id=*/"");
-    Complete(blink::mojom::DisconnectStatus::kError,
-             DisconnectStatus::kDisconnectFailedOnServer);
+    DisconnectStatus status =
+        fetch_status.parse_status == ParseStatus::kBlockedByConnectionAllowlist
+            ? DisconnectStatus::kDisconnectBlockedByConnectionAllowlist
+            : DisconnectStatus::kDisconnectFailedOnServer;
+    Complete(blink::mojom::DisconnectStatus::kError, status);
     return;
   }
   permission_delegate_->RevokeSharingPermission(origin_, embedding_origin_,

@@ -439,6 +439,10 @@ void Metrics::RecordIdpSigninMatchStatus(std::optional<bool> idp_signin_status,
       case ParseStatus::kHttpNotFoundError:
         match_status = IdpSigninMatchStatus::kMismatchWithNetworkError;
         break;
+      case ParseStatus::kBlockedByConnectionAllowlist:
+        match_status =
+            IdpSigninMatchStatus::kMismatchWithConnectionAllowlistBlock;
+        break;
       case ParseStatus::kNoResponseError:
         match_status = IdpSigninMatchStatus::kMismatchWithNoContent;
         break;

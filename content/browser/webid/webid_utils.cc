@@ -212,6 +212,10 @@ std::string GetConsoleErrorMessageFromResult(FederatedRequestResult status) {
       return "The provider's FedCM well-known file fetch resulted in an "
              "error response code.";
     }
+    case FederatedRequestResult::kWellKnownBlockedByConnectionAllowlist: {
+      return "The provider's FedCM well-known file fetch was blocked by "
+             "connection allowlist.";
+    }
     case FederatedRequestResult::kWellKnownInvalidResponse: {
       return "Provider's FedCM well-known file is invalid.";
     }
@@ -235,6 +239,10 @@ std::string GetConsoleErrorMessageFromResult(FederatedRequestResult status) {
       return "The provider's FedCM config file fetch resulted in an "
              "error response code.";
     }
+    case FederatedRequestResult::kConfigBlockedByConnectionAllowlist: {
+      return "The provider's FedCM config file fetch was blocked by connection "
+             "allowlist.";
+    }
     case FederatedRequestResult::kConfigInvalidResponse: {
       return "Provider's FedCM config file is invalid.";
     }
@@ -248,6 +256,10 @@ std::string GetConsoleErrorMessageFromResult(FederatedRequestResult status) {
     case FederatedRequestResult::kAccountsNoResponse: {
       return "The provider's accounts list fetch resulted in an error response "
              "code.";
+    }
+    case FederatedRequestResult::kAccountsBlockedByConnectionAllowlist: {
+      return "The provider's accounts list fetch was blocked by connection "
+             "allowlist.";
     }
     case FederatedRequestResult::kAccountsInvalidResponse: {
       return "Provider's accounts list is invalid. Should have received an "
@@ -267,6 +279,9 @@ std::string GetConsoleErrorMessageFromResult(FederatedRequestResult status) {
     case FederatedRequestResult::kIdTokenNoResponse: {
       return "The provider's token fetch resulted in an error response "
              "code.";
+    }
+    case FederatedRequestResult::kIdTokenBlockedByConnectionAllowlist: {
+      return "The provider's token fetch was blocked by connection allowlist.";
     }
     case FederatedRequestResult::kIdTokenInvalidResponse: {
       return "Provider's token is invalid.";
@@ -376,6 +391,9 @@ std::string GetDisconnectConsoleErrorMessage(
     case DisconnectStatus::kWellKnownNoResponse: {
       return "The well-known file returned an error response code.";
     }
+    case DisconnectStatus::kWellKnownBlockedByConnectionAllowlist: {
+      return "The well-known file fetch was blocked by connection allowlist.";
+    }
     case DisconnectStatus::kWellKnownInvalidResponse: {
       return "The well-known filed returned some invalid response.";
     }
@@ -394,6 +412,13 @@ std::string GetDisconnectConsoleErrorMessage(
     case DisconnectStatus::kConfigInvalidContentType: {
       return "Provider's FedCM config file content type must be a JSON content "
              "type.";
+    }
+    case DisconnectStatus::kConfigBlockedByConnectionAllowlist: {
+      return "Provider's FedCM config file fetch was blocked by connection "
+             "allowlist.";
+    }
+    case DisconnectStatus::kDisconnectBlockedByConnectionAllowlist: {
+      return "The disconnect request was blocked by connection allowlist.";
     }
     case DisconnectStatus::kIdpNotPotentiallyTrustworthy: {
       return "The provider's config file URL is not potentially trustworthy.";

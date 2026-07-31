@@ -7077,6 +7077,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="17" label="WellKnownInvalidContentType"/>
   <int value="18" label="ConfigInvalidContentType"/>
   <int value="19" label="IdpNotPotentiallyTrustworthy"/>
+  <int value="20" label="WellKnownBlockedByConnectionAllowlist"/>
+  <int value="21" label="ConfigBlockedByConnectionAllowlist"/>
+  <int value="22" label="DisconnectBlockedByConnectionAllowlist"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:DisconnectStatus) -->
@@ -7155,6 +7158,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7"
       label="Browser has signed-out IDP status, accounts endpoint returned
              accounts."/>
+  <int value="8"
+      label="Browser has signed-in IDP status, accounts endpoint was blocked
+             by connection allowlist."/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:IdpSigninMatchStatus) -->
@@ -7341,6 +7347,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="51" label="LoginPopupClosedWithoutSignin"/>
   <int value="52" label="SuppressedBySegmentationPlatform"/>
   <int value="53" label="SuccessUsingRedirectTo"/>
+  <int value="54" label="WellKnownBlockedByConnectionAllowlist"/>
+  <int value="55" label="ConfigBlockedByConnectionAllowlist"/>
+  <int value="56" label="AccountsBlockedByConnectionAllowlist"/>
+  <int value="57" label="IdTokenBlockedByConnectionAllowlist"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:RequestIdTokenStatus) -->

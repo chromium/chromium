@@ -468,6 +468,7 @@ experimental domain Audits
       TooManyRequests
       WellKnownHttpNotFound
       WellKnownNoResponse
+      WellKnownBlockedByConnectionAllowlist
       WellKnownInvalidResponse
       WellKnownListEmpty
       WellKnownInvalidContentType
@@ -475,6 +476,7 @@ experimental domain Audits
       WellKnownTooBig
       ConfigHttpNotFound
       ConfigNoResponse
+      ConfigBlockedByConnectionAllowlist
       ConfigInvalidResponse
       ConfigInvalidContentType
       IdpNotPotentiallyTrustworthy
@@ -484,11 +486,13 @@ experimental domain Audits
       InvalidSigninResponse
       AccountsHttpNotFound
       AccountsNoResponse
+      AccountsBlockedByConnectionAllowlist
       AccountsInvalidResponse
       AccountsListEmpty
       AccountsInvalidContentType
       IdTokenHttpNotFound
       IdTokenNoResponse
+      IdTokenBlockedByConnectionAllowlist
       IdTokenInvalidResponse
       IdTokenIdpErrorResponse
       IdTokenCrossSiteIdpErrorResponse
