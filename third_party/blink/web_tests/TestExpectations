@@ -9407,8 +9407,3 @@ crbug.com/541138839 [ Mac ] wpt_internal/prerender/unload-on-prerender-same-orig
 # baseline.
 virtual/javascript-defer-phase-imports/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/cyclic-tla-defer-eval.tentative.html [ Failure Pass ]
 
-# Temporarily mark tests failing until DevTools Shared Storage removal CL lands and rolls
-crbug.com/535990398 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
-crbug.com/535990398 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
-crbug.com/535990398 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-
