@@ -2245,18 +2245,6 @@
       name: "DeclarativeSkeletons",
     },
     {
-      // https://chromestatus.com/feature/5133099851317248
-      name: "DecoupleComputedBorderWidthFromStyle",
-      public: true,
-      status: "stable",
-    },
-    {
-      // https://chromestatus.com/feature/5133099851317248
-      name: "DecoupleResolvedColumnRuleWidthFromStyle",
-      public: true,
-      status: "stable",
-    },
-    {
       // Killswitch for https://crbug.com/400317114 fix.
       // This lands in M142, and the flag can be removed in M144.
       name: "DelegatesFocusTextControlInputFix",

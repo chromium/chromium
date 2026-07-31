@@ -277,12 +277,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderBottomStyle:
       return a.BorderBottomStyle() == b.BorderBottomStyle();
     case CSSPropertyID::kBorderBottomWidth:
-      if (RuntimeEnabledFeatures::
-              DecoupleComputedBorderWidthFromStyleEnabled()) {
-        return a.BorderBottomWidthInternal() ==
-               b.BorderBottomWidthInternal();
-      }
-      return a.BorderBottomWidth() == b.BorderBottomWidth();
+      return a.SpecifiedBorderBottomWidth() == b.SpecifiedBorderBottomWidth();
     case CSSPropertyID::kBorderCollapse:
       return a.BorderCollapse() == b.BorderCollapse();
     case CSSPropertyID::kBorderImageOutset:
@@ -305,11 +300,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderLeftStyle:
       return a.BorderLeftStyle() == b.BorderLeftStyle();
     case CSSPropertyID::kBorderLeftWidth:
-      if (RuntimeEnabledFeatures::
-              DecoupleComputedBorderWidthFromStyleEnabled()) {
-        return a.BorderLeftWidthInternal() == b.BorderLeftWidthInternal();
-      }
-      return a.BorderLeftWidth() == b.BorderLeftWidth();
+      return a.SpecifiedBorderLeftWidth() == b.SpecifiedBorderLeftWidth();
     case CSSPropertyID::kBorderRightColor:
       return a.BorderRightColor() == b.BorderRightColor() &&
              a.InternalVisitedBorderRightColor() ==
@@ -317,12 +308,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderRightStyle:
       return a.BorderRightStyle() == b.BorderRightStyle();
     case CSSPropertyID::kBorderRightWidth:
-      if (RuntimeEnabledFeatures::
-              DecoupleComputedBorderWidthFromStyleEnabled()) {
-        return a.BorderRightWidthInternal() ==
-               b.BorderRightWidthInternal();
-      }
-      return a.BorderRightWidth() == b.BorderRightWidth();
+      return a.SpecifiedBorderRightWidth() == b.SpecifiedBorderRightWidth();
     case CSSPropertyID::kBorderTopColor:
       return a.BorderTopColor() == b.BorderTopColor() &&
              a.InternalVisitedBorderTopColor() ==
@@ -334,11 +320,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderTopStyle:
       return a.BorderTopStyle() == b.BorderTopStyle();
     case CSSPropertyID::kBorderTopWidth:
-      if (RuntimeEnabledFeatures::
-              DecoupleComputedBorderWidthFromStyleEnabled()) {
-        return a.BorderTopWidthInternal() == b.BorderTopWidthInternal();
-      }
-      return a.BorderTopWidth() == b.BorderTopWidth();
+      return a.SpecifiedBorderTopWidth() == b.SpecifiedBorderTopWidth();
     case CSSPropertyID::kBorderShape:
       return base::ValuesEquivalent(a.BorderShape(), b.BorderShape());
     case CSSPropertyID::kBottom:

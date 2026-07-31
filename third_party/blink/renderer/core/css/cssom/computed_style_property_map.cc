@@ -241,30 +241,30 @@ void ComputedStylePropertyMap::RecordUseCounterForWidthStyleValues(
                               EBorderStyle& out_style_value) {
     switch (property_id) {
       case CSSPropertyID::kBorderLeftWidth:
-        out_width_value = style.BorderLeftWidthInternal();
+        out_width_value = style.SpecifiedBorderLeftWidth();
         out_style_value = style.BorderLeftStyle();
         break;
       case CSSPropertyID::kBorderRightWidth:
-        out_width_value = style.BorderRightWidthInternal();
+        out_width_value = style.SpecifiedBorderRightWidth();
         out_style_value = style.BorderRightStyle();
         break;
       case CSSPropertyID::kBorderTopWidth:
-        out_width_value = style.BorderTopWidthInternal();
+        out_width_value = style.SpecifiedBorderTopWidth();
         out_style_value = style.BorderTopStyle();
         break;
       case CSSPropertyID::kBorderBottomWidth:
-        out_width_value = style.BorderBottomWidthInternal();
+        out_width_value = style.SpecifiedBorderBottomWidth();
         out_style_value = style.BorderBottomStyle();
         break;
       case CSSPropertyID::kOutlineWidth:
-        out_width_value = style.OutlineWidthInternal();
+        out_width_value = style.OutlineWidth();
         out_style_value = style.OutlineStyle();
         break;
       case CSSPropertyID::kColumnRuleWidth:
-        if (!style.ColumnRuleWidthInternal().HasSingleValue()) {
+        if (!style.ColumnRuleWidth().HasSingleValue()) {
           break;
         }
-        out_width_value = style.ColumnRuleWidthInternal().GetLegacyValue();
+        out_width_value = style.ColumnRuleWidth().GetLegacyValue();
         out_style_value = style.ColumnRuleStyle().GetLegacyValue();
         break;
       default:

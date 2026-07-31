@@ -329,31 +329,19 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       break;
 
     case CSSPropertyID::kBorderBottomWidth:
-      result =
-          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
-              ? Length::Fixed(style.BorderBottomWidthInternal())
-              : Length::Fixed(style.BorderBottomWidth());
+      result = Length::Fixed(style.SpecifiedBorderBottomWidth());
       success = true;
       break;
     case CSSPropertyID::kBorderLeftWidth:
-      result =
-          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
-              ? Length::Fixed(style.BorderLeftWidthInternal())
-              : Length::Fixed(style.BorderLeftWidth());
+      result = Length::Fixed(style.SpecifiedBorderLeftWidth());
       success = true;
       break;
     case CSSPropertyID::kBorderRightWidth:
-      result =
-          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
-              ? Length::Fixed(style.BorderRightWidthInternal())
-              : Length::Fixed(style.BorderRightWidth());
+      result = Length::Fixed(style.SpecifiedBorderRightWidth());
       success = true;
       break;
     case CSSPropertyID::kBorderTopWidth:
-      result =
-          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
-              ? Length::Fixed(style.BorderTopWidthInternal())
-              : Length::Fixed(style.BorderTopWidth());
+      result = Length::Fixed(style.SpecifiedBorderTopWidth());
       success = true;
       break;
     case CSSPropertyID::kLetterSpacing:
@@ -365,10 +353,7 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       success = true;
       break;
     case CSSPropertyID::kOutlineWidth:
-      result =
-          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
-              ? Length::Fixed(style.OutlineWidthInternal())
-              : Length::Fixed(style.OutlineWidth());
+      result = Length::Fixed(style.OutlineWidth());
       success = true;
       break;
     case CSSPropertyID::kWebkitBorderHorizontalSpacing:
