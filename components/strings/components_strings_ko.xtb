@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">보고 날짜:</translation>
 <translation id="1542105669288201090">비즈니스 교육</translation>
 <translation id="1542830386724426410">결제 시 사용 가능한 카드 혜택 및 리워드를 표시합니다. 발급기관 약관이 적용됩니다. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />자세히 알아보기<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">조직의 정책에 따라 복사한 콘텐츠에서 민감한 정보를 검사하고 있습니다. 스캔이 완료된 후에 붙여넣기가 허용될 수 있습니다.</translation>
 <translation id="1545757265410828525">가격 변동 내역</translation>
 <translation id="1546286808622193216">Gemini를 사용하여 카드 혜택 비교</translation>
 <translation id="1549470594296187301">이 기능을 이용하려면 자바스크립트를 사용하도록 설정해야 합니다.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> 정책에 관해 자세히 알아보기</translation>
 <translation id="3295444047715739395">Chrome 설정에서 비밀번호를 확인하고 관리하세요.</translation>
 <translation id="3299098170013242198">비밀번호 입력 시 Windows Hello 사용</translation>
+<translation id="3299197721044635447">조직의 정책으로 인해 관리 Chrome 컨텍스트 외부에 콘텐츠를 붙여넣을 수 없습니다.</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> 사용 중에 문제가 발생했습니다.</translation>
 <translation id="3303176609391916566">30x42인치</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">미리 커팅된 탭</translation>
 <translation id="7675756033024037212">스크롤 및 확대/축소가 허용되지 않음</translation>
 <translation id="7676643023259824263">클립보드 텍스트 <ph name="TEXT" /> 검색</translation>
+<translation id="7676840398262504532">조직에서 복사 작업을 모니터링하고 있습니다.</translation>
 <translation id="7678730592635586336">동영상 다시 촬영</translation>
 <translation id="7679287273775285018">전자 지갑으로 결제</translation>
 <translation id="7679367271685653708">Chrome 설정에서 방문 기록 보기 및 관리</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">신규모집 및 채용</translation>
 <translation id="8135546115396015134">왼쪽 키</translation>
 <translation id="8137456439814903304">에너지 및 공공사업</translation>
+<translation id="814071672416123670">조직의 정책으로 인해 콘텐츠를 복사할 수 없습니다.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1개월 전 생성됨}other{{NUM_MONTHS}개월 전 생성됨}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, 현재 기본값. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF 버전:</translation>

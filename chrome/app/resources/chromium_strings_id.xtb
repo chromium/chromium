@@ -574,6 +574,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="7173822816570314652">Organisasi Anda akan menghapus data Chromium jika tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data ini dapat mencakup histori, isi otomatis, dan download.</translation>
 <translation id="718435575166326686">Chromium memerlukan izin kamera untuk situs ini</translation>
 <translation id="7196312274710523067">Tidak dapat meluncurkan Chromium. Harap coba lagi.</translation>
+<translation id="7204669035546236137">Tanya apa saja, langsung dari tempat Anda berada, dengan Gemini di Chromium</translation>
 <translation id="7213008767289637091">Simpan Chromium di Dok untuk mengaksesnya dengan cepat kapan saja</translation>
 <translation id="7213407614656404070">Gunakan Chromium kapan pun Anda mengklik link di pesan, dokumen, dan aplikasi lainnya</translation>
 <translation id="7216228761061470870">Saat Anda menggunakan Penelusuran Gambar di desktop, judul halaman, URL, dan konten, termasuk PDF, akan dikirim ke server</translation>
@@ -628,6 +629,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7745317241717453663">Tindakan ini akan menghapus data browsing dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat membuat direktori sementara. Periksa kapasitas kosong pada disk dan izin untuk memasang software.</translation>
 <translation id="7750130090210923118">Reset ke Chromium Default</translation>
+<translation id="7752521946322750699">Untuk mengamankan pekerjaan di Chromium, organisasi Anda akan dapat melihat atau mengelola informasi tertentu saat Anda login ke Chromium.</translation>
 <translation id="7781047659465034537">Setel Chromium sebagai default dan sematkan ke taskbar</translation>
 <translation id="7786760609782648049">Buat Chromium lebih cepat</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>

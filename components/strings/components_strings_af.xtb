@@ -352,6 +352,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1539840569003678498">Verslag is gestuur:</translation>
 <translation id="1542105669288201090">Besigheidonderrig</translation>
 <translation id="1542830386724426410">Wys beskikbare kaartvoordele en -belonings by betaalpunt. Uitreikerbepalings geld. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Meer inligting<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Die inhoud wat jy gekopieer het, word op grond van jou organisasie se beleide vir sensitiewe inligting geskandeer. Plak kan toegelaat word nadat die skandering voltooi is.</translation>
 <translation id="1545757265410828525">Prysgeskiedenis</translation>
 <translation id="1546286808622193216">Vergelyk kaartvoordele met Gemini</translation>
 <translation id="1549470594296187301">JavaScript moet geaktiveer wees om hierdie kenmerk te gebruik.</translation>
@@ -1503,6 +1504,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3293642807462928945">Kom meer te wete oor <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="3295444047715739395">Bekyk en bestuur jou wagwoorde in Chrome-instellings</translation>
 <translation id="3299098170013242198">Windows Hello is aan om wagwoorde in te vul</translation>
+<translation id="3299197721044635447">Inhoud kon weens jou organisasie se beleide nie buite die bestuurde Chrome-konteks geplak word nie</translation>
 <translation id="3299720788264079132">Iets het skeefgeloop terwyl <ph name="FEATURE_NAME" /> gebruik is</translation>
 <translation id="3303176609391916566">30x42 dm.</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
@@ -4367,6 +4369,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="767550629621587224">Vooraf gesnyde vlaggies</translation>
 <translation id="7675756033024037212">Rollees en zoem word nie toegelaat nie</translation>
 <translation id="7676643023259824263">Soek vir knipbordteks, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Jou organisasie monitor kopiëring</translation>
 <translation id="7678730592635586336">Neem video weer</translation>
 <translation id="7679287273775285018">Betaal met eWallet</translation>
 <translation id="7679367271685653708">Bekyk en bestuur jou blaaigeskiedenis in Chrome-instellings</translation>
@@ -4653,6 +4656,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8134058435519644366">Werwing en personeel</translation>
 <translation id="8135546115396015134">linkersleutel</translation>
 <translation id="8137456439814903304">Energie- en munisipale dienste</translation>
+<translation id="814071672416123670">Inhoud kon weens jou organisasie se beleide nie gekopieer word nie</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 maand gelede geskep}other{{NUM_MONTHS} maande gelede geskep}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, huidige verstek. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-weergawe:</translation>

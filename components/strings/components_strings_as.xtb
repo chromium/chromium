@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">অভিযোগ পঠিওৱা হ’ল:</translation>
 <translation id="1542105669288201090">ব্যৱসায়িক শিক্ষা</translation>
 <translation id="1542830386724426410">চেকআউটত উপলব্ধ কাৰ্ডৰ সুবিধা আৰু পুৰষ্কাৰ প্ৰদৰ্শন কৰক। জাৰিকৰ্তাৰ চৰ্তাৱলী প্ৰযোজ্য। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />অধিক জানক<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">আপোনাৰ প্ৰতিষ্ঠানৰ নীতিৰ ওপৰত ভিত্তি কৰি, আপুনি প্ৰতিলিপি কৰা সমলত সংবেদনশীল তথ্য আছেনে নাই চাবলৈ স্কেন কৰা হৈছে। স্কেন সম্পূৰ্ণ হোৱাৰ পাছত পে’ষ্ট কৰাৰ অনুমতি দিয়া হ’ব পাৰে।</translation>
 <translation id="1545757265410828525">মূল্যৰ ইতিহাস</translation>
 <translation id="1546286808622193216">কাৰ্ডৰ লাভসমূহ Gemini ব্যৱহাৰ কৰি তুলনা কৰক</translation>
 <translation id="1549470594296187301">এই সুবিধাটো ব্যৱহাৰ কৰিবলৈ হ'লে JavaScript সক্ষম কৰা থাকিবই লাগিব।</translation>
@@ -1501,6 +1502,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> নীতিৰ বিষয়ে অধিক জানক</translation>
 <translation id="3295444047715739395">Chromeৰ ছেটিংসমূহত আপোনাৰ পাছৱৰ্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="3299098170013242198">পাছৱৰ্ড পূৰ কৰিবলৈ Windows Hello অন হৈ আছে</translation>
+<translation id="3299197721044635447">আপোনাৰ প্ৰতিষ্ঠানৰ নীতিৰ বাবে পৰিচালিত Chromeৰ প্ৰসংগৰ বাহিৰত সমল পে’ষ্ট কৰিব পৰা নগ’ল</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ব্যৱহাৰ কৰাৰ সময়ত কিবা ভুল হ’ল</translation>
 <translation id="3303176609391916566">৩০ x ৪২ ইঞ্চি</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
@@ -4362,6 +4364,7 @@
 <translation id="767550629621587224">প্ৰি-কাট টেব</translation>
 <translation id="7675756033024037212">স্ক্ৰ’ল কৰা আৰু জুম কৰাৰ অনুমতি নাই</translation>
 <translation id="7676643023259824263">ক্লিপব’ৰ্ডৰ পাঠ, <ph name="TEXT" /> সন্ধান কৰক</translation>
+<translation id="7676840398262504532">আপোনাৰ প্ৰতিষ্ঠানে প্ৰতিলিপি কৰাটো নিৰীক্ষণ কৰে</translation>
 <translation id="7678730592635586336">ভিডিঅ’ পুনৰ লওক</translation>
 <translation id="7679287273775285018">eWalletৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="7679367271685653708">Chromeৰ ছেটিঙত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস চাওক আৰু পৰিচালনা কৰক</translation>
@@ -4648,6 +4651,7 @@
 <translation id="8134058435519644366">নিযুক্তি আৰু কৰ্মচাৰীৰ ভৰ্তিকৰণ</translation>
 <translation id="8135546115396015134">বাওঁফালৰ কী</translation>
 <translation id="8137456439814903304">শক্তি আৰু উপযোগিতা</translation>
+<translation id="814071672416123670">আপোনাৰ প্ৰতিষ্ঠানৰ নীতিৰ বাবে সমল প্ৰতিলিপি কৰিব পৰা নগ’ল</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{১ মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{{NUM_MONTHS} মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{{NUM_MONTHS} মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, বৰ্তমানৰ ডিফ’ল্ট। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDFৰ সংস্কৰণ:</translation>

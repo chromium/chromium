@@ -352,6 +352,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1539840569003678498">Wysłanie raportu:</translation>
 <translation id="1542105669288201090">Edukacja biznesowa</translation>
 <translation id="1542830386724426410">W momencie płatności pokaż dostępne korzyści i nagrody z karty. Obowiązują warunki wystawcy. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Więcej informacji<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Zgodnie z zasadami obowiązującymi w organizacji skopiowane treści są skanowane pod kątem informacji poufnych. Wklejanie może być dozwolone po zakończeniu skanowania.</translation>
 <translation id="1545757265410828525">Historia cen</translation>
 <translation id="1546286808622193216">Porównaj korzyści związane z kartami za pomocą Gemini</translation>
 <translation id="1549470594296187301">Aby można było korzystać z tej funkcji, musi być włączony JavaScript.</translation>
@@ -1503,6 +1504,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3293642807462928945">Więcej informacji o zasadzie <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Wyświetl hasła i zarządzaj nimi w ustawieniach Chrome</translation>
 <translation id="3299098170013242198">Funkcja Windows Hello jest włączona w celu wypełniania haseł</translation>
+<translation id="3299197721044635447">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się wkleić treści poza zarządzanym kontekstem Chrome</translation>
 <translation id="3299720788264079132">Podczas korzystania z funkcji <ph name="FEATURE_NAME" /> coś poszło nie tak</translation>
 <translation id="3303176609391916566">30 x 42 cale</translation>
 <translation id="3303855915957856445">Brak wyników wyszukiwania</translation>
@@ -4368,6 +4370,7 @@ Dodatkowe informacje:
 <translation id="767550629621587224">Wstępnie wycięte zakładki</translation>
 <translation id="7675756033024037212">Przewijanie i powiększanie jest niedozwolone</translation>
 <translation id="7676643023259824263">Wyszukaj tekst ze schowka, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Twoja organizacja monitoruje kopiowanie treści</translation>
 <translation id="7678730592635586336">Nagraj film jeszcze raz</translation>
 <translation id="7679287273775285018">Zapłać przez e-portfel</translation>
 <translation id="7679367271685653708">Wyświetl historię przeglądania i zarządzaj nią w ustawieniach Chrome</translation>
@@ -4654,6 +4657,7 @@ Dodatkowe informacje:
 <translation id="8134058435519644366">Rekrutacja i zatrudnianie</translation>
 <translation id="8135546115396015134">lewy klawisz</translation>
 <translation id="8137456439814903304">Energetyka i usługi komunalne</translation>
+<translation id="814071672416123670">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się skopiować treści</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Utworzono miesiąc temu}few{Utworzono {NUM_MONTHS} miesiące temu}many{Utworzono {NUM_MONTHS} miesięcy temu}other{Utworzono {NUM_MONTHS} miesiąca temu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, bieżąca przeglądarka domyślna. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>

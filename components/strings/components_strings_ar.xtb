@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">تاريخ ووقت إرسال الإبلاغ:</translation>
 <translation id="1542105669288201090">دراسة الأعمال</translation>
 <translation id="1542830386724426410">يتيح هذا الإعداد عرض المكافآت والمزايا المتاحة للبطاقة عند الدفع. تنطبق أحكام جهة إصدار البطاقة. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />مزيد من المعلومات<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">استنادًا إلى سياسات مؤسستك، يتم فحص المحتوى الذي نسخته بحثًا عن معلومات حساسة. وقد يُسمح باللصق بعد اكتمال عملية الفحص.</translation>
 <translation id="1545757265410828525">سجلّ الأسعار</translation>
 <translation id="1546286808622193216">‏مقارنة مزايا البطاقات باستخدام Gemini</translation>
 <translation id="1549470594296187301">‏يجب تفعيل JavaScript لاستخدام هذه الميزة.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945">مزيد من المعلومات عن سياسة <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">‏عرض كلمات المرور وإدارتها في إعدادات متصفِّح Chrome</translation>
 <translation id="3299098170013242198">‏تم تفعيل ميزة Windows Hello لملء كلمات المرور.</translation>
+<translation id="3299197721044635447">‏تعذَّر لصق المحتوى خارج سياق Chrome المُدار بسبب سياسات مؤسستك</translation>
 <translation id="3299720788264079132">حدث خطأ أثناء استخدام ميزة "<ph name="FEATURE_NAME" />".</translation>
 <translation id="3303176609391916566">30 × 42 بوصة</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
@@ -4368,6 +4370,7 @@
 <translation id="767550629621587224">ملحقات تم اقتصاصها مسبقًا</translation>
 <translation id="7675756033024037212">غير مسموح بالانتقال للأعلى أو للأسفل في المحتوى وتكبيره أو تصغيره</translation>
 <translation id="7676643023259824263">البحث عن نص الحافظة،<ph name="TEXT" /></translation>
+<translation id="7676840398262504532">تراقب مؤسستك عملية النسخ</translation>
 <translation id="7678730592635586336">إعادة تسجيل الفيديو</translation>
 <translation id="7679287273775285018">الدفع باستخدام المحفظة الإلكترونية</translation>
 <translation id="7679367271685653708">‏عرض سجلّ التصفُّح وإدارته في إعدادات Chrome</translation>
@@ -4654,6 +4657,7 @@
 <translation id="8134058435519644366">توظيف وعمالة</translation>
 <translation id="8135546115396015134">السهم المتجّه لليسار</translation>
 <translation id="8137456439814903304">طاقة وشركات طاقة</translation>
+<translation id="814071672416123670">تعذَّر نسخ المحتوى بسبب سياسات مؤسستك</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{تم إنشاء المجموعة قبل شهر واحد}zero{تم إنشاء المجموعة قبل {NUM_MONTHS} شهر}two{تم إنشاء المجموعة قبل شهرَين ({NUM_MONTHS})}few{تم إنشاء المجموعة قبل {NUM_MONTHS} أشهر}many{تم إنشاء المجموعة قبل {NUM_MONTHS} شهرًا}other{تم إنشاء المجموعة قبل {NUM_MONTHS} شهر}}</translation>
 <translation id="8147389370274164212">‫<ph name="SEARCH_ENGINE_NAME" />، محرك البحث التلقائي. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏نسخة PDF:</translation>

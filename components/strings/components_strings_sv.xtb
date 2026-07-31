@@ -352,6 +352,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1539840569003678498">Rapporten skickades:</translation>
 <translation id="1542105669288201090">Företagsekonomi</translation>
 <translation id="1542830386724426410">Visa tillgängliga förmåner och belöningar för kortet i kassan. Utgivarens villkor gäller. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Läs mer<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Utifrån organisationens policyer genomsöks innehållet du kopierade efter känsliga uppgifter. Det är möjligt att det kan klistras in när det har genomsökts.</translation>
 <translation id="1545757265410828525">Prishistorik</translation>
 <translation id="1546286808622193216">Jämför kortförmåner med Gemini</translation>
 <translation id="1549470594296187301">JavaScript måste aktiveras för att du ska kunna använda den här funktionen.</translation>
@@ -1503,6 +1504,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3293642807462928945">Läs mer om principen <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Visa och hantera dina lösenord i inställningarna för Chrome</translation>
 <translation id="3299098170013242198">Windows Hello är aktiverat för att fylla i lösenord</translation>
+<translation id="3299197721044635447">Det gick inte att klistra in innehållet utanför det hanterade Chrome-sammanhanget på grund av organisationens policyer</translation>
 <translation id="3299720788264079132">Något gick fel när <ph name="FEATURE_NAME" /> skulle användas</translation>
 <translation id="3303176609391916566">30 x 42 tum</translation>
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>
@@ -4368,6 +4370,7 @@ Mer information.
 <translation id="767550629621587224">Förskurna flikar</translation>
 <translation id="7675756033024037212">Scrollning och zoom tillåts inte</translation>
 <translation id="7676643023259824263">Sök efter texten i Urklipp, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Organisationen övervakar kopiering</translation>
 <translation id="7678730592635586336">Ta om videon</translation>
 <translation id="7679287273775285018">Betala med eWallet</translation>
 <translation id="7679367271685653708">Öppna och hantera webbhistoriken i Chrome-inställningarna</translation>
@@ -4654,6 +4657,7 @@ Mer information.
 <translation id="8134058435519644366">Rekrytering och bemanning</translation>
 <translation id="8135546115396015134">vänstertangent</translation>
 <translation id="8137456439814903304">Energi och energiproduktion</translation>
+<translation id="814071672416123670">Det gick inte att kopiera innehållet på grund av organisationens policyer</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Skapades för 1 månad sedan}other{Skapades för {NUM_MONTHS} månader sedan}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, nuvarande standardsökmotor. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-version:</translation>

@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Isinara ang promo na mga notification tungkol sa mga tip</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1045899828449635435">I-clear ang data sa mga site?</translation>
-<translation id="1049461303780085993">Subukan ang Gemini sa Chrome para makakuha ng mga sagot, pangunahing takeaway, at higit pa</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Hindi ma-access ang ilan sa iyong mga password</translation>
 <translation id="1057623954802068161">Mag-scroll pataas ng page</translation>
@@ -314,6 +313,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2328474416100889417">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />,” at mao-off ang lahat ng link ng imbitasyon</translation>
 <translation id="2329500425421091035">Ipinapakilala ang AI Mode sa Chrome</translation>
 <translation id="2330186936255788117">Higit pang bookmark</translation>
+<translation id="2330243730505117832">Isinara ang "Pumili ng device."</translation>
 <translation id="2332515770639153015">Naka-on ang Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
 <translation id="2334275697832662087">Nakakatulong ang AI-powered na seguridad ng Chrome na protektahan ka laban sa mga banta online, na nagbibigay sa iyo ng kumpiyansa habang nagba-browse ka</translation>
@@ -503,6 +503,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3037177537145227281">Sinusubaybayan ang presyo</translation>
 <translation id="3037517125981011456">Nagpapakita ng mga prompt na mag-sign in sa Chrome</translation>
 <translation id="3038272154009688107">Tingnan ang lahat ng site</translation>
+<translation id="3044436568790455247">Binuksan nang buo ang "Pumili ng device."</translation>
 <translation id="3057938290530993634">I-tap at i-hold para i-pin ang mga website na pinakamadalas mong bisitahin para sa madaling pag-access sa susunod</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}one{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> na bookmark}}</translation>
 <translation id="3062802207422175757">Mga artikulo tungkol sa iyong mga interes sa Chrome</translation>
@@ -511,6 +512,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3067505415088964188">Mababa ang presyo</translation>
 <translation id="3070005020161560471">Awtomatikong isalin</translation>
 <translation id="3072980200212375806">Bubukas ang <ph name="APP_NAME" /> sa Chrome. Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_LINK2" />. Nalalapat din ang <ph name="BEGIN_LINK3" />Patakaran sa Privacy<ph name="END_LINK3" />.</translation>
+<translation id="3075397426753215787">Pumili ng device.</translation>
 <translation id="3080375898390966733">Maghanap sa tab gamit ang Google Lens</translation>
 <translation id="3080525922482950719">Puwede kang mag-save ng mga page para basahin sa ibang pagkakataon o nang offline</translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
@@ -550,6 +552,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3282801380074962248">I-expand ang seksyon</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> na tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Mase-save ang 1 password sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.}one{Mase-save ang # password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang # na password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
+<translation id="3287664192482809715">Binuksan nang kalahati ang "Pumili ng device."</translation>
 <translation id="3293181007446299124">Pinapanatiling pribado ang iyong history ng pag-browse sa device mo at inaantala ang pagpapadala ng mga ulat para maprotektahan ang iyong pagkakakilanlan</translation>
 <translation id="3301639354590628973">Lumipat ng account?</translation>
 <translation id="3301936297336370235">Kumpirmasyon ng suhestyon sa password</translation>

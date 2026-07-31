@@ -1595,7 +1595,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2227179592712503583">Ondoa pendekezo</translation>
 <translation id="222931766245975952">Faili imepunguzwa</translation>
 <translation id="2229342031987138128">Kuweka manukuu yenye maelezo</translation>
-<translation id="2231160360698766265">Tovuti zinaweza kucheza maudhui yanayolindwa</translation>
 <translation id="2231351769755997720">Hakuna mapendekezo yanayopatikana. Jaribu kuuliza swali kuhusu ukurasa huu.</translation>
 <translation id="2232751457155581899">Tovuti zinaweza kuomba ruhusa ya kufuatilia mkao wa kamera yako</translation>
 <translation id="2233502537820838181">&amp;Maelezo Zaidi</translation>
@@ -3882,7 +3881,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3928659086758780856">Wino unakaribia kuisha</translation>
 <translation id="3929426037718431833">Viendelezi hivi vinaweza kuona na kubadilisha maelezo kwenye tovutii hii.</translation>
 <translation id="3930155420525972941">Hamishia Kikundi kwenye Dirisha Jipya</translation>
-<translation id="3930602610362250897">Kucheza maudhui yanayolindwa kwa hakimiliki, huenda tovuti zikahitaji kutumia huduma ya kulinda maudhui</translation>
 <translation id="3930737994424905957">Inatafuta vifaa</translation>
 <translation id="3930968231047618417">Rangi ya mandharinyuma</translation>
 <translation id="3932356525934356570">Bandika <ph name="EXTENSION_NAME" /></translation>
@@ -7251,7 +7249,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6590458744723262880">Badilisha jina la folda</translation>
 <translation id="6592267180249644460">Kumbukumbu ya WebRTC ilipigwa picha <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Imenasa alama yako ya kidole</translation>
-<translation id="6593881952206664229">Huenda maudhui yaliyo na hakimiliki yasicheze</translation>
 <translation id="6594011207075825276">Inatafuta vifaa vilivyo na msimbo...</translation>
 <translation id="6595322909015878027">Zisizoruhusiwa kutumia kipengele cha kupachika picha ndani ya picha nyingine kiotomatiki</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Imebadilisha nenosiri lililoathiriwa.
@@ -10650,7 +10647,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="9179524979050048593">Jina la mtumiaji kwenye skrini ya kuingia katika akaunti</translation>
 <translation id="9180380851667544951">Tovuti inaweza kushiriki skrini yako</translation>
 <translation id="9180847522826713506">Ili uangalie nenosiri lako au uweke dokezo la nenosiri hilo, bofya aikoni ya kitufe</translation>
-<translation id="9182556968660520230">Usiruhusu tovuti zicheze maudhui yanayolindwa</translation>
 <translation id="9183302530794969518">Hati za Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Programu}other{Programu #}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Msimamizi wako anaweza kurekodi skrini yako akitumia <ph name="APP0_NAME" />. Hutaarifiwa anapoanza kurekodi.}=2{Msimamizi wako anaweza kurekodi skrini yako akitumia <ph name="APP0_NAME" /> na <ph name="APP1_NAME" />. Hutaarifiwa anapoanza kurekodi.}=3{Msimamizi wako anaweza kurekodi skrini yako akitumia <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> na programu nyingine 1. Hutaarifiwa anapoanza kurekodi.}other{Msimamizi wako anaweza kurekodi skrini yako akitumia <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> na programu nyingine #. Hutaarifiwa anapoanza kurekodi.}}</translation>

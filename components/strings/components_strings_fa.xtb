@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">گزارش ارسال شد:</translation>
 <translation id="1542105669288201090">آموزش کسب‌وکار</translation>
 <translation id="1542830386724426410">مزايا و پاداش‌های دردسترس کارت را هنگام تسویه‌حساب نمایش می‌دهد. شرایط صادرکننده اعمال می‌شود. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />بیشتر بدانید<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">براساس خط‌مشی‌های سازمان‌تان، محتوایی که کپی می‌کنید، برای بررسی وجود اطلاعات حساس اسکن می‌شود. پس‌از تکمیل اسکن، ممکن است اجازه جای‌گذاری داده شود.</translation>
 <translation id="1545757265410828525">سابقه قیمت</translation>
 <translation id="1546286808622193216">‏مقایسه مزایای کارت بااستفاده از Gemini</translation>
 <translation id="1549470594296187301">برای استفاده از این قابلیت، جاوا اسکریپت باید فعال باشد.</translation>
@@ -1504,6 +1505,7 @@
 <translation id="3293642807462928945">درباره خطمشی <ph name="POLICY_NAME" /> بیشتر بدانید</translation>
 <translation id="3295444047715739395">‏گذرواژه‌هایتان را در تنظیمات Chrome مشاهده و مدیریت کنید</translation>
 <translation id="3299098170013242198">‏Windows Hello برای پر کردن گذرواژه‌ها روشن است</translation>
+<translation id="3299197721044635447">‏به‌دلیل خط‌مشی‌های سازمان‌تان، امکان جای‌گذاری محتوا در خارج از محیط مدیریت‌شده Chrome وجود ندارد</translation>
 <translation id="3299720788264079132">هنگام استفاده از <ph name="FEATURE_NAME" /> مشکلی پیش آمد</translation>
 <translation id="3303176609391916566">۴۲ × ۳۰ اینچ</translation>
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>
@@ -4369,6 +4371,7 @@
 <translation id="767550629621587224">برگه‌های ازپیش برش‌خورده</translation>
 <translation id="7675756033024037212">پیمایش و بزرگ‌نمایی مجاز نیست</translation>
 <translation id="7676643023259824263">جستجوی نوشتار بریده‌دان، <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">سازمان‌تان کپی کردن را پایش می‌کند</translation>
 <translation id="7678730592635586336">فیلم‌برداری مجدد</translation>
 <translation id="7679287273775285018">پرداخت با «کیف پول الکترونیکی»</translation>
 <translation id="7679367271685653708">‏مشاهده و مدیریت سابقه مرور در تنظیمات Chrome</translation>
@@ -4655,6 +4658,7 @@
 <translation id="8134058435519644366">استخدام و تأمین نیرو</translation>
 <translation id="8135546115396015134">کلید چپ</translation>
 <translation id="8137456439814903304">انرژی و تأسیسات</translation>
+<translation id="814071672416123670">به‌دلیل خط‌مشی‌های سازمان‌تان، محتوا کپی نشد</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫۱ ماه پیش ایجاد شده است}one{‫{NUM_MONTHS} ماه پیش ایجاد شده است}other{‫{NUM_MONTHS} ماه پیش ایجاد شده است}}</translation>
 <translation id="8147389370274164212">‫<ph name="SEARCH_ENGINE_NAME" />، برنامه پیش‌فرض فعلی. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏نسخه PDF:</translation>

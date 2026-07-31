@@ -275,6 +275,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="117059611145966538">Servidores de impresión externos</translation>
 <translation id="117080706484659953">Permitir detección del nivel de las políticas en <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Habilitar los informes sobre la versión del dispositivo</translation>
+<translation id="1171286631068003605">URL que dirige a la definición de la habilidad. Debe ser única.</translation>
 <translation id="1173493742686115032">Habilitar <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
 <translation id="1176740714945046981">Habilita la función para cambiar a una versión inferior de las IWAs. De forma predeterminada, solo se instalan las versiones más recientes de las IWA. Si se le asigna el valor <ph name="TRUE" />, también podrás instalar versiones anteriores. Para habilitar la opción de cambiar a una versión inferior, el valor de la versión deseada debe especificarse mediante el campo pinned_version. Si no se define la propiedad allow_downgrades o se le asigna el valor <ph name="FALSE" />, se inhabilitará la opción de cambiar a una versión inferior de esa IWA.</translation>
 <translation id="1177624681620856105"> Esta política controla si se muestra la casilla "Abrir siempre" en los mensajes de confirmación de lanzamiento de protocolos externos.
@@ -437,6 +438,15 @@ Si se habilita esta política, se abrirán las ventanas de navegador y de aplica
 Si se inhabilita la política o se deja sin definir, la configuración de restauración completa determinará qué debe abrirse al iniciar sesión.</translation>
 <translation id="1327466551276625742">Habilitar mensaje de configuración de red si no hay conexión</translation>
 <translation id="13356285923490863">Nombre de la política</translation>
+<translation id="1336231837510847759">Lista con los ajustes de los servicios de <ph name="PRODUCT_NAME" /> Enterprise Connectors que se aplicarán al conector <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se hace una solicitud de red desde <ph name="PRODUCT_NAME" />. Esta política solo evalúa las solicitudes POST de HTTP.
+
+El campo <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> se usa para determinar qué solicitudes se deben auditar. La solicitud y su contenido crearán una solicitud de análisis, pero no se bloquearán. Solo es necesario que una entrada de la lista de la política coincida con una solicitud de red para que se cree una solicitud de análisis de auditoría.
+
+Los campos de lista <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> se comparan, respectivamente, con la URL de una solicitud y la URL de la pestaña principal desde la que se originó la solicitud. Si falta uno de los campos, se considerará implícitamente que coincide.
+
+El campo <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> se utiliza para determinar qué etiquetas se deben incluir en la solicitud de análisis si el campo <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> coincide.
+
+Para que se aplique esta política, se necesitan ajustes adicionales. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="1338603603553894503">Especifica si el selector de perfil se habilita, se inhabilita o se fuerza al iniciar el navegador.
 
       De forma predeterminada no se muestra el selector de perfil si se dan las siguientes situaciones: el navegador se inicia en el modo Invitado o de incógnito, se especifica un directorio de perfil o URLs en línea de comandos, se solicita explícitamente abrir una aplicación, una notificación nativa abre el navegador, solo hay un perfil disponible o se le asigna el valor "true" a la política ForceBrowserSignin.
@@ -2344,8 +2354,24 @@ La aplicación de esta política en dispositivos gestionados se ve influenciada 
 
           Si no se le asigna ningún valor, el resaltado del símbolo de intercalación de texto se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="2506865562891982662">Permitir que los usuarios seleccionen dispositivos de emisión con un código de acceso o un código QR desde el menú de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="2508800409212941632">Política de configuración del conector <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> de <ph name="PRODUCT_NAME" /> Enterprise</translation>
 <translation id="2509748672176727116">El usuario podrá realizar capturas de paquetes de red</translation>
 <translation id="2509919237512982967">Utiliza los controles de formulario antiguos hasta la versión M84.</translation>
+<translation id="2509947330677441695">Si se define esta política, se permite acceder en modo Incógnito a las URLs incluidas en la lista. Úsala para permitir excepciones de determinados patrones de URL definidos en <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, con el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si se definen tanto esta política como <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, la lista de permitidas tendrá prioridad. Si una URL coincide con un patrón de la lista de permitidas, se permitirá. Si coincide con un patrón de la lista de bloqueadas (pero no con la lista de permitidas), se bloqueará. Si una URL no coincide con ninguna de las dos, se usarán las políticas generales <ph name="URL_BLOCKLIST_POLICY_NAME" /> o <ph name="URL_ALLOWLIST_POLICY_NAME" /> como alternativa.
+
+Si se define esta política y no se define <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las URLs que no estén incluidas en la lista de permitidas en el modo Incógnito.
+
+Si se define la política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> para no permitirlo (valor 1), pero se configura esta política, el modo Incógnito solo estará disponible para las URLs que estén incluidas en la lista de permitidas.
+
+Si no se define esta política, no se permitirán excepciones de <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ni de <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
+
+Esta política solo afecta al modo Incógnito. Para permitir URLs en todos los perfiles de usuario, usa la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+No se admiten comodines de host generales (por ejemplo, "*" ni "[*]"). Usa la política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> para habilitar la función de forma global.
+
+Esta política está limitada a 1000 entradas.</translation>
 <translation id="2512531606818417084">Esta política es temporal y dejará de funcionar a partir de la versión M137.
 
 Esta función habilita el uso de zstd en el encabezado de solicitud Accept-Encoding y permite descomprimir contenido web comprimido con <ph name="ZSTANDARD_SHORTNAME" />.
@@ -7515,6 +7541,7 @@ Si se le asigna el valor 3 (<ph name="ASK_IDLE_DETECTION_VALUE_NAME" />) o no se
 Si se habilita esta política, siempre se usará el almacenamiento en búfer adaptable.
 
 Si se inhabilita esta política o no se define, el proceso de lanzamiento de funciones del navegador decidirá si se usa el almacenamiento en búfer adaptable.</translation>
+<translation id="579556027056000499">El hash SHA-256 del contenido de la URL.</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red si no hay conexión</translation>
 <translation id="5800627752428920394">Esta política controla si las conexiones WebSocket activas se desconectan cuando una página se guarda en la caché de páginas completas. Anteriormente, las conexiones WebSocket activas impedían que una página se almacenara en la caché de páginas completas, pero <ph name="PRODUCT_NAME" /> ha cambiado este comportamiento para desconectar los WebSockets, lo que permite que la página se almacene en la caché y se restaure en un estado desconectado.
 
@@ -9595,6 +9622,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Para que se aplique esta política, se necesitan ajustes adicionales. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="7032323070729112362">No permitir el uso de la API Translator</translation>
+<translation id="7032734784894075746">Configurar habilidades en Chrome</translation>
 <translation id="7032813174556919004">Inhabilitar DNS-over-HTTPS</translation>
 <translation id="703672323011778742">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si asignas el valor 1 a esta política, podrás establecer si todos los sitios pueden ejecutar automáticamente el complemento <ph name="FLASH_PLUGIN_NAME" />. Si se le asigna el valor 2, se denegará este complemento en todos los sitios. La opción de hacer clic para reproducir permite que se ejecute el complemento <ph name="FLASH_PLUGIN_NAME" />, pero los usuarios tendrán que hacer clic en el marcador de posición para iniciar la ejecución.
 
@@ -10487,6 +10515,21 @@ Si no se define esta política, no se permitirán excepciones de <ph name="FLOAT
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
 <translation id="7602621823177962064">Inhabilitar los informes sobre la memoria del dispositivo</translation>
 <translation id="7604169113182304895">Las aplicaciones para Android pueden aceptar esta lista voluntariamente. No se les puede forzar a que lo hagan.</translation>
+<translation id="7604302274842086162">Esta política se puede usar para permitir las <ph name="CHROME_DEVTOOLS_NAME" /> en URLs específicas.
+
+Los patrones de URL se compararán con la URL de cada marco de la página que se esté inspeccionando. El comportamiento resultante dependerá de si también se ha definido la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+Si se define esta política y no se define <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, la URL de cada marco debe coincidir con un patrón de esta lista de permitidas para que se pueda usar <ph name="CHROME_DEVTOOLS_NAME" />. Si la URL de algún marco no coincide, DevTools se bloqueará en toda la página. Para obtener información sobre el formato de URL, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si se definen tanto esta política como la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, esta lista de permitidas tendrá prioridad. Si la URL de un marco coincide con un patrón de esta lista de permitidas, se podrá usar, aunque también coincida con un patrón de la lista de bloqueadas. Si una URL coincide con un patrón de la lista de bloqueadas (pero no con uno de la lista de permitidas), se bloqueará. Si una URL no coincide con ninguna de las dos, se usará la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> como alternativa.
+
+Si no se define esta política, la disponibilidad de <ph name="CHROME_DEVTOOLS_NAME" /> se determinará según las políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> y <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Esta política también se aplica a <ph name="CHROME_DEVTOOLS_NAME" /> que se abran para extensiones y aplicaciones web.
+
+No se admiten comodines de host generales (por ejemplo, "*" ni "[*]"). Usa la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> para habilitar la función de forma global.
+
+Esta política está limitada a 1000 entradas.</translation>
 <translation id="7607831126797434329">Bloquear descargas automáticas en estos sitios</translation>
 <translation id="7608186022704392724">La función de enviar PINs automáticamente cambia la forma en la que se introducen los PINs en <ph name="PRODUCT_OS_NAME" />.
           En lugar de mostrar el mismo campo de texto que se utiliza para introducir contraseñas, esta
@@ -11840,6 +11883,15 @@ El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
 <translation id="8471860377920321311">Permitir funciones de IA generativa y mejorar modelos de IA</translation>
 <translation id="8473107305327396242">Importar certificados de servidor TLS añadidos por el usuario desde almacenes de confianza de la plataforma.</translation>
 <translation id="8473841363404590708">Migrar archivos locales a Microsoft OneDrive y ocultar carpetas locales</translation>
+<translation id="8476434719168701332">Si se define esta política, las habilidades de IA generativa se publican para el usuario en <ph name="PRODUCT_NAME" />.
+
+Si se define, los usuarios verán estas competencias configuradas de forma predeterminada en la página chrome://skills, además de sus habilidades personales. Los usuarios podrán ver, modificar y guardar estas habilidades para su uso personal.
+
+Cada habilidad de la lista debe ser un objeto que contenga una <ph name="URL_NAME" /> desde la que se pueda descargar el contenido de la habilidad y un <ph name="HASH_NAME" /> (SHA-256) de ese contenido para verificar su integridad antes de aplicarlo. La URL de cada habilidad debe ser inmutable. Para actualizar un archivo de habilidad, se necesitan una URL y un hash nuevos.
+
+Si se proporcionan más de 10 habilidades, se mostrará una advertencia y solo se publicarán las 10 primeras.
+
+Si la política no se define o se establece en una lista vacía, no se publicará ninguna habilidad empresarial para el usuario.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC usará todas las interfaces disponibles al buscar la mejor ruta.</translation>
 <translation id="8479496880635054740">Inhabilitar el teclado virtual de accesibilidad en la pantalla de inicio de sesión</translation>

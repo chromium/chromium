@@ -157,6 +157,7 @@
 <translation id="1497590942294823549">Меню → Менеджер паролів</translation>
 <translation id="1498283581832036924">Ваш обліковий запис на веб-сайті <ph name="WEBSITE" /> не буде видалено.</translation>
 <translation id="1503814213414825943">Виберіть облікові записи, які потрібно експортувати в інший додаток.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">Пошукова система</translation>
 <translation id="1506063256525392513">Так ви зможете робити й завантажувати фотографії, а також сканувати QR-коди</translation>
 <translation id="1506733063065214205">Клієнт RCS MLS</translation>
@@ -272,6 +273,7 @@
 <translation id="183878838231635348">На цій картці відображаються всі проблеми з конфіденційністю чи захистом, які функція перевірки безпеки виявила автоматично.</translation>
 <translation id="1840320537320704887">Налаштування сторінки нової вкладки вилучено</translation>
 <translation id="1845230888742614096">Зберегти групу</translation>
+<translation id="1853558655412913122">Тепер ви можете змінити положення адресного рядка в розділі "Налаштування" &gt; "Адресний рядок"</translation>
 <translation id="1853692000353488670">Нова анонімна вкладка</translation>
 <translation id="1854463785401910334">Шукати у відкритих вкладках</translation>
 <translation id="1860609647735325606">Пояснити за допомогою Gemini</translation>
@@ -1189,6 +1191,7 @@
 <translation id="4985921635659180565">Якщо запланувати видалення файлу, цю дію не можна буде скасувати.</translation>
 <translation id="498624032394115435">Кожен, хто має посилання, може редагувати всі вкладки.</translation>
 <translation id="499122600724363620">Обліковим записом користувача <ph name="NAME" /> (<ph name="EMAIL" />) керує ваша організація.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Колір групи вкладок: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5009127379503001909">Шукати далі</translation>
@@ -1802,6 +1805,7 @@
 <translation id="6924299883035848912">Сховати опцію "Видалити дані вебперегляду"</translation>
 <translation id="6930162026494574854">Скинути налаштування</translation>
 <translation id="6930799952781667037">Натисніть, щоб змінити на цю мову.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">Налаштуйте код доступу</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6946722113367118030">Думає</translation>
@@ -1851,6 +1855,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
 <translation id="7138678301420049075">Інше</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Ваші вкладки буде закрито, а дані веб-перегляду – видалено</translation>
 <translation id="714291438898585119">Із зірочкою</translation>
 <translation id="7145337554745942724">Оновіть дані посвідчення водія</translation>
@@ -1916,6 +1921,7 @@
 <translation id="7402602673739047753">{count,plural, =1{1 закладка зберігається лише на поточному пристрої. Щоб використовувати закладку на інших пристроях, збережіть її у своєму обліковому записі Google ({email}).}one{{count} закладка зберігається лише на поточному пристрої. Щоб використовувати ці закладки на інших пристроях, збережіть їх в обліковому записі Google ({email}).}few{{count} закладки зберігаються лише на поточному пристрої. Щоб використовувати ці закладки на інших пристроях, збережіть їх в обліковому записі Google ({email}).}many{{count} закладок зберігаються лише на поточному пристрої. Щоб використовувати ці закладки на інших пристроях, збережіть їх в обліковому записі Google ({email}).}other{{count} закладки зберігаються лише на поточному пристрої. Щоб використовувати ці закладки на інших пристроях, збережіть їх в обліковому записі Google ({email}).}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) одразу втратить доступ до групи вкладок "<ph name="GROUP_NAME" />"</translation>
 <translation id="7409985198648820906">Непрочитаних статей: <ph name="UNREAD_COUNT" />.</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Продовжити</translation>
 <translation id="741204030948306876">Увімкнути</translation>
 <translation id="7419565702166471774">Завжди використовувати надійні з’єднання</translation>
@@ -2203,6 +2209,7 @@
 <translation id="8292893224181644074">Завантаження завершено</translation>
 <translation id="8299417921174340354">Щоб використовувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="8307481894409578819">Не вдалося завантажити цей файл</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">Новий пошук</translation>
 <translation id="8319282042900445670">Нагадування налаштовано на <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Останні дії</translation>
@@ -2490,6 +2497,7 @@
 <translation id="9219154867334666734">Шукати вкладки…</translation>
 <translation id="9223358826628549784">Звіт про аварійне завершення роботи надіслано.</translation>
 <translation id="926455622548529175">Перейти й видалити</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">Виділений текст</translation>
 <translation id="932305336591073205">{count,plural, =1{Закрити вкладку}one{Закрити вкладки}few{Закрити вкладки}many{Закрити вкладки}other{Закрити вкладки}}</translation>
 <translation id="939472100615258482">Поточний сайт</translation>

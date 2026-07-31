@@ -1578,7 +1578,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2227179592712503583">Vorschlag entfernen</translation>
 <translation id="222931766245975952">Datei gekürzt</translation>
 <translation id="2229342031987138128">Untertitelung</translation>
-<translation id="2231160360698766265">Websites können geschützte Inhalte wiedergeben</translation>
 <translation id="2231351769755997720">Keine Vorschläge verfügbar. Formuliere deine eigene Frage zu dieser Seite.</translation>
 <translation id="2232751457155581899">Websites dürfen nachfragen, wenn sie meine Kameraposition erfassen möchten</translation>
 <translation id="2233502537820838181">&amp;Weitere Informationen</translation>
@@ -1598,6 +1597,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2243934210752059021">Suchtaste + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> – <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Mit den Pfeiltasten den Cursor von einem Buchstaben zum nächsten bewegen</translation>
+<translation id="2246104792527215550">Passwörter automatisch ändern</translation>
 <translation id="2246549592927364792">Bildbeschreibungen von Google verwenden?</translation>
 <translation id="2247738527273549923">Dein Gerät wird von deiner Organisation verwaltet</translation>
 <translation id="2247870315273396641">Stimme anhören</translation>
@@ -3854,7 +3854,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3928659086758780856">Tinte fast leer</translation>
 <translation id="3929426037718431833">Diese Erweiterungen können Daten dieser Website abrufen und verändern.</translation>
 <translation id="3930155420525972941">Gruppe in ein neues Fenster verschieben</translation>
-<translation id="3930602610362250897">Zum Wiedergeben urheberrechtlich geschützter Inhalte müssen Websites eventuell einen Dienst für den Schutz von Inhalten verwenden</translation>
 <translation id="3930737994424905957">Suche nach Geräten läuft</translation>
 <translation id="3930968231047618417">Hintergrundfarbe</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> anpinnen</translation>
@@ -5019,6 +5018,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4852383141291180386">App-Benachrichtigungen verwalten</translation>
 <translation id="4852916668365817106">Cursorfarbe</translation>
 <translation id="4853020600495124913">In &amp;neuem Fenster öffnen</translation>
+<translation id="4853328060971905294">An (Zeilenfokus aktivieren)</translation>
 <translation id="4854317507773910281">Elternkonto für die Genehmigung auswählen</translation>
 <translation id="4854603338816296098">Adresse entfernt</translation>
 <translation id="485480310608090163">Weitere Einstellungen und Berechtigungen</translation>
@@ -7194,7 +7194,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6590458744723262880">Ordner umbenennen</translation>
 <translation id="6592267180249644460">WebRTC-Protokoll erfasst am <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Dein Fingerabdruck wurde erfasst</translation>
-<translation id="6593881952206664229">Urheberrechtlich geschützte Medien werden möglicherweise nicht wiedergegeben</translation>
 <translation id="6594011207075825276">Serielle Geräte werden gesucht…</translation>
 <translation id="6595322909015878027">Dürfen den Bild-im-Bild-Modus nicht automatisch aktivieren</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Das kompromittierte Passwort wurde erfolgreich geändert.
@@ -8006,6 +8005,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Neuer Tab in „1 Tab“}other{Neuer Tab in „# Tabs“}}</translation>
 <translation id="721490496276866468">Passwörter importieren</translation>
 <translation id="7217208603285112910">Auswahl nicht auf <ph name="LANGUAGE" /> verfügbar</translation>
+<translation id="7217317914610152390">Mit dem neuen Tool „Textanmerkungen“ kannst du Text, Kommentare und Notizen hinzufügen</translation>
 <translation id="7219254577985949841">Websitedaten löschen?</translation>
 <translation id="7219473482981809164">Es wurden mehrere Profile zum Download gefunden. Wähle diejenigen aus, die du herunterladen möchtest, bevor du fortfährst.</translation>
 <translation id="7220019174139618249">Passwort kann nicht in "<ph name="FOLDER" />" exportiert werden</translation>
@@ -10575,7 +10575,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9179524979050048593">Nutzername auf Anmeldebildschirm</translation>
 <translation id="9180380851667544951">Die Website kann deinen Bildschirm freigeben</translation>
 <translation id="9180847522826713506">Wenn du dein Passwort ansehen oder eine Notiz dafür hinzufügen möchtest, klicke auf das Schlüsselsymbol</translation>
-<translation id="9182556968660520230">Websites dürfen keine geschützten Inhalte wiedergeben</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# Apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}=2{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> und <ph name="APP1_NAME" /> aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}=3{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und einer weiteren App aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}other{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und # weiteren Apps aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}}</translation>
@@ -10698,6 +10697,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> möchte Informationen von deinem Mobilgerät abrufen</translation>
 <translation id="988320949174893488">Gelegentliches Stocken</translation>
 <translation id="988978206646512040">Eine leere Passphrase ist nicht zulässig</translation>
+<translation id="989111665033316622">Aus (Zeilenfokus deaktivieren)</translation>
 <translation id="992032470292211616">Erweiterungen, Apps und Designs können Schäden auf deinem Gerät verursachen. Möchtest du wirklich fortfahren?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="994087375490600917">Seitenleisten</translation>

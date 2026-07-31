@@ -352,6 +352,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1539840569003678498">Ilmoitus lähetetty:</translation>
 <translation id="1542105669288201090">Kaupallinen koulutus</translation>
 <translation id="1542830386724426410">Näytä saatavilla olevat korttiedut ja ‑palkintot kassalla. Huomioi myöntäjän ehdot. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Lue lisää<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Organisaation käytäntöjen mukaan kopioimasi sisältö tarkastetaan arkaluontoisten tietojen varalta. Liittäminen voidaan sallia, kun tarkastus on valmis.</translation>
 <translation id="1545757265410828525">Hintahistoria</translation>
 <translation id="1546286808622193216">Vertaile korttietuja Geminin avulla</translation>
 <translation id="1549470594296187301">Tämän ominaisuuden käyttö edellyttää JavaScriptiä.</translation>
@@ -1504,6 +1505,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3293642807462928945">Lisätietoja käytännöstä: <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Katso ja hallinnoi salasanojasi Chromen asetuksissa</translation>
 <translation id="3299098170013242198">Windows Hello on päällä salasanojen täyttämistä varten</translation>
+<translation id="3299197721044635447">Sisällön liittäminen epäonnistuihallinnoidun Chromen ulkopuolelle organisaation käytäntöjen vuoksi</translation>
 <translation id="3299720788264079132">Jotain meni pieleen, kun <ph name="FEATURE_NAME" /> oli käytössä</translation>
 <translation id="3303176609391916566">30 x 42 tuumaa</translation>
 <translation id="3303855915957856445">Ei hakutuloksia</translation>
@@ -4369,6 +4371,7 @@ Lisätietoja:
 <translation id="767550629621587224">Esileikatut sarkaimet</translation>
 <translation id="7675756033024037212">Vieritys ja zoomaus ei ole sallittua</translation>
 <translation id="7676643023259824263">Hae leikepöydän tekstiä <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Organisaatiosi seuraa kopiointia</translation>
 <translation id="7678730592635586336">Kuvaa video uudelleen</translation>
 <translation id="7679287273775285018">Maksa sähköisellä lompakolla</translation>
 <translation id="7679367271685653708">Katso ja ylläpidä selaushistoriaasi Chromen asetuksista</translation>
@@ -4655,6 +4658,7 @@ Lisätietoja:
 <translation id="8134058435519644366">Rekrytointi ja henkilöstön hankinta</translation>
 <translation id="8135546115396015134">vasenta näppäintä</translation>
 <translation id="8137456439814903304">Energia ja energianjakelu</translation>
+<translation id="814071672416123670">Sisältöä ei voitu kopioida organisaation käytäntöjen vuoksi</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Luotu 1 kuukausi sitten}other{Luotu {NUM_MONTHS} kuukautta sitten}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, nykyinen oletus. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-versio:</translation>

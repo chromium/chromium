@@ -352,6 +352,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1539840569003678498">Rapport envoyé :</translation>
 <translation id="1542105669288201090">Études de commerce</translation>
 <translation id="1542830386724426410">Affichez les avantages et récompenses disponibles pour votre carte lors du paiement. Les conditions d'utilisation de l'émetteur s'appliquent. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />En savoir plus<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Conformément aux règles de votre organisation, le contenu que vous avez copié est analysé pour détecter d'éventuelles informations sensibles. Vous aurez peut-être le droit de le coller une fois l'analyse terminée.</translation>
 <translation id="1545757265410828525">Historique des prix</translation>
 <translation id="1546286808622193216">Comparez les avantages des cartes avec Gemini</translation>
 <translation id="1549470594296187301">Vous devez activer JavaScript pour utiliser cette fonctionnalité.</translation>
@@ -1503,6 +1504,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3293642807462928945">En savoir plus sur les règles <ph name="POLICY_NAME" />.</translation>
 <translation id="3295444047715739395">Affichez et gérez vos mots de passe dans les paramètres Chrome</translation>
 <translation id="3299098170013242198">Windows Hello est activé pour la saisie des mots de passe</translation>
+<translation id="3299197721044635447">Impossible de coller le contenu en dehors du contexte Chrome géré à cause des règles de votre organisation</translation>
 <translation id="3299720788264079132">Un problème est survenu lors de l'utilisation du <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 pouces</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
@@ -4369,6 +4371,7 @@ Informations supplémentaires :
 <translation id="767550629621587224">Intercalaire prédécoupés</translation>
 <translation id="7675756033024037212">Défilement et zoom non autorisés</translation>
 <translation id="7676643023259824263">Rechercher le texte du presse-papier "<ph name="TEXT" />"</translation>
+<translation id="7676840398262504532">Votre organisation surveille les copies</translation>
 <translation id="7678730592635586336">Recommencer la vidéo</translation>
 <translation id="7679287273775285018">Payer avec un e-portefeuille</translation>
 <translation id="7679367271685653708">Affichez et gérez votre historique de navigation dans les paramètres Chrome</translation>
@@ -4655,6 +4658,7 @@ Informations supplémentaires :
 <translation id="8134058435519644366">Recrutement et gestion du personnel</translation>
 <translation id="8135546115396015134">touche gauche</translation>
 <translation id="8137456439814903304">Énergie et services publics</translation>
+<translation id="814071672416123670">Impossible de copier le contenu à cause des règles de votre organisation</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Créé il y a 1 mois}one{Créé il y a {NUM_MONTHS} mois}other{Créé il y a {NUM_MONTHS} mois}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, utilisé par défaut. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Version PDF :</translation>

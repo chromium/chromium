@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">რჩევების შეტყობინების პრომო დაიხურა</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1045899828449635435">ამ საიტების მონაცემთა გასუფთავებაც გსურთ?</translation>
-<translation id="1049461303780085993">სცადეთ Gemini Chrome-ში, რათა მიიღოთ პასუხები, ძირითადი დასკვნები და სხვა</translation>
 <translation id="1049743911850919806">ინკოგნიტო</translation>
 <translation id="1052842760770519282">თქვენი ზოგიერთი პაროლი მიუწვდომელია</translation>
 <translation id="1057623954802068161">გვერდის დასაწყისში გადაადგილება</translation>
@@ -314,6 +313,7 @@
 <translation id="2328474416100889417">ყველა მომენტალურად დაკარგავს წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“, ხოლო მოსაწვევის ბმულები გამოირთვება</translation>
 <translation id="2329500425421091035">წარმოგიდგენთ ხელოვნური ინტელექტის რეჟიმს Chrome-ში</translation>
 <translation id="2330186936255788117">სხვა სანიშნეები</translation>
+<translation id="2330243730505117832">„მოწყობილობის არჩევა“ დახურულია.</translation>
 <translation id="2332515770639153015">გაძლიერებული Safe Browsing ჩართულია</translation>
 <translation id="233375395665273385">წაშლა და გასვლა</translation>
 <translation id="2334275697832662087">Chrome-ის ხელოვნური ინტელექტის მხარდაჭერით მოქმედი უსაფრთხოების ფუნქციები გიცავთ ონლაინ საფრთხეებისგან, რაც ინტერნეტში მუშაობისას დამატებით თავდაჯერებას გმატებთ</translation>
@@ -503,6 +503,7 @@
 <translation id="3037177537145227281">ფასისთვის თვალის მიდევნება</translation>
 <translation id="3037517125981011456">გამოაჩენს Chrome-ში შესვლის მოთხოვნებს</translation>
 <translation id="3038272154009688107">ყველა ვებსაიტის ნახვა</translation>
+<translation id="3044436568790455247">„მოწყობილობის არჩევა“ გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="3057938290530993634">ხანგრძლივად შეეხეთ თქვენი ყველაზე ხშირად მონახულებული ვებსაიტების ჩასამაგრებლად, რათა შემდეგ ჯერზე მარტივად მიიღოთ მათზე წვდომა</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> სანიშნე}other{<ph name="BOOKMARKS_COUNT_MANY" /> სანიშნე}}</translation>
 <translation id="3062802207422175757">თქვენს ინტერესებთან დაკავშირებული სტატიები Chrome-ში</translation>
@@ -511,6 +512,7 @@
 <translation id="3067505415088964188">ფასი დაბალია</translation>
 <translation id="3070005020161560471">ავტომატურად ითარგმნოს</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />. გარდა ამისა, მოქმედებს <ph name="BEGIN_LINK3" />კონფიდენციალურობის დებულება<ph name="END_LINK3" />.</translation>
+<translation id="3075397426753215787">აირჩიეთ მოწყობილობა.</translation>
 <translation id="3080375898390966733">ჩანართის ძიება Google Lens-ით</translation>
 <translation id="3080525922482950719">სურვილისამებრ, შეგიძლიათ შეინახოთ გვერდები მოგვიანებით ან ხაზგარეშე რეჟიმში წასაკითხად</translation>
 <translation id="3087734570205094154">ქვედა საზღვარი</translation>
@@ -550,6 +552,7 @@
 <translation id="3282801380074962248">სექციის გაშლა</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 პაროლი შენახულია მხოლოდ ამ მოწყობილობაში. თქვენს სხვა მოწყობილობებში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში.}other{# პაროლი შენახულია მხოლოდ ამ მოწყობილობაში. თქვენს სხვა მოწყობილობებში მათ გამოსაყენებლად შეინახეთ ისინი თქვენს Google ანგარიშში.}}</translation>
+<translation id="3287664192482809715">„მოწყობილობის არჩევა“ გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="3293181007446299124">თქვენი დათვალიერების ისტორია კონფიდენციალურად ინახება თქვენივე მოწყობილობაზე, ხოლო ანგარიშები დაყოვნებით იგზავნება, თქვენი ვინაობის დაცვის მიზნით</translation>
 <translation id="3301639354590628973">გსურთ ანგარიშების გადართვა?</translation>
 <translation id="3301936297336370235">პაროლის შემოთავაზების დადასტურება</translation>

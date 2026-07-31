@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Уведомление для продвижения функции закрыто</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1045899828449635435">Удалить эти данные?</translation>
-<translation id="1049461303780085993">Попробуйте Gemini в Chrome, чтобы получать ответы, тезисы и другую информацию</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1052842760770519282">Некоторые пароли недоступны</translation>
 <translation id="1057623954802068161">Прокрутить вверх до начала страницы</translation>
@@ -314,6 +313,7 @@
 <translation id="2328474416100889417">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям, а ссылки для приглашения больше не будут работать.</translation>
 <translation id="2329500425421091035">Представляем режим ИИ в Chrome</translation>
 <translation id="2330186936255788117">Ещё закладки</translation>
+<translation id="2330243730505117832">Окно "Выберите устройство" закрыто.</translation>
 <translation id="2332515770639153015">Включен улучшенный Безопасный просмотр</translation>
 <translation id="233375395665273385">Удалить и выйти</translation>
 <translation id="2334275697832662087">С системой безопасности Chrome на основе искусственного интеллекта вы можете пользоваться интернетом, не опасаясь онлайн-угроз.</translation>
@@ -503,6 +503,7 @@
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
 <translation id="3037517125981011456">Показывать предложения войти в Chrome</translation>
 <translation id="3038272154009688107">Показать все сайты</translation>
+<translation id="3044436568790455247">Окно "Выберите устройство" открыто полностью.</translation>
 <translation id="3057938290530993634">Нажмите и удерживайте, чтобы закрепить часто посещаемые сайты для быстрого доступа.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Прочитайте в Chrome статьи, подобранные с учетом ваших интересов.</translation>
@@ -511,6 +512,7 @@
 <translation id="3067505415088964188">Низкая цена</translation>
 <translation id="3070005020161560471">Переводить автоматически</translation>
 <translation id="3072980200212375806">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Также действует <ph name="BEGIN_LINK3" />Политика конфиденциальности<ph name="END_LINK3" />.</translation>
+<translation id="3075397426753215787">Выберите устройство.</translation>
 <translation id="3080375898390966733">Поиск на вкладке с Объективом</translation>
 <translation id="3080525922482950719">Сохраняйте страницы, чтобы продолжить чтение позже или в офлайн-режиме.</translation>
 <translation id="3087734570205094154">Снизу</translation>
@@ -550,6 +552,7 @@
 <translation id="3282801380074962248">Развернуть раздел</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 пароль доступен только на этом устройстве. Добавьте его в аккаунт Google, чтобы использовать на других устройствах.}one{# пароль доступен только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}few{# пароля доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}many{# паролей доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}other{# пароля доступно только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}}</translation>
+<translation id="3287664192482809715">Окно "Выберите устройство" открыто на половину экрана.</translation>
 <translation id="3293181007446299124">История браузера хранится на устройстве и доступна только вам. Для защиты персональных данных отчеты отправляются с задержкой.</translation>
 <translation id="3301639354590628973">Сменить аккаунт?</translation>
 <translation id="3301936297336370235">Подтверждение предложенного пароля</translation>

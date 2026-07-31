@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Долният лист за известия със съвети е затворен</translation>
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1045899828449635435">Изчиств. и на данните от тези сайтове?</translation>
-<translation id="1049461303780085993">Изпробвайте Gemini в Chrome, за да получавате отговори, ключова информация и др.</translation>
 <translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="1052842760770519282">Някои от паролите ви не са достъпни</translation>
 <translation id="1057623954802068161">Превъртане до горната част на страницата</translation>
@@ -237,6 +236,7 @@
 <translation id="200114059308480249">Да се включи ли съседният текст в търсенията с Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, чийто звук е спрян</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
+<translation id="2022369817198611683">Възползвайте се максимално от Gemini в лентата с инструменти на Chrome. Натиснете продължително за персонализиране.</translation>
 <translation id="2024195579772565064">Изтриване на търсещата машина</translation>
 <translation id="2029669011553795746">Долният лист за включване на известията със съвети е отворен на половината височина</translation>
 <translation id="2038563949887743358">Включване на функцията за заявяване на настолни сайтове</translation>
@@ -314,6 +314,7 @@
 <translation id="2328474416100889417">Всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и всички връзки към поканата ще бъдат изключени</translation>
 <translation id="2329500425421091035">Представяме ви режима с AI в Chrome</translation>
 <translation id="2330186936255788117">Още отметки</translation>
+<translation id="2330243730505117832">Долният лист за избор на устройство е затворен.</translation>
 <translation id="2332515770639153015">Функцията за подобрена защита от Безопасно сърфиране е включена</translation>
 <translation id="233375395665273385">Изтриване и излизане от профила</translation>
 <translation id="2334275697832662087">Базираните на AI функции за сигурност на Chrome ви предпазват от онлайн заплахи, за да сърфирате уверено</translation>
@@ -503,6 +504,7 @@
 <translation id="3037177537145227281">Цената се проследява</translation>
 <translation id="3037517125981011456">Показва подкани за влизане в Chrome</translation>
 <translation id="3038272154009688107">Преглед на всички сайтове</translation>
+<translation id="3044436568790455247">Долният лист за избор на устройство е отворен на пълната височина.</translation>
 <translation id="3057938290530993634">Докоснете и задръжте, за да фиксирате най-посещаваните от вас уебсайтове за лесен достъп следващия път</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
@@ -511,6 +513,7 @@
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3070005020161560471">Да се превежда автоматично от</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Декларацията за поверителност<ph name="END_LINK3" />.</translation>
+<translation id="3075397426753215787">Изберете устройство.</translation>
 <translation id="3080375898390966733">Търсене в раздела с Google Обектив</translation>
 <translation id="3080525922482950719">Можете да запазвате страници за четене по-късно или офлайн</translation>
 <translation id="3087734570205094154">Най-долу</translation>
@@ -550,6 +553,7 @@
 <translation id="3282801380074962248">Разгъване на секцията</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 парола е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google.}other{# пароли са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google.}}</translation>
+<translation id="3287664192482809715">Долният лист за избор на устройство е отворен на половината височина.</translation>
 <translation id="3293181007446299124">Историята ви на сърфиране остава частна на устройството ви, а отчетите се изпращат със закъснение, за да защитим самоличността ви.</translation>
 <translation id="3301639354590628973">Да се превключи ли между профилите?</translation>
 <translation id="3301936297336370235">Потвърждаване на предложението за парола</translation>

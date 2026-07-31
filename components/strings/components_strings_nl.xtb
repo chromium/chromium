@@ -352,6 +352,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1539840569003678498">Melding gestuurd:</translation>
 <translation id="1542105669288201090">Bedrijfsonderwijs</translation>
 <translation id="1542830386724426410">Toon beschikbare kaartvoordelen en -beloningen bij het afrekenen. Er zijn voorwaarden van de uitgever van toepassing. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Meer informatie<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Op basis van het beleid van je organisatie wordt de content die je hebt gekopieerd, gescand op gevoelige informatie. Plakken is misschien toegestaan nadat de scan is afgerond.</translation>
 <translation id="1545757265410828525">Prijsgeschiedenis</translation>
 <translation id="1546286808622193216">Kaartvoordelen vergelijken met Gemini</translation>
 <translation id="1549470594296187301">JavaScript moet aanstaan om deze functie te kunnen gebruiken.</translation>
@@ -1500,6 +1501,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3293642807462928945">Meer informatie over het beleid <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Je wachtwoorden bekijken en beheren in de Chrome-instellingen</translation>
 <translation id="3299098170013242198">Windows Hello staat aan om wachtwoorden in te vullen</translation>
+<translation id="3299197721044635447">Content kan niet worden geplakt buiten de beheerde Chrome-context vanwege het beleid van je organisatie</translation>
 <translation id="3299720788264079132">Er is iets misgegaan bij het gebruik van <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 inch</translation>
 <translation id="3303855915957856445">Geen zoekresultaten gevonden</translation>
@@ -4361,6 +4363,7 @@ Aanvullende informatie:
 <translation id="767550629621587224">Voorgesneden tabbladen</translation>
 <translation id="7675756033024037212">Scrollen en zoomen niet toegestaan</translation>
 <translation id="7676643023259824263">Zoeken naar klembordtekst, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Je organisatie houdt kopiëren in de gaten</translation>
 <translation id="7678730592635586336">Video opnieuw opnemen</translation>
 <translation id="7679287273775285018">Betalen met eWallet</translation>
 <translation id="7679367271685653708">Je browsegeschiedenis bekijken en beheren in de Chrome-instellingen</translation>
@@ -4647,6 +4650,7 @@ Aanvullende informatie:
 <translation id="8134058435519644366">Werving en selectie</translation>
 <translation id="8135546115396015134">linkertoets</translation>
 <translation id="8137456439814903304">Nutsbedrijven</translation>
+<translation id="814071672416123670">Content kan niet worden gekopieerd vanwege het beleid van je organisatie</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 maand geleden gemaakt}other{{NUM_MONTHS} maanden geleden gemaakt}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, huidige standaard. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Pdf-versie:</translation>

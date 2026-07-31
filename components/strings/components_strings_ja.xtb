@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">レポートの送信日時:</translation>
 <translation id="1542105669288201090">ビジネス教育</translation>
 <translation id="1542830386724426410">購入手続きの際に、ご利用いただけるカードの特典とメリットを表示します。カード発行会社の利用規約が適用されます。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />詳細<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">組織のポリシーに基づき、コピーしたコンテンツに機密情報が含まれていないかスキャンしています。スキャン完了後、状況に応じて貼り付けが許可されます。</translation>
 <translation id="1545757265410828525">価格の推移</translation>
 <translation id="1546286808622193216">Gemini を使用してカードの特典を比較します</translation>
 <translation id="1549470594296187301">この機能を使用するには JavaScript を有効にする必要があります。</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ポリシーの詳細</translation>
 <translation id="3295444047715739395">Chrome の設定でパスワードを表示、管理します</translation>
 <translation id="3299098170013242198">パスワード入力で Windows Hello が有効になっています</translation>
+<translation id="3299197721044635447">組織のポリシーにより、管理対象の Chrome コンテキスト外にコンテンツを貼り付けられませんでした</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> の使用中にエラーが発生しました</translation>
 <translation id="3303176609391916566">30x42 インチ</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
@@ -4368,6 +4370,7 @@
 <translation id="767550629621587224">プレカットタブ</translation>
 <translation id="7675756033024037212">スクロールとズームは許可されませんでした</translation>
 <translation id="7676643023259824263">クリップボードにあるテキスト<ph name="TEXT" />を検索します</translation>
+<translation id="7676840398262504532">組織がコピー操作をモニタリングしています</translation>
 <translation id="7678730592635586336">動画を撮り直す</translation>
 <translation id="7679287273775285018">電子ウォレットで支払う</translation>
 <translation id="7679367271685653708">Chrome の設定で閲覧履歴を表示、管理します</translation>
@@ -4654,6 +4657,7 @@
 <translation id="8134058435519644366">採用、人事</translation>
 <translation id="8135546115396015134">左矢印キー</translation>
 <translation id="8137456439814903304">エネルギー、公共事業</translation>
+<translation id="814071672416123670">組織のポリシーにより、コンテンツをコピーできませんでした</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 か月前に作成}other{{NUM_MONTHS} か月前に作成}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />、現在のデフォルト設定。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF バージョン:</translation>

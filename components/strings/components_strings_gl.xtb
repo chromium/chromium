@@ -352,6 +352,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1539840569003678498">Envío do informe:</translation>
 <translation id="1542105669288201090">Formación empresarial</translation>
 <translation id="1542830386724426410">Mostra os beneficios e as recompensas das tarxetas dispoñibles ao tramitar a compra. Vantaxes suxeitas ás condicións do emisor. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Máis información<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Segundo as políticas da túa organización, o contido que copiaches está analizándose para detectar información confidencial. Pode que se permita pegar despois de que remate a análise.</translation>
 <translation id="1545757265410828525">Historial de prezos</translation>
 <translation id="1546286808622193216">Compara os beneficios das tarxetas con Gemini</translation>
 <translation id="1549470594296187301">JavaScript debe estar activado para usar esta función.</translation>
@@ -1503,6 +1504,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3293642807462928945">Máis información acerca da política de <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consultar e xestiona os teus contrasinais na configuración de Chrome</translation>
 <translation id="3299098170013242198">Windows Hello está activado para completar contrasinais</translation>
+<translation id="3299197721044635447">Non se puido pegar o contido fóra do contexto de Chrome xestionado debido ás políticas da túa organización</translation>
 <translation id="3299720788264079132">Produciuse un erro ao usar <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 polgadas</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
@@ -4231,7 +4233,7 @@ Detalles adicionais:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> comprobará se cumpres os requisitos (este proceso non lle afectará á túa cualificación crediticia). Se os cumpres, <ph name="BNPL_ISSUER_NAME" /> ofrecerache varios plans de pagos entre os que poderás escoller para completar a compra.</translation>
 <translation id="7489392576326061356">Champús e acondicionadores</translation>
 <translation id="7489919936111034362">Tes ocupado todo o espazo de almacenamento de Google Drive</translation>
-<translation id="7490622939531327327">Interpretación máis intelixente de formularios</translation>
+<translation id="7490622939531327327">Comprensión de formularios máis intelixente</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
 <translation id="749865518782565832">Fontanaría</translation>
 <translation id="7499188644237027195">Cando fagas compras en Chrome, verás o moedeiro electrónico e Pix como opcións</translation>
@@ -4367,6 +4369,7 @@ Detalles adicionais:
 <translation id="767550629621587224">Pestanas cortadas previamente</translation>
 <translation id="7675756033024037212">Desprazamento e zoom non permitidos</translation>
 <translation id="7676643023259824263">Buscar texto do portapapeis, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">A túa organización supervisa as copias</translation>
 <translation id="7678730592635586336">Volver realizar vídeo</translation>
 <translation id="7679287273775285018">Pagar co moedeiro electrónico</translation>
 <translation id="7679367271685653708">Ver e xestionar o teu historial de navegación na configuración de Chrome</translation>
@@ -4653,6 +4656,7 @@ Detalles adicionais:
 <translation id="8134058435519644366">Contratación e persoal</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Enerxía, empresas e servizos públicos</translation>
+<translation id="814071672416123670">Non se puido copiar o contido debido ás políticas da túa organización</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creouse hai 1 mes}other{Creouse hai {NUM_MONTHS} meses}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, buscador predeterminado actual. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>

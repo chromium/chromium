@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">रिपोर्ट भेज दी गई:</translation>
 <translation id="1542105669288201090">व्यावसायिक शिक्षा</translation>
 <translation id="1542830386724426410">चेकआउट के समय, कार्ड से खरीदारी करने पर मिलने वाले फ़ायदों और इनामों की जानकारी दिखाएं. कार्ड जारी करने वाले बैंक की शर्तें लागू. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ज़्यादा जानें<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">आपके संगठन की नीतियों के आधार पर, आपके कॉपी किए गए कॉन्टेंट को संवेदनशील जानकारी के लिए स्कैन किया जा रहा है. स्कैन पूरा होने के बाद, कॉन्टेंट को चिपकाने की अनुमति दी जा सकती है.</translation>
 <translation id="1545757265410828525">कीमत का इतिहास</translation>
 <translation id="1546286808622193216">Gemini का इस्तेमाल करके, कार्ड पर मिलने वाले फ़ायदों की तुलना करें</translation>
 <translation id="1549470594296187301">इस सुविधा का उपयोग करने के लिए JavaScript को सक्षम किया जाना चाहिए.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीति के बारे में ज़्यादा जानें</translation>
 <translation id="3295444047715739395">Chrome की सेटिंग में अपने पासवर्ड देखें और प्रबंधित करें</translation>
 <translation id="3299098170013242198">Windows Hello चालू है, पासवर्ड डाला जा सकता है</translation>
+<translation id="3299197721044635447">आपके संगठन की नीतियों की वजह से, मैनेज किए जा रहे Chrome के कॉन्टेक्स्ट से बाहर कॉन्टेंट चिपकाया नहीं जा सका</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> का इस्तेमाल करते समय कोई गड़बड़ी हुई</translation>
 <translation id="3303176609391916566">30 x 42 इंच</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
@@ -4368,6 +4370,7 @@
 <translation id="767550629621587224">प्री-कट टैब्स</translation>
 <translation id="7675756033024037212">स्क्रोल और ज़ूम करने की अनुमति नहीं है</translation>
 <translation id="7676643023259824263">क्लिपबोर्ड टेक्स्ट, <ph name="TEXT" /> खोजें</translation>
+<translation id="7676840398262504532">आपका संगठन, कॉपी किए जाने वाले कॉन्टेंट की निगरानी करता है</translation>
 <translation id="7678730592635586336">वीडियो फिर से बनाएं</translation>
 <translation id="7679287273775285018">इलेक्ट्रॉनिक वॉलेट से पेमेंट करें</translation>
 <translation id="7679367271685653708">Chrome की सेटिंग में अपने ब्राउज़िंग इतिहास को देखें और मैनेज करें</translation>
@@ -4654,6 +4657,7 @@
 <translation id="8134058435519644366">रिक्रूटमेंट और स्टाफ़िंग</translation>
 <translation id="8135546115396015134">बाईं ओर मौजूद बटन</translation>
 <translation id="8137456439814903304">ऊर्जा और बिजली, पानी जैसी सुविधाएं</translation>
+<translation id="814071672416123670">आपके संगठन की नीतियों की वजह से, कॉन्टेंट कॉपी नहीं किया जा सका</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 महीने पहले बनाया गया}one{{NUM_MONTHS} महीने पहले बनाया गया}other{{NUM_MONTHS} महीने पहले बनाया गया}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, मौजूदा डिफ़ॉल्ट सर्च इंजन. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">पीडीएफ़ का वर्शन:</translation>

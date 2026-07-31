@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">報告傳送時間：</translation>
 <translation id="1542105669288201090">商業教育</translation>
 <translation id="1542830386724426410">結帳時顯示可用的付款卡禮遇和獎賞。受發卡機構條款約束。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />瞭解詳情<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">根據你機構的政策，系統正在掃瞄你複製的內容以找出敏感資料。掃瞄完成後，可能會允許貼上。</translation>
 <translation id="1545757265410828525">過往價格</translation>
 <translation id="1546286808622193216">使用 Gemini 比較付款卡禮遇</translation>
 <translation id="1549470594296187301">必須啟用 JavaScript 才能使用此功能。</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945">進一步瞭解 <ph name="POLICY_NAME" /> 政策</translation>
 <translation id="3295444047715739395">在 Chrome 設定中查看和管理密碼</translation>
 <translation id="3299098170013242198">Windows Hello 已開啟，以便填入密碼</translation>
+<translation id="3299197721044635447">根據你機構的政策，你無法在受管理的 Chrome 環境以外貼上內容</translation>
 <translation id="3299720788264079132">在使用「<ph name="FEATURE_NAME" />」時發生錯誤</translation>
 <translation id="3303176609391916566">30 x 42 吋</translation>
 <translation id="3303855915957856445">找不到任何搜尋結果</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">預先裁切分隔紙</translation>
 <translation id="7675756033024037212">唔可以捲動同縮放</translation>
 <translation id="7676643023259824263">搵剪貼簿文字：<ph name="TEXT" /></translation>
+<translation id="7676840398262504532">你的機構會監察複製行為</translation>
 <translation id="7678730592635586336">重新拍攝影片</translation>
 <translation id="7679287273775285018">以電子錢包付款</translation>
 <translation id="7679367271685653708">在 Chrome 設定中查看並管理您的瀏覽記錄</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">人才招募和人力配備</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源和公用事業</translation>
+<translation id="814071672416123670">根據你機構的政策，你不可複製內容</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
 <translation id="8147389370274164212">目前預設為 <ph name="SEARCH_ENGINE_NAME" />。<ph name="MARKETING_SNIPPET" /> ·</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>

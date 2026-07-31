@@ -352,6 +352,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1539840569003678498">Aruanne saadeti:</translation>
 <translation id="1542105669288201090">Ärijuhtimisharidus</translation>
 <translation id="1542830386724426410">Kuva kassas saadaolevad kaardi hüved ja preemiad. Kohaldatakse väljaandja tingimusi. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Lisateave<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Teie organisatsiooni eeskirjade kohaselt skannitakse teie kopeeritud sisu delikaatse teabe suhtes. Kleepimine võib olla lubatud pärast skannimise lõpuleviimist.</translation>
 <translation id="1545757265410828525">Hinna ajalugu</translation>
 <translation id="1546286808622193216">Võrrelge kaardi hüvesid Gemini abil</translation>
 <translation id="1549470594296187301">Selle funktsiooni kasutamiseks peab JavaScript olema lubatud.</translation>
@@ -1503,6 +1504,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3293642807462928945">Lisateave reegli <ph name="POLICY_NAME" /> kohta</translation>
 <translation id="3295444047715739395">Vaadake ja hallake oma paroole Chrome'i seadetes</translation>
 <translation id="3299098170013242198">Windows Hello on paroolide täitmiseks sisse lülitatud</translation>
+<translation id="3299197721044635447">Sisu ei saanud teie organisatsiooni eeskirjade tõttu hallatavast Chrome'i kontekstist väljapoole kleepida</translation>
 <translation id="3299720788264079132">Midagi läks funktsiooni <ph name="FEATURE_NAME" /> kasutamisel valesti</translation>
 <translation id="3303176609391916566">30 × 42 tolli</translation>
 <translation id="3303855915957856445">Otsingutulemusi ei leitud</translation>
@@ -3075,7 +3077,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> selle seadme <ph name="WINDOW_COUNT" /></translation>
 <translation id="5716325061445053985">Puudutage vahelehe avamiseks oma telefonis</translation>
 <translation id="5717509257172454543">Uisutamine</translation>
-<translation id="5718326209176373202">Tekstimärkuste lisamine</translation>
+<translation id="5718326209176373202">Tekstmärkmete lisamine</translation>
 <translation id="5718601519531438273">Hõlmab sellist teavet nagu passid ja juhiload.</translation>
 <translation id="5720705177508910913">Praegune kasutaja</translation>
 <translation id="5720895412771013401">Lauaarvutid</translation>
@@ -4368,6 +4370,7 @@ Lisateave:
 <translation id="767550629621587224">Valmislõigatud registrilehed</translation>
 <translation id="7675756033024037212">Kerimine ja suumimine pole lubatud</translation>
 <translation id="7676643023259824263">Lõikelaua teksti otsimine, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Teie organisatsioon jälgib kopeerimist</translation>
 <translation id="7678730592635586336">Jäädvusta video uuesti</translation>
 <translation id="7679287273775285018">Maksmine e-rahakotiga</translation>
 <translation id="7679367271685653708">Vaadake ja hallake Chrome'i seadetes oma sirvimisajalugu</translation>
@@ -4654,6 +4657,7 @@ Lisateave:
 <translation id="8134058435519644366">Töölevõtmine ja värbamine</translation>
 <translation id="8135546115396015134">vasak klahv</translation>
 <translation id="8137456439814903304">Energia- ja kommunaalteenused</translation>
+<translation id="814071672416123670">Sisu ei saanud teie organisatsiooni eeskirjade tõttu kopeerida</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Loodud 1 kuu tagasi}other{Loodud {NUM_MONTHS} kuud tagasi}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, praegune vaikeseade. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-i versioon:</translation>

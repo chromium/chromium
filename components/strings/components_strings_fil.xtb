@@ -352,6 +352,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1539840569003678498">Naipadala ang ulat:</translation>
 <translation id="1542105669288201090">Edukasyong Pangnegosyo</translation>
 <translation id="1542830386724426410">Ipakita ang mga available na reward at benepisyo ng card sa pag-checkout. May mga nalalapat na tuntunin ng nag-isyu. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Matuto pa<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Batay sa mga patakaran ng iyong organisasyon, sina-scan ang content na kinopya mo para sa sensitibong impormasyon. Posibleng payagan ang pag-paste pagkatapos makumpleto ang pag-scan.</translation>
 <translation id="1545757265410828525">History ng presyo</translation>
 <translation id="1546286808622193216">Paghambingin ang mga benepisyo ng card gamit ang Gemini</translation>
 <translation id="1549470594296187301">Dapat naka-enable ang JavaScript upang magamit ang feature na ito.</translation>
@@ -1503,6 +1504,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3293642807462928945">Matuto pa tungkol sa patakarang <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Tingnan at pamahalaan ang iyong mga password sa mga setting ng Chrome</translation>
 <translation id="3299098170013242198">Naka-on ang Windows Hello para sa paglalagay ng mga password</translation>
+<translation id="3299197721044635447">Hindi ma-paste ang content sa labas ng pinapamahalaang konteksto ng Chrome dahil sa mga patakaran ng iyong organisasyon</translation>
 <translation id="3299720788264079132">Nagkaproblema habang ginagamit ang <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 in</translation>
 <translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
@@ -4368,6 +4370,7 @@ Mga karagdagang detalye:
 <translation id="767550629621587224">Mga Naka-Precut na Tab</translation>
 <translation id="7675756033024037212">Hindi pinapayagan ang pag-scroll at pag-zoom</translation>
 <translation id="7676643023259824263">Hanapin ang text sa clipboard, na <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Sinusubaybayan ng iyong organisasyon ang pagkopya</translation>
 <translation id="7678730592635586336">Kunan ulit ng video</translation>
 <translation id="7679287273775285018">Magbayad gamit ang eWallet</translation>
 <translation id="7679367271685653708">Tingnan at pamahalaan ang iyong history ng pag-browse sa mga setting ng Chrome</translation>
@@ -4654,6 +4657,7 @@ Mga karagdagang detalye:
 <translation id="8134058435519644366">Pag-recruit at Pagpapasok ng Tauhan</translation>
 <translation id="8135546115396015134">pakaliwang key</translation>
 <translation id="8137456439814903304">Enerhiya at Mga Utility</translation>
+<translation id="814071672416123670">Hindi makopya ang content dahil sa mga patakaran ng iyong organisasyon</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ginawa 1 buwan ang nakalipas}one{Ginawa {NUM_MONTHS} buwan ang nakalipas}other{Ginawa {NUM_MONTHS} na buwan ang nakalipas}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, kasalukuyang default. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Bersyon ng PDF:</translation>

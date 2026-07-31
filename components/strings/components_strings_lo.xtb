@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">ສົ່ງລາຍງານແລ້ວ:</translation>
 <translation id="1542105669288201090">ທຸລະກິດ ການສຶກສາ</translation>
 <translation id="1542830386724426410">ສະແດງສິດທິປະໂຫຍດ ແລະ ຮາງວັນຂອງບັດທີມີໃຫ້ໃນຕອນຈ່າຍເງິນ. ມີເງື່ອນໄຂຂອງຜູ້ອອກບັດ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">ອີງຕາມນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ, ລະບົບກຳລັງສະແກນເນື້ອຫາທີ່ທ່ານສຳເນົາເພື່ອຊອກຫາຂໍ້ມູນລະອຽດອ່ອນ. ອາດອະນຸຍາດໃຫ້ວາງໄດ້ຫຼັງຈາກການສະແກນສຳເລັດ.</translation>
 <translation id="1545757265410828525">ປະຫວັດລາຄາ</translation>
 <translation id="1546286808622193216">ປຽບທຽບສິດທິປະໂຫຍດຂອງບັດໂດຍໃຊ້ Gemini</translation>
 <translation id="1549470594296187301">ຕ້ອງເປີດໃຊ້ງານ JavaScript ເພື່ອໃຊ້ຄຸນສົມບັດໃຊ້ງານນີ້.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບນະໂຍບາຍ <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">ເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3299098170013242198">Windows Hello ເປີດຢູ່ເພື່ອການຕື່ມລະຫັດຜ່ານ</translation>
+<translation id="3299197721044635447">ບໍ່ສາມາດວາງເນື້ອຫາພາຍນອກບໍລິບົດ Chrome ທີ່ມີການຈັດການໄດ້ເນື່ອງຈາກນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ</translation>
 <translation id="3299720788264079132">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນໃນລະຫວ່າງທີ່ໃຊ້ <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 ນິ້ວ</translation>
 <translation id="3303855915957856445">ບໍ່ພົບຜົນການຊອກຫາໃດໆ</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">ແຖບແບບຕັດລ່ວງໜ້າ</translation>
 <translation id="7675756033024037212">ບໍອະນຸຍາດໃຫ້ເລື່ອນ ແລະ ຊູມ</translation>
 <translation id="7676643023259824263">ຊອກຫາຂໍ້ຄວາມໃນຄລິບບອດ, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">ອົງກອນຂອງທ່ານຕິດຕາມການສຳເນົາ</translation>
 <translation id="7678730592635586336">ຖ່າຍວິດີໂອໃໝ່</translation>
 <translation id="7679287273775285018">ຈ່າຍດ້ວຍ eWallet</translation>
 <translation id="7679367271685653708">ເບິ່ງ ແລະ ຈັດການປະຫວັດການທ່ອງເວັບຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">ການຈັດຫາ ແລະ ຮັບພະນັກງານ</translation>
 <translation id="8135546115396015134">ປຸ່ມຊ້າຍ</translation>
 <translation id="8137456439814903304">ພະລັງງານ ແລະ ສາທາລະນຸປະໂພກ</translation>
+<translation id="814071672416123670">ບໍ່ສາມາດສຳເນົາເນື້ອຫາໄດ້ເນື່ອງຈາກນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ 1 ເດືອນກ່ອນ}other{ສ້າງເມື່ອ {NUM_MONTHS} ເດືອນກ່ອນ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ຄ່າເລີ່ມຕົ້ນປັດຈຸບັນ. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">ເວີຊັນ PDF:</translation>

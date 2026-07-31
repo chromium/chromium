@@ -1577,7 +1577,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2227179592712503583">Ukloni predlog</translation>
 <translation id="222931766245975952">Datoteka je skraćena</translation>
 <translation id="2229342031987138128">Opcionalni titl</translation>
-<translation id="2231160360698766265">Sajtovi mogu da puštaju zaštićen sadržaj</translation>
 <translation id="2231351769755997720">Nema dostupnih predloga. Pitajte nešto o ovoj stranici.</translation>
 <translation id="2232751457155581899">Sajtovi mogu da traže da prate položaj kamere</translation>
 <translation id="2233502537820838181">&amp;Više informacija</translation>
@@ -3856,7 +3855,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3928659086758780856">Nizak nivo mastila</translation>
 <translation id="3929426037718431833">Ovi dodaci mogu da vide i menjaju informacije na ovom sajtu.</translation>
 <translation id="3930155420525972941">Premesti grupu u novi prozor</translation>
-<translation id="3930602610362250897">Da bi puštali sadržaj zaštićen autorskim pravima, sajtovi će možda morati da koriste uslugu zaštite sadržaja</translation>
 <translation id="3930737994424905957">Traže se uređaji</translation>
 <translation id="3930968231047618417">Boja pozadine</translation>
 <translation id="3932356525934356570">Zakačite <ph name="EXTENSION_NAME" /></translation>
@@ -7201,7 +7199,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6590458744723262880">Promenite naziv direktorijuma</translation>
 <translation id="6592267180249644460">WebRTC evidencija je snimljena <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Otisak prsta je snimljen</translation>
-<translation id="6593881952206664229">Mediji sa autorskim pravima se možda neće puštati</translation>
 <translation id="6594011207075825276">Traže se serijski uređaji…</translation>
 <translation id="6595322909015878027">Nije im dozvoljeno da automatski uđu u sliku u slici</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Promenili ste ugroženu lozinku.
@@ -10587,7 +10584,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9179524979050048593">Korisničko ime na ekranu za prijavljivanje</translation>
 <translation id="9180380851667544951">Sajt može da deli ekran</translation>
 <translation id="9180847522826713506">Da biste videli lozinku ili dodali napomenu o njoj, kliknite na ikonu ključa</translation>
-<translation id="9182556968660520230">Ne dozvoljavaj sajtovima da puštaju zaštićeni sadržaj</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />. Obavestićemo vas kada počne snimanje.}=2{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Obavestićemo vas kada počne snimanje.}=3{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još jednu aplikaciju. Nećete dobiti obaveštenje kada počne snimanje.}one{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikaciju. Obavestićemo vas kada počne snimanje.}few{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacije. Obavestićemo vas kada počne snimanje.}other{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacija. Obavestićemo vas kada počne snimanje.}}</translation>

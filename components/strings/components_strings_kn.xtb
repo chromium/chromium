@@ -351,6 +351,7 @@
 <translation id="1539840569003678498">ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ:</translation>
 <translation id="1542105669288201090">ವ್ಯವಹಾರ ಶಿಕ್ಷಣ</translation>
 <translation id="1542830386724426410">ಚೆಕ್ಔಟ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುವ ಕಾರ್ಡ್ ಪ್ರಯೋಜನಗಳು ಮತ್ತು ರಿವಾರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ. ವಿತರಕರ ನಿಯಮಗಳು ಅನ್ವಯಿಸುತ್ತವೆ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳನ್ನು ಆಧರಿಸಿ, ನೀವು ಕಾಪಿ ಮಾಡಿದ ಕಂಟೆಂಟ್‌ನಲ್ಲಿ ಸೂಕ್ಷ್ಮವಾದ ಮಾಹಿತಿ ಇದೆಯೇ ಎಂದು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಸ್ಕ್ಯಾನ್ ಪೂರ್ಣಗೊಂಡ ನಂತರ ಪೇಸ್ಟ್ ಮಾಡಲು ಅನುಮತಿಸಬಹುದು.</translation>
 <translation id="1545757265410828525">ದರದ ಇತಿಹಾಸ</translation>
 <translation id="1546286808622193216">Gemini ಅನ್ನು ಬಳಸಿಕೊಂಡು ಕಾರ್ಡ್ ಪ್ರಯೋಜನಗಳನ್ನು ಹೋಲಿಸಿ ನೋಡಿ</translation>
 <translation id="1549470594296187301">ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ಬಳಸಲು JavaScript ಸಕ್ರಿಯಗೊಳಿಸಬೇಕು.</translation>
@@ -1501,6 +1502,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ಕಾರ್ಯನೀತಿಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="3295444047715739395">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3299098170013242198">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವುದಕ್ಕಾಗಿ Windows Hello ಆನ್ ಆಗಿದೆ</translation>
+<translation id="3299197721044635447">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳ ಕಾರಣದಿಂದಾಗಿ, ನಿರ್ವಹಿಸಲಾದ Chrome ಕಾಂಟೆಕ್ಸ್ಟ್‌ನ ಹೊರಗೆ ಕಂಟೆಂಟ್ ಅನ್ನು ಪೇಸ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸುವಾಗ ಏನೋ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="3303176609391916566">30 x 42 ಇಂಚು</translation>
 <translation id="3303855915957856445">ಯಾವುದೇ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
@@ -4365,6 +4367,7 @@
 <translation id="767550629621587224">ಪೂರ್ವ-ಕಟ್ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="7675756033024037212">ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="7676643023259824263">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಪಠ್ಯಕ್ಕಾಗಿ ಹುಡುಕಿ, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಕಾಪಿ ಮಾಡುವುದನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡುತ್ತದೆ</translation>
 <translation id="7678730592635586336">ವೀಡಿಯೊ ಮರುತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7679287273775285018">ಇ-ವಾಲೆಟ್ ಮೂಲಕ ಪಾವತಿಸಿ</translation>
 <translation id="7679367271685653708">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
@@ -4651,6 +4654,7 @@
 <translation id="8134058435519644366">ನೇಮಕಾತಿ ಮತ್ತು ಸಿಬ್ಬಂದಿ ವ್ಯವಸ್ಥೆ</translation>
 <translation id="8135546115396015134">ಎಡ ಕೀ</translation>
 <translation id="8137456439814903304">ಇಂಧನ ಮತ್ತು ಯುಟಿಲಿಟಿಗಳು</translation>
+<translation id="814071672416123670">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳ ಕಾರಣದಿಂದಾಗಿ ಕಂಟೆಂಟ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ತಿಂಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{{NUM_MONTHS} ತಿಂಗಳುಗಳ ಹಿಂದೆ}other{{NUM_MONTHS} ತಿಂಗಳುಗಳ ಹಿಂದೆ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ಆವೃತ್ತಿ:</translation>

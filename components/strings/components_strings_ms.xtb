@@ -352,6 +352,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1539840569003678498">Laporan dihantar:</translation>
 <translation id="1542105669288201090">Pendidikan Perniagaan</translation>
 <translation id="1542830386724426410">Tunjukkan manfaat kad dan ganjaran yang tersedia semasa semak keluar. Syarat pengeluar dikenakan. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ketahui lebih lanjut<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Berdasarkan dasar organisasi anda, kandungan yang anda salin sedang diimbas untuk mencari maklumat sensitif. Penampalan kandungan tersebut mungkin dibenarkan selepas imbasan selesai.</translation>
 <translation id="1545757265410828525">Sejarah harga</translation>
 <translation id="1546286808622193216">Bandingkan manfaat kad menggunakan Gemini</translation>
 <translation id="1549470594296187301">JavaScript mesti didayakan untuk menggunakan ciri ini.</translation>
@@ -1503,6 +1504,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3293642807462928945">Ketahui lebih lanjut tentang dasar <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Lihat dan urus kata laluan anda dalam tetapan Chrome</translation>
 <translation id="3299098170013242198">Windows Hello dihidupkan untuk mengisikan kata laluan</translation>
+<translation id="3299197721044635447">Kandungan tidak dapat ditampal di luar konteks Chrome terurus disebabkan oleh dasar organisasi anda</translation>
 <translation id="3299720788264079132">Ada masalah semasa menggunakan <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 in</translation>
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
@@ -4369,6 +4371,7 @@ Butiran tambahan:
 <translation id="767550629621587224">Tab Diprapotong</translation>
 <translation id="7675756033024037212">Tatal &amp; zum tidak dibenarkan</translation>
 <translation id="7676643023259824263">Cari teks papan keratan, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Organisasi anda memantau tindakan penyalinan</translation>
 <translation id="7678730592635586336">Rakam semula video</translation>
 <translation id="7679287273775285018">Bayar dengan e-Dompet</translation>
 <translation id="7679367271685653708">Lihat dan urus sejarah penyemakan imbas anda dalam tetapan Chrome</translation>
@@ -4655,6 +4658,7 @@ Butiran tambahan:
 <translation id="8134058435519644366">Perekrutan &amp; Pengambilan Pekerja</translation>
 <translation id="8135546115396015134">kekunci kiri</translation>
 <translation id="8137456439814903304">Tenaga &amp; Utiliti</translation>
+<translation id="814071672416123670">Kandungan tidak dapat disalin disebabkan oleh dasar organisasi anda</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Dibuat 1 bulan yang lalu}other{Dibuat {NUM_MONTHS} bulan yang lalu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, lalai semasa. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versi PDF:</translation>

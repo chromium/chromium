@@ -157,6 +157,7 @@
 <translation id="1497590942294823549">മെനു → Password Manager</translation>
 <translation id="1498283581832036924">നിങ്ങളുടെ <ph name="WEBSITE" /> അക്കൗണ്ട് ഇല്ലാതാക്കില്ല.</translation>
 <translation id="1503814213414825943">മറ്റൊരു ആപ്പിലേക്ക് എക്‌സ്‌പോർട്ട് ചെയ്യേണ്ട അക്കൗണ്ടുകൾ തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">തിരയൽ യന്ത്രം</translation>
 <translation id="1506063256525392513">ഫോട്ടോകളെടുത്ത് അപ്‌ലോഡ് ചെയ്യാനും QR കോഡുകൾ സ്‌കാൻ ചെയ്യാനും ഇത് നിങ്ങളെ അനുവദിക്കുന്നു</translation>
 <translation id="1506733063065214205">RCS MLS ക്ലയന്റ്</translation>
@@ -272,6 +273,7 @@
 <translation id="183878838231635348">'സുരക്ഷാ പരിശോധന' സ്വയമേവ നിങ്ങൾക്കായി കണ്ടെത്തുന്ന ഏതെങ്കിലും സ്വകാര്യതാ അല്ലെങ്കിൽ സുരക്ഷാ പ്രശ്നങ്ങൾ ഈ കാർഡ് കാണിക്കുന്നു.</translation>
 <translation id="1840320537320704887">നിങ്ങളുടെ പുതിയ ടാബ് പേജ് മുൻഗണനകൾ നീക്കം ചെയ്തു</translation>
 <translation id="1845230888742614096">ഗ്രൂപ്പ് നിലനിർത്തുക</translation>
+<translation id="1853558655412913122">"ക്രമീകരണങ്ങൾ" എന്നതിലെ "വിലാസ ബാർ" എന്ന ഓപ്ഷൻ ഉപയോഗിച്ച് നിങ്ങൾക്ക് ഇപ്പോൾ വിലാസ ബാറിന്റെ സ്ഥാനം മാറ്റാം</translation>
 <translation id="1853692000353488670">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="1854463785401910334">തുറന്നിരിക്കുന്ന ടാബുകളിൽ തിരയുക</translation>
 <translation id="1860609647735325606">Gemini ഉപയോഗിച്ച് വിശദീകരിക്കുക</translation>
@@ -1189,6 +1191,7 @@
 <translation id="4985921635659180565">ഒരു ഫയൽ ഇല്ലാതാക്കാൻ ഷെഡ്യൂൾ ചെയ്‌തുകഴിഞ്ഞാൽ, അത് റദ്ദാക്കാനാകില്ല.</translation>
 <translation id="498624032394115435">ലിങ്കുള്ള ആർക്ക് വേണമെങ്കിലും എല്ലാ ടാബുകളും എഡിറ്റ് ചെയ്യാം.</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ടാബ് ഗ്രൂപ്പ് നിറം <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5009127379503001909">ബ്രൗസ് ചെയ്യുന്നത് തുടരൂ</translation>
@@ -1802,6 +1805,7 @@
 <translation id="6924299883035848912">'ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക' മറയ്ക്കുക</translation>
 <translation id="6930162026494574854">വിവർത്തന ക്രമീകരണം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6930799952781667037">ഈ ഭാഷയിലേക്ക് മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">പാസ്‌കോഡ് സജ്ജീകരിക്കുക</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6946722113367118030">ചിന്തിക്കൽ</translation>
@@ -1851,6 +1855,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ക്യാമറ ലഭ്യമല്ല</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">നിങ്ങളുടെ ടാബുകൾ അടച്ചു, ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കി</translation>
 <translation id="714291438898585119">നക്ഷത്രചിഹ്നമിട്ടവ</translation>
 <translation id="7145337554745942724">ഡ്രൈവിംഗ് ലൈസൻസ് അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -1916,6 +1921,7 @@
 <translation id="7402602673739047753">{count,plural, =1{1 ബുക്ക്‌മാർക്ക് ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, {email} എന്ന നിങ്ങളുടെ Google Account-ൽ ഇത് സംരക്ഷിക്കുക.}other{{count} ബുക്ക്‌മാർക്കുകൾ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, {email} എന്ന നിങ്ങളുടെ Google Account-ൽ ഇവ സംരക്ഷിക്കുക.}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) എന്നയാൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />" എന്ന ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും</translation>
 <translation id="7409985198648820906">വായിക്കാത്ത <ph name="UNREAD_COUNT" /> ലേഖനങ്ങൾ.</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">തുടരുക</translation>
 <translation id="741204030948306876">ഞാൻ തയ്യാറാണ്</translation>
 <translation id="7419565702166471774">എല്ലായ്‌പ്പോഴും സുരക്ഷിതമായ കണക്ഷനുകൾ ഉപയോഗിക്കുക</translation>
@@ -2203,6 +2209,7 @@
 <translation id="8292893224181644074">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="8299417921174340354">പാസ്‍വേഡുകൾ ഉപയോഗിക്കാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="8307481894409578819">ഈ ഫയൽ അപ്‌ലോഡ് ചെയ്യാനായില്ല</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">പുതിയ തിരയൽ</translation>
 <translation id="8319282042900445670"><ph name="DATE" />, <ph name="TIME" />-നായി റിമൈൻഡർ സജ്ജീകരിച്ചു</translation>
 <translation id="8320212361750431956">സമീപകാല ആക്റ്റിവിറ്റി</translation>
@@ -2490,6 +2497,7 @@
 <translation id="9219154867334666734">ടാബുകൾ തിരയുക…</translation>
 <translation id="9223358826628549784">ക്രാഷ് റിപ്പോർട്ട് അയച്ചു.</translation>
 <translation id="926455622548529175">മാറുക, ഇല്ലാതാക്കുക</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">ഹൈലൈറ്റ് ചെയ്ത ടെക്സ്റ്റ്</translation>
 <translation id="932305336591073205">{count,plural, =1{ടാബ് അടയ്ക്കുക}other{ടാബുകൾ അടയ്ക്കുക}}</translation>
 <translation id="939472100615258482">നിലവിലെ സൈറ്റ്</translation>

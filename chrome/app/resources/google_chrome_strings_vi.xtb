@@ -79,6 +79,7 @@
 <translation id="1698376642261615901">Google Chrome là một trình duyệt web chạy các trang web và ứng dụng với tốc độ cực nhanh. Trình duyệt này nhanh, ổn định và dễ sử dụng. Duyệt web an toàn hơn với tính năng ngăn chặn phần mềm độc hại và lừa đảo được tích hợp trong Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome sẽ khởi động lại sau một giờ}other{Chrome sẽ khởi động lại sau # giờ}}</translation>
 <translation id="1722488837206509557">Thao tác này sẽ cho phép bạn chọn trong số các thiết bị có sẵn và hiển thị nội dung trên các thiết bị đó.</translation>
+<translation id="1724094881572874997">Để bảo mật công việc của bạn trên Chrome, tổ chức bạn sẽ có thể xem hoặc quản lý một số thông tin khi bạn đăng nhập vào Chrome.</translation>
 <translation id="177180974022074201">Dùng thử với Gemini trong Chrome</translation>
 <translation id="1786003790898721085">Đảm bảo bạn đã đăng nhập vào Chrome trên <ph name="TARGET_DEVICE_NAME" /> của mình rồi thử gửi lại.</translation>
 <translation id="1786044937610313874">Lối tắt sẽ mở trong Chrome</translation>
@@ -417,6 +418,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="521447420733633466">Nếu các bạn dùng chung một thiết bị, thì bạn bè và gia đình có thể duyệt web một cách riêng biệt cũng như thiết lập Chrome theo ý muốn</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5239627039202700673">Dùng Chrome mỗi khi bạn nhấp vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
+<translation id="524751727772074981">Hỏi bất cứ điều gì và từ bất cứ đâu với Gemini trong Chrome</translation>
 <translation id="5251420635869119124">Khách có thể sử dụng Chrome mà không phải thoát khỏi bất cứ nội dung nào.</translation>
 <translation id="5271833978500241046">Sử dụng các kỹ năng này cùng với các tính năng khác của Gemini trong Chrome</translation>
 <translation id="5286907366254680517">Đã phát hiện</translation>

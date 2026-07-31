@@ -2293,6 +2293,19 @@ PAC 樣式的字串：
 <translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise 連接器的設定政策</translation>
 <translation id="2509748672176727116">使用者將可以執行網路封包擷取作業</translation>
 <translation id="2509919237512982967">使用舊版表單控制項，直到 M84 版為止。</translation>
+<translation id="2509947330677441695">如果設定這項政策，使用者可在無痕模式下存取許可清單中的網址。你可以使用這項政策，將 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 中定義的特定網址模式設為例外，格式請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+
+如果同時設定這項政策和 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />，系統會優先採用許可清單。如果網址符合許可清單中的模式，系統就會允許存取。如果網址符合封鎖清單的模式 (但不符合許可清單)，系統就會封鎖該網址。如果網址都不符合，系統會自動改用一般 <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策。
+
+如果設定這項政策，而未設定 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />，在無痕模式下，未列入許可清單的網址一律會被封鎖。
+
+如果 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 設為禁止 (值 1)，但已設定這項政策，只有符合許可清單的網址才能使用無痕模式。
+
+如果未設定這項政策，<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 就不會有任何例外。
+
+這項政策只會影響無痕模式。如要允許所有使用者設定檔存取這些網址，請使用 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策。請勿使用主機綜合萬用字元 (即「*」或「[*]」)，請改用 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 政策在全域啟用這項功能。
+
+這項政策最多只能輸入 1,000 個項目。</translation>
 <translation id="2512531606818417084">這項政策只是臨時解決方案，並將於 M137 起將停用。
 
 有了這項功能，即可在 Accept-Encoding 要求標頭中使用「zstd」，還能解壓縮用 <ph name="ZSTANDARD_SHORTNAME" /> 壓縮的網路內容。如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 就會接受用 <ph name="ZSTANDARD_SHORTNAME" /> 壓縮的網路內容；
@@ -10187,6 +10200,21 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 <translation id="759957074386651883">安全瀏覽設定</translation>
 <translation id="7602621823177962064">停用裝置記憶體資訊回報功能</translation>
 <translation id="7604169113182304895">Android 應用程式可以選擇是否使用這份清單，你無法強制套用。</translation>
+<translation id="7604302274842086162">這項政策可用於允許 <ph name="CHROME_DEVTOOLS_NAME" /> 存取特定網址。
+
+系統會比對網址模式和要檢查的網頁中每個框架的網址。最終行為取決於是否也設定了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。
+
+如果已設定這項政策，但未設定 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />，則每個框架的網址都必須符合這份許可清單中的模式，才能允許 <ph name="CHROME_DEVTOOLS_NAME" />。如果任何框架的網址不相符，系統就會封鎖整頁的開發人員工具。如要瞭解網址格式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+
+如果同時設定這項政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策，系統會優先採用這個許可清單。如果框架的網址符合這份許可清單中的模式，系統就會允許存取，即使該網址也與封鎖清單中的模式相符。如果網址符合封鎖清單的模式 (但不符合許可清單)，系統就會封鎖該網址。如果網址都不符合，系統會自動改用「<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />」政策。
+
+如果未設定這項政策，<ph name="CHROME_DEVTOOLS_NAME" /> 是否可用會取決於 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策。
+
+這項政策也適用於開放給擴充功能和網頁應用程式使用的 <ph name="CHROME_DEVTOOLS_NAME" />。
+
+請勿使用主機綜合萬用字元 (即「*」或「[*]」)，請改用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策在全域啟用這項功能。
+
+這項政策最多只能輸入 1,000 個項目。</translation>
 <translation id="7607831126797434329">禁止這些網站自動下載</translation>
 <translation id="7608186022704392724">PIN 碼自動提交功能可變更在 <ph name="PRODUCT_OS_NAME" /> 中輸入 PIN 碼的方式。
           這項功能會顯示特別的 UI，向使用者清楚呈現其 PIN 碼所需的位數，而不會顯示用於輸入密碼的相同文字欄位。因此，系統會將使用者的 PIN 碼長度儲存在其加密資料以外的位置。系統只支援 6 到 12 位數的 PIN 碼。

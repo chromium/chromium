@@ -574,6 +574,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="7173822816570314652">Organisasjonen din sletter Chromium-data når de ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />. Dette kan omfatte loggen, autofyll og nedlastinger.</translation>
 <translation id="718435575166326686">Chromium trenger kameratillatelse for dette nettstedet</translation>
 <translation id="7196312274710523067">Kunne ikke starte Chromium. Prøv på nytt.</translation>
+<translation id="7204669035546236137">Spør om hva som helst, akkurat der du er, med Gemini i Chromium</translation>
 <translation id="7213008767289637091">Ha Chromium i dokken for å få rask tilgang til den når som helst</translation>
 <translation id="7213407614656404070">Bruk Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="7216228761061470870">Når du bruker bildesøk på datamaskiner, sendes sidetittel, nettadresse og innhold, inkludert PDF-filer, til tjeneren</translation>
@@ -630,6 +631,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7745317241717453663">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installasjonsprogrammet kunne ikke opprette en midlertidig katalog. Kontroller at du har nok ledig diskplass og tillatelse til å installere programvare.</translation>
 <translation id="7750130090210923118">Tilbakestill til standardversjonen av Chromium</translation>
+<translation id="7752521946322750699">For å sikre arbeidet ditt i Chromium kan organisasjonen din se eller administrere bestemt informasjon når du er logget på Chromium.</translation>
 <translation id="7781047659465034537">Bruk Chromium som standard, og fest den til oppgavelinjen</translation>
 <translation id="7786760609782648049">Gjør Chromium raskere</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>

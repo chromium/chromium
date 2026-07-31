@@ -1588,7 +1588,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2227179592712503583">Fjarlægja tillögu</translation>
 <translation id="222931766245975952">Skrá stýfð</translation>
 <translation id="2229342031987138128">Skjátextar</translation>
-<translation id="2231160360698766265">Vefsvæði mega spilað varið efni</translation>
 <translation id="2231351769755997720">Engar tillögur í boði. Prófaðu að spyrja þinnar eigin spurningar um þessa síðu.</translation>
 <translation id="2232751457155581899">Vefsvæði geta beðið um að rekja stöðu myndavélarinnar</translation>
 <translation id="2233502537820838181">Frekari upplýsingar</translation>
@@ -3870,7 +3869,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3928659086758780856">Lítið eftir af bleki</translation>
 <translation id="3929426037718431833">Þessar viðbætur geta séð og breytt upplýsingum á þessu vefsvæði.</translation>
 <translation id="3930155420525972941">Færa hóp í nýjan glugga</translation>
-<translation id="3930602610362250897">Vefsvæði kunna að nota efnisverndarþjónustu til að spila höfundarréttavarið efni</translation>
 <translation id="3930737994424905957">Leitar að tækjum</translation>
 <translation id="3930968231047618417">Bakgrunnslitur</translation>
 <translation id="3932356525934356570">Festa <ph name="EXTENSION_NAME" /></translation>
@@ -7216,7 +7214,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6590458744723262880">Endurnefna möppu</translation>
 <translation id="6592267180249644460">WebRTC-annáll skráður <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Fingrafarið þitt greindist</translation>
-<translation id="6593881952206664229">Óvíst er að höfundarréttarvarið efni spilist</translation>
 <translation id="6594011207075825276">Leitar að raðtengdum tækjum...</translation>
 <translation id="6595322909015878027">Mega ekki fara sjálfkrafa í mynd í mynd</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Aðgangsorði í hættu var breytt.
@@ -10599,7 +10596,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9179524979050048593">Notandanafn á innskráningarskjá</translation>
 <translation id="9180380851667544951">Vefsvæði getur deilt skjánum þínum</translation>
 <translation id="9180847522826713506">Til að skoða aðgangsorð eða bæta við glósu um það skaltu smella á lykilstáknið</translation>
-<translation id="9182556968660520230">Ekki leyfa vefsvæðum að spila varið efni</translation>
 <translation id="9183302530794969518">Google-skjöl</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Forrit}one{# forrit}other{# forrit}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" />. Þú færð ekki tilkynningu þegar upptakan hefst.}=2{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" /> og <ph name="APP1_NAME" />. Þú færð ekki tilkynningu þegar upptakan hefst.}=3{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og einu öðru forriti. Þú færð ekki tilkynningu þegar upptakan hefst.}one{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # öðru forriti. Þú færð ekki tilkynningu þegar upptakan hefst.}other{Kerfisstjórinn þinn getur tekið upp af skjánum þínum með <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # öðrum forritum. Þú færð ekki tilkynningu þegar upptakan hefst.}}</translation>

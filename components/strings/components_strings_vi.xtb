@@ -352,6 +352,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1539840569003678498">Thời gian gửi báo cáo:</translation>
 <translation id="1542105669288201090">Giáo dục kinh doanh</translation>
 <translation id="1542830386724426410">Hiển thị các lợi ích và phần thưởng hiện đang áp dụng cho thẻ khi thanh toán. Có áp dụng các điều khoản của tổ chức phát hành. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Tìm hiểu thêm<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Theo các chính sách của tổ chức bạn, nội dung bạn vừa sao chép đang được quét xem có thông tin nhạy cảm hay không. Bạn có thể dán nội dung sau khi quá trình quét hoàn tất.</translation>
 <translation id="1545757265410828525">Giá theo thời gian</translation>
 <translation id="1546286808622193216">So sánh các lợi ích của thẻ bằng cách sử dụng Gemini</translation>
 <translation id="1549470594296187301">Bạn phải bật JavaScript để sử dụng tính năng này.</translation>
@@ -1503,6 +1504,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3293642807462928945">Hãy tìm hiểu thêm về chính sách <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Xem và quản lý mật khẩu của bạn trong phần cài đặt của Chrome</translation>
 <translation id="3299098170013242198">Windows Hello đã được kích hoạt để điền mật khẩu</translation>
+<translation id="3299197721044635447">Do các chính sách của tổ chức bạn, bạn không thể dán nội dung bên ngoài ngữ cảnh Chrome được quản lý</translation>
 <translation id="3299720788264079132">Đã xảy ra lỗi khi sử dụng <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 inch</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
@@ -4368,6 +4370,7 @@ Thông tin chi tiết bổ sung:
 <translation id="767550629621587224">Giấy có nhãn cắt sẵn</translation>
 <translation id="7675756033024037212">Không cho phép cuộn và thu phóng</translation>
 <translation id="7676643023259824263">Tìm kiếm văn bản trong bảng nhớ tạm, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Tổ chức của bạn giám sát hành động sao chép</translation>
 <translation id="7678730592635586336">Quay lại video</translation>
 <translation id="7679287273775285018">Thanh toán bằng Ví điện tử</translation>
 <translation id="7679367271685653708">Xem và quản lý nhật ký duyệt web của bạn trong phần cài đặt Chrome</translation>
@@ -4654,6 +4657,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8134058435519644366">Tuyển dụng và bố trí cán bộ</translation>
 <translation id="8135546115396015134">phím mũi tên trái</translation>
 <translation id="8137456439814903304">Tiện ích và năng lượng</translation>
+<translation id="814071672416123670">Không thể sao chép nội dung do các chính sách của tổ chức bạn</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Tạo 1 tháng trước}other{Tạo {NUM_MONTHS} tháng trước}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, chế độ mặc định hiện tại. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Phiên bản PDF:</translation>

@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">'നുറുങ്ങുകളെ കുറിച്ചുള്ള അറിയിപ്പുകൾ' പ്രമോ അടച്ചു</translation>
 <translation id="1036348656032585052">ഓഫാക്കുക</translation>
 <translation id="1045899828449635435">ഇവയിലെ ഡാറ്റയും മായ്ക്കണോ?</translation>
-<translation id="1049461303780085993">ഉത്തരങ്ങളും പ്രധാന പോയിന്റുകളും മറ്റും ലഭിക്കാൻ Chrome-ലെ Gemini പരീക്ഷിക്കൂ</translation>
 <translation id="1049743911850919806">ആള്‍‌മാറാട്ടം</translation>
 <translation id="1052842760770519282">നിങ്ങളുടെ ചില പാസ്‌വേഡുകൾ ആക്‌സസ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="1057623954802068161">പേജിന്റെ മുകളിലേക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
@@ -314,6 +313,7 @@
 <translation id="2328474416100889417">എല്ലാവർക്കും ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, എല്ലാ ക്ഷണ ലിങ്കുകളും ഓഫാക്കുകയും ചെയ്യും</translation>
 <translation id="2329500425421091035">Chrome-ൽ AI മോഡ് അവതരിപ്പിക്കുന്നു</translation>
 <translation id="2330186936255788117">കൂടുതൽ ബുക്ക്‌മാർക്കുകൾ</translation>
+<translation id="2330243730505117832">"ഉപകരണം തിരഞ്ഞെടുക്കുക" അടച്ചു.</translation>
 <translation id="2332515770639153015">മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗ് ഓണാണ്</translation>
 <translation id="233375395665273385">ഇല്ലാതാക്കിയ ശേഷം സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="2334275697832662087">Chrome-ന്റെ AI ലഭ്യമാക്കുന്ന സുരക്ഷ, ഓൺലൈൻ ഭീഷണികളിൽ നിന്ന് നിങ്ങളെ പരിരക്ഷിക്കാൻ സഹായിക്കുന്നു, ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് ആത്മവിശ്വാസം നൽകുന്നു</translation>
@@ -503,6 +503,7 @@
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037517125981011456">Chrome-ൽ സൈൻ ഇൻ ചെയ്യാനുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="3038272154009688107">എല്ലാ സൈറ്റുകളും കാണുക</translation>
+<translation id="3044436568790455247">"ഉപകരണം തിരഞ്ഞെടുക്കുക" മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="3057938290530993634">അടുത്ത തവണ എളുപ്പത്തിൽ ആക്‌സസ് ചെയ്യാൻ, നിങ്ങൾ ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച വെബ്‌സൈറ്റുകൾ പിൻ ചെയ്യാൻ ടാപ്പ് ചെയ്‌ത് പിടിക്കുക</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="3062802207422175757">Chrome-ൽ നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളിലെ ലേഖനങ്ങൾ കാണൂ</translation>
@@ -511,6 +512,7 @@
 <translation id="3067505415088964188">കുറഞ്ഞ നിരക്ക്</translation>
 <translation id="3070005020161560471">സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />സ്വകാര്യതാ നയവും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
+<translation id="3075397426753215787">ഉപകരണം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="3080375898390966733">Google Lens ഉപയോഗിച്ച് ടാബ് തിരയുക</translation>
 <translation id="3080525922482950719">പിന്നീട് അല്ലെങ്കിൽ ഓഫ്‌ലൈനിൽ വായിക്കുന്നതിന് നിങ്ങൾക്ക് പേജുകൾ സംരക്ഷിക്കാനാകും</translation>
 <translation id="3087734570205094154">താഴെ</translation>
@@ -550,6 +552,7 @@
 <translation id="3282801380074962248">വിഭാഗം വിപുലീകരിക്കുക</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{ഒരു പാസ്‌വേഡ് ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അത് നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}other{# പാസ്‌വേഡുകൾ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അവ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}}</translation>
+<translation id="3287664192482809715">"ഉപകരണം തിരഞ്ഞെടുക്കുക" പകുതി ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="3293181007446299124">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം നിങ്ങളുടെ ഉപകരണത്തിൽ സ്വകാര്യമായി സൂക്ഷിക്കുകയും നിങ്ങളുടെ ഐഡന്റിറ്റി സംരക്ഷിക്കാനായി റിപ്പോർട്ടുകൾ വൈകി അയയ്ക്കുകയും ചെയ്യുന്നു.</translation>
 <translation id="3301639354590628973">അക്കൗണ്ടുകൾ മാറണോ?</translation>
 <translation id="3301936297336370235">പാസ്‌വേഡ് നിർദ്ദേശ സ്ഥിരീകരണം</translation>

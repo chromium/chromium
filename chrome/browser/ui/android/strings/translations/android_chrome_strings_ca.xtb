@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Promoció de notificacions de consells tancada</translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1045899828449635435">Vols esborrar també les dades d'aquests llocs web?</translation>
-<translation id="1049461303780085993">Prova Gemini a Chrome per obtenir respostes, conclusions clau i més</translation>
 <translation id="1049743911850919806">Incògnit</translation>
 <translation id="1052842760770519282">No es pot accedir a algunes de les teves contrasenyes</translation>
 <translation id="1057623954802068161">Desplaça't fins a la part superior de la pàgina</translation>
@@ -460,7 +459,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, pestanya audible fixada</translation>
 <translation id="2900528713135656174">Crea un esdeveniment</translation>
 <translation id="2901411048554510387">S'estan mostrant suggeriments per a <ph name="WEBSITE_TITLE" /></translation>
-<translation id="2904300462646366554">Els PDF baixats s'obren automàticament amb un dels lectors de PDF al dispositiu</translation>
+<translation id="2904300462646366554">Els PDF baixats s'obren automàticament amb un dels visors de PDF al dispositiu</translation>
 <translation id="2909615210195135082">Plataforma de notificacions de Google</translation>
 <translation id="2912247081180973411">Tanca les finestres</translation>
 <translation id="2912345083818861431">Fes servir el bloqueig de pantalla per veure les pestanyes d'incògnit obertes</translation>

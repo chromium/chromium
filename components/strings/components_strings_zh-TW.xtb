@@ -351,6 +351,7 @@
 <translation id="1539840569003678498">回報時間：</translation>
 <translation id="1542105669288201090">商業教育</translation>
 <translation id="1542830386724426410">結帳時顯示可用的卡片福利和獎勵 (適用發卡機構的條款規定)。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />瞭解詳情<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">根據貴機構的政策，系統正在掃描你複製的內容，檢查是否含有機密資訊。掃描完成後，系統可能會允許貼上內容。</translation>
 <translation id="1545757265410828525">價格記錄</translation>
 <translation id="1546286808622193216">使用 Gemini 比較卡片福利</translation>
 <translation id="1549470594296187301">您必須啟用 JavaScript 才能使用這項功能。</translation>
@@ -1501,6 +1502,7 @@
 <translation id="3293642807462928945">進一步瞭解 <ph name="POLICY_NAME" /> 政策</translation>
 <translation id="3295444047715739395">在 Chrome 設定中查看和管理密碼</translation>
 <translation id="3299098170013242198">已開啟 Windows Hello 做為填入密碼時的驗證機制</translation>
+<translation id="3299197721044635447">根據貴機構的政策，無法在受管理的 Chrome 環境外貼上內容</translation>
 <translation id="3299720788264079132">使用<ph name="FEATURE_NAME" />功能時發生錯誤</translation>
 <translation id="3303176609391916566">30 x 42 吋</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
@@ -4366,6 +4368,7 @@
 <translation id="767550629621587224">預先裁切分隔紙</translation>
 <translation id="7675756033024037212">不允許捲動及縮放</translation>
 <translation id="7676643023259824263">搜尋剪貼簿文字：<ph name="TEXT" /></translation>
+<translation id="7676840398262504532">貴機構會監控複製內容</translation>
 <translation id="7678730592635586336">重新拍攝影片</translation>
 <translation id="7679287273775285018">使用電子錢包付款</translation>
 <translation id="7679367271685653708">在 Chrome 設定中查看及管理瀏覽記錄</translation>
@@ -4652,6 +4655,7 @@
 <translation id="8134058435519644366">人才招募與人力派遣</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源與公用事業</translation>
+<translation id="814071672416123670">根據貴機構的政策，無法複製內容</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" /> 是目前的預設搜尋引擎。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF 版本：</translation>

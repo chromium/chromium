@@ -573,6 +573,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="7173822816570314652">La tua organizzazione elimina i dati di Chromium quando non vengono utilizzati per <ph name="TIMEOUT_DURATION" />. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
 <translation id="718435575166326686">Chromium deve avere l'autorizzazione di accesso alla fotocamera per questo sito</translation>
 <translation id="7196312274710523067">Impossibile avviare Chromium. Riprova.</translation>
+<translation id="7204669035546236137">Chiedi qualsiasi cosa, ovunque ti trovi, con Gemini in Chromium</translation>
 <translation id="7213008767289637091">Mantieni Chromium nel dock per accedervi rapidamente in qualsiasi momento</translation>
 <translation id="7213407614656404070">Usa Chromium ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
 <translation id="7216228761061470870">Quando utilizzi la Ricerca immagini su desktop, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati al server</translation>
@@ -628,6 +629,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7745317241717453663">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>
 <translation id="7750130090210923118">Ripristina Chromium predefinito</translation>
+<translation id="7752521946322750699">Per proteggere il tuo lavoro su Chromium, la tua organizzazione potrà visualizzare o gestire determinate informazioni quando accedi a Chromium.</translation>
 <translation id="7781047659465034537">Imposta Chromium come browser predefinito e fissalo alla barra delle app</translation>
 <translation id="7786760609782648049">Rendi Chromium più veloce</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>

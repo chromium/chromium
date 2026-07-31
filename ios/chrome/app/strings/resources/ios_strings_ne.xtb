@@ -157,6 +157,7 @@
 <translation id="1497590942294823549">मेनु → पासवर्ड म्यानेजर</translation>
 <translation id="1498283581832036924">तपाईंको <ph name="WEBSITE" /> खाता मेटिने छैन।</translation>
 <translation id="1503814213414825943">आफूले अर्को एपमा एक्स्पोर्ट गर्न चाहेका खाताहरू चयन गर्नुहोस्।</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />।</translation>
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
 <translation id="1506063256525392513">तपाईंले क्यामेरा प्रयोग गर्न दिनुभयो भने तपाईं फोटो खिच्न र अपलोड गर्न तथा QR कोड स्क्यान गर्न पनि सक्नुहुन्छ</translation>
 <translation id="1506733063065214205">RCS MLS क्लाइन्ट</translation>
@@ -272,6 +273,7 @@
 <translation id="183878838231635348">यो कार्डले सुरक्षा जाँचले स्वतः पत्ता लगाउने गोपनीयता वा सुरक्षासम्बन्धी सबै समस्याहरू देखाउँछ।</translation>
 <translation id="1840320537320704887">नयाँ ट्याब पेजसम्बन्धी तपाईंका प्राथमिकताहरू हटाइएका छन्</translation>
 <translation id="1845230888742614096">समूह राखिराख्नुहोस्</translation>
+<translation id="1853558655412913122">तपाईं अब "सेटिङ" अनि "एड्रेस बार" मा गई एड्रेस बारको स्थान परिवर्तन गर्न सक्नुहुन्छ</translation>
 <translation id="1853692000353488670">नयाँ इनकगनिटो ट्याब</translation>
 <translation id="1854463785401910334">खुला ट्याबहरूमा खोज्नुहोस्</translation>
 <translation id="1860609647735325606">Gemini प्रयोग गरी व्याख्या गर्नुहोस्</translation>
@@ -1189,6 +1191,7 @@
 <translation id="4985921635659180565">फाइल मेटाउने समय तोकिसकेपछि उक्त कारबाही रद्द गर्न मिल्दैन।</translation>
 <translation id="498624032394115435">यो लिंक हुने सबै जना सबै ट्याब सम्पादन गर्न सक्छन्।</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />। यो खाता तपाईंको सङ्गठनले व्यवस्थापन गर्छ।</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="4992255726304765516">ट्याब समूहको रङ: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">पासवर्ड कपी गर्नुहोस्</translation>
 <translation id="5009127379503001909">ब्राउज गरिराख्नुहोस्</translation>
@@ -1802,6 +1805,7 @@
 <translation id="6924299883035848912">"ब्राउजिङ डेटा मेटाउनुहोस्" लुकाउनुहोस्</translation>
 <translation id="6930162026494574854">अनुवाद गर्नेसम्बन्धी सेटिङ रिसेट गर्नुहोस्</translation>
 <translation id="6930799952781667037">यसलाई यो भाषामा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="MANAGED_STATUS" />।</translation>
 <translation id="693761253105515415">कुनै पासकोड सेट गर्नुहोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6946722113367118030">सोचिरहेको</translation>
@@ -1851,6 +1855,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">क्यामेरा उपलब्ध छैन</translation>
 <translation id="7138678301420049075">अन्य</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="7141960840225504692">तपाईंका ट्याबहरू बन्द गरिने छन् र ब्राउजिङ डेटा मेटाइने छ</translation>
 <translation id="714291438898585119">ताराङ्कित</translation>
 <translation id="7145337554745942724">चालक अनुमतिपत्रसम्बन्धी जानकारी अपडेट गर्नुहोस्</translation>
@@ -1916,6 +1921,7 @@
 <translation id="7402602673739047753">{count,plural, =1{एउटा बुकमार्क यो डिभाइसमा मात्र सेभ गरिएको छ। यो बुकमार्क आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न यसलाई आफ्नो Google खाता ({email}) मा सेभ गर्नुहोस्।}other{{count} वटा बुकमार्क यो डिभाइसमा मात्र सेभ गरिएका छन्। यी बुकमार्क आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न तिनलाई आफ्नो Google खाता ({email}) मा सेभ गर्नुहोस्।}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) तत्कालै “<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउनु हुने छ</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> वटा नपढिएका लेखहरू।</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />। <ph name="MANAGED_STATUS" />।</translation>
 <translation id="7412027924265291969">जारी राख्नुहोस्</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
 <translation id="7419565702166471774">सधैँ सुरक्षित कनेक्सन प्रयोग गर्नुहोस्</translation>
@@ -2203,6 +2209,7 @@
 <translation id="8292893224181644074">डाउनलोड पूरा भयो</translation>
 <translation id="8299417921174340354">पासवर्डहरू प्रयोग गर्न सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>
 <translation id="8307481894409578819">यो फाइल अपलोड गर्न सकिएन</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />। <ph name="MANAGED_STATUS" />। <ph name="AI_TIER" />।</translation>
 <translation id="8319076807703933069">नयाँ खोज</translation>
 <translation id="8319282042900445670"><ph name="DATE" /> का दिन <ph name="TIME" /> को रिमाइन्डर सेट गरियो</translation>
 <translation id="8320212361750431956">हालसालैको क्रियाकलाप</translation>
@@ -2490,6 +2497,7 @@
 <translation id="9219154867334666734">ट्याबहरू खोज्नुहोस्…</translation>
 <translation id="9223358826628549784">क्र्याश रिपोर्ट पठाइयो।</translation>
 <translation id="926455622548529175">बदल्नुहोस् र मेटाउनुहोस्</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="MANAGED_STATUS" />। <ph name="AI_TIER" />।</translation>
 <translation id="929748059769569925">हाइलाइट गरिएको टेक्स्ट</translation>
 <translation id="932305336591073205">{count,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="939472100615258482">हालको साइट</translation>

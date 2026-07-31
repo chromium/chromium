@@ -575,6 +575,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="7173822816570314652">Je organisatie verwijdert Chromium-gegevens als deze <ph name="TIMEOUT_DURATION" /> niet worden gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.</translation>
 <translation id="718435575166326686">Chromium heeft camerarechten nodig voor deze site</translation>
 <translation id="7196312274710523067">Kan Chromium niet starten. Probeer het opnieuw.</translation>
+<translation id="7204669035546236137">Stel een vraag met Gemini in Chromium, zonder je tabblad te verlaten</translation>
 <translation id="7213008767289637091">Houd Chromium in je Dock om er op elk moment snel toegang toe te hebben</translation>
 <translation id="7213407614656404070">Chromium gebruiken als je op links in berichten, documenten en andere apps klikt</translation>
 <translation id="7216228761061470870">Als je Zoeken met afbeelding gebruikt, worden de paginatitel, URL en content, waaronder pdf's, naar de server gestuurd</translation>
@@ -631,6 +632,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7745317241717453663">Hiermee worden je browsegegevens verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
 <translation id="7750130090210923118">Resetten naar standaard Chromium</translation>
+<translation id="7752521946322750699">Je organisatie kan bepaalde informatie bekijken of beheren als je bent ingelogd bij Chromium om je werk in Chromium te beveiligen.</translation>
 <translation id="7781047659465034537">Chromium instellen als standaardbrowser en vastzetten op de taakbalk</translation>
 <translation id="7786760609782648049">Maak Chromium sneller</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>

@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Кеңештер камтылган жарнамалык билдирме жабылды</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1045899828449635435">Маалымат бул сайттардан да өчүрүлсүнбү?</translation>
-<translation id="1049461303780085993">Жоопторду, негизги сунуштарды жана башкаларды алуу үчүн Chrome'догу Gemini'ды колдонуп көрүңүз</translation>
 <translation id="1049743911850919806">Жашыруун</translation>
 <translation id="1052842760770519282">Айрым сырсөздөрүңүз жеткиликсиз</translation>
 <translation id="1057623954802068161">Беттин жогору жагына сыдыруу</translation>
@@ -314,6 +313,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2328474416100889417">Ар бир адам дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготот жана бардык чакыруу шилтемелери өчүрүлөт</translation>
 <translation id="2329500425421091035">Chrome'догу ЖИ режимине кош келиңиз</translation>
 <translation id="2330186936255788117">Дагы башка кыстармалар</translation>
+<translation id="2330243730505117832">"Түзмөк тандоо" жабылды.</translation>
 <translation id="2332515770639153015">Өркүндөтүлгөн коопсуз серептөө күйүк</translation>
 <translation id="233375395665273385">Өчүрүү жана аккаунттан чыгуу</translation>
 <translation id="2334275697832662087">Chrome'дун ЖИ менен иштеген коопсуздук тутуму Интернеттеги коркунучтардан коргоп, серептөө учурунда коопсуздукту камсыздайт</translation>
@@ -503,6 +503,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3037177537145227281">Баасына көз салуу</translation>
 <translation id="3037517125981011456">Chrome'го кирүү үчүн билдирмелерди көрсөтөт</translation>
 <translation id="3038272154009688107">Бардык сайттарды көрүү</translation>
+<translation id="3044436568790455247">"Түзмөктү тандоо" толук экранда ачылды.</translation>
 <translation id="3057938290530993634">Көп кирген вебсайттарды кадап коюу үчүн коё бербей басып туруп, кийинки жолу оңой ачыңыз</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> кыстарма}other{<ph name="BOOKMARKS_COUNT_MANY" /> кыстарма}}</translation>
 <translation id="3062802207422175757">Chrome'догу сизди кызыктырган макалалар</translation>
@@ -511,6 +512,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3067505415088964188">Баасы төмөн</translation>
 <translation id="3070005020161560471">Автоматтык түрдө которуу</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз. <ph name="BEGIN_LINK3" />Купуялык эрежелери<ph name="END_LINK3" /> да колдонулат.</translation>
+<translation id="3075397426753215787">Түзмөк тандаңыз.</translation>
 <translation id="3080375898390966733">Өтмөктү Google Lens аркылуу издөө</translation>
 <translation id="3080525922482950719">Барактарды сактап коюп, кийинчерээк оффлайн режиминде окуй аласыз</translation>
 <translation id="3087734570205094154">Аягы</translation>
@@ -550,6 +552,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3282801380074962248">Бөлүмдү жайып көрсөтүү</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 сырсөз ушул түзмөккө гана сакталды. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда сактаңыз.}other{# сырсөз ушул түзмөккө гана сакталды. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда сактаңыз.}}</translation>
+<translation id="3287664192482809715">"Түзмөк тандоо" экраны жарым-жартылай ачылды.</translation>
 <translation id="3293181007446299124">Серепчиден көргөн нерселериңиз түзмөктө сакталып, өзүңүзгө гана көрүнөт. Жеке маалыматыңызды сактоо үчүн отчёттор бир аз кечигип жөнөтүлөт.</translation>
 <translation id="3301639354590628973">Башка аккаунтка которуласызбы?</translation>
 <translation id="3301936297336370235">Сунушталган сырсөздү ырастоо</translation>

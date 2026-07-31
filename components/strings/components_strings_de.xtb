@@ -599,6 +599,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="192095259937375524">Button „Tab teilen“ – aktivieren, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen</translation>
 <translation id="1924727005275031552">Neu</translation>
 <translation id="1927439846988093361">Haarpflege</translation>
+<translation id="1927930548546198515">Chrome protokolliert, wie du die Funktion verwendest, z. B. deine Anfragen und dein Verhalten, wenn du Vorschläge annimmst oder ignorierst</translation>
 <translation id="1932098463447129402">Nicht vor</translation>
 <translation id="1935353813610900265">Feedback zur KI‑gestützten Verlaufssuche senden</translation>
 <translation id="1935995810530254458">Trotzdem kopieren</translation>
@@ -833,7 +834,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2268044343513325586">Verfeinern</translation>
 <translation id="2268966938956566076">In <ph name="MINUTES" /> Min. hochladen</translation>
 <translation id="2270484714375784793">Telefonnummer</translation>
-<translation id="2274179746480077483">Informationen aus Apps wie Gmail und Google Fotos automatisch ausfüllen. Basierend auf Personal Intelligence.</translation>
+<translation id="2274179746480077483">Informationen aus Apps wie Gmail und Google Fotos automatisch eintragen. Basierend auf Personal Intelligence.</translation>
 <translation id="2276057643614339130">Druckbasis</translation>
 <translation id="2277103315734023688">Vorwärts springen</translation>
 <translation id="2277753418458118549">Verbindungsdetails anzeigen</translation>
@@ -985,6 +986,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2491120439723279231">Das Serverzertifikat enthält Fehler.</translation>
 <translation id="2491414235131909199">Diese Seite wurde von einer Erweiterung blockiert</translation>
 <translation id="2493122313108999546">Größe geändert</translation>
+<translation id="249376477913017009">Hinweis zum automatischen Ausfüllen aus Gmail und anderen Quellen geöffnet</translation>
 <translation id="2495083838625180221">JSON-Parser</translation>
 <translation id="2496402116964818747">Du kannst in den <ph name="SETTINGS" /> ändern, ob dein Fingerabdruck zum Ausfüllen von Passwörtern verwendet werden soll</translation>
 <translation id="2498091847651709837">Neue Karte scannen</translation>
@@ -1154,6 +1156,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Heimautomatisierung</translation>
 <translation id="2743512410823092182">Ressourcen und Ausrüstung für DJs</translation>
+<translation id="275259155159336003">Unterstützt durch Personal Intelligence mit Gemini. Deine Anfragen, Seitentitel und URLs werden möglicherweise überprüft, um die Funktion „Erweitertes Autofill“ zu verbessern. <ph name="BEGIN_LINK" />Einstellungen verwalten<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> Dateien werden in Google Drive hochgeladen</translation>
 <translation id="2759299890026163685">Versuche es noch einmal, wenn du eine stabile Internetverbindung hast</translation>
 <translation id="2759825833388495838">dein Passwort in <ph name="APP_NAME" /> einzugeben</translation>
@@ -1438,6 +1441,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3208701679386778924">Bitte sende einen Bericht, damit wir ChromeOS-Updates weiter verbessern können.</translation>
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
+<translation id="3209071504641569648">Deine Anfragen, Seitentitel und URLs werden an Google gesendet und möglicherweise überprüft, um die Funktion „Erweitertes Autofill“ zu verbessern</translation>
 <translation id="3212468046572043669">Download gestartet. Zum Ansehen: von oben ziehen und auf den Button „Zurück“ tippen</translation>
 <translation id="3212581601480735796">Deine Aktivität auf <ph name="HOSTNAME" /> wird überwacht</translation>
 <translation id="3215092763954878852">WebAuthn konnte nicht verwendet werden</translation>
@@ -1475,6 +1479,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3254301855501243548">18 × 22 Zoll</translation>
 <translation id="3255926992597692024">Chromium versucht, Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell einen neuen Termin in Google Kalender zu erstellen</translation>
+<translation id="3261180263071638338">Hinweis zum automatischen Ausfüllen aus Gmail und anderen Quellen geschlossen</translation>
 <translation id="3261488570342242926">Informationen zu virtuellen Karten</translation>
 <translation id="3262698603497362968">Kaufoptionen</translation>
 <translation id="3264637689694266148">Wenn du Vorschläge deaktivierst, können der Seitentitel und die URLs deiner Tabs weiterhin für andere Chrome-Funktionen verarbeitet werden. Du kannst den Browserzugriff auf diese Daten in deinen</translation>
@@ -2335,6 +2340,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Flugreservierungen</translation>
 <translation id="4607608436550361748">Chrome-Tipps aufrufen</translation>
+<translation id="4607879293515681409">Mit der Funktion „Erweitertes Autofill“ kannst du jetzt Informationen wie Flugnummern und Termine aus Apps wie Gmail und Google Fotos abrufen und einfügen</translation>
 <translation id="460848736049414407">Vom Administrator blockiert</translation>
 <translation id="4610279718074907952">Diese Website ist einer durch <ph name="SET_OWNER" /> definierten Gruppe zugeordnet, die deine Aktivitäten sehen kann</translation>
 <translation id="4612631413844865947">Bei der Verarbeitung deiner Bestellung bei <ph name="MERCHANT_ORIGIN" /> über <ph name="PAYMENT_APP_ORIGIN" /> ist ein Fehler aufgetreten.</translation>
@@ -2852,6 +2858,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5401344472773249513">Prominenten- und Unterhaltungsnachrichten</translation>
 <translation id="5401674281624189321">Berg- und Skiresorts</translation>
+<translation id="5402715318763077894">Zugriff auf lokales Netzwerk zulassen?</translation>
 <translation id="540949333488055151">Kunststoff (bunt)</translation>
 <translation id="540969355065856584">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat ist zurzeit ungültig. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="5411462078004183575">Preisgünstige Option</translation>
@@ -3102,6 +3109,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5764725887548570807">Ungültiges Quellenformat.</translation>
 <translation id="5764920692828389743">An <ph name="EMAIL_ADDRESS" /> senden</translation>
 <translation id="5765072501007116331">Wähle eine Adresse aus, um Lieferoptionen und -anforderungen zu sehen</translation>
+<translation id="5768323954710688012">Hinweis zum automatischen Ausfüllen aus Gmail und anderen Quellen vollständig geöffnet</translation>
 <translation id="57689295674415555">Wurde die virtuelle Kartennummer nicht eingefügt?</translation>
 <translation id="5773286975255318081">Beispielsweise Nutzernamen von Profilen und Browserversionen</translation>
 <translation id="5774897849666641211">Fragen zu diesem Tab stellen</translation>

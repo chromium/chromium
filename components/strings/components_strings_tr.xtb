@@ -352,6 +352,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1539840569003678498">Rapor gönderildi:</translation>
 <translation id="1542105669288201090">İşletme Eğitimi</translation>
 <translation id="1542830386724426410">Ödeme sırasında kullanılabilen kart avantajlarını ve ödülleri gösterin. Kart sağlayıcının şartları geçerlidir. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Daha fazla bilgi edinin<ph name="CARD_BENEFIT_HELP_LINK_END" />.</translation>
+<translation id="1544739361222649706">Kopyaladığınız içerik, kuruluşunuzun politikaları uyarınca hassas bilgiler açısından taranıyor. Tarama tamamlandıktan sonra yapıştırmaya izin verilebilir.</translation>
 <translation id="1545757265410828525">Fiyat geçmişi</translation>
 <translation id="1546286808622193216">Gemini'ı kullanarak kart avantajlarını karşılaştırın</translation>
 <translation id="1549470594296187301">Bu özelliğin kullanılabilmesi için JavaScript etkinleştirilmelidir.</translation>
@@ -1503,6 +1504,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> politikası ile ilgili daha fazla bilgi edinin</translation>
 <translation id="3295444047715739395">Chrome ayarlarında şifrelerinizi görüntüleyin ve yönetin</translation>
 <translation id="3299098170013242198">Şifreleri doldurmak için Windows Hello etkin</translation>
+<translation id="3299197721044635447">İçerik, kuruluşunuzun politikaları nedeniyle yönetilen Chrome bağlamının dışına yapıştırılamadı</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> kullanılırken bir hata oluştu</translation>
 <translation id="3303176609391916566">30 x 42 inç</translation>
 <translation id="3303855915957856445">Arama sonucu bulunamadı</translation>
@@ -4368,6 +4370,7 @@ Ek ayrıntılar:
 <translation id="767550629621587224">Önceden Kesilmiş Tablar</translation>
 <translation id="7675756033024037212">Kaydırma ve yakınlaştırmaya izin verilmiyor</translation>
 <translation id="7676643023259824263">Panoda metni (<ph name="TEXT" />) ara</translation>
+<translation id="7676840398262504532">Kuruluşunuz kopyalama işlemlerini izliyor</translation>
 <translation id="7678730592635586336">Videoyu yeniden çek</translation>
 <translation id="7679287273775285018">E-cüzdan ile öde</translation>
 <translation id="7679367271685653708">Chrome ayarlarında tarama geçmişinizi görüntüleyin ve yönetin</translation>
@@ -4654,6 +4657,7 @@ Ek ayrıntılar:
 <translation id="8134058435519644366">İşe Alım ve Kadrolar</translation>
 <translation id="8135546115396015134">sol tuş</translation>
 <translation id="8137456439814903304">Enerji ve Kamu Hizmetleri</translation>
+<translation id="814071672416123670">İçerik, kuruluşunuzun politikaları nedeniyle kopyalanamadı</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ay önce oluşturuldu}other{{NUM_MONTHS} ay önce oluşturuldu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, mevcut varsayılan. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF sürümü:</translation>

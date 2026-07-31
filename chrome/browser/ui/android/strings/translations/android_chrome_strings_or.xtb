@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">ଟିପ୍ସ ବିଜ୍ଞପ୍ତି ପ୍ରୋମୋ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1045899828449635435">ଏଇ ସାଇଟ ଡାଟା ବି କାଢ଼ିବେ?</translation>
-<translation id="1049461303780085993">ଉତ୍ତର, ପ୍ରମୁଖ ଟେକଆୱେ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବା ପାଇଁ Chromeରେ Geminiକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="1049743911850919806">ଇନ୍‌କଗ୍ନିଟୋ</translation>
 <translation id="1052842760770519282">ଆପଣଙ୍କର କିଛି ପାସୱାର୍ଡ ଆକ୍ସେସ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1057623954802068161">ପୃଷ୍ଠାର ଶୀର୍ଷକୁ ସ୍କ୍ରୋଲ କରନ୍ତୁ</translation>
@@ -314,6 +313,7 @@
 <translation id="2328474416100889417">ସମସ୍ତେ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ସମସ୍ତ ଆମନ୍ତ୍ରଣ ଲିଙ୍କ କାମ କରିବ ନାହିଁ</translation>
 <translation id="2329500425421091035">Chromeରେ AI ମୋଡ ଆସିଯାଇଛି</translation>
 <translation id="2330186936255788117">ଅଧିକ ବୁକମାର୍କ</translation>
+<translation id="2330243730505117832">"ଏକ ଡିଭାଇସ ବାଛନ୍ତୁ" ବନ୍ଦ ଅଛି।</translation>
 <translation id="2332515770639153015">ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଚାଲୁ ଅଛି</translation>
 <translation id="233375395665273385">ଡିଲିଟ କରି ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="2334275697832662087">Chromeର AI-ପରିଚାଳିତ ସିକ୍ୟୁରିଟି ଆପଣଙ୍କୁ ଅନଲାଇନ ବିପଦଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରେ, ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ଆତ୍ମବିଶ୍ୱାସ ଦିଏ</translation>
@@ -503,6 +503,7 @@
 <translation id="3037177537145227281">ମୂଲ୍ୟ ଟ୍ରାକ କରାଯାଉଛି</translation>
 <translation id="3037517125981011456">Chromeରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ ପ୍ରମ୍ପ୍ଟ ଦେଖାଏ</translation>
 <translation id="3038272154009688107">ସମସ୍ତ ସାଇଟ ଦେଖନ୍ତୁ</translation>
+<translation id="3044436568790455247">"ଏକ ଡିଭାଇସ ବାଛନ୍ତୁ" ପୂର୍ଣ୍ଣ ଉଚ୍ଚତାରେ ଖୋଲାଯାଇଛି।</translation>
 <translation id="3057938290530993634">ପରବର୍ତ୍ତୀ ସମୟରେ ସହଜ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ସବୁଠାରୁ ଅଧିକ ଭିଜିଟ କରାଯାଇଥିବା ୱେବସାଇଟଗୁଡ଼ିକୁ ପିନ କରିବା ପାଇଁ ଟାପ କରି ଧରି ରଖନ୍ତୁ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />ଟି ବୁକ୍‌ମାର୍କ}other{<ph name="BOOKMARKS_COUNT_MANY" />ଟି ବୁକ୍‌ମାର୍କ}}</translation>
 <translation id="3062802207422175757">Chromeରେ ଆପଣଙ୍କ ଆଗ୍ରହଗୁଡ଼ିକ ବିଷୟରେ ଆର୍ଟିକିଲ୍</translation>
@@ -511,6 +512,7 @@
 <translation id="3067505415088964188">ମୂଲ୍ୟ କମ ଅଟେ</translation>
 <translation id="3070005020161560471">ସ୍ୱତଃ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖି, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" />ରେ ସମ୍ମତ ହୁଅନ୍ତି। <ph name="BEGIN_LINK3" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK3" /> ମଧ୍ୟ ଲାଗୁ ହୁଏ।</translation>
+<translation id="3075397426753215787">ଏକ ଡିଭାଇସ ବାଛନ୍ତୁ।</translation>
 <translation id="3080375898390966733">Google Lens ମାଧ୍ୟମରେ ଟାବ ସର୍ଚ୍ଚ କର</translation>
 <translation id="3080525922482950719">ଆପଣ ପରେ କିମ୍ବା ଅଫଲାଇନରେ ପଢ଼ିବା ପାଇଁ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="3087734570205094154">ନିମ୍ନଭାଗ</translation>
@@ -550,6 +552,7 @@
 <translation id="3282801380074962248">ବିଭାଗ ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ଟାବ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ଟାବ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 ପାସୱାର୍ଡକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହାକୁ ସେଭ କରନ୍ତୁ।}other{# ପାସୱାର୍ଡକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}}</translation>
+<translation id="3287664192482809715">"ଏକ ଡିଭାଇସ ବାଛନ୍ତୁ" ଅଧା ଉଚ୍ଚତାରେ ଖୋଲାଯାଇଛି।</translation>
 <translation id="3293181007446299124">ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସକୁ ବ୍ୟକ୍ତିଗତ ରଖାଯାଏ ଏବଂ ଆପଣଙ୍କର ପରିଚୟକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ବିଳମ୍ବରେ ରିପୋର୍ଟଗୁଡ଼ିକ ପଠାଯାଏ</translation>
 <translation id="3301639354590628973">ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସ୍ୱିଚ କରିବେ?</translation>
 <translation id="3301936297336370235">ପାସୱାର୍ଡର ପରାମର୍ଶର ସୁନିଶ୍ଚିତକରଣ</translation>

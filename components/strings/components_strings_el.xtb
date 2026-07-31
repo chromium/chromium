@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Η αναφορά στάλθηκε:</translation>
 <translation id="1542105669288201090">Επιχειρηματική εκπαίδευση</translation>
 <translation id="1542830386724426410">Εμφάνιση των διαθέσιμων οφελών και επιβραβεύσεων κάρτας κατά την ολοκλήρωση αγοράς. Ισχύουν όροι εκδότη. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Μάθετε περισσότερα<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Με βάση τις πολιτικές του οργανισμού σας, το περιεχόμενο που αντιγράψατε σαρώνεται για ευαίσθητες πληροφορίες. Η επικόλληση μπορεί να επιτρέπεται μετά την ολοκλήρωση της σάρωσης.</translation>
 <translation id="1545757265410828525">Ιστορικό τιμών</translation>
 <translation id="1546286808622193216">Σύγκριση οφελών καρτών με το Gemini</translation>
 <translation id="1549470594296187301">Θα πρέπει να ενεργοποιηθεί η JavaScript για τη χρήση αυτής της λειτουργίας.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945">Μάθετε περισσότερα σχετικά με την πολιτική <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Δείτε και διαχειριστείτε τους κωδικούς πρόσβασής σας στις ρυθμίσεις του Chrome.</translation>
 <translation id="3299098170013242198">Το Windows Hello είναι ενεργό για τη συμπλήρωση κωδικών πρόσβασης</translation>
+<translation id="3299197721044635447">Δεν ήταν δυνατή η επικόλληση περιεχομένου εκτός του διαχειριζόμενου περιβάλλοντος του Chrome λόγω των πολιτικών του οργανισμού σας</translation>
 <translation id="3299720788264079132">Παρουσιάστηκε κάποιο πρόβλημα κατά τη χρήση της λειτουργίας <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 ίντσες</translation>
 <translation id="3303855915957856445">Δεν βρέθηκαν αποτελέσματα αναζήτησης</translation>
@@ -4370,6 +4372,7 @@
 <translation id="767550629621587224">Καρτέλες με κοπή</translation>
 <translation id="7675756033024037212">Η κύλιση και η εστίαση δεν επιτρέπονται</translation>
 <translation id="7676643023259824263">Αναζήτηση κειμένου σε πρόχειρο, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Ο οργανισμός σας παρακολουθεί την αντιγραφή</translation>
 <translation id="7678730592635586336">Επανάληψη εγγραφής βίντεο</translation>
 <translation id="7679287273775285018">Πληρωμή με Ηλεκτρονικό πορτοφόλι</translation>
 <translation id="7679367271685653708">Προβολή και διαχείριση του ιστορικού περιήγησής σας στις ρυθμίσεις του Chrome</translation>
@@ -4656,6 +4659,7 @@
 <translation id="8134058435519644366">Προσλήψεις και προσωπικό</translation>
 <translation id="8135546115396015134">αριστερό πλήκτρο</translation>
 <translation id="8137456439814903304">Ενέργεια και υπηρεσίες κοινής ωφέλειας</translation>
+<translation id="814071672416123670">Δεν ήταν δυνατή η αντιγραφή του περιεχομένου λόγω των πολιτικών του οργανισμού σας</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Δημιουργήθηκε πριν από 1 μήνα}other{Δημιουργήθηκε πριν από {NUM_MONTHS} μήνες}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, τρέχουσα προεπιλογή. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Έκδοση PDF:</translation>

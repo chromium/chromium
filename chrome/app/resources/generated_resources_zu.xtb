@@ -1595,7 +1595,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2227179592712503583">Susa isiphakamiso</translation>
 <translation id="222931766245975952">Ifayela lifinyeziwe</translation>
 <translation id="2229342031987138128">Amagama-ncazo avalekile</translation>
-<translation id="2231160360698766265">Amasayithi angadlala okuqukethwe okuvikelekile</translation>
 <translation id="2231351769755997720">Azikho iziphakamiso ezitholakalayo. Zama ukubuza umbuzo wakho mayelana naleli khasi.</translation>
 <translation id="2232751457155581899">Amasayithi angacela ukulandelela isimo sekhamera yakho</translation>
 <translation id="2233502537820838181">Olunye ulwazi</translation>
@@ -3882,7 +3881,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="3928659086758780856">Uyinki sewuyaphela</translation>
 <translation id="3929426037718431833">Lezi zandiso zingabona futhi zishintshe ulwazi kuleli sayithi.</translation>
 <translation id="3930155420525972941">Hambisa iqembu ewindini elisha</translation>
-<translation id="3930602610362250897">Ukuze adlale okuqukethwe okuvikelwe yi-copyright, amasayithi angahle adinge ukusebenzisa amasevisi okuvikela okuqukethwe</translation>
 <translation id="3930737994424905957">Ifuna amadivayisi</translation>
 <translation id="3930968231047618417">Umbala ongemuva</translation>
 <translation id="3932356525934356570">Phina i-<ph name="EXTENSION_NAME" /></translation>
@@ -7253,7 +7251,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6590458744723262880">Qamba kabusha ifolda</translation>
 <translation id="6592267180249644460">Ilogi ye-WebRTC ithwetshuliwe ngomhla ka-<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Isigxivizo sakho somunwe sithwetshuliwe</translation>
-<translation id="6593881952206664229">Imidiya ene-copyright ingahle ingadlali</translation>
 <translation id="6594011207075825276">Ithola amadivayisi womkhiqizo...</translation>
 <translation id="6595322909015878027">Ayivunyelwe ukufaka isithombe-esithombeni ngokuzenzakalela</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Iphumelele ukushintsha iphasiwedi eyonakalisiwe.
@@ -10653,7 +10650,6 @@ Lokhu kungabandakanya ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza y
 <translation id="9179524979050048593">Igama lomsebenzisi lesikrini sokungena ngemvume</translation>
 <translation id="9180380851667544951">Isayithi lingabelana ngesikrini sakho</translation>
 <translation id="9180847522826713506">Ukuze ubuke iphasiwedi yakho noma wengeze inothi ngayo, chofoza isithonjana sokhiye</translation>
-<translation id="9182556968660520230">Ungavumeli amasayithi kokuqukethwe okuvikelwe yi-Google Play</translation>
 <translation id="9183302530794969518">Google Amadokhumenti</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Uhlelo lokusebenza}one{izinhlelo zokusebenza ezingu-#}other{izinhlelo zokusebenza ezingu-#}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Umlawuli wakho angarekhoda isikrini sakho nge-<ph name="APP0_NAME" />. Ngeke waziswe uma ukurekhoda kuqala.}=2{Umlawuli wakho angarekhoda isikrini sakho nge-<ph name="APP0_NAME" /> nange-<ph name="APP1_NAME" />. Ngeke waziswe uma ukurekhoda kuqala.}=3{Umlawuli wakho angarekhoda isikrini sakho nge-<ph name="APP0_NAME" />, <ph name="APP1_NAME" /> kanye nenye i-app e-1. Ngeke waziswe lapho ukurekhoda kuqala.}one{Umlawuli wakho angarekhoda isikrini sakho nge-<ph name="APP0_NAME" />, <ph name="APP1_NAME" /> nangamanye ama-app angu-#. Ngeke waziswe uma ukurekhoda kuqala.}other{Umlawuli wakho angarekhoda isikrini sakho nge-<ph name="APP0_NAME" />, <ph name="APP1_NAME" /> nangamanye ama-app angu-#. Ngeke waziswe uma ukurekhoda kuqala.}}</translation>

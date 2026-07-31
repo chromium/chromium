@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">报告发送时间：</translation>
 <translation id="1542105669288201090">商业教育</translation>
 <translation id="1542830386724426410">在结账时显示凭卡可享受哪些福利和奖励。须遵守发卡机构的相关条款。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />了解详情<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">根据您所在组织的政策，系统正在扫描您复制的内容，以检查其中是否包含敏感信息。扫描完成后，系统可能会允许粘贴。</translation>
 <translation id="1545757265410828525">既往价格</translation>
 <translation id="1546286808622193216">使用 Gemini 比较凭卡可享的福利</translation>
 <translation id="1549470594296187301">必须启用 JavaScript 才能使用此功能。</translation>
@@ -1501,6 +1502,7 @@
 <translation id="3293642807462928945">详细了解“<ph name="POLICY_NAME" />”政策</translation>
 <translation id="3295444047715739395">请在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="3299098170013242198">已开启 Windows Hello 作为填充密码时的验证机制</translation>
+<translation id="3299197721044635447">受组织政策限制，无法将内容粘贴到受管理的 Chrome 环境之外</translation>
 <translation id="3299720788264079132">使用“<ph name="FEATURE_NAME" />”功能时出了点问题</translation>
 <translation id="3303176609391916566">30 x 42 英寸</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
@@ -4363,6 +4365,7 @@
 <translation id="767550629621587224">预剪切标签</translation>
 <translation id="7675756033024037212">不允许滚动和缩放</translation>
 <translation id="7676643023259824263">搜索剪贴板上的文字：<ph name="TEXT" /></translation>
+<translation id="7676840398262504532">您的组织会对复制操作进行监控</translation>
 <translation id="7678730592635586336">重拍视频</translation>
 <translation id="7679287273775285018">使用电子钱包付款</translation>
 <translation id="7679367271685653708">在 Chrome 设置中查看和管理您的浏览记录</translation>
@@ -4649,6 +4652,7 @@
 <translation id="8134058435519644366">招聘与人事</translation>
 <translation id="8135546115396015134">向左键</translation>
 <translation id="8137456439814903304">能源与公共事业</translation>
+<translation id="814071672416123670">受组织政策限制，您无法复制内容</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{创建时间：1 个月前}other{创建时间：{NUM_MONTHS} 个月前}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />，当前默认搜索引擎。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF 版本：</translation>

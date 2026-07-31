@@ -77,6 +77,7 @@
 <translation id="1698376642261615901">Google Chrome ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes kannst du bedenkenlos im Internet surfen.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome wird in einer Stunde neu gestartet}other{Chrome wird in # Stunden neu gestartet}}</translation>
 <translation id="1722488837206509557">So kannst du aus verfügbaren Geräten auswählen und Inhalte darauf anzeigen lassen.</translation>
+<translation id="1724094881572874997">Zum Schutz deiner Arbeit in Chrome kann deine Organisation bestimmte Informationen ansehen oder verwalten, wenn du in Chrome angemeldet bist.</translation>
 <translation id="177180974022074201">Mit Gemini in Chrome ausprobieren</translation>
 <translation id="1786003790898721085">Du musst auf deinem Gerät (<ph name="TARGET_DEVICE_NAME" />) in Chrome angemeldet sein. Versuche es dann noch einmal.</translation>
 <translation id="1786044937610313874">Verknüpfungen werden in Chrome geöffnet</translation>
@@ -196,6 +197,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chrome</translation>
 <translation id="2970681950995291301">Wenn du dein Google-Konto von Chrome entfernen möchtest, melde dich auf der Seite „Einstellungen“ von Chrome ab</translation>
 <translation id="2976869732253036751">Mit Chrome Preis-Tracking-Benachrichtigungen auf dem Smartphone erhalten</translation>
+<translation id="2985091279808606502">Chrome benötigt die Berechtigung für das lokale Netzwerk für diese Website</translation>
 <translation id="2991167882679440829">Deine Passwörter und anderen in deinem Google-Konto gespeicherten Chrome-Daten werden von diesem Gerät entfernt. Wenn du sie in Zukunft in Chrome verwenden möchtest, melde dich einfach wieder an.</translation>
 <translation id="2994465299455873643">Bietet Verschlüsselungsdienste und eine sichere Möglichkeit, <ph name="BROWSER_NAME" /> wiederherzustellen, falls der Browser veraltet ist. Wenn dieser Dienst deaktiviert ist, verliert <ph name="BROWSER_NAME" /> möglicherweise den Zugriff auf verschlüsselte Daten und <ph name="BROWSER_NAME" /> kann sich möglicherweise nicht selbst wiederherstellen.</translation>
 <translation id="3003694935412297923">Alle Tasks</translation>
@@ -714,6 +716,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="8113883687556086139">Bestätige deine Identität, um Chrome-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="8115695070094288807">Chrome personalisieren…</translation>
 <translation id="8118331347066725040">Feedback zur Suche mit Lens geben</translation>
+<translation id="812930250799242837">Angemeldet als <ph name="USER_NAME" />, Google-Abo. Kontomenü öffnen.</translation>
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8162006532256575008">Chrome ohne Konto verwenden</translation>
@@ -747,6 +750,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 
 Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelöscht hast. Wenn du dich jetzt abmeldest, werden nicht gespeicherte Lesezeichen gelöscht.</translation>
 <translation id="8458117863387545390">Chrome auf deinem Smartphone installieren</translation>
+<translation id="848851325211467878">Angemeldet als <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-Abo. Kontomenü öffnen.</translation>
 <translation id="8496177819998570653">Google P&amp;asswortmanager</translation>
 <translation id="8498858610309223613">Da soeben ein kritisches Sicherheitsupdate für Google Chrome installiert wurde, solltest du jetzt einen Neustart durchführen. Deine Tabs werden dann automatisch wiederhergestellt.</translation>
 <translation id="8521348052903287641">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Dev.</translation>

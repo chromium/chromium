@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Kampanjen för tipsaviseringar har stängts</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1045899828449635435">Vill du även rensa data?</translation>
-<translation id="1049461303780085993">Testa Gemini i Chrome för att få svar, viktiga slutsatser med mera</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Vissa av dina lösenord är inte tillgängliga</translation>
 <translation id="1057623954802068161">Scrolla högst upp på sidan</translation>
@@ -314,6 +313,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2328474416100889417">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
 <translation id="2329500425421091035">Vi presenterar AI-läget i Chrome</translation>
 <translation id="2330186936255788117">Fler bokmärken</translation>
+<translation id="2330243730505117832">Välj en enhet är stängt.</translation>
 <translation id="2332515770639153015">Förbättrad säker webbsökning har aktiverats</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
 <translation id="2334275697832662087">Med Chromes AI-baserade säkerhet skyddas du mot hot online, så att du kan känna dig säker när du surfar</translation>
@@ -503,6 +503,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037517125981011456">Visar meddelanden om att logga in i Chrome</translation>
 <translation id="3038272154009688107">Visa alla webbplatser</translation>
+<translation id="3044436568790455247">Välj en enhet har öppnats över hela skärmen.</translation>
 <translation id="3057938290530993634">Tryck länge för att fästa dina mest besökta webbplatser så att du kommer åt dem snabbt nästa gång</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
 <translation id="3062802207422175757">Artiklar om dina intressen i Chrome</translation>
@@ -511,6 +512,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3067505415088964188">Priset är lågt</translation>
 <translation id="3070005020161560471">Översätt automatiskt</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Integritetspolicyn<ph name="END_LINK3" /> gäller också.</translation>
+<translation id="3075397426753215787">Välj en enhet.</translation>
 <translation id="3080375898390966733">Sök på fliken med Google Lens</translation>
 <translation id="3080525922482950719">Du kan spara sidor som du vill läsa senare eller offline</translation>
 <translation id="3087734570205094154">Nederst</translation>
@@ -550,6 +552,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3282801380074962248">Utöka avsnitt</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> flikar}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 lösenord sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot.}other{# lösenord sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot.}}</translation>
+<translation id="3287664192482809715">Välj en enhet har öppnats över halva skärmen.</translation>
 <translation id="3293181007446299124">Webbhistoriken förblir privat på enheten och rapporter skickas med en fördröjning för att skydda din identitet</translation>
 <translation id="3301639354590628973">Vill du byta konto?</translation>
 <translation id="3301936297336370235">Bekräftelse för lösenordsförslag</translation>

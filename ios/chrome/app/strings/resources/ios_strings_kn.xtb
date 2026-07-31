@@ -157,6 +157,7 @@
 <translation id="1497590942294823549">ಮೆನು → Password Manager</translation>
 <translation id="1498283581832036924">ನಿಮ್ಮ <ph name="WEBSITE" /> ಖಾತೆಯನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1503814213414825943">ನೀವು ಇನ್ನೊಂದು ಆ್ಯಪ್‌ಗೆ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಲು ಬಯಸುವ ಖಾತೆಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="1506063256525392513">ಇದು ಫೋಟೋಗಳನ್ನು ತೆಗೆಯಲು ಮತ್ತು ಅಪ್‌ಲೋಡ್ ಮಾಡಲು, ಹಾಗೂ QR ಕೋಡ್‌ಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ</translation>
 <translation id="1506733063065214205">RCS MLS ಕ್ಲೈಂಟ್</translation>
@@ -272,6 +273,7 @@
 <translation id="183878838231635348">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಿಮಗಾಗಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಯಾದ ಯಾವುದೇ ಗೌಪ್ಯತೆ ಅಥವಾ ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳನ್ನು ಈ ಕಾರ್ಡ್ ತೋರಿಸುತ್ತದೆ.</translation>
 <translation id="1840320537320704887">ನಿಮ್ಮ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದ ಆದ್ಯತೆಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1845230888742614096">ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="1853558655412913122">ನೀವು ಈಗ "ಸೆಟ್ಟಿಂಗ್‌ಗಳು" ಮತ್ತು ನಂತರ "ವಿಳಾಸ ಪಟ್ಟಿ"ಗೆ ಹೋಗುವ ಮೂಲಕ ವಿಳಾಸ ಪಟ್ಟಿಯ ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="1853692000353488670">ಹೊಸ ಅದೃಶ್ಯ ವಿಂಡೋ</translation>
 <translation id="1854463785401910334">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="1860609647735325606">Gemini ಮೂಲಕ ವಿವರಿಸಿ</translation>
@@ -1189,6 +1191,7 @@
 <translation id="4985921635659180565">ಫೈಲ್ ಅನ್ನು ಅಳಿಸಲು ನಿಗದಿಪಡಿಸಿದ ನಂತರ, ಅದನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="498624032394115435">ಲಿಂಕ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516"><ph name="COLOR" /> ಟ್ಯಾಬ್ ಗುಂಪಿನ ಬಣ್ಣ</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="5009127379503001909">ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರಿ</translation>
@@ -1802,6 +1805,7 @@
 <translation id="6924299883035848912">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="6930162026494574854">ಅನುವಾದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ರೀಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="6930799952781667037">ಈ ಭಾಷೆಯನ್ನು ಬದಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">ಪಾಸ್‌ಕೋಡ್‌ ಅನ್ನು ಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6946722113367118030">ಆಲೋಚಿಸುವುದು</translation>
@@ -1851,6 +1855,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ಕ್ಯಾಮರಾ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7138678301420049075">ಇತರೆ</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="714291438898585119">ನಕ್ಷತ್ರ ಹಾಕಿರುವುದು</translation>
 <translation id="7145337554745942724">ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
@@ -1916,6 +1921,7 @@
 <translation id="7402602673739047753">{count,plural, =1{1 ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಇದನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ.}one{ಈ ಸಾಧನದಲ್ಲಿ {count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ.}other{ಈ ಸಾಧನದಲ್ಲಿ {count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ.}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ತಕ್ಷಣವೇ “<ph name="GROUP_NAME" />” ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ಓದದಿರುವ ಲೇಖನಗಳು.</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">ಮುಂದುವರಿಸಿ</translation>
 <translation id="741204030948306876">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="7419565702166471774">ಯಾವಾಗಲೂ ಸುರಕ್ಷಿತವಾದ ಕನೆಕ್ಷನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
@@ -2203,6 +2209,7 @@
 <translation id="8292893224181644074">ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="8299417921174340354">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೋಡ್ ಅನ್ನು ಹೊಂದಿಸಬೇಕು.</translation>
 <translation id="8307481894409578819">ಈ ಫೈಲ್ ಅನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">ಹೊಸ ಹುಡುಕಾಟ</translation>
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> ಗೆ ರಿಮೈಂಡರ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8320212361750431956">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ</translation>
@@ -2490,6 +2497,7 @@
 <translation id="9219154867334666734">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ…</translation>
 <translation id="9223358826628549784">ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
 <translation id="926455622548529175">ಬದಲಿಸಿ ಮತ್ತು ಅಳಿಸಿ</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">ಹೈಲೈಟ್ ಮಾಡಿದ ಪಠ್ಯ</translation>
 <translation id="932305336591073205">{count,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="939472100615258482">ಪ್ರಸ್ತುತ ಸೈಟ್‌</translation>

@@ -1577,7 +1577,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2227179592712503583">Hiq sugjerimin</translation>
 <translation id="222931766245975952">Dosja është e shkurtuar</translation>
 <translation id="2229342031987138128">Titrat</translation>
-<translation id="2231160360698766265">Sajtet mund të luajnë përmbajtje të mbrojtura</translation>
 <translation id="2231351769755997720">Nuk ka asnjë sugjerim të disponueshëm. Provo të bësh pyetjen tënde për këtë faqe.</translation>
 <translation id="2232751457155581899">Sajtet mund të kërkojnë të monitorojnë pozicionin e kamerës</translation>
 <translation id="2233502537820838181">&amp;Më shumë informacion</translation>
@@ -3857,7 +3856,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3928659086758780856">Ka pak bojë</translation>
 <translation id="3929426037718431833">Këto shtesa mund të shikojnë dhe të ndryshojnë informacionet në këtë sajt.</translation>
 <translation id="3930155420525972941">Zhvendose grupin në dritaren e re</translation>
-<translation id="3930602610362250897">Për të luajtur përmbajtjet e mbrojtura nga të drejtat e autorit, sajtet mund të kenë nevojë të përdorin një shërbim të mbrojtjes së përmbajtjeve</translation>
 <translation id="3930737994424905957">Po kërkohet për pajisje</translation>
 <translation id="3930968231047618417">Ngjyra e sfondit</translation>
 <translation id="3932356525934356570">Gozhdoje <ph name="EXTENSION_NAME" /></translation>
@@ -7201,7 +7199,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6590458744723262880">Riemërto dosjen</translation>
 <translation id="6592267180249644460">Evidenca e WebRTC regjistroi <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Gjurma e gishtit tënd u regjistrua</translation>
-<translation id="6593881952206664229">Mediat me të drejtat e autorit mund të mos luhen</translation>
 <translation id="6594011207075825276">Po gjen pajisjet me portë seriale...</translation>
 <translation id="6595322909015878027">Nuk lejohen të kalojnë automatikisht në modalitetin "figurë brenda figurës"</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Fjalëkalimi i komprometuar u ndryshua me sukses.
@@ -10582,7 +10579,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9179524979050048593">Emri i përdoruesit të ekranit të identifikimit</translation>
 <translation id="9180380851667544951">Sajti mund të ndajë ekranin tënd</translation>
 <translation id="9180847522826713506">Për të shikuar fjalëkalimin tënd ose për të shtuar një shënim për të, kliko tek ikona e çelësit</translation>
-<translation id="9182556968660520230">Mos lejo që sajtet të luajnë përmbajtje të mbrojtura</translation>
 <translation id="9183302530794969518">Dokumentet e Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacion}other{# aplikacione}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=2{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" /> dhe <ph name="APP1_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=3{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe 1 aplikacion tjetër. Nuk do të njoftohesh kur të fillojë regjistrimi.}other{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe # aplikacione të tjera. Nuk do të njoftohesh kur të fillojë regjistrimi.}}</translation>

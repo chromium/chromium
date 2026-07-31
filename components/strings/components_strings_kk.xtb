@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Есеп жіберілді:</translation>
 <translation id="1542105669288201090">Іскери білім</translation>
 <translation id="1542830386724426410">Төлеу кезінде қолжетімді карта бонустарын көрсету. Эмитент шарттары қолданылады. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Толық ақпарат<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Ұйымыңыздың саясаттарына сәйкес, көшірілген контентте құпия ақпарат бар-жоғы тексеріліп жатыр. Тексеру аяқталғаннан кейін, қоюға рұқсат берілуі мүмкін.</translation>
 <translation id="1545757265410828525">Баға тарихы</translation>
 <translation id="1546286808622193216">Gemini арқылы карта бонустарын салыстырыңыз.</translation>
 <translation id="1549470594296187301">Бұл мүмкіндікті пайдалану үшін JavaScript қосылуы керек.</translation>
@@ -1502,6 +1503,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты туралы қосымша ақпарат</translation>
 <translation id="3295444047715739395">Chrome параметрлерінде құпия сөздерді көріңіз және басқарыңыз.</translation>
 <translation id="3299098170013242198">Құпия сөздерді толтыру үшін Windows Hello қосулы.</translation>
+<translation id="3299197721044635447">Ұйымыңыздың саясаттарына сәйкес, контентті басқарылатын Chrome контексінен тыс жерге қою мүмкін емес.</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> функциясын пайдаланған кезде бірдеңе дұрыс болмады.</translation>
 <translation id="3303176609391916566">30 x 42 дюйм</translation>
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
@@ -4366,6 +4368,7 @@
 <translation id="767550629621587224">Алдын ала қиып алынған қойындылар</translation>
 <translation id="7675756033024037212">Айналдыру мен масштабтауға рұқсат берілмеді</translation>
 <translation id="7676643023259824263">Буфер мәтінін (<ph name="TEXT" />) іздеу</translation>
+<translation id="7676840398262504532">Ұйымыңыз көшіруді бақылайды</translation>
 <translation id="7678730592635586336">Бейнені қайта жазу</translation>
 <translation id="7679287273775285018">Электрондық әмиянмен төлеу</translation>
 <translation id="7679367271685653708">Chrome параметрлерінен браузерді қолдану тарихын көру және басқару</translation>
@@ -4652,6 +4655,7 @@
 <translation id="8134058435519644366">Жұмысқа қабылдау және жұмысқа тұру</translation>
 <translation id="8135546115396015134">сол жақ перне</translation>
 <translation id="8137456439814903304">Қуат және коммуналдық қызметтер</translation>
+<translation id="814071672416123670">Ұйымыңыздың саясаттарына сәйкес, контентті көшіру мүмкін емес.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ай бұрын жасалды.}other{{NUM_MONTHS} ай бұрын жасалды.}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, қазіргі әдепкі жүйе. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF нұсқасы:</translation>

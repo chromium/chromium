@@ -352,6 +352,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1539840569003678498">Data invio ultimo rapporto:</translation>
 <translation id="1542105669288201090">Formazione manageriale</translation>
 <translation id="1542830386724426410">Mostra i premi e i vantaggi disponibili per la carta al momento del pagamento. Si applicano i termini dell'emittente. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Scopri di più<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">In base alle policy della tua organizzazione, i contenuti copiati vengono analizzati per verificare la presenza di informazioni sensibili. Potrai incollare i contenuti una volta completata l'analisi.</translation>
 <translation id="1545757265410828525">Cronologia dei prezzi</translation>
 <translation id="1546286808622193216">Confronta i vantaggi delle carte con Gemini</translation>
 <translation id="1549470594296187301">JavaScript deve essere attivato per utilizzare questa funzione.</translation>
@@ -1500,6 +1501,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3293642807462928945">Scopri di più sulla norma <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Visualizza e gestisci le tue password nelle impostazioni di Chrome</translation>
 <translation id="3299098170013242198">Windows Hello è attivo per inserire le password</translation>
+<translation id="3299197721044635447">Impossibile incollare i contenuti al di fuori del contesto Chrome gestito a causa delle policy della tua organizzazione</translation>
 <translation id="3299720788264079132">Si è verificato un problema durante l'utilizzo della funzionalità <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 in</translation>
 <translation id="3303855915957856445">Nessun risultato di ricerca trovato</translation>
@@ -4364,6 +4366,7 @@ Ulteriori dettagli:
 <translation id="767550629621587224">Schede pretagliate</translation>
 <translation id="7675756033024037212">Scorrimento e zoom non consentiti</translation>
 <translation id="7676643023259824263">Cerca testo negli appunti, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">La tua organizzazione monitora le operazioni di copia</translation>
 <translation id="7678730592635586336">Nuova ripresa video</translation>
 <translation id="7679287273775285018">Paga con e-wallet</translation>
 <translation id="7679367271685653708">Visualizza e gestisci la tua cronologia di navigazione nelle impostazioni di Chrome</translation>
@@ -4650,6 +4653,7 @@ Ulteriori dettagli:
 <translation id="8134058435519644366">Selezione e assunzione di personale</translation>
 <translation id="8135546115396015134">tasto sinistro</translation>
 <translation id="8137456439814903304">Energia e servizi pubblici</translation>
+<translation id="814071672416123670">Impossibile copiare i contenuti a causa delle policy della tua organizzazione</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creato 1 mese fa}other{Creato {NUM_MONTHS} mesi fa}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, valore predefinito corrente. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versione PDF:</translation>

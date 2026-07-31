@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Raportul a fost trimis:</translation>
 <translation id="1542105669288201090">Educație comercială</translation>
 <translation id="1542830386724426410">Afișează beneficiile și recompensele disponibile pentru card la finalizarea achiziției. Se aplică anumite condiții ale emitentului. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Află mai multe<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Conform politicilor organizației, conținutul pe care l-ai copiat este verificat pentru informații sensibile. Inserarea poate fi permisă după finalizarea scanării.</translation>
 <translation id="1545757265410828525">Istoricul prețurilor</translation>
 <translation id="1546286808622193216">Compară beneficiile cardurilor folosind Gemini</translation>
 <translation id="1549470594296187301">Trebuie să activezi JavaScript pentru a folosi această funcție.</translation>
@@ -1503,6 +1504,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3293642807462928945">Află mai multe despre politica <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Afișează și gestionează parolele din setările Chrome</translation>
 <translation id="3299098170013242198">Windows Hello este activat pentru completarea parolelor</translation>
+<translation id="3299197721044635447">Conținutul nu a putut fi inserat în afara contextului Chrome gestionat din cauza politicilor organizației</translation>
 <translation id="3299720788264079132">A apărut o eroare la folosirea funcției <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 in</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
@@ -4368,6 +4370,7 @@ Detalii suplimentare:
 <translation id="767550629621587224">Separatoare pretăiate</translation>
 <translation id="7675756033024037212">Derularea și zoomul nu sunt permise</translation>
 <translation id="7676643023259824263">Caută text din clipboard, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Organizația ta monitorizează copierea</translation>
 <translation id="7678730592635586336">Înregistrează din nou videoclipul</translation>
 <translation id="7679287273775285018">Plătește cu portofelul electronic</translation>
 <translation id="7679367271685653708">Vezi și gestionează istoricul de navigare în setările Chrome</translation>
@@ -4654,6 +4657,7 @@ Detalii suplimentare:
 <translation id="8134058435519644366">Recrutare și personal</translation>
 <translation id="8135546115396015134">tasta săgeată spre stânga</translation>
 <translation id="8137456439814903304">Energie și utilități</translation>
+<translation id="814071672416123670">Conținutul nu a putut fi copiat din cauza politicilor organizației</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creat acum o lună}few{Creat acum {NUM_MONTHS} luni}other{Creat acum {NUM_MONTHS} de luni}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, prestabilit actual. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versiune PDF:</translation>

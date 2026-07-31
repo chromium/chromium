@@ -352,6 +352,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1539840569003678498">Rapporten er sendt:</translation>
 <translation id="1542105669288201090">Bedriftsutdanning</translation>
 <translation id="1542830386724426410">Vis tilgjengelige kortfordeler og -belønninger i kassen. Utstederens vilkår gjelder. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Finn ut mer<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Basert på retningslinjene for organisasjonen din blir innholdet du har kopiert, skannet for sensitiv informasjon. Det kan hende du kan lime inn når skanningen er fullført.</translation>
 <translation id="1545757265410828525">Prishistorikk</translation>
 <translation id="1546286808622193216">Bruk Gemini til å sammenligne kortfordeler</translation>
 <translation id="1549470594296187301">Denne funksjonen kan ikke brukes når JavaScript er slått av.</translation>
@@ -1503,6 +1504,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3293642807462928945">Finn ut mer om regelen <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Se og administrer passordene dine i Chrome-innstillingene</translation>
 <translation id="3299098170013242198">Windows Hello er påslått for utfylling av passord</translation>
+<translation id="3299197721044635447">Innholdet kunne ikke limes inn utenfor den administrerte Chrome-konteksten på grunn av retningslinjene for organisasjonen din</translation>
 <translation id="3299720788264079132">Noe gikk galt under bruk av <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 tommer</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
@@ -4367,6 +4369,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="767550629621587224">Forhåndsstanset fanepapir</translation>
 <translation id="7675756033024037212">Rulling og zooming er ikke tillatt</translation>
 <translation id="7676643023259824263">Søk etter teksten <ph name="TEXT" /> på utklippstavlen</translation>
+<translation id="7676840398262504532">Organisasjonen din overvåker kopiering</translation>
 <translation id="7678730592635586336">Ta opp videoen på nytt</translation>
 <translation id="7679287273775285018">Betal med e-lommebok</translation>
 <translation id="7679367271685653708">Se og administrer nettleserloggen din i Chrome-innstillingene</translation>
@@ -4653,6 +4656,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8134058435519644366">Rekruttering og bemanning</translation>
 <translation id="8135546115396015134">venstretast</translation>
 <translation id="8137456439814903304">Energi og infrastruktur</translation>
+<translation id="814071672416123670">Innholdet kunne ikke kopieres på grunn av retningslinjene for organisasjonen din</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Opprettet for én måned siden}other{Opprettet for {NUM_MONTHS} måneder siden}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, gjeldende standard. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-versjon:</translation>

@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">მოხსენება გაიგზავნა:</translation>
 <translation id="1542105669288201090">ბიზნესგანათლება</translation>
 <translation id="1542830386724426410">ბარათის ხელმისაწვდომი უპირატესობებისა და ჯილდოების ჩვენება შეკვეთის გაფორმებისას. მოქმედებს გამცემის პირობები. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />შეიტყვეთ მეტი<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">თქვენი ორგანიზაციის წესების შესაბამისად, თქვენ მიერ კოპირებული კონტენტი მოწმდება სენსიტიური ინფორმაციის არსებობაზე. ჩასმა შესაძლებელი იქნება შემოწმების დასრულების შემდეგ.</translation>
 <translation id="1545757265410828525">ფასების ისტორია</translation>
 <translation id="1546286808622193216">ბარათის უპირატესობების შედარება Gemini-ს გამოყენებით</translation>
 <translation id="1549470594296187301">ამ ფუნქციის გამოსაყენებლად, JavaScript ჩართული უნდა იყოს.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945">შეიტყვეთ მეტი „<ph name="POLICY_NAME" />“ წესების შესახებ</translation>
 <translation id="3295444047715739395">იხილეთ თქვენი პაროლები და მართეთ ისინი Chrome-ის პარამეტრებიდან</translation>
 <translation id="3299098170013242198">Windows Hello ჩართულია პაროლების შესავსებად</translation>
+<translation id="3299197721044635447">კონტენტის ჩასმა მართული Chrome-ის კონტექსტის გარეთ ვერ მოხერხდა თქვენი ორგანიზაციის წესების გამო</translation>
 <translation id="3299720788264079132">ფუნქციის „<ph name="FEATURE_NAME" />“ გამოყენებისას წარმოიქმნა შეფერხება</translation>
 <translation id="3303176609391916566">30 x 42 დუიმი</translation>
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">წინასწარ ამოჭრილი ჩანართები</translation>
 <translation id="7675756033024037212">გადაადგილება და მასშტაბირება არ არის დაშვებული</translation>
 <translation id="7676643023259824263">გაცვლის ბუფერში ტექსტის ძიება, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">თქვენი ორგანიზაცია მონიტორინგს უწევს კოპირებას</translation>
 <translation id="7678730592635586336">ვიდეოს ხელახლა გადაღება</translation>
 <translation id="7679287273775285018">ელსაფულით გადახდა</translation>
 <translation id="7679367271685653708">თქვენი დათვალიერების ისტორიის ნახვა და მართვა Chrome პარამეტრებიდან</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">დასაქმება და პერსონალი</translation>
 <translation id="8135546115396015134">მარცხენა კლავიში</translation>
 <translation id="8137456439814903304">ენერგომომარაგება და კომუნალური მომსახურებები</translation>
+<translation id="814071672416123670">კონტენტის კოპირება ვერ მოხერხდა თქვენი ორგანიზაციის წესების გამო</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{შეიქმნა 1 თვის წინ}other{შეიქმნა {NUM_MONTHS} თვის წინ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, მიმდინარე ნაგულისხმევი პარამეტრები. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ვერსია:</translation>

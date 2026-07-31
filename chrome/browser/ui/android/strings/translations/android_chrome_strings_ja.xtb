@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">ヒント通知のプロモーションが閉じられました</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1045899828449635435">これらのサイトのデータも削除しますか？</translation>
-<translation id="1049461303780085993">質問の回答や重要なポイントなどを確認できる Gemini in Chrome をお試しください</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1052842760770519282">一部のパスワードにアクセスできません</translation>
 <translation id="1057623954802068161">ページの一番上までスクロール</translation>
@@ -314,6 +313,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2328474416100889417">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、招待リンクはすべて無効になります</translation>
 <translation id="2329500425421091035">Chrome の AI モードのご紹介</translation>
 <translation id="2330186936255788117">その他のブックマーク</translation>
+<translation id="2330243730505117832">[デバイスの選択] が閉じられました。</translation>
 <translation id="2332515770639153015">セーフ ブラウジング保護強化機能はオンになっています</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
 <translation id="2334275697832662087">Chrome の AI を活用したセキュリティ機能により、オンラインの脅威から保護されるので、安心してブラウジングできます</translation>
@@ -503,6 +503,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3037177537145227281">価格をトラッキングします</translation>
 <translation id="3037517125981011456">Chrome へのログインを促すメッセージが表示されます</translation>
 <translation id="3038272154009688107">すべてのサイトを表示</translation>
+<translation id="3044436568790455247">[デバイスの選択] が画面全体に表示されています。</translation>
 <translation id="3057938290530993634">長押しすると、よくアクセスするウェブサイトが固定され、次回から簡単にアクセスできます</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個のブックマーク}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個のブックマーク}}</translation>
 <translation id="3062802207422175757">Chrome の履歴に基づくおすすめの記事を表示します</translation>
@@ -511,6 +512,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3067505415088964188">低価格</translation>
 <translation id="3070005020161560471">自動的に翻訳する</translation>
 <translation id="3072980200212375806">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />に同意したものと見なされます。また、<ph name="BEGIN_LINK3" />プライバシー ポリシー<ph name="END_LINK3" />も適用されます。</translation>
+<translation id="3075397426753215787">デバイスを選択します。</translation>
 <translation id="3080375898390966733">Google レンズでタブを検索</translation>
 <translation id="3080525922482950719">ページを保存して、後で読んだり、オフラインで読んだりできます</translation>
 <translation id="3087734570205094154">下部</translation>
@@ -550,6 +552,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3282801380074962248">セクションを展開</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_ONE" /> 個のタブ}other{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_MANY" /> 個のタブ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{# 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
+<translation id="3287664192482809715">[デバイスの選択] が画面の下半分に表示されています。</translation>
 <translation id="3293181007446299124">閲覧履歴はプライバシーを保つためデバイスに保存され、レポートはユーザーを特定できないように遅れて送信されます</translation>
 <translation id="3301639354590628973">アカウントを切り替えますか？</translation>
 <translation id="3301936297336370235">パスワード候補の確認</translation>

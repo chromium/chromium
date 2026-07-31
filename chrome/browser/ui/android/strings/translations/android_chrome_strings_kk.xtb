@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Кеңестер хабарландыруларының промокеңесі жабылды</translation>
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1045899828449635435">Деректер өшірілсін бе?</translation>
-<translation id="1049461303780085993">Жауаптар, негізгі тұжырымдар және т.б. ақпарат алу үшін Chrome-дағы Gemini-ды пайдаланып көріңіз.</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1052842760770519282">Құпия сөздеріңіздің кейбірін пайдалана алмайсыз.</translation>
 <translation id="1057623954802068161">Беттің жоғарғы жағына айналдыру</translation>
@@ -314,6 +313,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2328474416100889417">Барлығы "<ph name="GROUP_NAME" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады. Барлық шақыру сілтемесі өшіріледі.</translation>
 <translation id="2329500425421091035">Chrome-дағы ЖИ режимімен танысыңыз</translation>
 <translation id="2330186936255788117">Басқа бетбелгілер</translation>
+<translation id="2330243730505117832">"Құрылғы таңдау" терезесі жабылды.</translation>
 <translation id="2332515770639153015">Күшейтілген Safe Browsing қосулы</translation>
 <translation id="233375395665273385">Жою және шығу</translation>
 <translation id="2334275697832662087">Chrome-ның жасанды интеллектіге негізделген қауіпсіздік жүйесі интернеттегі қауіптерден қорғап, браузерді сенімді түрде пайдалануға мүмкіндік береді.</translation>
@@ -503,6 +503,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="3037177537145227281">Баға бақылануда</translation>
 <translation id="3037517125981011456">Chrome-ға кіру нұсқауларын көрсетеді.</translation>
 <translation id="3038272154009688107">Барлық сайтты көру</translation>
+<translation id="3044436568790455247">"Құрылғы таңдау" терезесі толығымен ашылды.</translation>
 <translation id="3057938290530993634">Келесі жолы оңай кіргіңіз келсе, жиі кіретін веб-сайттарды бекіту үшін түртіп, ұстап тұрыңыз.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> бетбелгі}other{<ph name="BOOKMARKS_COUNT_MANY" /> бетбелгі}}</translation>
 <translation id="3062802207422175757">Chrome браузеріндегі қызығушылықтарыңызға сай мақалалар</translation>
@@ -511,6 +512,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="3067505415088964188">Бағасы төмен</translation>
 <translation id="3070005020161560471">Автоматты түрде аударылатындар</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> қолданбасы Chrome браузерінде ашылады. Жалғастыру арқылы <ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарына<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome және ChromeOS Қосымша қызмет көрсету шарттарына<ph name="END_LINK2" /> келісесіз. <ph name="BEGIN_LINK3" />Құпиялық саясаты<ph name="END_LINK3" /> да қолданылады.</translation>
+<translation id="3075397426753215787">Құрылғы таңдаңыз.</translation>
 <translation id="3080375898390966733">Қойындыны Google Lens арқылы іздеу</translation>
 <translation id="3080525922482950719">Беттерді сақтап, оларды кейінірек не офлайн режимде оқи аласыз.</translation>
 <translation id="3087734570205094154">Астына</translation>
@@ -550,6 +552,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="3282801380074962248">Бөлімді жаю</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> қойынды}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> қойынды}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 құпия сөз тек осы құрылғыға сақталды. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}other{# құпия сөз тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}}</translation>
+<translation id="3287664192482809715">"Құрылғы таңдау" терезесі жартылай ашылды.</translation>
 <translation id="3293181007446299124">Браузерді қолдану тарихыңыз құрылғыда құпия сақталады және жеке басыңызды қорғау үшін есептер кідіріспен жіберіледі.</translation>
 <translation id="3301639354590628973">Аккаунт ауыстыру қажет пе?</translation>
 <translation id="3301936297336370235">Ұсынылған құпия сөзді растау</translation>

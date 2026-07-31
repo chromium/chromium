@@ -2409,6 +2409,21 @@ Bu politikanın yönetilen cihazlarda uygulanması, desteklendiği platformlarda
 <translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise Bağlayıcı için yapılandırma politikası</translation>
 <translation id="2509748672176727116">Kullanıcı, ağ paketi yakalama işlemleri gerçekleştirebilir</translation>
 <translation id="2509919237512982967">M84'e kadar Eski Form Kontrollerini kullanın.</translation>
+<translation id="2509947330677441695">Politikanın ayarlanması, Gizli modda listelenen URL'lere erişim sağlar. Bu politikayı, (https://support.google.com/chrome/a?p=url_blocklist_filter_format) adresinde belirtilen biçimi kullanarak <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikasında tanımlanan belirli URL kalıplarına ilişkin istisnaları açmak için kullanın.
+
+Hem bu politika hem de <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa izin verilenler listesi öncelikli olur. Bir URL, izin verilenler listesindeki bir kalıpla eşleşirse URL'ye izin verilir. Engellenenler listesindeki bir kalıpla eşleşir ancak izin verilenler listesindeki bir kalıpla eşleşmezse URL engellenir. Bir URL hiçbiriyle eşleşmezse yedek olarak genel <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> politikaları kullanılır.
+
+Bu politika ayarlanır ve <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanmazsa izin verilenler listesinde yer almayan tüm URL'ler Gizli modda engellenir.
+
+<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> politikası izin vermeyecek şekilde (1 değeri) ayarlanır ancak bu politika yapılandırılırsa Gizli mod yalnızca izin verilenler listesindeki URL'ler için kullanılabilir.
+
+Politika ayarlanmadan bırakılırsa <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> politikası için hiçbir istisnaya izin verilmez.
+
+Bu politika yalnızca Gizli modu etkiler. URL'lere tüm kullanıcı profillerinde izin vermek için lütfen <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikasını kullanın.
+
+Geniş kapsamlı ana makine joker karakterlerine (ör. "*" veya "[*]") izin verilmez. Özelliği dünya genelinde etkinleştirmek için <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> politikasını kullanın.
+
+Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="2512531606818417084">Bu politika geçicidir ve M137 sürümünden itibaren çalışmayacaktır.
 
 Bu özellik, Accept-Encoding istek başlığında "zstd" kullanılmasını ve <ph name="ZSTANDARD_SHORTNAME" />
@@ -10650,6 +10665,21 @@ Politika ayarlanmadan bırakılırsa <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POL
 <translation id="759957074386651883">Güvenli Tarama ayarları</translation>
 <translation id="7602621823177962064">Cihazın bellek bilgileri raporlamasını devre dışı bırak</translation>
 <translation id="7604169113182304895">Android uygulamaları, kendi tercihleriyle bu listeye uymaya karar verebilir. Bu uygulamaları listeye uymaya zorlayamazsınız.</translation>
+<translation id="7604302274842086162">Bu politika, belirli URL'lerde <ph name="CHROME_DEVTOOLS_NAME" /> kullanmaya izin vermek için kullanılabilir.
+
+URL kalıpları, incelenen sayfadaki her çerçevenin URL'siyle eşleştirilir. Sonuçtaki davranış, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikasının da ayarlanıp ayarlanmadığına bağlıdır.
+
+Bu politika ayarlanır ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ayarlanmazsa <ph name="CHROME_DEVTOOLS_NAME" /> kullanımına izin verilmesi için her çerçevenin URL'si bu izin verilenler listesindeki bir kalıpla eşleşmelidir. Herhangi bir çerçevenin URL'si eşleşmezse Geliştirici Araçları tüm sayfa için engellenir. URL biçimi hakkında bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakın.
+
+Hem bu politika hem de <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa bu izin verilenler listesi öncelikli olur. Bir çerçevenin URL'si bu izin verilenler listesindeki bir kalıpla eşleşirse engellenenler listesindeki bir kalıpla eşleşse bile URL'ye izin verilir. Bir URL, engellenenler listesindeki bir kalıpla eşleşir ancak izin verilenler listesindeki bir kalıpla eşleşmezse engellenir. Bir URL hiçbiriyle eşleşmezse yedek olarak <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikası kullanılır.
+
+Bu politika ayarlanmazsa <ph name="CHROME_DEVTOOLS_NAME" /> kullanılabilirliği <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikalarına göre belirlenir.
+
+Bu politika, uzantılar ve web uygulamalarında açılan <ph name="CHROME_DEVTOOLS_NAME" /> için de geçerlidir.
+
+Geniş kapsamlı ana makine joker karakterlerine (ör. "*" veya "[*]") izin verilmez. Özelliği dünya genelinde etkinleştirmek için <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikasını kullanın.
+
+Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="7607831126797434329">Bu sitelerde otomatik indirmeleri engelleme</translation>
 <translation id="7608186022704392724">PIN kodu otomatik gönderme özelliği <ph name="PRODUCT_OS_NAME" /> ürününde PIN kodlarının girilme biçimini değiştirir.
           Şifre girmek için kullanılan aynı metin alanı yerine, bu 

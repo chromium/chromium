@@ -352,6 +352,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1539840569003678498">Laporan dikirim:</translation>
 <translation id="1542105669288201090">Pendidikan Bisnis</translation>
 <translation id="1542830386724426410">Tampilkan reward dan manfaat kartu yang tersedia saat checkout. Persyaratan penerbit berlaku. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Pelajari lebih lanjut<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Berdasarkan kebijakan organisasi Anda, konten yang Anda salin sedang dipindai untuk mendeteksi informasi sensitif. Penempelan mungkin diizinkan setelah pemindaian selesai.</translation>
 <translation id="1545757265410828525">Histori harga</translation>
 <translation id="1546286808622193216">Bandingkan manfaat kartu menggunakan Gemini</translation>
 <translation id="1549470594296187301">JavaScript harus diaktifkan untuk menggunakan fitur ini.</translation>
@@ -1504,6 +1505,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3293642807462928945">Pelajari lebih lanjut tentang kebijakan <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Lihat dan kelola sandi Anda di setelan Chrome</translation>
 <translation id="3299098170013242198">Windows Hello aktif untuk mengisi sandi</translation>
+<translation id="3299197721044635447">Konten tidak dapat ditempel di luar konteks Chrome terkelola karena kebijakan organisasi Anda</translation>
 <translation id="3299720788264079132">Terjadi error saat menggunakan <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 inci (76 x 106 cm)</translation>
 <translation id="3303855915957856445">Hasil penelusuran tidak ditemukan</translation>
@@ -4366,6 +4368,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="767550629621587224">Tab Prapotong</translation>
 <translation id="7675756033024037212">Scroll &amp; zoom tidak diizinkan</translation>
 <translation id="7676643023259824263">Telusuri teks papan klip, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Organisasi Anda memantau penyalinan</translation>
 <translation id="7678730592635586336">Rekam lagi video</translation>
 <translation id="7679287273775285018">Bayar dengan eWallet</translation>
 <translation id="7679367271685653708">Lihat dan kelola histori penjelajahan Anda di setelan Chrome</translation>
@@ -4652,6 +4655,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8134058435519644366">Perekrutan &amp; Ketenagakerjaan</translation>
 <translation id="8135546115396015134">tombol kiri</translation>
 <translation id="8137456439814903304">Energi, Gas &amp; Air</translation>
+<translation id="814071672416123670">Konten tidak dapat disalin karena kebijakan organisasi Anda</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Dibuat 1 bulan lalu}other{Dibuat {NUM_MONTHS} bulan lalu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, default saat ini. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versi PDF:</translation>

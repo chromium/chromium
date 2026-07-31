@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">팁 알림 프로모션 닫힘</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1045899828449635435">아래 사이트의 데이터도 삭제하시겠습니까?</translation>
-<translation id="1049461303780085993">Chrome의 Gemini를 사용해 답변을 얻고 핵심 내용 등을 확인하세요</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1052842760770519282">일부 비밀번호에 액세스할 수 없습니다</translation>
 <translation id="1057623954802068161">페이지 상단으로 스크롤</translation>
@@ -314,6 +313,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
 <translation id="2329500425421091035">Chrome의 AI 모드 소개</translation>
 <translation id="2330186936255788117">북마크 더보기</translation>
+<translation id="2330243730505117832">'기기 선택'이 닫혔습니다.</translation>
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
 <translation id="2334275697832662087">Chrome의 AI 기반 보안이 온라인 위협으로부터 사용자를 보호하므로 안심하고 웹을 탐색할 수 있습니다.</translation>
@@ -503,6 +503,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3037177537145227281">가격 추적</translation>
 <translation id="3037517125981011456">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="3038272154009688107">모든 사이트 보기</translation>
+<translation id="3044436568790455247">'기기 선택'이 전체 높이로 열렸습니다.</translation>
 <translation id="3057938290530993634">다음에 쉽게 액세스할 수 있도록 자주 방문하는 웹사이트를 고정하려면 길게 탭하세요.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
@@ -511,6 +512,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3067505415088964188">가격이 저렴함</translation>
 <translation id="3070005020161560471">자동으로 번역</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
+<translation id="3075397426753215787">기기를 선택합니다.</translation>
 <translation id="3080375898390966733">Google 렌즈로 탭 검색</translation>
 <translation id="3080525922482950719">페이지를 저장하여 나중에 읽거나 오프라인 상태에서 읽을 수 있습니다.</translation>
 <translation id="3087734570205094154">맨 아래</translation>
@@ -550,6 +552,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3282801380074962248">섹션 펼치기</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" />개 탭}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" />개 탭}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}other{비밀번호 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}}</translation>
+<translation id="3287664192482809715">'기기 선택'이 절반 높이로 열렸습니다.</translation>
 <translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
 <translation id="3301639354590628973">계정을 전환하시겠습니까?</translation>
 <translation id="3301936297336370235">비밀번호 추천 확인</translation>
@@ -1581,7 +1584,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7359002509206457351">결제 수단 액세스</translation>
 <translation id="7363349185727752629">개인 정보 보호 선택 가이드</translation>
 <translation id="7364103838544876661">인터넷 사용 기록 삭제 옵션 더보기</translation>
-<translation id="736435710397109878">카드 별칭(최대 25자)</translation>
+<translation id="736435710397109878">카드 닉네임(영문 기준 최대 25자)</translation>
 <translation id="7365073365123878797">Google 비밀번호 관리자로 비밀번호를 저장하고 사용하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="7368009310682364976">최근에 연 탭 보기</translation>
 <translation id="7368927539449986686">사이트 검색 편집</translation>

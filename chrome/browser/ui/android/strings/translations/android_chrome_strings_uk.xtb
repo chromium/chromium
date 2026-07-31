@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Пропозицію отримувати сповіщення з порадами закрито</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1045899828449635435">Видалити дані з цих сайтів?</translation>
-<translation id="1049461303780085993">Спробуйте Gemini у Chrome, щоб отримувати відповіді, важливу інформацію тощо</translation>
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="1052842760770519282">Деякі паролі недоступні</translation>
 <translation id="1057623954802068161">Прокрутити вгору сторінки</translation>
@@ -314,6 +313,7 @@
 <translation id="2328474416100889417">Усі користувачі відразу втратять доступ до групи вкладок "<ph name="GROUP_NAME" />", і всі посилання для запрошення буде вимкнено</translation>
 <translation id="2329500425421091035">Представляємо режим ШІ в Chrome</translation>
 <translation id="2330186936255788117">Більше закладок</translation>
+<translation id="2330243730505117832">Вікно "Виберіть пристрій" закрито.</translation>
 <translation id="2332515770639153015">Безпечний перегляд із розширеним захистом увімкнено</translation>
 <translation id="233375395665273385">Видалити й вийти</translation>
 <translation id="2334275697832662087">Система безпеки Chrome на основі ШІ захищає вас від онлайн-загроз, щоб ви могли впевнено переглядати вебконтент</translation>
@@ -503,6 +503,7 @@
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037517125981011456">Показувати сповіщення для входу в Chrome</translation>
 <translation id="3038272154009688107">Переглянути всі сайти</translation>
+<translation id="3044436568790455247">Вікно "Виберіть пристрій" відкрито на всю висоту.</translation>
 <translation id="3057938290530993634">Натисніть і утримуйте, щоб закріпити вебсайти, які найчастіше відвідуєте, для швидкого доступу</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Статті на цікаві вам теми в Chrome</translation>
@@ -511,6 +512,7 @@
 <translation id="3067505415088964188">Низька ціна</translation>
 <translation id="3070005020161560471">Мови, з яких потрібно автоматично перекладати</translation>
 <translation id="3072980200212375806">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Політика конфіденційності<ph name="END_LINK3" />.</translation>
+<translation id="3075397426753215787">Виберіть пристрій.</translation>
 <translation id="3080375898390966733">Шукати на вкладці за допомогою Google Об’єктива</translation>
 <translation id="3080525922482950719">Зберігайте сторінки, щоб читати їх пізніше або в режимі офлайн</translation>
 <translation id="3087734570205094154">Низ</translation>
@@ -550,6 +552,7 @@
 <translation id="3282801380074962248">Розгорнути розділ</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> вкладку}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладку}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 пароль зберігається лише на цьому пристрої. Щоб використовувати його на інших пристроях, збережіть пароль у своєму обліковому записі Google.}one{# пароль зберігається лише на цьому пристрої. Щоб використовувати їх на інших пристроях, збережіть паролі у своєму обліковому записі Google.}few{# паролі зберігаються лише на цьому пристрої. Щоб використовувати їх на інших пристроях, збережіть паролі у своєму обліковому записі Google.}many{# паролів зберігаються лише на цьому пристрої. Щоб використовувати їх на інших пристроях, збережіть паролі у своєму обліковому записі Google.}other{# пароля зберігаються лише на цьому пристрої. Щоб використовувати їх на інших пристроях, збережіть паролі у своєму обліковому записі Google.}}</translation>
+<translation id="3287664192482809715">Вікно "Виберіть пристрій" відкрито на половину висоти.</translation>
 <translation id="3293181007446299124">Історія веб-перегляду зберігається на вашому пристрої й доступна лише вам. Звіти надсилаються із затримкою, щоб захистити вашу особу.</translation>
 <translation id="3301639354590628973">Змінити обліковий запис?</translation>
 <translation id="3301936297336370235">Підтвердження пропозиції пароля</translation>

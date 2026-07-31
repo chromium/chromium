@@ -157,6 +157,7 @@
 <translation id="1497590942294823549">Μενού → Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="1498283581832036924">Ο λογαριασμός σας στον ιστότοπο <ph name="WEBSITE" /> δεν θα διαγραφεί.</translation>
 <translation id="1503814213414825943">Επιλέξτε τους λογαριασμούς που θέλετε να εξαγάγετε σε άλλη εφαρμογή.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">Μηχανή αναζήτησης</translation>
 <translation id="1506063256525392513">Σας επιτρέπει να τραβάτε και να ανεβάζετε φωτογραφίες, καθώς και να σαρώνετε κωδικούς QR.</translation>
 <translation id="1506733063065214205">Εφαρμογή πελάτης RCS MLS</translation>
@@ -272,6 +273,7 @@
 <translation id="183878838231635348">Αυτή η κάρτα εμφανίζει τυχόν προβλήματα απορρήτου ή ασφάλειας που εντοπίζει αυτόματα για εσάς ο Έλεγχος ασφαλείας.</translation>
 <translation id="1840320537320704887">Καταργήθηκαν οι προτιμήσεις σας για τη σελίδα Νέα καρτέλα</translation>
 <translation id="1845230888742614096">Διατήρηση ομάδας</translation>
+<translation id="1853558655412913122">Μπορείτε πλέον να αλλάξετε τη θέση της γραμμής διευθύνσεων από τις Ρυθμίσεις και, στη συνέχεια, από την επιλογή Γραμμή διευθύνσεων</translation>
 <translation id="1853692000353488670">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="1854463785401910334">Αναζήτηση σε ανοικτές καρτέλες</translation>
 <translation id="1860609647735325606">Επεξήγηση με το Gemini</translation>
@@ -1189,6 +1191,7 @@
 <translation id="4985921635659180565">Εάν ένα αρχείο έχει προγραμματιστεί για διαγραφή, δεν είναι δυνατή η ακύρωσή της.</translation>
 <translation id="498624032394115435">Όποιος διαθέτει τον σύνδεσμο μπορεί να επεξεργαστεί όλες τις καρτέλες.</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Χρώμα ομάδας καρτελών <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Αντιγραφή κωδικού πρόσβασης</translation>
 <translation id="5009127379503001909">Συνέχεια περιήγησης</translation>
@@ -1803,6 +1806,7 @@
 <translation id="6924299883035848912">Απόκρυψη διαγραφής δεδομένων περιήγησης</translation>
 <translation id="6930162026494574854">Επαν. ρυθμ. μετάφ.</translation>
 <translation id="6930799952781667037">Πατήστε για αλλαγή σε αυτήν τη γλώσσα.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">Ορισμός κωδικού πρόσβασης</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6946722113367118030">Σκέψη</translation>
@@ -1852,6 +1856,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Η κάμερα δεν είναι διαθέσιμη</translation>
 <translation id="7138678301420049075">Άλλο</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Οι καρτέλες σας θα κλείσουν και τα δεδομένα περιήγησης θα διαγραφούν</translation>
 <translation id="714291438898585119">Με αστέρι</translation>
 <translation id="7145337554745942724">Ενημέρωση πληροφοριών διπλώματος οδήγησης</translation>
@@ -1917,6 +1922,7 @@
 <translation id="7402602673739047753">{count,plural, =1{1 σελιδοδείκτης αποθηκεύεται μόνο σε αυτή τη συσκευή. Για να τον χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τον στον Λογαριασμό σας Google, {email}.}other{{count} σελιδοδείκτες αποθηκεύονται μόνο σε αυτή τη συσκευή. Για να τους χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τους στον Λογαριασμό σας Google, {email}.}}</translation>
 <translation id="7403227077090127147">Ο χρήστης <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) θα χάσει αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /></translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> μη αναγνωσμένα άρθρα.</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Συνέχεια</translation>
 <translation id="741204030948306876">Ναι, συμφωνώ</translation>
 <translation id="7419565702166471774">Να χρησιμοποιούνται πάντα ασφαλείς συνδέσεις</translation>
@@ -2204,6 +2210,7 @@
 <translation id="8292893224181644074">Η λήψη ολοκληρώθηκε</translation>
 <translation id="8299417921174340354">Για τη χρήση κωδικών πρόσβασης, πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
 <translation id="8307481894409578819">Δεν ήταν δυνατή η μεταφόρτωση αυτού του αρχείου</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">Νέα αναζήτηση</translation>
 <translation id="8319282042900445670">Ορίστηκε υπενθύμιση για τις <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="8320212361750431956">Πρόσφατη δραστηριότητα</translation>
@@ -2491,6 +2498,7 @@
 <translation id="9219154867334666734">Αναζήτηση στις καρτέλες…</translation>
 <translation id="9223358826628549784">Η αναφορά σφάλματος εστάλη.</translation>
 <translation id="926455622548529175">Εναλλαγή και διαγραφή</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">Επισημασμένο κείμενο</translation>
 <translation id="932305336591073205">{count,plural, =1{Κλείσιμο καρτέλας}other{Κλείσιμο καρτελών}}</translation>
 <translation id="939472100615258482">Τρέχων ιστότοπος</translation>

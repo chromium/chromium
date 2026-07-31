@@ -347,6 +347,7 @@
 <translation id="1539840569003678498">రిపోర్ట్ పంపబడింది:</translation>
 <translation id="1542105669288201090">బిజినెస్‌కు సంబంధించిన విద్య</translation>
 <translation id="1542830386724426410">చెక్ అవుట్ వద్ద అందుబాటులో ఉన్న కార్డ్ ప్రయోజనాలను, రివార్డ్‌లను చూపండి. జారీ చేసిన సంస్థ నియమాలు వర్తిస్తాయి. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">మీ సంస్థ పాలసీల ఆధారంగా, మీరు కాపీ చేసిన కంటెంట్ గోప్యమైన సమాచారం కోసం స్కాన్ చేస్తున్నాము. స్కాన్ పూర్తయిన తర్వాత పేస్ట్ చేయడానికి అనుమతి లభించవచ్చు.</translation>
 <translation id="1545757265410828525">ధర హిస్టరీ</translation>
 <translation id="1546286808622193216">Geminiని ఉపయోగించి కార్డ్ ప్రయోజనాలను కంపేర్ చేయండి</translation>
 <translation id="1549470594296187301">ఈ ఫీచర్‌ను ఉపయోగించడానికి జావాస్క్రిప్ట్ తప్పనిసరిగా ప్రారంభించాలి.</translation>
@@ -1498,6 +1499,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> విధానం గురించి మరింత తెలుసుకోండి</translation>
 <translation id="3295444047715739395">Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="3299098170013242198">పాస్‌వర్డ్‌లను పూరించడానికి Windows Hello ఆన్ చేయబడింది</translation>
+<translation id="3299197721044635447">మీ సంస్థ పాలసీల కారణంగా, మేనేజ్ అయ్యే Chrome వెలుపల కంటెంట్‌ను పేస్ట్ చేయడం సాధ్యపడదు</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />‌ను ఉపయోగిస్తున్నప్పుడు ఏదో పొరపాటు జరిగింది</translation>
 <translation id="3303176609391916566">30 x 42 అంగుళాలు</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
@@ -4363,6 +4365,7 @@
 <translation id="767550629621587224">ప్రీ-కట్ ట్యాబ్స్</translation>
 <translation id="7675756033024037212">స్క్రోల్ చేయడానికి, జూమ్ చేయడానికి అనుమతి లేదు</translation>
 <translation id="7676643023259824263">క్లిప్‌బోర్డ్ వచనం, <ph name="TEXT" /> కోసం వెతకండి</translation>
+<translation id="7676840398262504532">మీ సంస్థ కాపీ చేయడాన్ని మానిటర్ చేస్తుంది</translation>
 <translation id="7678730592635586336">వీడియోను మళ్లీ తీయండి</translation>
 <translation id="7679287273775285018">eWalletతో పేమెంట్ చేయండి</translation>
 <translation id="7679367271685653708">Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీని చూడండి, మేనేజ్ చేయండి</translation>
@@ -4649,6 +4652,7 @@
 <translation id="8134058435519644366">నియామకాలు &amp; స్టాఫింగ్</translation>
 <translation id="8135546115396015134">ఎడమవైపు కీ</translation>
 <translation id="8137456439814903304">ఎనర్జీ &amp; యుటిలిటీస్</translation>
+<translation id="814071672416123670">మీ సంస్థ పాలసీల కారణంగా కంటెంట్‌ను కాపీ చేయడం సాధ్యపడలేదు</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 నెల క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_MONTHS} నెలల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ప్రస్తుతం ఆటోమేటిక్ సెట్టింగ్‌గా ఉంది. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF వెర్షన్:</translation>

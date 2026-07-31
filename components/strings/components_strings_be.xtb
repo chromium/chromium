@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Справаздача адпраўлена:</translation>
 <translation id="1542105669288201090">Бізнес-адукацыя</translation>
 <translation id="1542830386724426410">Паказваць даступныя перавагі і бонусы для карткі падчас афармлення заказу. Прымяняюцца ўмовы эмітэнта. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Даведацца больш.<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Згодна з правіламі вашай арганізацыі скапіраванае змесціва правяраецца на наяўнасць канфідэнцыяльнай інфармацыі. Устаўка можа быць дазволена пасля завяршэння праверкі.</translation>
 <translation id="1545757265410828525">Гісторыя цэн</translation>
 <translation id="1546286808622193216">Параўноўвайце перавагі картак з дапамогай Gemini</translation>
 <translation id="1549470594296187301">Каб карыстацца гэтай функцыяй, трэба ўключыць JavaScript.</translation>
@@ -1504,6 +1505,7 @@
 <translation id="3293642807462928945">Даведацца больш пра палітыку "<ph name="POLICY_NAME" />"</translation>
 <translation id="3295444047715739395">Праглядаць свае паролі і кіраваць імі ў наладах Chrome</translation>
 <translation id="3299098170013242198">Windows Hello выкарыстоўваецца для ўводу пароляў.</translation>
+<translation id="3299197721044635447">Правілы вашай арганізацыі не дазволілі ўставіць змесціва па-за кантэкстам пад кіраваннем Chrome</translation>
 <translation id="3299720788264079132">Пры выкарыстанні функцыі "<ph name="FEATURE_NAME" />" адбылася памылка</translation>
 <translation id="3303176609391916566">30 x 42 цалі</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">Матэрыялы з загадзя выразанымі раздзяляльнікамі</translation>
 <translation id="7675756033024037212">Змяненне маштабу і прагортванне забаронены</translation>
 <translation id="7676643023259824263">Пошук тэксту з буфера абмену: "<ph name="TEXT" />"</translation>
+<translation id="7676840398262504532">Ваша арганізацыя кантралюе капіраванне</translation>
 <translation id="7678730592635586336">Зняць відэа яшчэ раз</translation>
 <translation id="7679287273775285018">Аплата праз eWallet</translation>
 <translation id="7679367271685653708">Азнаёміцца з гісторыяй прагляду сайтаў або кіраваць ёй у наладах Chrome</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">Рэкрутынг і працаўладкаванне</translation>
 <translation id="8135546115396015134">стрэлку ўлева</translation>
 <translation id="8137456439814903304">Энергетыка і камунальныя арганізацыі</translation>
+<translation id="814071672416123670">Правілы вашай арганізацыі не дазволілі скапіраваць змесціва</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Створана месяц таму}one{Створана {NUM_MONTHS} месяц таму}few{Створана {NUM_MONTHS} месяцы таму}many{Створана {NUM_MONTHS} месяцаў таму}other{Створана {NUM_MONTHS} месяца таму}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, цяперашняя стандартная сістэма пошуку. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версія PDF:</translation>

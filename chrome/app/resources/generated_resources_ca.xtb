@@ -1578,7 +1578,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2227179592712503583">Suprimeix el suggeriment</translation>
 <translation id="222931766245975952">Fitxer truncat</translation>
 <translation id="2229342031987138128">Subtítols</translation>
-<translation id="2231160360698766265">Els llocs web poden reproduir contingut protegit</translation>
 <translation id="2231351769755997720">No hi ha cap suggeriment disponible. Prova de fer la teva pròpia pregunta sobre aquesta pàgina.</translation>
 <translation id="2232751457155581899">Els llocs web poden demanar permís per fer un seguiment de la posició de la càmera</translation>
 <translation id="2233502537820838181">&amp;Més informació</translation>
@@ -3855,7 +3854,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3928659086758780856">S'està quedant sense tinta</translation>
 <translation id="3929426037718431833">Aquestes extensions poden veure i modificar la informació d'aquest lloc web.</translation>
 <translation id="3930155420525972941">Mou el grup a una finestra nova</translation>
-<translation id="3930602610362250897">Per reproduir continguts protegits amb drets d'autor, és possible que els llocs web hagin d'utilitzar un servei de protecció del contingut</translation>
 <translation id="3930737994424905957">S'estan cercant dispositius</translation>
 <translation id="3930968231047618417">Color de fons</translation>
 <translation id="3932356525934356570">Fixa <ph name="EXTENSION_NAME" /></translation>
@@ -7197,7 +7195,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6590458744723262880">Canvia el nom de la carpeta</translation>
 <translation id="6592267180249644460">Data i hora del registre de WebRTC capturat: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">S'ha capturat la teva empremta digital</translation>
-<translation id="6593881952206664229">Pot ser que el contingut multimèdia amb drets d'autor no es reprodueixi</translation>
 <translation id="6594011207075825276">S'estan cercant dispositius en sèrie...</translation>
 <translation id="6595322909015878027">Sense permís per entrar automàticament al mode d'imatge sobre imatge</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{La contrasenya en perill s'ha canviat correctament.
@@ -10579,7 +10576,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9179524979050048593">Nom d'usuari a la pantalla d'inici de sessió</translation>
 <translation id="9180380851667544951">El lloc web pot compartir la pantalla</translation>
 <translation id="9180847522826713506">Per veure la contrasenya o afegir-hi una nota, fes clic a la icona de la clau</translation>
-<translation id="9182556968660520230">No permetis que els llocs web reprodueixin contingut protegit</translation>
 <translation id="9183302530794969518">Documents de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicació}other{# aplicacions}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />. No rebràs cap notificació quan la gravació comenci.}=2{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. No rebràs cap notificació quan la gravació comenci.}=3{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i 1 aplicació més. No rebràs cap notificació quan la gravació comenci.}other{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i # aplicacions més. No rebràs cap notificació quan la gravació comenci.}}</translation>

@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">ሪፖርት ተልኳል፦</translation>
 <translation id="1542105669288201090">የቢዝነስ ትምህርት</translation>
 <translation id="1542830386724426410">በክፍያ ማጠናቀቅ ወቅት የሚገኙ የካርድ ጥቅማጥቅሞችን እና ሽልማቶችን ያሳያል። የሰጪ ደንቦች ይተገበራሉ። <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />የበለጠ ለመረዳት<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">በድርጅትዎ መመሪያዎች መሠረት የቀዱት ይዘት ልዩ ጥንቃቄ የሚያስፈልገው መረጃን ለማግኘት እየተቃኘ ነው። ቅኝቱ ከተጠናቀቀ በኋላ መለጠፍ ሊፈቀድ ይችላል።</translation>
 <translation id="1545757265410828525">የዋጋ ታሪክ</translation>
 <translation id="1546286808622193216">Geminiን በመጠቀም የካርድ ጥቅማጥቅሞችን ያነጻጽሩ</translation>
 <translation id="1549470594296187301">ይህን ባህሪ ለመጠቀም ጃቫስክሪፕት መንቃት አለበት።</translation>
@@ -1502,6 +1503,7 @@
 <translation id="3293642807462928945">ስለ<ph name="POLICY_NAME" /> መመሪያው ተጨማሪ ይወቁ</translation>
 <translation id="3295444047715739395">በChrome ቅንብሮች ውስጥ የእርስዎን የይለፍ ቃላት ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="3299098170013242198">Windows Hello የይለፍ ቃላትን ለመሙላት በርቷል</translation>
+<translation id="3299197721044635447">በድርጅትዎ መመሪያዎች ምክንያት ይዘት ከሚተዳደረው የChrome ዓውድ ውጭ መለጠፍ አልተቻለም</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />ን በመጠቀም ላይ ሳለ የሆነ ስህተት ተከስቷል</translation>
 <translation id="3303176609391916566">30 x 42 ኢንች</translation>
 <translation id="3303855915957856445">ምንም የፍለጋ ውጤቶች አልተገኙም</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">ቀድመው የተቆረጡ ትሮች</translation>
 <translation id="7675756033024037212">ማሸብለል እና ማጉላት አይፈቀድም</translation>
 <translation id="7676643023259824263">የቅንጥብ ሰሌዳ ጽሁፍ <ph name="TEXT" /> ይፈልጉ</translation>
+<translation id="7676840398262504532">ድርጅትዎ መቅዳትን ይከታተላል</translation>
 <translation id="7678730592635586336">ቪድዮ ዳግም አንሳ</translation>
 <translation id="7679287273775285018">በኢ-ኪስ ቦርሳ ይክፈሉ</translation>
 <translation id="7679367271685653708">በChrome ቅንብሮች ውስጥ የአሰሳ ታሪክዎን ይመልከቱ እና ያቀናብሩ</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">ምልመላ እና የሰው ኃይል ምደባ</translation>
 <translation id="8135546115396015134">የግራ ቁልፍ</translation>
 <translation id="8137456439814903304">ኃይል እና መገልገያዎች</translation>
+<translation id="814071672416123670">በድርጅትዎ መመሪያዎች ምክንያት ይዘት ሊቀዳ አልቻለም</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ከ1 ወር በፊት የተፈጠረ}one{ከ{NUM_MONTHS} ወር በፊት የተፈጠረ}other{ከ{NUM_MONTHS} ወሮች በፊት የተፈጠረ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />፣ አሁን ያለ ነባሪ። <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">የPDF ስሪት፦</translation>

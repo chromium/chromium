@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">റിപ്പോർട്ട് അയച്ചു:</translation>
 <translation id="1542105669288201090">ബിസിനസ് വിദ്യാഭ്യാസം</translation>
 <translation id="1542830386724426410">ലഭ്യമായ കാർഡ് ആനുകൂല്യങ്ങളും റിവാർഡുകളും ചെക്ക്ഔട്ടിൽ കാണിക്കുക. ഇഷ്യൂവറുടെ നിബന്ധനകൾ ബാധകമാണ്. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />കൂടുതലറിയുക<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ അനുസരിച്ച്, നിങ്ങൾ പകർത്തിയ ഉള്ളടക്കത്തിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട വിവരങ്ങൾ ഉണ്ടോയെന്ന് പരിശോധിച്ചുകൊണ്ടിരിക്കുകയാണ്. സ്കാൻ പൂർത്തിയായ ശേഷം ഒട്ടിക്കാൻ അനുവദിച്ചേക്കാം.</translation>
 <translation id="1545757265410828525">നിരക്ക് ചരിത്രം</translation>
 <translation id="1546286808622193216">Gemini ഉപയോഗിച്ച് കാർഡ് ആനുകൂല്യങ്ങൾ താരതമ്യം ചെയ്യുക</translation>
 <translation id="1549470594296187301">ഈ ഫീച്ചർ ഉപയോഗിക്കാൻ JavaScript പ്രവർത്തനക്ഷമമാക്കിയിരിക്കണം.</translation>
@@ -1502,6 +1503,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> നയത്തെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="3295444047715739395">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="3299098170013242198">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് Windows Hello ഓണാണ്</translation>
+<translation id="3299197721044635447">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ കാരണം, മാനേജ് ചെയ്യുന്ന Chrome സന്ദർഭത്തിന് പുറത്ത് ഉള്ളടക്കം ഒട്ടിക്കാനായില്ല</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ഉപയോഗിക്കുന്നതിനിടെ എന്തോ കുഴപ്പമുണ്ടായി</translation>
 <translation id="3303176609391916566">30 x 42 ഇഞ്ച്</translation>
 <translation id="3303855915957856445">തിരയൽ ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
@@ -4365,6 +4367,7 @@
 <translation id="767550629621587224">പ്രീ കട്ട് ടാബുകൾ</translation>
 <translation id="7675756033024037212">സ്ക്രോൾ ചെയ്യലും സൂം ചെയ്യലും അനുവദനീയമല്ല</translation>
 <translation id="7676643023259824263">ക്ലിപ്പ്‌ബോർഡ് ടെക്‌സ്‌റ്റിനായി തിരയുക, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">നിങ്ങളുടെ സ്ഥാപനം പകർത്തൽ നിരീക്ഷിക്കുന്നു</translation>
 <translation id="7678730592635586336">വീഡിയോ വീണ്ടുമെടുക്കുക</translation>
 <translation id="7679287273775285018">ഇ-വാലറ്റ് ഉപയോഗിച്ച് പേ ചെയ്യുക</translation>
 <translation id="7679367271685653708">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം കാണുക, മാനേജ് ചെയ്യുക</translation>
@@ -4651,6 +4654,7 @@
 <translation id="8134058435519644366">റിക്രൂട്ട് ചെയ്യലും ജീവനക്കാരെ നിയമിക്കലും</translation>
 <translation id="8135546115396015134">'Left' കീ</translation>
 <translation id="8137456439814903304">ഊർജ്ജവും യൂട്ടിലിറ്റികളും</translation>
+<translation id="814071672416123670">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ കാരണം ഉള്ളടക്കം പകർത്താനായില്ല</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ഒരു മാസം മുമ്പ് സൃഷ്‌ടിച്ചത്}other{{NUM_MONTHS} മാസം മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, നിലവിലെ ഡിഫോൾട്ട്. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF പതിപ്പ്:</translation>

@@ -352,6 +352,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1539840569003678498">Pārskata nosūtīšanas laiks:</translation>
 <translation id="1542105669288201090">Uzņēmējdarbības izglītība</translation>
 <translation id="1542830386724426410">Norēķināšanās laikā rādīt pieejamās kartes priekšrocības un atlīdzības. Ir spēkā kartes izsniedzēja noteikumi. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Uzziniet vairāk<ph name="CARD_BENEFIT_HELP_LINK_END" />.</translation>
+<translation id="1544739361222649706">Pamatojoties uz jūsu organizācijas politikām, jūsu kopētais saturs tiek pārbaudīts, vai tajā nav ietverta sensitīva informācija. Pēc pārbaudes pabeigšanas ielīmēšana var tikt atļauta.</translation>
 <translation id="1545757265410828525">Cenu vēsture</translation>
 <translation id="1546286808622193216">Karšu priekšrocību salīdzināšana, izmantojot Gemini</translation>
 <translation id="1549470594296187301">Lai izmantotu šo funkciju, ir jābūt iespējotai valodai JavaScript.</translation>
@@ -1503,6 +1504,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3293642807462928945">Uzzināt vairāk par politiku <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Skatiet un pārvaldiet savas paroles Chrome iestatījumos.</translation>
 <translation id="3299098170013242198">Paroļu aizpildei ir ieslēgta funkcija Windows Hello.</translation>
+<translation id="3299197721044635447">Saturu nevarēja ielīmēt ārpus pārvaldītā Chrome konteksta jūsu organizācijas politiku dēļ.</translation>
 <translation id="3299720788264079132">Izmantojot funkciju <ph name="FEATURE_NAME" />, radās problēma.</translation>
 <translation id="3303176609391916566">30 x 42 collas</translation>
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
@@ -4366,6 +4368,7 @@ Papildu informācija:
 <translation id="767550629621587224">Izgriezti izciļņi</translation>
 <translation id="7675756033024037212">Ritināšana un tālummaiņa nav atļauta</translation>
 <translation id="7676643023259824263">Meklēt starpliktuves tekstu <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Jūsu organizācija pārrauga kopēšanu.</translation>
 <translation id="7678730592635586336">Atkārtoti uzņemt videoklipu</translation>
 <translation id="7679287273775285018">Maksāt, izmantojot e-maku</translation>
 <translation id="7679367271685653708">Chrome iestatījumos skatīt un pārvaldīt pārlūkošanas vēsturi</translation>
@@ -4652,6 +4655,7 @@ Papildu informācija:
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>
 <translation id="8135546115396015134">kreisais taustiņš</translation>
 <translation id="8137456439814903304">Enerģija un komunālie pakalpojumi</translation>
+<translation id="814071672416123670">Saturu nevarēja kopēt jūsu organizācijas politiku dēļ.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Izveidota pirms 1 mēneša}zero{Izveidota pirms {NUM_MONTHS} mēnešiem}one{Izveidota pirms {NUM_MONTHS} mēneša}other{Izveidota pirms {NUM_MONTHS} mēnešiem}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, pašreizējais noklusējums. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versija:</translation>

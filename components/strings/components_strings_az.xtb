@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Şikayət göndərildi:</translation>
 <translation id="1542105669288201090">Biznes təhsili</translation>
 <translation id="1542830386724426410">Ödəmə zamanı əlçatan kart üstünlüklərini və mükafatlarını göstərin. Emitent şərtləri tətbiq olunur. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ətraflı məlumat<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Təşkilat siyasətlərinə əsasən kopiyaladığınız kontent həssas məlumatlar üçün skan edilir. Skanlama tamamlandıqdan sonra əlavə etməyə icazə verilə bilər.</translation>
 <translation id="1545757265410828525">Qiymət tarixçəsi</translation>
 <translation id="1546286808622193216">Gemini-dan istifadə edərək kartın üstünlüklərini müqayisə edin</translation>
 <translation id="1549470594296187301">JavaScript bu funksiyanı istifadə etmək üçün aktiv olmalıdır.</translation>
@@ -1501,6 +1502,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> siyasəti haqqında ətraflı məlumat əldə edin</translation>
 <translation id="3295444047715739395">Parollarınıza Chrome ayarlarında baxın və idarə edin</translation>
 <translation id="3299098170013242198">Windows Hello parolları daxil etmək üçün aktivdir</translation>
+<translation id="3299197721044635447">Təşkilat siyasətlərinə əsasən kontenti idarə olunan Chrome kontekstindən kənarda əlavə etmək mümkün olmadı</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> istifadə edərkən xəta oldu</translation>
 <translation id="3303176609391916566">30 x 42 düym</translation>
 <translation id="3303855915957856445">Heç bir axtarış nəticəsi tapılmadı</translation>
@@ -4363,6 +4365,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="767550629621587224">Əvvəlcədən kəsilmiş tablar</translation>
 <translation id="7675756033024037212">Sürüşdürüb zumlamağa icazə verilmir</translation>
 <translation id="7676643023259824263">Mübadilə buferində mətni axtarın, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Təşkilat kopiyalamağa nəzarət edir</translation>
 <translation id="7678730592635586336">Videonu yenidən çəkin</translation>
 <translation id="7679287273775285018">E-pulqabı ilə ödəyin</translation>
 <translation id="7679367271685653708">Chrome ayarlarında brauzer tarixçənizə baxın və idarə edin</translation>
@@ -4649,6 +4652,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8134058435519644366">İşə qəbul və iş heyəti</translation>
 <translation id="8135546115396015134">sol düymə</translation>
 <translation id="8137456439814903304">Enerji və Kommunal Xidmət</translation>
+<translation id="814071672416123670">Təşkilat siyasətlərinə əsasən kontenti kopiyalamaq mümkün olmadı</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ay əvvəl yaradıldı}other{{NUM_MONTHS} ay əvvəl yaradıldı}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, cari defolt. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versiyası:</translation>

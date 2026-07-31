@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">ରିପୋର୍ଟ ପଠାଯାଇଛି:</translation>
 <translation id="1542105669288201090">ବିଜିନେସ ଶିକ୍ଷା</translation>
 <translation id="1542830386724426410">ଚେକଆଉଟ ସମୟରେ ଉପଲବ୍ଧ କାର୍ଡ ଲାଭ ଏବଂ ପୁରସ୍କାରଗୁଡ଼ିକ ଦେଖାନ୍ତୁ। ପ୍ରଦାନକାରୀ ସର୍ତ୍ତାବଳୀ ଲାଗୁ ହୁଏ। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତିଗୁଡ଼ିକ ଆଧାରରେ, ଆପଣ କପି କରିଥିବା ବିଷୟବସ୍ତୁକୁ ସମ୍ବେଦନଶୀଳ ସୂଚନା ପାଇଁ ସ୍କାନ କରାଯାଉଛି। ସ୍କାନ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ପେଷ୍ଟ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇପାରେ।</translation>
 <translation id="1545757265410828525">ମୂଲ୍ୟ ଇତିହାସ</translation>
 <translation id="1546286808622193216">Gemini ବ୍ୟବହାର କରି କାର୍ଡ ଲାଭଗୁଡ଼ିକୁ ତୁଳନା କରନ୍ତୁ</translation>
 <translation id="1549470594296187301">ଏହି ବୈଶିଷ୍ଟ୍ୟକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ନିଶ୍ଚିତରୂପେ JavaScriptକୁ ସକ୍ଷମ କରାଯିବା ଉଚିତ।</translation>
@@ -1501,6 +1502,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ନୀତି ସମ୍ଵନ୍ଧରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="3295444047715739395">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଦେଖନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3299098170013242198">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ Windows Hello ଚାଲୁ ଅଛି</translation>
+<translation id="3299197721044635447">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତିଗୁଡ଼ିକ ଯୋଗୁଁ ପରିଚାଳିତ Chrome ପ୍ରସଙ୍ଗ ବାହାରେ ବିଷୟବସ୍ତୁକୁ ପେଷ୍ଟ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ବ୍ୟବହାର କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋଇଛି</translation>
 <translation id="3303176609391916566">30 x 42 ଇଞ୍ଚ</translation>
 <translation id="3303855915957856445">କୌଣସି ସର୍ଚ୍ଚ ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
@@ -4363,6 +4365,7 @@
 <translation id="767550629621587224">ପ୍ରି-କଟ ଟାବ</translation>
 <translation id="7675756033024037212">ସ୍କ୍ରୋଲ କରି ଜୁମ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="7676643023259824263">କ୍ଲିପ୍‌ବୋର୍ଡ ଟେକ୍ସଟ୍ <ph name="TEXT" /> ଖୋଜନ୍ତୁ</translation>
+<translation id="7676840398262504532">ଆପଣଙ୍କ ସଂସ୍ଥା କପି କରିବାକୁ ମନିଟର କରେ</translation>
 <translation id="7678730592635586336">ପୁଣି ଭିଡିଓ କରନ୍ତୁ</translation>
 <translation id="7679287273775285018">eWallet ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7679367271685653708">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଦେଖନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -4649,6 +4652,7 @@
 <translation id="8134058435519644366">ନିଯୁକ୍ତି ଓ କର୍ମଚାରୀ</translation>
 <translation id="8135546115396015134">ବାମ କୀ</translation>
 <translation id="8137456439814903304">ଏନର୍ଜି ଏବଂ ୟୁଟିଲିଟିଗୁଡ଼ିକ</translation>
+<translation id="814071672416123670">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତିଗୁଡ଼ିକ ଯୋଗୁଁ ବିଷୟବସ୍ତୁକୁ କପି କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_MONTHS} ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ବର୍ତ୍ତମାନର ଡିଫଲ୍ଟ। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ସଂସ୍କରଣ:</translation>

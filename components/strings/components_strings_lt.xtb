@@ -352,6 +352,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1539840569003678498">Ataskaita išsiųsta:</translation>
 <translation id="1542105669288201090">Verslo studijos</translation>
 <translation id="1542830386724426410">Atsiskaitant rodyti pasiekiamas kortelės privilegijas ir premijas. Taikomos išdavėjo sąlygos. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Sužinokite daugiau<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Pagal jūsų organizacijos politiką nukopijuotas turinys nuskaitomas, siekiant nustatyti, ar jame nėra neskelbtinos informacijos. Įklijuoti gali būti leidžiama, kai nuskaitymas bus baigtas.</translation>
 <translation id="1545757265410828525">Kainų istorija</translation>
 <translation id="1546286808622193216">Palyginkite kortelių privilegijas naudodami „Gemini“</translation>
 <translation id="1549470594296187301">Norint naudoti šią funkciją, reikia įgalinti „JavaScript“.</translation>
@@ -1504,6 +1505,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3293642807462928945">Sužinokite daugiau apie „<ph name="POLICY_NAME" />“ politiką</translation>
 <translation id="3295444047715739395">Peržiūrėkite ir tvarkykite slaptažodžius „Chrome“ nustatymuose</translation>
 <translation id="3299098170013242198">„Windows Hello“ įjungta slaptažodžiams užpildyti</translation>
+<translation id="3299197721044635447">Turinio nepavyko įklijuoti ne tvarkomoje „Chrome“ aplinkoje dėl organizacijos politikos</translation>
 <translation id="3299720788264079132">Kažkas nepavyko naudojant „<ph name="FEATURE_NAME" />“</translation>
 <translation id="3303176609391916566">30 x 42 col.</translation>
 <translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
@@ -4369,6 +4371,7 @@ Papildoma išsami informacija:
 <translation id="767550629621587224">Iš anksto iškirpti lakštai</translation>
 <translation id="7675756033024037212">Slinkimas ir mastelio keitimas neleidžiamas</translation>
 <translation id="7676643023259824263">Ieškoti iškarpinės teksto „<ph name="TEXT" />“</translation>
+<translation id="7676840398262504532">Jūsų organizacija stebi kopijavimą</translation>
 <translation id="7678730592635586336">Iš naujo įrašyti vaizdo įrašą</translation>
 <translation id="7679287273775285018">Mokėti naudodami el. piniginę</translation>
 <translation id="7679367271685653708">Peržiūrėkite ir tvarkykite naršymo istoriją „Chrome“ nustatymuose</translation>
@@ -4655,6 +4658,7 @@ Papildoma išsami informacija:
 <translation id="8134058435519644366">Komplektavimas ir personalo poreikiai</translation>
 <translation id="8135546115396015134">kairįjį klavišą</translation>
 <translation id="8137456439814903304">Energija ir komunalinės paslaugos</translation>
+<translation id="814071672416123670">Turinio nepavyko nukopijuoti dėl organizacijos politikos</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Sukurta prieš 1 mėnesį}one{Sukurta prieš {NUM_MONTHS} mėnesį}few{Sukurta prieš {NUM_MONTHS} mėnesius}many{Sukurta prieš {NUM_MONTHS} mėnesio}other{Sukurta prieš {NUM_MONTHS} mėnesių}}</translation>
 <translation id="8147389370274164212">„<ph name="SEARCH_ENGINE_NAME" />“, dabartinis numatytasis. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versija:</translation>

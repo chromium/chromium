@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">रिपोर्ट पठाइएको मिति र समय:</translation>
 <translation id="1542105669288201090">व्यावसायिक शिक्षा</translation>
 <translation id="1542830386724426410">चेकआउट गर्ने क्रममा कार्डमार्फत उपलब्ध हुने लाभ तथा रिवार्डहरू देखाउनुहोस्। कार्ड जारीकर्ताका सर्तहरू लागू हुन्छन्। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />थप जान्नुहोस्<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">तपाईंको सङ्गठनका नीतिहरूका आधारमा तपाईंले कपी गर्नुभएको सामग्रीमा संवेदनशील जानकारी छ कि छैन भन्ने कुराको जाँच गरिँदै छ। जाँच गर्ने कार्य पूरा भएपछि पेस्ट गर्न दिइन सक्छ।</translation>
 <translation id="1545757265410828525">विगतको मूल्य</translation>
 <translation id="1546286808622193216">Gemini प्रयोग गरी कार्डका लाभहरूको तुलना गर्नुहोस्</translation>
 <translation id="1549470594296187301">यो सुविधा प्रयोग गर्न JavaScript सक्रिय गर्नुपर्छ।</translation>
@@ -1500,6 +1501,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीतिका बारेमा थप जान्नुहोस्</translation>
 <translation id="3295444047715739395">Chrome ब्राउजरका सेटिङमा गई आफ्ना पासवर्डहरू हेर्नुहोस् तथा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3299098170013242198">पासवर्डहरू हाल्नका निम्ति Windows Hello अन छ</translation>
+<translation id="3299197721044635447">तपाईंको सङ्गठनका नीतिहरूका कारण व्यवस्थापन गरिएको Chrome कन्टेक्स्टबाहिर सामग्री पेस्ट गर्न सकिएन।</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> प्रयोग गर्ने क्रममा कुनै समस्या आयो</translation>
 <translation id="3303176609391916566">३० x ४२ इन्च</translation>
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
@@ -4365,6 +4367,7 @@
 <translation id="767550629621587224">प्रि-कट ट्याब</translation>
 <translation id="7675756033024037212">स्क्रोल तथा जुम गर्ने अनुमति दिइएको छैन</translation>
 <translation id="7676643023259824263">क्लिपबोर्डसम्बन्धी पाठ <ph name="TEXT" /> को खोजी गर्नुहोस्</translation>
+<translation id="7676840398262504532">तपाईंको सङ्गठनले कपी गर्ने कार्यको निगरानी गर्छ</translation>
 <translation id="7678730592635586336">फेरि भिडियो खिच्नुहोस्</translation>
 <translation id="7679287273775285018">इवालेट प्रयोग गरी भुक्तानी गर्नुहोस्</translation>
 <translation id="7679367271685653708">Chrome का सेटिङमा गई आफ्नो ब्राउजिङ इतिहास हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
@@ -4651,6 +4654,7 @@
 <translation id="8134058435519644366">भर्ती तथा नियक्ति गर्ने सेवा</translation>
 <translation id="8135546115396015134">लेफ्ट की</translation>
 <translation id="8137456439814903304">ऊर्जा तथा युटिलिटीहरू</translation>
+<translation id="814071672416123670">तपाईंको सङ्गठनका नीतिहरूका कारण सामग्री कपी गर्न सकिएन</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{१ महिनाअघि बनाइएको}other{{NUM_MONTHS} महिनाअघि बनाइएको}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, हालको डिफल्ट सर्च इन्जिन। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF को संस्करण:</translation>

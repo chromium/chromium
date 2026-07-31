@@ -352,6 +352,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1539840569003678498">Anfonwyd yr adroddiad:</translation>
 <translation id="1542105669288201090">Addysg Busnes</translation>
 <translation id="1542830386724426410">Dangos buddion a gwobrau cerdyn sydd ar gael wrth y ddesg dalu. Mae telerau'r cyhoeddwr yn berthnasol. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Dysgu rhagor<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Yn seiliedig ar bolisïau eich sefydliad, mae'r cynnwys a gopïwyd gennych yn cael ei sganio am wybodaeth sensitif. Gellir caniatáu gludo ar ôl i'r sgan gael ei gwblhau.</translation>
 <translation id="1545757265410828525">Hanes prisiau</translation>
 <translation id="1546286808622193216">Cymharu buddion cardiau gan ddefnyddio Gemini</translation>
 <translation id="1549470594296187301">Rhaid galluogi JavaScript i ddefnyddio'r nodwedd hon.</translation>
@@ -1503,6 +1504,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3293642807462928945">Dysgu rhagor am y polisi <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Gweld a rheoli'ch cyfrineiriau yn Gosodiadau Chrome</translation>
 <translation id="3299098170013242198">Mae Windows Hello ymlaen ar gyfer llenwi cyfrineiriau</translation>
+<translation id="3299197721044635447">Nid oedd modd gludo cynnwys y tu allan i'r cyd-destun Chrome a reolir oherwydd polisïau eich sefydliad</translation>
 <translation id="3299720788264079132">Aeth rhywbeth o'i le wrth ddefnyddio <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 modfedd</translation>
 <translation id="3303855915957856445">Ni chanfuwyd unrhyw ganlyniadau chwilio</translation>
@@ -4367,6 +4369,7 @@ Manylion ychwanegol:
 <translation id="767550629621587224">Tabiau a Ragdorrwyd</translation>
 <translation id="7675756033024037212">Ni chaniateir sgrolio a chwyddo</translation>
 <translation id="7676643023259824263">Chwilio am destun clipfwrdd, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Mae eich sefydliad yn monitro copïo</translation>
 <translation id="7678730592635586336">Ail-dynnu fideo</translation>
 <translation id="7679287273775285018">Talu gydag eWaled</translation>
 <translation id="7679367271685653708">Gweld a rheoli eich hanes pori yng ngosodiadau Chrome</translation>
@@ -4653,6 +4656,7 @@ Manylion ychwanegol:
 <translation id="8134058435519644366">Recriwtio a Staffio</translation>
 <translation id="8135546115396015134">bysell chwith</translation>
 <translation id="8137456439814903304">Ynni a Chyfleustodau</translation>
+<translation id="814071672416123670">Nid oedd modd copïo'r cynnwys oherwydd polisïau eich sefydliad</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Crëwyd 1 mis yn ôl}zero{Crëwyd {NUM_MONTHS} mis yn ôl}two{Crëwyd {NUM_MONTHS} fis yn ôl}few{Crëwyd {NUM_MONTHS} mis yn ôl}many{Crëwyd {NUM_MONTHS} mis yn ôl}other{Crëwyd {NUM_MONTHS} mis yn ôl}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, diofyn presennol. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Fersiwn y PDF:</translation>

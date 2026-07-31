@@ -352,6 +352,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1539840569003678498">Fecha de envío del informe:</translation>
 <translation id="1542105669288201090">Educación empresarial</translation>
 <translation id="1542830386724426410">Muestra las recompensas y los beneficios de la tarjeta disponibles durante la confirmación de la compra. Se aplican los términos de la entidad emisora. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Más información<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Según las políticas de tu organización, se está analizando el contenido que copiaste en busca de información sensible. Es posible que se permita pegar después de que se complete el análisis.</translation>
 <translation id="1545757265410828525">Historial de precios</translation>
 <translation id="1546286808622193216">Compara los beneficios de tarjetas con Gemini</translation>
 <translation id="1549470594296187301">JavaScript debe estar habilitado para usar esta función.</translation>
@@ -1504,6 +1505,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3293642807462928945">Más información sobre la política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta y administra tus contraseñas en la configuración de Chrome</translation>
 <translation id="3299098170013242198">Se activó Windows Hello para completar contraseñas</translation>
+<translation id="3299197721044635447">No se pudo pegar el contenido fuera del contexto de Chrome administrado debido a las políticas de tu organización</translation>
 <translation id="3299720788264079132">Se produjo un error al utilizar <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">76.2 × 106.7 cm (30 × 42 in)</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
@@ -4369,6 +4371,7 @@ Detalles adicionales:
 <translation id="767550629621587224">Tiras precortadas</translation>
 <translation id="7675756033024037212">No se permiten el desplazamiento ni el zoom</translation>
 <translation id="7676643023259824263">Buscar el texto <ph name="TEXT" /> en el portapapeles</translation>
+<translation id="7676840398262504532">Tu organización supervisa la copia de contenido</translation>
 <translation id="7678730592635586336">Volver a grabar video</translation>
 <translation id="7679287273775285018">Pago con billetera electrónica</translation>
 <translation id="7679367271685653708">Ver y administrar tu historial de navegación en la configuración de Chrome</translation>
@@ -4655,6 +4658,7 @@ Detalles adicionales:
 <translation id="8134058435519644366">Contratación y selección de personal</translation>
 <translation id="8135546115396015134">tecla izquierda</translation>
 <translation id="8137456439814903304">Energía y servicios públicos</translation>
+<translation id="814071672416123670">No se pudo copiar el contenido debido a las políticas de tu organización</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Se creó hace 1 mes}other{Se creó hace {NUM_MONTHS} meses}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, motor de búsqueda predeterminado actualmente. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>

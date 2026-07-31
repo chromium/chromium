@@ -2452,6 +2452,21 @@ Penerapan kebijakan ini pada perangkat terkelola dipengaruhi oleh kebijakan ting
 <translation id="2508800409212941632">Kebijakan konfigurasi untuk Enterprise Connector <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509748672176727116">Pengguna akan dapat melakukan rekaman paket jaringan</translation>
 <translation id="2509919237512982967">Menggunakan Kontrol Formulir Lama hingga M84.</translation>
+<translation id="2509947330677441695">Jika kebijakan ini disetel, akses ke URL yang tercantum akan diberikan di mode Samaran. Gunakan kebijakan ini untuk membuka pengecualian untuk pola URL tertentu yang ditentukan dalam <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Jika kebijakan ini dan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> disetel, daftar yang diizinkan akan diprioritaskan. Jika cocok dengan pola di daftar yang diizinkan, URL akan diizinkan. Jika cocok dengan pola di daftar yang tidak diizinkan (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL tidak cocok dengan keduanya, kebijakan umum <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> akan digunakan sebagai penggantian.
+
+Jika kebijakan ini disetel dan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL apa pun yang tidak ada dalam daftar yang diizinkan akan diblokir dalam mode Samaran.
+
+Jika <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> disetel ke tidak diizinkan (nilai 1), tetapi kebijakan ini dikonfigurasi, mode Samaran hanya akan tersedia untuk URL yang cocok dengan daftar yang diizinkan.
+
+Jika kebijakan ini tidak disetel, tidak ada pengecualian untuk <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
+
+Kebijakan ini hanya memengaruhi mode Samaran. Untuk mengizinkan URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Karakter pengganti host menyeluruh (yaitu, "*" atau "[*]") tidak diperbolehkan; gunakan kebijakan <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> untuk mengaktifkan fitur ini secara global.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="2512531606818417084">Kebijakan ini bersifat sementara dan tidak akan berfungsi lagi mulai M137.
 
 Fitur ini memungkinkan penggunaan "zstd" di header permintaan Accept-Encoding,
@@ -10902,6 +10917,21 @@ Jika kebijakan ini dikosongkan, tidak akan ada pengecualian untuk <ph name="FLOA
 <translation id="759957074386651883">Setelan Safe Browsing</translation>
 <translation id="7602621823177962064">Nonaktifkan pelaporan info memori perangkat</translation>
 <translation id="7604169113182304895">Aplikasi Android dapat memilih untuk menerima daftar ini secara sukarela. Anda tidak dapat memaksa aplikasi untuk menerimanya.</translation>
+<translation id="7604302274842086162">Kebijakan ini dapat digunakan untuk mengizinkan <ph name="CHROME_DEVTOOLS_NAME" /> di URL tertentu.
+
+Pola URL dicocokkan dengan URL setiap frame di halaman yang diperiksa. Perilaku yang dihasilkan bergantung pada apakah kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> juga disetel.
+
+Jika kebijakan ini disetel dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL setiap frame harus cocok dengan pola di daftar yang diizinkan ini agar <ph name="CHROME_DEVTOOLS_NAME" /> diizinkan. Jika URL frame tidak cocok, DevTools akan diblokir untuk seluruh halaman. Untuk mengetahui informasi tentang format URL, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Jika kebijakan ini dan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> disetel, daftar yang diizinkan ini akan diprioritaskan. Jika URL frame cocok dengan pola di daftar yang diizinkan ini, URL akan tetap diizinkan, meskipun juga cocok dengan pola di daftar yang tidak diizinkan. Jika cocok dengan pola di daftar yang tidak diizinkan (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL tidak cocok dengan keduanya, kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> akan digunakan sebagai gantinya.
+
+Jika kebijakan ini tidak disetel, ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> akan ditentukan oleh kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Kebijakan ini juga berlaku untuk <ph name="CHROME_DEVTOOLS_NAME" /> yang dibuka untuk ekstensi dan aplikasi web.
+
+Karakter pengganti host menyeluruh (yaitu, "*" atau "[*]") tidak diperbolehkan; gunakan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> untuk mengaktifkan fitur ini secara global.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="7607831126797434329">Blokir download otomatis di situs ini</translation>
 <translation id="7608186022704392724">Fitur kirim otomatis PIN akan mengubah cara memasukkan PIN di <ph name="PRODUCT_OS_NAME" />.
           Fitur ini akan menampilkan UI khusus yang dengan jelas memperlihatkan kepada pengguna berapa

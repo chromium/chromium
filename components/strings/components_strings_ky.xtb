@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Кабар жөнөтүлдү:</translation>
 <translation id="1542105669288201090">Ишкердик боюнча билим берүү</translation>
 <translation id="1542830386724426410">Төлөө учурунда карта артыкчылыктарын жана сыйлыктарын көрсөтүү. Карта берген мекеменин шарттары колдонулат. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Кеңири маалымат<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Уюмуңуздун эрежелерине ылайык, көчүргөн контентиңизде купуя маалыматтын бар-жогу текшерилүүдө. Текшерилип бүткөндөн кийин чаптоого уруксат берилиши мүмкүн.</translation>
 <translation id="1545757265410828525">Баалар таржымалы</translation>
 <translation id="1546286808622193216">Gemini аркылуу картанын артыкчылыктарын салыштырыңыз</translation>
 <translation id="1549470594296187301">Бул функцияны пайдалануу үчүн JavaScript иштетилиши керек.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты жөнүндө кеңири маалымат</translation>
 <translation id="3295444047715739395">Сырсөздөрүңүздү Chrome'дун жөндөөлөрүндө көрүп, башкарыңыз</translation>
 <translation id="3299098170013242198">Сырсөздөрдү толтуруу үчүн Windows Hello күйгүзүлдү</translation>
+<translation id="3299197721044635447">Уюмуңуздун эрежелеринен улам контентти тескелген Chrome контекстинен тышкары жерге чаптоого болбойт</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> колдонууда бир жерден ката кетти</translation>
 <translation id="3303176609391916566">30 x 42 дюйм</translation>
 <translation id="3303855915957856445">Эч нерсе табылган жок</translation>
@@ -4366,6 +4368,7 @@
 <translation id="767550629621587224">Өтмөктөрү менен барак</translation>
 <translation id="7675756033024037212">Сыдырууга жана чоңойтуп/кичирейтүүгө уруксат берилбейт</translation>
 <translation id="7676643023259824263">Алмашуу буфериндеги текстти издөө, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Уюмуңуз көчүрүү аракеттерин көзөмөлдөйт</translation>
 <translation id="7678730592635586336">Видеону кайра тартуу</translation>
 <translation id="7679287273775285018">Электрондук капчык менен төлөңүз</translation>
 <translation id="7679367271685653708">Chrome жөндөөлөрүндө көрүлгөн вебсайттарды көрүү жана башкаруу</translation>
@@ -4652,6 +4655,7 @@
 <translation id="8134058435519644366">Жумушка алуу жана кадрлар менен камсыз кылуу</translation>
 <translation id="8135546115396015134">сол баскычты</translation>
 <translation id="8137456439814903304">Энергетика жана коммуналдык кызматтар</translation>
+<translation id="814071672416123670">Уюмуңуздун эрежелерине ылайык контентти көчүрүүгө болбойт</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ай мурун түзүлдү}other{{NUM_MONTHS} ай мурун түзүлдү}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, демейки шартта колдонулат. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF версиясы:</translation>

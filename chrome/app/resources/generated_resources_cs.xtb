@@ -1578,7 +1578,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2227179592712503583">Odebrat návrh</translation>
 <translation id="222931766245975952">Soubor byl zkrácen</translation>
 <translation id="2229342031987138128">Skryté titulky</translation>
-<translation id="2231160360698766265">Weby mohou přehrávat chráněný obsah</translation>
 <translation id="2231351769755997720">Žádné návrhy nejsou k dispozici. Zkuste položit vlastní otázku ohledně této stránky.</translation>
 <translation id="2232751457155581899">Weby mohou žádat o sledování pozice kamery</translation>
 <translation id="2233502537820838181">&amp;Další informace</translation>
@@ -3855,7 +3854,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3928659086758780856">Dochází inkoust</translation>
 <translation id="3929426037718431833">Tato rozšíření mohou zobrazit a změnit informace na tomto webu.</translation>
 <translation id="3930155420525972941">Přesunout skupinu do nového okna</translation>
-<translation id="3930602610362250897">K přehrávání obsahu chráněného autorskými právy mohou weby potřebovat používat službu ochrany obsahu</translation>
 <translation id="3930737994424905957">Vyhledávání zařízení</translation>
 <translation id="3930968231047618417">Barva pozadí</translation>
 <translation id="3932356525934356570">Připnout rozšíření <ph name="EXTENSION_NAME" /></translation>
@@ -7195,7 +7193,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6590458744723262880">Přejmenovat složku</translation>
 <translation id="6592267180249644460">Protokol WebRTC zaznamenaný <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Otisk prstu byl sejmut</translation>
-<translation id="6593881952206664229">Mediální obsah chráněný autorskými právy se nemusí přehrávat</translation>
 <translation id="6594011207075825276">Hledání zařízení se sériovým portem…</translation>
 <translation id="6595322909015878027">Zákaz automaticky aktivovat režim obrazu v obraze</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Úspěšně jste změnili prolomené heslo.
@@ -8011,7 +8008,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nová karta ve skupině 1 karty}few{Nová karta ve skupině # karet}many{Nová karta ve skupině # karty}other{Nová karta ve skupině # karet}}</translation>
 <translation id="721490496276866468">Importovat hesla</translation>
 <translation id="7217208603285112910">Výběr není v jazyce <ph name="LANGUAGE" /></translation>
-<translation id="7217317914610152390">Přidávejte text, komentáře a poznámky pomocí nového nástroje Textové poznámky</translation>
+<translation id="7217317914610152390">Přidávejte text, komentáře a poznámky pomocí nového nástroje Textové anotace</translation>
 <translation id="7219254577985949841">Vymazat data webu?</translation>
 <translation id="7219473482981809164">Našli jsme několik profilů ke stažení. Než budete pokračovat, vyberte, které chcete stáhnout.</translation>
 <translation id="7220019174139618249">Hesla nelze exportovat do složky „<ph name="FOLDER" />“</translation>
@@ -10579,7 +10576,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9179524979050048593">Uživatelské jméno na přihlašovací obrazovce</translation>
 <translation id="9180380851667544951">Web může sdílet vaši obrazovku</translation>
 <translation id="9180847522826713506">Pokud chcete zobrazit heslo nebo k němu přidat poznámku, klikněte na ikonu klíče</translation>
-<translation id="9182556968660520230">Nepovolovat webům přehrávání chráněného obsahu</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Váš administrátor může pomocí aplikace <ph name="APP0_NAME" /> nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}=2{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" /> a <ph name="APP1_NAME" /> nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}=3{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a 1 další nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}few{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # dalších nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}many{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # další nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}other{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # dalších nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}}</translation>

@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">ટિપ સંબંધિત નોટિફિકેશન પ્રોમો બંધ કર્યો</translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1045899828449635435">આ સાઇટમાંથી પણ ડેટા સાફ કરીએ?</translation>
-<translation id="1049461303780085993">જવાબો, મુખ્ય મુદ્દા અને બીજું ઘણું મેળવવા માટે Gemini in Chrome અજમાવી જુઓ</translation>
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="1052842760770519282">તમારા પાસવર્ડમાંથી અમુક ઍક્સેસિબલ નથી</translation>
 <translation id="1057623954802068161">સ્ક્રોલ કરીને પેજની સૌથી ઉપરની બાજુએ જાઓ</translation>
@@ -314,6 +313,7 @@
 <translation id="2328474416100889417">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
 <translation id="2329500425421091035">રજૂ કરી રહ્યાં છીએ Chromeમાં AI મોડ</translation>
 <translation id="2330186936255788117">વધુ બુકમાર્ક</translation>
+<translation id="2330243730505117832">"કોઈ ડિવાઇસ પસંદ કરો" બંધ છે.</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="2334275697832662087">Chromeની AI-સંચાલિત સુરક્ષા તમને ઑનલાઇન જોખમો સામે સુરક્ષિત રાખવામાં મદદ કરે છે, જેથી તમે બ્રાઉઝ કરો ત્યારે તમને વિશ્વાસ રહે</translation>
@@ -503,6 +503,7 @@
 <translation id="3037177537145227281">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="3037517125981011456">Chromeમાં સાઇન ઇન કરવા માટે સંકેતો બતાવે છે</translation>
 <translation id="3038272154009688107">બધી સાઇટ જુઓ</translation>
+<translation id="3044436568790455247">"કોઈ ડિવાઇસ પસંદ કરો" સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવ્યું.</translation>
 <translation id="3057938290530993634">આગલી વખતે સરળ ઍક્સેસ માટે, તમારી સૌથી વધુ મુલાકાત લેવાયેલી વેબસાઇટને પિન કરવા ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> બુકમાર્ક}one{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}other{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}}</translation>
 <translation id="3062802207422175757">Chrome પર તમારી રુચિ વિશેના લેખ</translation>
@@ -511,6 +512,7 @@
 <translation id="3067505415088964188">કિંમત ઓછી છે</translation>
 <translation id="3070005020161560471">ઑટોમૅટિક રીતે અનુવાદ કરો</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />પ્રાઇવસી પૉલિસી<ph name="END_LINK3" /> પણ લાગુ થાય છે.</translation>
+<translation id="3075397426753215787">કોઈ ડિવાઇસ પસંદ કરો.</translation>
 <translation id="3080375898390966733">Google Lens વડે ટૅબ શોધો</translation>
 <translation id="3080525922482950719">તમે પછીથી અથવા ઑફલાઇન વાંચવા માટે પેજ સાચવી શકો છો</translation>
 <translation id="3087734570205094154">તળિયું</translation>
@@ -550,6 +552,7 @@
 <translation id="3282801380074962248">વિભાગ મોટો કરો</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ટૅબ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}one{# પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}other{# પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}}</translation>
+<translation id="3287664192482809715">"કોઈ ડિવાઇસ પસંદ કરો" અડધી ઊંચાઈએ ખોલવામાં આવ્યું.</translation>
 <translation id="3293181007446299124">તમારા બ્રાઉઝિંગ ઇતિહાસને તમારા ડિવાઇસમાં ખાનગી રાખવામાં આવે છે અને તમારી ઓળખને સુરક્ષિત રાખવા માટે રિપોર્ટને થોડા વિલંબ પછી મોકલવામાં આવે છે</translation>
 <translation id="3301639354590628973">એકાઉન્ટ સ્વિચ કરીએ?</translation>
 <translation id="3301936297336370235">પાસવર્ડના સૂચનનું કન્ફર્મેશન</translation>

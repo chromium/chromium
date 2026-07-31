@@ -352,6 +352,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1539840569003678498">Hisobot yuborildi:</translation>
 <translation id="1542105669288201090">Biznes taʼlim</translation>
 <translation id="1542830386724426410">Hisob-kitob vaqtida karta imtiyozlari va bonuslari axborotini chiqarish. Noshir shartlari amal qiladi. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Batafsil<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Tashkilotingiz siyosatlariga muvofiq, siz nusxalagan kontentda qaltis axborot bor-yoʻqligi tekshirilmoqda. Skanerlash yakunlangach, joylashga ruxsat berilishi mumkin.</translation>
 <translation id="1545757265410828525">Narxlar tarixi</translation>
 <translation id="1546286808622193216">Gemini yordamida karta imtiyozlarini taqqoslash</translation>
 <translation id="1549470594296187301">Bu xususiyatdan foydalanish uchun JavaScript yoqilgan bo‘lishi lozim.</translation>
@@ -1500,6 +1501,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> parametri haqida batafsil axborot olish</translation>
 <translation id="3295444047715739395">Parollaringizni Chrome sozlamalari orqali koʻrish va boshqarish</translation>
 <translation id="3299098170013242198">Parollarni kiritish uchun Windows Hello himoyasi yoniq</translation>
+<translation id="3299197721044635447">Tashkilotingiz siyosatlari sababli kontentni boshqariladigan Chrome muhitidan tashqariga joylash imkonsiz</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ishlashida xatolik yuz berdi</translation>
 <translation id="3303176609391916566">30 x 42 in</translation>
 <translation id="3303855915957856445">Qidiruv hech qanday natija bermadi</translation>
@@ -4361,6 +4363,7 @@ Batafsil axborot:
 <translation id="767550629621587224">Kesilgan qogʻoz</translation>
 <translation id="7675756033024037212">Varaqlash va zum taqiqlangan</translation>
 <translation id="7676643023259824263">Klipborddagi matnni qidirish, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Nusxa olish jarayoni tashkilotingiz nazoratida</translation>
 <translation id="7678730592635586336">Yangi video yozib olish</translation>
 <translation id="7679287273775285018">eWallet bilan toʻlash</translation>
 <translation id="7679367271685653708">Chrome sozlamalari orqali brauzer tarixini koʻrish va boshqarish</translation>
@@ -4647,6 +4650,7 @@ Batafsil axborot:
 <translation id="8134058435519644366">Ishga yonlash va xodimlar boshqaruvi</translation>
 <translation id="8135546115396015134">chap tugma</translation>
 <translation id="8137456439814903304">Energiya va vositalar</translation>
+<translation id="814071672416123670">Tashkilotingiz siyosatlari tufayli kontent nusxalanmadi</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 oy oldin yaratilgan}other{{NUM_MONTHS} oy oldin yaratilgan}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, hozirda asosiy. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versiyasi:</translation>

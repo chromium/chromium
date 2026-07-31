@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">చిట్కాల నోటిఫికేషన్‌ల ప్రోమో మూసివేయబడింది</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1045899828449635435">ఈ సైట్‌ల డేటా కూడా తొలగించాలా?</translation>
-<translation id="1049461303780085993">సమాధానాలను, ఇంకా కీలకమైన అంశాలు, మరిన్నింటిని పొందడానికి Chromeలో Geminiని ట్రై చేయండి</translation>
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
 <translation id="1052842760770519282">మీ పాస్‌వర్డ్‌లలో కొన్నింటిని యాక్సెస్ చేయడం సాధ్యం కాదు</translation>
 <translation id="1057623954802068161">పేజీ ఎగువకు స్క్రోల్ చేయండి</translation>
@@ -314,6 +313,7 @@
 <translation id="2328474416100889417">అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అలాగే అన్ని ఆహ్వాన లింక్‌లు ఆఫ్ చేయబడతాయి</translation>
 <translation id="2329500425421091035">Chromeలో AI మోడ్‌ను పరిచయం చేస్తున్నాము</translation>
 <translation id="2330186936255788117">మరిన్ని బుక్‌మార్క్‌లు</translation>
+<translation id="2330243730505117832">"డివైజ్‌ను ఎంచుకోండి" మూసివేయబడింది.</translation>
 <translation id="2332515770639153015">మెరుగైన సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="233375395665273385">తొలగించి, సైన్ అవుట్ చేయండి</translation>
 <translation id="2334275697832662087">Chrome AI-ఆధారిత సెక్యూరిటీ ఆన్‌లైన్ ప్రమాదాల నుండి మిమ్మల్ని రక్షించడంలో సహాయపడుతుంది, మీరు బ్రౌజ్ చేస్తున్నప్పుడు మీకు విశ్వాసాన్ని అందిస్తుంది</translation>
@@ -503,6 +503,7 @@
 <translation id="3037177537145227281">ధరను ట్రాక్ చేయడం</translation>
 <translation id="3037517125981011456">Chromeకు సైన్ ఇన్ చేయడానికి ప్రాంప్ట్‌లను చూపిస్తుంది</translation>
 <translation id="3038272154009688107">సైట్‌లన్నింటిని చూడండి</translation>
+<translation id="3044436568790455247">"డివైజ్‌ను ఎంచుకోండి" అనే షీట్ పూర్తి స్క్రీన్‌లో తెరుచుకుంది.</translation>
 <translation id="3057938290530993634">తర్వాతిసారి సులభంగా యాక్సెస్ చేయడానికి, మీరు ఎక్కువగా సందర్శించే వెబ్‌సైట్‌లను పిన్ చేయడానికి ట్యాప్ చేసి ఉంచండి</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> బుక్‌మార్క్}other{<ph name="BOOKMARKS_COUNT_MANY" /> బుక్‌మార్క్‌లు}}</translation>
 <translation id="3062802207422175757">Chromeలోని మీ అభిరుచులకు అనుగుణమైన కథనాలు</translation>
@@ -511,6 +512,7 @@
 <translation id="3067505415088964188">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="3070005020161560471">ఆటోమేటిక్‌గా అనువదించాల్సినవి</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />గోప్యతా పాలసీ<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
+<translation id="3075397426753215787">డివైజ్‌ను ఎంచుకోండి.</translation>
 <translation id="3080375898390966733">Google Lensతో ట్యాబ్ సెర్చ్ చేయండి</translation>
 <translation id="3080525922482950719">తర్వాత చదవడానికి లేదా ఆఫ్‌లైన్‌లో చదవడానికి మీరు పేజీలను సేవ్ చేయవచ్చు</translation>
 <translation id="3087734570205094154">దిగువ</translation>
@@ -550,6 +552,7 @@
 <translation id="3282801380074962248">విభాగాన్ని విస్తరించండి</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ట్యాబ్}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 పాస్‌వర్డ్ ఈ డివైజ్‌లో మాత్రమే సేవ్ అయింది. దాన్ని మీ ఇతర డివైజ్‌లలో ఉపయోగించడానికి, మీ Google ఖాతాలో సేవ్ చేయండి.}other{# పాస్‌వర్డ్‌లు ఈ డివైజ్‌లో మాత్రమే సేవ్ అయ్యాయి. వాటిని మీ ఇతర డివైజ్‌లలో ఉపయోగించడానికి, మీ Google ఖాతాలో సేవ్ చేయండి.}}</translation>
+<translation id="3287664192482809715">"డివైజ్‌ను ఎంచుకోండి" అనే షీట్ స్క్రీన్‌లో దిగువ సగ భాగంలో తెరుచుకుంది.</translation>
 <translation id="3293181007446299124">మీ బ్రౌజింగ్ హిస్టరీ మీ పరికరంలో ప్రైవేట్‌గా ఉంచబడుతుంది, అలాగే మీ గుర్తింపును సురక్షితంగా ఉంచడానికి రిపోర్ట్‌లు ఆలస్యంగా పంపబడతాయి</translation>
 <translation id="3301639354590628973">ఖాతాలను స్విచ్ చేయాలా?</translation>
 <translation id="3301936297336370235">పాస్‌వర్డ్ సూచన నిర్ధారణ</translation>

@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Отчет отправлен:</translation>
 <translation id="1542105669288201090">Бизнес-образование</translation>
 <translation id="1542830386724426410">Показывать информацию о преимуществах и бонусах карты при оформлении покупки. Применяются условия эмитента. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Подробнее…<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Согласно правилам вашей организации, скопированный контент проверяется на наличие конфиденциальной информации. После завершения сканирования вставка может быть разрешена.</translation>
 <translation id="1545757265410828525">История изменения цен</translation>
 <translation id="1546286808622193216">Сравнивайте преимущества карт с помощью Gemini.</translation>
 <translation id="1549470594296187301">Для использования этой функции необходимо включить JavaScript.</translation>
@@ -1502,6 +1503,7 @@
 <translation id="3293642807462928945">Подробнее о политике <ph name="POLICY_NAME" />…</translation>
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
 <translation id="3299098170013242198">Windows Hello используется, чтобы указывать пароли</translation>
+<translation id="3299197721044635447">Не удалось вставить содержимое за пределами управляемого контекста Chrome из-за правил вашей организации.</translation>
 <translation id="3299720788264079132">Что-то пошло не так при использовании функции "<ph name="FEATURE_NAME" />".</translation>
 <translation id="3303176609391916566">30 x 42 дюйма</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">Бумага с вкладками</translation>
 <translation id="7675756033024037212">Изменение масштаба и прокрутка запрещены</translation>
 <translation id="7676643023259824263">Поиск по тексту "<ph name="TEXT" />" из буфера обмена</translation>
+<translation id="7676840398262504532">Ваша организация отслеживает копирование.</translation>
 <translation id="7678730592635586336">Снять новое видео</translation>
 <translation id="7679287273775285018">Оплата с помощью электронного кошелька</translation>
 <translation id="7679367271685653708">Посмотреть историю браузера в настройках Chrome и управлять ею</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">Набор персонала и трудоустройство</translation>
 <translation id="8135546115396015134">стрелку влево</translation>
 <translation id="8137456439814903304">Энергетика и коммунальные службы</translation>
+<translation id="814071672416123670">Не удалось скопировать контент из-за правил вашей организации.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Создано 1 месяц назад}one{Создано {NUM_MONTHS} месяц назад}few{Создано {NUM_MONTHS} месяца назад}many{Создано {NUM_MONTHS} месяцев назад}other{Создано {NUM_MONTHS} месяца назад}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, используется по умолчанию. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версия PDF:</translation>

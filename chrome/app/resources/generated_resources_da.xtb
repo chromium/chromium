@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Denne side svarer ikke</translation>
 <translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den i "<ph name="ACCOUNT_FOLDER" />" på din konto.</translation>
 <translation id="1041263367839475438">Tilgængelige enheder</translation>
+<translation id="1041365648398872803">Tillad ikke, at websites anvender tjenester til beskyttelse af indhold</translation>
 <translation id="1041607257468256895">Administrer lokationstilladelser for websites i Chrome</translation>
 <translation id="1042248468362992359">Opret forbindelse via mobildata for at bruge hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Tilføj handling</translation>
@@ -429,6 +430,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307165550267142340">Din pinkode blev oprettet</translation>
 <translation id="1307431692088049276">Spørg mig ikke igen</translation>
 <translation id="130744661532298792">Verificer din identitet for at sikre, at du altid kan bruge adgangskoderne på din Google-konto</translation>
+<translation id="1308105352527684175">Du kan muligvis ikke få adgang til visse typer indhold</translation>
 <translation id="1311092170520822848">Dette website styrer chipkortlæsere, der er knyttet til din enhed, og muligvis chipkort, der er tilgængelige for dem</translation>
 <translation id="131112695174432497">Data, der påvirker personlig tilpasning af annoncer, slettes</translation>
 <translation id="131188242279372879">Prøv forbedret beskyttelse for at få Chromes højeste sikkerhedsniveau for downloads</translation>
@@ -1597,7 +1599,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2227179592712503583">Fjern forslag</translation>
 <translation id="222931766245975952">Fil forkortet</translation>
 <translation id="2229342031987138128">Undertekster</translation>
-<translation id="2231160360698766265">Websites kan afspille beskyttet indhold</translation>
 <translation id="2231351769755997720">Ingen tilgængelige forslag. Prøv at stille dit eget spørgsmål om denne side.</translation>
 <translation id="2232751457155581899">Websites kan anmode om tilladelse til at registrere din kameraposition</translation>
 <translation id="2233502537820838181">&amp;Flere oplysninger</translation>
@@ -1800,6 +1801,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (aktiv)</translation>
 <translation id="2390782873446084770">Wi-Fi-synkronisering</translation>
 <translation id="2391419135980381625">Standardskriftstørrelse</translation>
+<translation id="2391778823627025394">Websites kan bruge tjenester til beskyttelse af indhold</translation>
 <translation id="239185270194776190">Din Gemini-samtale er i et andet vindue. Klik på et vilkårligt sted i dette sidepanel for at flytte den hertil.</translation>
 <translation id="2392369802118427583">Aktivér</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> er skjult</translation>
@@ -2683,6 +2685,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3032272345862007156">Seneste AI-tema <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Forstyr ikke er aktiveret</translation>
 <translation id="3036546437875325427">Aktivér Flash</translation>
+<translation id="3036602651971781493">Websites kan bruge en tjeneste til beskyttelse af indhold til at afspille indhold, der er beskyttet af ophavsret, eller tjekke, hvilken browser du bruger</translation>
 <translation id="3036907164806060573">Drøm</translation>
 <translation id="3037193115779933814">Bogstaver og tal</translation>
 <translation id="3038272154009688107">Se alle websites</translation>
@@ -3884,7 +3887,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3928659086758780856">Lavt blækniveau</translation>
 <translation id="3929426037718431833">Disse udvidelser kan se og ændre oplysninger på dette website.</translation>
 <translation id="3930155420525972941">Flyt gruppe til nyt vindue</translation>
-<translation id="3930602610362250897">For at afspille ophavsretligt beskyttet indhold kan det være nødvendigt for websites at benytte en tjeneste til beskyttelse af indhold</translation>
 <translation id="3930737994424905957">Søger efter enheder</translation>
 <translation id="3930968231047618417">Baggrundsfarve</translation>
 <translation id="3932356525934356570">Fastgør <ph name="EXTENSION_NAME" /></translation>
@@ -4424,6 +4426,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4362459470237309049">Brug "." til at slippe en museknap</translation>
 <translation id="4362871358537270439">Vis faner fra andre enheder i sidepanelet</translation>
 <translation id="4363262124589131906">Nye filer i Mit drev vil ikke blive synkroniseret med denne Chromebook automatisk</translation>
+<translation id="4364129298304269786">Websites kan bruge en tjeneste til beskyttelse af indhold til at afspille indhold, der er beskyttet af ophavsret</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 element gemmes kun på denne enhed. Hvis du vil bruge det på dine andre enheder, skal du gemme det på din Google-konto.}one{{ITEM_COUNT} element gemmes kun på denne enhed. Hvis du vil bruge det på dine andre enheder, skal du gemme det på din Google-konto.}other{{ITEM_COUNT} elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deler et vindue.</translation>
@@ -6588,6 +6591,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6069799426896362048">Adskil visninger</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> hukommelse er sparet</translation>
 <translation id="6071995715087444295">Log ind på din Google-konto for at tjekke, om der er kompromitterede adgangskoder</translation>
+<translation id="607211254380611738">Disse websites kan se, hvilken browser du bruger</translation>
 <translation id="6073292342939316679">reducer tastaturets lysstyrke</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6073903501322152803">Tilføj hjælpefunktioner</translation>
@@ -7255,7 +7259,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6590458744723262880">Omdøb mappe</translation>
 <translation id="6592267180249644460">WebRTC-logfil blev registreret <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Dit fingeraftryk blev registreret</translation>
-<translation id="6593881952206664229">Medier, der er underlagt ophavsret, kan muligvis ikke afspilles</translation>
 <translation id="6594011207075825276">Finder serieenheder...</translation>
 <translation id="6595322909015878027">Har ikke tilladelse til automatisk at åbne integreret billede</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Den kompromitterede adgangskode blev ændret.
@@ -10657,7 +10660,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9179524979050048593">Brugernavn på loginskærm</translation>
 <translation id="9180380851667544951">Websitet kan dele din skærm</translation>
 <translation id="9180847522826713506">Du kan se din adgangskode eller tilføje en note om den ved at klikke på nøgleikonet</translation>
-<translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />. Du får ikke besked, når optagelsen starter.}=2{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" /> og <ph name="APP1_NAME" />. Du får ikke besked, når optagelsen starter.}=3{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og 1 anden app. Du får ikke besked, når optagelsen starter.}one{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # anden app. Du får ikke besked, når optagelsen starter.}other{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # andre apps. Du får ikke besked, når optagelsen starter.}}</translation>

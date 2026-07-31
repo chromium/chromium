@@ -81,6 +81,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1698376642261615901">Google Chrome je web preglednik koji pokreće web stranice i aplikacije munjevitom brzinom. Brz je, stabilan i jednostavan za upotrebu. Pregledajte web u sigurnijem okruženju, zaštićeni od zlonamjernih softvera i krađe identiteta zahvaljujući elementima ugrađenim u Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome će se ponovo pokrenuti za sat vremena}one{Chrome će se ponovo pokrenuti za # sat}few{Chrome će se ponovo pokrenuti za # sata}other{Chrome će se ponovo pokrenuti za # sati}}</translation>
 <translation id="1722488837206509557">Ovo će vam dozvoliti da odaberete jedan od dostupnih uređaja i da se na njemu prikazuje sadržaj.</translation>
+<translation id="1724094881572874997">Da zaštiti vaš rad u Chromeu, vaša organizacija će moći pregledati određene informacije ili upravljati njima kada ste prijavljeni u Chrome.</translation>
 <translation id="177180974022074201">Isprobajte putem Geminija u Chromeu</translation>
 <translation id="1786003790898721085">Provjerite jeste li prijavljeni u Chrome na svom uređaju <ph name="TARGET_DEVICE_NAME" /> i pokušajte poslati ponovo.</translation>
 <translation id="1786044937610313874">Prečice se otvaraju u Chromeu</translation>
@@ -419,6 +420,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="521447420733633466">Ako dijelite uređaj, prijatelji i porodica mogu odvojeno pregledati i postavljati Chrome na način koji njima odgovara</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5239627039202700673">Koristite Chrome svaki put kada kliknete na linkove u porukama, dokumentima i drugim aplikacijama</translation>
+<translation id="524751727772074981">Pitajte bilo šta, bilo gdje, putem Geminija u Chromeu</translation>
 <translation id="5251420635869119124">Gosti mogu koristiti Chrome, a da pritom ne ostave tragove o korištenju.</translation>
 <translation id="5271833978500241046">Koristite ih zajedno s drugim funkcijama Geminija u Chromeu</translation>
 <translation id="5286907366254680517">Otkriveno</translation>

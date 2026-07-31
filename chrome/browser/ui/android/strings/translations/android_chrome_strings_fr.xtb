@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Promotion des notifications de conseils fermée</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1045899828449635435">Effacer les données de ces sites ?</translation>
-<translation id="1049461303780085993">Essayez Gemini dans Chrome pour obtenir des réponses, dégager les points clés à retenir et plus encore</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1052842760770519282">Certains de vos mots de passe ne sont pas accessibles</translation>
 <translation id="1057623954802068161">Faire défiler la page vers le haut</translation>
@@ -314,6 +313,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", et tous les liens d'invitation seront désactivés</translation>
 <translation id="2329500425421091035">Découvrez le Mode IA dans Chrome</translation>
 <translation id="2330186936255788117">Plus de favoris</translation>
+<translation id="2330243730505117832">La fenêtre qui permet de choisir un appareil est fermée.</translation>
 <translation id="2332515770639153015">Navigation sécurisée avec protection renforcée activée</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
 <translation id="2334275697832662087">La sécurité de Chrome, optimisée par l'IA, vous protège contre les menaces en ligne pour que vous puissiez naviguer l'esprit tranquille</translation>
@@ -503,6 +503,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3037177537145227281">Suivi du prix activé</translation>
 <translation id="3037517125981011456">Permet d'afficher des invites de connexion à Chrome</translation>
 <translation id="3038272154009688107">Afficher tous les sites</translation>
+<translation id="3044436568790455247">La fenêtre qui permet de choisir un appareil est ouverte à pleine hauteur.</translation>
 <translation id="3057938290530993634">Appuyez de manière prolongée pour épingler les sites Web que vous consultez le plus et y accéder facilement la prochaine fois</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
 <translation id="3062802207422175757">Articles sur vos centres d'intérêt dans Chrome</translation>
@@ -511,6 +512,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3067505415088964188">Prix bas</translation>
 <translation id="3070005020161560471">Traduire automatiquement</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> va s'ouvrir dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />. Les <ph name="BEGIN_LINK3" />Règles de confidentialité<ph name="END_LINK3" /> s'appliquent également.</translation>
+<translation id="3075397426753215787">Choisir un appareil.</translation>
 <translation id="3080375898390966733">Explorer l'onglet avec Google Lens</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages pour les consulter plus tard ou hors connexion</translation>
 <translation id="3087734570205094154">En bas</translation>
@@ -550,6 +552,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3282801380074962248">Développer la section</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{# mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{# mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
+<translation id="3287664192482809715">La fenêtre qui permet de choisir un appareil est ouverte à mi-hauteur.</translation>
 <translation id="3293181007446299124">Votre historique de navigation reste privé sur votre appareil, et les rapports sont transmis avec un certain retard pour protéger votre identité</translation>
 <translation id="3301639354590628973">Changer de compte ?</translation>
 <translation id="3301936297336370235">Confirmation de la suggestion de mot de passe</translation>

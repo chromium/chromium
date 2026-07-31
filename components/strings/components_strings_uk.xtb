@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Звіт надіслано:</translation>
 <translation id="1542105669288201090">Бізнес-освіта</translation>
 <translation id="1542830386724426410">Показувати доступні переваги й бонуси картки під час оплати. Застосовуються умови емітента. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Докладніше<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Згідно з правилами вашої організації, скопійований контент перевіряється на наявність чутливої інформації. Вставлення може бути дозволено після завершення сканування.</translation>
 <translation id="1545757265410828525">Історія цін</translation>
 <translation id="1546286808622193216">Порівняйте переваги карток за допомогою Gemini</translation>
 <translation id="1549470594296187301">Щоб користуватися цією функцією, потрібно ввімкнути JavaScript.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945">Докладніше про правило <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
 <translation id="3299098170013242198">Windows Hello ввімкнено для заповнення паролів</translation>
+<translation id="3299197721044635447">Не вдалося вставити контент за межами керованого контексту Chrome через правила вашої організації</translation>
 <translation id="3299720788264079132">Під час використання функції <ph name="FEATURE_NAME" /> сталася помилка</translation>
 <translation id="3303176609391916566">30 x 42 дюйм.</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
@@ -4368,6 +4370,7 @@
 <translation id="767550629621587224">Попередньо вирізані роздільники</translation>
 <translation id="7675756033024037212">Зміну масштабу й прокручування заборонено</translation>
 <translation id="7676643023259824263">Пошук тексту з буфера обміну: <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Ваша організація відстежує копіювання</translation>
 <translation id="7678730592635586336">Зняти відео ще раз</translation>
 <translation id="7679287273775285018">Оплата через електронний гаманець</translation>
 <translation id="7679367271685653708">Переглянути історію веб-перегляду та керувати нею в налаштуваннях Chrome</translation>
@@ -4654,6 +4657,7 @@
 <translation id="8134058435519644366">Набір персоналу й працевлаштування</translation>
 <translation id="8135546115396015134">клавіша зі стрілкою вліво</translation>
 <translation id="8137456439814903304">Енергетична промисловість і комунальне господарство</translation>
+<translation id="814071672416123670">Не вдалося скопіювати контент через правила вашої організації</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Створено 1 місяць тому}one{Створено {NUM_MONTHS} місяць тому}few{Створено {NUM_MONTHS} місяці тому}many{Створено {NUM_MONTHS} місяців тому}other{Створено {NUM_MONTHS} місяця тому}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, використовується за умовчанням. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версія PDF:</translation>

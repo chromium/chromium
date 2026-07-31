@@ -352,6 +352,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1539840569003678498">Informe enviado:</translation>
 <translation id="1542105669288201090">Educación empresarial</translation>
 <translation id="1542830386724426410">Muestra las ventajas y recompensas disponibles de las tarjetas al tramitar la compra. Se aplican los términos de la entidad emisora. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Más información<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Según las políticas de tu organización, se está analizando el contenido que has copiado para detectar información sensible. Es posible que se permita pegar contenido una vez que se haya completado el análisis.</translation>
 <translation id="1545757265410828525">Historial de precios</translation>
 <translation id="1546286808622193216">Compara las ventajas de las tarjetas con Gemini</translation>
 <translation id="1549470594296187301">JavaScript debe estar habilitado para utilizar esta función.</translation>
@@ -1081,6 +1082,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2631387782019878060">Código de verificación: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">No se ha podido encontrar la dirección IP del servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">Firma</translation>
+<translation id="2638070510549214427">Marcar como seguro</translation>
 <translation id="2638567100095052009">Escribe @ para buscar en <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Estado:</translation>
 <translation id="2644219706149911059">Subiendo a Google Drive...</translation>
@@ -1384,6 +1386,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3121994479408824897">Ir a <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Mostrar resultados de los últimos 30 días</translation>
 <translation id="3126023634486644099">Etiquetas (permanente)</translation>
+<translation id="3131746543143948171">Este sitio parece similar a otros sitios asociados a phishing, malware y estafas. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Guardar número Redress</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> es ahora tu buscador predeterminado</translation>
 <translation id="3134859781443140237">Red local</translation>
@@ -1501,6 +1504,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3293642807462928945">Más información sobre la política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta y gestiona tus contraseñas desde la configuración de Chrome</translation>
 <translation id="3299098170013242198">Windows Hello está activado para rellenar contraseñas</translation>
+<translation id="3299197721044635447">No se ha podido pegar el contenido fuera del contexto de Chrome gestionado debido a las políticas de tu organización</translation>
 <translation id="3299720788264079132">Se ha producido un error al usar <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30x42 pulgadas</translation>
 <translation id="3303855915957856445">No se han encontrado resultados de búsqueda</translation>
@@ -4366,6 +4370,7 @@ Más información:
 <translation id="767550629621587224">Fichas precortadas</translation>
 <translation id="7675756033024037212">Desplazamiento y zoom no permitidos</translation>
 <translation id="7676643023259824263">Buscar texto <ph name="TEXT" /> del portapapeles</translation>
+<translation id="7676840398262504532">Tu organización monitoriza el copiado</translation>
 <translation id="7678730592635586336">Volver a grabar vídeo</translation>
 <translation id="7679287273775285018">Pagar con cartera electrónica</translation>
 <translation id="7679367271685653708">Consulta y gestiona tu historial de navegación desde la configuración de Chrome</translation>
@@ -4561,6 +4566,7 @@ Más información:
 <translation id="7979595116210197019">Hostelería</translation>
 <translation id="798134797138789862">Puede solicitar permiso para utilizar dispositivos y datos de realidad virtual</translation>
 <translation id="7983008347525536475">SUVs</translation>
+<translation id="7983569303268727247">Rellenando tu información</translation>
 <translation id="7984945080620862648">No puedes acceder a <ph name="SITE" /> en este momento porque el sitio web ha enviado credenciales codificadas que Chrome no puede procesar. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Los emisores de pago aplazado disponibles para pagar a plazos están abiertos a altura completa.</translation>
@@ -4651,6 +4657,7 @@ Más información:
 <translation id="8134058435519644366">Contratación y selección de personal</translation>
 <translation id="8135546115396015134">tecla izquierda</translation>
 <translation id="8137456439814903304">Energía y servicios públicos</translation>
+<translation id="814071672416123670">El contenido no se ha podido copiar debido a las políticas de tu organización</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creado hace 1 mes}other{Creado hace {NUM_MONTHS} meses}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, predeterminado. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>
@@ -5019,6 +5026,7 @@ Más información:
 <translation id="8738058698779197622">Para establecer una conexión segura, tu reloj debe estar correctamente configurado. Esto se debe a que los certificados utilizados por los sitios web para identificarse son solo válidos durante períodos específicos de tiempo. Dado que la hora de tu dispositivo no es correcta, Chromium no puede verificar estos certificados.</translation>
 <translation id="8740359287975076522">No se ha podido encontrar la &lt;abbr id="dnsDefinition"&gt;dirección DNS&lt;/abbr&gt; de la página <ph name="HOST_NAME" />. Se está diagnosticando el problema.</translation>
 <translation id="874918643257405732">Añadir esta pestaña a marcadores</translation>
+<translation id="8749274696886550762">Este sitio no parece correcto</translation>
 <translation id="8751426954251315517">Vuelve a intentarlo más adelante</translation>
 <translation id="8753913772043329557">Registros de políticas</translation>
 <translation id="8754546574216727970">Botas</translation>
@@ -5306,6 +5314,7 @@ Más información:
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Belleza con productos sostenibles</translation>
 <translation id="9193018794001479794">Desarrollar</translation>
+<translation id="9194783551575429711">Pregunta a <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
 <translation id="9198613052465150219">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en la página <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">La impresión está bloqueada</translation>

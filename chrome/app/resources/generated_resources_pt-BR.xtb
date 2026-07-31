@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Esta página não está respondendo</translation>
 <translation id="1041181446722933623">O favorito "<ph name="LOCAL_BOOKMARK" />" foi salvo apenas neste dispositivo. Salve em "<ph name="ACCOUNT_FOLDER" />" para usar em outros aparelhos.</translation>
 <translation id="1041263367839475438">Dispositivos disponíveis</translation>
+<translation id="1041365648398872803">Não permitir que os sites usem serviços de proteção de conteúdo</translation>
 <translation id="1041607257468256895">Gerenciar permissões de localização de sites no Chrome</translation>
 <translation id="1042248468362992359">Conecte-se aos dados móveis para usar o ponto de acesso. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Adicionar ação</translation>
@@ -429,6 +430,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1307165550267142340">Seu PIN foi criado</translation>
 <translation id="1307431692088049276">Não perguntar novamente</translation>
 <translation id="130744661532298792">Para garantir que você sempre possa usar as senhas na sua Conta do Google, confirme sua identidade</translation>
+<translation id="1308105352527684175">Talvez você não consiga acessar alguns conteúdos</translation>
 <translation id="1311092170520822848">Este site está controlando os leitores de cartão inteligente conectados ao seu dispositivo e, possivelmente, os cartões disponíveis a eles</translation>
 <translation id="131112695174432497">Os dados que afetam a personalização de anúncios são excluídos</translation>
 <translation id="131188242279372879">Conheça a proteção reforçada e tenha o nível mais alto de segurança para downloads do Chrome</translation>
@@ -1596,7 +1598,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="222931766245975952">Arquivo truncado</translation>
 <translation id="2229342031987138128">Legenda descritiva</translation>
-<translation id="2231160360698766265">Os sites podem abrir conteúdo protegido</translation>
 <translation id="2231351769755997720">Nenhuma sugestão disponível. Tente fazer uma pergunta sobre a página.</translation>
 <translation id="2232751457155581899">Os sites podem pedir para rastrear a posição da câmera</translation>
 <translation id="2233502537820838181">&amp;Mais informações</translation>
@@ -1799,6 +1800,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (atual)</translation>
 <translation id="2390782873446084770">Sincronizar Wi-Fi</translation>
 <translation id="2391419135980381625">Fonte padrão</translation>
+<translation id="2391778823627025394">Os sites podem usar serviços de proteção de conteúdo</translation>
 <translation id="239185270194776190">Sua conversa no Gemini está em outra janela. Clique neste painel lateral para movê-la para cá.</translation>
 <translation id="2392369802118427583">Ativar</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> oculto</translation>
@@ -2681,6 +2683,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3032272345862007156">Tema recente de IA <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">"Não perturbe" ativado</translation>
 <translation id="3036546437875325427">Ativar Flash</translation>
+<translation id="3036602651971781493">Os sites podem usar um serviço de proteção de conteúdo para reproduzir mídias protegidas por direitos autorais ou verificar qual navegador você está usando</translation>
 <translation id="3036907164806060573">Sonho</translation>
 <translation id="3037193115779933814">Letras e números</translation>
 <translation id="3038272154009688107">Todos os sites</translation>
@@ -3883,7 +3886,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3928659086758780856">Pouca tinta</translation>
 <translation id="3929426037718431833">Estas extensões podem ver e mudar as informações neste site.</translation>
 <translation id="3930155420525972941">Mover grupo para nova janela</translation>
-<translation id="3930602610362250897">Para abrir conteúdo protegido por direitos autorais, os sites podem precisar usar um serviço de proteção de conteúdo</translation>
 <translation id="3930737994424905957">Procurando dispositivos</translation>
 <translation id="3930968231047618417">Cor do plano de fundo</translation>
 <translation id="3932356525934356570">Fixar <ph name="EXTENSION_NAME" /></translation>
@@ -4423,6 +4425,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4362459470237309049">Use a tecla “.” para soltar um botão do mouse</translation>
 <translation id="4362871358537270439">Mostrar guias de outros dispositivos no painel lateral</translation>
 <translation id="4363262124589131906">Os novos arquivos da seção Meu Drive deixarão de ser sincronizados automaticamente com este Chromebook</translation>
+<translation id="4364129298304269786">Os sites podem usar um serviço de proteção de conteúdo para reproduzir mídias protegidas por direitos autorais</translation>
 <translation id="4364327530094270451">Melão</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 item foi salvo apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}one{{ITEM_COUNT} item foi salvo apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}other{{ITEM_COUNT} itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}}</translation>
 <translation id="4364567974334641491">O app <ph name="APP_NAME" /> está compartilhando uma janela.</translation>
@@ -6588,6 +6591,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6069799426896362048">Separar visualizações</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> de memória economizados</translation>
 <translation id="6071995715087444295">Para checar se há senhas comprometidas, faça login na sua Conta do Google</translation>
+<translation id="607211254380611738">Esses sites podem ver qual navegador você está usando</translation>
 <translation id="6073292342939316679">diminuir brilho do teclado</translation>
 <translation id="6073451960410192870">Parar de gravar</translation>
 <translation id="6073903501322152803">Adicionar recursos de acessibilidade</translation>
@@ -7255,7 +7259,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6590458744723262880">Renomear pasta</translation>
 <translation id="6592267180249644460">Horário da captura do registro WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Impressão digital capturada</translation>
-<translation id="6593881952206664229">Talvez não seja possível reproduzir mídia protegida por direitos autorais</translation>
 <translation id="6594011207075825276">Procurando dispositivos seriais…</translation>
 <translation id="6595322909015878027">Sem permissão para entrar no modo picture-in-picture automaticamente</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Você mudou a senha comprometida.
@@ -10656,7 +10659,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9179524979050048593">Nome de usuário na tela de login</translation>
 <translation id="9180380851667544951">O site pode compartilhar sua tela</translation>
 <translation id="9180847522826713506">Para conferir sua senha ou adicionar uma observação sobre ela, clique no ícone de chave</translation>
-<translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{O administrador pode gravar sua tela com o app <ph name="APP0_NAME" />. Você não vai receber uma notificação quando a gravação começar.}=2{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Você não vai receber uma notificação quando a gravação começar.}=3{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais 1. Você não vai receber uma notificação quando a gravação começar.}one{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você não vai receber uma notificação quando a gravação começar.}other{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você não vai receber uma notificação quando a gravação começar.}}</translation>

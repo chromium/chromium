@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">सुझावहरूका बारेमा दिइने नोटिफिकेसनहरूको प्रोमो बन्द गरिएको छ</translation>
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1045899828449635435">यी साइटहरूको डेटा पनि मेटाउने हो?</translation>
-<translation id="1049461303780085993">जवाफ, मुख्य बुँदा र अन्य कुरा प्राप्त गर्न Chrome मा उपलब्ध Gemini प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="1052842760770519282">तपाईंका केही पासवर्डहरू एक्सेस गर्न मिल्दैन</translation>
 <translation id="1057623954802068161">स्क्रोल गरी पेजको सिरानमा जानुहोस्</translation>
@@ -314,6 +313,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2328474416100889417">सबै जना तत्कालै "<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउने छन् र निम्तोका सबै लिंकहरू रद्द गरिने छन्</translation>
 <translation id="2329500425421091035">Chrome मा AI मोड उपलब्ध भएको छ</translation>
 <translation id="2330186936255788117">थप बुकमार्कहरू</translation>
+<translation id="2330243730505117832">"कुनै डिभाइस छनौट गर्नुहोस्" बन्द गरिएको छ।</translation>
 <translation id="2332515770639153015">परिष्कृत Safe Browsing अन छ</translation>
 <translation id="233375395665273385">मेटाउनुहोस् र साइन आउट गर्नुहोस्</translation>
 <translation id="2334275697832662087">Chrome को AI मा आधारित सुरक्षाले तपाईंलाई अनलाइन जोखिमहरूबाट सुरक्षित राख्न मद्दत गर्छ र तपाईंलाई ब्राउज गर्दा आत्मविश्वास प्रदान गर्छ</translation>
@@ -503,6 +503,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3037177537145227281">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ</translation>
 <translation id="3037517125981011456">Chrome मा साइन इन गर्ने निर्देशन देखाउँछ</translation>
 <translation id="3038272154009688107">सबै साइट हेर्नुहोस्</translation>
+<translation id="3044436568790455247">"कुनै डिभाइस छनौट गर्नुहोस्" पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="3057938290530993634">अर्को पटक सजिलैसँग एक्सेस गर्न आफूले सबैभन्दा बढी हेर्ने वेबसाइटहरू पिन गर्न ट्याप गरी थिचिरहनुहोस्</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> पुस्तक चिन्ह}other{<ph name="BOOKMARKS_COUNT_MANY" /> पुस्तक चिन्हहरू}}</translation>
 <translation id="3062802207422175757">Chrome मा तपाईंको रुचिका विषयसँग सम्बन्धित लेखहरू पढ्नुहोस्</translation>
@@ -511,6 +512,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3067505415088964188">सस्तो मूल्य</translation>
 <translation id="3070005020161560471">स्वतः अनुवाद गर्नुहोस्</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_LINK3" />गोपनीयता नीति<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
+<translation id="3075397426753215787">कुनै डिभाइस छनौट गर्नुहोस्।</translation>
 <translation id="3080375898390966733">Google लेन्स प्रयोग गरी ट्याब खोज्नुहोस्</translation>
 <translation id="3080525922482950719">तपाईं पृष्ठहरू सुरक्षित गरी ती पृष्ठ पछि वा इन्टरनेट नभएका बेलामा पढ्न सक्नुहुन्छ</translation>
 <translation id="3087734570205094154">तल</translation>
@@ -550,6 +552,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3282801380074962248">खण्ड एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> वटा ट्याब}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{एउटा पासवर्ड यो डिभाइसमा मात्र सेभ गरिएको छ। यो बुकमार्क आफ्ना अन्य डिभाइसमा प्रयोग गर्न यसलाई आफ्नो Google खातामा सेभ गर्नुहोस्।}other{# वटा पासवर्ड यो डिभाइसमा मात्र सेभ गरिएका छन्। यी बुकमार्क आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्।}}</translation>
+<translation id="3287664192482809715">"कुनै डिभाइस छनौट गर्नुहोस्" आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="3293181007446299124">तपाईंको ब्राउजिङ हिस्ट्री तपाईंको डिभाइसमा गोप्य राखिन्छ र तपाईंको पहिचान सुरक्षित राख्न रिपोर्टहरू तत्कालै पठाइँदैनन्</translation>
 <translation id="3301639354590628973">खाता बदल्ने हो?</translation>
 <translation id="3301936297336370235">सिफारिस गरिएको पासवर्ड प्रयोग गर्ने कि नगर्ने भन्ने कुराको पुष्टि</translation>

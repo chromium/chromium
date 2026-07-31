@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">အစီရင်ခံစာ ပို့ပြီးပြီ-</translation>
 <translation id="1542105669288201090">စီးပွားရေးဆိုင်ရာ ပညာရေး</translation>
 <translation id="1542830386724426410">ရနိုင်သော ကတ်အကျိုးခံစားခွင့်နှင့် ဆုလာဘ်များကို ငွေရှင်းချိန်တွင် ပြပါ။ ထုတ်ပေးသည့် အဖွဲ့အစည်း၏ စည်းမျဉ်းများ ရှိသည်။ <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ပိုလေ့လာရန်<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">သင့်အဖွဲ့အစည်း၏ မူဝါဒများအရ သင် မိတ္တူကူးထားသော အကြောင်းအရာတွင် သတိထားရမည့် အချက်အလက် ရှိမရှိ စစ်ဆေးနေသည်။ စစ်ဆေးပြီးနောက် ကူးထည့်ခွင့်ပြုနိုင်သည်။</translation>
 <translation id="1545757265410828525">ဈေးနှုန်းမှတ်တမ်း</translation>
 <translation id="1546286808622193216">Gemini ဖြင့် ကတ်အကျိုးခံစားခွင့်များကို နှိုင်းယှဉ်ပါ</translation>
 <translation id="1549470594296187301">ဤလုပ်ဆောင်ချက်အား ပြုလုပ်နိုင်ရန် JavaScript အား ဖွင့်ထားရမည်ဖြစ်၏။</translation>
@@ -1505,6 +1506,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> မူဝါဒအကြောင်း ပိုမိုလေ့လာပါ</translation>
 <translation id="3295444047715739395">Chrome ဆက်တင်များတွင် သင့်စကားဝှက်များကို ကြည့်ရှုစီမံပါ</translation>
 <translation id="3299098170013242198">စကားဝှက်ဖြည့်ရန် Windows Hello ဖွင့်ထားသည်</translation>
+<translation id="3299197721044635447">သင့်အဖွဲ့အစည်း၏ မူဝါဒများကြောင့် စီမံထားသော Chrome ပြင်ပသို့ အကြောင်းအရာကို ကူးထည့်၍မရပါ</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> သုံးနေစဉ် အမှားအယွင်း ဖြစ်သွားသည်</translation>
 <translation id="3303176609391916566">၃၀ x ၄၂ လက်မ</translation>
 <translation id="3303855915957856445">မည်သည့်ရှာဖွေမှု ရလဒ်မျှ မတွေ့ပါ</translation>
@@ -4368,6 +4370,7 @@
 <translation id="767550629621587224">ကြိုတင်ဖြတ်ထားသည့် တဘ်များ</translation>
 <translation id="7675756033024037212">လှိမ့်ခြင်း၊ ဇူးမ်ဆွဲခြင်းတို့ကို ခွင့်ပြုမထားပါ</translation>
 <translation id="7676643023259824263">ကလစ်ဘုတ်စာသား <ph name="TEXT" /> အတွက် ရှာဖွေမှု</translation>
+<translation id="7676840398262504532">အဖွဲ့အစည်းသည် မိတ္တူကူးခြင်းကို စောင့်ကြည့်သည်</translation>
 <translation id="7678730592635586336">ဗီဒီယိုပြန်ရိုက်ရန်</translation>
 <translation id="7679287273775285018">eWallet ဖြင့် ငွေပေးချေပါ</translation>
 <translation id="7679367271685653708">Chrome ဆက်တင်များတွင် သင့်ကြည့်ရှုခြင်းမှတ်တမ်းကို ကြည့်ရှုစီမံပါ</translation>
@@ -4655,6 +4658,7 @@
 <translation id="8134058435519644366">လူသစ်စုဆောင်းမှုနှင့် ဝန်ထမ်းခန့်အပ်မှု</translation>
 <translation id="8135546115396015134">ဘယ်ခလုတ်</translation>
 <translation id="8137456439814903304">စွမ်းအင်၊ လျှပ်စစ်မီး ဝန်ဆောင်မှု</translation>
+<translation id="814071672416123670">အဖွဲ့အစည်း၏ မူဝါဒများကြောင့် အကြောင်းအရာကို မိတ္တူကူး၍မရလိုက်ပါ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော ၁ လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော {NUM_MONTHS} လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />၊ လက်ရှိမူရင်း။ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ဗားရှင်း-</translation>

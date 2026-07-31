@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">सलाह की सूचनाओं के प्रमोशन वाली शीट को बंद किया गया</translation>
 <translation id="1036348656032585052">बंद करें</translation>
 <translation id="1045899828449635435">इन साइटों से जुड़ा डेटा मिटाना है?</translation>
-<translation id="1049461303780085993">जवाब, ज़रूरी जानकारी वगैरह पाने के लिए, Chrome में Gemini को आज़माएं</translation>
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="1052842760770519282">आपके कुछ पासवर्ड ऐक्सेस नहीं किए जा सकते</translation>
 <translation id="1057623954802068161">पेज पर सबसे ऊपर जाने के लिए स्क्रोल करें</translation>
@@ -314,6 +313,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2328474416100889417">सभी लोगों के लिए “<ph name="GROUP_NAME" />” टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, न्योते के सभी लिंक काम करना बंद कर देंगे</translation>
 <translation id="2329500425421091035">पेश है Chrome में एआई मोड</translation>
 <translation id="2330186936255788117">ज़्यादा बुकमार्क</translation>
+<translation id="2330243730505117832">"कोई डिवाइस चुनें" पैनल बंद है.</translation>
 <translation id="2332515770639153015">बेहतर सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>
 <translation id="233375395665273385">मिटाएं और साइन आउट करें</translation>
 <translation id="2334275697832662087">एआई की मदद से काम करने वाली Chrome की सुरक्षा, आपको ऑनलाइन खतरों से बचाती है, ताकि आप बेझिझक होकर ब्राउज़ कर सकें</translation>
@@ -503,6 +503,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
 <translation id="3037517125981011456">Chrome में साइन इन करने के निर्देश दिखाता है</translation>
 <translation id="3038272154009688107">सभी साइटें देखें</translation>
+<translation id="3044436568790455247">"कोई डिवाइस चुनें" पैनल, पूरी स्क्रीन पर खुला है.</translation>
 <translation id="3057938290530993634">अपनी सबसे ज़्यादा देखी गई वेबसाइटों को पिन करने के लिए उन पर टैप करके रखें, ताकि उनको आसानी से ऐक्सेस किया जा सके</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}one{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
@@ -511,6 +512,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3067505415088964188">कीमत कम है</translation>
 <translation id="3070005020161560471">अपने-आप अनुवाद करें</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> के साथ-साथ <ph name="BEGIN_LINK2" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, <ph name="BEGIN_LINK3" />निजता नीति<ph name="END_LINK3" /> भी लागू होगी.</translation>
+<translation id="3075397426753215787">कोई डिवाइस चुनें.</translation>
 <translation id="3080375898390966733">Google Lens की मदद से टैब में खोजें</translation>
 <translation id="3080525922482950719">पेजों को सेव किया जा सकता है, ताकि उन्हें बाद में या ऑफ़लाइन पढ़ा जा सके</translation>
 <translation id="3087734570205094154">नीचे</translation>
@@ -550,6 +552,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3282801380074962248">सेक्शन को बड़ा करें</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> टैब}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> टैब}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 पासवर्ड को सिर्फ़ इस डिवाइस में सेव किया गया है. अपने दूसरे डिवाइसों पर इसका इस्तेमाल करने के लिए, इसे अपने Google खाते में सेव करें.}one{# पासवर्ड को सिर्फ़ इस डिवाइस में सेव किया गया है. अपने दूसरे डिवाइसों पर इसका इस्तेमाल करने के लिए, इसे अपने Google खाते में सेव करें.}other{# पासवर्ड सिर्फ़ इस डिवाइस में सेव किए गए हैं. अपने दूसरे डिवाइसों पर इनका इस्तेमाल करने के लिए, इन्हें अपने Google खाते में सेव करें.}}</translation>
+<translation id="3287664192482809715">"कोई डिवाइस चुनें" पैनल, आधी स्क्रीन पर खुला है.</translation>
 <translation id="3293181007446299124">आपके ब्राउज़िंग इतिहास को आपके डिवाइस पर निजी रखा जाता है. साथ ही, आपकी पहचान को सुरक्षित रखने के लिए, रिपोर्ट को देर से भेजा जाता है</translation>
 <translation id="3301639354590628973">क्या आपको खाते स्विच करने हैं?</translation>
 <translation id="3301936297336370235">सुझाए गए पासवर्ड को इस्तेमाल करने की पुष्टि करें</translation>

@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">ส่งรายงานแล้ว:</translation>
 <translation id="1542105669288201090">ธุรกิจศึกษา</translation>
 <translation id="1542830386724426410">แสดงสิทธิประโยชน์และรางวัลของบัตรที่พร้อมใช้งานเมื่อชำระเงิน เป็นไปตามข้อกำหนดของผู้ออกบัตร <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">ตามนโยบายขององค์กร ระบบกำลังสแกนเนื้อหาที่คุณคัดลอกเพื่อหาข้อมูลที่ละเอียดอ่อน และอาจอนุญาตให้วางได้หลังจากสแกนเสร็จสมบูรณ์</translation>
 <translation id="1545757265410828525">ประวัติราคา</translation>
 <translation id="1546286808622193216">เปรียบเทียบสิทธิประโยชน์ของบัตรด้วย Gemini</translation>
 <translation id="1549470594296187301">ต้องเปิดใช้ JavaScript เพื่อใช้ฟีเจอร์นี้</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945">ดูข้อมูลเพิ่มเติมเกี่ยวกับนโยบาย <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">ดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
 <translation id="3299098170013242198">Windows Hello เปิดอยู่สำหรับการป้อนรหัสผ่าน</translation>
+<translation id="3299197721044635447">วางเนื้อหานอกบริบทของ Chrome ที่มีการจัดการไม่ได้เนื่องจากนโยบายขององค์กร</translation>
 <translation id="3299720788264079132">เกิดข้อผิดพลาดขณะใช้<ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 นิ้ว</translation>
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">แท็บแบบตัดล่วงหน้า</translation>
 <translation id="7675756033024037212">ไม่อนุญาตให้เลื่อนและซูม</translation>
 <translation id="7676643023259824263">ค้นหาข้อความในคลิปบอร์ด <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">องค์กรของคุณตรวจสอบการคัดลอก</translation>
 <translation id="7678730592635586336">ถ่ายวิดีโอใหม่</translation>
 <translation id="7679287273775285018">ชำระเงินด้วยอีวอลเล็ต</translation>
 <translation id="7679367271685653708">ดูและจัดการประวัติการท่องเว็บในการตั้งค่า Chrome</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">การรับสมัครงาน</translation>
 <translation id="8135546115396015134">ปุ่มซ้าย</translation>
 <translation id="8137456439814903304">พลังงานและสาธารณูปโภค</translation>
+<translation id="814071672416123670">คัดลอกเนื้อหาไม่ได้เนื่องจากนโยบายขององค์กร</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{สร้างเมื่อ 1 เดือนที่ผ่านมา}other{สร้างเมื่อ {NUM_MONTHS} เดือนที่ผ่านมา}}</translation>
 <translation id="8147389370274164212">เครื่องมือค้นหาเริ่มต้นปัจจุบันคือ <ph name="SEARCH_ENGINE_NAME" /> <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">เวอร์ชัน PDF:</translation>

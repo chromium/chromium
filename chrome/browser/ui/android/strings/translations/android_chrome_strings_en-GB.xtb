@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Tips notifications promo closed</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1045899828449635435">Also clear data from these sites?</translation>
-<translation id="1049461303780085993">Try Gemini in Chrome to get answers, key takeaways and more</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Some of your passwords aren't accessible</translation>
 <translation id="1057623954802068161">Scroll to top of page</translation>
@@ -314,6 +313,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2328474416100889417">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
 <translation id="2329500425421091035">Introducing AI Mode in Chrome</translation>
 <translation id="2330186936255788117">More bookmarks</translation>
+<translation id="2330243730505117832">'Choose a device' is closed.</translation>
 <translation id="2332515770639153015">Enhanced Safe Browsing is on</translation>
 <translation id="233375395665273385">Delete and sign out</translation>
 <translation id="2334275697832662087">Chrome's AI-powered security helps protect you against online threats, giving you confidence as you browse</translation>
@@ -503,6 +503,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
 <translation id="3038272154009688107">See all sites</translation>
+<translation id="3044436568790455247">'Choose a device' opened at full height.</translation>
 <translation id="3057938290530993634">Tap and hold to pin your most visited websites for easy access next time</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Articles on your interests on Chrome</translation>
@@ -511,6 +512,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3070005020161560471">Automatically translate</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Policy<ph name="END_LINK3" /> also applies.</translation>
+<translation id="3075397426753215787">Choose a device.</translation>
 <translation id="3080375898390966733">Search tab with Google Lens</translation>
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3087734570205094154">Bottom</translation>
@@ -550,6 +552,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3282801380074962248">Expand section</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabs}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 password is saved only to this device. To use it on your other devices, save it in your Google Account.}other{# passwords are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
+<translation id="3287664192482809715">'Choose a device' opened at half height.</translation>
 <translation id="3293181007446299124">Your browsing history is kept private on your device and reports are sent with a delay to protect your identity</translation>
 <translation id="3301639354590628973">Switch accounts?</translation>
 <translation id="3301936297336370235">Password suggestion confirmation</translation>
