@@ -39,6 +39,11 @@ aside {
   flex: 1;
   min-width: 0;
   overflow-y: auto;
+  scrollbar-width: none;
   padding: 32px;
   box-sizing: border-box;
+}
+
+.content-area::-webkit-scrollbar {
+  display: none;
 }

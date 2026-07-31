@@ -29,10 +29,16 @@ cr-expand-button {
   gap: 20px;
 }
 
+#check-circle {
+  margin-inline-start: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
 .todo-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  flex: 1;
 }
 
 .todo-info h3 {
@@ -55,13 +61,11 @@ cr-expand-button {
   gap: 12px;
 }
 
-cr-button cr-icon {
-  --cr-icon-size: 16px;
-  margin-inline-start: 4px;
-}
-
 .expanded-content {
-  padding: 0 20px 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px 16px 20px;
   border-top: 1px solid #F1F5F9;
   font-size: 14px;
   color: #64748B;

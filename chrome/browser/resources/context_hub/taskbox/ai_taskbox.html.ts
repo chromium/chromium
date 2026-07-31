@@ -17,11 +17,15 @@ export function getHtml(this: AiTaskboxElement) {
         <section>
             <div class="section-header">
                 <h2>Suggested to-dos</h2>
+                <cr-button @click="${this.onGeneralFeedbackClick_}">
+                  General Feedback Form
+                </cr-button>
             </div>
 
             <div class="todo-list">
                 ${this.todos?.map(todo => html`
                   <todo-item
+                      .id="${todo.id}"
                       .heading="${todo.title}"
                       .description="${todo.description}"
                       .actionableUrl="${todo.actionableUrl}"
