@@ -93,6 +93,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileMenuActionableItem)
 
+  enum class AvatarRingType { kNone, kDotted, kGradient };
+
   // Parameters for `SetProfileIdentityWithCallToAction()`
   struct IdentitySectionParams {
     IdentitySectionParams();
@@ -113,11 +115,11 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
     // `profile_image` must not be empty. It does not need to be circular.
     ui::ImageModel profile_image;
-    bool has_dotted_ring = false;
+    AvatarRingType avatar_ring = AvatarRingType::kNone;
     // This padding does not make the avatar larger in the menu.
     // `profile_image` is drawn smaller to leave space around for the padding.
     int profile_image_padding = 0;
-    int ai_subscription_tier = 0;
+    std::u16string badge_label;
 
     // Must not be empty.
     std::u16string title;

@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/profiles/avatar_badge_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
@@ -685,6 +686,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       primary_extended_account_info.GetAvatarImage().value_or(
           entry.GetAvatarIcon(kIdentityInfoImageSize,
                               /*use_high_res_file=*/true, icon_params)));
+  if (ShouldShowAvatarGradientRing(&profile())) {
+    params.avatar_ring = AvatarRingType::kGradient;
+  }
 
   ui::ImageModel* custom_management_image = nullptr;
   if (enterprise_util::CanShowEnterpriseBadgingForMenu(&profile())) {
@@ -741,7 +745,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.button_action =
           base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
                               base::Unretained(this), error);
-      params.has_dotted_ring = true;
+      params.avatar_ring = AvatarRingType::kDotted;
       return params;
     }
   }
@@ -760,7 +764,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.button_action =
           base::BindRepeating(&ProfileMenuView::OnPasskeyUnlockButtonClicked,
                               base::Unretained(this));
-      params.has_dotted_ring = true;
+      params.avatar_ring = AvatarRingType::kDotted;
       return params;
     }
   }
@@ -936,7 +940,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.button_text = l10n_util::GetStringUTF16(GetSyncErrorButtonStringId(
           syncer::SyncService::UserActionableError::kSignInNeedsUpdate,
           /*support_title_case=*/true));
-      params.has_dotted_ring = true;
+      params.avatar_ring = AvatarRingType::kDotted;
       signin_metrics::LogSigninPendingOffered(access_point);
       break;
   }
@@ -955,7 +959,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       subscription_service = subscription_eligibility::
           SubscriptionEligibilityServiceFactory::GetForProfile(&profile());
   if (subscription_service) {
-    params.ai_subscription_tier = subscription_service->GetAiSubscriptionTier();
+    params.badge_label = AvatarBadgeView::GetAvatarBadgeLabel(
+        subscription_service->GetAiSubscriptionTier());
   }
 
   return params;
