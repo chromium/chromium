@@ -331,17 +331,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
           {"WebSerialWorldIsolatedCache",
            raw_ref(features::kWebSerialWorldIsolatedCache)},
-          {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
-          {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
-          {"TopicsDocumentAPI",
-           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
-          {"TopicsDocumentAPI",
-           raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
-          {"TopicsImgAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
-          {"TopicsImgAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
+          {"TopicsAPI", raw_ref(network::features::kBrowsingTopics)},
           {"TouchTextEditingRedesign",
            raw_ref(features::kTouchTextEditingRedesign)},
           {"TrustedTypesFromLiteral",
@@ -532,30 +522,6 @@ void ResolveInvalidConfigurations() {
         << blink::features::kFencedFrames.name << " in addition.";
     WebRuntimeFeatures::EnableFeatureFromString(
         "FencedFramesLocalUnpartitionedDataAccess", false);
-  }
-
-  // Topics API cannot be enabled without the support of the browser process.
-  // The Document API should be additionally gated by the
-  // `kBrowsingTopicsDocumentAPI` feature.
-  if (!base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsAPIEnabled())
-        << "Topics cannot be enabled in this configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << network::features::kBrowsingTopics.name << " in addition.";
-    WebRuntimeFeatures::EnableTopicsAPI(false);
-    WebRuntimeFeatures::EnableTopicsDocumentAPI(false);
-    WebRuntimeFeatures::EnableTopicsImgAPI(false);
-  } else {
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kBrowsingTopicsDocumentAPI)) {
-      LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsDocumentAPIEnabled())
-          << "Topics Document API cannot be enabled in this configuration. Use "
-             "--"
-          << switches::kEnableFeatures << "="
-          << blink::features::kBrowsingTopicsDocumentAPI.name
-          << " in addition.";
-      WebRuntimeFeatures::EnableTopicsDocumentAPI(false);
-    }
   }
 
   if (!base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {

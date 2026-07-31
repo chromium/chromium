@@ -103,22 +103,6 @@ base::DictValue CreateBlockedTopicEntry(const CanonicalTopic& topic) {
       .Set(kBlockedTopicsBlockTimeKey, base::TimeToValue(base::Time::Now()));
 }
 
-std::set<browsing_topics::Topic> GetTopicsSetFromString(
-    std::string topics_string) {
-  if (topics_string.empty()) {
-    return {};
-  }
-  std::set<browsing_topics::Topic> result;
-  std::vector<std::string> tokens = base::SplitString(
-      topics_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const std::string& token : tokens) {
-    int topic_id;
-    CHECK(base::StringToInt(token, &topic_id));
-    result.emplace(topic_id);
-  }
-  return result;
-}
-
 }  // namespace
 
 // static
@@ -216,28 +200,6 @@ PrivacySandboxSettingsImpl::GetM1TopicAllowedStatus() const {
   return control_status;
 }
 
-const std::set<browsing_topics::Topic>&
-PrivacySandboxSettingsImpl::GetFinchDisabledTopics() {
-  if (finch_disabled_topics_.size() > 0) {
-    return finch_disabled_topics_;
-  }
-  std::string disabled_topics_string =
-      blink::features::kBrowsingTopicsDisabledTopicsList.Get();
-  finch_disabled_topics_ = GetTopicsSetFromString(disabled_topics_string);
-  return finch_disabled_topics_;
-}
-
-const std::set<browsing_topics::Topic>&
-PrivacySandboxSettingsImpl::GetFinchPrioritizedTopics() {
-  if (finch_prioritized_topics_.size() > 0) {
-    return finch_prioritized_topics_;
-  }
-  std::string prioritized_topics_string =
-      blink::features::kBrowsingTopicsPrioritizedTopicsList.Get();
-  finch_prioritized_topics_ = GetTopicsSetFromString(prioritized_topics_string);
-  return finch_prioritized_topics_;
-}
-
 bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
   Status status = GetM1TopicAllowedStatus();
   JoinHistogram(kIsTopicsAllowedHistogram, status);
@@ -289,12 +251,6 @@ bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
     }
   }
 
-  for (browsing_topics::Topic blocked_topic_id : GetFinchDisabledTopics()) {
-    if ((topic.topic_id() == blocked_topic_id) ||
-        (std::ranges::contains(ancestor_topics, blocked_topic_id))) {
-      return false;
-    }
-  }
   return true;
 }
 
@@ -324,22 +280,6 @@ void PrivacySandboxSettingsImpl::SetTopicAllowed(const CanonicalTopic& topic,
   if (!allowed) {
     scoped_pref_update->Append(CreateBlockedTopicEntry(topic));
   }
-}
-
-bool PrivacySandboxSettingsImpl::IsTopicPrioritized(
-    const CanonicalTopic& topic) {
-  const std::set<browsing_topics::Topic>& prioritized_topics =
-      GetFinchPrioritizedTopics();
-  if (prioritized_topics.contains(topic.topic_id())) {
-    return true;
-  }
-  for (const browsing_topics::Topic& ancestor_topic :
-       browsing_topics::SemanticTree().GetAncestorTopics(topic.topic_id())) {
-    if (prioritized_topics.contains(ancestor_topic)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void PrivacySandboxSettingsImpl::ClearTopicSettings(base::Time start_time,

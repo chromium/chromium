@@ -11,13 +11,13 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
 
@@ -805,28 +805,19 @@ RepresentativenessMap GetInternalRepresentativenessMap() {
 }
 
 const RepresentativenessMap& GetRepresentativenessMapForCurrentTaxonomy() {
-  int current_taxonomy = blink::features::kBrowsingTopicsTaxonomyVersion.Get();
-  switch (current_taxonomy) {
-    case 1:
-      static const base::NoDestructor<RepresentativenessMap>
-          kRepresentativenessMapV1(GetInternalRepresentativenessMap());
-      return *kRepresentativenessMapV1;
-    case 2:
-      static const base::NoDestructor<RepresentativenessMap>
-          kRepresentativenessMapV2([]() -> RepresentativenessMap {
-            RepresentativenessMap map;
-            std::ranges::copy_if(
-                GetInternalRepresentativenessMap(),
-                std::inserter(map, map.end()), [](const auto& topic_kv) {
-                  return topic_kv.first != 275 && topic_kv.first != 279;
-                });
-            return map;
-          }());
-      return *kRepresentativenessMapV2;
-    default:
-      NOTREACHED();
-  }
+  static const base::NoDestructor<RepresentativenessMap>
+      kRepresentativenessMapV2([]() -> RepresentativenessMap {
+        RepresentativenessMap map;
+        std::ranges::copy_if(
+            GetInternalRepresentativenessMap(), std::inserter(map, map.end()),
+            [](const auto& topic_kv) {
+              return topic_kv.first != 275 && topic_kv.first != 279;
+            });
+        return map;
+      }());
+  return *kRepresentativenessMapV2;
 }
+
 }  // namespace
 
 SemanticTree::SemanticTree() = default;
@@ -883,8 +874,7 @@ std::vector<Topic> SemanticTree::GetAncestorTopics(const Topic& topic) {
 
 std::optional<int> SemanticTree::GetLatestLocalizedNameMessageId(
     const Topic& topic) {
-  return SemanticTree::GetLocalizedNameMessageId(
-      topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get());
+  return SemanticTree::GetLocalizedNameMessageId(topic, /*taxonomy_version=*/2);
 }
 
 std::optional<int> SemanticTree::GetLocalizedNameMessageId(

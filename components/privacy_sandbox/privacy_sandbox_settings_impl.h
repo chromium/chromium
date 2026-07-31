@@ -52,7 +52,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       content::RenderFrameHost* console_frame = nullptr) const override;
   bool IsTopicAllowed(const CanonicalTopic& topic) override;
   void SetTopicAllowed(const CanonicalTopic& topic, bool allowed) override;
-  bool IsTopicPrioritized(const CanonicalTopic& topic) override;
   void ClearTopicSettings(base::Time start_time, base::Time end_time) override;
   base::Time TopicsDataAccessibleSince() const override;
   void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
@@ -137,12 +136,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       InterestGroupApiOperation interest_group_api_operation,
       Status status);
 
-  // Get the Topics that are disabled by Finch.
-  const std::set<browsing_topics::Topic>& GetFinchDisabledTopics();
-
-  // Get the Topics that are prioritized for top topic selection by Finch.
-  const std::set<browsing_topics::Topic>& GetFinchPrioritizedTopics();
-
   // Whether the site associated with the URL is allowed to access privacy
   // sandbox APIs within the context of |top_frame_origin|.
   Status GetSiteAccessAllowedStatus(const url::Origin& top_frame_origin,
@@ -191,14 +184,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  // Which topics are disabled by Finch; This is set and read by
-  // GetFinchDisabledTopics.
-  std::set<browsing_topics::Topic> finch_disabled_topics_;
-
-  // Which topics are prioritized in top topic selection by Finch. This is set
-  // and read by GetFinchPrioritizedTopics.
-  std::set<browsing_topics::Topic> finch_prioritized_topics_;
 };
 
 }  // namespace privacy_sandbox

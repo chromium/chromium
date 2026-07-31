@@ -120,9 +120,6 @@ class PrivacySandboxSettings : public KeyedService {
   // site assigned topic.
   virtual bool IsTopicAllowed(const CanonicalTopic& topic) = 0;
 
-  // Returns whether |topic| is prioritized by Finch settings.
-  virtual bool IsTopicPrioritized(const CanonicalTopic& topic) = 0;
-
   // Sets |topic| to |allowed|. Whether a topic is allowed or not is made
   // available through IsTopicAllowed().
   virtual void SetTopicAllowed(const CanonicalTopic& topic, bool allowed) = 0;
