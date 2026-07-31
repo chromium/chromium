@@ -63,8 +63,6 @@ namespace blink {
 // static
 float ExternalPopupMenu::GetDprForSizeAdjustment(const Element& owner_element) {
   float dpr = 1.0f;
-  // Android doesn't need these adjustments and it makes tests fail.
-#ifndef OS_ANDROID
   LocalFrame* frame = owner_element.GetDocument().GetFrame();
   const Page* page = frame ? frame->GetPage() : nullptr;
   // DevTools devicePixelRatio emulation only applies to the outermost
@@ -79,7 +77,6 @@ float ExternalPopupMenu::GetDprForSizeAdjustment(const Element& owner_element) {
   } else {
     dpr = page->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
   }
-#endif
   return dpr;
 }
 

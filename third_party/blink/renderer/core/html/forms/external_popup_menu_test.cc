@@ -366,26 +366,16 @@ TEST_F(ExternalPopupMenuTest, PopupClippedToViewportVariations) {
   } test_cases[] = {
       // Top left partial
       {-50, -50, 200, 200, 1.0f, true, 0, 0, 150, 150},
-  // Top left partial with DPR
-// The android differences here and below correspond to the OS_ANDROID check in
-// ExternalPopupMenu::GetDprForSizeAdjustment.
-#ifdef OS_ANDROID
-      {-50, -50, 200, 200, 2.0f, true, 0, 0, 300, 300},
-#else
+      // Top left partial with DPR
       {-50, -50, 200, 200, 2.0f, true, 0, 0, 150, 150},
-#endif
       // Top left complete
       {-250, -250, 200, 200, 1.0f, false, 0, 0, 0, 0},
       // Top left complete with DPR
       {-250, -250, 200, 200, 2.0f, false, 0, 0, 0, 0},
       // Bottom right partial
       {750, 550, 200, 200, 1.0f, true, 750, 550, 50, 50},
-  // Bottom right partial with DPR
-#ifdef OS_ANDROID
-      {750, 550, 200, 200, 2.0f, true, 1500, 1100, 100, 100},
-#else
+      // Bottom right partial with DPR
       {750, 550, 200, 200, 2.0f, true, 750, 550, 200, 200},
-#endif
       // Bottom right complete
       {850, 650, 200, 200, 1.0f, false, 0, 0, 0, 0},
       // Bottom right complete with DPR
@@ -449,16 +439,7 @@ TEST_F(ExternalPopupMenuTest, PopupClippedToViewportVariations) {
   }
 }
 
-// Android doesn't use this position data and we don't adjust it for DPR there..
-#ifdef OS_ANDROID
-#define MAYBE_PopupAccountsForDeviceScaleFactor \
-  DISABLED_PopupAccountsForDeviceScaleFactor
-#else
-#define MAYBE_PopupAccountsForDeviceScaleFactor \
-  PopupAccountsForDeviceScaleFactor
-#endif
-
-TEST_F(ExternalPopupMenuTest, MAYBE_PopupAccountsForDeviceScaleFactor) {
+TEST_F(ExternalPopupMenuTest, PopupAccountsForDeviceScaleFactor) {
   RegisterMockedURLLoad("select_mid_screen.html");
   LoadFrame("select_mid_screen.html");
 
