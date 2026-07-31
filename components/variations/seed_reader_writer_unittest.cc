@@ -442,6 +442,17 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSessionCountryCode) {
       kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
       entropy_providers_.get(), GetHistogramSuffix(),
       file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Initial migration should complete, writing the initial state to the file.
+  file_writer_thread_.FlushForTesting();
+
+  // Verify that the seed file on disk initially has the session country code.
+  StoredSeedInfo initial_seed_info = ReadStoredSeedInfo();
+  EXPECT_EQ(initial_seed_info.session_country_code(), "us");
+  if (GetParam().HasGeoLevel1Pref()) {
+    EXPECT_EQ(initial_seed_info.session_geo_level1(), "us-ny");
+  }
 
   ASSERT_THAT(seed_reader_writer.GetSeedInfo().session_country_code,
               Not(IsEmpty()));
@@ -452,7 +463,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSessionCountryCode) {
 
   seed_reader_writer.ClearSessionCountry();
 
-  // Session country code is cleared.
+  // Session country code is cleared in memory.
   EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_country_code, IsEmpty());
   EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_geo_level1, IsEmpty());
   // Local state pref should be cleared.
@@ -464,6 +475,187 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSessionCountryCode) {
         local_state_.GetString(GetParam().seed_fields_prefs.session_geo_level1),
         IsEmpty());
   }
+
+  // Force write the update to the seed file.
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  // Verify that the seed file on disk is also updated (cleared).
+  StoredSeedInfo cleared_seed_info = ReadStoredSeedInfo();
+  EXPECT_THAT(cleared_seed_info.session_country_code(), IsEmpty());
+  EXPECT_THAT(cleared_seed_info.session_geo_level1(), IsEmpty());
+}
+
+// Verifies that stored_seed_info_ field updates are written to the seed file.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, UpdateStoredSeedInfoFields) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Store a validated seed to ensure the seed file has data.
+  const std::string seed_data = CreateVariationsSeed();
+  const base::Time seed_date = base::Time::Now();
+  const base::Time fetch_time = base::Time::Now();
+  seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+      .seed_data = seed_data,
+      .signature = "signature",
+      .milestone = 2,
+      .seed_date = seed_date,
+      .client_fetch_time = fetch_time,
+      .session_country_code = "us",
+      .session_geo_level1 = "us-ny",
+  });
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  // 1. Verify updating seed date.
+  // Add a non-zero offset to ensure the new time is distinct from base::Time()
+  // and seed_date.
+  base::Time new_seed_date = seed_date + base::Days(1);
+  seed_reader_writer.SetSeedDate(new_seed_date);
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_date = ReadStoredSeedInfo();
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, new_seed_date);
+  EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(seed_info_after_date.seed_date()),
+            new_seed_date);
+
+  // 2. Verify updating fetch time.
+  base::Time new_fetch_time = fetch_time + base::Days(2);
+  seed_reader_writer.SetFetchTime(new_fetch_time);
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_fetch = ReadStoredSeedInfo();
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().client_fetch_time, new_fetch_time);
+  EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(
+                seed_info_after_fetch.client_fetch_time()),
+            new_fetch_time);
+
+  // 3. Verify setting permanent consistency country and version.
+  seed_reader_writer.SetPermanentConsistencyCountryAndVersion("ca", "1.2.3");
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_set_perm = ReadStoredSeedInfo();
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().permanent_country_code, "ca");
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().permanent_country_version,
+            "1.2.3");
+  EXPECT_EQ(seed_info_after_set_perm.permanent_country_code(), "ca");
+  EXPECT_EQ(seed_info_after_set_perm.permanent_version(), "1.2.3");
+
+  // 4. Verify clearing permanent consistency country and version.
+  seed_reader_writer.ClearPermanentConsistencyCountryAndVersion();
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_clear_perm = ReadStoredSeedInfo();
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().permanent_country_code,
+              IsEmpty());
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().permanent_country_version,
+              IsEmpty());
+  EXPECT_THAT(seed_info_after_clear_perm.permanent_country_code(), IsEmpty());
+  EXPECT_THAT(seed_info_after_clear_perm.permanent_version(), IsEmpty());
+}
+
+// Verifies that stored_seed_info_ field updates are written to the seed file,
+// even after the seed data has been purged from memory.
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       UpdateStoredSeedInfoFieldsAfterAllowToPurgeSeedDataFromMemory) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Store a validated seed to ensure the seed file has data.
+  const std::string seed_data = CreateVariationsSeed();
+  const base::Time seed_date = base::Time::Now();
+  const base::Time fetch_time = base::Time::Now();
+  seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+      .seed_data = seed_data,
+      .signature = "signature",
+      .milestone = 2,
+      .seed_date = seed_date,
+      .client_fetch_time = fetch_time,
+      .session_country_code = "us",
+      .session_geo_level1 = "us-ny",
+  });
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  // Allow the seed data to be purged from memory.
+  seed_reader_writer.AllowToPurgeSeedDataFromMemory();
+  ASSERT_FALSE(seed_reader_writer.stored_seed_data_for_testing().has_value());
+
+  // 1. Verify updating seed date.
+  // Add a non-zero offset to ensure the new time is distinct from base::Time()
+  // and seed_date.
+  base::Time new_seed_date = seed_date + base::Days(1);
+  seed_reader_writer.SetSeedDate(new_seed_date);
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_date = ReadStoredSeedInfo();
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, new_seed_date);
+  EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(seed_info_after_date.seed_date()),
+            new_seed_date);
+  // Verify that seed data and signature are preserved and not empty.
+  EXPECT_EQ(seed_info_after_date.data(), seed_data);
+  EXPECT_EQ(seed_info_after_date.signature(), "signature");
+
+  // 2. Verify updating fetch time.
+  base::Time new_fetch_time = fetch_time + base::Days(2);
+  seed_reader_writer.SetFetchTime(new_fetch_time);
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_fetch = ReadStoredSeedInfo();
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().client_fetch_time, new_fetch_time);
+  EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(
+                seed_info_after_fetch.client_fetch_time()),
+            new_fetch_time);
+  EXPECT_EQ(seed_info_after_fetch.data(), seed_data);
+
+  // 3. Verify setting permanent consistency country and version.
+  seed_reader_writer.SetPermanentConsistencyCountryAndVersion("ca", "1.2.3");
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_set_perm = ReadStoredSeedInfo();
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().permanent_country_code, "ca");
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().permanent_country_version,
+            "1.2.3");
+  EXPECT_EQ(seed_info_after_set_perm.permanent_country_code(), "ca");
+  EXPECT_EQ(seed_info_after_set_perm.permanent_version(), "1.2.3");
+  EXPECT_EQ(seed_info_after_set_perm.data(), seed_data);
+
+  // 4. Verify clearing permanent consistency country and version.
+  seed_reader_writer.ClearPermanentConsistencyCountryAndVersion();
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  StoredSeedInfo seed_info_after_clear_perm = ReadStoredSeedInfo();
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().permanent_country_code,
+              IsEmpty());
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().permanent_country_version,
+              IsEmpty());
+  EXPECT_THAT(seed_info_after_clear_perm.permanent_country_code(), IsEmpty());
+  EXPECT_THAT(seed_info_after_clear_perm.permanent_version(), IsEmpty());
+  EXPECT_EQ(seed_info_after_clear_perm.data(), seed_data);
 }
 
 // Verifies clients in SeedFiles group read seeds from the seed file.
