@@ -17,7 +17,10 @@
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/display/screen.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
@@ -209,6 +212,34 @@ void AiOverlayDialogPageHandler::OnOutputCaptionsVisibleChanged(bool visible) {
 
 void AiOverlayDialogPageHandler::OnUsePersonaChanged(bool use_persona) {
   page_->SetUsePersona(use_persona);
+}
+
+void AiOverlayDialogPageHandler::GetCursorPosition(
+    GetCursorPositionCallback callback) {
+  display::Screen* screen = display::Screen::Get();
+  if (!screen) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  gfx::Point cursor_screen = screen->GetCursorScreenPoint();
+
+  content::WebContents* web_contents =
+      browser_ ? browser_->GetTabStripModel()->GetActiveWebContents()
+               : nullptr;
+
+  if (!web_contents) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  gfx::Rect tab_bounds = web_contents->GetContainerBounds();
+  if (!tab_bounds.Contains(cursor_screen)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  gfx::Point cursor_local = cursor_screen - tab_bounds.OffsetFromOrigin();
+  std::move(callback).Run(cursor_local);
 }
 
 }  // namespace ttc

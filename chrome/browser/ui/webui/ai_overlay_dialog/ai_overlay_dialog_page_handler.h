@@ -38,6 +38,7 @@ class AiOverlayDialogPageHandler
   void GetMockAudioData(GetMockAudioDataCallback callback) override;
   void UpdateAudioEnergy(float energy) override;
   void Close() override;
+  void GetCursorPosition(GetCursorPositionCallback callback) override;
 
   void DidChangePage(const GURL& url,
                      const std::optional<std::u16string>& title,
