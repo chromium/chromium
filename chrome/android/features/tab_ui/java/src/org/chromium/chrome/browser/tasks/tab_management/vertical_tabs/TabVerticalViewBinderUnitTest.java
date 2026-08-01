@@ -298,7 +298,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
 
-        assertEquals(View.INVISIBLE, mCloseButton.getVisibility());
+        assertEquals(View.GONE, mCloseButton.getVisibility());
 
         MotionEvent hoverEnterEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
@@ -310,7 +310,7 @@ public class TabVerticalViewBinderUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 0f, 0f, 0);
         hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
         mItemView.dispatchGenericMotionEvent(hoverExitEvent);
-        assertEquals(View.INVISIBLE, mCloseButton.getVisibility());
+        assertEquals(View.GONE, mCloseButton.getVisibility());
     }
 
     @Test
@@ -464,11 +464,11 @@ public class TabVerticalViewBinderUnitTest {
         buttonExitEvent.setSource(InputDevice.SOURCE_MOUSE);
         mCloseButton.dispatchGenericMotionEvent(buttonExitEvent);
 
-        // Verify row un-hovered and close button is invisible
+        // Verify row un-hovered and close button is gone
         ColorStateList bgTint = mItemView.getBackgroundTintList();
         assertNotNull(bgTint);
         assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
-        assertEquals(View.INVISIBLE, mCloseButton.getVisibility());
+        assertEquals(View.GONE, mCloseButton.getVisibility());
     }
 
     @Test

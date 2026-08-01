@@ -293,7 +293,7 @@ class TabVerticalViewBinder {
                     PARENT_ID,
                     /* marginStartDimenId= */ 0,
                     /* marginEndDimenId= */ 0);
-            actionButton.setVisibility(actionWanted ? View.VISIBLE : View.INVISIBLE);
+            actionButton.setVisibility(actionWanted ? View.VISIBLE : View.GONE);
             if (DeviceFormFactor.isTablet() && !DeviceInfo.isDesktop()) {
                 setActionButtonTouchDelegate(view, actionButton, actionWanted);
             }
