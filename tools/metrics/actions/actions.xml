@@ -28726,6 +28726,104 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiLiveButtonTapped">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user taps the Live button on the UI to initiate/switch to
+    the Gemini Live voice flow on iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveChromeMicPromptAllowed">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user grants mic permission on the Chrome-side permission
+    alert for Gemini Live on iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveChromeMicPromptDenied">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user denies mic permission on the Chrome-side permission
+    alert for Gemini Live on iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveChromeMicPromptShown">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the Chrome-side microphone permission alert is shown to the
+    user for Gemini Live on iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveOSMicPromptAllowed">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user grants native OS mic permission for Gemini Live on
+    iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveOSMicPromptDenied">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user denies native OS mic permission for Gemini Live on
+    iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveOSMicPromptShown">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the native OS microphone permission alert is shown to the user
+    for Gemini Live on iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveSessionStarted">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when a Gemini Live voice session has successfully started on iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveSettingsRedirectCancel">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user chooses 'No Thanks' on the microphone settings
+    redirect alert for Gemini Live on iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveSettingsRedirectOpenSettings">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user chooses 'Go to Settings' on the microphone settings
+    redirect alert for Gemini Live on iOS.
+  </description>
+</action>
+
+<action name="MobileGeminiLiveSettingsRedirectShown">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the microphone settings redirect alert is shown to the user
+    for Gemini Live on iOS.
+  </description>
+</action>
+
 <action name="MobileGeminiLocationSettingsBack">
   <owner>joemerramos@google.com</owner>
   <description>

@@ -1016,6 +1016,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiInvocationPageType) -->
 
+<!-- LINT.IfChange(IOSGeminiLiveFREOutcome) -->
+
+<enum name="IOSGeminiLiveFREOutcome">
+  <summary>Onboarding final outcomes for Gemini Live FRE.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Dismissed on Consent Screen"/>
+  <int value="2" label="Denied OS Mic Permission"/>
+  <int value="3" label="Denied Chrome Mic Permission"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiLiveFREOutcome) -->
+
 <!-- LINT.IfChange(IOSGeminiOSCameraAuthorizationInitialStatus) -->
 
 <enum name="IOSGeminiOSCameraAuthorizationInitialStatus">

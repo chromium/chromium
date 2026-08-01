@@ -114,6 +114,41 @@ void RecordFirstRunPromoAction(IOSGeminiFirstRunAction action);
 // Records the user action on the FRE Consent Screen.
 void RecordFirstRunConsentAction(IOSGeminiFirstRunAction action);
 
+// Enum for the IOS.Gemini.Live.FREOutcome histogram.
+// LINT.IfChange(IOSGeminiLiveFREOutcome)
+enum class IOSGeminiLiveFREOutcome {
+  kSuccess = 0,
+  kDismissedOnConsent = 1,
+  kDeniedOSMicPermission = 2,
+  kDeniedChromeMicPermission = 3,
+  kMaxValue = kDeniedChromeMicPermission,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiLiveFREOutcome)
+
+// Records the final outcome of the Gemini Live FRE flow.
+void RecordLiveFREOutcome(IOSGeminiLiveFREOutcome outcome);
+
+// Records that the user tapped the Live button to switch to Live mode.
+void RecordLiveButtonTapped();
+
+// Records that a Gemini Live session has started.
+void RecordLiveSessionStarted();
+
+// Records native OS microphone prompt events.
+void RecordLiveOSMicPromptShown();
+void RecordLiveOSMicPromptAllowed();
+void RecordLiveOSMicPromptDenied();
+
+// Records in-app Chrome side microphone permission prompt events.
+void RecordLiveChromeMicPromptShown();
+void RecordLiveChromeMicPromptAllowed();
+void RecordLiveChromeMicPromptDenied();
+
+// Records OS settings redirect alert events.
+void RecordLiveSettingsRedirectShown();
+void RecordLiveSettingsRedirectOpenSettings();
+void RecordLiveSettingsRedirectCancel();
+
 // Represents the type of page or WebState when a Gemini session is invoked.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
