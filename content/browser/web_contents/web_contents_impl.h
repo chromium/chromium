@@ -1313,6 +1313,7 @@ class CONTENT_EXPORT WebContentsImpl
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
   FrameTree* GetOwnedDocumentPictureInPictureFrameTree() override;
   FrameTree* GetDocumentPictureInPictureOpenerFrameTree() override;
+  std::optional<int64_t> GetPrivilegedContentsFeatureId() override;
 
   // NavigationControllerDelegate ----------------------------------------------
 

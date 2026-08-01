@@ -9,6 +9,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -214,6 +215,15 @@ class CONTENT_EXPORT FrameTree {
     // Returns the PrerenderHostId hosting this FrameTree. Returns an invalid ID
     // when this FrameTree is not being prerendered.
     virtual PrerenderHostId GetPrerenderHostId() = 0;
+
+    // If this FrameTree is hosted by a privileged WebContents (see //chrome's
+    // PrivilegedWebContents), returns that WebContents' immutable feature id;
+    // otherwise returns nullopt. Used to mark every frame the privileged
+    // WebContents hosts with a privileged EmbedderIsolationInfo, which keeps it
+    // isolated from ordinary web content. Delegates for inner frame trees
+    // (fenced frames, guests) may return nullopt here; those frames instead
+    // inherit the privileged bit from their outer document.
+    virtual std::optional<int64_t> GetPrivilegedContentsFeatureId();
   };
 
   // Type of FrameTree instance.

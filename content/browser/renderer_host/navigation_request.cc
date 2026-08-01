@@ -1099,19 +1099,45 @@ EmbedderIsolationInfo ResolveEmbedderIsolationInfo(
     FrameTreeNode* frame_tree_node,
     EmbedderIsolationInfo::Mode mode,
     int64_t navigation_id) {
+  // Resolve kPdf and kUniqueInstance first, before the privileged mode below.
+  // If content that needs one of these modes (e.g. an embedded PDF) is hosted
+  // in a privileged WebContents, it must keep its own process and mitigations
+  // rather than becoming privileged -- the two imply opposite things (e.g. PDF
+  // requires a JIT-less process, privileged does not), and PDF's must win.
   if (mode == EmbedderIsolationInfo::Mode::kPdf) {
     return EmbedderIsolationInfo::CreateForPdf();
   }
   if (mode == EmbedderIsolationInfo::Mode::kUniqueInstance) {
     return EmbedderIsolationInfo::CreateForUniqueInstance(navigation_id);
   }
-  // Inherit a unique-instance ancestor's id when present so that a descendant
-  // frame stays in its parent's isolation domain.
+
+  // A privileged WebContents (see //chrome's PrivilegedWebContents) marks every
+  // frame it hosts as privileged, keyed on its constant feature id. Derive this
+  // from the WebContents' immutable creation-time marker (reached via the
+  // FrameTree delegate) rather than the passed-in `mode`. This prevents a
+  // security downgrade: a renderer-initiated navigation requests `kNone` by
+  // default, so keying off `mode` would let a privileged frame silently drop
+  // its privileged isolation and be placed into an ordinary renderer process
+  // shared with a normal tab, exposing its elevated browser capabilities to
+  // untrusted code or extensions. Same-site frames then resolve to the same
+  // SiteInfo and may share a process; cross-site frames get their own
+  // privileged process and never share with ordinary (kNone) content.
+  if (std::optional<int64_t> feature_id =
+          frame_tree_node->frame_tree()
+              .delegate()
+              ->GetPrivilegedContentsFeatureId()) {
+    return EmbedderIsolationInfo::CreateForPrivileged(*feature_id);
+  }
+
+  // Inherit a unique-instance or privileged ancestor's info when present so
+  // that a descendant frame -- including the root of an inner frame tree such
+  // as a fenced frame, reached via GetParentOrOuterDocument() -- stays in its
+  // outer document's isolation domain.
   if (RenderFrameHostImpl* parent =
           frame_tree_node->GetParentOrOuterDocument()) {
     const EmbedderIsolationInfo& parent_info =
         parent->GetSiteInstance()->GetSiteInfo().embedder_isolation_info();
-    if (parent_info.is_unique_instance()) {
+    if (parent_info.is_unique_instance() || parent_info.is_privileged()) {
       return parent_info;
     }
   }
