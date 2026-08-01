@@ -669,9 +669,8 @@ void InterstitialHTMLSource::StartDataRequest(
     html = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
         IDR_SECURITY_INTERSTITIAL_UI_HTML);
   }
-  scoped_refptr<base::RefCountedString> html_bytes = new base::RefCountedString;
-  html_bytes->as_string() = html;
-  std::move(callback).Run(html_bytes.get());
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(html)));
 }
 
 std::string InterstitialHTMLSource::GetSupervisedUserAskParentInterstitialHTML(

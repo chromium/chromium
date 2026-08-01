@@ -67,7 +67,8 @@ class TestWebUIController : public content::WebUIController {
         base::BindRepeating(
             [](const std::string& path,
                content::WebUIDataSource::GotDataCallback callback) {
-              std::move(callback).Run(new base::RefCountedString(R"(
+              std::move(callback).Run(
+                  base::MakeRefCounted<base::RefCountedString>(R"(
                   <!DOCTYPE html>
                   <html>
                     <body><webview src="about:blank"></webview></body>

@@ -318,9 +318,8 @@ void DeleteFaviconMappingsImpl(Profile* profile,
     favicon_service->DeleteFaviconMappings({node->url()},
                                            favicon_base::IconType::kFavicon);
   } else {
-    ApplyBookmarkFavicon(
-        node, favicon_service, /*icon_url=*/GURL(),
-        scoped_refptr<base::RefCountedString>(new base::RefCountedString()));
+    ApplyBookmarkFavicon(node, favicon_service, /*icon_url=*/GURL(),
+                         base::MakeRefCounted<base::RefCountedString>());
   }
 
   // Wait for the favicon for |node| to be deleted.

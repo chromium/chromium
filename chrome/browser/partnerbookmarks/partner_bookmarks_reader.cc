@@ -50,8 +50,7 @@ void SetFaviconTask(Profile* profile,
                     const std::vector<unsigned char>& image_data,
                     favicon_base::IconType icon_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  scoped_refptr<base::RefCountedMemory> bitmap_data(
-      new base::RefCountedBytes(image_data));
+  auto bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(image_data);
   gfx::Size pixel_size(gfx::kFaviconSize, gfx::kFaviconSize);
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile,

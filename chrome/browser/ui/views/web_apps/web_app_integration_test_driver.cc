@@ -813,11 +813,11 @@ bool ShouldLoadResponseFromDisk(const base::FilePath& root,
 
 void LoadFileFromDisk(const base::FilePath& path,
                       content::WebUIDataSource::GotDataCallback callback) {
-  std::string result;
-  CHECK(base::ReadFileToString(path, &result));
+  std::optional<std::vector<uint8_t>> result = base::ReadFileToBytes(path);
+  CHECK(result.has_value());
 
   std::move(callback).Run(
-      new base::RefCountedBytes(base::as_byte_span(result)));
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(result.value())));
 }
 
 void LoadResponseFromDisk(const base::FilePath& root,

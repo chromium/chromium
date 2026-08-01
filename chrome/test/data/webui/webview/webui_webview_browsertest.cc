@@ -116,7 +116,7 @@ class TestWebUIController : public content::WebUIController {
       content::WebUIDataSource::GotDataCallback callback) {
     if (path.empty()) {
       // Main document.
-      std::move(callback).Run(new base::RefCountedString(R"(
+      std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(R"(
           <!DOCTYPE html>
           <html>
             <body>
@@ -141,9 +141,8 @@ class TestWebUIController : public content::WebUIController {
         test_data_dir.AppendASCII("webui").AppendASCII(url_substr[1]),
         &contents));
 
-    base::RefCountedString* ref_contents = new base::RefCountedString();
-    ref_contents->as_string() = contents;
-    std::move(callback).Run(ref_contents);
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::move(contents)));
   }
 
   WEB_UI_CONTROLLER_TYPE_DECL();

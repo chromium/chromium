@@ -174,7 +174,8 @@ void DevToolsDataSource::StartDataRequest(
   std::string empty_path_prefix(chrome::kChromeUIDevToolsBlankPath);
   if (base::StartsWith(path, empty_path_prefix,
                        base::CompareCase::INSENSITIVE_ASCII)) {
-    std::move(callback).Run(new base::RefCountedStaticMemory());
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedStaticMemory>());
     return;
   }
 
