@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: David Cheng <dcheng@chromium.org>
+Date: Fri, 31 Jul 2026 15:00:00 -0700
+Subject: [PATCH] Return an empty node-set from document('') with an invalid base URI
+
+`document('')` is sometimes used as an idiom for returning a node-set
+corresponding to the current stylesheet. However, resolving the empty string
+against an invalid base URI produces an invalid URI, and per section
+12.1 of the XSLT 1.0 standard:
+
+  If there is an error retrieving the resource, then the XSLT processor
+  may signal the error; if it does not signal the error, it must recover
+  by returning an empty node-set.
+---
+ libxslt/functions.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/libxslt/functions.c b/libxslt/functions.c
+index 11ec039f540cc..317a44e5d01fe 100644
+--- a/libxslt/functions.c
++++ b/libxslt/functions.c
+@@ -337,14 +337,7 @@ xsltDocumentFunction(xmlXPathParserContextPtr ctxt, int nargs)
+         if (base != NULL)
+             xmlFree(base);
+         if (URI == NULL) {
+-            if ((tctxt != NULL) && (tctxt->style != NULL) &&
+-                (tctxt->style->doc != NULL) &&
+-                (xmlStrEqual(URI, tctxt->style->doc->URL))) {
+-                /* This selects the stylesheet's doc itself. */
+-                valuePush(ctxt, xmlXPathNewNodeSet((xmlNodePtr) tctxt->style->doc));
+-            } else {
+-                valuePush(ctxt, xmlXPathNewNodeSet(NULL));
+-            }
++            valuePush(ctxt, xmlXPathNewNodeSet(NULL));
+         } else {
+ 	    xsltDocumentFunctionLoadDocument(ctxt, URI, fragment);
+ 	    xmlFree(URI);
+--
