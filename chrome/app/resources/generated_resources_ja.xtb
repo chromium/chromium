@@ -649,7 +649,7 @@
 <translation id="1467432559032391204">左</translation>
 <translation id="1468571364034902819">このプロフィールは使用できません</translation>
 <translation id="1469702495092129863">マイクを確認してください</translation>
-<translation id="1470084204649225129">{NUM_TABS,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
+<translation id="1470084204649225129">{NUM_TABS,plural, =1{新しいグループに追加}other{新しいグループに追加}}</translation>
 <translation id="1470946456740188591">カーソル ブラウジングをオンまたはオフにするには、Ctrl+検索+7 ショートカット キーを使用します</translation>
 <translation id="1471034383866732283">リーディング モードで、このページのメイン コンテンツを検出できません</translation>
 <translation id="1472675084647422956">表示項目を増やす</translation>
@@ -4854,7 +4854,7 @@
 <translation id="4500647907053779331">選択範囲を<ph name="LANGUAGE" />に翻訳(&amp;T)</translation>
 <translation id="4501530680793980440">削除の確認</translation>
 <translation id="4502423230170890588">このデバイスから削除</translation>
-<translation id="4502477450742595012">タブを右クリックして、[タブを新しいグループに追加] を選択します</translation>
+<translation id="4502477450742595012">タブを右クリックして、[新しいグループに追加] を選択します</translation>
 <translation id="4503362512377701151">最近使用したタブグループが表示され、中断したところから簡単に再開できます。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8435,7 +8435,7 @@
 <translation id="7169122689956315694">周辺にデバイスがあるときに通知をオンにする</translation>
 <translation id="7171000599584840888">プロファイルを追加...</translation>
 <translation id="7171259390164035663">登録しない</translation>
-<translation id="7172470549472604877">{NUM_TABS,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
+<translation id="7172470549472604877">{NUM_TABS,plural, =1{新しいグループに追加}other{新しいグループに追加}}</translation>
 <translation id="7173114856073700355">設定を開く</translation>
 <translation id="7174199383876220879">New! 音楽や動画などを操作できます。</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> の設定</translation>
