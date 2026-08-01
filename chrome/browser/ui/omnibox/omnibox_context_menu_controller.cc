@@ -203,8 +203,11 @@ void HandleDriveUploadResponse(
     file_attachment->uuid = file->token;
     file_attachment->name = file->file_name;
     file_attachment->mime_type = file->mime_type;
-    file_attachment->image_data_url = file->thumbnail_url;
+    file_attachment->image_data_url = std::nullopt;
     file_attachment->icon_url = file->icon_url;
+    if (file->thumbnail_url.has_value()) {
+      file_attachment->thumbnail_url = GURL(file->thumbnail_url.value());
+    }
 
     file_attachments.push_back(
         searchbox::mojom::SearchContextAttachment::NewFileAttachment(

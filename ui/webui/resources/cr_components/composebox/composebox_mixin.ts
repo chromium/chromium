@@ -2061,6 +2061,7 @@ export const ComposeboxEmbedderMixin =
                     mimeType: file.type,
                     isDeletable: true,
                     selectionTime: new Date(),
+                    thumbnailUrl: null,
                   },
                   bigBuffer);
             } catch (e) {
@@ -2098,6 +2099,7 @@ export const ComposeboxEmbedderMixin =
             uuid: uuid,
             name: fileInfo.fileName,
             dataUrl: fileInfo.imageDataUrl ?? null,
+            thumbnailUrl: fileInfo.thumbnailUrl ?? null,
             objectUrl: null,
             type: fileInfo.mimeType || (fileInfo.imageDataUrl ? 'image' : ''),
             inputType: fileInfo.imageDataUrl ? InputType.kLensImage :

@@ -245,6 +245,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         pendingStatus ?? ContextUploadStatus.kNotUploaded, {
           dataUrl: fileAttachment.imageDataUrl ?? null,
           iconUrl: fileAttachment.iconUrl,
+          thumbnailUrl: fileAttachment.thumbnailUrl ?? null,
           supportsUnimodal: true,
         });
     this.onFileContextAdded(composeboxFile);

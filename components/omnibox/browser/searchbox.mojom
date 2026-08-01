@@ -136,6 +136,11 @@ struct FileAttachment {
   // from a trusted Google domain by DrivePickerSanitizer in the trusted
   // browser process before being populated here.
   url.mojom.Url? icon_url;
+  // The URL of the file thumbnail, if available. This is currently only
+  // populated for Google Drive files. The URL is validated to originate
+  // from a trusted Google domain by DrivePickerSanitizer in the trusted
+  // browser process before being populated here.
+  url.mojom.Url? thumbnail_url;
 };
 
 // Represents a tab attachment chosen browser-side and communicated to WebUI.
@@ -179,6 +184,11 @@ struct SelectedFileInfo {
   bool is_deletable;
   // Time that the file was selected at.
   mojo_base.mojom.JSTime selection_time;
+  // The URL of the file thumbnail, if available. This is currently only
+  // populated for Google Drive files. The URL is validated to originate
+  // from a trusted Google domain by DrivePickerSanitizer in the trusted
+  // browser process before being populated here.
+  url.mojom.Url? thumbnail_url;
 };
 
 // Indicates whether a suggestion group is in the primary or the secondary

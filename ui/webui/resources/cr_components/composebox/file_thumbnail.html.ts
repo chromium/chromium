@@ -122,7 +122,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           <div class="chip-overlay"></div>
         </div>
       ` : (this.file.type.startsWith('image/') || this.file.objectUrl
-            || this.file.dataUrl) ? html`
+            || this.file.dataUrl || this.file.thumbnailUrl) ? html`
         <div id="imgChip" class="img-chip">
           ${this.isUploading_ ? html`
             <svg role="image" class="spinner" viewBox="0 0 100 100">

@@ -1492,6 +1492,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       mimeType: 'image/jpeg',
       errorType: null,
       iconUrl: null,
+      thumbnailUrl: null,
     };
 
     const context = {
@@ -1527,6 +1528,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       errorType:
           ContextUploadErrorType.kBrowserProcessingUnsupportedFileTypeError,
       iconUrl: null,
+      thumbnailUrl: null,
     };
 
     const context = {
