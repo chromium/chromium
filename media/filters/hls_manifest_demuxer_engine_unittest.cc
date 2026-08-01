@@ -147,6 +147,13 @@ const std::string kMultivariantPlaylistWithEmbeddedAlts =
     "#EXT-X-STREAM-INF:BANDWIDTH=7680000,CODECS=\"avc1.420000\",AUDIO=\"aac\"\n"
     "hi/video-only.m3u8\n";
 
+const std::string kMultivariantPlaylistAudioOnlyMissingUri =
+    "#EXTM3U\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"aac\",NAME=\"Eng\",DEFAULT=YES,"
+    "AUTOSELECT=YES,LANGUAGE=\"en\"\n"
+    "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"mp4a.40.05\",AUDIO=\"aac\"\n"
+    "hi/audio-only.m3u8\n";
+
 const std::string kLiveFullEncryptedMediaPlaylist =
     "#EXTM3U\n"
     "#EXT-X-VERSION:4\n"
@@ -703,6 +710,27 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithNoUrlAlts) {
   EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "7.6 Mbps"));
   EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Eng"));
   EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "7.6 Mbps",
+                                       MediaTrack::State::kActive));
+
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestAudioOnlyPlaylistWithMissingUri) {
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
+
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8",
+      kMultivariantPlaylistAudioOnlyMissingUri);
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/hi/audio-only.m3u8", kSimpleMediaPlaylist);
+
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Eng"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kAudio, "Eng",
                                        MediaTrack::State::kActive));
 
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));

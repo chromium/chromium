@@ -231,6 +231,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
 
   HlsDemuxerStatusCallback BindPlaylistLoader(
       hls::RenditionGroup::RenditionTrack rendition,
+      const hls::VariantStream& variant,
       std::string rendition_role,
       HlsDemuxerStatusCallback do_next);
   void OnMultivariantPlaylist(

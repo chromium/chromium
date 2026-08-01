@@ -847,10 +847,12 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
 
 HlsDemuxerStatusCallback HlsManifestDemuxerEngine::BindPlaylistLoader(
     hls::RenditionGroup::RenditionTrack rendition,
+    const hls::VariantStream& variant,
     std::string rendition_role,
     HlsDemuxerStatusCallback do_next) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  const GURL& rendition_uri = std::get<1>(rendition)->GetUri().value();
+  const GURL& rendition_uri = std::get<1>(rendition)->GetUri().value_or(
+      variant.GetPrimaryRenditionUri());
   auto existing = renditions_.find(rendition_role);
   if (existing != renditions_.end() &&
       existing->second->MediaPlaylistUri() == rendition_uri) {
@@ -886,14 +888,14 @@ void HlsManifestDemuxerEngine::OnRenditionsSelected(
   selected_variant_codecs_ = variant->GetCodecs().value_or(no_codecs);
 
   if (extra.has_value()) {
-    on_complete = BindPlaylistLoader(extra.value(), kAudioOverride,
+    on_complete = BindPlaylistLoader(extra.value(), *variant, kAudioOverride,
                                      std::move(on_complete));
     track_manager_->SetTrackState(std::get<0>(extra.value()),
                                   MediaTrack::State::kActive);
   }
   if (primary.has_value()) {
-    on_complete =
-        BindPlaylistLoader(primary.value(), kPrimary, std::move(on_complete));
+    on_complete = BindPlaylistLoader(primary.value(), *variant, kPrimary,
+                                     std::move(on_complete));
     track_manager_->SetTrackState(std::get<0>(primary.value()),
                                   MediaTrack::State::kActive);
   }
