@@ -5,17 +5,18 @@
 #include "chrome/browser/context_hub/context_hub_service.h"
 
 #include <optional>
-#include <tuple>
 
+#include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/in_memory_auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
-#include "chrome/browser/context_hub/memory_bank/noop_memory_bank.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
@@ -34,8 +35,24 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::FieldsAre;
+using ::testing::IsEmpty;
+
+class MockServiceObserver : public ContextHubService::Observer {
+ public:
+  MockServiceObserver() = default;
+  MockServiceObserver(const MockServiceObserver&) = delete;
+  MockServiceObserver& operator=(const MockServiceObserver&) = delete;
+  ~MockServiceObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnAutoTodosChanged,
+              (base::span<const AutoTodoEntry>),
+              (override));
+};
 
 class ContextHubServiceTest : public testing::Test {
  public:
@@ -65,7 +82,7 @@ class ContextHubServiceTest : public testing::Test {
   ContextHubService service_;
 };
 
-TEST_F(ContextHubServiceTest, GenerateAutoTodos_ServiceSuccess) {
+TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
   personal_context::proto::AutoTodosResponse expected_response;
   auto* todo = expected_response.add_todos();
   todo->set_title("Test Todo");
@@ -81,10 +98,23 @@ TEST_F(ContextHubServiceTest, GenerateAutoTodos_ServiceSuccess) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::ok(std::move(any_response)))));
 
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  // Initial clearing of the store.
+  EXPECT_CALL(observer, OnAutoTodosChanged(IsEmpty()));
+  // Notification after adding the todos.
+  EXPECT_CALL(observer,
+              OnAutoTodosChanged(ElementsAre(AllOf(
+                  Field(&AutoTodoEntry::title, "Test Todo"),
+                  Field(&AutoTodoEntry::description, "Test Description")))));
+
   base::test::TestFuture<
       std::optional<personal_context::proto::AutoTodosResponse>>
       future;
-  service_.GenerateAutoTodos(future.GetCallback());
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
@@ -93,7 +123,7 @@ TEST_F(ContextHubServiceTest, GenerateAutoTodos_ServiceSuccess) {
   EXPECT_EQ(result.value().todos(0).description(), "Test Description");
 }
 
-TEST_F(ContextHubServiceTest, GenerateAutoTodos_ServiceError) {
+TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
   personal_context::ContextMemoryError expected_error =
       personal_context::ContextMemoryError::FromExecutionError(
           personal_context::ContextMemoryError::ExecutionError::
@@ -106,15 +136,22 @@ TEST_F(ContextHubServiceTest, GenerateAutoTodos_ServiceError) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::unexpected(expected_error))));
 
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
+
   base::test::TestFuture<
       std::optional<personal_context::proto::AutoTodosResponse>>
       future;
-  service_.GenerateAutoTodos(future.GetCallback());
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
   EXPECT_FALSE(future.Get().has_value());
 }
 
-TEST_F(ContextHubServiceTest, GenerateAutoTodos_ParseError) {
+TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
   personal_context::proto::Any any_response;
   any_response.set_value("corrupted proto data");
 
@@ -125,10 +162,17 @@ TEST_F(ContextHubServiceTest, GenerateAutoTodos_ParseError) {
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::ok(std::move(any_response)))));
 
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
+
   base::test::TestFuture<
       std::optional<personal_context::proto::AutoTodosResponse>>
       future;
-  service_.GenerateAutoTodos(future.GetCallback());
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
   EXPECT_FALSE(future.Get().has_value());
 }

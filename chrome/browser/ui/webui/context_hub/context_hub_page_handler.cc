@@ -120,7 +120,7 @@ void ContextHubPageHandler::GenerateAutoTodos(
     return;
   }
 
-  service->GenerateAutoTodos(
+  service->GenerateFirstPartyAutoTodos(
       base::BindOnce(&ContextHubPageHandler::OnAutoTodosGenerated,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

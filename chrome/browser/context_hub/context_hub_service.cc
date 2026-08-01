@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
@@ -105,7 +106,9 @@ void ContextHubService::OnAutoTodosChanged(
   observers_.Notify(&Observer::OnAutoTodosChanged, entries);
 }
 
-void ContextHubService::GenerateAutoTodos(AutoTodosCallback callback) {
+void ContextHubService::GenerateFirstPartyAutoTodos(
+    AutoTodosCallback callback) {
+
   personal_context::proto::AutoTodosRequest request_metadata;
   personal_context::ContextMemoryRequestOptions options;
   options.request_timeout = features::kAutoTodosTimeoutSeconds.Get();
@@ -113,11 +116,11 @@ void ContextHubService::GenerateAutoTodos(AutoTodosCallback callback) {
   personal_context_service_->FetchContext(
       personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
       request_metadata, options,
-      base::BindOnce(&ContextHubService::OnAutoTodosFetched,
+      base::BindOnce(&ContextHubService::OnFirstPartyAutoTodosFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ContextHubService::OnAutoTodosFetched(
+void ContextHubService::OnFirstPartyAutoTodosFetched(
     AutoTodosCallback callback,
     personal_context::FetchContextResult result) {
   if (!result.response.has_value()) {
@@ -129,6 +132,30 @@ void ContextHubService::OnAutoTodosFetched(
   if (!response.ParseFromString(result.response.value().value())) {
     std::move(callback).Run(std::nullopt);
     return;
+  }
+
+  if (auto_todos_store_) {
+  // TODO(crbug.com/540562062): Remove this once state management is handled.
+  auto_todos_store_->Clear(base::DoNothing());
+
+  for (const personal_context::proto::AutoTodoItem& todo : response.todos()) {
+    AutoTodoEntry entry;
+    entry.title = todo.title();
+    entry.description = todo.description();
+    entry.importance_score = todo.importance_score();
+    entry.status = AutoTodoEntry::Status::kActive;
+
+    FirstPartyData first_party;
+    first_party.actionable_url = GURL(todo.actionable_url());
+    for (const auto& ref : todo.source_references()) {
+      if (ref.has_gmail()) {
+        first_party.source_references.push_back(
+            GURL(ref.gmail().message_url()));
+      }
+    }
+    entry.data = std::move(first_party);
+    auto_todos_store_->AddOrUpdateItem(std::move(entry), base::DoNothing());
+  }
   }
 
   std::move(callback).Run(std::move(response));

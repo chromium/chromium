@@ -71,9 +71,9 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   using AutoTodosCallback = base::OnceCallback<void(
       std::optional<personal_context::proto::AutoTodosResponse>)>;
 
-  // Generates auto-todos and invokes `callback` on completion, whether it's
-  // successful or not.
-  void GenerateAutoTodos(AutoTodosCallback callback);
+  // Generates 1P AutoTodos and saves them in the AutoTodos store. Invokes
+  // `callback` on completion with the response if successful, or std::nullopt.
+  void GenerateFirstPartyAutoTodos(AutoTodosCallback callback);
 
   // Stores or updates a todo feedback item in the in-memory cache.
   void SetTodoFeedback(
@@ -158,8 +158,9 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
                          GroupTabsCallback callback);
 
   // Handles the async response from the AutoTodos fetch.
-  void OnAutoTodosFetched(AutoTodosCallback callback,
-                          personal_context::FetchContextResult result);
+  void OnFirstPartyAutoTodosFetched(
+      AutoTodosCallback callback,
+      personal_context::FetchContextResult result);
 
   // Handles the result of the model execution from `GenerateTabGroups`.
   void HandleTabGroupModelExecutionResult(
