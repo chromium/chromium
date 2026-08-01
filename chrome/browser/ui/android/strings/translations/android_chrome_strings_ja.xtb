@@ -59,7 +59,7 @@
 <translation id="11947597112837849">メールアドレス</translation>
 <translation id="1197267115302279827">ブックマークを移動</translation>
 <translation id="1197761954713363183">パスキー確認シートを閉じました</translation>
-<translation id="1197933394627598677">リーディング モードを表示</translation>
+<translation id="1197933394627598677">リーディング モード</translation>
 <translation id="1197935538609051549">無効にする</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1202892408424955784">トラッキングしている商品</translation>
@@ -571,7 +571,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3430670036890315772">プロフィールのロックをオフにすると、保存した情報が削除されます</translation>
 <translation id="3435575784518354875">パスワードを引き続き使用できるようにするには、今すぐパスワードをエクスポートし、Google Play 開発者サービスを更新してから、Google パスワード マネージャーに再度インポートしてください。<ph name="BEGIN_LINK" />詳細な手順はこちらをご覧ください<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
-<translation id="3435914367318771664">タブを新しいグループに追加</translation>
+<translation id="3435914367318771664">新しいグループに追加</translation>
 <translation id="3436118221454753036">AI モードに質問</translation>
 <translation id="3438681572027105609">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome にログインしてください</translation>
 <translation id="3439276997620616816">最近使ったタブがここに表示されます</translation>
