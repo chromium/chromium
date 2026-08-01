@@ -10491,6 +10491,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
                desc="Accessible alert text used in IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT for which side the window/pane is seen on.">
                Bottom
       </message>
+      <message name="IDS_SPLIT_VIEW_HORIZONTAL_INDIRECT_ACCESS_IPH_TITLE" desc="The title for horizontal split view indirect access snooze IPH.">
+        Try stacked split view
+      </message>
+      <message name="IDS_SPLIT_VIEW_HORIZONTAL_INDIRECT_ACCESS_IPH_BODY" desc="The body for horizontal split view indirect access snooze IPH.">
+        Use the split view menu to switch between side by side and stacked layouts.
+      </message>
 
       <!-- Vertical Tab Strings -->
       <if expr="use_titlecase">

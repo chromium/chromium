@@ -323,6 +323,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSmartTabSharingDefaultOnFeature,
     &kIPHSmartTabSharingFeature,
     &kIPHSmartTabSharingTryItFeature,
+    &kIPHSplitViewHorizontalIndirectAccessFeature,
     &kIPHTabAudioMutingFeature,
     &kIPHTabGroupsSaveV2CloseGroupFeature,
     &kIPHTabGroupsSaveV2IntroFeature,
