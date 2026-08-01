@@ -214,8 +214,14 @@ void PaymentRequestSpec::RecomputeSpecForDetails() {
 
   NotifyOnSpecUpdated();
 
+  // NotifyInitialized() can synchronously trigger observers that destroy the
+  // payment window's WebContents and delete `this`.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (is_initialization)
     NotifyInitialized();
+  if (!weak_this) {
+    return;
+  }
 
   current_update_reason_ = UpdateReason::NONE;
 }

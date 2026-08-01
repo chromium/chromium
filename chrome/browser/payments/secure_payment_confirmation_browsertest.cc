@@ -523,6 +523,44 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
   test_controller()->CloseDialog();
 }
 
+class SecurePaymentConfirmationSynchronousDestructionTest
+    : public SecurePaymentConfirmationTest {
+ public:
+  SecurePaymentConfirmationSynchronousDestructionTest() = default;
+  ~SecurePaymentConfirmationSynchronousDestructionTest() override = default;
+
+  void OnUIDisplayed() override {
+    SecurePaymentConfirmationTest::OnUIDisplayed();
+    GetActiveWebContents()->Close();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationSynchronousDestructionTest,
+                       CloseTabDuringUIDisplayed) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
+  webdata_services::WebDataServiceWrapperFactory::
+      GetWebPaymentsWebDataServiceForBrowserContext(
+          GetActiveWebContents()->GetBrowserContext(),
+          ServiceAccessType::EXPLICIT_ACCESS)
+          ->AddSecurePaymentConfirmationCredential(
+              std::make_unique<SecurePaymentConfirmationCredential>(
+                  std::move(credential_id), "a.com", std::move(user_id)),
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
+
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
+  ExecuteScriptAsync(GetActiveWebContents(),
+                     "getSecurePaymentConfirmationStatus()");
+  WaitForObservedEvent();
+
+  // The WebContents and PaymentRequest were closed during OnUIDisplayed(),
+  // and SetupModelAndShowDialogIfApplicable() returned safely without a UAF.
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // Intentionally do not enable the "SecurePaymentConfirmation" Blink runtime
 // feature or the browser-side Finch flag.
