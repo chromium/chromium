@@ -246,6 +246,16 @@ class MockFpopService : public contextual_search::FpopService {
            const footprints::oneplatform::
                UpdateActivityControlsSettingsResponse& response)> callback),
       (override));
+  MOCK_METHOD(
+      void,
+      ShouldShowMobileConsentFlow,
+      (const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+           request,
+       base::OnceCallback<void(
+           bool success,
+           const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&
+               response)> callback),
+      (override));
 };
 
 class MockContextualTasksContextService
@@ -375,14 +385,18 @@ class ContextualSearchboxHandlerTest
 
   void SetUpMockFpopService(bool accepted) {
     auto mock_fpop_service = std::make_unique<MockFpopService>();
-    EXPECT_CALL(*mock_fpop_service, GetFacs(testing::_, testing::_))
+    EXPECT_CALL(*mock_fpop_service,
+                ShouldShowMobileConsentFlow(testing::_, testing::_))
         .WillOnce([accepted](const auto& request, auto callback) {
-          footprints::oneplatform::GetFacsResponse response;
+          footprints::oneplatform::ShouldShowMobileConsentFlowResponse response;
           if (accepted) {
-            auto* setting = response.add_facs_setting();
-            setting->set_setting(
-                contextual_search::kPersonalContextSearchUsingWorkspace);
-            setting->set_data_recording_enabled(true);
+            response.mutable_should_show_flow_result()
+                ->mutable_eligibility()
+                ->set_status(3);  // ALREADY_CONSENTED
+          } else {
+            response.mutable_should_show_flow_result()
+                ->mutable_eligibility()
+                ->set_status(1);  // ELIGIBLE / CAN_CONSENT
           }
           std::move(callback).Run(true, response);
         });

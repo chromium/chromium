@@ -49,6 +49,16 @@ class FpopService {
           bool success,
           const footprints::oneplatform::UpdateActivityControlsSettingsResponse&
               response)> callback) = 0;
+
+  // Determines whether a consent flow should be shown for the user, and if they
+  // are eligible to consent.
+  virtual void ShouldShowMobileConsentFlow(
+      const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+          request,
+      base::OnceCallback<void(
+          bool success,
+          const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&
+              response)> callback) = 0;
 };
 
 }  // namespace contextual_search
