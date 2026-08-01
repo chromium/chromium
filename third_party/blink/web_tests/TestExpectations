@@ -429,11 +429,6 @@ crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-s
 crbug.com/1273409 [ Linux ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 crbug.com/1273409 [ Win10.20h2 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 
-# Tentative allow to fail to roll SwiftShader changes.
-crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-imageSmoothing-disabled-scaling-down.html [ Failure ]
-
-
-
 # These are testing deprecated features: https://github.com/web-platform-tests/wpt/issues/35662
 external/wpt/editing/run/inserttext.html?2001-last [ Failure ]
 external/wpt/editing/run/forecolor.html?1-1000 [ Failure ]
