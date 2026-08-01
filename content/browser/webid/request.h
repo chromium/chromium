@@ -298,6 +298,9 @@ class CONTENT_EXPORT Request
 
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
+  // When retrying a single IdP whose .well-known and config endpoints are
+  // already cached in `idp_infos_`, bypasses ConfigFetcher and directly
+  // fetches the accounts endpoint.
   void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls);
 
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>

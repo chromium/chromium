@@ -578,6 +578,26 @@ void Request::FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls) {
           rp_mode_, icon_ideal_size, icon_minimum_size, mediation_requirement_),
       base::BindOnce(&Request::OnAccountsResultsReceived,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // When retrying (e.g. after IDP sign-in failure popup), there is only 1 IDP
+  // requested and its .well-known and config endpoints/metadata are already
+  // cached in `idp_infos_`. In this case, bypass ConfigFetcher and directly
+  // fetch accounts for the cached IDP.
+  if (idps.size() == 1u) {
+    auto it = idp_infos_.find(idps[0].identity_provider_config_url);
+    if (it != idp_infos_.end() && it->second) {
+      std::vector<std::unique_ptr<IdentityProviderInfo>> cached_idp_infos;
+      cached_idp_infos.push_back(
+          std::make_unique<IdentityProviderInfo>(*it->second));
+      fedcm_accounts_fetcher_->FetchAccountsForIdps(
+          cached_idp_infos, token_request_get_infos_, fedcm_metrics_.get(),
+          GetEmbeddingOrigin(),
+          base::BindRepeating(&Request::FilterAccounts,
+                              weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+  }
+
   fedcm_accounts_fetcher_->FetchEndpointsForIdps(
       idps, token_request_get_infos_, fedcm_metrics_.get(),
       GetEmbeddingOrigin(),
@@ -615,7 +635,9 @@ void Request::FilterAccounts(const GURL& idp_config_url,
 void Request::OnAccountsResultsReceived(
     base::TimeTicks well_known_and_config_fetched_time,
     std::vector<AccountsFetcher::Result> results) {
-  SetWellKnownAndConfigFetchedTime(well_known_and_config_fetched_time);
+  if (!well_known_and_config_fetched_time.is_null()) {
+    SetWellKnownAndConfigFetchedTime(well_known_and_config_fetched_time);
+  }
 
   for (auto& result : results) {
     if (result.idp_info) {

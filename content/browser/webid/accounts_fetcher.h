@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBID_ACCOUNTS_FETCHER_H_
 #define CONTENT_BROWSER_WEBID_ACCOUNTS_FETCHER_H_
 
+#include <memory>
 #include <set>
 
 #include "base/containers/flat_map.h"
@@ -13,6 +14,7 @@
 #include "content/browser/webid/config_fetcher.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/common/content_export.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -26,12 +28,12 @@ namespace webid {
 class Metrics;
 
 // A class that fetches accounts from a set of IDPs.
-class AccountsFetcher {
+class CONTENT_EXPORT AccountsFetcher {
  public:
   using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
   static constexpr char kWildcardDomainHint[] = "any";
 
-  struct IdentityProviderGetInfo {
+  struct CONTENT_EXPORT IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderRequestOptionsPtr,
                             blink::mojom::RpContext rp_context,
                             blink::mojom::RpMode rp_mode,
@@ -46,7 +48,7 @@ class AccountsFetcher {
     std::optional<blink::mojom::Format> format;
   };
 
-  struct FedCmFetchingParams {
+  struct CONTENT_EXPORT FedCmFetchingParams {
     FedCmFetchingParams(blink::mojom::RpMode rp_mode,
                         int icon_ideal_size,
                         int icon_minimum_size,
@@ -60,7 +62,7 @@ class AccountsFetcher {
     ::password_manager::CredentialMediationRequirement mediation_requirement;
   };
 
-  struct Result {
+  struct CONTENT_EXPORT Result {
     Result();
     ~Result();
     Result(Result&&);
@@ -99,10 +101,23 @@ class AccountsFetcher {
       AccountsFetcherCallback callback);
   ~AccountsFetcher();
 
+  // Note that a single AccountsFetcher instance should invoke either
+  // FetchEndpointsForIdps() or FetchAccountsForIdps() only once in its
+  // lifetime.
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos`.
   void FetchEndpointsForIdps(
       const std::vector<ConfigFetcher::FetchRequest>& idps,
+      const base::flat_map<GURL, IdentityProviderGetInfo>&
+          token_request_get_infos,
+      Metrics* fedcm_metrics,
+      const url::Origin& embedding_origin,
+      FilterAccountsCallback filter_accounts_callback);
+
+  // Fetches accounts for IdPs whose config and well-known files are already
+  // fetched (e.g. from cache or after ConfigFetcher completion).
+  void FetchAccountsForIdps(
+      const std::vector<std::unique_ptr<IdentityProviderInfo>>& idp_infos,
       const base::flat_map<GURL, IdentityProviderGetInfo>&
           token_request_get_infos,
       Metrics* fedcm_metrics,
