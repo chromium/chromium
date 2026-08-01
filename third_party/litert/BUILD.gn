@@ -60,6 +60,81 @@ tflite_group("litert") {
   ]
 }
 
+source_set("support_util") {
+  sources = [
+    "src/support/util/convert_tensor_buffer.h",
+    "src/support/util/io_types.cc",
+    "src/support/util/io_types.h",
+    "src/support/util/memory_mapped_file.h",
+    "src/support/util/scoped_file.h",
+    "src/support/util/status_macros.h",
+  ]
+  if (is_win) {
+    sources += [ "src/support/util/memory_mapped_file_win.cc" ]
+  } else {
+    sources += [ "src/support/util/memory_mapped_file_posix.cc" ]
+  }
+  public_deps = [
+    ":litert_headers",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  public_configs = [
+    ":litert_config",
+    ":warnings_config",
+  ]
+}
+
+source_set("support_preprocessor") {
+  sources = [
+    "src/support/preprocessor/audio_preprocessor.h",
+    "src/support/preprocessor/audio_preprocessor_utils.cc",
+    "src/support/preprocessor/audio_preprocessor_utils.h",
+    "src/support/preprocessor/by_pass_audio_preprocessor.h",
+    "src/support/preprocessor/by_pass_image_preprocessor.h",
+    "src/support/preprocessor/image_preprocessor.h",
+    "src/support/preprocessor/image_preprocessor_utils.cc",
+    "src/support/preprocessor/image_preprocessor_utils.h",
+    "src/support/preprocessor/mel_filterbank.cc",
+    "src/support/preprocessor/mel_filterbank.h",
+  ]
+  public_deps = [
+    ":litert_headers",
+    ":support_util",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  configs += [ "//build/config/compiler:rtti" ]
+
+  public_configs = [
+    ":litert_config",
+    ":warnings_config",
+  ]
+}
+
+source_set("support_tokenizer") {
+  sources = [
+    "src/support/tokenizer/sentencepiece_tokenizer.cc",
+    "src/support/tokenizer/sentencepiece_tokenizer.h",
+    "src/support/tokenizer/tokenizer.h",
+  ]
+  public_deps = [
+    ":litert_headers",
+    ":support_util",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/sentencepiece",
+    "//third_party/sentencepiece:sentencepiece_proto_gen",
+  ]
+  deps = [ "//third_party/protobuf:protobuf_lite" ]
+
+  configs += [ "//build/config/compiler:rtti" ]
+
+  public_configs = [
+    ":litert_config",
+    ":warnings_config",
+  ]
+}
+
 config("litert_config") {
   include_dirs = [
     "$root_gen_dir/third_party/litert/src",
@@ -78,6 +153,10 @@ config("litert_config") {
     defines += [ "LITERT_USE_XNNPACK" ]
   } else {
     defines += [ "LITERT_DISABLE_CPU" ]
+  }
+
+  if (is_win) {
+    defines += [ "_USE_MATH_DEFINES" ]
   }
 
   visibility = [
