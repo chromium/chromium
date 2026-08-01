@@ -288,6 +288,9 @@ void OmniboxPopupUI::CreatePageHandler(
 
 void OmniboxPopupUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver) {
+  if (!omnibox::IsAimPopupFeatureEnabled()) {
+    return;
+  }
   if (composebox_page_factory_receiver_.is_bound()) {
     composebox_page_factory_receiver_.reset();
   }

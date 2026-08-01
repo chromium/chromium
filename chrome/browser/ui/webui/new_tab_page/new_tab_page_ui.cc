@@ -1235,6 +1235,14 @@ void NewTabPageUI::BindInterface(
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
         pending_receiver) {
+  auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile_);
+  bool aim_eligible = aim_service && aim_service->IsAimEligible();
+
+  if (!aim_eligible &&
+      !ntp_composebox::IsNtpComposeboxEnabled(profile_) &&
+      !SearchboxHandler::GetVoiceSearchCoherenceAnySearchboxExperimentEnabled()) {
+    return;
+  }
   if (composebox_page_factory_receiver_.is_bound()) {
     composebox_page_factory_receiver_.reset();
   }

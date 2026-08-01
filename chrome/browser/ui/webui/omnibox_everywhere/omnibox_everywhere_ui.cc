@@ -182,6 +182,9 @@ OmniboxEverywhereUI::~OmniboxEverywhereUI() = default;
 
 void OmniboxEverywhereUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver) {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
+    return;
+  }
   if (composebox_page_factory_receiver_.is_bound()) {
     composebox_page_factory_receiver_.reset();
   }

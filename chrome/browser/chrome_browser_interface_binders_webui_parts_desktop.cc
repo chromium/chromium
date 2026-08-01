@@ -22,7 +22,6 @@
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
@@ -55,7 +54,6 @@
 #include "chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
@@ -558,10 +556,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       guest_contents::mojom::GuestContentsHost, WebUIBrowserUI>(map);
 
-  const bool is_ntp_composebox_enabled =
-      ntp_composebox::IsNtpComposeboxEnabled(Profile::FromBrowserContext(
-          render_frame_host->GetProcess()->GetBrowserContext()));
-  const bool is_omnibox_aim_popup_enabled = omnibox::IsAimPopupFeatureEnabled();
   const bool is_contextual_tasks_enabled =
       contextual_tasks::IsContextualTasksUIEnabled();
 
@@ -577,12 +571,9 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   // registry.ForWebUI() pattern used in
   // PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop below which
   // eliminates the need to account for feature flag combinations.
-  if (is_ntp_composebox_enabled || is_omnibox_aim_popup_enabled ||
-      is_contextual_tasks_enabled) {
-    RegisterWebUIControllerInterfaceBinder<
-        composebox::mojom::PageHandlerFactory, NewTabPageUI, ContextualTasksUI,
-        OmniboxPopupUI, OmniboxEverywhereUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      composebox::mojom::PageHandlerFactory, NewTabPageUI, ContextualTasksUI,
+      OmniboxPopupUI, OmniboxEverywhereUI>(map);
 
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOption)) {
