@@ -2887,6 +2887,40 @@ class SamlTestWithManagedLocalPinAndPassword : public SAMLPolicyTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class SamlTestWithEphemeralUser
+    : public SamlTestWithManagedLocalPinAndPassword {
+ public:
+  SamlTestWithEphemeralUser() = default;
+  ~SamlTestWithEphemeralUser() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_ephemeral_users_enabled()
+        ->set_ephemeral_users_enabled(true);
+    device_policy_update.reset();
+    SamlTestWithManagedLocalPinAndPassword::SetUpInProcessBrowserTestFixture();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SamlTestWithEphemeralUser,
+    CompletesLoginOnSamlConfirmPasswordScreenForEphemeralUser) {
+  ShowGAIALoginForm();
+  LogInWithSAMLUsingTemplate(saml_test_users::kSixthUserCorpExampleTestEmail,
+                             kSixthSAMLUserGaiaId, kTestAuthSIDCookie1,
+                             kTestAuthLSIDCookie1, kSamlLoginNoPasswordTemplate,
+                             /*use_password=*/false, /*submit=*/true);
+
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
+  SetManualPasswords(test::kGaiaPassword, test::kGaiaPassword);
+
+  test::WaitForPrimaryUserSessionStart();
+  ExpectCanUnlockWithPassword(saml_test_users::kSixthUserCorpExampleTestEmail,
+                              kSixthSAMLUserGaiaId, test::kGaiaPassword);
+}
+
 IN_PROC_BROWSER_TEST_F(SamlTestWithManagedLocalPinAndPassword,
                        SkipsSamlConfirmPasswordScreenOnPolicySet) {
   SetLocalPasswordAsAllowedAuthFactorsPolicy();

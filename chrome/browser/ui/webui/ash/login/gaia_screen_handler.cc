@@ -1042,13 +1042,22 @@ void GaiaScreenHandler::CompleteAuthentication(
     if (features::IsManagedLocalPinAndPasswordEnabled()) {
       user_context->SetScrapedSamlPasswords(std::move(scraped_saml_passwords));
       user_context->SetRequiresPasswordConfirmation(true);
-      if (!auth_factor_editor_) {
-        auth_factor_editor_ =
-            std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
+      // For device ephemeral users, immediately show the saml confirm password
+      // screen if it is required.
+      if (user_manager::UserManager::Get()->IsUserNonCryptohomeDataEphemeral(
+              user_context->GetAccountId())) {
+        LoginDisplayHost::default_host()
+            ->GetSigninUI()
+            ->ShowSamlConfirmPassword(std::move(user_context));
+      } else {
+        if (!auth_factor_editor_) {
+          auth_factor_editor_ =
+              std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
+        }
+        auth_factor_editor_->GetAuthFactorsConfiguration(
+            std::move(user_context),
+            base::BindOnce(&OnGetAuthFactorsConfiguration));
       }
-      auth_factor_editor_->GetAuthFactorsConfiguration(
-          std::move(user_context),
-          base::BindOnce(&OnGetAuthFactorsConfiguration));
     } else {
       LoginDisplayHost::default_host()->GetSigninUI()->SAMLConfirmPassword(
           std::move(scraped_saml_passwords), std::move(user_context));
