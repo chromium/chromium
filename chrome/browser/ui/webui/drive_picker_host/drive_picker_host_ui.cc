@@ -29,6 +29,7 @@
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/webui/webui_util.h"
 #include "url/origin.h"
 
@@ -379,6 +380,9 @@ void DrivePickerHostUI::ShowConsentKitDialog(
   builder.SetFlowId(omnibox::kComposeboxDriveConsentFlowId.Get());
   builder.SetProductId(omnibox::kComposeboxDriveConsentProductId.Get());
   builder.SetEntrypointId(omnibox::kComposeboxDriveConsentEntrypointId.Get());
+  builder.SetDarkMode(
+      ui::NativeTheme::GetInstanceForWeb()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark);
 
   GURL consent_kit_url = builder.Build();
   consent_result_handler_.reset();
