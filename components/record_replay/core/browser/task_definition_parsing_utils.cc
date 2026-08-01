@@ -52,9 +52,6 @@ base::expected<TaskParameter, std::string> MapParameter(
   return param;
 }
 
-// TODO(crbug.com/504555471): base::DictValue and base::ListValue are
-// deprecated. We need to change them to base::Value::Dict and base::Value::List
-// respectively.
 base::expected<TaskStep, std::string> MapStep(const base::DictValue& dict,
                                               int default_step_index,
                                               const GURL& default_url) {
