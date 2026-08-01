@@ -297,6 +297,25 @@ void OmniboxAutofillDelegate::OnAfterFormsSeen(
   }
 }
 
+void OmniboxAutofillDelegate::OnAfterDidAutofillForm(AutofillManager& manager,
+                                                     FormGlobalId form) {
+  if (!candidate_form_found_) {
+    // Candidate form has not yet been found, so no flow is active.
+    return;
+  }
+  if (!field_became_visible_) {
+    // The trigger field is not visible in the viewport; so the omnibox chip is
+    // not shown.
+    return;
+  }
+  if (form != trigger_form_global_id_) {
+    // The autofilled `form` is different from the trigger form.
+    return;
+  }
+
+  client_->GetPaymentsAutofillClient()->HideOmniboxAutofillChip();
+}
+
 bool OmniboxAutofillDelegate::OnFilterChanged(const std::u16string& filter) {
   return false;
 }

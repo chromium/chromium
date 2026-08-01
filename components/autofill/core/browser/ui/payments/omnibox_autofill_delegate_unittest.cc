@@ -762,6 +762,73 @@ TEST_F(OmniboxAutofillDelegateTest,
 }
 
 TEST_F(OmniboxAutofillDelegateTest,
+       OnAfterDidAutofillForm_CandidateFormNotFound_ReturnsEarly) {
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnAfterDidAutofillForm(autofill_manager(),
+                                   test::MakeFormGlobalId());
+
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnAfterDidAutofillForm_TriggerFieldNotVisible_ReturnsEarly) {
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnAfterDidAutofillForm(autofill_manager(), form.global_id());
+
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnAfterDidAutofillForm_DifferentForm_ReturnsEarly) {
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnFieldBecameVisible();
+
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
+
+  FormGlobalId different_form_id = test::MakeFormGlobalId();
+  ASSERT_NE(different_form_id, form.global_id());
+  delegate->OnAfterDidAutofillForm(autofill_manager(), different_form_id);
+
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
+}
+
+TEST_F(OmniboxAutofillDelegateTest, OnAfterDidAutofillForm_HidesChip) {
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnFieldBecameVisible();
+
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
+
+  delegate->OnAfterDidAutofillForm(autofill_manager(), form.global_id());
+
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_hidden());
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_shown());
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
        OnFieldBecameVisible_NoAutofillManager_ReturnsEarly) {
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});

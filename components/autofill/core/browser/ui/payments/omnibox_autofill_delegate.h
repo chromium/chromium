@@ -48,6 +48,8 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   void OnAfterFormsSeen(AutofillManager& manager,
                         base::span<const FormGlobalId> updated_forms,
                         base::span<const FormGlobalId> removed_forms) override;
+  void OnAfterDidAutofillForm(AutofillManager& manager,
+                              FormGlobalId form) override;
 
   // AutofillSuggestionDelegate:
   bool OnFilterChanged(const std::u16string& filter) override;
