@@ -134,4 +134,36 @@ TEST(LanguageStateTest, PendingTranslation) {
   EXPECT_FALSE(language_state.pending_target_language().has_value());
 }
 
+TEST(LanguageStateTest, PdfTranslatability) {
+  MockTranslateDriver driver;
+  LanguageState language_state(&driver);
+
+  // Initial state.
+  EXPECT_EQ(LanguageState::PdfTranslatabilityStatus::kNotChecked,
+            language_state.pdf_translatability_status());
+
+  // Set to translatable.
+  language_state.set_pdf_translatability_status(
+      LanguageState::PdfTranslatabilityStatus::kTranslatable);
+  EXPECT_EQ(LanguageState::PdfTranslatabilityStatus::kTranslatable,
+            language_state.pdf_translatability_status());
+
+  // Same-document navigation does not reset status.
+  language_state.DidNavigate(/*is_same_document_navigation=*/true,
+                             /*is_main_frame=*/true, /*reload=*/false,
+                             /*href_translate=*/"",
+                             /*navigation_from_google=*/false);
+  EXPECT_EQ(LanguageState::PdfTranslatabilityStatus::kTranslatable,
+            language_state.pdf_translatability_status());
+
+  // Main frame navigation resets status.
+  language_state.DidNavigate(/*is_same_document_navigation=*/false,
+                             /*is_main_frame=*/true, /*reload=*/false,
+                             /*href_translate=*/"",
+                             /*navigation_from_google=*/false);
+  EXPECT_EQ(LanguageState::PdfTranslatabilityStatus::kNotChecked,
+            language_state.pdf_translatability_status());
+}
+
 }  // namespace translate
+

@@ -26,6 +26,7 @@ class TranslateDriver;
 // - user is on page in language A that they had translated to language B.
 // - user clicks a link in that page that takes them to a page also in language
 //   A.
+// TODO(b/540074979): Rename this class to PageTranslationState.
 class LanguageState {
  public:
   explicit LanguageState(TranslateDriver* driver);
@@ -73,6 +74,9 @@ class LanguageState {
 
   bool page_level_translation_criteria_met() const {
     return page_level_translation_criteria_met_;
+  }
+  void SetPageLevelTranslationCriteriaMet(bool value) {
+    page_level_translation_criteria_met_ = value;
   }
 
   // Whether the page is currently in the process of being translated.
@@ -147,6 +151,22 @@ class LanguageState {
     return should_auto_translate_to_predefined_target_language_;
   }
 
+  // The document's PDF translatability status. Note that since PDF translatability
+  // is checked asynchronously on the browser side, this state may change
+  // dynamically. Only relevant if the document is a PDF.
+  enum class PdfTranslatabilityStatus {
+    kNotChecked,
+    kTranslatable,
+    kUntranslatable,
+  };
+
+  PdfTranslatabilityStatus pdf_translatability_status() const {
+    return pdf_translatability_status_;
+  }
+  void set_pdf_translatability_status(PdfTranslatabilityStatus status) {
+    pdf_translatability_status_ = status;
+  }
+
  private:
   void SetIsPageTranslated(bool value);
 
@@ -218,6 +238,9 @@ class LanguageState {
   // Indicates that the page should be automatically translated to
   // |predefined_target_language_| if possible.
   bool should_auto_translate_to_predefined_target_language_ = false;
+
+  PdfTranslatabilityStatus pdf_translatability_status_ =
+      PdfTranslatabilityStatus::kNotChecked;
 };
 
 }  // namespace translate

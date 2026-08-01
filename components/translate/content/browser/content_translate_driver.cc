@@ -4,6 +4,11 @@
 
 #include "components/translate/content/browser/content_translate_driver.h"
 
+#include "pdf/buildflags.h"
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/translate/content/browser/pdf_translation_coordinator.h"
+#endif
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,6 +28,7 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -43,10 +49,30 @@ namespace translate {
 
 namespace {
 
-// The maximum number of attempts we'll do to see if the page has finshed
+// The maximum number of attempts we'll do to see if the page has finished
 // loading before giving up the translation
 const int kMaxTranslateLoadCheckAttempts = 20;
+
+class ContentTranslateDriverUserData : public base::SupportsUserData::Data {
+ public:
+  explicit ContentTranslateDriverUserData(base::WeakPtr<ContentTranslateDriver> driver) : driver_(driver) {}
+  ContentTranslateDriver* driver() const { return driver_.get(); }
+ private:
+  const base::WeakPtr<ContentTranslateDriver> driver_;
+};
+
+const void* const kContentTranslateDriverUserDataKey = &kContentTranslateDriverUserDataKey;
+
 }  // namespace
+
+// static
+ContentTranslateDriver* ContentTranslateDriver::FromWebContents(content::WebContents* web_contents) {
+  if (!web_contents)
+    return nullptr;
+  auto* data = static_cast<ContentTranslateDriverUserData*>(
+      web_contents->GetUserData(kContentTranslateDriverUserDataKey));
+  return data ? data->driver() : nullptr;
+}
 
 ContentTranslateDriver::ContentTranslateDriver(
     content::WebContents& web_contents,
@@ -56,9 +82,17 @@ ContentTranslateDriver::ContentTranslateDriver(
       is_otr_context_(web_contents.GetBrowserContext()->IsOffTheRecord()),
       max_reload_check_attempts_(kMaxTranslateLoadCheckAttempts),
       next_page_seq_no_(0),
-      language_histogram_(url_language_histogram) {}
+      language_histogram_(url_language_histogram) {
+  web_contents.SetUserData(
+      kContentTranslateDriverUserDataKey,
+      std::make_unique<ContentTranslateDriverUserData>(
+          weak_pointer_factory_.GetWeakPtr()));
+}
 
 ContentTranslateDriver::~ContentTranslateDriver() {
+  if (web_contents()) {
+    web_contents()->RemoveUserData(kContentTranslateDriverUserDataKey);
+  }
   // Clear any remaining observers to avoid the CHECK in ObserverList's
   // destructor. This can happen if the WebContents is destroyed before
   // observers have a chance to unregister (e.g., Java-side cleanup callbacks
@@ -316,7 +350,20 @@ void ContentTranslateDriver::RegisterPage(
       details.adopted_language, page_level_translation_criteria_met);
 
   if (web_contents()) {
+#if BUILDFLAG(ENABLE_PDF)
+    if (GetContentsMimeType() == "application/pdf" &&
+        base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
+      content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+      auto* coordinator = PDFTranslationCoordinator::GetOrCreateForCurrentDocument(rfh);
+      coordinator->RunIfPdfIsTranslatable(base::BindOnce(
+          &TranslateManager::InitiateTranslation,
+          translate_manager_->GetWeakPtr(), details.adopted_language));
+    } else {
+      translate_manager_->InitiateTranslation(details.adopted_language);
+    }
+#else
     translate_manager_->InitiateTranslation(details.adopted_language);
+#endif
 
     // Save the page language on the navigation entry so it can be synced.
     // TODO(crbug.com/40779913): The mojo IPC coming from the renderer might

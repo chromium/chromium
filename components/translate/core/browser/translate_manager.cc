@@ -207,6 +207,17 @@ bool TranslateManager::CanManuallyTranslate(bool menu_logging) {
     can_translate = false;
   }
 
+  if (language_state_.pdf_translatability_status() ==
+      LanguageState::PdfTranslatabilityStatus::kUntranslatable) {
+    if (!menu_logging) {
+      return false;
+    }
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kURLNotTranslatable);
+    can_translate = false;
+  }
+
   const std::string source_language = language_state_.source_language();
   // The source language is empty when language detection has not finished
   // running. In this case, Android queues the translation and waits until the

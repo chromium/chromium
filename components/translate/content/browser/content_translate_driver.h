@@ -79,8 +79,15 @@ class ContentTranslateDriver : public TranslateDriver,
     translate_manager_ = manager;
   }
 
+  TranslateManager* translate_manager() { return translate_manager_; }
+
+  static ContentTranslateDriver* FromWebContents(
+      content::WebContents* web_contents);
+
   // Initiates translation once the page is finished loading.
   void InitiateTranslation(const std::string& page_lang, int attempt);
+
+
 
   // TranslateDriver methods.
   void OnIsPageTranslatedChanged() override;

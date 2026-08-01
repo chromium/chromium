@@ -57,6 +57,7 @@ void LanguageState::DidNavigate(bool is_same_document_navigation,
   navigation_from_google_ = navigation_from_google;
 
   SetTranslateEnabled(false);
+  pdf_translatability_status_ = PdfTranslatabilityStatus::kNotChecked;
 }
 
 void LanguageState::LanguageDetermined(
