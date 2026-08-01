@@ -383,6 +383,12 @@ void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
     return;
   }
 
+  if (!IsValidWebContentsForIntentPicker(web_contents())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*launched=*/false));
+    return;
+  }
+
   // TODO(crbug.com/421950209): Add and record new enum for when the intent
   // picker is shown via the Web Install API.
   intent_picker_delegate_->RecordIntentPickerIconEvent(
@@ -434,6 +440,12 @@ void IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch(
     apps::IntentPickerCloseReason close_reason,
     bool should_persist) {
   if (IsShuttingDown(web_contents())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*launched=*/false));
+    return;
+  }
+
+  if (!IsValidWebContentsForIntentPicker(web_contents())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*launched=*/false));
     return;
