@@ -5088,11 +5088,6 @@ crbug.com/359279545 compositing/video/video-subpixel.html [ Failure Pass ]
 
 # Failures need to be investigated.
 crbug.com/359279545 [ Linux ] http/tests/html/scaled-oopif-text-not-blurry.html [ Failure ]
-crbug.com/359279545 [ Win ] http/tests/html/scaled-oopif-text-not-blurry.html [ Failure ]
-
-# Sheriff 2019-02-01, 2019-02-19
-# These are crashy on Win10, and seem to leave processes lying around, causing the swarming
-# task to hang.
 
 # Recently became flaky on multiple platforms (Linux and Windows primarily)
 crbug.com/927769 fast/webgl/OffscreenCanvas-webgl-preserveDrawingBuffer.html [ Crash Failure Pass Timeout ]
@@ -5103,9 +5098,6 @@ crbug.com/933880 http/tests/inspector-protocol/fetch/legacy/xhr-interception-aut
 # because content_shell does not add the about: handler. With network service
 # enabled this fails in both content_shell and chrome.
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Failure Timeout ]
-
-
-# Sheriff 2019-02-28
 
 # Contentful First Paint failures
 crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate.html [ Failure ]
@@ -5118,8 +5110,6 @@ crbug.com/931533 media/video-played-collapse.html [ Failure Pass ]
 
 # Sheriff 2019-03-14
 crbug.com/806357 virtual/threaded/fast/events/pointerevents/pinch/pointerevent_touch-action-pinch_zoom_touch.html [ Crash Failure Pass Timeout ]
-
-# Trooper 2019-03-19
 
 # Sheriff 2019-03-25
 crbug.com/41448929 http/tests/devtools/elements/styles-3/styles-add-new-rule-tab.js [ Failure Pass ]
@@ -8411,8 +8401,7 @@ crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.
 crbug.com/325323464 [ Mac ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 crbug.com/325323464 [ Win ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure Pass Timeout ]
 
-# Gardener 2024-06-10
-crbug.com/346219035 [ Linux ] http/tests/loading/preload-image-src.html [ Failure ]
+
 
 # Flaky output
 crbug.com/346387874 [ Win11 ] fast/backgrounds/size/contain-and-cover.html [ Failure ]
