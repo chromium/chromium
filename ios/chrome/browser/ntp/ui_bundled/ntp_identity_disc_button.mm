@@ -341,25 +341,37 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
                                                email:(NSString*)email {
   NSString* accountButtonLabel;
   if (name) {
-    accountButtonLabel =
-        _hasAccountError
-            ? l10n_util::GetNSStringF(
-                  IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
-                  base::SysNSStringToUTF16(name),
-                  base::SysNSStringToUTF16(email))
-            : l10n_util::GetNSStringF(
-                  IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
-                  base::SysNSStringToUTF16(name),
-                  base::SysNSStringToUTF16(email));
+    if (_hasAccountError) {
+      accountButtonLabel = l10n_util::GetNSStringF(
+          IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+          base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+    } else {
+      if (_hasAITier) {
+        accountButtonLabel = l10n_util::GetNSStringF(
+            IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_GOOGLE_MEMBERSHIP_OPEN_ACCOUNT_MENU,
+            base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+      } else {
+        accountButtonLabel = l10n_util::GetNSStringF(
+            IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
+            base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+      }
+    }
   } else {
-    accountButtonLabel =
-        _hasAccountError
-            ? l10n_util::GetNSStringF(
-                  IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
-                  base::SysNSStringToUTF16(email))
-            : l10n_util::GetNSStringF(
-                  IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU,
-                  base::SysNSStringToUTF16(email));
+    if (_hasAccountError) {
+      accountButtonLabel = l10n_util::GetNSStringF(
+          IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+          base::SysNSStringToUTF16(email));
+    } else {
+      if (_hasAITier) {
+        accountButtonLabel = l10n_util::GetNSStringF(
+            IDS_IOS_IDENTITY_DISC_WITH_EMAIL_GOOGLE_MEMBERSHIP_OPEN_ACCOUNT_MENU,
+            base::SysNSStringToUTF16(email));
+      } else {
+        accountButtonLabel = l10n_util::GetNSStringF(
+            IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU,
+            base::SysNSStringToUTF16(email));
+      }
+    }
   }
 
   _identityDiscAccessibilityLabel = accountButtonLabel;
