@@ -168,8 +168,10 @@ void IdlenessDetector::WillProcessTask(base::TimeTicks start_time) {
   }
 }
 
-void IdlenessDetector::DidProcessTask(base::TimeTicks start_time,
-                                      base::TimeTicks end_time) {
+void IdlenessDetector::DidProcessTask(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    base::TimeTicks /*desired_execution_time*/) {
   // Shift idle timestamps with the duration of the task, we were not idle.
   if (in_network_2_quiet_period_ && !network_2_quiet_.is_null())
     network_2_quiet_ += end_time - start_time;

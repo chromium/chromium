@@ -14,7 +14,9 @@ namespace sequence_manager {
 class TestTaskTimeObserver : public TaskTimeObserver {
  public:
   void WillProcessTask(TimeTicks start_time) override {}
-  void DidProcessTask(TimeTicks start_time, TimeTicks end_time) override {}
+  void DidProcessTask(TimeTicks start_time,
+                      TimeTicks end_time,
+                      TimeTicks desired_execution_time) override {}
 };
 
 }  // namespace sequence_manager

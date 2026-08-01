@@ -79,8 +79,13 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   // TaskTimeObserver
   void WillProcessTask(base::TimeTicks start_time) override;
 
+  // `desired_execution_time` is when the task was meant to run (see
+  // TaskMetadata::GetDesiredExecutionTime()); congested-moment detection uses
+  // it to measure queuing delay. It is null when the sequence manager does not
+  // stamp these times.
   void DidProcessTask(base::TimeTicks start_time,
-                      base::TimeTicks end_time) override;
+                      base::TimeTicks end_time,
+                      base::TimeTicks desired_execution_time) override;
 
   // probes
   void WillHandlePromise(ScriptState*,
@@ -155,7 +160,20 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   bool PushScriptEntryPoint(ScriptState*);
 
   void OnWorkerTaskCompleted(base::TimeTicks start_time,
-                             base::TimeTicks end_time);
+                             base::TimeTicks end_time,
+                             base::TimeTicks desired_execution_time);
+  // Accumulates the just-completed task's script attribution (scriptCount and
+  // long scripts) into the open congested moment.
+  void AccumulateCurrentTaskScripts();
+  // Closes the open congested moment, reporting it as an entry only if it
+  // stayed saturated for at least the congestion threshold and folded at least
+  // one script entry point; then resets the run state. Also called when the
+  // queue drains and at Shutdown, so shorter or attribution-less moments are
+  // simply discarded.
+  // TODO(crbug.com/534893134): also track internal browser tasks (e.g. GC, IPC)
+  // that carry no JS attribution, so congestion dominated by native work is not
+  // dropped by the scriptCount > 0 guard.
+  void FinalizeCongestedMoment();
 
   void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&,
                                            LocalDOMWindow& window);
@@ -212,6 +230,25 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   // Top-level script entry points in the current reporting interval, counted
   // regardless of duration (so it can exceed current_scripts_.size()).
   uint32_t script_count_ = 0;
+
+  // Actual start and scheduled start of the previous task, used to decide
+  // whether this task was already queued before the previous one began
+  // (backlog depth >= 2 => congestion).
+  base::TimeTicks prev_task_start_;
+  base::TimeTicks prev_scheduled_start_;
+
+  // Open congested moment: the interval during which the task queue stayed
+  // congested — a task was scheduled but not yet handled (queued while an
+  // earlier task was still running). Such moments bind the tasks together into
+  // one potential long animation frame.
+  base::TimeTicks congestion_run_start_;
+  // End of the most recent task folded into the congested moment. Null when no
+  // moment is open.
+  base::TimeTicks congestion_run_end_;
+  // Top-level script entry points accumulated across the congested moment.
+  uint32_t congestion_script_count_ = 0;
+  // Long scripts accumulated across the congested moment.
+  HeapVector<Member<ScriptTimingInfo>> congestion_scripts_;
 
   bool enabled_ = false;
 };

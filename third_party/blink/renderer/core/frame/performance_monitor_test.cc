@@ -47,7 +47,7 @@ class PerformanceMonitorTest : public testing::Test {
   }
 
   void DidProcessTask(base::TimeTicks start_time, base::TimeTicks end_time) {
-    monitor_->DidProcessTask(start_time, end_time);
+    monitor_->DidProcessTask(start_time, end_time, base::TimeTicks());
   }
   void UpdateTaskAttribution(ExecutionContext* execution_context) {
     monitor_->UpdateTaskAttribution(execution_context);

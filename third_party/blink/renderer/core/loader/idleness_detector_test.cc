@@ -46,7 +46,7 @@ class IdlenessDetectorTest : public PageTestBase {
     DCHECK(start_time < end_time);
     AdvanceClock(end_time - start_time);
     platform_time_ = end_time;
-    Detector()->DidProcessTask(start_time, end_time);
+    Detector()->DidProcessTask(start_time, end_time, base::TimeTicks());
   }
 
   base::TimeTicks SecondsToTimeTicks(double seconds) {

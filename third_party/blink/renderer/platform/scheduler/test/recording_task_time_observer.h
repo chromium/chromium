@@ -27,7 +27,8 @@ class RecordingTaskTimeObserver
   // base::sequence_manager::TaskTimeObserver implementations.
   void WillProcessTask(base::TimeTicks start_time) override;
   void DidProcessTask(base::TimeTicks start_time,
-                      base::TimeTicks end_time) override;
+                      base::TimeTicks end_time,
+                      base::TimeTicks desired_execution_time) override;
 
   const Result& result() const { return result_; }
 

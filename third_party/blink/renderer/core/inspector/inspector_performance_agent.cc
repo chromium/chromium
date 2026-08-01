@@ -401,8 +401,10 @@ void InspectorPerformanceAgent::WillProcessTask(base::TimeTicks start_time) {
   task_start_ticks_ = GetTimeTicksNow();
 }
 
-void InspectorPerformanceAgent::DidProcessTask(base::TimeTicks start_time,
-                                               base::TimeTicks end_time) {
+void InspectorPerformanceAgent::DidProcessTask(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    base::TimeTicks /*desired_execution_time*/) {
   if (task_start_ticks_.is_null())
     return;
 

@@ -45,8 +45,10 @@ void LongTaskDetector::UnregisterObserver(LongTaskObserver* observer) {
   }
 }
 
-void LongTaskDetector::DidProcessTask(base::TimeTicks start_time,
-                                      base::TimeTicks end_time) {
+void LongTaskDetector::DidProcessTask(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    base::TimeTicks /*desired_execution_time*/) {
   if ((end_time - start_time) < LongTaskDetector::kLongTaskThreshold)
     return;
 

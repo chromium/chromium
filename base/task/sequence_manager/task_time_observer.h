@@ -23,8 +23,14 @@ class BASE_EXPORT TaskTimeObserver : public CheckedObserver {
   // To be called when task is about to start.
   virtual void WillProcessTask(TimeTicks start_time) = 0;
 
-  // To be called when task is completed.
-  virtual void DidProcessTask(TimeTicks start_time, TimeTicks end_time) = 0;
+  // To be called when task is completed. `desired_execution_time` is the time
+  // the task was scheduled to run: its enqueue time for an immediate task, or
+  // its run time (enqueue time + delay) for a delayed task (see
+  // TaskMetadata::GetDesiredExecutionTime()). It is null when the sequence
+  // manager does not stamp these times.
+  virtual void DidProcessTask(TimeTicks start_time,
+                              TimeTicks end_time,
+                              TimeTicks desired_execution_time) = 0;
 };
 
 }  // namespace sequence_manager

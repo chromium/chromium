@@ -48,7 +48,8 @@ class CORE_EXPORT LongTaskDetector final
   // scheduler::TaskTimeObserver implementation
   void WillProcessTask(base::TimeTicks start_time) override {}
   void DidProcessTask(base::TimeTicks start_time,
-                      base::TimeTicks end_time) override;
+                      base::TimeTicks end_time,
+                      base::TimeTicks desired_execution_time) override;
 
   HeapHashSet<Member<LongTaskObserver>> observers_;
   HeapVector<Member<LongTaskObserver>> observers_to_be_removed_;

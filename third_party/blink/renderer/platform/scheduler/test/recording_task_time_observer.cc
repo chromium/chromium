@@ -20,8 +20,10 @@ void RecordingTaskTimeObserver::WillProcessTask(base::TimeTicks start_time) {
   result_.emplace_back(start_time, base::TimeTicks());
 }
 
-void RecordingTaskTimeObserver::DidProcessTask(base::TimeTicks start_time,
-                                               base::TimeTicks end_time) {
+void RecordingTaskTimeObserver::DidProcessTask(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    base::TimeTicks /*desired_execution_time*/) {
   DCHECK(!result_.empty());
   DCHECK_EQ(result_.back().first, start_time);
   result_.back().second = end_time;

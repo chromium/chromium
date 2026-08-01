@@ -828,7 +828,9 @@ void SequenceManagerImpl::NotifyDidProcessTask(ExecutingTask* executing_task,
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                  "SequenceManager.DidProcessTaskTimeObservers");
     for (auto& observer : main_thread_only().task_time_observers) {
-      observer.DidProcessTask(task_timing.start_time(), task_timing.end_time());
+      observer.DidProcessTask(
+          task_timing.start_time(), task_timing.end_time(),
+          executing_task->pending_task.GetDesiredExecutionTime());
     }
   }
 
