@@ -76,6 +76,9 @@ enum ModelAvailabilityCheckResult {
   kUnavailableIncompatiblePreferenceOptions = 21,
   // The specified options are not supported with speculative decoding (MTP).
   kUnavailableIncompatibleSpeculativeDecodingOptions = 22,
+  // The device does not have sufficient disk space to build caches for the
+  // on-device model.
+  kUnavailableInsufficientDiskSpaceForCaches = 23,
 
   // Append new line here
 };

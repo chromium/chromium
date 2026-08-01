@@ -356,7 +356,11 @@ String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::
         kUnavailableInsufficientDiskSpace:
       return "The device does not have enough space for downloading the "
-             "on-device model";
+             "on-device model.";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableInsufficientDiskSpaceForCaches:
+      return "The device does not have enough disk space to initialize "
+             "the on-device model.";
     case mojom::blink::ModelAvailabilityCheckResult::
         kUnavailableTranslationNotEligible:
       return "The on-device translation is not available.";
