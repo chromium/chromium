@@ -666,19 +666,17 @@ wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index) {
 skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
-    bool readonly,
     int plane_index,
     bool is_yuv_plane,
     bool mipmapped,
-    bool scanout_dcomp_surface,
-    bool supports_multiplanar_rendering,
-    bool supports_multiplanar_copy) {
+    bool scanout_dcomp_surface) {
 #if BUILDFLAG(SKIA_USE_DAWN)
   CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
   return skgpu::graphite::TextureInfos::MakeDawn(DawnBackendTextureInfo(
-      format, readonly, is_yuv_plane, plane_index,
+      format, /*readonly=*/false, is_yuv_plane, plane_index,
       /*array_slice=*/0, mipmapped, scanout_dcomp_surface,
-      supports_multiplanar_rendering, supports_multiplanar_copy));
+      /*supports_multiplanar_rendering=*/false,
+      /*support_multiplanar_copy=*/false));
 #else
   NOTREACHED();
 #endif
