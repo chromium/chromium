@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -28,6 +29,7 @@
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/features/feature_flags.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/features/simple_feature_test_constants.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -41,6 +43,21 @@ using version_info::Channel;
 namespace extensions {
 
 namespace {
+
+constexpr char kBazId[] = "bazabbbbccccddddeeeeffffgggghhhh";
+constexpr char kNotId[] = "notabbbbccccddddeeeeffffgggghhhh";
+constexpr char kTooLongId[] = "slightlytoooolongforanextensionid";
+constexpr char kTooShortId[] = "tooshortforanextensionid";
+
+// SHA1 of kBazId.
+constexpr std::string_view kHashedBazId =
+    "BF6D2F14A9126FD8F44E5050EF8A5FA08E2C1015";
+// SHA1 of "monkey", used as an arbitrary non-matching extension ID.
+constexpr std::string_view kHashedMonkeyId =
+    "AB87D24BDC7452E55738DEB5F868E1F16DEA5ACE";
+
+static_assert(kHashedBazId.size() == 40);
+static_assert(kHashedMonkeyId.size() == 40);
 
 struct IsAvailableTestData {
   ExtensionId extension_id;
@@ -141,14 +158,13 @@ TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
 }
 
 TEST_F(SimpleFeatureTest, Allowlist) {
-  const HashedExtensionId kIdFoo(
-      ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));
-  const HashedExtensionId kIdBar(
-      ExtensionId("barabbbbccccddddeeeeffffgggghhhh"));
-  const HashedExtensionId kIdBaz(
-      ExtensionId("bazabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdFoo{ExtensionId(kFooId)};
+  const HashedExtensionId kIdBar{ExtensionId(kBarId)};
+  const HashedExtensionId kIdBaz{ExtensionId(kBazId)};
   SimpleFeature feature;
-  feature.set_allowlist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
+  static constexpr auto kAllowlist =
+      std::to_array<std::string_view>({kHashedFooId, kHashedBarId});
+  feature.set_allowlist(StaticSpan(kAllowlist));
 
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
@@ -191,35 +207,25 @@ TEST_F(SimpleFeatureTest, Allowlist) {
 }
 
 TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
-  // echo -n "fooabbbbccccddddeeeeffffgggghhhh" |
-  //   sha1sum | tr '[:lower:]' '[:upper:]'
-  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const std::string kIdFooHashed("55BC7228A0D502A2A48C9BB16B07062A01E62897");
   SimpleFeature feature;
 
-  feature.set_allowlist({kIdFooHashed.c_str()});
+  static constexpr auto kAllowlist =
+      std::to_array<std::string_view>({kHashedFooId});
+  feature.set_allowlist(StaticSpan(kAllowlist));
 
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
-                .IsAvailableToManifest(HashedExtensionId(ExtensionId(kIdFoo)),
+                .IsAvailableToManifest(HashedExtensionId(ExtensionId(kFooId)),
                                        Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
                 .result());
-  EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
-            feature
-                .IsAvailableToManifest(
-                    HashedExtensionId(kIdFooHashed), Manifest::Type::kUnknown,
-                    ManifestLocation::kInvalidLocation, -1,
-                    Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
-                .result());
-  EXPECT_EQ(
-      Feature::AvailabilityResult::kNotFoundInAllowlist,
+  EXPECT_NE(
+      Feature::AvailabilityResult::kIsAvailable,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId(
-                  ExtensionId("slightlytoooolongforanextensionid")),
+              HashedExtensionId(ExtensionId(kHashedFooId)),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -227,24 +233,29 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
       Feature::AvailabilityResult::kNotFoundInAllowlist,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId(ExtensionId("tooshortforanextensionid")),
+              HashedExtensionId(ExtensionId(kTooLongId)),
+              Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
+              Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+          .result());
+  EXPECT_EQ(
+      Feature::AvailabilityResult::kNotFoundInAllowlist,
+      feature
+          .IsAvailableToManifest(
+              HashedExtensionId(ExtensionId(kTooShortId)),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
 }
 
 TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIds) {
-  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
-  const std::string kIdBaz("bazabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kHashedFoo((ExtensionId(kIdFoo)));
-  const HashedExtensionId kHashedBar((ExtensionId(kIdBar)));
-  const HashedExtensionId kHashedBaz((ExtensionId(kIdBaz)));
+  const HashedExtensionId kHashedFoo((ExtensionId(kFooId)));
+  const HashedExtensionId kHashedBar((ExtensionId(kBarId)));
 
   SimpleFeature feature;
-  feature.set_allowlist({kHashedBaz.value().c_str()});
+  static constexpr auto kAllowlist =
+      std::to_array<std::string_view>({kHashedBazId});
+  feature.set_allowlist(StaticSpan(kAllowlist));
 
-  // Only kIdBaz is in the JSON allowlist; foo and bar are rejected.
   EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToManifest(kHashedFoo, Manifest::Type::kUnknown,
@@ -256,7 +267,7 @@ TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIds) {
   {
     // Allowlist both foo and bar via the command-line override.
     SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
-        {kIdFoo, kIdBar});
+        std::vector<std::string>{std::string(kFooId), std::string(kBarId)});
 
     // Both foo and bar now pass the allowlist check.
     EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
@@ -275,15 +286,14 @@ TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIds) {
                   .result());
 
     // An ID not in either list is still rejected.
-    EXPECT_EQ(
-        Feature::AvailabilityResult::kNotFoundInAllowlist,
-        feature
-            .IsAvailableToManifest(
-                HashedExtensionId(
-                    ExtensionId("notabbbbccccddddeeeeffffgggghhhh")),
-                Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
-                -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
-            .result());
+    EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
+              feature
+                  .IsAvailableToManifest(HashedExtensionId(ExtensionId(kNotId)),
+                                         Manifest::Type::kUnknown,
+                                         ManifestLocation::kInvalidLocation, -1,
+                                         Feature::UNSPECIFIED_PLATFORM,
+                                         kUnspecifiedContextId)
+                  .result());
   }
 
   // After the scoped override, foo is rejected again.
@@ -297,17 +307,17 @@ TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIds) {
 }
 
 TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIdsFromFlag) {
-  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kHashedFoo((ExtensionId(kIdFoo)));
-  const HashedExtensionId kHashedBar((ExtensionId(kIdBar)));
+  const HashedExtensionId kHashedFoo((ExtensionId(kFooId)));
+  const HashedExtensionId kHashedBar((ExtensionId(kBarId)));
 
   SimpleFeature feature;
-  feature.set_allowlist({kHashedFoo.value().c_str()});
+  static constexpr auto kAllowlist =
+      std::to_array<std::string_view>({kHashedFooId});
+  feature.set_allowlist(StaticSpan(kAllowlist));
 
   {
     auto allowlist = SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
-        CreateFromCommaSeparated(kIdFoo + "," + kIdBar);
+        CreateFromCommaSeparated(std::string(kFooId) + "," + kBarId);
 
     EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature
@@ -324,15 +334,14 @@ TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIdsFromFlag) {
                                          kUnspecifiedContextId)
                   .result());
 
-    EXPECT_EQ(
-        Feature::AvailabilityResult::kNotFoundInAllowlist,
-        feature
-            .IsAvailableToManifest(
-                HashedExtensionId(
-                    ExtensionId("notabbbbccccddddeeeeffffgggghhhh")),
-                Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
-                -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
-            .result());
+    EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
+              feature
+                  .IsAvailableToManifest(HashedExtensionId(ExtensionId(kNotId)),
+                                         Manifest::Type::kUnknown,
+                                         ManifestLocation::kInvalidLocation, -1,
+                                         Feature::UNSPECIFIED_PLATFORM,
+                                         kUnspecifiedContextId)
+                  .result());
   }
 
   EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
@@ -345,14 +354,13 @@ TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIdsFromFlag) {
 }
 
 TEST_F(SimpleFeatureTest, Blocklist) {
-  const HashedExtensionId kIdFoo(
-      ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));
-  const HashedExtensionId kIdBar(
-      ExtensionId("barabbbbccccddddeeeeffffgggghhhh"));
-  const HashedExtensionId kIdBaz(
-      ExtensionId("bazabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdFoo{ExtensionId(kFooId)};
+  const HashedExtensionId kIdBar{ExtensionId(kBarId)};
+  const HashedExtensionId kIdBaz{ExtensionId(kBazId)};
   SimpleFeature feature;
-  feature.set_blocklist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
+  static constexpr auto kBlocklist =
+      std::to_array<std::string_view>({kHashedFooId, kHashedBarId});
+  feature.set_blocklist(StaticSpan(kBlocklist));
 
   EXPECT_EQ(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
@@ -386,35 +394,25 @@ TEST_F(SimpleFeatureTest, Blocklist) {
 }
 
 TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
-  // echo -n "fooabbbbccccddddeeeeffffgggghhhh" |
-  //   sha1sum | tr '[:lower:]' '[:upper:]'
-  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const std::string kIdFooHashed("55BC7228A0D502A2A48C9BB16B07062A01E62897");
   SimpleFeature feature;
 
-  feature.set_blocklist({kIdFooHashed.c_str()});
+  static constexpr auto kBlocklist =
+      std::to_array<std::string_view>({kHashedFooId});
+  feature.set_blocklist(StaticSpan(kBlocklist));
 
   EXPECT_EQ(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
-                .IsAvailableToManifest(HashedExtensionId(ExtensionId(kIdFoo)),
+                .IsAvailableToManifest(HashedExtensionId(ExtensionId(kFooId)),
                                        Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
                 .result());
-  EXPECT_NE(Feature::AvailabilityResult::kFoundInBlocklist,
-            feature
-                .IsAvailableToManifest(
-                    HashedExtensionId(kIdFooHashed), Manifest::Type::kUnknown,
-                    ManifestLocation::kInvalidLocation, -1,
-                    Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
-                .result());
-  EXPECT_EQ(
-      Feature::AvailabilityResult::kIsAvailable,
+  EXPECT_NE(
+      Feature::AvailabilityResult::kFoundInBlocklist,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId(
-                  ExtensionId("slightlytoooolongforanextensionid")),
+              HashedExtensionId(ExtensionId(kHashedFooId)),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -422,7 +420,15 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
       Feature::AvailabilityResult::kIsAvailable,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId(ExtensionId("tooshortforanextensionid")),
+              HashedExtensionId(ExtensionId(kTooLongId)),
+              Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
+              Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+          .result());
+  EXPECT_EQ(
+      Feature::AvailabilityResult::kIsAvailable,
+      feature
+          .IsAvailableToManifest(
+              HashedExtensionId(ExtensionId(kTooShortId)),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -486,8 +492,9 @@ TEST_F(SimpleFeatureTest, Context) {
   EXPECT_EQ(u"", error);
   ASSERT_TRUE(extension.get());
 
-  feature.set_allowlist(
-      {HashedExtensionId(ExtensionId("monkey")).value().c_str()});
+  static constexpr auto kAllowlist =
+      std::to_array<std::string_view>({kHashedMonkeyId});
+  feature.set_allowlist(StaticSpan(kAllowlist));
   EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToContext(extension.get(),
@@ -495,7 +502,7 @@ TEST_F(SimpleFeatureTest, Context) {
                                       Feature::CHROMEOS_PLATFORM,
                                       kUnspecifiedContextId, TestContextData())
                 .result());
-  feature.set_allowlist({});
+  feature.set_allowlist(StaticSpan<std::string_view>());
 
   feature.set_extension_types({Manifest::Type::kTheme});
   {
@@ -1217,7 +1224,6 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
 }
 
 TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
-  // Create a webui feature available on trunk.
   SimpleFeature feature;
   feature.set_contexts({mojom::ContextType::kWebUi});
   static constexpr auto kMatches =

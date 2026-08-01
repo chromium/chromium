@@ -506,7 +506,7 @@ bool SimpleFeature::IsIdInAllowlist(const HashedExtensionId& hashed_id) const {
 
 // static
 bool SimpleFeature::IsIdInList(const HashedExtensionId& hashed_id,
-                               const std::vector<std::string>& list) {
+                               base::span<const std::string_view> list) {
   if (!IsValidHashedExtensionId(hashed_id))
     return false;
 
@@ -593,9 +593,8 @@ bool SimpleFeature::IsValidHashedExtensionId(
   return hashed_id.value().length() == 40;
 }
 
-void SimpleFeature::set_blocklist(
-    std::initializer_list<const char* const> blocklist) {
-  blocklist_.assign(blocklist.begin(), blocklist.end());
+void SimpleFeature::set_blocklist(StaticSpan<std::string_view> blocklist) {
+  blocklist_ = blocklist.span();
 }
 
 void SimpleFeature::set_command_line_switch(
@@ -609,8 +608,8 @@ void SimpleFeature::set_contexts(
 }
 
 void SimpleFeature::set_dependencies(
-    std::initializer_list<const char* const> dependencies) {
-  dependencies_.assign(dependencies.begin(), dependencies.end());
+    StaticSpan<std::string_view> dependencies) {
+  dependencies_ = dependencies.span();
 }
 
 void SimpleFeature::set_extension_types(
@@ -643,9 +642,8 @@ void SimpleFeature::set_platforms(std::initializer_list<Platform> platforms) {
   platforms_ = platforms;
 }
 
-void SimpleFeature::set_allowlist(
-    std::initializer_list<const char* const> allowlist) {
-  allowlist_.assign(allowlist.begin(), allowlist.end());
+void SimpleFeature::set_allowlist(StaticSpan<std::string_view> allowlist) {
+  allowlist_ = allowlist.span();
 }
 
 Feature::Availability SimpleFeature::GetEnvironmentAvailability(

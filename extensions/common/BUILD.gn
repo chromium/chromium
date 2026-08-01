@@ -694,6 +694,7 @@ source_set("unit_tests") {
     "feature_switch_unittest.cc",
     "features/complex_feature_unittest.cc",
     "features/feature_provider_unittest.cc",
+    "features/simple_feature_test_constants.h",
     "features/simple_feature_unittest.cc",
     "file_util_unittest.cc",
     "hashed_extension_id_unittest.cc",

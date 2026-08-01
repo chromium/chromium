@@ -569,6 +569,24 @@ class FeatureCompilerTest(unittest.TestCase):
     self.assertNotIn('set_matches', cc_code)
     self.assertNotIn('kMatches', cc_code)
 
+  def testEmptyDependenciesAreSkipped(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+
+    compiler._json = {
+        'empty_dependencies': {
+            'channel': 'beta',
+            'contexts': ['privileged_extension'],
+            'dependencies': []
+        }
+    }
+    compiler.Compile()
+    cc_code = compiler.Render().Render()
+
+    # An empty list needs no setter call; the member already defaults to an
+    # empty span, and a zero-length array cannot form a span.
+    self.assertNotIn('set_dependencies', cc_code)
+    self.assertNotIn('kDependencies', cc_code)
+
   def testOverrideFeature(self):
     current_directory = os.path.dirname(os.path.abspath(__file__))
     source_files = ['test/_test_api_features.json']

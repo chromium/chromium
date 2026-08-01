@@ -4,13 +4,16 @@
 
 #include "extensions/common/features/complex_feature.h"
 
+#include <array>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/test/bind.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
+#include "extensions/common/features/simple_feature_test_constants.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/test_context_data.h"
@@ -21,16 +24,18 @@ using extensions::mojom::ManifestLocation;
 namespace extensions {
 
 TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
-  const HashedExtensionId kIdFoo(
-      ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));
-  const HashedExtensionId kIdBar(
-      ExtensionId("barabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdFoo{ExtensionId(kFooId)};
+  const HashedExtensionId kIdBar{ExtensionId(kBarId)};
+  static constexpr auto kFooAllowlist =
+      std::to_array<std::string_view>({kHashedFooId});
+  static constexpr auto kBarAllowlist =
+      std::to_array<std::string_view>({kHashedBarId});
   std::vector<Feature*> features;
 
   {
     // Rule: "extension", allowlist "foo".
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    simple_feature->set_allowlist({kIdFoo.value().c_str()});
+    simple_feature->set_allowlist(StaticSpan(kFooAllowlist));
     simple_feature->set_extension_types({Manifest::Type::kExtension});
     features.push_back(simple_feature.release());
   }
@@ -38,7 +43,7 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
   {
     // Rule: "legacy_packaged_app", allowlist "bar".
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    simple_feature->set_allowlist({kIdBar.value().c_str()});
+    simple_feature->set_allowlist(StaticSpan(kBarAllowlist));
     simple_feature->set_extension_types({Manifest::Type::kLegacyPackagedApp});
     features.push_back(simple_feature.release());
   }
@@ -92,14 +97,18 @@ TEST(ComplexFeatureTest, Dependencies) {
     // Rule which depends on an extension-only feature
     // (content_security_policy).
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    simple_feature->set_dependencies({"manifest:content_security_policy"});
+    static constexpr auto kCspDependency =
+        std::to_array<std::string_view>({"manifest:content_security_policy"});
+    simple_feature->set_dependencies(StaticSpan(kCspDependency));
     features.push_back(simple_feature.release());
   }
 
   {
     // Rule which depends on an platform-app-only feature (videoCapture).
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    simple_feature->set_dependencies({"permission:videoCapture"});
+    static constexpr auto kVideoCaptureDependency =
+        std::to_array<std::string_view>({"permission:videoCapture"});
+    simple_feature->set_dependencies(StaticSpan(kVideoCaptureDependency));
     features.push_back(simple_feature.release());
   }
 

@@ -46,9 +46,9 @@ void ExpectOptionalVectorsEqual(const std::optional<std::vector<T>>& expected,
     ExpectVectorsEqual(*expected, *actual, name);
 }
 
-void ExpectMatchPatternsEqual(base::span<const std::string> expected,
-                              base::span<const std::string_view> actual,
-                              std::string_view name) {
+void ExpectStringSpanEqual(base::span<const std::string> expected,
+                           base::span<const std::string_view> actual,
+                           std::string_view name) {
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected)) << name;
 }
 
@@ -102,13 +102,13 @@ FeatureComparator::~FeatureComparator() = default;
 void FeatureComparator::CompareFeature(const SimpleFeature* feature) {
   ASSERT_TRUE(feature);
   EXPECT_EQ(name, feature->name());
-  ExpectVectorsEqual(blocklist, feature->blocklist(), name);
-  ExpectVectorsEqual(allowlist, feature->allowlist(), name);
-  ExpectVectorsEqual(dependencies, feature->dependencies(), name);
+  ExpectStringSpanEqual(blocklist, feature->blocklist(), name);
+  ExpectStringSpanEqual(allowlist, feature->allowlist(), name);
+  ExpectStringSpanEqual(dependencies, feature->dependencies(), name);
   ExpectVectorsEqual(extension_types, feature->extension_types(), name);
   ExpectOptionalVectorsEqual(contexts, feature->contexts(), name);
   ExpectVectorsEqual(platforms, feature->platforms(), name);
-  ExpectMatchPatternsEqual(match_patterns, feature->match_patterns(), name);
+  ExpectStringSpanEqual(match_patterns, feature->match_patterns(), name);
   EXPECT_EQ(location, feature->location()) << name;
   EXPECT_EQ(min_manifest_version, feature->min_manifest_version()) << name;
   EXPECT_EQ(max_manifest_version, feature->max_manifest_version()) << name;

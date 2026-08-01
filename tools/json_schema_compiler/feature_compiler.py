@@ -543,6 +543,14 @@ FINAL_VALIDATION = ({
 # These keys can not be set on a feature and are hence ignored.
 IGNORED_KEYS = ['default_parent', 'required_buildflags']
 
+# List-valued keys emitted as static arrays for StaticSpan setters.
+STATIC_STRING_LIST_KEYS = {
+    'matches': 'kMatches',
+    'blocklist': 'kBlocklist',
+    'allowlist': 'kAllowlist',
+    'dependencies': 'kDependencies',
+}
+
 # By default, if an error is encountered, assert to stop the compilation. This
 # can be disabled for testing.
 ENABLE_ASSERTIONS = True
@@ -555,12 +563,15 @@ def GetCodeForFeatureValues(feature_values):
     if key in IGNORED_KEYS:
       continue
 
-    if key == 'matches':
-      if not feature_values[key]:
+    if key in STATIC_STRING_LIST_KEYS:
+      values = feature_values[key]
+      # Empty lists match the member default and cannot form C++ arrays.
+      if values.strip() == '{}':
         continue
-      c.Append('static constexpr auto kMatches = '
-               'std::to_array<std::string_view>(%s);' % feature_values[key])
-      c.Append('feature->set_matches(StaticSpan(kMatches));')
+      array_name = STATIC_STRING_LIST_KEYS[key]
+      c.Append('static constexpr auto %s = '
+               'std::to_array<std::string_view>(%s);' % (array_name, values))
+      c.Append('feature->set_%s(StaticSpan(%s));' % (key, array_name))
     else:
       c.Append('feature->set_%s(%s);' % (key, feature_values[key]))
   return c
