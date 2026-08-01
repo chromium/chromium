@@ -35,6 +35,7 @@
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "build/android_buildflags.h"
+#include "cc/base/features.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -270,6 +271,15 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
 
   // Enable desktop fling curve.
   feature_overrides.EnableFeature(features::kDesktopFlingCurveOnAndroid);
+
+  // Disable modern overscroll animations and gestures on Desktop Android.
+  feature_overrides.DisableFeature(features::kElasticOverscroll);
+  feature_overrides.DisableFeature(features::kOverscrollHistoryNavigation);
+  feature_overrides.DisableFeature(
+      features::kOverscrollEffectOnNonRootScrollers);
+
+  // Suppress fallback to the legacy Android edge glow shade on Desktop Android.
+  feature_overrides.EnableFeature(features::kSuppressOverscrollGlow);
 
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,

@@ -20,6 +20,7 @@
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/base/l10n/l10n_util_android.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/events/android/motion_event_android.h"
@@ -51,6 +52,10 @@ std::unique_ptr<EdgeEffect> CreateGlowEdgeEffect(
 std::unique_ptr<OverscrollGlow> CreateGlowEffect(OverscrollGlowClient* client) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableOverscrollEdgeEffect)) {
+    return nullptr;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSuppressOverscrollGlow)) {
     return nullptr;
   }
 

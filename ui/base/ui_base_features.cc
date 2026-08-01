@@ -208,9 +208,14 @@ BASE_FEATURE(kExperimentalFlingAnimation,
 );
 
 #if BUILDFLAG(IS_ANDROID)
-// Whether to use the desktop scrolling behavion on Android. This is intended
+// Whether to use the desktop scrolling behavior on Android. This is intended
 // for desktop Android, though it's available everywhere.
 BASE_FEATURE(kDesktopFlingCurveOnAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether to suppress legacy overscroll edge glow (OverscrollGlow) on Android.
+// This is intended for desktop Android, where neither elastic stretch nor
+// legacy shade should be shown.
+BASE_FEATURE(kSuppressOverscrollGlow, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_APPLE)
