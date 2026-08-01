@@ -1781,18 +1781,14 @@ bool WillCreateURLLoaderFactoryParams::Run(
       factory_override && *factory_override ? factory_override->get()
                                             : &devtools_override;
 
-  // Order of targets and sessions matters -- the latter proxy is created,
-  // the closer it is to the network. So start with frame's NetworkHandler,
-  // then process frame's FetchHandler and then browser's FetchHandler.
+  // Order of targets and sessions matters -- the later proxy is created,
+  // the closer it is to the network. So process frame's FetchHandler
+  // and then browser's FetchHandler.
   // Within the target, the agents added earlier are closer to network.
   bool had_interceptors =
-      MaybeCreateProxyForInterception<protocol::NetworkHandler>(
+      MaybeCreateProxyForInterception<protocol::FetchHandler>(
           agent_host_, process_id_, storage_partition_, devtools_token_,
           is_navigation, is_download, handler_override, header_client);
-
-  had_interceptors |= MaybeCreateProxyForInterception<protocol::FetchHandler>(
-      agent_host_, process_id_, storage_partition_, devtools_token_,
-      is_navigation, is_download, handler_override, header_client);
 
   // TODO(caseq): assure deterministic order of browser agents (or sessions).
   for (auto* browser_agent_host : BrowserDevToolsAgentHost::Instances()) {

@@ -194,7 +194,7 @@ static std::unique_ptr<protocol::Network::Headers> BuildObjectForHeaders(
   return protocol::Network::Headers::fromValue(headers_object.get(), &errors);
 }
 
-String NetErrorToString(int net_error) {
+String NetErrorToProtocolEnum(int net_error) {
   switch (net_error) {
     case net::ERR_ABORTED:
       return protocol::Network::ErrorReasonEnum::Aborted;
@@ -2262,7 +2262,7 @@ void InspectorNetworkAgent::DirectTCPSocketAborted(uint64_t identifier,
                                                    int net_error) {
   GetFrontend()->directTCPSocketAborted(
       IdentifiersFactory::SubresourceRequestId(identifier),
-      NetErrorToString(net_error),
+      NetErrorToProtocolEnum(net_error),
       base::TimeTicks::Now().since_origin().InSecondsF());
 }
 
@@ -2335,7 +2335,7 @@ void InspectorNetworkAgent::DirectUDPSocketAborted(uint64_t identifier,
                                                    int net_error) {
   GetFrontend()->directUDPSocketAborted(
       IdentifiersFactory::SubresourceRequestId(identifier),
-      NetErrorToString(net_error),
+      NetErrorToProtocolEnum(net_error),
       base::TimeTicks::Now().since_origin().InSecondsF());
 }
 

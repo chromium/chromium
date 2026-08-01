@@ -106,8 +106,7 @@ bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), session,
-      GetProcessHost()->GetStoragePartition(), base::BindRepeating([] {}),
-      session->GetClient());
+      GetProcessHost()->GetStoragePartition(), session->GetClient());
   // TODO(crbug.com/40154954): support pushing updated loader factories down to
   // renderer.
   session->CreateAndAddHandler<protocol::FetchHandler>(

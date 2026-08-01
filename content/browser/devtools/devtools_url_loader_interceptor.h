@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
+#include "content/browser/devtools/protocol/fetch.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -65,9 +66,9 @@ class DevToolsURLLoaderInterceptor {
   using RequestInterceptedCallback =
       base::RepeatingCallback<void(std::unique_ptr<InterceptedRequestInfo>)>;
   using ContinueInterceptedRequestCallback =
-      protocol::Network::Backend::ContinueInterceptedRequestCallback;
+      protocol::Fetch::Backend::ContinueRequestCallback;
   using GetResponseBodyForInterceptionCallback =
-      protocol::Network::Backend::GetResponseBodyForInterceptionCallback;
+      protocol::Fetch::Backend::GetResponseBodyCallback;
   using TakeResponseBodyPipeCallback =
       base::OnceCallback<void(protocol::Response,
                               mojo::ScopedDataPipeConsumerHandle,
