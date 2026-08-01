@@ -745,6 +745,84 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
             extension_url);
 }
 
+namespace {
+
+// Simulates the browser immediately closing upon activation. This can
+// potentially happen synchronously as part of showing a window on some
+// platforms, but that's difficult to reproduce in a test directly.
+class CloseOnBrowserCreatedObserver : public BrowserCollectionObserver {
+ public:
+  explicit CloseOnBrowserCreatedObserver(BrowserWindowInterface* ignore_browser)
+      : ignore_browser_(ignore_browser) {
+    observation_.Observe(GlobalBrowserCollection::GetInstance());
+  }
+
+  void OnBrowserActivated(BrowserWindowInterface* browser) override {
+    if (browser != ignore_browser_ && !closed_new_window_) {
+      closed_new_window_ = true;
+      browser->GetWindow()->Close();
+    }
+  }
+
+ private:
+  bool closed_new_window_ = false;
+  raw_ptr<BrowserWindowInterface> ignore_browser_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
+};
+
+}  // namespace
+
+// Tests that a browser window that's closed as soon as it's shown is
+// gracefully handled (in windows.create). Regression test for
+// https://crbug.com/537109028.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       WindowsCreateFunctionWindowClosedOnShow) {
+  CloseOnBrowserCreatedObserver observer(browser_window_interface());
+
+  auto function = base::MakeRefCounted<WindowsCreateFunction>();
+  function->SetRenderFrameHost(GetTabListInterface()
+                                   ->GetActiveTab()
+                                   ->GetContents()
+                                   ->GetPrimaryMainFrame());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  function->set_extension(extension.get());
+
+  static const char kArgs[] = R"([{"url": "about:blank"}])";
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), kArgs, profile());
+  EXPECT_EQ(ExtensionTabUtil::kBrowserWindowNotAllowed, error);
+}
+
+// Tests that a browser window that's closed as soon as it's shown is
+// gracefully handled (in tabs.create). Regression test for
+// https://crbug.com/537109028.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsCreateFunctionWindowClosedOnShow) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  CloseBrowserSynchronously(browser());
+
+  auto observer =
+      std::make_unique<CloseOnBrowserCreatedObserver>(incognito_browser);
+
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->SetRenderFrameHost(TabListInterface::From(incognito_browser)
+                                   ->GetActiveTab()
+                                   ->GetContents()
+                                   ->GetPrimaryMainFrame());
+  function->set_extension(extension.get());
+
+  const std::string args = base::StringPrintf(
+      R"([{"url": "%s"}])", extension->GetResourceURL("page.html").spec());
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, incognito_browser->GetProfile());
+  EXPECT_EQ(ExtensionTabUtil::kBrowserWindowNotAllowed, error);
+  observer.reset();  // Reset the observer to avoid any dangling pointer issues.
+  // Close the incognito browser to clean up.
+  CloseBrowserSynchronously(incognito_browser);
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                        DefaultToIncognitoWhenItIsForcedAndNoArgs) {
   static const char kEmptyArgs[] = "[]";
