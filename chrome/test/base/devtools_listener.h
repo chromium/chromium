@@ -6,6 +6,7 @@
 #define CHROME_TEST_BASE_DEVTOOLS_LISTENER_H_
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -86,7 +87,7 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
 
   std::vector<base::DictValue> scripts_;
   base::DictValue script_coverage_;
-  std::map<std::string, std::string> script_hash_map_;
+  std::set<std::string> script_hash_set_;
   std::map<std::string, std::string> script_id_map_;
 
   base::OnceClosure value_closure_;
