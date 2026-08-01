@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">這個網頁沒有回應</translation>
 <translation id="1041181446722933623">「<ph name="LOCAL_BOOKMARK" />」只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶的「<ph name="ACCOUNT_FOLDER" />」。</translation>
 <translation id="1041263367839475438">可用的裝置</translation>
+<translation id="1041365648398872803">禁止網站使用內容保護服務</translation>
 <translation id="1041607257468256895">在 Chrome 中管理網站位置存取權</translation>
 <translation id="1042248468362992359">連線至行動數據即可使用無線基地台。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">新增動作</translation>
@@ -429,6 +430,7 @@
 <translation id="1307165550267142340">已建立 PIN 碼</translation>
 <translation id="1307431692088049276">不要再詢問我</translation>
 <translation id="130744661532298792">請驗證身分，確保你隨時可以使用 Google 帳戶中的密碼</translation>
+<translation id="1308105352527684175">你可能無法存取特定內容</translation>
 <translation id="1311092170520822848">這個網站正在控制裝置連接的智慧卡讀卡機，以及可讀取的智慧卡</translation>
 <translation id="131112695174432497">系統會刪除影響廣告個人化的資料</translation>
 <translation id="131188242279372879">探索強化防護，享有 Chrome 最強大的下載項目安全防護機制</translation>
@@ -1785,6 +1787,7 @@
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (目前)</translation>
 <translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391419135980381625">標準字型</translation>
+<translation id="2391778823627025394">網站可以使用內容保護服務</translation>
 <translation id="239185270194776190">Gemini 對話位於另一個視窗。點選這個側邊面板的任一處，即可將對話移到這裡。</translation>
 <translation id="2392369802118427583">啟用</translation>
 <translation id="2393944685985256805">已隱藏「<ph name="MODULE_NAME" />」</translation>
@@ -2668,6 +2671,7 @@
 <translation id="3032272345862007156">最近的 AI 主題 <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">「零打擾」模式已啟用</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
+<translation id="3036602651971781493">網站可能會透過內容保護服務，播放受著作權保護的內容，或檢查你使用的瀏覽器</translation>
 <translation id="3036907164806060573">夢幻</translation>
 <translation id="3037193115779933814">英文字母和數字</translation>
 <translation id="3038272154009688107">查看所有網站</translation>
@@ -4404,6 +4408,7 @@
 <translation id="4362459470237309049">按下「.」表示放開滑鼠按鍵</translation>
 <translation id="4362871358537270439">在側邊面板顯示其他裝置的分頁</translation>
 <translation id="4363262124589131906">「我的雲端硬碟」中的新檔案會自動停止同步至這部 Chromebook</translation>
+<translation id="4364129298304269786">網站可能會透過內容保護服務，播放受著作權保護的內容</translation>
 <translation id="4364327530094270451">瓜</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {ITEM_COUNT} 個項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
 <translation id="4364567974334641491">「<ph name="APP_NAME" />」正在分享視窗。</translation>
@@ -6560,6 +6565,7 @@
 <translation id="6069799426896362048">取消分割畫面</translation>
 <translation id="6071938745001252305">已節省 <ph name="MEMORY_VALUE" /> 的記憶體</translation>
 <translation id="6071995715087444295">如要檢查密碼是否外洩，請登入 Google 帳戶</translation>
+<translation id="607211254380611738">這些網站可能會偵測到你使用的瀏覽器</translation>
 <translation id="6073292342939316679">調低鍵盤亮度</translation>
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="6073903501322152803">新增無障礙功能</translation>

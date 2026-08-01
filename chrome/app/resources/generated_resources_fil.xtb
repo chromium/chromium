@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Hindi tumutugon ang page na ito</translation>
 <translation id="1041181446722933623">Naka-save lang ang “<ph name="LOCAL_BOOKMARK" />” sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa “<ph name="ACCOUNT_FOLDER" />” sa iyong account.</translation>
 <translation id="1041263367839475438">Mga available na device</translation>
+<translation id="1041365648398872803">Huwag payagan ang mga site na gumamit ng mga serbisyo sa pagprotekta ng content</translation>
 <translation id="1041607257468256895">Pamahalaan ang mga pahintulot sa lokasyon sa website sa Chrome</translation>
 <translation id="1042248468362992359">Kumonekta sa mobile data para makagamit ng hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Magdagdag ng aksyon</translation>
@@ -429,6 +430,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1307165550267142340">Nagawa ang iyong PIN</translation>
 <translation id="1307431692088049276">Huwag akong tanungin ulit</translation>
 <translation id="130744661532298792">Para matiyak na magagamit mo ang mga password sa iyong Google Account anumang oras, i-verify na ikaw ito</translation>
+<translation id="1308105352527684175">Posibleng hindi mo ma-access ang ilang partikular na content</translation>
 <translation id="1311092170520822848">Kinokontrol ng site na ito ang mga smart card reader na nakakonekta sa iyong device at mga smart card na posibleng available sa mga ito</translation>
 <translation id="131112695174432497">Dine-delete ang data na nakakaapekto sa pag-personalize ng ad</translation>
 <translation id="131188242279372879">Alamin ang pinaigting na proteksyon para makuha ang pinakamataas na level ng seguridad ng Chrome para sa mga pag-download</translation>
@@ -1798,6 +1800,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Kasalukuyan)</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Karaniwang font</translation>
+<translation id="2391778823627025394">Puwedeng gumamit ang mga site ng mga serbisyo sa pagprotekta ng content</translation>
 <translation id="239185270194776190">Nasa ibang window ang iyong interaction sa Gemini. Mag-click sa kahit saan sa panel sa gilid na ito para ilipat ito rito.</translation>
 <translation id="2392369802118427583">I-activate</translation>
 <translation id="2393944685985256805">Naka-hide ang <ph name="MODULE_NAME" /></translation>
@@ -2681,6 +2684,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3032272345862007156">Kamakailang AI theme <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Naka-enable ang Huwag Istorbohin</translation>
 <translation id="3036546437875325427">I-enable ang Flash</translation>
+<translation id="3036602651971781493">Puwedeng gumamit ang mga site ng serbisyo sa pagprotekta ng content para mag-play ng content na pinoprotektahan ng copyright o para tingnan kung aling browser ang ginagamit mo</translation>
 <translation id="3036907164806060573">Panaginip</translation>
 <translation id="3037193115779933814">Mga Titik at Numero</translation>
 <translation id="3038272154009688107">Tingnan ang lahat ng site</translation>
@@ -4421,6 +4425,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4362459470237309049">Gamitin ang “.” para i-release ang button ng mouse</translation>
 <translation id="4362871358537270439">Ipakita ang mga tab mula sa iba pang device sa panel sa gilid</translation>
 <translation id="4363262124589131906">Hihinto sa awtomatikong pag-sync sa Chromebook na ito ang mga bagong file sa Aking Drive</translation>
+<translation id="4364129298304269786">Puwedeng gumamit ang mga site ng serbisyo sa pagprotekta ng content para mag-play ng content na pinoprotektahan ng copyright</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{Mase-save ang 1 item sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.}one{Mase-save ang {ITEM_COUNT} item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang {ITEM_COUNT} na item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="4364567974334641491">Nagbabahagi ng window ang <ph name="APP_NAME" />.</translation>
@@ -6585,6 +6590,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6069799426896362048">Paghiwalayin ang mga view</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> na memory ang natipid</translation>
 <translation id="6071995715087444295">Para tingnan kung may mga nakompromisong password, mag-sign in sa iyong Google Account</translation>
+<translation id="607211254380611738">Posibleng makita ng mga site na ito kung aling browser ang ginagamit mo</translation>
 <translation id="6073292342939316679">babaan ang liwanag ng keyboard</translation>
 <translation id="6073451960410192870">Ihinto ang pag-record</translation>
 <translation id="6073903501322152803">Magdagdag ng mga feature ng pagiging naa-access</translation>
@@ -8071,7 +8077,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Bagong Tab sa 1 Tab}one{Bagong Tab sa # Tab}other{Bagong Tab sa # na Tab}}</translation>
 <translation id="721490496276866468">Mag-import ng mga password</translation>
 <translation id="7217208603285112910">Hindi nakasalin sa <ph name="LANGUAGE" /> ang seleksyon</translation>
-<translation id="7217317914610152390">Magdagdag ng text, mga komento, at mga tala gamit ang bagong tool na Mga Anotasyon ng Text</translation>
+<translation id="7217317914610152390">Magdagdag ng text, mga komento, at mga tala gamit ang bagong tool na Mga Text Annotation</translation>
 <translation id="7219254577985949841">I-delete ang data ng site?</translation>
 <translation id="7219473482981809164">Marami kaming nakitang profile na available na i-download. Piliin ang mga profile na gusto mong i-download bago magpatuloy.</translation>
 <translation id="7220019174139618249">Hindi ma-export ang mga password sa "<ph name="FOLDER" />"</translation>

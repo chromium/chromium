@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Ta stran se ne odziva</translation>
 <translation id="1041181446722933623">Mapa »<ph name="LOCAL_BOOKMARK" />« je shranjena samo v tej napravi. Če jo želite uporabiti v drugih napravah, jo shranite v mapo »<ph name="ACCOUNT_FOLDER" />« v računu.</translation>
 <translation id="1041263367839475438">Razpoložljive naprave</translation>
+<translation id="1041365648398872803">Spletnim mestom ni dovoljena uporaba storitev za zaščito vsebine</translation>
 <translation id="1041607257468256895">Upravljanje dovoljenj za lokacijo za spletna mesta v Chromu</translation>
 <translation id="1042248468362992359">Če želite uporabljati dostopno točko, se povežite s prenosom podatkov v mobilnem omrežju. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Dodaj dejanje</translation>
@@ -429,6 +430,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1307165550267142340">Koda PIN je bila ustvarjena</translation>
 <translation id="1307431692088049276">Ne sprašuj me več</translation>
 <translation id="130744661532298792">Če želite zagotoviti, da boste lahko v računu Google vedno uporabljali gesla, potrdite, da ste to vi</translation>
+<translation id="1308105352527684175">Morda ne boste mogli dostopati do določene vsebine</translation>
 <translation id="1311092170520822848">To spletno mesto upravlja bralnike pametnih kartic, ki so povezani z vašo napravo, in morebitnih pametnih kartic, ki so jim na voljo</translation>
 <translation id="131112695174432497">Podatki, ki vplivajo na osebno prilagajanje oglasov, so izbrisani.</translation>
 <translation id="131188242279372879">Odkrijte izboljšano zaščito, če si želite zagotoviti Chromovo najvišjo raven varnosti pri prenosih</translation>
@@ -1797,6 +1799,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (trenutno)</translation>
 <translation id="2390782873446084770">Sinhronizacija poverilnic za Wi-Fi</translation>
 <translation id="2391419135980381625">Standardna pisava</translation>
+<translation id="2391778823627025394">Spletna mesta lahko uporabljajo storitve za zaščito vsebine</translation>
 <translation id="239185270194776190">Pogovor z Geminijem je v drugem oknu. Kliknite kjer koli v tem stranskem podoknu, če ga želite premakniti sem.</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
 <translation id="2393944685985256805">Modul <ph name="MODULE_NAME" /> je skrit</translation>
@@ -2680,6 +2683,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3032272345862007156">Nedavna tema, ustvarjena z umetno inteligenco, št. <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Način »ne moti« je omogočen</translation>
 <translation id="3036546437875325427">Omogoči Flash</translation>
+<translation id="3036602651971781493">Spletna mesta lahko uporabijo storitev za zaščito vsebine za predvajanje vsebine, zaščitene z avtorskimi pravicami, ali preverjanje, kateri brskalnik uporabljate</translation>
 <translation id="3036907164806060573">Sanje</translation>
 <translation id="3037193115779933814">Črke in številke</translation>
 <translation id="3038272154009688107">Ogled vseh spletnih mest</translation>
@@ -3546,7 +3550,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3708295717182051206">Podnapisi</translation>
 <translation id="3708684582558000260">Zaprtim spletnim mestom ni dovoljeno dokončati pošiljanja ali prejemanja podatkov.</translation>
 <translation id="3709244229496787112">Brskalnik se je zaprl pred dokončanjem prenosa.</translation>
-<translation id="3710438437470197252">Ogled več v Googlu Drive</translation>
+<translation id="3710438437470197252">Več v Googlu Drive</translation>
 <translation id="3710501561113687889">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše podatke – <ph name="FIELDS_STRING" /> – s tem spletnim mestom.</translation>
 <translation id="3711931198657368127">&amp;Prilepi in pojdi na <ph name="URL" /></translation>
 <translation id="3711945201266135623">Število najdenih tiskalnikov v tiskalnem strežniku: <ph name="NUM_PRINTERS" />.</translation>
@@ -4420,6 +4424,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4362459470237309049">Uporabite ».« za sprostitev gumba miške</translation>
 <translation id="4362871358537270439">Prikaz zavihkov iz drugih naprav v stranskem podoknu</translation>
 <translation id="4363262124589131906">Nove datoteke v Mojem disku se bodo samodejno nehale sinhronizirati s tem Chromebookom</translation>
+<translation id="4364129298304269786">Spletna mesta lahko uporabijo storitev za zaščito vsebine za predvajanje vsebine, zaščitene z avtorskimi pravicami</translation>
 <translation id="4364327530094270451">Melona</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 element je shranjen samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google.}one{{ITEM_COUNT} element je shranjen samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}two{{ITEM_COUNT} elementa sta shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}few{{ITEM_COUNT} elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}other{{ITEM_COUNT} elementov je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}}</translation>
 <translation id="4364567974334641491">Aplikacija <ph name="APP_NAME" /> je v skupno rabo dala okno.</translation>
@@ -6585,6 +6590,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6069799426896362048">Ločeni pogledi</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> prihranjenega pomnilnika</translation>
 <translation id="6071995715087444295">Če želite preveriti, ali so gesla ogrožena, se prijavite v račun Google</translation>
+<translation id="607211254380611738">Ta spletna mesta lahko vidijo, kateri brskalnik uporabljate</translation>
 <translation id="6073292342939316679">zmanjšanje svetlosti osvetlitve tipkovnice</translation>
 <translation id="6073451960410192870">Ustavi snemanje</translation>
 <translation id="6073903501322152803">Dodajanje funkcij za ljudi s posebnimi potrebami</translation>

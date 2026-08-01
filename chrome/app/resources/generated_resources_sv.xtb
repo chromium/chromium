@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Sidan svarar inte</translation>
 <translation id="1041181446722933623"><ph name="LOCAL_BOOKMARK" /> sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i <ph name="ACCOUNT_FOLDER" /> i kontot.</translation>
 <translation id="1041263367839475438">Tillgängliga enheter</translation>
+<translation id="1041365648398872803">Tillåt inte att webbplatser använder tjänster för innehållsskydd</translation>
 <translation id="1041607257468256895">Hantera platsbehörigheter för webbplatser i Chrome</translation>
 <translation id="1042248468362992359">Anslut till mobildata om du vill använda surfzon. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Lägg till åtgärd</translation>
@@ -429,6 +430,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307165550267142340">Pinkoden har skapats</translation>
 <translation id="1307431692088049276">Fråga mig inte igen</translation>
 <translation id="130744661532298792">Verifiera din identitet för att se till att du alltid kan använda lösenorden i Google-kontot</translation>
+<translation id="1308105352527684175">Du kanske inte kan komma åt visst innehåll</translation>
 <translation id="1311092170520822848">Den här webbplatsen styr smartkortsläsare som är anslutna till enheten och eventuellt smartkort som är tillgängliga för dem</translation>
 <translation id="131112695174432497">Data som påverkar annonsanpassning raderas</translation>
 <translation id="131188242279372879">Upptäck utökat skydd och få Chromes bästa säkerhet för nedladdningar</translation>
@@ -1798,6 +1800,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (nuvarande)</translation>
 <translation id="2390782873446084770">wifi-synkronisering</translation>
 <translation id="2391419135980381625">Standardfont</translation>
+<translation id="2391778823627025394">Webbplatser kan använda tjänster för innehållsskydd</translation>
 <translation id="239185270194776190">Din Gemini-konversation finns i ett annat fönster. Klicka var som helst på den här sidopanelen för att flytta den hit.</translation>
 <translation id="2392369802118427583">Aktivera</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> har dolts</translation>
@@ -2681,6 +2684,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3032272345862007156">Senaste AI-tema <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Stör ej har aktiverats</translation>
 <translation id="3036546437875325427">Aktivera blixt</translation>
+<translation id="3036602651971781493">Webbplatser kan använda en tjänst för innehållsskydd för att spela upp innehåll som skyddas av upphovsrätt eller kontrollera vilken webbläsare du använder</translation>
 <translation id="3036907164806060573">Dröm</translation>
 <translation id="3037193115779933814">Bokstäver och siffor</translation>
 <translation id="3038272154009688107">Visa alla webbplatser</translation>
@@ -4421,6 +4425,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4362459470237309049">Använd punkt för att släppa en musknapp</translation>
 <translation id="4362871358537270439">Visa flikar från andra enheter i sidopanelen</translation>
 <translation id="4363262124589131906">Nya filer på Min enhet synkroniseras inte längre med denna Chromebook</translation>
+<translation id="4364129298304269786">Webbplatser kan använda en tjänst för innehållsskydd för att spela upp innehåll som är upphovsrättsskyddat</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 objekt sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot.}other{{ITEM_COUNT} objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> delar ett fönster.</translation>
@@ -6585,6 +6590,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6069799426896362048">Separera vyerna</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> minne har sparats</translation>
 <translation id="6071995715087444295">Logga in på Google-kontot för att kontrollera om det finns utsatta lösenord</translation>
+<translation id="607211254380611738">Dessa webbplatser kan se vilken webbläsare du använder</translation>
 <translation id="6073292342939316679">minska ljusstyrkan på tangentbordet</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="6073903501322152803">Lägg till tillgänglighetsfunktioner</translation>

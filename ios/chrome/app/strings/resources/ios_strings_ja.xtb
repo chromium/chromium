@@ -1756,7 +1756,7 @@
 <translation id="6775952316617222141">Chrome で Gemini と Live で会話する</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
 <translation id="6782531425936234573">データをエクスポート</translation>
-<translation id="6791425686608802741">[タブを新しいグループに追加] をタップします</translation>
+<translation id="6791425686608802741">[新しいグループに追加] をタップします</translation>
 <translation id="6794476726485507147">このページに再度アクセスするリマインダーの通知を受け取る日時を選択してください</translation>
 <translation id="6797543908718012274">リーディング モードをオンにする</translation>
 <translation id="6806550742467879742">ページツール</translation>
@@ -2203,7 +2203,7 @@
 <translation id="8281781826761538115">デフォルト - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8282657446819506217">タブグループで開く</translation>
-<translation id="828291969289324795">{count,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
+<translation id="828291969289324795">{count,plural, =1{新しいグループに追加}other{新しいグループに追加}}</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8289930144142009940">「<ph name="FEATURE_NAME" />」の通知をオフにしました</translation>
 <translation id="8292893224181644074">ダウンロード完了</translation>

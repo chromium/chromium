@@ -352,6 +352,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1539840569003678498">Report sent:</translation>
 <translation id="1542105669288201090">Business Education</translation>
 <translation id="1542830386724426410">Show available card benefits and rewards at checkout. Issuer terms apply. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn more<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Based on your organisation's policies, the content that you copied is being scanned for sensitive information. Pasting may be allowed after the scan is complete.</translation>
 <translation id="1545757265410828525">Price history</translation>
 <translation id="1546286808622193216">Compare card benefits using Gemini</translation>
 <translation id="1549470594296187301">JavaScript must be enabled to use this feature.</translation>
@@ -1503,6 +1504,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3293642807462928945">Learn more about <ph name="POLICY_NAME" /> policy</translation>
 <translation id="3295444047715739395">View and manage your passwords in Chrome settings</translation>
 <translation id="3299098170013242198">Windows Hello is on for filling passwords</translation>
+<translation id="3299197721044635447">Content couldn't be pasted outside of the managed Chrome context due to your organisation's policies</translation>
 <translation id="3299720788264079132">Something went wrong while using <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 in x 42 in</translation>
 <translation id="3303855915957856445">No search results found</translation>
@@ -4368,6 +4370,7 @@ Additional details:
 <translation id="767550629621587224">Pre-cut tabs</translation>
 <translation id="7675756033024037212">Scroll and zoom not allowed</translation>
 <translation id="7676643023259824263">Search for clipboard text, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Your organisation monitors copying</translation>
 <translation id="7678730592635586336">Retake video</translation>
 <translation id="7679287273775285018">Pay with eWallet</translation>
 <translation id="7679367271685653708">View and manage your browsing history in Chrome settings</translation>
@@ -4654,6 +4657,7 @@ Additional details:
 <translation id="8134058435519644366">Recruitment and Staffing</translation>
 <translation id="8135546115396015134">left key</translation>
 <translation id="8137456439814903304">Energy and utilities</translation>
+<translation id="814071672416123670">Content couldn't be copied due to your organisation's policies</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Created 1 month ago}other{Created {NUM_MONTHS} months ago}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, current default. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF version:</translation>

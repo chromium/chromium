@@ -352,6 +352,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1539840569003678498">Hlášení bylo odesláno:</translation>
 <translation id="1542105669288201090">Ekonomické vzdělávání</translation>
 <translation id="1542830386724426410">Při placení zobrazit dostupné výhody a odměny karet. Platí podmínky vydavatele karty. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Další informace<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Na základě zásad vaší organizace se u zkopírovaného obsahu kontroluje, jestli neobsahuje citlivé údaje. Vkládání může být povoleno po dokončení kontroly.</translation>
 <translation id="1545757265410828525">Historie ceny</translation>
 <translation id="1546286808622193216">Nechte si od Gemini porovnat výhody karet</translation>
 <translation id="1549470594296187301">Chcete-li tuto funkci použít, musí být aktivován JavaScript.</translation>
@@ -1500,6 +1501,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3293642807462928945">Další informace o zásadě <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Zobrazte a spravujte svá hesla v nastavení Chromu</translation>
 <translation id="3299098170013242198">Pro vyplňování hesel je zapnutá funkce Windows Hello</translation>
+<translation id="3299197721044635447">Obsah se kvůli zásadám vaší organizace nepodařilo vložit mimo spravovaný kontext Chromu</translation>
 <translation id="3299720788264079132">Při používání funkce <ph name="FEATURE_NAME" /> se něco pokazilo</translation>
 <translation id="3303176609391916566">30 × 42″</translation>
 <translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
@@ -4362,6 +4364,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="767550629621587224">Předřezané záložky</translation>
 <translation id="7675756033024037212">Posouvání a přibližování není povoleno</translation>
 <translation id="7676643023259824263">Vyhledat text ve schránce (<ph name="TEXT" />)</translation>
+<translation id="7676840398262504532">Vaše organizace kopírování sleduje</translation>
 <translation id="7678730592635586336">Natočit video znovu</translation>
 <translation id="7679287273775285018">Platit pomocí elektronické peněženky</translation>
 <translation id="7679367271685653708">Zobrazit a spravovat v nastavení Chromu historii prohlížení</translation>
@@ -4648,6 +4651,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8134058435519644366">Personální agentury</translation>
 <translation id="8135546115396015134">šipky vlevo</translation>
 <translation id="8137456439814903304">Energie a technické vybavení</translation>
+<translation id="814071672416123670">Obsah se kvůli zásadám vaší organizace nepodařilo zkopírovat</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvořeno před 1 měsícem}few{Vytvořeno před {NUM_MONTHS} měsíci}many{Vytvořeno před {NUM_MONTHS} měsíce}other{Vytvořeno před {NUM_MONTHS} měsíci}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktuálně výchozí. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Verze PDF:</translation>

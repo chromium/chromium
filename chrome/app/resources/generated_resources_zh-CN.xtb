@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">该页面未响应</translation>
 <translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />”仅会保存到此设备上。若要在其他设备上使用，请将其保存到“<ph name="ACCOUNT_FOLDER" />”。</translation>
 <translation id="1041263367839475438">可用的设备</translation>
+<translation id="1041365648398872803">不允许网站使用内容保护服务</translation>
 <translation id="1041607257468256895">在 Chrome 中管理网站位置信息权限</translation>
 <translation id="1042248468362992359">连接到移动流量即可使用热点。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">添加操作</translation>
@@ -429,6 +430,7 @@
 <translation id="1307165550267142340">您的 PIN 码已创建完毕</translation>
 <translation id="1307431692088049276">不再询问</translation>
 <translation id="130744661532298792">为了确保您可以一直使用 Google 账号中的密码，请验证是您本人在操作</translation>
+<translation id="1308105352527684175">您可能无法访问某些内容</translation>
 <translation id="1311092170520822848">此网站正在控制连接到您的设备的智能卡读卡器，并且可能会控制读卡器中的智能卡</translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
 <translation id="131188242279372879">了解增强型保护，为下载内容提供最高级别的 Chrome 安全防护</translation>
@@ -1785,6 +1787,7 @@
 <translation id="2387602571959163792">“<ph name="DESK_NAME" />”（当前）</translation>
 <translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391419135980381625">标准字体</translation>
+<translation id="2391778823627025394">网站可以使用内容保护服务</translation>
 <translation id="239185270194776190">您的 Gemini 对话位于另一个窗口中。点击此侧边栏上的任意位置，即可将对话移至此处。</translation>
 <translation id="2392369802118427583">激活</translation>
 <translation id="2393944685985256805">已隐藏“<ph name="MODULE_NAME" />”</translation>
@@ -2668,6 +2671,7 @@
 <translation id="3032272345862007156">近期搜索的 AI 主题 <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">已启用“勿扰”模式</translation>
 <translation id="3036546437875325427">启用 Flash</translation>
+<translation id="3036602651971781493">网站可能会使用内容保护服务来播放受版权保护的内容，或检查您使用的是哪个浏览器</translation>
 <translation id="3036907164806060573">梦幻</translation>
 <translation id="3037193115779933814">字母和数字</translation>
 <translation id="3038272154009688107">查看所有网站</translation>
@@ -4405,6 +4409,7 @@
 <translation id="4362459470237309049">按下“.”键表示松开鼠标按键</translation>
 <translation id="4362871358537270439">在侧边栏中显示来自其他设备的标签页</translation>
 <translation id="4363262124589131906">您在“我的云端硬盘”中保存的新文件将停止自动同步到此 Chromebook</translation>
+<translation id="4364129298304269786">网站可能会使用内容保护服务来播放受版权保护的内容</translation>
 <translation id="4364327530094270451">甜瓜</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{有 1 项内容只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 {ITEM_COUNT} 项内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="4364567974334641491">“<ph name="APP_NAME" />”正在分享窗口。</translation>
@@ -6564,6 +6569,7 @@
 <translation id="6069799426896362048">取消拆分视图</translation>
 <translation id="6071938745001252305">节省了 <ph name="MEMORY_VALUE" /> 的内存</translation>
 <translation id="6071995715087444295">若要检查是否存在已泄露的密码，请登录您的 Google 账号</translation>
+<translation id="607211254380611738">这些网站可能会知道您使用的是哪个浏览器</translation>
 <translation id="6073292342939316679">调低键盘亮度</translation>
 <translation id="6073451960410192870">停止录制</translation>
 <translation id="6073903501322152803">添加无障碍功能</translation>

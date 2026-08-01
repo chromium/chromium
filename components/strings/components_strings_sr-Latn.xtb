@@ -352,6 +352,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1539840569003678498">Prijava je poslata:</translation>
 <translation id="1542105669288201090">Poslovno obrazovanje</translation>
 <translation id="1542830386724426410">Prikaži dostupne prednosti i nagrade za karticu pri plaćanju. Važe uslovi izdavača. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saznajte više<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Na osnovu smernica organizacije, sadržaj koji ste kopirali skenira se u potrazi za osetljivim informacijama. Nalepljivanje može da bude dozvoljeno kada se skeniranje završi.</translation>
 <translation id="1545757265410828525">Istorija cena</translation>
 <translation id="1546286808622193216">Uporedite prednosti kartica pomoću Gemini-ja</translation>
 <translation id="1549470594296187301">JavaScript mora da bude omogućen da biste koristili ovu funkciju.</translation>
@@ -1503,6 +1504,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3293642807462928945">Saznajte više o smernicama <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Pregledajte lozinke i upravljajte njima u podešavanjima Chrome-a</translation>
 <translation id="3299098170013242198">Windows Hello je uključen za popunjavanje lozinki</translation>
+<translation id="3299197721044635447">Zbog smernica organizacije nije uspelo nalepljivanje sadržaja van konteksta Chrome-a kojim se upravlja</translation>
 <translation id="3299720788264079132">Došlo je do greške dok ste koristili <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30×42 in</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretrage</translation>
@@ -4367,6 +4369,7 @@ Dodatni detalji:
 <translation id="767550629621587224">Perforirane kartice</translation>
 <translation id="7675756033024037212">Skrolovanje i zumiranje nije dozvoljeno</translation>
 <translation id="7676643023259824263">Potražite tekst u privremenoj memoriji, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Organizacija nadgleda kopiranje</translation>
 <translation id="7678730592635586336">Ponovo snimi video</translation>
 <translation id="7679287273775285018">Platite pomoću e-novčanika</translation>
 <translation id="7679367271685653708">Pregledajte istoriju pregledanja i upravljajte njom u podešavanjima Chrome-a</translation>
@@ -4653,6 +4656,7 @@ Dodatni detalji:
 <translation id="8134058435519644366">Zapošljavanje i izbor kadrova</translation>
 <translation id="8135546115396015134">levi taster</translation>
 <translation id="8137456439814903304">Proizvodnja i distribucija energije</translation>
+<translation id="814071672416123670">Kopiranje sadržaja nije uspelo zbog smernica organizacije</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Napravljeno je pre 1 mesec}one{Napravljeno je pre {NUM_MONTHS} mesec}few{Napravljeno je pre {NUM_MONTHS} meseca}other{Napravljeno je pre {NUM_MONTHS} meseci}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, trenutno podrazumevani. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF verzija:</translation>

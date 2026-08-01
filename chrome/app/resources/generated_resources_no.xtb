@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Denne siden svarer ikke</translation>
 <translation id="1041181446722933623">«<ph name="LOCAL_BOOKMARK" />» er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i «<ph name="ACCOUNT_FOLDER" />» i kontoen din.</translation>
 <translation id="1041263367839475438">Tilgjengelige enheter</translation>
+<translation id="1041365648398872803">Ikke la nettsteder bruke tjenester for innholdsbeskyttelse</translation>
 <translation id="1041607257468256895">Administrer posisjonstillatelser for nettsteder i Chrome</translation>
 <translation id="1042248468362992359">Koble til mobildata for å bruke wifi-sone. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Legg til handling</translation>
@@ -429,6 +430,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1307165550267142340">PIN-koden er opprettet</translation>
 <translation id="1307431692088049276">Ikke spør meg igjen</translation>
 <translation id="130744661532298792">For å sikre at du alltid kan bruke passordene i Google-kontoen din, bekreft at det er deg</translation>
+<translation id="1308105352527684175">Du har kanskje ikke tilgang til visse typer innhold</translation>
 <translation id="1311092170520822848">Dette nettstedet kontrollerer smartkortlesere som er koblet til enheten din, og potensielt smartkort som er tilgjengelige for dem</translation>
 <translation id="131112695174432497">Data som påvirker personlig tilpasning av annonser, blir slettet</translation>
 <translation id="131188242279372879">Bruk økt beskyttelse for å få det høyeste sikkerhetsnivået for nedlastinger i Chrome</translation>
@@ -1795,6 +1797,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (gjeldende)</translation>
 <translation id="2390782873446084770">Wifi-synkronisering</translation>
 <translation id="2391419135980381625">Standardskrift</translation>
+<translation id="2391778823627025394">Nettsteder kan bruke tjenester for innholdsbeskyttelse</translation>
 <translation id="239185270194776190">Gemini-samtalen din er i et annet vindu. Klikk hvor som helst i dette sidepanelet for å flytte den hit.</translation>
 <translation id="2392369802118427583">Aktiver</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> er skjult</translation>
@@ -2678,6 +2681,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3032272345862007156">Nylig AI-tema <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">«Ikke forstyrr» er slått på</translation>
 <translation id="3036546437875325427">Slå på blitsen</translation>
+<translation id="3036602651971781493">Nettsteder kan bruke en tjeneste for innholdsbeskyttelse for å spille av innhold som er opphavsrettsbeskyttet, eller sjekke hvilken nettleser du bruker</translation>
 <translation id="3036907164806060573">Drøm</translation>
 <translation id="3037193115779933814">Bokstaver og tall</translation>
 <translation id="3038272154009688107">Se alle nettsteder</translation>
@@ -4416,6 +4420,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4362459470237309049">Bruk «.» for å slippe en museknapp</translation>
 <translation id="4362871358537270439">Vis faner fra andre enheter i sidepanelet</translation>
 <translation id="4363262124589131906">Nye filer i Min disk slutter å bli synkronisert automatisk med denne Chromebooken</translation>
+<translation id="4364129298304269786">Nettsteder kan bruke en tjeneste for innholdsbeskyttelse for å spille av innhold som er beskyttet av opphavsrett</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 element er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din.}other{{ITEM_COUNT} elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deler et vindu.</translation>
@@ -6577,6 +6582,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6069799426896362048">Del visninger</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> minne er spart</translation>
 <translation id="6071995715087444295">For å sjekke om du har passord som er utsatt for sikkerhetsbrudd, logg på Google-kontoen din</translation>
+<translation id="607211254380611738">Disse nettstedene kan se hvilken nettleser du bruker</translation>
 <translation id="6073292342939316679">tastaturlysstyrke ned</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="6073903501322152803">Legg til tilgjengelighetsfunksjoner</translation>

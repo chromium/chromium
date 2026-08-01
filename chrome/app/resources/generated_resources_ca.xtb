@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Aquesta pàgina no respon</translation>
 <translation id="1041181446722933623">L'adreça d'interès "<ph name="LOCAL_BOOKMARK" />" només es desa en aquest dispositiu. Per utilitzar-la en altres dispositius que facis servir, desa-la a "<ph name="ACCOUNT_FOLDER" />" al teu compte.</translation>
 <translation id="1041263367839475438">Dispositius disponibles</translation>
+<translation id="1041365648398872803">No permetis que els llocs web utilitzin serveis de protecció del contingut</translation>
 <translation id="1041607257468256895">Gestiona els permisos d'ubicació per a llocs web a Chrome</translation>
 <translation id="1042248468362992359">Connecta't a les dades mòbils per utilitzar el punt d'accés Wi‐Fi. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Afegeix una acció</translation>
@@ -426,6 +427,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1307165550267142340">El PIN s'ha creat</translation>
 <translation id="1307431692088049276">No m'ho tornis a preguntar</translation>
 <translation id="130744661532298792">Per assegurar-te que puguis fer servir sempre les contrasenyes del teu Compte de Google, verifica la teva identitat</translation>
+<translation id="1308105352527684175">Pot ser que no puguis accedir a determinat contingut</translation>
 <translation id="1311092170520822848">Aquest lloc web està controlant els lectors de targetes intel·ligents connectats al teu dispositiu i, possiblement, les targetes intel·ligents que aquests lectors tenen disponibles</translation>
 <translation id="131112695174432497">Se suprimiran les dades que afecten la personalització d'anuncis</translation>
 <translation id="131188242279372879">Descobreix la protecció millorada per obtenir el màxim nivell de seguretat de Chrome per a les baixades</translation>
@@ -1777,6 +1779,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (actual)</translation>
 <translation id="2390782873446084770">Sincronització Wi‑Fi</translation>
 <translation id="2391419135980381625">Tipus de lletra estàndard</translation>
+<translation id="2391778823627025394">Els llocs web poden utilitzar serveis de protecció del contingut</translation>
 <translation id="239185270194776190">La teva conversa amb Gemini es troba en una altra finestra. Fes clic en qualsevol lloc d'aquest tauler lateral per moure-la aquí.</translation>
 <translation id="2392369802118427583">Activa</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> s'ha amagat</translation>
@@ -2659,6 +2662,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3032272345862007156">Tema d'IA recent <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">El mode No molestis està activat</translation>
 <translation id="3036546437875325427">Activa Flash</translation>
+<translation id="3036602651971781493">És possible que els llocs web utilitzin un servei de protecció del contingut per reproduir contingut protegit per drets d'autor o per comprovar quin navegador utilitzes</translation>
 <translation id="3036907164806060573">Somni</translation>
 <translation id="3037193115779933814">Lletres i números</translation>
 <translation id="3038272154009688107">Mostra tots els llocs web</translation>
@@ -4384,6 +4388,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4362459470237309049">Utilitza el punt (.) per deixar anar un botó del ratolí</translation>
 <translation id="4362871358537270439">Mostra les pestanyes d'altres dispositius al tauler lateral</translation>
 <translation id="4363262124589131906">Els fitxers nous de La meva unitat deixaran de sincronitzar-se automàticament amb aquest Chromebook</translation>
+<translation id="4364129298304269786">És possible que els llocs web utilitzin un servei de protecció del contingut per reproduir contingut protegit per drets d'autor</translation>
 <translation id="4364327530094270451">Meló</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 element s'ha desat només en aquest dispositiu. Per utilitzar-lo als altres dispositius que fas servir, desa'l al teu Compte de Google.}other{{ITEM_COUNT} elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> està compartint una finestra.</translation>
@@ -6530,6 +6535,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6069799426896362048">Separa les visualitzacions</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> de memòria estalviada</translation>
 <translation id="6071995715087444295">Per comprovar si hi ha contrasenyes en perill, inicia la sessió al teu Compte de Google</translation>
+<translation id="607211254380611738">Aquests llocs web poden veure quin navegador utilitzes</translation>
 <translation id="6073292342939316679">disminueix la brillantor del teclat</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="6073903501322152803">Afegeix funcions d'accessibilitat</translation>

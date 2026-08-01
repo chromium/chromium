@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Cette page ne répond pas</translation>
 <translation id="1041181446722933623">« <ph name="LOCAL_BOOKMARK" /> » est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte « <ph name="ACCOUNT_FOLDER" /> ».</translation>
 <translation id="1041263367839475438">Appareils accessibles</translation>
+<translation id="1041365648398872803">Interdire aux sites d'utiliser des services de protection du contenu</translation>
 <translation id="1041607257468256895">Gérer les autorisations de localisation du site Web dans Chrome</translation>
 <translation id="1042248468362992359">Connectez-vous aux données cellulaires pour utiliser le point d'accès sans fil. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Ajouter une action</translation>
@@ -429,6 +430,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1307165550267142340">Votre NIP a été créé</translation>
 <translation id="1307431692088049276">Ne plus me demander</translation>
 <translation id="130744661532298792">Pour vous assurer de toujours pouvoir utiliser les mots de passe dans votre compte Google, confirmez qu'il s'agit bien de vous.</translation>
+<translation id="1308105352527684175">Vous ne pourrez peut-être pas accéder à certains contenus</translation>
 <translation id="1311092170520822848">Ce site contrôle les lecteurs de cartes à puce connectés à votre appareil et, potentiellement, les cartes à puce qui leur sont accessibles</translation>
 <translation id="131112695174432497">Les données qui touchent la personnalisation des annonces sont supprimées</translation>
 <translation id="131188242279372879">Découvrez une protection renforcée pour bénéficier du plus haut niveau de sécurité de Chrome pour les téléchargements</translation>
@@ -1785,6 +1787,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (actuel)</translation>
 <translation id="2390782873446084770">Synchronisation Wi-Fi</translation>
 <translation id="2391419135980381625">Police standard</translation>
+<translation id="2391778823627025394">Les sites peuvent utiliser des services de protection du contenu</translation>
 <translation id="239185270194776190">Votre conversation Gemini se trouve dans une autre fenêtre. Cliquez n'importe où sur ce panneau latéral pour la déplacer ici.</translation>
 <translation id="2392369802118427583">Activer</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> masqué</translation>
@@ -2670,6 +2673,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3032272345862007156">Thème d'IA <ph name="INDEX" /> récent</translation>
 <translation id="3033167916029856961">Le mode Ne pas déranger est activé</translation>
 <translation id="3036546437875325427">Activer le flash</translation>
+<translation id="3036602651971781493">Les sites peuvent utiliser un service de protection du contenu pour faire jouer du contenu protégé par des droits d'auteur ou vérifier quel navigateur vous utilisez</translation>
 <translation id="3036907164806060573">Rêve</translation>
 <translation id="3037193115779933814">Lettres et chiffres</translation>
 <translation id="3038272154009688107">Afficher tous les sites</translation>
@@ -4410,6 +4414,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4362459470237309049">Utilisez « . » pour relâcher un bouton de la souris</translation>
 <translation id="4362871358537270439">Afficher les onglets d'autres appareils dans le panneau latéral</translation>
 <translation id="4363262124589131906">Les nouveaux fichiers dans Mon disque cesseront d'être synchronisés automatiquement avec ce Chromebook</translation>
+<translation id="4364129298304269786">Les sites peuvent utiliser un service de protection du contenu pour faire jouer du contenu protégé par des droits d'auteur</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{{ITEM_COUNT} élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{{ITEM_COUNT} éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
@@ -6572,6 +6577,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6069799426896362048">Affichages séparés</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> de mémoire économisée</translation>
 <translation id="6071995715087444295">Pour vérifier les mots de passe compromis, connectez-vous à votre compte Google</translation>
+<translation id="607211254380611738">Ces sites peuvent identifier le navigateur que vous utilisez</translation>
 <translation id="6073292342939316679">diminuer la luminosité du clavier</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6073903501322152803">Ajouter des fonctionnalités d'accessibilité</translation>

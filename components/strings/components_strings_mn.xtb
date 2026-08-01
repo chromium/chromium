@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Тайланг илгээсэн:</translation>
 <translation id="1542105669288201090">Бизнесийн боловсрол</translation>
 <translation id="1542830386724426410">Тооцоо хийх үед ашиглах боломжтой картын үр өгөөж, урамшууллыг харуулна уу. Олгогчийн нөхцөл хэрэгжинэ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Танай байгууллагын бодлогод зааснаар таны хуулсан контентод эмзэг мэдээлэл байгаа эсэхийг шалгаж байна. Скан хийж дууссаны дараа буулгах боломжтой болно.</translation>
 <translation id="1545757265410828525">Үнийн түүх</translation>
 <translation id="1546286808622193216">Gemini-г ашиглан картын үр өгөөжийг харьцуулах</translation>
 <translation id="1549470594296187301">JavaScript энэ онцлогийг ашиглахын тулд идэвхжсэн байх ёстой.</translation>
@@ -1504,6 +1505,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> удирдамжийн талаар дэлгэрэнгүй үзэх</translation>
 <translation id="3295444047715739395">Chrome-н тохиргоо дээрээс нууц үгсээ харах, удирдах</translation>
 <translation id="3299098170013242198">Windows Hello-г нууц үг бөглөхөд асаасан байна</translation>
+<translation id="3299197721044635447">Байгууллагын тань бодлогын улмаас контентыг удирдлагатай Chrome-н хам сэдвээс гадуур буулгах боломжгүй байна</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />-г ашиглах үед ямар нэг алдаа гарлаа</translation>
 <translation id="3303176609391916566">30 x 42 инч</translation>
 <translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">Урьдчилж зүссэн хавтас</translation>
 <translation id="7675756033024037212">Гүйлгэж, томруулахыг зөвшөөрөөгүй</translation>
 <translation id="7676643023259824263">Түр санах ойн текст болох <ph name="TEXT" />-г хайх</translation>
+<translation id="7676840398262504532">Танай байгууллага хуулахыг хянадаг</translation>
 <translation id="7678730592635586336">Видеог дахин бичих</translation>
 <translation id="7679287273775285018">Цахим хэтэвчээр төлөх</translation>
 <translation id="7679367271685653708">Chrome-н тохиргоонд хөтчийн түүхээ үзэх болон удирдана уу</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">Ажилд авах болон боловсон хүчин</translation>
 <translation id="8135546115396015134">зүүн суман товч</translation>
 <translation id="8137456439814903304">Эрчим хүч, эрчим хүч нийлүүлэгчид</translation>
+<translation id="814071672416123670">Танай байгууллагын бодлогын улмаас контентыг хуулж чадсангүй</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 сарын өмнө үүсгэсэн}other{{NUM_MONTHS} сарын өмнө үүсгэсэн}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, одоогийн өгөгдмөл. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF хувилбар:</translation>

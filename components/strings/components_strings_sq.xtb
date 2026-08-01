@@ -352,6 +352,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1539840569003678498">Raporti u dërgua:</translation>
 <translation id="1542105669288201090">Edukim për biznesin</translation>
 <translation id="1542830386724426410">Shfaq përfitimet dhe shpërblimet e disponueshme të kartës në përfundim të blerjes. Zbatohen kushtet e lëshuesit. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Mëso më shumë<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Bazuar në politikat e organizatës sate, përmbajtja që kopjove po skanohet për informacione delikate. Ngjitja mund të lejohet pasi të përfundojë skanimi.</translation>
 <translation id="1545757265410828525">Historiku i çmimeve</translation>
 <translation id="1546286808622193216">Krahaso përfitimet e kartave duke përdorur Gemini</translation>
 <translation id="1549470594296187301">Duhet të aktivizohet JavaScript për të përdorur këtë funksion.</translation>
@@ -1503,6 +1504,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3293642807462928945">Mëso më shumë për politikën <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Shiko dhe menaxho fjalëkalimet e tua te cilësimet e Chrome</translation>
 <translation id="3299098170013242198">Windows Hello është aktiv për plotësimin e fjalëkalimeve</translation>
+<translation id="3299197721044635447">Përmbajtjet nuk mund të ngjiteshin jashtë kontekstit të menaxhuar të Chrome për shkak të politikave të organizatës sate</translation>
 <translation id="3299720788264079132">Ndodhi një gabim gjatë përdorimit të "<ph name="FEATURE_NAME" />"</translation>
 <translation id="3303176609391916566">30 x 42 inç</translation>
 <translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
@@ -4366,6 +4368,7 @@ Detaje shtesë:
 <translation id="767550629621587224">Skeda të prera paraprakisht</translation>
 <translation id="7675756033024037212">Lëvizja dhe zmadhimi nuk lejohen</translation>
 <translation id="7676643023259824263">Kërko për tekstin e kujtesës së fragmenteve, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Organizata jote monitoron kopjimin</translation>
 <translation id="7678730592635586336">Bëje përsëri videon</translation>
 <translation id="7679287273775285018">Paguaj me "Portofolin elektronik"</translation>
 <translation id="7679367271685653708">Shiko dhe menaxho historikun e shfletimit te cilësimet e Chrome</translation>
@@ -4652,6 +4655,7 @@ Detaje shtesë:
 <translation id="8134058435519644366">Rekrutimi i personelit</translation>
 <translation id="8135546115396015134">tasti majtas</translation>
 <translation id="8137456439814903304">Energjia dhe shërbimet utilitare</translation>
+<translation id="814071672416123670">Përmbajtjet nuk mund të kopjoheshin për shkak të politikave të organizatës sate</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Krijuar 1 muaj më parë}other{Krijuar {NUM_MONTHS} muaj më parë}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, përzgjedhja aktuale. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versioni i PDF-së:</translation>

@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Trang này hiện không phản hồi</translation>
 <translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" chỉ được lưu vào thiết bị này. Để sử dụng dấu trang này trên các thiết bị khác, hãy lưu dấu trang vào "<ph name="ACCOUNT_FOLDER" />" trong tài khoản của bạn.</translation>
 <translation id="1041263367839475438">Thiết bị hiện có</translation>
+<translation id="1041365648398872803">Không cho phép các trang web sử dụng dịch vụ bảo vệ nội dung</translation>
 <translation id="1041607257468256895">Quản lý quyền truy cập thông tin vị trí của trang web trong Chrome</translation>
 <translation id="1042248468362992359">Hãy kết nối với dữ liệu di động để sử dụng điểm phát sóng. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Thêm thao tác</translation>
@@ -429,6 +430,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1307165550267142340">Mã PIN của bạn đã được tạo</translation>
 <translation id="1307431692088049276">Đừng hỏi lại tôi</translation>
 <translation id="130744661532298792">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
+<translation id="1308105352527684175">Bạn có thể không truy cập được một số nội dung</translation>
 <translation id="1311092170520822848">Trang web này đang kiểm soát máy đọc thẻ thông minh được kết nối với thiết bị của bạn và có thể truy cập vào thẻ thông minh có sẵn cho máy đọc thẻ</translation>
 <translation id="131112695174432497">Dữ liệu có ảnh hưởng đến hoạt động cá nhân hoá quảng cáo sẽ bị xoá</translation>
 <translation id="131188242279372879">Khám phá chế độ bảo vệ nâng cao để có được cấp độ bảo mật cao nhất của Chrome đối với nội dung tải xuống</translation>
@@ -1798,6 +1800,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Hiện tại)</translation>
 <translation id="2390782873446084770">Đồng bộ hóa Wi-Fi</translation>
 <translation id="2391419135980381625">Phông chữ tiêu chuẩn</translation>
+<translation id="2391778823627025394">Các trang web có thể sử dụng dịch vụ bảo vệ nội dung</translation>
 <translation id="239185270194776190">Cuộc trò chuyện của bạn trên Gemini đang ở một cửa sổ khác. Nhấp vào vị trí bất kỳ trên bảng điều khiển bên này để di chuyển cuộc trò chuyện sang đây.</translation>
 <translation id="2392369802118427583">Kích hoạt</translation>
 <translation id="2393944685985256805">Đã ẩn <ph name="MODULE_NAME" /></translation>
@@ -2681,6 +2684,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3032272345862007156">Giao diện AI tạo gần đây <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Đã bật chế độ Không làm phiền</translation>
 <translation id="3036546437875325427">Bật Flash</translation>
+<translation id="3036602651971781493">Các trang web có thể sử dụng dịch vụ bảo vệ nội dung để phát nội dung được bảo hộ bản quyền hoặc kiểm tra xem bạn đang sử dụng trình duyệt nào</translation>
 <translation id="3036907164806060573">Giấc mơ</translation>
 <translation id="3037193115779933814">Chữ cái và số</translation>
 <translation id="3038272154009688107">Xem tất cả trang web</translation>
@@ -4421,6 +4425,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4362459470237309049">Dùng dấu "." để nhả nút chuột</translation>
 <translation id="4362871358537270439">Hiện các thẻ từ các thiết bị khác trong bảng điều khiển bên</translation>
 <translation id="4363262124589131906">Các tệp mới trong Drive của tôi sẽ tự động dừng đồng bộ hoá với Chromebook này</translation>
+<translation id="4364129298304269786">Các trang web có thể sử dụng dịch vụ bảo vệ nội dung để phát nội dung được bảo hộ bản quyền</translation>
 <translation id="4364327530094270451">Quả dưa</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{Có 1 mục chỉ được lưu trên thiết bị này. Để sử dụng mục này trên các thiết bị khác, hãy lưu mục vào Tài khoản Google của bạn.}other{Có {ITEM_COUNT} mục chỉ được lưu trên thiết bị này. Để sử dụng những mục này trên các thiết bị khác, hãy lưu mục vào Tài khoản Google của bạn.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> đang chia sẻ một cửa sổ.</translation>
@@ -6585,6 +6590,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6069799426896362048">Huỷ phân tách dạng xem</translation>
 <translation id="6071938745001252305">Đã tiết kiệm được <ph name="MEMORY_VALUE" /> bộ nhớ</translation>
 <translation id="6071995715087444295">Để kiểm tra xem có mật khẩu nào bị lộ không, hãy đăng nhập vào Tài khoản Google của bạn</translation>
+<translation id="607211254380611738">Các trang web này có thể biết bạn đang sử dụng trình duyệt nào</translation>
 <translation id="6073292342939316679">giảm độ sáng đèn bàn phím</translation>
 <translation id="6073451960410192870">Dừng ghi</translation>
 <translation id="6073903501322152803">Thêm tính năng hỗ trợ tiếp cận</translation>

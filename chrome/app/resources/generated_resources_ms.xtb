@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Halaman ini tidak bertindak balas</translation>
 <translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />“ disimpan pada peranti ini sahaja. Untuk menggunakan penanda halaman ini pada peranti anda yang lain, simpan penanda halaman tersebut pada “<ph name="ACCOUNT_FOLDER" />” dalam akaun anda.</translation>
 <translation id="1041263367839475438">Peranti yang tersedia</translation>
+<translation id="1041365648398872803">Jangan benarkan laman menggunakan perkhidmatan perlindungan kandungan</translation>
 <translation id="1041607257468256895">Urus kebenaran lokasi laman web dalam Chrome</translation>
 <translation id="1042248468362992359">Sambung ke data mudah alih untuk menggunakan tempat liputan. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Tambahkan tindakan</translation>
@@ -429,6 +430,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307165550267142340">PIN anda telah dibuat</translation>
 <translation id="1307431692088049276">Jangan tanya saya lagi</translation>
 <translation id="130744661532298792">Untuk memastikan anda dapat menggunakan kata laluan pada bila-bila masa dalam Google Account anda, sahkan identiti anda</translation>
+<translation id="1308105352527684175">Anda mungkin tidak dapat mengakses kandungan tertentu</translation>
 <translation id="1311092170520822848">Laman ini sedang mengawal pembaca kad pintar yang disambungkan kepada peranti anda dan kad pintar yang berkemungkinan tersedia untuk pembaca tersebut</translation>
 <translation id="131112695174432497">Data yang mempengaruhi pemeribadian iklan dipadamkan</translation>
 <translation id="131188242279372879">Temukan perlindungan dipertingkat untuk mendapatkan tahap keselamatan tertinggi Chrome bagi muat turun</translation>
@@ -1798,6 +1800,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Semasa)</translation>
 <translation id="2390782873446084770">Penyegerakan Wi-Fi</translation>
 <translation id="2391419135980381625">Fon standard</translation>
+<translation id="2391778823627025394">Laman boleh menggunakan perkhidmatan perlindungan kandungan</translation>
 <translation id="239185270194776190">Perbualan Gemini anda berada dalam tetingkap lain. Klik mana-mana sahaja pada panel sisi ini untuk mengalihkan panel sisi ke sini.</translation>
 <translation id="2392369802118427583">Aktifkan</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> disembunyikan</translation>
@@ -2681,6 +2684,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3032272345862007156">Tema AI <ph name="INDEX" /> terbaharu</translation>
 <translation id="3033167916029856961">Jangan Ganggu didayakan</translation>
 <translation id="3036546437875325427">Dayakan Flash</translation>
+<translation id="3036602651971781493">Laman mungkin menggunakan perkhidmatan perlindungan kandungan untuk memainkan kandungan yang dilindungi oleh hak cipta atau menyemak penyemak imbas yang anda gunakan</translation>
 <translation id="3036907164806060573">Mimpi</translation>
 <translation id="3037193115779933814">Huruf &amp;&amp; Nombor</translation>
 <translation id="3038272154009688107">Lihat semua laman</translation>
@@ -4421,6 +4425,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4362459470237309049">Gunakan “.” untuk melepaskan butang tetikus</translation>
 <translation id="4362871358537270439">Tunjukkan tab daripada peranti lain dalam panel sisi</translation>
 <translation id="4363262124589131906">Penyegerakan secara automatik fail baharu dalam My Drive kepada Chromebook ini akan dihentikan</translation>
+<translation id="4364129298304269786">Laman boleh menggunakan perkhidmatan perlindungan kandungan untuk memainkan kandungan yang dilindungi oleh hak cipta</translation>
 <translation id="4364327530094270451">Tembikai</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 item disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}other{{ITEM_COUNT} item disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> berkongsi tetingkap.</translation>
@@ -6585,6 +6590,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6069799426896362048">Pisahkan paparan</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> memori dijimatkan</translation>
 <translation id="6071995715087444295">Untuk menyemak kata laluan yang terjejas, log masuk ke Google Account anda</translation>
+<translation id="607211254380611738">Laman ini mungkin melihat penyemak imbas yang anda gunakan</translation>
 <translation id="6073292342939316679">mengurangkan kecerahan papan kekunci</translation>
 <translation id="6073451960410192870">Hentikan rakaman</translation>
 <translation id="6073903501322152803">Tambahkan ciri kebolehaksesan</translation>

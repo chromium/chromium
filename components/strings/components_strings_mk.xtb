@@ -352,6 +352,7 @@
 <translation id="1539840569003678498">Извештајот е испратен на:</translation>
 <translation id="1542105669288201090">Бизнис образование</translation>
 <translation id="1542830386724426410">Прикажувај ги достапните придобивки и награди за картичката при плаќање. Важат условите на издавачот. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Дознајте повеќе<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Според правилата на вашата организација, содржините што ги копиравте се проверуваат за чувствителни податоци. Лепењето може да биде дозволено откако ќе заврши проверката.</translation>
 <translation id="1545757265410828525">Историја на цените</translation>
 <translation id="1546286808622193216">Споредете ги придобивките од картичките со Gemini</translation>
 <translation id="1549470594296187301">За да се користи функцијава, мора да биде овозможено JavaScript.</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3293642807462928945">Дознајте повеќе за правилото <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте ги и управувајте со лозинките во поставките за Chrome</translation>
 <translation id="3299098170013242198">Windows Hello е вклучено за пополнување лозинки</translation>
+<translation id="3299197721044635447">Содржините не можеше да се залепат надвор од управуваниот контекст на Chrome поради правилата на вашата организација</translation>
 <translation id="3299720788264079132">Нешто тргна наопаку при користењето <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 инчи</translation>
 <translation id="3303855915957856445">Не се пронајдени резултати од пребарувањето</translation>
@@ -4367,6 +4369,7 @@
 <translation id="767550629621587224">Однапред исечени јазичиња</translation>
 <translation id="7675756033024037212">„Лизгањето и зумирањето“ не е дозволено</translation>
 <translation id="7676643023259824263">Пребарајте текст во привремената меморија, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Вашата организација го набљудува копирањето</translation>
 <translation id="7678730592635586336">Сними го видеото повторно</translation>
 <translation id="7679287273775285018">Плаќајте со eWallet</translation>
 <translation id="7679367271685653708">Прегледајте ја и управувајте со историјата на прелистувањето во поставките за Chrome</translation>
@@ -4653,6 +4656,7 @@
 <translation id="8134058435519644366">Регрутирање и обезбедување персонал</translation>
 <translation id="8135546115396015134">лево копче</translation>
 <translation id="8137456439814903304">Електрична енергија и комунални претпријатија</translation>
+<translation id="814071672416123670">Содржините не можеше да се копираат поради правилата на вашата организација</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Создадено пред 1 месец}one{Создадено пред {NUM_MONTHS} месец}other{Создадено пред {NUM_MONTHS} месеци}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, стандарден пребарувач во моментов. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-верзија:</translation>

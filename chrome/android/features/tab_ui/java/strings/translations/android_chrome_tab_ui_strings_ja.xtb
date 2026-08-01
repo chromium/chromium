@@ -160,7 +160,7 @@
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6251046978189636310">音声再生中</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{グループからタブを削除}other{グループからタブを削除}}</translation>
-<translation id="6313830465749181217">{TABS_COUNT,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{新しいグループに追加}other{新しいグループに追加}}</translation>
 <translation id="6333260925957816943">このショップに関する情報</translation>
 <translation id="6344715021569694246">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを固定}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを固定}}</translation>
 <translation id="6381032505162537930">タブグループはここに表示されます</translation>

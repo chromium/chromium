@@ -189,7 +189,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1130430615924359526">{0,plural, =1{Inkognitofenster schließen}other{Inkognitofenster schließen (# Fenster)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Teil der Gruppe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Akkustand des rechten Kopfhörers bei <ph name="PERCENTAGE" /> %.</translation>
-<translation id="1130866111814048607">Wenn Tabs geteilt werden, werden ihre Seiteninhalte, Medien und URLs an Google gesendet und möglicherweise auf Sicherheit überprüft.</translation>
+<translation id="1130866111814048607">Beim Teilen von Tabs werden deren Seiteninhalte, Medien und URLs an Google gesendet und möglicherweise zu Sicherheitszwecken überprüft.</translation>
 <translation id="1133418583142946603">Aktuellen Tab hinzufügen</translation>
 <translation id="1133751489735776037">Mit der linken Maustaste dreimal klicken</translation>
 <translation id="1136712381129578788">Der Sicherheitsschlüssel wurde gesperrt, weil zu oft die falsche PIN eingegeben wurde. Entferne den Sicherheitsschlüssel und stecke ihn wieder ein, um ihn zu entsperren.</translation>
@@ -3335,7 +3335,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3569614820047645079">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst.</translation>
 <translation id="3569617221227793022">Die Zeitzone ist derzeit auf <ph name="TIME_ZONE_ENTRY" /> eingestellt. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> darf die folgenden Dateien und Ordner aufrufen</translation>
-<translation id="3570112771874223231">Die Seiteninhalte und URLs, die Gemini während des Erledigens einer Aufgabe verwendet, werden an Google weitergegeben und können auf Sicherheit überprüft werden.</translation>
+<translation id="3570112771874223231">Die Seiteninhalte und URLs, die Gemini während des Erledigens einer Aufgabe verwendet, werden an Google weitergegeben und können zu Sicherheitszwecken überprüft werden.</translation>
 <translation id="3571734092741541777">Einrichten</translation>
 <translation id="3575121482199441727">Für diese Website zulassen</translation>
 <translation id="3575224072358507281">IP-Adressen und Ergebnisse von Netzwerkmessungen für Measurement Lab gemäß der Datenschutzerklärung (measurementlab.net/privacy) erfassen</translation>
@@ -4997,7 +4997,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4840096453115567876">Inkognitomodus trotzdem verlassen?</translation>
 <translation id="4841475798258477260">Dieses Gerät kann nur mit einem bestimmten Mobilfunknetz verbunden werden. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Diese Seite versucht, Skripts aus nicht authentifizierten Quellen zu laden.</translation>
-<translation id="4843037705239202082">Medienverständnis</translation>
+<translation id="4843037705239202082">Medienanalyse</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Auswählen, wo diese Website Änderungen speichern kann</translation>
 <translation id="4846680374085650406">Du folgst der Empfehlung des Administrators für diese Einstellung.</translation>

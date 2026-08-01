@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">페이지가 응답하지 않음</translation>
 <translation id="1041181446722933623">'<ph name="LOCAL_BOOKMARK" />'가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 계정의 '<ph name="ACCOUNT_FOLDER" />'에 저장하세요</translation>
 <translation id="1041263367839475438">사용 가능한 기기</translation>
+<translation id="1041365648398872803">사이트에서 콘텐츠 보호 서비스를 사용하도록 허용하지 않음</translation>
 <translation id="1041607257468256895">Chrome에서 웹사이트 위치 정보 액세스 권한 관리하기</translation>
 <translation id="1042248468362992359">핫스팟을 사용하려면 모바일 데이터에 연결하세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">작업 추가</translation>
@@ -429,6 +430,7 @@
 <translation id="1307165550267142340">PIN이 생성되었습니다.</translation>
 <translation id="1307431692088049276">다시 묻지 않음</translation>
 <translation id="130744661532298792">Google 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요.</translation>
+<translation id="1308105352527684175">특정 콘텐츠에 액세스하지 못할 수 있습니다.</translation>
 <translation id="1311092170520822848">사이트에서 기기에 연결된 스마트 카드 리더 및 해당 리더에서 사용할 수 있는 스마트 카드를 제어합니다.</translation>
 <translation id="131112695174432497">광고 개인 최적화에 영향을 미치는 데이터가 삭제됨</translation>
 <translation id="131188242279372879">Chrome의 향상된 보호 모드를 통해 안전하게 다운로드하세요.</translation>
@@ -1799,6 +1801,7 @@
 <translation id="2387602571959163792"><ph name="DESK_NAME" />(현재)</translation>
 <translation id="2390782873446084770">Wi-Fi 동기화</translation>
 <translation id="2391419135980381625">표준 글꼴</translation>
+<translation id="2391778823627025394">사이트에서 콘텐츠 보호 서비스를 사용할 수 있음</translation>
 <translation id="239185270194776190">Gemini 대화가 다른 창에 있습니다. 이 측면 패널의 아무 곳이나 클릭하여 여기로 Gemini를 이동시키세요.</translation>
 <translation id="2392369802118427583">활성화</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> 숨겨짐</translation>
@@ -2682,6 +2685,7 @@
 <translation id="3032272345862007156">최근 AI 테마 <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">방해 금지 모드 사용 설정됨</translation>
 <translation id="3036546437875325427">Flash 사용</translation>
+<translation id="3036602651971781493">사이트에서 콘텐츠 보호 서비스를 사용하여 저작권으로 보호되는 콘텐츠를 재생하거나 사용 중인 브라우저를 확인할 수 있습니다.</translation>
 <translation id="3036907164806060573">꿈</translation>
 <translation id="3037193115779933814">문자 및 숫자</translation>
 <translation id="3038272154009688107">모든 사이트 보기</translation>
@@ -4420,6 +4424,7 @@
 <translation id="4362459470237309049">마우스 버튼을 놓으려면 '.' 키를 사용하세요.</translation>
 <translation id="4362871358537270439">측면 패널에 다른 기기의 탭 표시</translation>
 <translation id="4363262124589131906">내 드라이브의 새 파일이 이 Chromebook에 자동으로 동기화되지 않습니다.</translation>
+<translation id="4364129298304269786">사이트에서 콘텐츠 보호 서비스를 사용하여 저작권으로 보호되는 콘텐츠를 재생할 수 있습니다.</translation>
 <translation id="4364327530094270451">멜론</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{항목 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}other{항목 {ITEM_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />이(가) 창을 공유합니다.</translation>
@@ -6584,6 +6589,7 @@
 <translation id="6069799426896362048">뷰 분리</translation>
 <translation id="6071938745001252305">메모리 <ph name="MEMORY_VALUE" /> 절약됨</translation>
 <translation id="6071995715087444295">유출된 비밀번호가 있는지 확인하려면 Google 계정에 로그인하세요</translation>
+<translation id="607211254380611738">이러한 사이트에서 내가 사용 중인 브라우저를 확인할 수 있습니다.</translation>
 <translation id="6073292342939316679">키보드 밝기를 낮춥니다</translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6073903501322152803">접근성 기능 추가</translation>

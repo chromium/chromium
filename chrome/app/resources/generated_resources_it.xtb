@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Questa pagina non risponde</translation>
 <translation id="1041181446722933623">Il preferito "<ph name="LOCAL_BOOKMARK" />" è salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nella cartella "<ph name="ACCOUNT_FOLDER" />" del tuo account.</translation>
 <translation id="1041263367839475438">Dispositivi disponibili</translation>
+<translation id="1041365648398872803">Non consentire ai siti di usare servizi di protezione dei contenuti</translation>
 <translation id="1041607257468256895">Gestire le autorizzazioni di accesso alla posizione dei siti web in Chrome</translation>
 <translation id="1042248468362992359">Connettiti ai dati mobili per usare l'hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Aggiungi azione</translation>
@@ -429,6 +430,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1307165550267142340">Il PIN è stato creato</translation>
 <translation id="1307431692088049276">Non ripetere più la domanda</translation>
 <translation id="130744661532298792">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google</translation>
+<translation id="1308105352527684175">Potresti non riuscire ad accedere ad alcuni contenuti</translation>
 <translation id="1311092170520822848">Questo sito sta controllando i lettori di smart card collegati al tuo dispositivo e alle smart card potenzialmente disponibili</translation>
 <translation id="131112695174432497">I dati che influiscono sulla personalizzazione degli annunci vengono eliminati</translation>
 <translation id="131188242279372879">Scopri la Protezione avanzata per ottenere il massimo livello di sicurezza di Chrome per i download</translation>
@@ -1784,6 +1786,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (attuale)</translation>
 <translation id="2390782873446084770">Sync Wi-Fi</translation>
 <translation id="2391419135980381625">Carattere standard</translation>
+<translation id="2391778823627025394">I siti possono usare servizi di protezione dei contenuti</translation>
 <translation id="239185270194776190">La tua conversazione con Gemini è in un'altra finestra. Fai clic in un punto qualsiasi di questo riquadro laterale per spostarlo qui.</translation>
 <translation id="2392369802118427583">Attiva</translation>
 <translation id="2393944685985256805">Modulo nascosto: <ph name="MODULE_NAME" /></translation>
@@ -2667,6 +2670,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3032272345862007156">Tema IA recente <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Funzionalità Non disturbare attiva</translation>
 <translation id="3036546437875325427">Abilita Flash</translation>
+<translation id="3036602651971781493">I siti potrebbero utilizzare un servizio di protezione dei contenuti per riprodurre contenuti protetti da copyright o verificare quale browser stai utilizzando</translation>
 <translation id="3036907164806060573">Sogno</translation>
 <translation id="3037193115779933814">Lettere e numeri</translation>
 <translation id="3038272154009688107">Visualizza tutti i siti</translation>
@@ -4407,6 +4411,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4362459470237309049">Usa il carattere "." per rilasciare un pulsante del mouse</translation>
 <translation id="4362871358537270439">Mostra le schede di altri dispositivi nel riquadro laterale</translation>
 <translation id="4363262124589131906">La sincronizzazione automatica con questo Chromebook dei nuovi file in Il mio Drive verrà interrotta</translation>
+<translation id="4364129298304269786">I siti potrebbero utilizzare un servizio di protezione dei contenuti per riprodurre contenuti protetti da copyright</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 elemento è salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google.}other{{ITEM_COUNT} elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> sta condividendo una finestra.</translation>
@@ -6567,6 +6572,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6069799426896362048">Separa visualizzazioni</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> di memoria salvata</translation>
 <translation id="6071995715087444295">Per controllare la presenza di password compromesse, accedi al tuo Account Google</translation>
+<translation id="607211254380611738">Questi siti potrebbero vedere quale browser stai usando</translation>
 <translation id="6073292342939316679">riduci la luminosità della tastiera</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="6073903501322152803">Aggiungi funzioni di accessibilità</translation>

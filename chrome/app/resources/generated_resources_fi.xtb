@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Sivu ei vastaa</translation>
 <translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se tilillesi tähän kansioon: <ph name="ACCOUNT_FOLDER" />.</translation>
 <translation id="1041263367839475438">Käytettävissä olevat laitteet</translation>
+<translation id="1041365648398872803">Älä salli sivustojen käyttää sisällönsuojauspalveluita</translation>
 <translation id="1041607257468256895">Verkkosivustojen sijaintilupien hallinta Chromessa</translation>
 <translation id="1042248468362992359">Yhdistä mobiilidataan, jotta voit käyttää hotspotia. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Lisää toiminto</translation>
@@ -429,6 +430,7 @@
 <translation id="1307165550267142340">PIN-koodisi luotiin</translation>
 <translation id="1307431692088049276">Älä kysy uudestaan</translation>
 <translation id="130744661532298792">Vahvista henkilöllisyytesi, jotta voit aina käyttää Google-tilisi salasanoja</translation>
+<translation id="1308105352527684175">Et välttämättä voi käyttää tiettyä sisältöä</translation>
 <translation id="1311092170520822848">Tämä sivusto hallitsee laitteeseen yhdistettyjä älykortinlukijoita ja mahdollisesti niille saatavilla olevia älykortteja</translation>
 <translation id="131112695174432497">Mainosten personointiin vaikuttava data poistetaan</translation>
 <translation id="131188242279372879">Tutustu parannettuun suojaukseen, jolla saat Chromen korkeimman suojaustason latauksille</translation>
@@ -1797,6 +1799,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (nykyinen)</translation>
 <translation id="2390782873446084770">Wi-Fin synkronointi</translation>
 <translation id="2391419135980381625">Perusfontti</translation>
+<translation id="2391778823627025394">Sivustot voivat käyttää sisällönsuojauspalveluita</translation>
 <translation id="239185270194776190">Gemini-keskustelu on toisessa ikkunassa. Siirrä sivupaneeli tähän klikkaamalla mitä tahansa kohtaa.</translation>
 <translation id="2392369802118427583">Aktivoi</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> piilotettu</translation>
@@ -2680,6 +2683,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3032272345862007156">Viimeaikainen AI-teema <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Älä häiritse ‑tila käytössä</translation>
 <translation id="3036546437875325427">Ota Flash käyttöön</translation>
+<translation id="3036602651971781493">Sivustot voivat käyttää sisällönsuojauspalvelua tekijänoikeudella suojatun sisällön toistamiseen tai tarkistaa, mitä selainta käytät</translation>
 <translation id="3036907164806060573">Uni</translation>
 <translation id="3037193115779933814">Kirjaimet ja numerot</translation>
 <translation id="3038272154009688107">Näytä kaikki sivustot</translation>
@@ -4417,6 +4421,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4362459470237309049">Vapauta hiiren painike painamalla "."</translation>
 <translation id="4362871358537270439">Näytä muiden laitteiden välilehdet sivupaneelissa</translation>
 <translation id="4363262124589131906">Omassa Drivessa olevia uusia tiedostoja ei enää synkronoida automaattisesti tähän Chromebookiin</translation>
+<translation id="4364129298304269786">Sivustot voivat käyttää sisällönsuojauspalvelua tekijänoikeudella suojatun sisällön toistamiseen</translation>
 <translation id="4364327530094270451">Meloni</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 kohde tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, tallenna se Google-tilillesi.}other{{ITEM_COUNT} kohdetta tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> jakaa ikkunan.</translation>
@@ -6581,6 +6586,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6069799426896362048">Erilliset näkymät</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> muistia säästetty</translation>
 <translation id="6071995715087444295">Kirjaudu Google-tilillesi, niin voit tarkistaa vaarantuneet salasanat</translation>
+<translation id="607211254380611738">Nämä sivustot voivat nähdä käyttämäsi selaimen</translation>
 <translation id="6073292342939316679">vähennä näppäimistön kirkkautta</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
 <translation id="6073903501322152803">Lisää esteettömyysominaisuuksia</translation>

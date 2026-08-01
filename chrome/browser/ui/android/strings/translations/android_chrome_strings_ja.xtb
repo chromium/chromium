@@ -59,7 +59,7 @@
 <translation id="11947597112837849">メールアドレス</translation>
 <translation id="1197267115302279827">ブックマークを移動</translation>
 <translation id="1197761954713363183">パスキー確認シートを閉じました</translation>
-<translation id="1197933394627598677">リーディング モードを表示</translation>
+<translation id="1197933394627598677">リーディング モード</translation>
 <translation id="1197935538609051549">無効にする</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1202892408424955784">トラッキングしている商品</translation>
@@ -236,6 +236,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="200114059308480249">Google 検索に周辺のテキストを含めますか？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />、ミュート中の固定のシークレット タブ</translation>
 <translation id="2021896219286479412">全画面表示時のサイトの操作項目</translation>
+<translation id="2022369817198611683">Chrome ツールバーから Gemini を最大限に活用しましょう。長押しするとカスタマイズできます。</translation>
 <translation id="2024195579772565064">検索エンジンを削除</translation>
 <translation id="2029669011553795746">ヒントの通知のオプトイン メッセージが画面の下半分に表示されています</translation>
 <translation id="2038563949887743358">[PC 版サイトを見る] をオンにします</translation>
@@ -579,7 +580,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3430670036890315772">プロフィールのロックをオフにすると、保存した情報が削除されます</translation>
 <translation id="3435575784518354875">パスワードを引き続き使用できるようにするには、今すぐパスワードをエクスポートし、Google Play 開発者サービスを更新してから、Google パスワード マネージャーに再度インポートしてください。<ph name="BEGIN_LINK" />詳細な手順はこちらをご覧ください<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
-<translation id="3435914367318771664">タブを新しいグループに追加</translation>
+<translation id="3435914367318771664">新しいグループに追加</translation>
 <translation id="3436118221454753036">AI モードに質問</translation>
 <translation id="3438681572027105609">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome にログインしてください</translation>
 <translation id="3439276997620616816">最近使ったタブがここに表示されます</translation>

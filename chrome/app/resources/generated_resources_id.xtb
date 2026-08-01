@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Halaman ini tidak merespons</translation>
 <translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />” hanya disimpan di perangkat ini. Untuk menggunakannya di perangkat lain, simpan ke “<ph name="ACCOUNT_FOLDER" />” di akun Anda.</translation>
 <translation id="1041263367839475438">Perangkat yang tersedia</translation>
+<translation id="1041365648398872803">Jangan izinkan situs menggunakan layanan perlindungan konten</translation>
 <translation id="1041607257468256895">Kelola izin akses lokasi situs di Chrome</translation>
 <translation id="1042248468362992359">Hubungkan ke data seluler untuk menggunakan hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Tambahkan tindakan</translation>
@@ -429,6 +430,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1307165550267142340">PIN telah dibuat</translation>
 <translation id="1307431692088049276">Jangan tanya saya lagi</translation>
 <translation id="130744661532298792">Untuk memastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda, verifikasi diri Anda</translation>
+<translation id="1308105352527684175">Anda mungkin tidak dapat mengakses konten tertentu</translation>
 <translation id="1311092170520822848">Situs ini mengontrol pembaca kartu smart yang terhubung ke perangkat Anda dan kartu smart yang mungkin tersedia untuk pembaca kartu tersebut</translation>
 <translation id="131112695174432497">Data yang memengaruhi personalisasi iklan dihapus</translation>
 <translation id="131188242279372879">Temukan perlindungan yang ditingkatkan untuk mendapatkan tingkat keamanan tertinggi Chrome untuk hasil download</translation>
@@ -1797,6 +1799,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Saat ini)</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Font standar</translation>
+<translation id="2391778823627025394">Situs dapat menggunakan layanan perlindungan konten</translation>
 <translation id="239185270194776190">Percakapan Gemini Anda ada di jendela lain. Klik di mana saja pada panel samping ini untuk memindahkannya ke sini.</translation>
 <translation id="2392369802118427583">Aktifkan</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> disembunyikan</translation>
@@ -2680,6 +2683,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3032272345862007156">Tema AI terbaru <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Mode Jangan Ganggu diaktifkan</translation>
 <translation id="3036546437875325427">Aktifkan Flash</translation>
+<translation id="3036602651971781493">Situs mungkin menggunakan layanan perlindungan konten untuk memutar konten yang dilindungi hak cipta atau mengenali browser yang Anda gunakan</translation>
 <translation id="3036907164806060573">Mimpi</translation>
 <translation id="3037193115779933814">Huruf &amp;&amp; Angka</translation>
 <translation id="3038272154009688107">Lihat semua situs</translation>
@@ -4420,6 +4424,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4362459470237309049">Gunakan “.” untuk melepaskan tombol mouse</translation>
 <translation id="4362871358537270439">Tampilkan tab dari perangkat lain di panel samping</translation>
 <translation id="4363262124589131906">File baru di Drive Saya akan berhenti disinkronkan secara otomatis ke Chromebook ini</translation>
+<translation id="4364129298304269786">Situs mungkin menggunakan layanan perlindungan konten untuk memutar konten yang dilindungi hak cipta</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 item hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda.}other{{ITEM_COUNT} item hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> membagikan jendela.</translation>
@@ -6584,6 +6589,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6069799426896362048">Tampilan terpisah</translation>
 <translation id="6071938745001252305">Menghemat <ph name="MEMORY_VALUE" /> memori</translation>
 <translation id="6071995715087444295">Untuk memeriksa sandi yang telah dibobol, login ke Akun Google Anda</translation>
+<translation id="607211254380611738">Situs ini dapat melihat browser yang Anda gunakan</translation>
 <translation id="6073292342939316679">kurangi kecerahan keyboard</translation>
 <translation id="6073451960410192870">Berhenti merekam</translation>
 <translation id="6073903501322152803">Tambahkan fitur aksesibilitas</translation>

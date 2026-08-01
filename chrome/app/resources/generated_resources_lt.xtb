@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Šis puslapis neatsako</translation>
 <translation id="1041181446722933623">Žymė „<ph name="LOCAL_BOOKMARK" />“ išsaugota tik šiame įrenginyje. Jei norite naudoti kituose įrenginiuose, išsaugokite ją paskyros aplanke „<ph name="ACCOUNT_FOLDER" />“.</translation>
 <translation id="1041263367839475438">Pasiekiami įrenginiai</translation>
+<translation id="1041365648398872803">Neleisti svetainėms naudoti turinio apsaugos paslaugų</translation>
 <translation id="1041607257468256895">Svetainių leidimų pasiekti vietovės duomenis tvarkymas naršyklėje „Chrome“</translation>
 <translation id="1042248468362992359">Prisijunkite prie mobiliojo ryšio duomenų, kad galėtumėte naudoti viešosios interneto prieigos tašką. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Pridėti veiksmą</translation>
@@ -429,6 +430,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1307165550267142340">PIN kodas sukurtas</translation>
 <translation id="1307431692088049276">Daugiau neklausti</translation>
 <translation id="130744661532298792">Kad užtikrintumėte, jog visada galėsite naudoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
+<translation id="1308105352527684175">Gali būti, kad negalėsite pasiekti tam tikro turinio</translation>
 <translation id="1311092170520822848">Ši svetainė valdo išmaniųjų kortelių skaitytuvus, prijungtus prie jūsų įrenginio, ir galimai jiems pasiekiamas išmaniąsias korteles</translation>
 <translation id="131112695174432497">Duomenys, turintys įtakos suasmeninant skelbimus, ištrinami</translation>
 <translation id="131188242279372879">Atraskite sustiprintą apsaugą, kad užtikrintumėte aukščiausio lygio „Chrome“ atsisiuntimų saugą</translation>
@@ -1798,6 +1800,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2387602571959163792">„<ph name="DESK_NAME" />“ (dabartinis)</translation>
 <translation id="2390782873446084770">„Wi-Fi“ sinchronizavimas</translation>
 <translation id="2391419135980381625">Standartinis šriftas</translation>
+<translation id="2391778823627025394">Svetainėse gali būti naudojamos turinio apsaugos paslaugos</translation>
 <translation id="239185270194776190">„Gemini“ pokalbis yra kitame lange. Spustelėkite bet kur šoniniame skydelyje, kad perkeltumėte jį čia.</translation>
 <translation id="2392369802118427583">Suaktyvinti</translation>
 <translation id="2393944685985256805">Paslėpta: „<ph name="MODULE_NAME" />“</translation>
@@ -2681,6 +2684,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3032272345862007156">Naujausia DI tema „<ph name="INDEX" />“</translation>
 <translation id="3033167916029856961">Netrukdymo režimas įgalintas</translation>
 <translation id="3036546437875325427">Įgalinti „Flash“</translation>
+<translation id="3036602651971781493">Svetainėse gali būti naudojama turinio apsaugos paslauga, siekiant leisti autorių teisių saugomą turinį arba patikrinti, kurią naršyklę naudojate</translation>
 <translation id="3036907164806060573">Sapnas</translation>
 <translation id="3037193115779933814">Raidės ir skaičiai</translation>
 <translation id="3038272154009688107">Žr. visas svetaines</translation>
@@ -4421,6 +4425,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4362459470237309049">Naudokite „.“, kad atleistumėte pelės mygtuką</translation>
 <translation id="4362871358537270439">Rodyti skirtukus iš kitų įrenginių šoniniame skydelyje</translation>
 <translation id="4363262124589131906">Nauji Mano Disko failai nebebus automatiškai sinchronizuojami su šiuo „Chromebook“</translation>
+<translation id="4364129298304269786">Svetainėse gali būti naudojama turinio apsaugos paslauga, siekiant leisti autorių teisių saugomą turinį</translation>
 <translation id="4364327530094270451">Melionas</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{Vienas elementas išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}one{{ITEM_COUNT} elementas išsaugotas tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}few{{ITEM_COUNT} elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}many{{ITEM_COUNT} elemento išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}other{{ITEM_COUNT} elementų išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}}</translation>
 <translation id="4364567974334641491">„<ph name="APP_NAME" />“ bendrina langą.</translation>
@@ -6586,6 +6591,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6069799426896362048">Atskiri rodiniai</translation>
 <translation id="6071938745001252305">Sutaupyta atminties: <ph name="MEMORY_VALUE" /></translation>
 <translation id="6071995715087444295">Jei norite patikrinti, ar nėra pažeistų slaptažodžių, prisijunkite prie „Google“ paskyros</translation>
+<translation id="607211254380611738">Šios svetainės gali matyti, kurią naršyklę naudojate</translation>
 <translation id="6073292342939316679">sumažinti klaviatūros šviesumą</translation>
 <translation id="6073451960410192870">Sustabdyti įrašymą</translation>
 <translation id="6073903501322152803">Pridėti pritaikymo neįgaliesiems funkcijų</translation>

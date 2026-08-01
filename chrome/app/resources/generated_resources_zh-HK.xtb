@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">此網頁沒有回應</translation>
 <translation id="1041181446722933623">「<ph name="LOCAL_BOOKMARK" />」只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至帳戶的「<ph name="ACCOUNT_FOLDER" />」。</translation>
 <translation id="1041263367839475438">可用的裝置</translation>
+<translation id="1041365648398872803">不允許網站使用內容保護服務</translation>
 <translation id="1041607257468256895">在 Chrome 中管理網站位置存取權</translation>
 <translation id="1042248468362992359">連接至流動數據即可使用熱點。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">新增操作</translation>
@@ -191,7 +192,7 @@
 <translation id="1130430615924359526">{0,plural, =1{關閉無痕式視窗}other{關閉無痕式視窗 (# 個視窗)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 屬於「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="1130676589211693127">右邊電量係 <ph name="PERCENTAGE" />%。</translation>
-<translation id="1130866111814048607">共用分頁時，系統會將頁面內容、媒體和網址傳送給 Google，並可能送交安全審核。</translation>
+<translation id="1130866111814048607">共用分頁時，網頁內容、媒體和網址均會傳送給 Google，並可能會受到審查以確保安全。</translation>
 <translation id="1133418583142946603">新增目前的分頁</translation>
 <translation id="1133751489735776037">連按三下滑鼠</translation>
 <translation id="1136712381129578788">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。如要解鎖，請移除安全密鑰後重新插入。</translation>
@@ -429,6 +430,7 @@
 <translation id="1307165550267142340">已建立 PIN</translation>
 <translation id="1307431692088049276">不要再問我</translation>
 <translation id="130744661532298792">為確保你可隨時使用 Google 帳戶中的密碼，請驗證身分</translation>
+<translation id="1308105352527684175">你可能無法存取特定內容</translation>
 <translation id="1311092170520822848">此網站正控制連接至你裝置的智能讀卡器，且可能會存取讀卡器中的智能卡</translation>
 <translation id="131112695174432497">系統將刪除會影響廣告個人化的資料</translation>
 <translation id="131188242279372879">探索強化保護功能，即可享有 Chrome 就下載檔案提供的最強大安全防護</translation>
@@ -1797,6 +1799,7 @@
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (目前)</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">標準字型</translation>
+<translation id="2391778823627025394">網站可使用內容保護服務</translation>
 <translation id="239185270194776190">你的 Gemini 對話目前在另一個視窗中。按一下側面板的任何一處，即可將對話移到這裡。</translation>
 <translation id="2392369802118427583">啟用</translation>
 <translation id="2393944685985256805">「<ph name="MODULE_NAME" />」已隱藏</translation>
@@ -2108,7 +2111,7 @@
 <translation id="2624142942574147739">這個網頁正在存取您的相機和麥克風。</translation>
 <translation id="2626799779920242286">請稍後再試。</translation>
 <translation id="2627424346328942291">無法分享</translation>
-<translation id="2627970398976286795">睇 Gemini Spark 嘅風險</translation>
+<translation id="2627970398976286795">了解 Gemini Spark 嘅風險</translation>
 <translation id="2628258844236035475">要從 Chrome 自動填入功能中移除住宅地址嗎？</translation>
 <translation id="2628770867680720336">必須將 Chromebook 回復原廠設定才能啟用 ADB 偵錯。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">與 Gemini 展開新對話</translation>
@@ -2680,6 +2683,7 @@
 <translation id="3032272345862007156">最近嘅 AI 主題 <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">已啟用「請勿騷擾」模式</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
+<translation id="3036602651971781493">網站可能會使用內容保護服務來播放受版權保護的內容，或查看你使用的瀏覽器</translation>
 <translation id="3036907164806060573">夢幻</translation>
 <translation id="3037193115779933814">字母和數字</translation>
 <translation id="3038272154009688107">查看所有網站</translation>
@@ -3358,7 +3362,7 @@
 <translation id="3569614820047645079">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你便可在離線的情況下存取檔案。</translation>
 <translation id="3569617221227793022">時區目前設定為 <ph name="TIME_ZONE_ENTRY" />。此設定由管理員管理。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下檔案和資料夾</translation>
-<translation id="3570112771874223231">Gemini 在處理任務期間所用的頁面內容和網址會與 Google 分享，並可能送交安全審核。</translation>
+<translation id="3570112771874223231">Gemini 在處理任務期間所用的網頁內容和網址會與 Google 分享，並可能會受到審查以確保安全。</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3575224072358507281">根據 Measurement Lab 的《私隱權政策》(measurementlab.net/privacy) 收集 IP 位址和 Measurement Lab 的網絡測量結果</translation>
@@ -4418,6 +4422,7 @@
 <translation id="4362459470237309049">按下「.」代表放開滑鼠按鍵</translation>
 <translation id="4362871358537270439">在側面板顯示其他裝置上的分頁</translation>
 <translation id="4363262124589131906">「我的雲端硬碟」中的新檔案會自動停止同步至此 Chromebook</translation>
+<translation id="4364129298304269786">網站可能會使用內容保護服務來播放受版權保護的內容</translation>
 <translation id="4364327530094270451">蜜瓜</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 個項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{{ITEM_COUNT} 個項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
@@ -6577,6 +6582,7 @@
 <translation id="6069799426896362048">取消分割檢視畫面</translation>
 <translation id="6071938745001252305">節省咗 <ph name="MEMORY_VALUE" /> 記憶體</translation>
 <translation id="6071995715087444295">如要檢查密碼是否被盜用，請登入 Google 帳戶</translation>
+<translation id="607211254380611738">這些網站可能會看到你使用的瀏覽器</translation>
 <translation id="6073292342939316679">校暗鍵盤</translation>
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="6073903501322152803">新增無障礙功能</translation>

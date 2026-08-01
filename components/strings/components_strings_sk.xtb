@@ -352,6 +352,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1539840569003678498">Hlásenie bolo odoslané:</translation>
 <translation id="1542105669288201090">Obchodné vzdelanie</translation>
 <translation id="1542830386724426410">Zobrazujte si dostupné výhody a odmeny karty pri platbách. Platia zmluvné podmienky vydavateľa. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ďalšie informácie<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">V skopírovanom obsahu sa na základe pravidiel vašej organizácie kontroluje prítomnosť citlivých údajov. Prilepenie môže byť povolené po dokončení kontroly.</translation>
 <translation id="1545757265410828525">História cien</translation>
 <translation id="1546286808622193216">Porovnajte výhody kariet pomocou Gemini</translation>
 <translation id="1549470594296187301">Ak chcete použiť túto funkciu, musíte povoliť JavaScript.</translation>
@@ -1500,6 +1501,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3293642807462928945">Ďalšie informácie o pravidle <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Čítanie a správa hesiel v nastaveniach Chromu</translation>
 <translation id="3299098170013242198">Funkcia Windows Hello je zapnutá na vypĺňanie hesiel</translation>
+<translation id="3299197721044635447">Obsah sa pre pravidlá vašej organizácie nepodarilo prilepiť mimo spravovaného kontextu Chromu</translation>
 <translation id="3299720788264079132">Pri používaní funkcie <ph name="FEATURE_NAME" /> sa niečo pokazilo</translation>
 <translation id="3303176609391916566">30 × 42 palcov</translation>
 <translation id="3303855915957856445">Nič sa nenašlo</translation>
@@ -4363,6 +4365,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="767550629621587224">Vopred vystrihnuté záložky</translation>
 <translation id="7675756033024037212">Posúvanie a priblíženie nie sú povolené</translation>
 <translation id="7676643023259824263">Vyhľadať v schránke text <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Vaša organizácia sleduje kopírovanie</translation>
 <translation id="7678730592635586336">Znova nasnímať video</translation>
 <translation id="7679287273775285018">Platby pomocou elektronickej peňaženky</translation>
 <translation id="7679367271685653708">Zobraziť a spravovať históriu prehliadania v nastaveniach Chromu</translation>
@@ -4649,6 +4652,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8134058435519644366">Nábor a personalistika</translation>
 <translation id="8135546115396015134">ľavý kláves</translation>
 <translation id="8137456439814903304">Energia a služby</translation>
+<translation id="814071672416123670">Obsah sa pre pravidlá vašej organizácie nepodarilo skopírovať</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvorená pred 1 mesiacom}few{Vytvorená pred {NUM_MONTHS} mesiacmi}many{Vytvorená pred {NUM_MONTHS} mesiaca}other{Vytvorená pred {NUM_MONTHS} mesiacmi}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktuálne predvolený. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Verzia PDF:</translation>

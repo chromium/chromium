@@ -66,6 +66,7 @@
 <translation id="1041175011127912238">Ta strona nie odpowiada</translation>
 <translation id="1041181446722933623">Zakładka „<ph name="LOCAL_BOOKMARK" />” została zapisana tylko na tym urządzeniu. Aby używać jej na innych urządzeniach, zapisz ją w folderze „<ph name="ACCOUNT_FOLDER" />” na swoim koncie.</translation>
 <translation id="1041263367839475438">Dostępne urządzenia</translation>
+<translation id="1041365648398872803">Nie zezwalaj stronom na korzystanie z usług ochrony treści</translation>
 <translation id="1041607257468256895">Zarządzaj dostępem witryn do lokalizacji w Chrome</translation>
 <translation id="1042248468362992359">Aby używać hotspota, połącz się przez mobilną transmisję danych. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Dodaj działanie</translation>
@@ -429,6 +430,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1307165550267142340">Kod PIN został utworzony</translation>
 <translation id="1307431692088049276">Nie pytaj ponownie</translation>
 <translation id="130744661532298792">Potwierdź swoją tożsamość, aby móc zawsze używać haseł na koncie Google</translation>
+<translation id="1308105352527684175">Możesz nie mieć dostępu do niektórych treści</translation>
 <translation id="1311092170520822848">Ta strona steruje czytnikami kart inteligentnych podłączonymi do Twojego urządzenia i może odczytywać karty inteligentne</translation>
 <translation id="131112695174432497">Dane, które mają wpływ na personalizację reklam, są usuwane</translation>
 <translation id="131188242279372879">Poznaj silniejszą ochronę, która zapewnia najwyższy poziom bezpieczeństwa pobierania w Chrome</translation>
@@ -1783,6 +1785,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (teraz aktywne)</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Czcionka standardowa</translation>
+<translation id="2391778823627025394">Strony mogą korzystać z usług ochrony treści</translation>
 <translation id="239185270194776190">Twoja rozmowa z Gemini jest dostępna w innym oknie. Kliknij dowolne miejsce w tym panelu bocznym, aby przenieść ją tutaj.</translation>
 <translation id="2392369802118427583">Aktywuj</translation>
 <translation id="2393944685985256805">Moduł <ph name="MODULE_NAME" /> jest ukryty</translation>
@@ -2662,6 +2665,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3032272345862007156">Ostatni motyw AI: <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Włączono tryb Nie przeszkadzać</translation>
 <translation id="3036546437875325427">Włącz Flasha</translation>
+<translation id="3036602651971781493">Strony mogą korzystać z usługi ochrony treści, aby odtwarzać treści chronione prawem autorskim lub sprawdzać, z jakiej przeglądarki korzystasz</translation>
 <translation id="3036907164806060573">Sen</translation>
 <translation id="3037193115779933814">Litery i cyfry</translation>
 <translation id="3038272154009688107">Zobacz wszystkie witryny</translation>
@@ -4396,6 +4400,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4362459470237309049">Aby zwolnić przycisk myszy, naciśnij „.”</translation>
 <translation id="4362871358537270439">Pokaż karty z innych urządzeń w panelu bocznym</translation>
 <translation id="4363262124589131906">Nowe pliki na Moim dysku przestaną synchronizować się automatycznie z tym Chromebookiem</translation>
+<translation id="4364129298304269786">Strony mogą korzystać z usługi ochrony treści, aby odtwarzać treści chronione prawem autorskim</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 element został zapisany tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz go na swoim koncie Google.}few{{ITEM_COUNT} elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}many{{ITEM_COUNT} elementów zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}other{{ITEM_COUNT} elementu zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> udostępnia okno.</translation>
@@ -6557,6 +6562,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6069799426896362048">Rozdziel widoki</translation>
 <translation id="6071938745001252305">Zaoszczędzono <ph name="MEMORY_VALUE" /> pamięci</translation>
 <translation id="6071995715087444295">Aby sprawdzić, czy jakieś hasła nie zostały przejęte, zaloguj się na swoje konto Google</translation>
+<translation id="607211254380611738">Te strony mogą widzieć, z jakiej przeglądarki korzystasz</translation>
 <translation id="6073292342939316679">zmniejsz jasność klawiatury</translation>
 <translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
 <translation id="6073903501322152803">Dodaj ułatwienia dostępu</translation>
