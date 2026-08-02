@@ -570,6 +570,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1871284979644508959">Veuillez compléter ce champ.</translation>
 <translation id="1871739799120352748">Prix élevé</translation>
 <translation id="1874224422119691492">Vous pouvez choisir d'utiliser le verrouillage de l'écran pour la saisie des mots de passe dans <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">Envoyé à Chrome sur votre <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Bac photo</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">Par date</translation>
@@ -2111,6 +2112,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-shirts</translation>
 <translation id="4253168017788158739">Remarque</translation>
+<translation id="4255125583058870090">Chargement de l'application de paiement en cours</translation>
 <translation id="4255487295905690262">Vous recevrez des alertes par e-mail si le prix baisse sur un site.</translation>
 <translation id="425582637250725228">Les modifications que vous avez apportées ne seront peut-être pas enregistrées.</translation>
 <translation id="4258748452823770588">Signature incorrecte.</translation>
@@ -2985,6 +2987,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="561165882404867731">Traduisez cette page avec Google Traduction</translation>
 <translation id="5612720917913232150"><ph name="URL" /> souhaite utiliser la position de votre ordinateur</translation>
+<translation id="5613117810542399920">Annotation rétablie</translation>
 <translation id="5613958591683399697">Demandez à <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
 <translation id="5614520971155863709">Jeux de cartes</translation>
@@ -3003,6 +3006,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5640474731385449758">L'extension "<ph name="EXTENSION_NAME" />" souhaite ouvrir les liens <ph name="PROTOCOL" /> sur <ph name="ORIGIN" /> via <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Systèmes et composants stéréo</translation>
 <translation id="5642508497713047">Signataire de la liste de révocation de certificats</translation>
+<translation id="5643946808525377120">Envoyé à Chrome sur votre <ph name="DEVICE_NAME" /></translation>
 <translation id="5644090287519800334">Décalage X de l'image côté 1</translation>
 <translation id="5644128326840674462">Bannière promotionnelle</translation>
 <translation id="5645132789250840550">Plastique (semi-brillance)</translation>
@@ -3044,6 +3048,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5715150588940290235">Supprimer les codes de sécurité enregistrés ?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> sur cet appareil</translation>
 <translation id="5716325061445053985">Appuyez pour ouvrir l'onglet sur votre téléphone</translation>
+<translation id="5717281954932320486">Saisissez automatiquement les informations relatives à la carte lorsque vous payez en ligne. Les cartes sont enregistrées de manière sécurisée dans Google Wallet.</translation>
 <translation id="5717509257172454543">Patinage sur glace</translation>
 <translation id="5718326209176373202">Ajouter des annotations de texte</translation>
 <translation id="5718601519531438273">Inclut des informations comme les passeports et les permis de conduire</translation>
@@ -4042,6 +4047,7 @@ Informations supplémentaires :
 <translation id="7257453341537973799">Ressources et outils de planification de carrière</translation>
 <translation id="725866823122871198">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> : la date et l'heure de votre ordinateur (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
 <translation id="7260075294900977274">Un nouveau dossier intelligent qui vous permet d'enregistrer toutes vos pages d'achat au même endroit et de suivre automatiquement les prix, d'obtenir des tendances de prix, etc.</translation>
+<translation id="7261463765917514051">Payez en toute sécurité grâce à la saisie automatique</translation>
 <translation id="7265608370113700582">L'adresse n'est disponible que sur cet appareil</translation>
 <translation id="7266094331715305887">applis sur l'appareil</translation>
 <translation id="7269151392155523061">Le raccourci ne peut pas être identique au mot clé de l'agrégateur de recherche défini par <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> : <ph name="SHORTCUT_NAME" /></translation>
@@ -4613,6 +4619,7 @@ Informations supplémentaires :
 <translation id="8134058435519644366">Recrutement et gestion du personnel</translation>
 <translation id="8135546115396015134">touche gauche</translation>
 <translation id="8137456439814903304">Énergie et services publics</translation>
+<translation id="8138591088112729119">Optimisée par l'Intelligence personnalisée</translation>
 <translation id="814071672416123670">Impossible de copier le contenu à cause des règles de votre organisation</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Créé il y a 1 mois}one{Créé il y a {NUM_MONTHS} mois}other{Créé il y a {NUM_MONTHS} mois}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, utilisé par défaut. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4627,6 +4634,7 @@ Informations supplémentaires :
 <translation id="81563721597823545">Équipement de hockey</translation>
 <translation id="815805690561372740">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google, qui <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant<ph name="END_LINK" /> sur le site que vous avez essayé de consulter.</translation>
 <translation id="8161095570253161196">Reprendre la navigation</translation>
+<translation id="8163468049564974856">Activez la saisie automatique pour régler vos achats en ligne en toute sécurité. Les informations relatives à votre carte sont chiffrées dans Google Wallet.</translation>
 <translation id="8163866351304776260">Quadruple perforation à gauche</translation>
 <translation id="8164078261547504572">Vous souhaitez être informé par e-mail en cas de baisse de prix ?</translation>
 <translation id="8169175551046720804">Les clés "<ph name="DATA_CONTROLS_KEYS" />" ne peuvent pas être définies dans le même dictionnaire</translation>
@@ -4990,6 +4998,7 @@ Informations supplémentaires :
 <translation id="8758529215314160755">Vous pouvez modifier votre nom dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Carte arrivée à expiration</translation>
 <translation id="87601671197631245">La configuration de sécurité obsolète de ce site peut exposer vos informations, comme vos mots de passe, vos messages ou vos cartes de crédit, lorsqu'elles lui sont transmises.</translation>
+<translation id="8762871163452985706">Annotation annulée</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Lien envoyé depuis <ph name="DEVICE_NAME" />}one{# lien envoyé depuis <ph name="DEVICE_NAME" />}other{# liens envoyés depuis <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Périphérique USB</translation>
 <translation id="8763986294015493060">Fermez toutes les fenêtres de navigation privée actuellement ouvertes</translation>

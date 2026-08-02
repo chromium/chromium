@@ -228,6 +228,8 @@
 <translation id="197288927597451399">Зберегти</translation>
 <translation id="1973912524893600642">Зберігати дані</translation>
 <translation id="1974060860693918893">Розширені</translation>
+<translation id="1975298278721498749">Створюйте, зберігайте й автоматично заповнюйте надійні паролі</translation>
+<translation id="1975680286807856378">Блокуйте доступ до приватних вкладок</translation>
 <translation id="1982274314082047220">Проведіть пальцем угору, щоб відкрити параметри режиму читання</translation>
 <translation id="1984087999855033707">номер телефону</translation>
 <translation id="1984417487208496350">Захист вимкнено (не рекомендовано)</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">Враховувати контекст у пошуку Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" /> (закріплена анонімна вкладка, на якій вимкнено звук)</translation>
 <translation id="2021896219286479412">Керування повноекранним режимом</translation>
+<translation id="2022369817198611683">Користуйтеся всіма можливостями Gemini на панелі інструментів Chrome. Утримуйте, щоб налаштувати.</translation>
 <translation id="2024195579772565064">Видалити пошукову систему</translation>
 <translation id="2029669011553795746">Вікно пропозиції отримувати сповіщення з підказками відкрито на половину висоти</translation>
 <translation id="2038563949887743358">Увімкнути опцію "Запитувати версію сайту для комп’ютера"</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">Історія цін на цей товар на різних сайтах</translation>
 <translation id="2367818124433749493">Комбінації клавіш для розробників</translation>
 <translation id="2369058545741334020">Відкрити в режимі читання</translation>
+<translation id="2378656072948663224">Найвищий рівень захисту з інструментами Google від загроз в Інтернеті</translation>
 <translation id="2385605401818128172">Ви можете переглянути сайти, які надсилають багато сповіщень, і скасувати підписки</translation>
 <translation id="2386938421315164605">Ховайте й показуйте теми</translation>
 <translation id="2390510615457643724">Завантажити файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) знову?</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">Недійсна назва</translation>
 <translation id="2932150158123903946">Дані додатка Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Розкладка клавіатури не зміниться</translation>
+<translation id="2936830831577265247">Анонімний режим заблоковано</translation>
 <translation id="2936980480904111527">Переваги сповіщень Chrome</translation>
 <translation id="2939908794993783865">Інші неактивні сайти</translation>
 <translation id="2940075786175545812">Екран з опцією схвалити або відхилити запит на доступ до веб-сайту</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" /> (вибрана закріплена вкладка, на якій увімкнено запис)</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 закладка}one{# закладка}few{# закладки}many{# закладок}other{# закладки}}</translation>
+<translation id="4464892890754749268">Видаляйте історію вебперегляду одним дотиком</translation>
 <translation id="4478161224666880173">На цьому сайті можна використовувати обліковий запис, наданий <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Щоб продовжити, увійдіть в обліковий запис через сайт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Встановлення модуля <ph name="MODULE" /> для Chrome…</translation>
 <translation id="4487967297491345095">Усі дані Chrome буде видалено назавжди. Це стосується всіх файлів, налаштувань, облікових записів, баз даних тощо.</translation>
@@ -1053,6 +1059,7 @@
 <translation id="5404274604891474619">Не вдається редагувати файл PDF</translation>
 <translation id="5409881200985013443">Надіслати код <ph name="ONE_TIME_CODE" /> на пристрій "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) запрошує вас приєднатися до групи вкладок. Редагувати можуть усі, хто має посилання, тому приєднуйтеся відповідально. Посилання діє 48 годин.</translation>
+<translation id="5413221660329682980">Швидко видаляйте історію</translation>
 <translation id="5414836363063783498">Підтвердження…</translation>
 <translation id="5415871492522952905">Історія і вкладки зберігатимуться на всіх ваших пристроях, щоб ви могли продовжувати роботу з того місця, на якому зупинилися</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) відразу втратить доступ до групи вкладок "<ph name="GROUP_NAME" />"</translation>

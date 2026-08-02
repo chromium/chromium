@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} 個のタブ}other{{count} 個のタブ}}</translation>
 <translation id="1082554859195167538">おすすめの商品レビュー</translation>
 <translation id="1084365883616172403">Facebookへの投稿が完了しました。</translation>
+<translation id="108485301461714610">Google 検索の AI モードと接続されたアプリ</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> を開けませんでした</translation>
 <translation id="1086486568852410168">Google レンズで検索</translation>
 <translation id="1096992026380844478">同期の設定は前回のバックアップに基づいて復元されます。<ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">アクティブでないタブ</translation>
 <translation id="1231733316453485619">同期を ON にしますか？</translation>
 <translation id="1238794841176717085">このページを共有</translation>
+<translation id="1248901457873510750">[支払い] を開く</translation>
 <translation id="1253032109800629289">[価格トラッキングの通知を受け取る] を表示しない</translation>
 <translation id="1254424942107648268">前を検索</translation>
 <translation id="1258491128795710625">最新情報</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4738968082443868320">Google ドライブ</translation>
 <translation id="474209246745757965">カメラで撮影したアイテムを購入、翻訳</translation>
+<translation id="4742142641516465928">[自動入力とパスワード] を開く</translation>
 <translation id="4742407542027196863">パスワードを管理…</translation>
 <translation id="4744428388659507035">お使いのすべてのデバイスで同じブックマークを使用するには、設定で [ブックマーク] をオンにします。</translation>
 <translation id="4746926359847517643">いつでも履歴に戻すことができます。</translation>
@@ -1760,7 +1763,7 @@
 <translation id="6775952316617222141">Chrome で Gemini と Live で会話する</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
 <translation id="6782531425936234573">データをエクスポート</translation>
-<translation id="6791425686608802741">[タブを新しいグループに追加] をタップします</translation>
+<translation id="6791425686608802741">[新しいグループに追加] をタップします</translation>
 <translation id="6794476726485507147">このページに再度アクセスするリマインダーの通知を受け取る日時を選択してください</translation>
 <translation id="6797543908718012274">リーディング モードをオンにする</translation>
 <translation id="6806550742467879742">ページツール</translation>
@@ -2208,7 +2211,7 @@
 <translation id="8281781826761538115">デフォルト - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8282657446819506217">タブグループで開く</translation>
-<translation id="828291969289324795">{count,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
+<translation id="828291969289324795">{count,plural, =1{新しいグループに追加}other{新しいグループに追加}}</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8289930144142009940">「<ph name="FEATURE_NAME" />」の通知をオフにしました</translation>
 <translation id="8292893224181644074">ダウンロード完了</translation>

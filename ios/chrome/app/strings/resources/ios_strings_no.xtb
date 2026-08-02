@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} fane}other{{count} faner}}</translation>
 <translation id="1082554859195167538">Produktanmeldelser for deg</translation>
 <translation id="1084365883616172403">Facebook-innlegget er fullført.</translation>
+<translation id="108485301461714610">AI-modus i Google Søk og tilknyttede apper</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åpnes</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1096992026380844478">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. <ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">Inaktive faner</translation>
 <translation id="1231733316453485619">Vil du slå på synkronisering?</translation>
 <translation id="1238794841176717085">Del denne siden</translation>
+<translation id="1248901457873510750">Åpne Betalinger</translation>
 <translation id="1253032109800629289">Skjul «Få varsler om prissporing»</translation>
 <translation id="1254424942107648268">Finn forrige</translation>
 <translation id="1258491128795710625">Hva er nytt?</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4738968082443868320">Google Disk</translation>
 <translation id="474209246745757965">Handle og oversett med kameraet</translation>
+<translation id="4742142641516465928">Åpne Autofyll og passord</translation>
 <translation id="4742407542027196863">Administrer passord…</translation>
 <translation id="4744428388659507035">For å få bokmerkene dine på alle enhetene dine, slå på «Bokmerker» i innstillingene.</translation>
 <translation id="4746926359847517643">Du kan alltid få dem tilbake i loggen.</translation>

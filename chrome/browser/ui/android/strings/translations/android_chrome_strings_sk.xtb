@@ -228,6 +228,8 @@
 <translation id="197288927597451399">Uložiť</translation>
 <translation id="1973912524893600642">Ponechať údaje</translation>
 <translation id="1974060860693918893">Rozšírené</translation>
+<translation id="1975298278721498749">Vytvárajte, ukladajte a automaticky dopĺňajte silné heslá</translation>
+<translation id="1975680286807856378">Súkromné karty majte uzamknuté</translation>
 <translation id="1982274314082047220">Režim čítania: potiahnutím nahor zobrazíte predvoľby</translation>
 <translation id="1984087999855033707">telefónne číslo</translation>
 <translation id="1984417487208496350">Bez ochrany (neodporúča sa)</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">Chcete zahŕňať okolitý text vo vyhľadávaniach na Googli?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pripnutá karta inkognito s vypnutým zvukom</translation>
 <translation id="2021896219286479412">Ovládanie webu na celú obrazovku</translation>
+<translation id="2022369817198611683">Využívajte Gemini čo najlepšie na paneli s nástrojmi Chromu. Dlho stlačte a prispôsobte si ho.</translation>
 <translation id="2024195579772565064">Odstránenie vyhľadávača</translation>
 <translation id="2029669011553795746">Prihlásenie na odber upozornení na tipy je otvorené na polovičnú výšku</translation>
 <translation id="2038563949887743358">Zapnutie žiadosti o verziu stránok pre počítače</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">História cien na internete pre túto možnosť</translation>
 <translation id="2367818124433749493">Skratky pre vývojárov</translation>
 <translation id="2369058545741334020">Otvoriť v režime čítania</translation>
+<translation id="2378656072948663224">Najvyššia úroveň ochrany pred hrozbami na internete poskytovanej Googlom</translation>
 <translation id="2385605401818128172">Môžete skontrolovať weby, ktoré odosielajú veľa upozornení, a zabrániť im, aby v budúcnosti odosielali ďalšie</translation>
 <translation id="2386938421315164605">Skryte a zobrazte témy</translation>
 <translation id="2390510615457643724">Chcete znova stiahnuť <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">Názov je neplatný</translation>
 <translation id="2932150158123903946">Úložisko Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Klávesnica sa nezmení</translation>
+<translation id="2936830831577265247">Zamknutý režim inkognito</translation>
 <translation id="2936980480904111527">Upozornenia Chromu všetko uľahčia</translation>
 <translation id="2939908794993783865">Ďalšie neaktívne weby</translation>
 <translation id="2940075786175545812">Možnosť schváliť alebo neschváliť web</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">Uložené ako záložka v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, vybraná pripnutá karta s nahrávaním</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 záložka}few{# záložky}many{# bookmarks}other{# záložiek}}</translation>
+<translation id="4464892890754749268">Odstráňte históriu prehliadania jedným klepnutím</translation>
 <translation id="4478161224666880173">Na tomto webe môžete používať účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Ak chcete pokračovať, prihláste sa do účtu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Inštaluje sa <ph name="MODULE" /> pre Chrome…</translation>
 <translation id="4487967297491345095">Všetky dáta aplikácií v Chrome budú natrvalo odstránené. Platí to aj pre všetky súbory, nastavenia, účty, databázy atď.</translation>
@@ -1053,6 +1059,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5404274604891474619">Súbor PDF sa nedá upraviť</translation>
 <translation id="5409881200985013443">Odošlite kód <ph name="ONE_TIME_CODE" /> v zariadení <ph name="CLIENT_NAME" />.</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) chce, aby ste sa pripojili ku skupine kariet. Ktokoľvek s odkazom môže upravovať všetky karty, preto pri pripájaní postupujte opatrne. Odkaz vyprší o 48 h.</translation>
+<translation id="5413221660329682980">Rýchle odstraňujte svoju históriu</translation>
 <translation id="5414836363063783498">Overuje sa...</translation>
 <translation id="5415871492522952905">Históriu aj karty budete mať vo všetkých zariadeniach, aby ste mohli pokračovať v tom, čo ste robili</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) okamžite stratí prístup ku skupine kariet <ph name="GROUP_NAME" /></translation>

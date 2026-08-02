@@ -570,6 +570,7 @@
 <translation id="1871284979644508959">Обов’язкове поле</translation>
 <translation id="1871739799120352748">Висока ціна</translation>
 <translation id="1874224422119691492">Ви можете вимкнути цю функцію, перейшовши в розділ <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">Надіслано в Chrome на пристрої <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Лоток для фотографій</translation>
 <translation id="1875512691959384712">Google Форми</translation>
 <translation id="1876399092304384674">За датами</translation>
@@ -2111,6 +2112,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Футболки</translation>
 <translation id="4253168017788158739">Примітка</translation>
+<translation id="4255125583058870090">Завантаження платіжного додатка</translation>
 <translation id="4255487295905690262">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення електронною поштою.</translation>
 <translation id="425582637250725228">Внесені зміни, можливо, не буде збережено.</translation>
 <translation id="4258748452823770588">Недійсний підпис</translation>
@@ -2985,6 +2987,7 @@
 <translation id="5611398002774823980">Зберегти в обліковому записі</translation>
 <translation id="561165882404867731">Перекласти цю сторінку за допомогою Google Перекладача</translation>
 <translation id="5612720917913232150">Сайт <ph name="URL" /> хоче отримати доступ до геоданих вашого комп’ютера</translation>
+<translation id="5613117810542399920">Примітку створено повторно</translation>
 <translation id="5613958591683399697">Запитати <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Примітка для користувача</translation>
 <translation id="5614520971155863709">Картярські ігри</translation>
@@ -3003,6 +3006,7 @@
 <translation id="5640474731385449758">Розширення "<ph name="EXTENSION_NAME" />" хоче відкривати посилання (<ph name="PROTOCOL" />) на сайті <ph name="ORIGIN" /> через <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Стереосистеми і їх компоненти</translation>
 <translation id="5642508497713047">Сторона, що підписала CRL</translation>
+<translation id="5643946808525377120">Надіслано в Chrome на пристрої <ph name="DEVICE_NAME" /></translation>
 <translation id="5644090287519800334">Горизонтальний зсув сторони 1 зображення</translation>
 <translation id="5644128326840674462">Рекламний банер</translation>
 <translation id="5645132789250840550">Пластик (напівглянцевий)</translation>
@@ -3044,6 +3048,7 @@
 <translation id="5715150588940290235">Видалити збережені коди безпеки?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> в <ph name="WINDOW_COUNT" /> на цьому пристрої</translation>
 <translation id="5716325061445053985">Торкніться, щоб відкрити вкладку на телефоні</translation>
+<translation id="5717281954932320486">Автоматично заповнюйте дані картки під час оплати онлайн. Картки надійно зберігаються в Google Гаманці.</translation>
 <translation id="5717509257172454543">Катання на ковзанах</translation>
 <translation id="5718326209176373202">Додати текстові примітки</translation>
 <translation id="5718601519531438273">Зберігатимуться, зокрема, дані паспортів і посвідчень водія</translation>
@@ -4041,6 +4046,7 @@
 <translation id="7257453341537973799">Ресурси й планування кар’єрного розвитку</translation>
 <translation id="725866823122871198">Не вдається встановити конфіденційне з’єднання з <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на комп’ютері встановлено неправильні дату й час (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Нова розумна папка, у якій можна зберігати всі сторінки покупок, автоматично відстежувати ціни, отримувати статистику цін тощо</translation>
+<translation id="7261463765917514051">Оплачуйте покупки безпечно за допомогою функції автозаповнення</translation>
 <translation id="7265608370113700582">Адреса доступна лише на цьому пристрої</translation>
 <translation id="7266094331715305887">установлені додатки</translation>
 <translation id="7269151392155523061">Швидка команда не може збігатися з ключовим словом агрегатора пошуку, визначеним правилом <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4612,6 +4618,7 @@
 <translation id="8134058435519644366">Набір персоналу й працевлаштування</translation>
 <translation id="8135546115396015134">клавіша зі стрілкою вліво</translation>
 <translation id="8137456439814903304">Енергетична промисловість і комунальне господарство</translation>
+<translation id="8138591088112729119">На основі персоналізованого інтелекту</translation>
 <translation id="814071672416123670">Не вдалося скопіювати контент через правила вашої організації</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Створено 1 місяць тому}one{Створено {NUM_MONTHS} місяць тому}few{Створено {NUM_MONTHS} місяці тому}many{Створено {NUM_MONTHS} місяців тому}other{Створено {NUM_MONTHS} місяця тому}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, використовується за умовчанням. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4626,6 +4633,7 @@
 <translation id="81563721597823545">Хокейне обладнання</translation>
 <translation id="815805690561372740">Chrome має вбудовані функції безпеки, що захищають вас під час вебперегляду, як-от Безпечний перегляд Google. Зокрема, ця функція <ph name="BEGIN_LINK" />нещодавно виявила зловмисне програмне забезпечення<ph name="END_LINK" /> на сайті, який ви намагалися відвідати.</translation>
 <translation id="8161095570253161196">Відновити перегляд</translation>
+<translation id="8163468049564974856">Увімкніть автозаповнення, щоб безпечно здійснювати покупки онлайн. Дані картки шифруються в Google Гаманці.</translation>
 <translation id="8163866351304776260">Пробити чотири отвори ліворуч</translation>
 <translation id="8164078261547504572">Хочете отримувати електронні листи про зниження цін?</translation>
 <translation id="8169175551046720804">Ключі "<ph name="DATA_CONTROLS_KEYS" />" не можна додати в той самий словник</translation>
@@ -4990,6 +4998,7 @@
 <translation id="8758529215314160755">Ви можете змінити ім’я у своєму <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Термін дії цієї картки минув</translation>
 <translation id="87601671197631245">На цьому сайті використовується застаріла конфігурація безпеки. Якщо ви надсилатимете на нього ваші дані (як-от паролі, повідомлення й інформацію про кредитні картки), їх може бути розкрито.</translation>
+<translation id="8762871163452985706">Примітку скасовано</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Надіслано посилання з пристрою "<ph name="DEVICE_NAME" />"}one{Надіслано # посилання з пристрою "<ph name="DEVICE_NAME" />"}few{Надіслано # посилання з пристрою "<ph name="DEVICE_NAME" />"}many{Надіслано # посилань із пристрою "<ph name="DEVICE_NAME" />"}other{Надіслано # посилання з пристрою "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="8763927697961133303">Пристрій USB</translation>
 <translation id="8763986294015493060">Закрийте всі відкриті вікна в режимі анонімного перегляду</translation>

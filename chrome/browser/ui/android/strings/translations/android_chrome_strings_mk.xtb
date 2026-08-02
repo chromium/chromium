@@ -228,6 +228,8 @@
 <translation id="197288927597451399">Чувај</translation>
 <translation id="1973912524893600642">Задржи ги податоците</translation>
 <translation id="1974060860693918893">Напредни</translation>
+<translation id="1975298278721498749">Создавајте, зачувувајте и автоматски пополнувајте силни лозинки</translation>
+<translation id="1975680286807856378">Чувајте ги вашите приватни картички заклучени</translation>
 <translation id="1982274314082047220">Режим за читање – повлечете нагоре за поставки</translation>
 <translation id="1984087999855033707">телефонски број</translation>
 <translation id="1984417487208496350">Без заштита (не се препорачува)</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">Да се вклучи околниот текст во пребарувањата на Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, прикачена картичка „Инкогнито“ со исклучен звук</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
+<translation id="2022369817198611683">Извлечете максимум од Gemini од алатникот на Chrome. Долго притиснете за да приспособите.</translation>
 <translation id="2024195579772565064">Избришете го пребарувачот</translation>
 <translation id="2029669011553795746">Долниот лист со прифаќањето на „Известувања за совети“ е отворен на половина висина</translation>
 <translation id="2038563949887743358">Вклучи „Барај локација на работна површина“</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">Историја на цени на интернет за опцијава</translation>
 <translation id="2367818124433749493">Кратенки за програмери</translation>
 <translation id="2369058545741334020">Отвори во „Режим на читање“</translation>
+<translation id="2378656072948663224">Највисокото ниво на заштита на Google од онлајн закани</translation>
 <translation id="2385605401818128172">Сајтовите што испраќаат многу известувања може да ги прегледате и да сопрете да испраќаат уште известувања во иднина</translation>
 <translation id="2386938421315164605">Сокривајте и прикажувајте теми</translation>
 <translation id="2390510615457643724">Дали сакате да ја преземете датотеката <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> повторно?</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">Името е неважечко</translation>
 <translation id="2932150158123903946">Достапен простор на Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Вашата тастатура нема да се смени</translation>
+<translation id="2936830831577265247">Заклучен режим „Инкогнито“</translation>
 <translation id="2936980480904111527">Известувањата на Chrome ги олеснуваат работите</translation>
 <translation id="2939908794993783865">Дополнителни неактивни сајтови</translation>
 <translation id="2940075786175545812">Опција да се одобри или да не се одобри вебсајт</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">Додаден е обележувач во <ph name="FOLDER_NAME" /></translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, избрана прикачена картичка за снимање</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 обележувач}one{# обележувач}other{# обележувачи}}</translation>
+<translation id="4464892890754749268">Избришете ја историјата на прелистувањето со еден допир</translation>
 <translation id="4478161224666880173">Може да ја користите вашата сметка на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на сајтов. За да продолжите, најавете се на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Се инсталира <ph name="MODULE" /> за Chrome…</translation>
 <translation id="4487967297491345095">Сите податоци од апликациите на Chrome ќе се избришат трајно. Тука спаѓаат сите датотеки, поставки, сметки, бази на податоци итн.</translation>
@@ -1053,6 +1059,7 @@
 <translation id="5404274604891474619">Не може да се измени PDF-датотеката</translation>
 <translation id="5409881200985013443">Да се испрати <ph name="ONE_TIME_CODE" /> на <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) сака да се придружите во група картички. Секој што го има линкот може да ги изменува сите картички, па придружувајте се внимателно. Линкот истекува по 48 ч.</translation>
+<translation id="5413221660329682980">Брзо избришете ја историјата</translation>
 <translation id="5414836363063783498">Се проверува…</translation>
 <translation id="5415871492522952905">Ќе ги имате вашите картички и историја на сите ваши уреди, па ќе може да продолжувате со тоа што сте го правеле</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) веднаш ќе го изгуби пристапот до групата картички „<ph name="GROUP_NAME" />“</translation>

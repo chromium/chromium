@@ -59,7 +59,7 @@
 <translation id="11947597112837849">メールアドレス</translation>
 <translation id="1197267115302279827">ブックマークを移動</translation>
 <translation id="1197761954713363183">パスキー確認シートを閉じました</translation>
-<translation id="1197933394627598677">リーディング モードを表示</translation>
+<translation id="1197933394627598677">リーディング モード</translation>
 <translation id="1197935538609051549">無効にする</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1202892408424955784">トラッキングしている商品</translation>
@@ -228,6 +228,8 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="197288927597451399">保存</translation>
 <translation id="1973912524893600642">データを残す</translation>
 <translation id="1974060860693918893">詳細設定</translation>
+<translation id="1975298278721498749">安全なパスワードを作成、保存、自動入力</translation>
+<translation id="1975680286807856378">プライベート タブをロックしたままにします</translation>
 <translation id="1982274314082047220">リーディング モードで上にスワイプすると設定が表示されます</translation>
 <translation id="1984087999855033707">電話番号</translation>
 <translation id="1984417487208496350">保護なし（非推奨）</translation>
@@ -235,6 +237,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="200114059308480249">Google 検索に周辺のテキストを含めますか？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />、ミュート中の固定のシークレット タブ</translation>
 <translation id="2021896219286479412">全画面表示時のサイトの操作項目</translation>
+<translation id="2022369817198611683">Chrome ツールバーから Gemini を最大限に活用しましょう。長押しするとカスタマイズできます。</translation>
 <translation id="2024195579772565064">検索エンジンを削除</translation>
 <translation id="2029669011553795746">ヒントの通知のオプトイン メッセージが画面の下半分に表示されています</translation>
 <translation id="2038563949887743358">[PC 版サイトを見る] をオンにします</translation>
@@ -325,6 +328,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2366554533468315977">このオプションのウェブ全体での価格の推移</translation>
 <translation id="2367818124433749493">デベロッパーのショートカット</translation>
 <translation id="2369058545741334020">リーディング モードで開く</translation>
+<translation id="2378656072948663224">Google の最高レベルの保護機能でオンラインの脅威から保護</translation>
 <translation id="2385605401818128172">多くの通知を送信しているサイトを確認して、通知をブロックできます</translation>
 <translation id="2386938421315164605">トピックの表示と非表示を切り替えます</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" />を再ダウンロードしますか？</translation>
@@ -465,6 +469,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2923908459366352541">名前が無効です</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ストレージ</translation>
 <translation id="2932222164150889403">キーボードは変更されません</translation>
+<translation id="2936830831577265247">ロックされたシークレット モード</translation>
 <translation id="2936980480904111527">Chrome の通知で状況を簡単に把握</translation>
 <translation id="2939908794993783865">追加の無効なサイト</translation>
 <translation id="2940075786175545812">ウェブサイトを承認するかどうかを決定するオプション</translation>
@@ -573,7 +578,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3430670036890315772">プロフィールのロックをオフにすると、保存した情報が削除されます</translation>
 <translation id="3435575784518354875">パスワードを引き続き使用できるようにするには、今すぐパスワードをエクスポートし、Google Play 開発者サービスを更新してから、Google パスワード マネージャーに再度インポートしてください。<ph name="BEGIN_LINK" />詳細な手順はこちらをご覧ください<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
-<translation id="3435914367318771664">タブを新しいグループに追加</translation>
+<translation id="3435914367318771664">新しいグループに追加</translation>
 <translation id="3436118221454753036">AI モードに質問</translation>
 <translation id="3438681572027105609">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome にログインしてください</translation>
 <translation id="3439276997620616816">最近使ったタブがここに表示されます</translation>
@@ -831,6 +836,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />、選択された録画中の固定のタブ</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 件のブックマーク}other{# 件のブックマーク}}</translation>
+<translation id="4464892890754749268">ワンタップで閲覧履歴を削除できます</translation>
 <translation id="4478161224666880173">このサイトでは <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> アカウントを使用できます。続行するには、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> にログインしてください。</translation>
 <translation id="4479972344484327217">Chrome 用の <ph name="MODULE" /> をインストールしています…</translation>
 <translation id="4487967297491345095">Chrome のすべてのアプリデータを完全に削除します。削除されるデータには、すべてのファイル、設定、アカウント、データベースなどが含まれます。</translation>
@@ -1053,6 +1059,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5404274604891474619">PDF を編集できません</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> に <ph name="ONE_TIME_CODE" /> を送信しますか？</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" />（<ph name="OWNER_EMAIL" />）さんがタブグループに招待しています。リンクを知っているユーザーは誰でも、すべてのタブを編集できます。参加は慎重に行ってください。リンクは 48 時間で期限切れになります。</translation>
+<translation id="5413221660329682980">履歴をすばやく削除</translation>
 <translation id="5414836363063783498">確認しています…</translation>
 <translation id="5415871492522952905">すべてのデバイスで履歴とタブにアクセスできるため、デバイスが替わっても作業を続けられます</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />（<ph name="EMAIL" />）さんは「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなります</translation>

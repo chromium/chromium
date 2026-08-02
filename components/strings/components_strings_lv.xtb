@@ -570,6 +570,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1871284979644508959">Obligātais lauks</translation>
 <translation id="1871739799120352748">Cena ir augsta</translation>
 <translation id="1874224422119691492">Lietotnē <ph name="SETTINGS" /> varat norādīt, vai izmantot ekrāna bloķēšanu paroļu aizpildīšanai.</translation>
+<translation id="1874749478353075307">Nosūtīta uz pārlūku Chrome jūsu ierīcē (<ph name="DEVICE_NAME" />) • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Fotoattēlu paplāte</translation>
 <translation id="1875512691959384712">Google veidlapas</translation>
 <translation id="1876399092304384674">Pēc datuma</translation>
@@ -2109,6 +2110,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-krekli</translation>
 <translation id="4253168017788158739">Piezīme</translation>
+<translation id="4255125583058870090">Notiek maksājumu lietotnes ielāde</translation>
 <translation id="4255487295905690262">Jūs saņemsiet e-pasta brīdinājumus, ja kādā vietnē tiks konstatēts cenas kritums.</translation>
 <translation id="425582637250725228">Veiktās izmaiņas, iespējams, netiks saglabātas.</translation>
 <translation id="4258748452823770588">Paraksts nav derīgs.</translation>
@@ -2983,6 +2985,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5611398002774823980">Saglabāt kontā</translation>
 <translation id="561165882404867731">Tulkojiet šīs lapas saturu, izmantojot Google tulkotāju.</translation>
 <translation id="5612720917913232150">Vietnē <ph name="URL" /> tiek pieprasīta atļauja izmantot jūsu datora atrašanās vietu.</translation>
+<translation id="5613117810542399920">Komentāra atsaukšana ir atcelta</translation>
 <translation id="5613958591683399697">Jautāt <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Paziņojums lietotājam</translation>
 <translation id="5614520971155863709">Kāršu spēles</translation>
@@ -3001,6 +3004,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5640474731385449758">Paplašinājums “<ph name="EXTENSION_NAME" />” vēlas atvērt <ph name="PROTOCOL" /> saites vietnē <ph name="ORIGIN" />, izmantojot <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Stereosistēmas un to sastāvdaļas</translation>
 <translation id="5642508497713047">CRL parakstītājs</translation>
+<translation id="5643946808525377120">Nosūtīta uz pārlūku Chrome jūsu ierīcē (<ph name="DEVICE_NAME" />)</translation>
 <translation id="5644090287519800334">1. puses attēla nobīde uz X ass</translation>
 <translation id="5644128326840674462">Akcijas reklāmkarogs</translation>
 <translation id="5645132789250840550">Plastmasa (pusglancēta)</translation>
@@ -3042,6 +3046,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5715150588940290235">Vai dzēst saglabātos drošības kodus?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> <ph name="WINDOW_COUNT" /> šajā ierīcē</translation>
 <translation id="5716325061445053985">Pieskarieties, lai atvērtu cilni tālrunī.</translation>
+<translation id="5717281954932320486">Automātiski aizpildiet kartes datus, norēķinoties tiešsaistē. Kartes droši tiek glabātas lietotnē Google maks.</translation>
 <translation id="5717509257172454543">Slidošana</translation>
 <translation id="5718326209176373202">Pievienot teksta piezīmes</translation>
 <translation id="5718601519531438273">Ietver informāciju, piemēram, par pasēm un autovadītāja apliecībām.</translation>
@@ -4039,6 +4044,7 @@ Papildu informācija:
 <translation id="7257453341537973799">Karjeras iespējas un plānošana</translation>
 <translation id="725866823122871198">Nevar izveidot privātu savienojumu ar <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, jo jūsu datora datums un laiks (<ph name="DATE_AND_TIME" />) nav pareizs.</translation>
 <translation id="7260075294900977274">Jauna viedā mape, kas palīdz vienuviet saglabāt visas pirkumu lapas un automātiski izsekot cenām, gūt cenu ieskatus un veikt citas darbības.</translation>
+<translation id="7261463765917514051">Droši norēķini, izmantojot automātisko aizpildi</translation>
 <translation id="7265608370113700582">Adrese ir pieejama tikai šajā ierīcē.</translation>
 <translation id="7266094331715305887">lietotnes ierīcē</translation>
 <translation id="7269151392155523061">Saīsne nedrīkst būt tāda pati kā meklēšanas apkopotāja atslēgvārds, kas definēts politikā <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4610,6 +4616,7 @@ Papildu informācija:
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>
 <translation id="8135546115396015134">kreisais taustiņš</translation>
 <translation id="8137456439814903304">Enerģija un komunālie pakalpojumi</translation>
+<translation id="8138591088112729119">Nodrošina funkcija “Personīgais intelekts”</translation>
 <translation id="814071672416123670">Saturu nevarēja kopēt jūsu organizācijas politiku dēļ.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Izveidota pirms 1 mēneša}zero{Izveidota pirms {NUM_MONTHS} mēnešiem}one{Izveidota pirms {NUM_MONTHS} mēneša}other{Izveidota pirms {NUM_MONTHS} mēnešiem}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, pašreizējais noklusējums. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4624,6 +4631,7 @@ Papildu informācija:
 <translation id="81563721597823545">Hokeja aprīkojums</translation>
 <translation id="815805690561372740">Lai aizsargātu jūs pārlūkošanas laikā, pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, funkcija Google droša pārlūkošana, kas <ph name="BEGIN_LINK" />nesen konstatēja ļaunprātīgu programmatūru<ph name="END_LINK" /> vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="8161095570253161196">Atsākt pārlūkošanu</translation>
+<translation id="8163468049564974856">Ieslēdziet automātisko aizpildi, lai droši norēķinātos tiešsaistē. Jūsu kartes dati lietotnē Google maks tiek šifrēti.</translation>
 <translation id="8163866351304776260">Četri caurumi kreisajā malā</translation>
 <translation id="8164078261547504572">Vai vēlaties saņemt e-pasta ziņojumus par cenu kritumu?</translation>
 <translation id="8169175551046720804">Atslēgas “<ph name="DATA_CONTROLS_KEYS" />” nevar iestatīt vienā vārdnīcā</translation>
@@ -4988,6 +4996,7 @@ Papildu informācija:
 <translation id="8758529215314160755">Varat rediģēt savu vārdu savā <ph name="BEGIN_LINK" />Google kontā<ph name="END_LINK" /> (<ph name="ACCOUNT" />).</translation>
 <translation id="8759274551635299824">Kartes derīguma termiņš ir beidzies</translation>
 <translation id="87601671197631245">Šajā vietnē tiek izmantota novecojusi drošības konfigurācija, tādēļ var tikt atklāta jūsu informācija (piemēram, paroles, ziņojumi vai kredītkaršu dati), kad tā tiek nosūtīta uz šo vietni.</translation>
+<translation id="8762871163452985706">Komentārs ir atsaukts</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Nosūtīta saite no ierīces “<ph name="DEVICE_NAME" />”}zero{Nosūtītas # saites no ierīces “<ph name="DEVICE_NAME" />”}one{Nosūtīta # saite no ierīces “<ph name="DEVICE_NAME" />”}other{Nosūtītas # saites no ierīces “<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="8763927697961133303">USB ierīce</translation>
 <translation id="8763986294015493060">Aizveriet visus atvērtos inkognito režīma logus.</translation>

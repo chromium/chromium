@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} ट्याब}other{{count} वटा ट्याब}}</translation>
 <translation id="1082554859195167538">उत्पादनसम्बन्धी समीक्षाहरू</translation>
 <translation id="1084365883616172403">Facebook पोस्ट पूरा भयो।</translation>
+<translation id="108485301461714610">Google Search को AI मोड र कनेक्ट गरिएका एपहरू</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> खोल्न सकिएन</translation>
 <translation id="1086486568852410168">Google लेन्समार्फत खोज्नुहोस्</translation>
 <translation id="1096992026380844478">तपाईंको पछिल्लो ब्याकअपका आधारमा तपाईंले तय गर्नुभएका सिंकसम्बन्धी सेटिङ रिस्टोर गरिने छ। <ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ हेर्नुहोस्<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">निष्क्रिय ट्याबहरू</translation>
 <translation id="1231733316453485619">सिंक गर्ने सुविधा सक्रिय गर्ने हो?</translation>
 <translation id="1238794841176717085">यो पेज सेयर गर्नुहोस्</translation>
+<translation id="1248901457873510750">भुक्तानी विधि खोल्नुहोस्</translation>
 <translation id="1253032109800629289">"मूल्यको ट्र्याकिङसम्बन्धी नोटिफिकेसन प्राप्त गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="1254424942107648268">अघिल्लो भेट्टाउनुहोस्</translation>
 <translation id="1258491128795710625">नयाँ के छ</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">आफ्नो क्यामेरा प्रयोग गरी किनमेल तथा अनुवाद गर्नुहोस्</translation>
+<translation id="4742142641516465928">अटोफिल र पासवर्डहरू खोल्नुहोस्</translation>
 <translation id="4742407542027196863">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="4744428388659507035">आफ्ना सबै डिभाइसमा बुकमार्कहरू प्राप्त गर्न सेटिङमा गई "बुकमार्कहरू" अन गर्नुहोस्</translation>
 <translation id="4746926359847517643">तपाईं जुनसुकै बेला हिस्ट्रीमा गई ती ट्याबहरू फेरि खोल्न सक्नुहुन्छ।</translation>

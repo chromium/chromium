@@ -228,6 +228,8 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="197288927597451399">Сақтау</translation>
 <translation id="1973912524893600642">Деректерді сақтау</translation>
 <translation id="1974060860693918893">Қосымша</translation>
+<translation id="1975298278721498749">Күрделі құпия сөздерді жасау, сақтау және автоматты түрде толтыру</translation>
+<translation id="1975680286807856378">Құпия қойындыларды құлыптап қойыңыз.</translation>
 <translation id="1982274314082047220">Оқу режимінің параметрлерін ашу үшін жоғары сырғытыңыз</translation>
 <translation id="1984087999855033707">телефон нөмірі</translation>
 <translation id="1984417487208496350">Қорғау режимін өшіру (ұсынылмайды)</translation>
@@ -235,6 +237,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="200114059308480249">Google іздеу сұрауларында көбірек мәтін қамтылсын ба?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, бекітілген, дыбысы өшірілген инкогнито қойындысы</translation>
 <translation id="2021896219286479412">Толық экран режимін басқару</translation>
+<translation id="2022369817198611683">Gemini-дың ең жақсы функцияларын Chrome құралдар тақтасынан пайдаланыңыз. Бейімдеу үшін басып тұрыңыз.</translation>
 <translation id="2024195579772565064">Іздеу жүйесін жою</translation>
 <translation id="2029669011553795746">Кеңестер хабарландыруларына жазылу терезесі жартылай ашылды.</translation>
 <translation id="2038563949887743358">Жұмыс үстелі сайтын сұрау: қосу</translation>
@@ -325,6 +328,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2366554533468315977">Бұл опцияға арналған интернеттегі баға тарихы</translation>
 <translation id="2367818124433749493">Әзірлеушілерге арналған пернелер тіркесімдері</translation>
 <translation id="2369058545741334020">Оқу режимінде ашу</translation>
+<translation id="2378656072948663224">Google-дың онлайн қауіптерден қорғауға қатысты ең жоғары деңгейі</translation>
 <translation id="2385605401818128172">Тым көп хабарландыру жіберетін сайттарды тексеріп, олардың болашақта хабарландыру жіберуін тоқтатуға болады.</translation>
 <translation id="2386938421315164605">Тақырыптарды көрсету және жасыру</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /> файлын <ph name="FILE_SIZE" /> қайта жүктеп алғыңыз келе ме?</translation>
@@ -465,6 +469,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2923908459366352541">Атау жарамсыз.</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> жады</translation>
 <translation id="2932222164150889403">Пернетақта өзгермейді.</translation>
+<translation id="2936830831577265247">Құлыпталған инкогнито режимі</translation>
 <translation id="2936980480904111527">Chrome хабарландырулары жұмысты оңайлатады</translation>
 <translation id="2939908794993783865">Қосымша өшірулі сайттар</translation>
 <translation id="2940075786175545812">Веб-сайтты мақұлдау не мақұлдамау опциясы</translation>
@@ -831,6 +836,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> бетбелгісі жасалды</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, жазудың таңдалған, бекітілген қойындысы</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 бетбелгі}other{# бетбелгі}}</translation>
+<translation id="4464892890754749268">Бір рет түртіп, браузерді қолдану тарихын жойыңыз.</translation>
 <translation id="4478161224666880173">Бұл сайтта <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтыңызды пайдалануға болады. Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтына кіріңіз.</translation>
 <translation id="4479972344484327217">Chrome браузері үшін <ph name="MODULE" /> орнатылуда…</translation>
 <translation id="4487967297491345095">Chrome жүйесінің барлық қолданба деректері (бүкіл файлдар, параметрлер, аккаунттар, дерекқорлар, т.б.) біржола жойылады.</translation>
@@ -1053,6 +1059,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5404274604891474619">PDF файлын өзгерту мүмкін емес.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> коды <ph name="CLIENT_NAME" /> құрылғысына жіберілсін бе?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) сізді қойындылар тобына қосылуға шақырып жатыр. Сілтемені алған кез келген адам барлық қойындыны өзгерте алады. Сол себепті қосылмай тұрып ойланыңыз. Сілтеме мерзімі 48 сағаттан кейін аяқталады.</translation>
+<translation id="5413221660329682980">Тарихты жылдам жойыңыз</translation>
 <translation id="5414836363063783498">Расталуда…</translation>
 <translation id="5415871492522952905">Келген жеріңізден жалғастыра алуыңыз үшін, тарих пен қойындылар барлық құрылғыңызда болады.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) "<ph name="GROUP_NAME" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады.</translation>

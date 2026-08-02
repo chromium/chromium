@@ -573,6 +573,7 @@
 <translation id="1871284979644508959">Պարտադիր դաշտ</translation>
 <translation id="1871739799120352748">Գինը բարձր է</translation>
 <translation id="1874224422119691492">Անցեք <ph name="SETTINGS" />՝ ընտրելու, թե արդյոք ուզում եք օգտագործել էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
+<translation id="1874749478353075307">Ուղարկվել է Chrome-ին ձեր <ph name="DEVICE_NAME" /> սարքում • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Լուսանկարների դարակ</translation>
 <translation id="1875512691959384712">Google Ձևաթղթեր</translation>
 <translation id="1876399092304384674">Ըստ ամսաթվի</translation>
@@ -2115,6 +2116,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Շապիկներ</translation>
 <translation id="4253168017788158739">Նշում</translation>
+<translation id="4255125583058870090">Վճարային հավելվածը բեռնվում է</translation>
 <translation id="4255487295905690262">Դուք էլփոստով ծանուցումներ կստանաք, երբ որևէ կայքում գնիջեցում լինի։</translation>
 <translation id="425582637250725228">Ձեր կատարած փոփոխությունները հնարավոր է չպահպանվեն։</translation>
 <translation id="4258748452823770588">Սխալ ստորագրություն</translation>
@@ -2992,6 +2994,7 @@
 <translation id="5611398002774823980">Պահել հաշվում</translation>
 <translation id="561165882404867731">Թարգմանեք այս էջը Google Translate-ի միջոցով</translation>
 <translation id="5612720917913232150"><ph name="URL" /> կայքն ուզում է օգտագործել ձեր համակարգչի տեղադրությունը</translation>
+<translation id="5613117810542399920">Ծանոթագրության հետ գործողությունը կրկնվեց</translation>
 <translation id="5613958591683399697">Հարցրեք <ph name="ENGINE_NAME" />-ին</translation>
 <translation id="5614190747811328134">Օգտատիրոջ ծանուցում</translation>
 <translation id="5614520971155863709">Թղթախաղեր</translation>
@@ -3010,6 +3013,7 @@
 <translation id="5640474731385449758">«<ph name="EXTENSION_NAME" />» ընդլայնումն ուզում է <ph name="HANDLER_HOSTNAME" />-ի միջոցով «<ph name="PROTOCOL" />» տեսակի հղումներ բացել <ph name="ORIGIN" />-ից</translation>
 <translation id="5642411781689336699">Ստերեո համակարգեր և բաղադրիչներ</translation>
 <translation id="5642508497713047">CRL-ի ստորագրող</translation>
+<translation id="5643946808525377120">Ուղարկվել է Chrome-ին ձեր <ph name="DEVICE_NAME" /> սարքում</translation>
 <translation id="5644090287519800334">Պատկերների տեղաշարժ երեսի կողմից՝ X առանցքով</translation>
 <translation id="5644128326840674462">Գովազդային ազդերիզ</translation>
 <translation id="5645132789250840550">Պլաստիկ (կիսափայլուն)</translation>
@@ -3051,6 +3055,7 @@
 <translation id="5715150588940290235">Ջնջե՞լ անվտանգության պահված կոդերը</translation>
 <translation id="5715918316982363436"><ph name="WINDOW_COUNT" />ի <ph name="TAB_COUNT" /> այս սարքում</translation>
 <translation id="5716325061445053985">Հպեք՝ ներդիրը ձեր հեռախոսում բացելու համար</translation>
+<translation id="5717281954932320486">Ավտոմատ լրացրեք քարտի տվյալները, երբ վճարում եք առցանց։ Քարտերը ապահով կերպով պահվում են Google Wallet-ում։</translation>
 <translation id="5717509257172454543">Չմշկասահք</translation>
 <translation id="5718326209176373202">Ավելացնել տեքստային ծանոթագրություններ</translation>
 <translation id="5718601519531438273">Ներառում է այնպիսի տեղեկություններ, ինչպիսիք են անձնագրերը և վարորդական վկայականները</translation>
@@ -4047,6 +4052,7 @@
 <translation id="7257453341537973799">Կարիերայի ռեսուրսներ և պլանավորում</translation>
 <translation id="725866823122871198">Չհաջողվեց մասնավոր կապակցում հաստատել <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> տիրույթի հետ, քանի որ ձեր համակարգչի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ են:</translation>
 <translation id="7260075294900977274">Նոր խելացի պանակ, որը կօգնի ձեզ պահել ձեր գնումների բոլոր էջերը մեկ տեղում և ավտոմատ կերպով հետևել գներին, ինչպես նաև ստանալ գների մասին տեղեկություններ և շատ ավելին</translation>
+<translation id="7261463765917514051">Ապահով վճարեք ինքնալրացման օգնությամբ</translation>
 <translation id="7265608370113700582">Հասցեն հասանելի է միայն այս սարքում</translation>
 <translation id="7266094331715305887">հավելվածներ սարքում</translation>
 <translation id="7269151392155523061">Դյուրանցումը չի կարող լինել նույնը, ինչ որոնման ագրեգատորի հիմնաբառն է, որը սահմանված է <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> պարամետրով՝ <ph name="SHORTCUT_NAME" /></translation>
@@ -4617,6 +4623,7 @@
 <translation id="8134058435519644366">Անձնակազմի հավաքագրում և ընտրություն</translation>
 <translation id="8135546115396015134">ձախ ստեղն</translation>
 <translation id="8137456439814903304">Էներգիա մատակարարող և կոմունալ ծառայություն</translation>
+<translation id="8138591088112729119">Աշխատում է Personal Intelligence-ի հիման վրա</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ստեղծվել է 1 ամիս առաջ}one{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}other{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ընթացիկ կանխադրված որոնողական համակարգ։ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-ի տարբեակը՝</translation>
@@ -4630,6 +4637,7 @@
 <translation id="81563721597823545">Հոկեյի հանդերձանք</translation>
 <translation id="815805690561372740">Chrome-ն ունի անվտանգության ներկառուցված գործառույթներ, որոնք պաշտպանում են ձեզ դիտարկման ժամանակ, օրինակ՝ Google Ապահով դիտարկումը, որը <ph name="BEGIN_LINK" />վերջերս վնասագիր է հայտնաբերել<ph name="END_LINK" /> կայքում, որը փորձում էիք այցելել։</translation>
 <translation id="8161095570253161196">Շարունակել դիտարկումը</translation>
+<translation id="8163468049564974856">Միացրեք ինքնալրացումը՝ առցանց վճարումներն անվտանգ կատարելու համար։ Քարտի տվյալները գաղտնագրվում են Google Wallet-ում։</translation>
 <translation id="8163866351304776260">Չորս անցք ձախ կողմում</translation>
 <translation id="8164078261547504572">Ուզո՞ւմ եք գնիջեցումների մասին նամակներ ստանալ</translation>
 <translation id="8169175551046720804">«<ph name="DATA_CONTROLS_KEYS" />» բանալիները հնարավոր չէ ավելացնել նույն բառարանում</translation>
@@ -4993,6 +5001,7 @@
 <translation id="8758529215314160755">Դուք կարող եք փոփոխել ձեր անունը <ph name="ACCOUNT" /> <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
 <translation id="8759274551635299824">Քարտի ժամկետը սպառվել է</translation>
 <translation id="87601671197631245">Այս կայքն օգտագործում է անվտանգության հնացած կազմաձևում, ինչի հետևանքով ձեր տեղեկությունները (օր.` գաղտնաբառերը, հաղորդագրությունները կամ վարկային քարտի տվյալները) այս կայքում լրացնելիս կարող են բացահայտվել։</translation>
+<translation id="8762871163452985706">Ծանոթագրության հետ գործողությունը հետարկվեց</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Հղումն ուղարկվել է «<ph name="DEVICE_NAME" />» սարքից}one{# հղում ուղարկվել է «<ph name="DEVICE_NAME" />» սարքից}other{# հղում ուղարկվել է «<ph name="DEVICE_NAME" />» սարքից}}</translation>
 <translation id="8763927697961133303">USB սարք</translation>
 <translation id="8763986294015493060">Փակել ընթացիկ բացված բոլոր ինկոգնիտո պատուհանները</translation>

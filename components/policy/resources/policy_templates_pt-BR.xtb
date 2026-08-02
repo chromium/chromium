@@ -4767,6 +4767,11 @@ Em plataformas para computador, também é possível desativar o download desse 
 
       Se a política for definida como "Desativada" ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o dispositivo.</translation>
 <translation id="3973371701361892765">Nunca ocultar automaticamente a estante</translation>
+<translation id="3974715256242096353">Se a política for definida como falsa, a página "Nova guia" não permitirá que os usuários personalizem o plano de fundo. Qualquer plano de fundo personalizado já existente será removido permanentemente, mesmo que a política seja definida como verdadeira mais tarde.
+
+Se a política for definida como verdadeira ou não for definida, os usuários poderão personalizar o plano de fundo da página "Nova guia".
+
+Observação: no Android, a política é aplicada ao navegador somente após a reinicialização.</translation>
 <translation id="3977304360459208438">Usar a configuração padrão para pacotes de criptografia 3DES em TLS</translation>
 <translation id="3977906634350977040">Se a política for ativada, o host de acesso remoto poderá usar autenticações com PIN e pareamento ao aceitar conexões de clientes.
 

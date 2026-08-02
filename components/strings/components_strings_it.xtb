@@ -570,6 +570,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1871284979644508959">Campo obbligatorio</translation>
 <translation id="1871739799120352748">Prezzo alto</translation>
 <translation id="1874224422119691492">Puoi scegliere se utilizzare il blocco schermo per inserire le password in <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">Inviato a Chrome sul tuo <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Vassoio foto</translation>
 <translation id="1875512691959384712">Moduli Google</translation>
 <translation id="1876399092304384674">Per data</translation>
@@ -2108,6 +2109,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-shirt</translation>
 <translation id="4253168017788158739">Nota</translation>
+<translation id="4255125583058870090">Caricamento dell'app per pagamenti in corso…</translation>
 <translation id="4255487295905690262">Riceverai avvisi via email se il prezzo calerà su qualsiasi sito.</translation>
 <translation id="425582637250725228">Le modifiche apportate potrebbero non essere salvate.</translation>
 <translation id="4258748452823770588">Firma errata</translation>
@@ -2982,6 +2984,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5611398002774823980">Salva nell'account</translation>
 <translation id="561165882404867731">Traduci la pagina con Google Traduttore</translation>
 <translation id="5612720917913232150"><ph name="URL" /> vuole usare la posizione del computer</translation>
+<translation id="5613117810542399920">Annotazione ripristinata</translation>
 <translation id="5613958591683399697">Chiedi a <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Notifica all'utente</translation>
 <translation id="5614520971155863709">Giochi di carte</translation>
@@ -3000,6 +3003,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5640474731385449758">L'estensione "<ph name="EXTENSION_NAME" />" vuole aprire link <ph name="PROTOCOL" /> in <ph name="ORIGIN" /> tramite <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Sistemi e componenti stereo</translation>
 <translation id="5642508497713047">Firmatario CRL</translation>
+<translation id="5643946808525377120">Inviato a Chrome sul tuo <ph name="DEVICE_NAME" /></translation>
 <translation id="5644090287519800334">Spostamento X lato 1 immagine</translation>
 <translation id="5644128326840674462">Banner di promozione</translation>
 <translation id="5645132789250840550">Plastica (semilucida)</translation>
@@ -3041,6 +3045,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5715150588940290235">Eliminare i codici di sicurezza salvati?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> di <ph name="WINDOW_COUNT" /> su questo dispositivo</translation>
 <translation id="5716325061445053985">Tocca per aprire la scheda sullo smartphone</translation>
+<translation id="5717281954932320486">Inserisci automaticamente i dati della carta quando fai il checkout online. Le carte vengono salvate in modo sicuro su Google Wallet.</translation>
 <translation id="5717509257172454543">Pattinaggio su ghiaccio</translation>
 <translation id="5718326209176373202">Aggiungi annotazioni di testo</translation>
 <translation id="5718601519531438273">Include informazioni come passaporti e patenti di guida</translation>
@@ -4037,6 +4042,7 @@ Ulteriori dettagli:
 <translation id="7257453341537973799">Pianificazione carriera e risorse</translation>
 <translation id="725866823122871198">Impossibile stabilire una connessione privata con il sito <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perché data e ora del computer (<ph name="DATE_AND_TIME" />) sono sbagliate.</translation>
 <translation id="7260075294900977274">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere insight sul prezzo e altro ancora</translation>
+<translation id="7261463765917514051">Fai il checkout in tutta sicurezza con la compilazione automatica</translation>
 <translation id="7265608370113700582">L'indirizzo è disponibile solo su questo dispositivo</translation>
 <translation id="7266094331715305887">app sul dispositivo</translation>
 <translation id="7269151392155523061">La scorciatoia non può essere uguale alla parola chiave dell'aggregatore di ricerca definita da <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4608,6 +4614,7 @@ Ulteriori dettagli:
 <translation id="8134058435519644366">Selezione e assunzione di personale</translation>
 <translation id="8135546115396015134">tasto sinistro</translation>
 <translation id="8137456439814903304">Energia e servizi pubblici</translation>
+<translation id="8138591088112729119">Con tecnologia Personal Intelligence</translation>
 <translation id="814071672416123670">Impossibile copiare i contenuti a causa delle policy della tua organizzazione</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creato 1 mese fa}other{Creato {NUM_MONTHS} mesi fa}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, valore predefinito corrente. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4622,6 +4629,7 @@ Ulteriori dettagli:
 <translation id="81563721597823545">Attrezzature e articoli per hockey</translation>
 <translation id="815805690561372740">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che <ph name="BEGIN_LINK" />di recente ha rilevato malware<ph name="END_LINK" /> sul sito che hai cercato di visitare.</translation>
 <translation id="8161095570253161196">Riprendi la navigazione</translation>
+<translation id="8163468049564974856">Attiva la compilazione automatica per fare il checkout online in sicurezza. I dati della carta sono criptati in Google Wallet.</translation>
 <translation id="8163866351304776260">Perforatura quadrupla a sinistra</translation>
 <translation id="8164078261547504572">Vuoi ricevere email in caso di calo dei prezzo?</translation>
 <translation id="8169175551046720804">Impossibile impostare le chiavi "<ph name="DATA_CONTROLS_KEYS" />" nello stesso dizionario</translation>
@@ -4985,6 +4993,7 @@ Ulteriori dettagli:
 <translation id="8758529215314160755">Puoi modificare il tuo nome nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">La carta è scaduta</translation>
 <translation id="87601671197631245">Le tue informazioni (ad esempio password, messaggi o numeri di carte di credito) inviate a questo sito potrebbero essere a rischio, poiché il sito utilizza una configurazione di sicurezza obsoleta.</translation>
+<translation id="8762871163452985706">Annotazione annullata</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Link inviato da <ph name="DEVICE_NAME" />}other{# link inviati da <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Chiudi tutte le finestre Incognito aperte al momento</translation>

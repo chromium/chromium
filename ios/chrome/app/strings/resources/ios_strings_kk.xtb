@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} қойынды}other{{count} қойынды}}</translation>
 <translation id="1082554859195167538">Сізге арналған өнім туралы пікірлер</translation>
 <translation id="1084365883616172403">Facebook жариялау аяқталды.</translation>
+<translation id="108485301461714610">Google Search ЖИ режимі және байланысқан қолданбалар</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ашылмады</translation>
 <translation id="1086486568852410168">Google Lens арқылы іздеу</translation>
 <translation id="1096992026380844478">Синхрондау параметрлері соңғы cақтық көшірме деректері негізінде қалпына келтіріледі. <ph name="BEGIN_LINK" />Нені синхрондай алатыныңызды көріңіз<ph name="END_LINK" />.</translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">Белсенді емес қойындылар</translation>
 <translation id="1231733316453485619">Синхрондау қосылсын ба?</translation>
 <translation id="1238794841176717085">Осы бетті бөлісу</translation>
+<translation id="1248901457873510750">"Төлемдер" бөлімін ашыңыз.</translation>
 <translation id="1253032109800629289">"Баға бақылау туралы хабарландырулар алу" модулін жасыру</translation>
 <translation id="1254424942107648268">Алдыңғысын табу</translation>
 <translation id="1258491128795710625">Жаңалықтар</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">Камерамен сатып алыңыз және аударыңыз.</translation>
+<translation id="4742142641516465928">"Автотолтыру және құпия сөздер" бөлімін ашыңыз.</translation>
 <translation id="4742407542027196863">Құпия сөздерді басқару...</translation>
 <translation id="4744428388659507035">Бетбелгілерді барлық құрылғыда пайдалану үшін параметрлерде "Бетбелгілер" опциясын қосыңыз.</translation>
 <translation id="4746926359847517643">Оларды әрдайым тарихқа қайтара аласыз.</translation>

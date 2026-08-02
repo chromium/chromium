@@ -228,6 +228,8 @@
 <translation id="197288927597451399">Пакінуць</translation>
 <translation id="1973912524893600642">Захаваць даныя</translation>
 <translation id="1974060860693918893">Пашыраныя налады</translation>
+<translation id="1975298278721498749">Стварэнне, захоўванне і аўтаматычнае запаўненне надзейных пароляў</translation>
+<translation id="1975680286807856378">Блакіруйце прыватныя ўкладкі</translation>
 <translation id="1982274314082047220">Каб адкрыць налады рэжыму чытання, правядзіце пальцам уверх</translation>
 <translation id="1984087999855033707">нумар тэлефона</translation>
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">Дадаваць кантэкст у пошукавыя запыты Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта з выключаным гукам</translation>
 <translation id="2021896219286479412">Кіраванне сайтам на ўвесь экран</translation>
+<translation id="2022369817198611683">Выкарыстоўвайце ўсе магчымасці Gemini з панэлі інструментаў Chrome. Каб наладзіць, націсніце і ўтрымлівайце.</translation>
 <translation id="2024195579772565064">Выдаленне пошукавай сістэмы</translation>
 <translation id="2029669011553795746">Прапанова ўключыць апавяшчэнні з парадамі адкрыта на палову экрана</translation>
 <translation id="2038563949887743358">Уключыць запытванне версіі для настольнага камп’ютара</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">Гісторыя змянення цаны на гэты тавар у інтэрнэце</translation>
 <translation id="2367818124433749493">Спалучэнні клавіш для распрацоўшчыкаў</translation>
 <translation id="2369058545741334020">Адкрыць у рэжыме чытання</translation>
+<translation id="2378656072948663224">Найвышэйшы ўзровень абароны ад пагроз у інтэрнэце, прапанаваны Google</translation>
 <translation id="2385605401818128172">Вы можаце праглядзець сайты, які адпраўляюць зашмат апавяшчэнняў, і адклікаць дазвол на адпраўку новых апавяшчэнняў</translation>
 <translation id="2386938421315164605">Хавайце і рабіце бачнымі тэмы</translation>
 <translation id="2390510615457643724">Спампаваць файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) зноў?</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">Няправільная назва.</translation>
 <translation id="2932150158123903946">Сховішча Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Мова ўводу з клавіятуры не зменіцца</translation>
+<translation id="2936830831577265247">Рэжым інкогніта заблакіраваны</translation>
 <translation id="2936980480904111527">Апавяшчэнні Chrome спрашчаюць жыццё</translation>
 <translation id="2939908794993783865">Дадатковыя неактыўныя сайты</translation>
 <translation id="2940075786175545812">Старонка, на якой можна ўхваліць вэб-сайт</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">Закладка дададзена ў папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка, на якой ідзе запіс</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 закладка}one{# закладка}few{# закладкі}many{# закладак}other{# закладкі}}</translation>
+<translation id="4464892890754749268">Выдаляйце гісторыю прагляду сайтаў адным дотыкам</translation>
 <translation id="4478161224666880173">Вы можаце выкарыстоўваць уліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на гэтым вэб-сайце. Каб працягнуць, увайдзіце ва ўліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Усталёўваецца <ph name="MODULE" /> для Chrome…</translation>
 <translation id="4487967297491345095">Усе даныя праграмы Chrome будуць назаўсёды выдалены. Гэта датычыцца ўсіх файлаў, налад, уліковых запісаў, баз даных і г. д.</translation>
@@ -1053,6 +1059,7 @@
 <translation id="5404274604891474619">Немагчыма рэдагаваць файл PDF</translation>
 <translation id="5409881200985013443">Адправіць код <ph name="ONE_TIME_CODE" /> на прыладу "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) прапануе вам далучыцца да групы ўкладак. Любы карыстальнік, які мае спасылку, можа рэдагаваць усе ўкладкі, таму будзьце асцярожныя пры далучэнні. Тэрмін дзеяння спасылкі скончыцца праз 48 гадз.</translation>
+<translation id="5413221660329682980">Хуткае выдаленне гісторыі</translation>
 <translation id="5414836363063783498">Ідзе праверка…</translation>
 <translation id="5415871492522952905">Гісторыя і ўкладкі будуць захоўвацца на ўсіх вашых прыладах, каб вы заўжды маглі працягнуць рабіць на любой з гэтых прылад тое, што перад гэтым рабілі на іншай</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) адразу страціць доступ да групы ўкладак "<ph name="GROUP_NAME" />"</translation>

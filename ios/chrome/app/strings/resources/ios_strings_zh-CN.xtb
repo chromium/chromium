@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
 <translation id="1082554859195167538">为您推荐的商品评价</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
+<translation id="108485301461714610">Google 搜索 AI 模式和关联的应用</translation>
 <translation id="1085677983426914530">无法打开“<ph name="FILENAME" />”</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1096992026380844478">系统将根据上次备份来恢复您的同步设置。<ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">闲置标签页</translation>
 <translation id="1231733316453485619">开启同步功能？</translation>
 <translation id="1238794841176717085">分享此页面</translation>
+<translation id="1248901457873510750">打开“支付方式”</translation>
 <translation id="1253032109800629289">隐藏“接收价格跟踪通知”</translation>
 <translation id="1254424942107648268">查找上一个</translation>
 <translation id="1258491128795710625">新变化</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4738968082443868320">Google 云端硬盘</translation>
 <translation id="474209246745757965">使用摄像头拍照购物和进行翻译</translation>
+<translation id="4742142641516465928">打开“自动填充和密码”</translation>
 <translation id="4742407542027196863">管理密码…</translation>
 <translation id="4744428388659507035">若要将书签同步到所有设备上，请在设置中开启“书签”。</translation>
 <translation id="4746926359847517643">您随时可以从历史记录中重新打开这些标签页。</translation>

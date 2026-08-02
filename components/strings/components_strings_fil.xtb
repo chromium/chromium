@@ -570,6 +570,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1871284979644508959">Kinakailangang field</translation>
 <translation id="1871739799120352748">Mataas ang presyo</translation>
 <translation id="1874224422119691492">Puwede mong baguhin kung gagamitin mo ang iyong lock ng screen para sa paglalagay ng mga password sa <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">Ipinadala sa Chrome sa iyong <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Tray para sa Larawan</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">Ayon sa petsa</translation>
@@ -2111,6 +2112,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Mga Kamiseta</translation>
 <translation id="4253168017788158739">Tala</translation>
+<translation id="4255125583058870090">Nilo-load ang app sa pagbabayad</translation>
 <translation id="4255487295905690262">Makakatanggap ka ng mga alerto sa email kung bababa ang presyo sa anumang site.</translation>
 <translation id="425582637250725228">Maaaring hindi ma-save ang mga pagbabagong ginawa mo.</translation>
 <translation id="4258748452823770588">Maling lagda</translation>
@@ -2985,6 +2987,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5611398002774823980">I-save sa account</translation>
 <translation id="561165882404867731">Isalin ang page na ito gamit ang Google Translate</translation>
 <translation id="5612720917913232150">Gustong gamitin ng <ph name="URL" /> ang lokasyon ng iyong computer</translation>
+<translation id="5613117810542399920">Na-redo ang anotasyon</translation>
 <translation id="5613958591683399697">Magtanong sa <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Notice sa User</translation>
 <translation id="5614520971155863709">Mga Card Game</translation>
@@ -3003,6 +3006,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5640474731385449758">Gustong magbukas ng extension na "<ph name="EXTENSION_NAME" />" ng mga link sa <ph name="PROTOCOL" /> sa <ph name="ORIGIN" /> sa pamamagitan ng <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Mga Stereo System at Component</translation>
 <translation id="5642508497713047">Tagapaglagda ng CRL</translation>
+<translation id="5643946808525377120">Ipinadala sa Chrome sa iyong <ph name="DEVICE_NAME" /></translation>
 <translation id="5644090287519800334">Pag-shift ng gilid 1 larawan X</translation>
 <translation id="5644128326840674462">Banner ng promosyon</translation>
 <translation id="5645132789250840550">Plastic (Semi-Gloss)</translation>
@@ -3044,6 +3048,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5715150588940290235">I-delete ang mga naka-save na panseguridad na code?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> mula sa <ph name="WINDOW_COUNT" /> sa device na ito</translation>
 <translation id="5716325061445053985">I-tap para buksan ang tab sa iyong telepono</translation>
+<translation id="5717281954932320486">Awtomatikong punan ang mga detalye ng card kapag nag-check out ka online. Secure na sine-save ang mga card sa Google Wallet.</translation>
 <translation id="5717509257172454543">Ice Skating</translation>
 <translation id="5718326209176373202">Magdagdag ng mga anotasyon ng text</translation>
 <translation id="5718601519531438273">May kasamang impormasyon gaya ng mga passport at lisensya sa pagmamaneho</translation>
@@ -4041,6 +4046,7 @@ Mga karagdagang detalye:
 <translation id="7257453341537973799">Mga Resource at Pagpaplano para sa Career</translation>
 <translation id="725866823122871198">Hindi makapagtatag ng pribadong koneksyon sa <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> dahil mali ang petsa at oras ng iyong computer (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Isang bagong smart folder na tumutulong sa iyong i-save ang lahat ng iyong page sa pamimili sa iisang lugar, at awtomatikong subaybayan ang mga presyo, makakuha ng mga insight sa presyo, at higit pa</translation>
+<translation id="7261463765917514051">Secure na mag-check out gamit ang autofill</translation>
 <translation id="7265608370113700582">Available lang sa device na ito ang address</translation>
 <translation id="7266094331715305887">mga app sa device</translation>
 <translation id="7269151392155523061">Hindi puwedeng magkapareho ang shortcut at ang keyword ng aggregator ng paghahanap na tinutukoy ng <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4612,6 +4618,7 @@ Mga karagdagang detalye:
 <translation id="8134058435519644366">Pag-recruit at Pagpapasok ng Tauhan</translation>
 <translation id="8135546115396015134">pakaliwang key</translation>
 <translation id="8137456439814903304">Enerhiya at Mga Utility</translation>
+<translation id="8138591088112729119">Pinapagana ng Personal Intelligence</translation>
 <translation id="814071672416123670">Hindi makopya ang content dahil sa mga patakaran ng iyong organisasyon</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ginawa 1 buwan ang nakalipas}one{Ginawa {NUM_MONTHS} buwan ang nakalipas}other{Ginawa {NUM_MONTHS} na buwan ang nakalipas}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, kasalukuyang default. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4626,6 +4633,7 @@ Mga karagdagang detalye:
 <translation id="81563721597823545">Kagamitan sa Hockey</translation>
 <translation id="815805690561372740">May mga built-in na pangkaligtasang feature ang Chrome para maprotektahan ka habang nagba-browse ka — tulad ng Ligtas na Pag-browse sa Google, na <ph name="BEGIN_LINK" />nakakita kamakailan ng malware<ph name="END_LINK" /> sa site na sinubukan mong bisitahin.</translation>
 <translation id="8161095570253161196">Ipagpatuloy ang pag-browse</translation>
+<translation id="8163468049564974856">I-on ang autofill para ligtas na mag-check out online. Naka-encrypt sa Google Wallet ang mga detalye ng iyong card.</translation>
 <translation id="8163866351304776260">Quad punch left</translation>
 <translation id="8164078261547504572">Gusto mo bang makatanggap ng mga email kapag bumaba ang mga presyo?</translation>
 <translation id="8169175551046720804">Hindi puwedeng itakda sa iisang dictionary ang mga key na "<ph name="DATA_CONTROLS_KEYS" />"</translation>
@@ -4989,6 +4997,7 @@ Mga karagdagang detalye:
 <translation id="8758529215314160755">Puwede mong i-edit ang iyong pangalan sa <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> mong <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Nag-expire na ang card na ito</translation>
 <translation id="87601671197631245">Gumagamit ang site na ito ng lumang configuration sa seguridad, na posibleng maglantad ng iyong impormasyon (halimbawa, mga password, mensahe, o credit card) kapag ipinadala ito sa site na ito.</translation>
+<translation id="8762871163452985706">Na-undo ang anotasyon</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Naipadala ang link mula sa <ph name="DEVICE_NAME" />}one{Naipadala ang # link mula sa <ph name="DEVICE_NAME" />}other{Naipadala ang # na link mula sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8763986294015493060">Isara ang lahat ng Incognito window na kasalukuyang nakabukas</translation>

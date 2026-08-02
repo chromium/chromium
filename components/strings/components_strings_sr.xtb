@@ -350,6 +350,7 @@
 <translation id="1539840569003678498">Пријава је послата:</translation>
 <translation id="1542105669288201090">Пословно образовање</translation>
 <translation id="1542830386724426410">Прикажи доступне предности и награде за картицу при плаћању. Важе услови издавача. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Сазнајте више<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">На основу смерница организације, садржај који сте копирали скенира се у потрази за осетљивим информацијама. Налепљивање може да буде дозвољено када се скенирање заврши.</translation>
 <translation id="1545757265410828525">Историја цена</translation>
 <translation id="1546286808622193216">Упоредите предности картица помоћу Gemini-ја</translation>
 <translation id="1549470594296187301">JavaScript мора да буде омогућен да бисте користили ову функцију.</translation>
@@ -569,6 +570,7 @@
 <translation id="1871284979644508959">Обавезно поље</translation>
 <translation id="1871739799120352748">Цена је висока</translation>
 <translation id="1874224422119691492">Можете да промените да ли ћете користити откључавање екрана за попуњавање лозинки у: <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">Послато у Chrome на <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Фиока за слике</translation>
 <translation id="1875512691959384712">Google упитници</translation>
 <translation id="1876399092304384674">Према датуму</translation>
@@ -1488,6 +1490,7 @@
 <translation id="3293642807462928945">Сазнајте више о смерницама <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте лозинке и управљајте њима у подешавањима Chrome-а</translation>
 <translation id="3299098170013242198">Windows Hello је укључен за попуњавање лозинки</translation>
+<translation id="3299197721044635447">Због смерница организације није успело налепљивање садржаја ван контекста Chrome-а којим се управља</translation>
 <translation id="3299720788264079132">Дошло је до грешке док сте користили <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30×42 in</translation>
 <translation id="3303855915957856445">Нису пронађени резултати претраге</translation>
@@ -2038,6 +2041,7 @@
 <translation id="4153446078232988116"><ph name="SITE" /> не подржава безбедну везу са HTTPS-ом</translation>
 <translation id="4153858337812834972">Најновије картице</translation>
 <translation id="4154277373259957087">Chrome ће сада потврдити да сте то ви пре него што унесе начине плаћања. То можете да ажурирате у сваком тренутку у одељку <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="4157273919218514718">Омогућава Персонализована интелигенција помоћу Gemini-ја. <ph name="BEGIN_LINK" />Управљајте подешавањима<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">Љубичаста</translation>
 <translation id="4165422751765527461">Отвара чланак центра за помоћ на новој картици</translation>
 <translation id="4165986682804962316">Подешавања сајта</translation>
@@ -2109,6 +2113,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Мајице</translation>
 <translation id="4253168017788158739">Напомена</translation>
+<translation id="4255125583058870090">Апликација за плаћање се учитава</translation>
 <translation id="4255487295905690262">Добијаћете обавештења имејлом ако се цена снизи на било ком сајту.</translation>
 <translation id="425582637250725228">Промене које сте унели можда неће бити сачуване.</translation>
 <translation id="4258748452823770588">Неисправан потпис</translation>
@@ -2983,6 +2988,7 @@
 <translation id="5611398002774823980">Сачувај на налогу</translation>
 <translation id="561165882404867731">Преведите ову страницу помоћу Google преводиоца</translation>
 <translation id="5612720917913232150"><ph name="URL" /> жели да користи локацију рачунара</translation>
+<translation id="5613117810542399920">Напомена је поновљена</translation>
 <translation id="5613958591683399697">Питајте <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Обавештење о кориснику</translation>
 <translation id="5614520971155863709">Карташке игре</translation>
@@ -3001,6 +3007,7 @@
 <translation id="5640474731385449758">Додатак <ph name="EXTENSION_NAME" /> жели да отвори <ph name="PROTOCOL" /> линк на домену <ph name="ORIGIN" /> преко хоста <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Стерео системи и компоненте</translation>
 <translation id="5642508497713047">CRL потписник</translation>
+<translation id="5643946808525377120">Послато у Chrome на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="5644090287519800334">Померање слике 1. стране по X оси</translation>
 <translation id="5644128326840674462">Промотивни банер</translation>
 <translation id="5645132789250840550">Пластика (полусјајна)</translation>
@@ -3042,6 +3049,7 @@
 <translation id="5715150588940290235">Желите да избришете сачуване безбедносне кодове?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> из <ph name="WINDOW_COUNT" /> на овом уређају</translation>
 <translation id="5716325061445053985">Додирните да бисте отворили картицу на телефону</translation>
+<translation id="5717281954932320486">Аутоматски попуњавајте податке о картици када плаћате онлајн. Картице се безбедно чувају у Google новчанику.</translation>
 <translation id="5717509257172454543">Клизање на леду</translation>
 <translation id="5718326209176373202">Додај текстуалне напомене</translation>
 <translation id="5718601519531438273">Обухвата информације као што су пасоши и возачке дозволе</translation>
@@ -4038,6 +4046,7 @@
 <translation id="7257453341537973799">Ресурси за каријеру и планирање каријере</translation>
 <translation id="725866823122871198">Није могуће успоставити приватну везу са доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> јер време и датум на рачунару (<ph name="DATE_AND_TIME" />) нису тачни.</translation>
 <translation id="7260075294900977274">Нов паметни фолдер који вам помаже да сачувате све странице за куповину на једном месту и аутоматски пратите цене, добијате увид у цене и друго</translation>
+<translation id="7261463765917514051">Плаћајте безбедно помоћу аутоматског попуњавања</translation>
 <translation id="7265608370113700582">Адреса је доступна само на овом уређају</translation>
 <translation id="7266094331715305887">апликације на уређају</translation>
 <translation id="7269151392155523061">Пречица не може да буде иста као кључна реч агрегатора претраге коју дефинише <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4063,6 +4072,7 @@
 <translation id="7310392214323165548">Уређај ће се рестартовати веома брзо</translation>
 <translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
 <translation id="7313107491291103073">Ваша организација је означила овај сајт јер можда крши смернице.</translation>
+<translation id="7315372670898739748">Повезивање није успело. Пробајте поново касније</translation>
 <translation id="7316521168101843192">Фајл се чува на Microsoft OneDrive-у</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помоћ при повезивању</translation>
@@ -4256,6 +4266,7 @@
 <translation id="7575800019233204241">„Веза није приватна“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“ или „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ или „Грешка са SSL сертификатом“</translation>
 <translation id="7575887283389198269">Мобилни телефони</translation>
 <translation id="7579113844074980463"><ph name="MANUFACTURER" /> таблет</translation>
+<translation id="7579227976546039122">верзија за програмере</translation>
 <translation id="7579442726219254162">Непозната променљива „<ph name="VARIABLE" />“ у управљаној конфигурацији апликације <ph name="APPLICATION_ID" />.</translation>
 <translation id="7581199239021537589">Померање слике 2. стране по Y оси</translation>
 <translation id="7582602800368606489">Брзо направите нов догађај у Google календару</translation>
@@ -4327,6 +4338,7 @@
 <translation id="767550629621587224">Перфориране картице</translation>
 <translation id="7675756033024037212">Скроловање и зумирање није дозвољено</translation>
 <translation id="7676643023259824263">Потражите текст у привременој меморији, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Организација надгледа копирање</translation>
 <translation id="7678730592635586336">Поново сними видео</translation>
 <translation id="7679287273775285018">Платите помоћу е-новчаника</translation>
 <translation id="7679367271685653708">Прегледајте историју прегледања и управљајте њом у подешавањима Chrome-а</translation>
@@ -4608,6 +4620,8 @@
 <translation id="8134058435519644366">Запошљавање и избор кадрова</translation>
 <translation id="8135546115396015134">леви тастер</translation>
 <translation id="8137456439814903304">Производња и дистрибуција енергије</translation>
+<translation id="8138591088112729119">Омогућава Персонализована интелигенција</translation>
+<translation id="814071672416123670">Копирање садржаја није успело због смерница организације</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Направљено је пре 1 месец}one{Направљено је пре {NUM_MONTHS} месец}few{Направљено је пре {NUM_MONTHS} месеца}other{Направљено је пре {NUM_MONTHS} месеци}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, тренутно подразумевани. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF верзија:</translation>
@@ -4621,6 +4635,7 @@
 <translation id="81563721597823545">Опрема за хокеј</translation>
 <translation id="815805690561372740">Chrome има уграђене безбедносне функције које вас штите током прегледања – као што је Google безбедно прегледање, које је <ph name="BEGIN_LINK" />недавно пронашло малвер<ph name="END_LINK" /> на сајту који сте пробали да посетите.</translation>
 <translation id="8161095570253161196">Настави прегледање</translation>
+<translation id="8163468049564974856">Укључите аутоматско попуњавање да бисте безбедно плаћали онлајн. Подаци о картици се шифрују у Google новчанику.</translation>
 <translation id="8163866351304776260">Четвороструко бушење на левој страни</translation>
 <translation id="8164078261547504572">Желите ли имејлове када цене падну?</translation>
 <translation id="8169175551046720804">Кључеви <ph name="DATA_CONTROLS_KEYS" /> не могу да се подесе у истом речнику</translation>
@@ -4985,6 +5000,7 @@
 <translation id="8758529215314160755">Можете да измените име на <ph name="BEGIN_LINK" />Google налогу<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Ова картица је истекла</translation>
 <translation id="87601671197631245">Овај сајт користи застарелу безбедносну конфигурацију која може да открије ваше информације (на пример, лозинке, поруке или кредитне картице) када се шаљу том сајту.</translation>
+<translation id="8762871163452985706">Напомена је опозвана</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Линк је послат са уређаја <ph name="DEVICE_NAME" />}one{# линк је послат са уређаја <ph name="DEVICE_NAME" />}few{# линка су послата са уређаја <ph name="DEVICE_NAME" />}other{# линкова је послато са уређаја <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB уређај</translation>
 <translation id="8763986294015493060">Затворите све прозоре без архивирања који су тренутно отворени</translation>
@@ -5334,6 +5350,7 @@
 <translation id="987264212798334818">Опште</translation>
 <translation id="988159990683914416">Верзија за програмере</translation>
 <translation id="989988560359834682">Измена адресе</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
 <translation id="991936891556421157">Обућа</translation>
 <translation id="992110854164447044">Виртуелна картица крије вашу стварну картицу да би вас заштитила од потенцијалне преваре. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

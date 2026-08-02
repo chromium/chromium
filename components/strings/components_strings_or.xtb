@@ -570,6 +570,7 @@
 <translation id="1871284979644508959">ଆବଶ୍ୟକୀୟ ଫିଲ୍ଡ</translation>
 <translation id="1871739799120352748">ମୂଲ୍ୟ ଅଧିକ ଅଟେ</translation>
 <translation id="1874224422119691492">ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂରଣ କରିବା ପାଇଁ <ph name="SETTINGS" />ରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ବ୍ୟବହାର କରିବେ ନା ନାହିଁ ତାହା ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
+<translation id="1874749478353075307">ଆପଣଙ୍କ <ph name="DEVICE_NAME" />ରେ Chromeକୁ ପଠାଯାଇଛି • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">ଫଟୋ ଟ୍ରେ</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">ତାରିଖ ଅନୁସାରେ</translation>
@@ -2108,6 +2109,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">ଟି-ସାର୍ଟ</translation>
 <translation id="4253168017788158739">ନୋଟ୍</translation>
+<translation id="4255125583058870090">ପେମେଣ୍ଟ ଲୋଡ ହେଉଛି</translation>
 <translation id="4255487295905690262">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆପଣ ଇମେଲ ଆଲର୍ଟ ପାଇବେ।</translation>
 <translation id="425582637250725228">ଆପଣ କରିଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସେଭ୍ ହୋଇନପାରେ।</translation>
 <translation id="4258748452823770588">ଖରାପ ସ୍ବାକ୍ଷର</translation>
@@ -2982,6 +2984,7 @@
 <translation id="5611398002774823980">ଆକାଉଣ୍ଟରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="561165882404867731">Google Translate ସାହାଯ୍ୟରେ ଏହି ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ର ଲୋକେସନ୍‌ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
+<translation id="5613117810542399920">ଏନୋଟେସନ ରିଡୁ କରାଯାଇଛି</translation>
 <translation id="5613958591683399697"><ph name="ENGINE_NAME" />କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="5614190747811328134">ୟୁଜରଙ୍କ ବିଜ୍ଞପ୍ତି</translation>
 <translation id="5614520971155863709">କାର୍ଡ ଗେମଗୁଡ଼ିକ</translation>
@@ -3000,6 +3003,7 @@
 <translation id="5640474731385449758">ଏକ୍ସଟେନସନ "<ph name="EXTENSION_NAME" />" <ph name="HANDLER_HOSTNAME" /> ମାଧ୍ୟମରେ <ph name="ORIGIN" />ରେ <ph name="PROTOCOL" /> ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବାକୁ ଚାହେଁ</translation>
 <translation id="5642411781689336699">ଷ୍ଟେରିଓ ସିଷ୍ଟମ ଏବଂ କମ୍ପୋନେଣ୍ଟ</translation>
 <translation id="5642508497713047">CRL ସ୍ୱାକ୍ଷରକାରୀ</translation>
+<translation id="5643946808525377120">ଆପଣଙ୍କ <ph name="DEVICE_NAME" />ରେ Chromeକୁ ପଠାଯାଇଛି।</translation>
 <translation id="5644090287519800334">ସାଇଡ୍ 1 ଇମେଜ୍ X ସିଫ୍ଟ</translation>
 <translation id="5644128326840674462">ପ୍ରଚାର ବେନର</translation>
 <translation id="5645132789250840550">ପ୍ଲାଷ୍ଟିକ (ସେମି-ଗ୍ଲସ)</translation>
@@ -3041,6 +3045,7 @@
 <translation id="5715150588940290235">ସେଭ କରାଯାଇଥିବା ସୁରକ୍ଷା କୋଡଗୁଡ଼ିକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="5715918316982363436">ଏହି ଡିଭାଇସରେ <ph name="WINDOW_COUNT" />ରୁ <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">ଆପଣଙ୍କ ଫୋନରେ ଟାବକୁ ଖୋଲିବା ପାଇଁ ଟାପ କରନ୍ତୁ</translation>
+<translation id="5717281954932320486">ଆପଣ ଅନଲାଇନରେ ଚେକ ଆଉଟ କରିବା ସମୟରେ କାର୍ଡ ବିବରଣୀ ସ୍ୱତଃ ପୂରଣ କରନ୍ତୁ। କାର୍ଡଗୁଡ଼ିକୁ Google Walletରେ ସୁରକ୍ଷିତ ଭାବେ ସେଭ କରାଯାଇଛି।</translation>
 <translation id="5717509257172454543">ଆଇସ ସ୍କେଟିଂ</translation>
 <translation id="5718326209176373202">ଟେକ୍ସଟ ଏନୋଟେସନ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5718601519531438273">ପାସପୋର୍ଟ ଏବଂ ଡ୍ରାଇଭିଂ ଲାଇସେନ୍ସ ପରି ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ</translation>
@@ -4036,6 +4041,7 @@
 <translation id="7257453341537973799">କ୍ୟାରିଅର ରିସୋର୍ସ ଏବଂ ପ୍ଲାନିଂ</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ରୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ର ତାରିଖ ଓ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ୍‍ ଅଟେ।</translation>
 <translation id="7260075294900977274">ଆପଣଙ୍କୁ ଆପଣଙ୍କର ସମସ୍ତ ପୃଷ୍ଠାକୁ ଗୋଟିଏ ସ୍ଥାନରେ ସେଭ କରିବାରେ, ସ୍ୱତଃ ମୂଲ୍ୟ ଟ୍ରାକ କରିବାରେ, ମୂଲ୍ୟ ଇନସାଇଟ ପାଇବାରେ ଏବଂ ଆହୁରି ଅନେକ କିଛି କରିବାରେ ସାହାଯ୍ୟ କରୁଥିବା ଏକ ନୂଆ ସ୍ମାର୍ଟ ଫୋଲ୍ଡର</translation>
+<translation id="7261463765917514051">ଅଟୋଫିଲ ସହ ସୁରକ୍ଷିତ ଭାବେ ଚେକ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="7265608370113700582">ଠିକଣାଟି କେବଳ ଏହି ଡିଭାଇସରେ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7266094331715305887">ଡିଭାଇସରେ ଥିବା ଆପ୍ସ</translation>
 <translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥିବା ସର୍ଚ୍ଚ ଏଗ୍ରିଗେଟର କୀୱାର୍ଡ ସହ ସର୍ଟକଟ ସମାନ ହୋଇପାରିବ ନାହିଁ: <ph name="SHORTCUT_NAME" /></translation>
@@ -4607,6 +4613,7 @@
 <translation id="8134058435519644366">ନିଯୁକ୍ତି ଓ କର୍ମଚାରୀ</translation>
 <translation id="8135546115396015134">ବାମ କୀ</translation>
 <translation id="8137456439814903304">ଏନର୍ଜି ଏବଂ ୟୁଟିଲିଟିଗୁଡ଼ିକ</translation>
+<translation id="8138591088112729119">ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="814071672416123670">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତିଗୁଡ଼ିକ ଯୋଗୁଁ ବିଷୟବସ୍ତୁକୁ କପି କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_MONTHS} ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ବର୍ତ୍ତମାନର ଡିଫଲ୍ଟ। <ph name="MARKETING_SNIPPET" /></translation>
@@ -4621,6 +4628,7 @@
 <translation id="81563721597823545">ହକି ଇକ୍ୟୁପମେଣ୍ଟ</translation>
 <translation id="815805690561372740">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromeରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପରି — ବିଲ୍ଟ-ଇନ ସୁରକ୍ଷା ଫିଚରଗୁଡ଼ିକ ଅଛି, ଯାହା ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରିଥିବା ସାଇଟରେ <ph name="BEGIN_LINK" />ବର୍ତ୍ତମାନ ମାଲୱେର ପାଇଛି<ph name="END_LINK" />।</translation>
 <translation id="8161095570253161196">ବ୍ରାଉଜ କରିବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
+<translation id="8163468049564974856">ଅନଲାଇନରେ ସୁରକ୍ଷିତ ଭାବେ ଚେକ ଆଉଟ କରିବାକୁ ଅଟୋଫିଲ ଚାଲୁ କରନ୍ତୁ। Google Walletରେ କାର୍ଡ ବିବରଣୀକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="8163866351304776260">ବାମ ପଟରେ ଚାରୋଟି ପଞ୍ଚ୍</translation>
 <translation id="8164078261547504572">ମୂଲ୍ୟରେ ହ୍ରାସ ହେଲେ ଇମେଲ ପାଇବେ?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" କୀଗୁଡ଼ିକୁ ସମାନ ଶବ୍ଦକୋଷରେ ସେଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -4984,6 +4992,7 @@
 <translation id="8758529215314160755">ଆପଣ ଆପଣଙ୍କର <ph name="BEGIN_LINK" />Google ଆକାଉଣ୍ଟ<ph name="END_LINK" /> <ph name="ACCOUNT" />ରେ ଆପଣଙ୍କ ନାମକୁ ଏଡିଟ କରିପାରିବେ।</translation>
 <translation id="8759274551635299824">ଏହି କାର୍ଡର ସମୟ ସୀମା ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="87601671197631245">ଏହି ସାଇଟ୍ ଏକ ପୁରୁଣା ସୁରକ୍ଷା କନଫିଗରେସନ୍ ବ୍ୟବହାର କରେ, ଯାହା ଆପଣଙ୍କର ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସୱାର୍ଡ, ମେସେଜ କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡଗୁଡ଼ିକ), ଏହି ସାଇଟକୁ ପଠାଇବା ସମୟରେ ପ୍ରକାଶ କରିଦେଇପାରେ।</translation>
+<translation id="8762871163452985706">ଏନୋଟେସନ ଅନଡୁ କରାଯାଇଛି</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ରୁ ଲିଙ୍କ ପଠାଯାଇଛି}other{<ph name="DEVICE_NAME" />ରୁ # ଲିଙ୍କ ପଠାଯାଇଛି}}</translation>
 <translation id="8763927697961133303">USB ଡିଭାଇସ୍</translation>
 <translation id="8763986294015493060">ବର୍ତ୍ତମାନ ଖୋଲା ଥିବା ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>

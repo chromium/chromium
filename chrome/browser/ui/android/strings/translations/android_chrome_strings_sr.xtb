@@ -228,6 +228,8 @@
 <translation id="197288927597451399">Задржи</translation>
 <translation id="1973912524893600642">Задржи податке</translation>
 <translation id="1974060860693918893">Напредне опције</translation>
+<translation id="1975298278721498749">Правите, чувајте и аутоматски попуњавајте јаке лозинке</translation>
+<translation id="1975680286807856378">Нека ваше приватне картице остану закључане</translation>
 <translation id="1982274314082047220">Превуците нагоре у режиму читања за подешавања</translation>
 <translation id="1984087999855033707">број телефона</translation>
 <translation id="1984417487208496350">Без заштите (не препоручује се)</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">Желите да уврстите околни текст у Google претраге?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, закачена картица без архивирања са искљученим звуком</translation>
 <translation id="2021896219286479412">Контроле сајта на целом екрану</translation>
+<translation id="2022369817198611683">Искористите најбоље од Gemini-ја директно са Chrome траке с алаткама. Дуго притисните да бисте прилагодили.</translation>
 <translation id="2024195579772565064">Избришите претраживач</translation>
 <translation id="2029669011553795746">Опција за омогућавање обавештења о саветима је отворена до половине екрана</translation>
 <translation id="2038563949887743358">Укључи захтевање верзије сајта за рачунаре</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">Историја цена широм веба за ову опцију</translation>
 <translation id="2367818124433749493">Пречице за програмере</translation>
 <translation id="2369058545741334020">Отвори у режиму за читање</translation>
+<translation id="2378656072948663224">Највиши ниво Google заштите од онлајн претњи</translation>
 <translation id="2385605401818128172">Можете да прегледате сајтове који шаљу много обавештења и спречите их да убудуће шаљу још обавештења</translation>
 <translation id="2386938421315164605">Сакријте и откријте теме</translation>
 <translation id="2390510615457643724">Да ли желите поново да преузмете фајл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">Назив је неважећи</translation>
 <translation id="2932150158123903946">Меморијски простор за Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Тастатура се неће променити</translation>
+<translation id="2936830831577265247">Закључан режим без архивирања</translation>
 <translation id="2936980480904111527">Chrome обавештења олакшавају ствари</translation>
 <translation id="2939908794993783865">Додатни неактивни сајтови</translation>
 <translation id="2940075786175545812">Опција за одобравање или neодобравање веб-сајта</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">Обележивач је додат у <ph name="FOLDER_NAME" /></translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, изабрана закачена картица за снимање</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 обележивач}one{# обележивач}few{# обележивача}other{# обележивача}}</translation>
+<translation id="4464892890754749268">Избришите историју прегледања једним додиром</translation>
 <translation id="4478161224666880173">Можете да користите <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> налог на овом сајту. Да бисте наставили, пријавите се на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Инсталира се <ph name="MODULE" /> за Chrome…</translation>
 <translation id="4487967297491345095">Сви подаци Chrome апликација ће бити трајно избрисани. То обухвата све датотеке, подешавања, налоге, базе података итд.</translation>
@@ -1053,6 +1059,7 @@ Google налог можда има друге облике историје п�
 <translation id="5404274604891474619">Измена PDF-а није успела</translation>
 <translation id="5409881200985013443">Желите ли да пошаљете <ph name="ONE_TIME_CODE" /> на <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) жели да се придружите групи картица. Свако са линком може да мења све картице, па будите пажљиви када се придружујете. Линк истиче за 48 сати.</translation>
+<translation id="5413221660329682980">Брзо избришите историју</translation>
 <translation id="5414836363063783498">Верификују се...</translation>
 <translation id="5415871492522952905">Имаћете историју и картице на свим уређајима да бисте могли да наставите оно што сте радили</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /></translation>

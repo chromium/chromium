@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} өтмөк}other{{count} өтмөк}}</translation>
 <translation id="1082554859195167538">Сиз үчүн тандалган товарлар тууралуу сын-пикирлер</translation>
 <translation id="1084365883616172403">Facebook'ка жайгаштырылды.</translation>
+<translation id="108485301461714610">Google Издөө кызматынын ЖИ режими жана туташкан колдонмолор</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ачылган жок</translation>
 <translation id="1086486568852410168">Google Lens аркылуу издөө</translation>
 <translation id="1096992026380844478">Шайкештирүү параметрлери акыркы жолу сакталган камдык көчүрмөнүн негизинде калыбына келтирилет. <ph name="BEGIN_LINK" />Эмнелерди шайкештире аларыңызды көрүңүз<ph name="END_LINK" />.</translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">Жигерсиз өтмөктөр</translation>
 <translation id="1231733316453485619">Шайкештирүү күйгүзүлсүнбү?</translation>
 <translation id="1238794841176717085">Бул баракты бөлүшүү</translation>
+<translation id="1248901457873510750">Төлөмдөрдү ачуу</translation>
 <translation id="1253032109800629289">"Бааларга көз салуу билдирмелерин алуу" модулун жашыруу</translation>
 <translation id="1254424942107648268">Мурункуну табуу</translation>
 <translation id="1258491128795710625">Эмне жаңылык</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">Соода кылып, камераңыз менен которуңуз</translation>
+<translation id="4742142641516465928">Автотолтуруу жана сырсөздөрдү ачыңыз</translation>
 <translation id="4742407542027196863">Сырсөздөрдү башкаруу…</translation>
 <translation id="4744428388659507035">Бардык түзмөктөрүңүздө кыстармаларыңызды алуу үчүн параметрлерден "Кыстармаларды" күйгүзүңүз.</translation>
 <translation id="4746926359847517643">Каалаган убакта аларды таржымалдан таба аласыз.</translation>

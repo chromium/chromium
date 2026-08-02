@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{တဘ် {count} ခု}other{တဘ် {count} ခု}}</translation>
 <translation id="1082554859195167538">သင့်အတွက် ကုန်ပစ္စည်းသုံးသပ်ချက်များ</translation>
 <translation id="1084365883616172403">ဖေ့စ်ဘွတ်တွင် တင်ပြခြင်း ပြီးစီပါပြီ။</translation>
+<translation id="108485301461714610">Google Search AI မုဒ်နှင့် ချိတ်ဆက်အက်ပ်များ</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ကို ဖွင့်၍မရလိုက်ပါ</translation>
 <translation id="1086486568852410168">Google Lens ဖြင့် ရှာရန်</translation>
 <translation id="1096992026380844478">သင်နောက်ဆုံး အရန်သိမ်းခြင်းပေါ်မူတည်၍ စင့်ခ်လုပ်ခြင်း ဆက်တင်များကို ပြန်ယူပါမည်။ <ph name="BEGIN_LINK" />စင့်ခ်လုပ်နိုင်သည်များကို ကြည့်ရန်<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">အသုံးမပြုသောတဘ်များ</translation>
 <translation id="1231733316453485619">စင့်ခ်လုပ်ခြင်းကို ဖွင့်မလား။</translation>
 <translation id="1238794841176717085">ဤစာမျက်နှာကို မျှဝေရန်</translation>
+<translation id="1248901457873510750">ငွေပေးချေမှုများ ဖွင့်ရန်</translation>
 <translation id="1253032109800629289">“ဈေးနှုန်းခြေရာခံခြင်း အကြောင်းကြားချက်များ ရယူရန်” ကိုဖျောက်ပါ</translation>
 <translation id="1254424942107648268">ယခင်တစ်ခုရှာရန်</translation>
 <translation id="1258491128795710625">အသစ်ပါဝင်မှုများ</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">သင့်ကင်မရာဖြင့် ဈေးဝယ်ရန်နှင့် ဘာသာပြန်ရန်</translation>
+<translation id="4742142641516465928">အော်တိုဖြည့်ခြင်းနှင့် စကားဝှက်များကို ဖွင့်ရန်</translation>
 <translation id="4742407542027196863">စကားဝှက်များ စီမံရန်…</translation>
 <translation id="4744428388659507035">သင်၏လိပ်စာများကို စက်အားလုံးတွင် ရယူနိုင်ရန် ဆက်တင်များတွင် “လိပ်စာများ” ကိုဖွင့်ပါ။</translation>
 <translation id="4746926359847517643">၎င်းတို့ကို မှတ်တမ်းတွင် အမြဲပြန်ယူနိုင်သည်။</translation>

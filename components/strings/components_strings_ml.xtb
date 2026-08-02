@@ -570,6 +570,7 @@
 <translation id="1871284979644508959">ഇത് പൂരിപ്പിക്കേണ്ടതുണ്ട്</translation>
 <translation id="1871739799120352748">ഉയർന്ന നിരക്ക്</translation>
 <translation id="1874224422119691492">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കണോ എന്നത് <ph name="SETTINGS" /> എന്നതിൽ നിങ്ങൾക്ക് മാറ്റാം</translation>
+<translation id="1874749478353075307">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> എന്നതിലെ Chrome-ലേക്ക് അയച്ചു • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">ഫോട്ടോ ട്രേ</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">തീയതി പ്രകാരം</translation>
@@ -2110,6 +2111,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">ടീ-ഷർട്ടുകൾ</translation>
 <translation id="4253168017788158739">കുറിപ്പ്</translation>
+<translation id="4255125583058870090">പേയ്‌മെന്റ് ആപ്പ് ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="4255487295905690262">ഏതെങ്കിലും സൈറ്റിൽ നിരക്ക് കുറയുമ്പോൾ നിങ്ങൾക്ക് ഇമെയിൽ മുന്നറിയിപ്പുകൾ ലഭിക്കും.</translation>
 <translation id="425582637250725228">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ സംരക്ഷിക്കപ്പെട്ടിരിക്കാനിടയില്ല.</translation>
 <translation id="4258748452823770588">മോശം സിഗ്‌നേച്ചർ</translation>
@@ -2984,6 +2986,7 @@
 <translation id="5611398002774823980">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="561165882404867731">Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="5612720917913232150">നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്‍റെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
+<translation id="5613117810542399920">കുറിപ്പ് വീണ്ടും ചേർത്തു</translation>
 <translation id="5613958591683399697"><ph name="ENGINE_NAME" /> എന്നതിനോട് ചോദിക്കുക</translation>
 <translation id="5614190747811328134">ഉപയോക്തൃ അറിയിപ്പ്</translation>
 <translation id="5614520971155863709">കാർഡ് ഗെയിമുകൾ</translation>
@@ -3002,6 +3005,7 @@
 <translation id="5640474731385449758">"<ph name="EXTENSION_NAME" />" എന്ന വിപുലീകരണത്തിന് <ph name="HANDLER_HOSTNAME" /> വഴി <ph name="ORIGIN" /> എന്നതിൽ <ph name="PROTOCOL" /> ലിങ്കുകൾ തുറക്കണമെന്നുണ്ട്</translation>
 <translation id="5642411781689336699">സ്‌റ്റീരിയോ സിസ്‌റ്റങ്ങളും ഘടകങ്ങളും</translation>
 <translation id="5642508497713047">CRL സൈനര്‍‌</translation>
+<translation id="5643946808525377120">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> എന്നതിലെ Chrome-ലേക്ക് അയച്ചു</translation>
 <translation id="5644090287519800334">സൈഡ് 1 ചിത്രം X ഷിഫ്റ്റ്</translation>
 <translation id="5644128326840674462">പ്രമോഷൻ ബാനർ</translation>
 <translation id="5645132789250840550">പ്ലാസ്റ്റിക് (സെമി ഗ്ലോസ്)</translation>
@@ -3043,6 +3047,7 @@
 <translation id="5715150588940290235">സംരക്ഷിച്ച സുരക്ഷാ കോഡുകൾ ഇല്ലാതാക്കണോ?</translation>
 <translation id="5715918316982363436">ഈ ഉപകരണത്തിലെ <ph name="WINDOW_COUNT" /> വിൻഡോകളിൽ നിന്നുള്ള <ph name="TAB_COUNT" /> ടാബുകൾ</translation>
 <translation id="5716325061445053985">നിങ്ങളുടെ ഫോണിലെ ടാബ് തുറക്കാൻ ടാപ്പ് ചെയ്യുക</translation>
+<translation id="5717281954932320486">ഓൺലൈനിൽ ചെക്ക് ഔട്ട് ചെയ്യുമ്പോൾ കാർഡ് വിശദാംശങ്ങൾ സ്വയമേവ പൂരിപ്പിക്കുക. കാർഡുകൾ Google Wallet-ൽ സുരക്ഷിതമായി സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
 <translation id="5717509257172454543">ഐസ് സ്കേറ്റിംഗ്</translation>
 <translation id="5718326209176373202">ടെക്സ്റ്റ് കുറിപ്പുകൾ ചേർക്കുക</translation>
 <translation id="5718601519531438273">പാസ്‌പോർട്ടുകളും ഡ്രൈവിംഗ് ലൈസൻസുകളും പോലുള്ള വിവരങ്ങൾ ഉൾപ്പെടുന്നു</translation>
@@ -4040,6 +4045,7 @@
 <translation id="7257453341537973799">കരിയർ റിസോഴ്‌സുകളും പ്ലാനിംഗും</translation>
 <translation id="725866823122871198">നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>
 <translation id="7260075294900977274">നിങ്ങളുടെ എല്ലാ ഷോപ്പിംഗ് പേജുകളും ഒരിടത്ത് സംരക്ഷിക്കാനും വിലകൾ സ്വയമേവ ട്രാക്ക് ചെയ്യാനും നിരക്ക് ഉൾക്കാഴ്‌ചകൾ നേടാനും മറ്റും സഹായിക്കുന്ന പുതിയ സ്‌മാർട്ട് ഫോൾഡർ</translation>
+<translation id="7261463765917514051">സ്വയമേവ പൂരിപ്പിക്കൽ ഉപയോഗിച്ച് സുരക്ഷിതമായി ചെക്ക് ഔട്ട് ചെയ്യുക</translation>
 <translation id="7265608370113700582">വിലാസം ഈ ഉപകരണത്തിൽ മാത്രമേ ലഭ്യമാകൂ</translation>
 <translation id="7266094331715305887">ഉപകരണത്തിലെ ആപ്പുകൾ</translation>
 <translation id="7269151392155523061">കുറുക്കുവഴിയും <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> നിർവചിച്ചിരിക്കുന്ന തിരയൽ അഗ്രഗേറ്റർ കീവേഡും സമാനമാകരുത്: <ph name="SHORTCUT_NAME" /></translation>
@@ -4609,6 +4615,7 @@
 <translation id="8134058435519644366">റിക്രൂട്ട് ചെയ്യലും ജീവനക്കാരെ നിയമിക്കലും</translation>
 <translation id="8135546115396015134">'Left' കീ</translation>
 <translation id="8137456439814903304">ഊർജ്ജവും യൂട്ടിലിറ്റികളും</translation>
+<translation id="8138591088112729119">പേഴ്‌സണൽ ഇന്റലിജൻസ് നൽകുന്നത്</translation>
 <translation id="814071672416123670">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ കാരണം ഉള്ളടക്കം പകർത്താനായില്ല</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ഒരു മാസം മുമ്പ് സൃഷ്‌ടിച്ചത്}other{{NUM_MONTHS} മാസം മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, നിലവിലെ ഡിഫോൾട്ട്. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4623,6 +4630,7 @@
 <translation id="81563721597823545">ഹോക്കി ഉപകരണം</translation>
 <translation id="815805690561372740">ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങളെ പരിരക്ഷിക്കുന്നതിന് Chrome-ൽ ബിൽറ്റ് ഇൻ സുരക്ഷാ ഫീച്ചറുകളുണ്ട് — ഉദാ. Google സുരക്ഷിത ബ്രൗസിംഗ്, ഇത് നിങ്ങൾ സന്ദർശിക്കാൻ ശ്രമിച്ച സൈറ്റിൽ <ph name="BEGIN_LINK" />അടുത്തിടെ മാൽവെയർ കണ്ടെത്തി<ph name="END_LINK" />.</translation>
 <translation id="8161095570253161196">ബ്രൗസിംഗ് പുനരാരംഭിക്കുക</translation>
+<translation id="8163468049564974856">ഓൺലൈനിൽ സുരക്ഷിതമായി ചെക്ക് ഔട്ട് ചെയ്യാൻ സ്വയമേവ പൂരിപ്പിക്കൽ ഓണാക്കുക. Google Wallet-ൽ കാർഡ് വിശദാംശങ്ങൾ എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="8163866351304776260">ഇടതുവശത്ത് നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="8164078261547504572">വിലയിടിയുമ്പോൾ ഇമെയിലുകൾ വേണോ?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" എന്നീ കീകൾ ഒരേ നിഘണ്ടുവിൽ സജ്ജീകരിക്കാനാകില്ല</translation>
@@ -4986,6 +4994,7 @@
 <translation id="8758529215314160755"><ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> <ph name="ACCOUNT" /> -ൽ നിങ്ങളുടെ പേര് എഡിറ്റ് ചെയ്യാം</translation>
 <translation id="8759274551635299824">ഈ കാർഡ് കാലഹരണപ്പെട്ടു</translation>
 <translation id="87601671197631245">ഈ സൈറ്റ് കാലഹരണപ്പെട്ട സുരക്ഷാ കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാൽ നിങ്ങളുടെ വിവരങ്ങൾ (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, ക്രെഡിറ്റ് കാർഡുകൾ) ഈ സൈറ്റിലേക്ക് അയച്ചാൽ അവ വെളിപ്പെട്ടേക്കാം.</translation>
+<translation id="8762871163452985706">കുറിപ്പ് പഴയപടിയാക്കി</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് ലിങ്ക് അയച്ചു}other{<ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് # ലിങ്കുകൾ അയച്ചു}}</translation>
 <translation id="8763927697961133303">USB ഉപകരണം</translation>
 <translation id="8763986294015493060">നിലവിൽ തുറന്നിരിക്കുന്ന എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്ക്കുക</translation>

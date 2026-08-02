@@ -570,6 +570,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1871284979644508959">Campo obrigatório</translation>
 <translation id="1871739799120352748">O preço é alto</translation>
 <translation id="1874224422119691492">Pode alterar se usa o bloqueio de ecrã para preencher palavras-passe nas <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">Enviado para o Chrome no <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Tabuleiro de fotos</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">Por data</translation>
@@ -2112,6 +2113,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-shirts</translation>
 <translation id="4253168017788158739">Nota</translation>
+<translation id="4255125583058870090">A carregar a app de pagamentos</translation>
 <translation id="4255487295905690262">Vai obter alertas por email se o preço descer em qualquer site.</translation>
 <translation id="425582637250725228">É possível que as alterações não tenham sido efetuadas.</translation>
 <translation id="4258748452823770588">Assinatura incorreta</translation>
@@ -2986,6 +2988,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5611398002774823980">Guardar na conta</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
 <translation id="5612720917913232150"><ph name="URL" /> quer utilizar a localização do seu computador.</translation>
+<translation id="5613117810542399920">Anotação refeita</translation>
 <translation id="5613958591683399697">Pergunte ao <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Aviso ao utilizador</translation>
 <translation id="5614520971155863709">Jogos de cartas</translation>
@@ -3004,6 +3007,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5640474731385449758">A extensão "<ph name="EXTENSION_NAME" />" quer abrir <ph name="PROTOCOL" /> links em <ph name="ORIGIN" /> através de <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Sistemas e componentes estéreo</translation>
 <translation id="5642508497713047">Signatário CRL</translation>
+<translation id="5643946808525377120">Enviado para o Chrome no <ph name="DEVICE_NAME" /></translation>
 <translation id="5644090287519800334">Turno X da imagem 1 lateral</translation>
 <translation id="5644128326840674462">Faixa promocional</translation>
 <translation id="5645132789250840550">Plástico (semibrilho)</translation>
@@ -3045,6 +3049,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5715150588940290235">Eliminar os códigos de segurança guardados?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> neste dispositivo</translation>
 <translation id="5716325061445053985">Toque para abrir o separador no telemóvel</translation>
+<translation id="5717281954932320486">Preencha os detalhes do cartão automaticamente quando faz pagamentos online. Os cartões são guardados na Carteira do Google em segurança.</translation>
 <translation id="5717509257172454543">Patinagem no gelo</translation>
 <translation id="5718326209176373202">Adicionar anotações de texto</translation>
 <translation id="5718601519531438273">Inclui informações como passaportes e cartas de condução</translation>
@@ -4042,6 +4047,7 @@ Detalhes adicionais:
 <translation id="7257453341537973799">Recursos e planeamento de carreiras</translation>
 <translation id="725866823122871198">Não é possível estabelecer uma ligação privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="7260075294900977274">Uma nova pasta inteligente que ajuda a guardar todas as páginas de compras num único lugar, bem como a monitorizar preços automaticamente, extrair estatísticas de preço e muito mais</translation>
+<translation id="7261463765917514051">Faça pagamentos em segurança com o preenchimento automático</translation>
 <translation id="7265608370113700582">A morada só está disponível neste dispositivo</translation>
 <translation id="7266094331715305887">apps no dispositivo</translation>
 <translation id="7269151392155523061">O atalho não pode ser igual à palavra-chave do agregador de pesquisa definida por <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4067,6 +4073,7 @@ Detalhes adicionais:
 <translation id="7310392214323165548">O dispositivo será reiniciado em breve</translation>
 <translation id="7311244614769792472">Não foram encontrados resultados</translation>
 <translation id="7313107491291103073">A sua organização denunciou este site porque pode violar uma política.</translation>
+<translation id="7315372670898739748">A associação falhou. Tente mais tarde</translation>
 <translation id="7316521168101843192">A guardar ficheiro no Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ajuda para estabelecer ligação</translation>
@@ -4613,6 +4620,7 @@ Detalhes adicionais:
 <translation id="8134058435519644366">Recrutamento e pessoal</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Energia e empresas de serviços públicos</translation>
+<translation id="8138591088112729119">Com tecnologia de Inteligência Personalizada</translation>
 <translation id="814071672416123670">Não foi possível copiar o conteúdo devido às políticas da sua organização</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Criado há 1 mês}other{Criado há {NUM_MONTHS} meses}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, predefinição atual. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4627,6 +4635,7 @@ Detalhes adicionais:
 <translation id="81563721597823545">Equipamento de hóquei</translation>
 <translation id="815805690561372740">O Chrome tem funcionalidades de segurança integradas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente software malicioso<ph name="END_LINK" /> no site que tentou visitar.</translation>
 <translation id="8161095570253161196">Retomar navegação</translation>
+<translation id="8163468049564974856">Ative o preenchimento automático para fazer pagamentos online em segurança. As informações do cartão são encriptadas na Carteira do Google.</translation>
 <translation id="8163866351304776260">Perfuração quádrupla à esquerda</translation>
 <translation id="8164078261547504572">Quer receber emails quando os preços descerem?</translation>
 <translation id="8169175551046720804">Não é possível definir as chaves "<ph name="DATA_CONTROLS_KEYS" />" no mesmo dicionário</translation>
@@ -4991,6 +5000,7 @@ Detalhes adicionais:
 <translation id="8758529215314160755">Pode editar o seu nome na sua <ph name="BEGIN_LINK" />Conta Google <ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="87601671197631245">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe, mensagens ou cartões de crédito) quando são enviadas para este site.</translation>
+<translation id="8762871163452985706">Anotação anulada</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Link enviado do <ph name="DEVICE_NAME" />}other{# links enviados do <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Feche todas as janelas de navegação anónima atualmente abertas</translation>

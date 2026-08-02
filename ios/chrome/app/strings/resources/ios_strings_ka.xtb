@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} ჩანართი}other{{count} ჩანართი}}</translation>
 <translation id="1082554859195167538">პროდუქტების მიმოხილვები თქვენთვის</translation>
 <translation id="1084365883616172403">Facebook-ის პოსტი დასრულებულია.</translation>
+<translation id="108485301461714610">Google Search-ის AI რეჟიმი და დაკავშირებული აპები</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" />-ის გახსნა ვერ მოხერხდა</translation>
 <translation id="1086486568852410168">ძიება Google Lens-ით</translation>
 <translation id="1096992026380844478">სინქრონიზაციის პარამეტრები აღდგენილი იქნება თქვენი ბოლო სარეზერვო ასლის მიხედვით. <ph name="BEGIN_LINK" />იხილეთ, რისი სინქრონიზაცია შეგიძლიათ<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">არააქტიური ჩანართები</translation>
 <translation id="1231733316453485619">გსურთ სინქრონიზაციის ჩართვა?</translation>
 <translation id="1238794841176717085">ამ გვერდის გაზიარება</translation>
+<translation id="1248901457873510750">გადახდების გახსნა</translation>
 <translation id="1253032109800629289">პარამეტრის „ფასისთვის თვალის მიდევნების შეტყობინებების მიღება“ დამალვა</translation>
 <translation id="1254424942107648268">წინას პოვნა</translation>
 <translation id="1258491128795710625">სიახლეები</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">იყიდეთ და თარგმნეთ თქვენი კამერით</translation>
+<translation id="4742142641516465928">ავტომატური შევსებისა და პაროლების გახსნა</translation>
 <translation id="4742407542027196863">პაროლების მართვა…</translation>
 <translation id="4744428388659507035">თქვენს სანიშნეებზე თქვენი ყველა მოწყობილობიდან წვდომისთვის პარამეტრებიდან ჩართეთ „სანიშნეები“</translation>
 <translation id="4746926359847517643">მათზე დაბრუნებას ნებისმიერ დროს შეძლებთ ისტორიიდან.</translation>

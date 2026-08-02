@@ -2583,7 +2583,7 @@
 <translation id="5001526427543320409">ខូគី​ភាគីទីបី</translation>
 <translation id="5007344584818503324">សកម្មភាព​ក្រុមផ្ទាំង​ដែលបាន​ចែករំលែក</translation>
 <translation id="5007392906805964215">ពិនិត្យមើល</translation>
-<translation id="5008767248670679254">ការដឹកជញ្ជូនទាំងអស់របស់អ្នក</translation>
+<translation id="5008767248670679254">ទំនិញដឹកជញ្ជូនទាំងអស់របស់អ្នក</translation>
 <translation id="5011561501798487822">ភាសាដែលបានសម្គាល់</translation>
 <translation id="5015510746216210676">ឈ្មោះ​ម៉ាស៊ីន​៖</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -4076,6 +4076,7 @@
 <translation id="7310392214323165548">ឧបករណ៍នឹងចាប់ផ្ដើមឡើងវិញឆាប់ៗនេះ</translation>
 <translation id="7311244614769792472">រក​មិន​ឃើញ​លទ្ធផលទេ</translation>
 <translation id="7313107491291103073">ស្ថាប័ន​របស់អ្នក​បាន​សម្គាល់​គេហទំព័រនេះ ដោយសារ​វាអាច​បំពាន​គោលការណ៍។</translation>
+<translation id="7315372670898739748">ការភ្ជាប់មិនបានសម្រេចទេ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ</translation>
 <translation id="7316521168101843192">កំពុងរក្សាទុកឯកសារទៅ Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ជំនួយ​ការតភ្ជាប់</translation>
@@ -4122,7 +4123,7 @@
 <translation id="7393161616326137353">ហ្គេមផ្សងព្រេង</translation>
 <translation id="7393475648162498734">បង្ហាញ​រង្វាន់ និង​អត្ថប្រយោជន៍​ដែលមាន​ផ្ដល់ជូន​សម្រាប់​កាត​របស់អ្នក​នៅពេល​បង់ប្រាក់​ចេញ</translation>
 <translation id="7393971683644170444">កំពុង​ភ្ជាប់ទៅ​ក្រុមហ៊ុន​ផ្ដល់សេវាកាត​របស់អ្នក...</translation>
-<translation id="7394497897677511168">ការដឹកជញ្ជូនផ្សេងទៀត</translation>
+<translation id="7394497897677511168">ទំនិញដឹកជញ្ជូនផ្សេងទៀត</translation>
 <translation id="739728382607845710">រូប​ឧបករណ៍ដោះស្រាយ​ការទូទាត់</translation>
 <translation id="7399616692258236448">សំណើសុំ​ទីតាំង​ត្រូវបានទប់ស្កាត់​ដោយស្វ័យប្រវត្តិ​សម្រាប់គេហទំព័រ​ទាំងអស់ លើកលែងតែ​គេហទំព័រ​ដែលអ្នក​អនុញ្ញាត​ប៉ុណ្ណោះ</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4625,6 +4626,7 @@
 <translation id="8134058435519644366">ការជ្រើសរើស និងរៀបចំបុគ្គលិក</translation>
 <translation id="8135546115396015134">គ្រាប់ចុច​ទៅឆ្វេង</translation>
 <translation id="8137456439814903304">ថាមពល និងក្រុមហ៊ុនផ្គត់ផ្គង់អគ្គិសនី</translation>
+<translation id="8138591088112729119">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួន</translation>
 <translation id="814071672416123670">មិនអាចចម្លងខ្លឹមសារបានទេ ដោយសារគោលការណ៍របស់ស្ថាប័នអ្នក</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{បាន​បង្កើត 1 ខែមុន}other{បានបង្កើត {NUM_MONTHS} ខែមុន}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, លំនាំដើម​បច្ចុប្បន្ន។ <ph name="MARKETING_SNIPPET" /></translation>

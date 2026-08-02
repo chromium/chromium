@@ -228,6 +228,8 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="197288927597451399">계속</translation>
 <translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
+<translation id="1975298278721498749">안전한 비밀번호를 만들고, 저장하고, 자동 완성하세요</translation>
+<translation id="1975680286807856378">비공개 탭을 잠금 상태로 유지하세요</translation>
 <translation id="1982274314082047220">읽기 모드를 위로 스와이프하여 환경설정 확인</translation>
 <translation id="1984087999855033707">전화번호</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
@@ -235,6 +237,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, 고정되고 음소거된 시크릿 탭</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
+<translation id="2022369817198611683">Chrome 툴바에서 Gemini를 최대한 활용하세요. 맞춤설정하려면 길게 누르세요.</translation>
 <translation id="2024195579772565064">검색엔진 삭제</translation>
 <translation id="2029669011553795746">팁 알림 수신 동의가 절반 높이로 열림</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
@@ -325,6 +328,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2366554533468315977">이 옵션의 웹 전반 가격 변동 내역</translation>
 <translation id="2367818124433749493">개발자 단축키</translation>
 <translation id="2369058545741334020">읽기 모드로 열기</translation>
+<translation id="2378656072948663224">온라인 위협에 대비한 Google의 최고 수준 보호</translation>
 <translation id="2385605401818128172">알림을 많이 보내는 사이트를 검토하고, 향후 알림을 보내지 못하도록 할 수 있습니다.</translation>
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다시 다운로드하시겠습니까?</translation>
@@ -465,6 +469,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2923908459366352541">잘못된 이름</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 저장공간</translation>
 <translation id="2932222164150889403">키보드는 변경되지 않습니다</translation>
+<translation id="2936830831577265247">잠긴 시크릿 모드</translation>
 <translation id="2936980480904111527">Chrome 알림으로 더 간편하게 작업하세요</translation>
 <translation id="2939908794993783865">추가 비활성 사이트</translation>
 <translation id="2940075786175545812">웹사이트 승인 또는 비승인 옵션</translation>
@@ -831,6 +836,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4452548195519783679">북마크를 <ph name="FOLDER_NAME" />에 추가함</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, 선택되고 고정되고 녹화 중인 탭</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{북마크 1개}other{북마크 #개}}</translation>
+<translation id="4464892890754749268">탭 한 번으로 방문 기록을 삭제하세요</translation>
 <translation id="4478161224666880173">이 사이트에서 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정을 사용할 수 있습니다. 계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에 로그인하세요.</translation>
 <translation id="4479972344484327217">Chrome에 <ph name="MODULE" />을(를) 설치하고 있습니다…</translation>
 <translation id="4487967297491345095">모든 파일, 설정, 계정, 데이터베이스 등을 포함한 Chrome의 모든 앱 데이터가 완전히 삭제됩니다.</translation>
@@ -1053,6 +1059,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5404274604891474619">PDF를 수정할 수 없음</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />에 코드(<ph name="ONE_TIME_CODE" />)를 제출하시겠습니까?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" />(<ph name="OWNER_EMAIL" />)님이 내가 탭 그룹에 참여하기를 바랍니다. 링크가 있는 사용자는 모든 탭을 수정할 수 있으므로, 신중하게 참여하세요. 링크는 48시간 후에 만료됩니다.</translation>
+<translation id="5413221660329682980">방문 기록을 빠르게 삭제하기</translation>
 <translation id="5414836363063783498">인증 중...</translation>
 <translation id="5415871492522952905">모든 기기에 방문 기록과 탭이 유지되므로 이전에 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />(<ph name="EMAIL" />)님이 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 됩니다.</translation>

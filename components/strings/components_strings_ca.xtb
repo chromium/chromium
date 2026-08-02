@@ -569,6 +569,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1871284979644508959">Camp obligatori</translation>
 <translation id="1871739799120352748">El preu és alt</translation>
 <translation id="1874224422119691492">Pots canviar si vols utilitzar el bloqueig de pantalla per emplenar contrasenyes a <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">S'ha enviat a Chrome al teu <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" />.</translation>
 <translation id="1875025161375567525">Safata de fotos</translation>
 <translation id="1875512691959384712">Formularis de Google</translation>
 <translation id="1876399092304384674">Per data</translation>
@@ -2110,6 +2111,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Samarretes</translation>
 <translation id="4253168017788158739">Nota</translation>
+<translation id="4255125583058870090">S'està carregant l'aplicació de pagaments</translation>
 <translation id="4255487295905690262">Si baixa el preu en qualsevol lloc web, rebràs una alerta.</translation>
 <translation id="425582637250725228">És possible que els canvis que heu fet no es desin.</translation>
 <translation id="4258748452823770588">Signatura errònia</translation>
@@ -2984,6 +2986,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5611398002774823980">Desa al compte</translation>
 <translation id="561165882404867731">Tradueix aquesta pàgina amb el Traductor de Google</translation>
 <translation id="5612720917913232150"><ph name="URL" /> vol utilitzar la ubicació de l'ordinador</translation>
+<translation id="5613117810542399920">S'ha refet l'anotació</translation>
 <translation id="5613958591683399697">Pregunta a <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Avís per a l'usuari </translation>
 <translation id="5614520971155863709">Jocs de cartes</translation>
@@ -3002,6 +3005,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5640474731385449758">L'extensió <ph name="EXTENSION_NAME" /> vol obrir enllaços de <ph name="PROTOCOL" /> a <ph name="ORIGIN" /> mitjançant <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Sistemes i components estèreo</translation>
 <translation id="5642508497713047">Signant de CRL</translation>
+<translation id="5643946808525377120">S'ha enviat a Chrome al teu <ph name="DEVICE_NAME" /></translation>
 <translation id="5644090287519800334">Desplaçament a l'eix X del costat 1 de la imatge</translation>
 <translation id="5644128326840674462">Bàner de promoció</translation>
 <translation id="5645132789250840550">Plàstic (semibrillant)</translation>
@@ -3043,6 +3047,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5715150588940290235">Vols suprimir els codis de seguretat desats?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> en aquest dispositiu</translation>
 <translation id="5716325061445053985">Toca per obrir la pestanya al teu telèfon</translation>
+<translation id="5717281954932320486">Emplena automàticament els detalls de la targeta quan tramitis una compra en línia. Les targetes es desen de manera segura a Google Wallet.</translation>
 <translation id="5717509257172454543">Patinatge sobre gel</translation>
 <translation id="5718326209176373202">Afegeix anotacions de text</translation>
 <translation id="5718601519531438273">Inclou informació com ara passaports i permisos de conduir</translation>
@@ -4040,6 +4045,7 @@ Detalls addicionals:
 <translation id="7257453341537973799">Recursos i planificació de carreres</translation>
 <translation id="725866823122871198">No s'ha pogut establir una connexió privada amb <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perquè la data i l'hora (<ph name="DATE_AND_TIME" />) de l'ordinador no són correctes.</translation>
 <translation id="7260075294900977274">Una carpeta intel·ligent nova que et permet desar totes les teves pàgines de compra en un sol lloc i fer un seguiment automàtic dels preus, obtenir estadístiques de preus i més</translation>
+<translation id="7261463765917514051">Tramita compres de manera segura amb l'emplenament automàtic</translation>
 <translation id="7265608370113700582">L'adreça només està disponible en aquest dispositiu</translation>
 <translation id="7266094331715305887">aplicacions al dispositiu</translation>
 <translation id="7269151392155523061">La drecera no pot ser igual que la paraula clau de l'agregador de cerca definida per <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4611,6 +4617,7 @@ Detalls addicionals:
 <translation id="8134058435519644366">Contractació de personal</translation>
 <translation id="8135546115396015134">tecla esquerra</translation>
 <translation id="8137456439814903304">Energia i companyies elèctriques</translation>
+<translation id="8138591088112729119">Amb la tecnologia d'Intel·ligència personal</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creat fa 1 mes}other{Creat fa {NUM_MONTHS} mesos}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, predeterminat actualment. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versió de PDF:</translation>
@@ -4624,6 +4631,7 @@ Detalls addicionals:
 <translation id="81563721597823545">Equipament d'hoquei</translation>
 <translation id="815805690561372740">Per protegir-te mentre navegues, Chrome té funcions de seguretat integrades, com ara Navegació segura de Google, que <ph name="BEGIN_LINK" />recentment ha detectat programari maliciós<ph name="END_LINK" /> al lloc web que has provat de visitar.</translation>
 <translation id="8161095570253161196">Reprèn la navegació</translation>
+<translation id="8163468049564974856">Activa l'emplenament automàtic per tramitar compres en línia de manera segura. Els detalls de la targeta s'encripten a Google Wallet.</translation>
 <translation id="8163866351304776260">Encunyació quàdruple a l'esquerra</translation>
 <translation id="8164078261547504572">Vols rebre correus electrònics quan baixin els preus?</translation>
 <translation id="8169175551046720804">Les claus "<ph name="DATA_CONTROLS_KEYS" />" no es poden establir en el mateix diccionari</translation>
@@ -4987,6 +4995,7 @@ Detalls addicionals:
 <translation id="8758529215314160755">Pots editar el teu nom al teu <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Aquesta targeta ha caducat</translation>
 <translation id="87601671197631245">Aquest lloc web utilitza una configuració de seguretat obsoleta i, per tant, la informació que hi enviïs podria quedar exposada (per exemple, les contrasenyes, els missatges o les targetes de crèdit).</translation>
+<translation id="8762871163452985706">S'ha desfet l'anotació</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{S'ha enviat un enllaç des de: <ph name="DEVICE_NAME" />}other{S'han enviat # enllaços des de: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositiu USB</translation>
 <translation id="8763986294015493060">Tanca totes les finestres d'incògnit que estan obertes en aquests moments</translation>

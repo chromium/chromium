@@ -570,6 +570,7 @@
 <translation id="1871284979644508959">必填字段</translation>
 <translation id="1871739799120352748">价格高</translation>
 <translation id="1874224422119691492">您可以在<ph name="SETTINGS" />中更改是否使用屏幕锁定功能填充密码</translation>
+<translation id="1874749478353075307">已发送到<ph name="DEVICE_NAME" />上的 Chrome • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">照片匣</translation>
 <translation id="1875512691959384712">Google 表单</translation>
 <translation id="1876399092304384674">按日期</translation>
@@ -2107,6 +2108,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T 恤衫</translation>
 <translation id="4253168017788158739">备注</translation>
+<translation id="4255125583058870090">正在加载支付应用</translation>
 <translation id="4255487295905690262">当任一网站上的商品降价时，您会收到邮件提醒。</translation>
 <translation id="425582637250725228">系统可能不会保存您所做的更改。</translation>
 <translation id="4258748452823770588">签名无效</translation>
@@ -2981,6 +2983,7 @@
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="561165882404867731">使用 Google 翻译来翻译此页面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 想使用您计算机的位置信息</translation>
+<translation id="5613117810542399920">已重做注释</translation>
 <translation id="5613958591683399697">问问 <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">用户须知</translation>
 <translation id="5614520971155863709">卡牌游戏</translation>
@@ -2999,6 +3002,7 @@
 <translation id="5640474731385449758">此扩展程序“<ph name="EXTENSION_NAME" />”想通过 <ph name="HANDLER_HOSTNAME" /> 打开 <ph name="ORIGIN" /> 中的<ph name="PROTOCOL" />链接</translation>
 <translation id="5642411781689336699">立体声系统及组件</translation>
 <translation id="5642508497713047">CRL 签名人</translation>
+<translation id="5643946808525377120">已发送到<ph name="DEVICE_NAME" />上的 Chrome。</translation>
 <translation id="5644090287519800334">侧边 1，图片沿 X 轴位移</translation>
 <translation id="5644128326840674462">促销横幅</translation>
 <translation id="5645132789250840550">塑料（半光）</translation>
@@ -3040,6 +3044,7 @@
 <translation id="5715150588940290235">要删除已保存的安全码吗？</translation>
 <translation id="5715918316982363436">此设备上来自 <ph name="WINDOW_COUNT" />的 <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">点按即可在手机上打开标签页</translation>
+<translation id="5717281954932320486">在线结账时自动填充卡详细信息。卡片会安全地保存在 Google 钱包中。</translation>
 <translation id="5717509257172454543">滑冰</translation>
 <translation id="5718326209176373202">添加文字注释</translation>
 <translation id="5718601519531438273">包括护照和驾照等信息</translation>
@@ -4036,6 +4041,7 @@
 <translation id="7257453341537973799">职业资源与规划</translation>
 <translation id="725866823122871198">您计算机的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="7260075294900977274">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等</translation>
+<translation id="7261463765917514051">使用自动填充功能安全结账</translation>
 <translation id="7265608370113700582">地址只能保存在该设备上</translation>
 <translation id="7266094331715305887">设备上的应用</translation>
 <translation id="7269151392155523061">下述快捷字词不能与 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 所定义的搜索聚合器关键字相同：<ph name="SHORTCUT_NAME" /></translation>
@@ -4607,6 +4613,7 @@
 <translation id="8134058435519644366">招聘与人事</translation>
 <translation id="8135546115396015134">向左键</translation>
 <translation id="8137456439814903304">能源与公共事业</translation>
+<translation id="8138591088112729119">由个性化智能服务提供支持</translation>
 <translation id="814071672416123670">受组织政策限制，您无法复制内容</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{创建时间：1 个月前}other{创建时间：{NUM_MONTHS} 个月前}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />，当前默认搜索引擎。<ph name="MARKETING_SNIPPET" /></translation>
@@ -4621,6 +4628,7 @@
 <translation id="81563721597823545">曲棍球装备</translation>
 <translation id="815805690561372740">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了恶意软件<ph name="END_LINK" />。</translation>
 <translation id="8161095570253161196">继续浏览</translation>
+<translation id="8163468049564974856">开启自动填充功能，安全地在线结账。卡详细信息会在 Google 钱包中加密。</translation>
 <translation id="8163866351304776260">四孔（左侧）</translation>
 <translation id="8164078261547504572">想在商品降价时收到电子邮件通知？</translation>
 <translation id="8169175551046720804">不能在同一字典中设置键“<ph name="DATA_CONTROLS_KEYS" />”</translation>
@@ -4985,6 +4993,7 @@
 <translation id="8758529215314160755">您可以在 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" /> (<ph name="ACCOUNT" />) 中修改姓名</translation>
 <translation id="8759274551635299824">此信用卡已失效</translation>
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
+<translation id="8762871163452985706">已撤销注释</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{收到<ph name="DEVICE_NAME" />发送的链接}other{收到<ph name="DEVICE_NAME" />发送的 # 个链接}}</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8763986294015493060">关闭当前打开的所有无痕式窗口</translation>

@@ -570,6 +570,7 @@
 <translation id="1871284979644508959">அவசியமானவை</translation>
 <translation id="1871739799120352748">விலை உயர்ந்துள்ளது</translation>
 <translation id="1874224422119691492">கடவுச்சொற்களை நிரப்புவதற்காக உங்கள் திரைப்பூட்டைப் பயன்படுத்துகிறீர்களா என்பதை <ph name="SETTINGS" /> சென்று மாற்றிக்கொள்ளலாம்</translation>
+<translation id="1874749478353075307"><ph name="DEVICE_NAME" /> சாதனத்தில் உள்ள Chromeமிற்கு அனுப்பப்பட்டது • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">பட டிரே</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">தேதியின்படி</translation>
@@ -2107,6 +2108,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">டி-ஷர்ட்டுகள்</translation>
 <translation id="4253168017788158739">குறிப்பு</translation>
+<translation id="4255125583058870090">பேமெண்ட் ஆப்ஸை ஏற்றுகிறது</translation>
 <translation id="4255487295905690262">எந்தத் தளத்தில் விலை குறைந்தாலும் அதுகுறித்த மின்னஞ்சல் விழிப்பூட்டல்களைப் பெறுவீர்கள்.</translation>
 <translation id="425582637250725228">உங்கள் மாற்றங்கள் சேமிக்கப்படாமல் இருக்கலாம்.</translation>
 <translation id="4258748452823770588">தவறான கையொப்பம்</translation>
@@ -2981,6 +2983,7 @@
 <translation id="5611398002774823980">கணக்கில் சேமி</translation>
 <translation id="561165882404867731">இந்தப் பக்கத்தை Google Translate மூலம் மொழிபெயர்</translation>
 <translation id="5612720917913232150"><ph name="URL" /> உங்கள் கம்ப்யூட்டரின் இருப்பிடத்தைப் பயன்படுத்த விரும்புகிறது</translation>
+<translation id="5613117810542399920">குறிப்பு மீண்டும் எடுக்கப்பட்டது</translation>
 <translation id="5613958591683399697"><ph name="ENGINE_NAME" /> இடம் கேளுங்கள்</translation>
 <translation id="5614190747811328134">பயனர் அறிவிப்பு</translation>
 <translation id="5614520971155863709">கார்டு கேம்கள்</translation>
@@ -2999,6 +3002,7 @@
 <translation id="5640474731385449758"><ph name="PROTOCOL" /> இணைப்புகளை <ph name="HANDLER_HOSTNAME" /> மூலம் <ph name="ORIGIN" /> இல் திறக்க "<ph name="EXTENSION_NAME" />" நீட்டிப்பு விரும்புகிறது</translation>
 <translation id="5642411781689336699">ஸ்டீரியோ சிஸ்டங்கள் &amp; பாகங்கள்</translation>
 <translation id="5642508497713047">CRL கையொப்பமிடுநர்</translation>
+<translation id="5643946808525377120"><ph name="DEVICE_NAME" /> சாதனத்தில் உள்ள Chromeமிற்கு அனுப்பப்பட்டது</translation>
 <translation id="5644090287519800334">சைடு 1 இமேஜ் X ஷிஃப்ட்</translation>
 <translation id="5644128326840674462">விளம்பர பேனர்</translation>
 <translation id="5645132789250840550">செமி க்ளாஸ்ஸி பிளாஸ்டிக்</translation>
@@ -3040,6 +3044,7 @@
 <translation id="5715150588940290235">சேமிக்கப்பட்ட பாதுகாப்புக் குறியீடுகளை நீக்கவா?</translation>
 <translation id="5715918316982363436">இந்தச் சாதனத்தின் <ph name="WINDOW_COUNT" /> இல் உள்ள <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">உங்கள் மொபைலில் பக்கத்தைத் திறக்க தட்டவும்</translation>
+<translation id="5717281954932320486">ஆன்லைனில் செக் அவுட் செய்யும்போது கார்டு விவரங்களைத் தானாக நிரப்பலாம். கார்டுகள் Google Walletடில் பாதுகாப்பாகச் சேமிக்கப்படும்.</translation>
 <translation id="5717509257172454543">உறைபனிச்சறுக்கு</translation>
 <translation id="5718326209176373202">வார்த்தைக் குறிப்புகளைச் சேர்</translation>
 <translation id="5718601519531438273">பாஸ்போர்ட்டுகள், ஓட்டுநர் உரிமங்கள் போன்ற தகவல்கள் அடங்கும்</translation>
@@ -4036,6 +4041,7 @@
 <translation id="7257453341537973799">தொழில் தகவல்கள் மற்றும் திட்டமிடல்</translation>
 <translation id="725866823122871198">உங்கள் கம்ப்யூட்டரின் தேதியும் நேரமும் (<ph name="DATE_AND_TIME" />) தவறாக இருப்பதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> க்கான தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.</translation>
 <translation id="7260075294900977274">இது ஒரு புதிய ஸ்மார்ட் ஃபோல்டர். இதன்மூலம் உங்களின் ஷாப்பிங் பக்கங்கள் அனைத்தையும் ஒரே இடத்தில் சேமிக்கலாம், விலைகளைத் தானாகக் கண்காணிக்கலாம், விலை குறித்த புள்ளிவிவரங்களைப் பெறலாம், மேலும் பலவற்றைச் செய்யலாம்</translation>
+<translation id="7261463765917514051">தானியங்கு நிரப்பல் மூலம் பாதுகாப்பாகச் செக்-அவுட் செய்தல்</translation>
 <translation id="7265608370113700582">இந்தச் சாதனத்தில் மட்டுமே முகவரி கிடைக்கும்</translation>
 <translation id="7266094331715305887">சாதனத்திலுள்ள ஆப்ஸ்</translation>
 <translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> வரையறுத்துள்ள தேடலை ஒருங்கிணைக்கும் சேவையின் தேடல் குறிப்பும் ஷார்ட்கட்டும் ஒன்றாக இருக்கக்கூடாது: <ph name="SHORTCUT_NAME" /></translation>
@@ -4607,6 +4613,7 @@
 <translation id="8134058435519644366">ஆட்சேர்ப்பு &amp; பணியமர்த்துதல்</translation>
 <translation id="8135546115396015134">இடது அம்புக்குறி</translation>
 <translation id="8137456439814903304">ஆற்றல் மற்றும் யூட்டிலிட்டிகள்</translation>
+<translation id="8138591088112729119">தனிப்பட்ட நுண்ணறிவு வழங்குகிறது</translation>
 <translation id="814071672416123670">உங்கள் நிறுவனத்தின் கொள்கைகள் காரணமாக உள்ளடக்கத்தை நகலெடுக்க முடியவில்லை</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 மாதத்திற்கு முன் உருவாக்கப்பட்டது}other{{NUM_MONTHS} மாதங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, தற்போது இயல்பாக இருப்பது. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4621,6 +4628,7 @@
 <translation id="81563721597823545">ஹாக்கி உபகரணங்கள்</translation>
 <translation id="815805690561372740">நீங்கள் பிரவுஸ் செய்யும்போது உங்களைப் பாதுகாக்க ‘Google பாதுகாப்பு உலாவல்’ போன்ற உள்ளமைந்த பாதுகாப்பு அம்சங்கள் Chromeமில் உள்ளன. இந்த அம்சம் நீங்கள் பார்க்க முயன்ற தளத்தில் <ph name="BEGIN_LINK" />மால்வேரைச் சமீபத்தில் கண்டறிந்தது<ph name="END_LINK" />.</translation>
 <translation id="8161095570253161196">உலாவலை மீண்டும் தொடங்கு</translation>
+<translation id="8163468049564974856">ஆன்லைனில் பாதுகாப்பாகச் செக்-அவுட் செய்ய, தானாக நிரப்புதல் அம்சத்தை ஆன் செய்யுங்கள். உங்கள் கார்டு விவரங்கள் Google Walletடில் என்க்ரிப்ஷன் செய்யப்பட்டிருக்கும்.</translation>
 <translation id="8163866351304776260">குவாட் பஞ்ச் லெஃப்ட்</translation>
 <translation id="8164078261547504572">விலை குறையும்போது மின்னஞ்சல்களைப் பெற விரும்புகிறீர்களா?</translation>
 <translation id="8169175551046720804">அதே அகராதியில் "<ph name="DATA_CONTROLS_KEYS" />" கீகளை அமைக்க முடியாது</translation>
@@ -4984,6 +4992,7 @@
 <translation id="8758529215314160755">உங்கள் <ph name="ACCOUNT" /> <ph name="BEGIN_LINK" />Google கணக்கில்<ph name="END_LINK" /> பெயரை மாற்றலாம்</translation>
 <translation id="8759274551635299824">கார்டு காலாவதியாகிவிட்டது</translation>
 <translation id="87601671197631245">இந்தத் தளம் காலாவதியான பாதுகாப்பு உள்ளமைவைப் பயன்படுத்துகிறது, இந்தத் தளத்திற்கு உங்கள் தகவல்களை (உதாரணமாக, கடவுச்சொற்கள், மெசேஜ்கள் அல்லது கிரெடிட் கார்டு தகவல்கள் போன்றவை) அனுப்பும்போது அவற்றை இது வெளிப்படுத்தக்கூடும்.</translation>
+<translation id="8762871163452985706">குறிப்பு நீக்கப்பட்டது</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து இணைப்பு அனுப்பப்பட்டது}other{<ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து # இணைப்புகள் அனுப்பப்பட்டன}}</translation>
 <translation id="8763927697961133303">USB சாதனம்</translation>
 <translation id="8763986294015493060">தற்போது திறந்துள்ள மறைநிலைச் சாளரங்கள் அனைத்தையும் மூடும்</translation>

@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="1082554859195167538">Отзывы о товарах для вас</translation>
 <translation id="1084365883616172403">Опубликовано в Facebook.</translation>
+<translation id="108485301461714610">Режим ИИ в Google Поиске и подключенные приложения</translation>
 <translation id="1085677983426914530">Не удалось открыть файл "<ph name="FILENAME" />"</translation>
 <translation id="1086486568852410168">Поиск с Google Объективом</translation>
 <translation id="1096992026380844478">Ваши настройки синхронизации будут восстановлены на основе данных из последней резервной копии. Узнайте, <ph name="BEGIN_LINK" />какие данные можно синхронизировать<ph name="END_LINK" />.</translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">Неактивные вкладки</translation>
 <translation id="1231733316453485619">Включить синхронизацию?</translation>
 <translation id="1238794841176717085">Поделиться страницей</translation>
+<translation id="1248901457873510750">Откройте платежи</translation>
 <translation id="1253032109800629289">Скрыть карточку "Получать уведомления об изменении цены"</translation>
 <translation id="1254424942107648268">Найти предыдущую</translation>
 <translation id="1258491128795710625">Что нового</translation>
@@ -184,7 +186,7 @@
 <translation id="1558391695376153246">Закрыть вкладки инкогнито</translation>
 <translation id="1559263013367304065">с начала использования Google Объектива</translation>
 <translation id="1560153516220021659">Кнопка свернутой дополнительной панели инструментов</translation>
-<translation id="1562601408588733317">Управляйте поиском и вводом данных с помощью Gemini</translation>
+<translation id="1562601408588733317">Управляйте поиском и Заполнением с Gemini</translation>
 <translation id="1565371473877914088">Новая вкладка инкогнито</translation>
 <translation id="1567960978791353852">Перейти в Режим чтения</translation>
 <translation id="1571780780926010134">Вкладки инкогнито</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4738968082443868320">Google Диск</translation>
 <translation id="474209246745757965">Ищите товары и переводите текст с помощью камеры.</translation>
+<translation id="4742142641516465928">Откройте настройки автозаполнения и паролей</translation>
 <translation id="4742407542027196863">Управление паролями</translation>
 <translation id="4744428388659507035">Чтобы ваши закладки были доступны на всех устройствах, которые у вас есть, включите параметр "Закладки" в настройках.</translation>
 <translation id="4746926359847517643">Вы всегда можете найти их в истории.</translation>

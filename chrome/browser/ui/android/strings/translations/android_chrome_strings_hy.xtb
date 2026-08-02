@@ -228,6 +228,8 @@
 <translation id="197288927597451399">Տեղադրել</translation>
 <translation id="1973912524893600642">Պահպանել տվյալները</translation>
 <translation id="1974060860693918893">Լրացուցիչ</translation>
+<translation id="1975298278721498749">Ստեղծեք, պահեք և ավտոմատ լրացրեք հուսալի գաղտնաբառեր</translation>
+<translation id="1975680286807856378">Անձնական ներդիրները կողպված պահեք</translation>
 <translation id="1982274314082047220">Սահեցրեք վերև՝ ընթերցման ռեժիմի կարգավորումները բացելու համար</translation>
 <translation id="1984087999855033707">հեռախոսահամար</translation>
 <translation id="1984417487208496350">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">Ներառե՞լ շրջապատող տեքստը Google-ի որոնման հարցումներում</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ամրացված ինկոգնիտո ներդիր, որի ձայնն անջատված է</translation>
 <translation id="2021896219286479412">Լիաէկրան ռեժիմի կարգավորումներ</translation>
+<translation id="2022369817198611683">Օգտվեք Gemini-ի բոլոր առավելություններից Chrome-ի գործիքագոտու միջոցով։ Երկար սեղմեք՝ հարմարեցնելու համար։</translation>
 <translation id="2024195579772565064">Որոնողական համակարգի ջնջում</translation>
 <translation id="2029669011553795746">Խորհուրդները միացնելու առաջարկով ներքևի էկրանը բացված է կիսով չափ</translation>
 <translation id="2038563949887743358">Միացնել կայքի ամբողջական տարբերակը</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">Վեբ ռեսուրսներում այս ապրանքի գնի փոփոխման պատմությունը</translation>
 <translation id="2367818124433749493">Ծրագրավորողի դյուրանցումներ</translation>
 <translation id="2369058545741334020">Բացել ընթերցման ռեժիմում</translation>
+<translation id="2378656072948663224">Google-ի կողմից առցանց սպառնալիքներից պաշտպանության ամենաբարձր մակարդակը</translation>
 <translation id="2385605401818128172">Դուք կարող եք դիտել այն կայքերը, որոնք չափազանց շատ ծանուցումներ են ուղարկում, և կանգնեցնել դրանց ուղարկումը</translation>
 <translation id="2386938421315164605">Թաքցրեք և ցուցադրեք թեմաները</translation>
 <translation id="2390510615457643724">Նորից ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">Անունն անվավեր է:</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-ի օգտագործած տարածքը</translation>
 <translation id="2932222164150889403">Ձեր ստեղնաշարը չի փոխվի</translation>
+<translation id="2936830831577265247">Ինկոգնիտո ռեժիմը կողպված է</translation>
 <translation id="2936980480904111527">Օգտվեք Chrome-ում ծանուցումների բոլոր առավելություններից</translation>
 <translation id="2939908794993783865">Լրացուցիչ ոչ ակտիվ կայքեր</translation>
 <translation id="2940075786175545812">Կայքի այցելությունը հաստատելու կամ մերժելու ընտրանք</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">Էջանիշը պահվել է <ph name="FOLDER_NAME" />-ում</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, ընտրված և ամրացված ներդիր, որում տեսագրում է արվում</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 էջանիշ}one{# էջանիշ}other{# էջանիշ}}</translation>
+<translation id="4464892890754749268">Մեկ հպումով ջնջեք ձեր այցելությունների պատմությունը</translation>
 <translation id="4478161224666880173">Այս կայքում կարող եք օգտագործել ձեր <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշիվը։ Շարունակելու համար մուտք գործեք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />։</translation>
 <translation id="4479972344484327217">«<ph name="MODULE" />» բաղադրիչը տեղադրվում է Chrome-ի համար…</translation>
 <translation id="4487967297491345095">Chrome հավելվածի բոլոր տվյալներն ընդմիշտ կջնջվեն, ներառյալ` բոլոր ֆայլերը, կարգավորումները, հաշիվները, տվյալների շտեմարանները և այլն:</translation>
@@ -1053,6 +1059,7 @@
 <translation id="5404274604891474619">Հնարավոր չէ խմբագրել PDF ֆայլը</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) օգտատերն ուզում է ներդիրների խմբի միանալ։ Ցանկացած մեկը, ով ունի այս հղումը, կարող է փոփոխել բոլոր ներդիրները, այնպես որ ուշադիր եղեք։ Հղումը կգործի 48 ժամ։</translation>
+<translation id="5413221660329682980">Արագ ջնջեք ձեր պատմությունը</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
 <translation id="5415871492522952905">Պատմությունը և ներդիրները հասանելի կլինեն ձեր բոլոր սարքերում, այնպես որ դուք կկարողանաք սկսել օգտվել դիտարկիչից մեկ սարքում և շարունակել մյուսում</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />-ին (<ph name="EMAIL" />) անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը</translation>

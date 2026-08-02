@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{탭 {count}개}other{탭 {count}개}}</translation>
 <translation id="1082554859195167538">추천 제품 리뷰</translation>
 <translation id="1084365883616172403">Facebook 게시가 완료되었습니다.</translation>
+<translation id="108485301461714610">Google 검색 AI 모드 및 연결된 앱</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> 파일을 열 수 없습니다</translation>
 <translation id="1086486568852410168">Google 렌즈로 검색</translation>
 <translation id="1096992026380844478">마지막 백업에 따라 동기화 설정이 복원됩니다. <ph name="BEGIN_LINK" />동기화할 수 있는 항목 확인하기<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">비활성된 탭</translation>
 <translation id="1231733316453485619">동기화를 사용하시겠습니까?</translation>
 <translation id="1238794841176717085">이 페이지 공유</translation>
+<translation id="1248901457873510750">결제 열기</translation>
 <translation id="1253032109800629289">'가격 추적 알림 받기' 숨기기</translation>
 <translation id="1254424942107648268">이전 찾기</translation>
 <translation id="1258491128795710625">새로운 기능</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">카메라를 사용해 쇼핑하고 번역해 보세요.</translation>
+<translation id="4742142641516465928">자동 완성 및 비밀번호 열기</translation>
 <translation id="4742407542027196863">비밀번호 관리...</translation>
 <translation id="4744428388659507035">어느 기기에서나 내 북마크를 사용하려면 설정에서 ‘북마크’를 사용 설정하세요.</translation>
 <translation id="4746926359847517643">방문 기록에서 언제든지 되돌릴 수 있습니다.</translation>

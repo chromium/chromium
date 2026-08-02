@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} thẻ}other{{count} thẻ}}</translation>
 <translation id="1082554859195167538">Bài đánh giá sản phẩm dành cho bạn</translation>
 <translation id="1084365883616172403">Đã đăng lên Facebook.</translation>
+<translation id="108485301461714610">Chế độ AI của Google Tìm kiếm và các ứng dụng có thể kết nối</translation>
 <translation id="1085677983426914530">Không mở được <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
 <translation id="1096992026380844478">Chế độ cài đặt đồng bộ hoá sẽ được khôi phục dựa trên lần sao lưu gần đây nhất. <ph name="BEGIN_LINK" />Xem những nội dung bạn có thể đồng bộ hoá<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">Thẻ không hoạt động</translation>
 <translation id="1231733316453485619">Bật tính năng đồng bộ hóa?</translation>
 <translation id="1238794841176717085">Chia sẻ trang này</translation>
+<translation id="1248901457873510750">Mở phần Thanh toán</translation>
 <translation id="1253032109800629289">Ẩn lựa chọn "Nhận thông báo theo dõi giá"</translation>
 <translation id="1254424942107648268">Tìm nội dung khớp ở trước</translation>
 <translation id="1258491128795710625">Tính năng mới</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">Cập nhật</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">Mua sắm và dịch bằng máy ảnh</translation>
+<translation id="4742142641516465928">Mở phần Tự động điền và mật khẩu</translation>
 <translation id="4742407542027196863">Quản lý mật khẩu…</translation>
 <translation id="4744428388659507035">Để sử dụng dấu trang trên tất cả các thiết bị của bạn, hãy bật "Dấu trang" trong phần cài đặt.</translation>
 <translation id="4746926359847517643">Bạn có thể khôi phục các thẻ này bất cứ lúc nào trong phần nhật ký.</translation>

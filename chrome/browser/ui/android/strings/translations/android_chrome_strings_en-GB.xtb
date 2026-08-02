@@ -228,6 +228,8 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">Keep Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
+<translation id="1975298278721498749">Create, save and autofill strong passwords</translation>
+<translation id="1975680286807856378">Keep your private tabs locked</translation>
 <translation id="1982274314082047220">Reading mode swipe up for preferences</translation>
 <translation id="1984087999855033707">phone number</translation>
 <translation id="1984417487208496350">No protection (not recommended)</translation>
@@ -235,6 +237,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pinned muted Incognito tab</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
+<translation id="2022369817198611683">Get the best of Gemini from your Chrome toolbar. Long press to customise.</translation>
 <translation id="2024195579772565064">Delete search engine</translation>
 <translation id="2029669011553795746">Tips notifications opt-in opened at half height</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
@@ -325,6 +328,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2366554533468315977">Price history across the web for this option</translation>
 <translation id="2367818124433749493">Developer shortcuts</translation>
 <translation id="2369058545741334020">Open in reading mode</translation>
+<translation id="2378656072948663224">Google's highest level of protection against online threats</translation>
 <translation id="2385605401818128172">You can review sites that send a lot of notifications and stop them from sending more in the future</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
@@ -465,6 +469,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2923908459366352541">Name is invalid</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> storage</translation>
 <translation id="2932222164150889403">Your keyboard won’t change</translation>
+<translation id="2936830831577265247">Locked Incognito mode</translation>
 <translation id="2936980480904111527">Chrome notifications make things easier</translation>
 <translation id="2939908794993783865">Additional inactive sites</translation>
 <translation id="2940075786175545812">Option to approve or not approve a website</translation>
@@ -831,6 +836,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, selected pinned recording tab</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 bookmark}other{# bookmarks}}</translation>
+<translation id="4464892890754749268">Delete your browsing history with one tap</translation>
 <translation id="4478161224666880173">You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
 <translation id="4487967297491345095">All Chrome’s app data will be deleted permanently. This includes all files, settings, accounts, databases, etc.</translation>
@@ -1053,6 +1059,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5404274604891474619">Cannot edit PDF</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hours.</translation>
+<translation id="5413221660329682980">Quickly delete your history</translation>
 <translation id="5414836363063783498">Verifying…</translation>
 <translation id="5415871492522952905">You’ll have your history and tabs on all your devices so that you can continue what you were doing</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group</translation>

@@ -228,6 +228,8 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="197288927597451399">रखें</translation>
 <translation id="1973912524893600642">डेटा को सेव रखें</translation>
 <translation id="1974060860693918893">ऐडवांस सेटिंग</translation>
+<translation id="1975298278721498749">मज़बूत पासवर्ड बनाएं, सेव करें, और ऑटोमैटिक तरीके से भरें</translation>
+<translation id="1975680286807856378">अपने निजी टैब लॉक करके रखें</translation>
 <translation id="1982274314082047220">रीडिंग मोड में, सेटिंग देखने के लिए ऊपर की ओर स्वाइप करें</translation>
 <translation id="1984087999855033707">फ़ोन नंबर</translation>
 <translation id="1984417487208496350">कोई सुरक्षा नहीं (हम ऐसा करने का सुझाव नहीं देते)</translation>
@@ -235,6 +237,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="200114059308480249">क्या आप Google पर कुछ खोजते समय, खोज से जुड़े मिलते-जुलते शब्द भी शामिल करना चाहते हैं?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, पिन किया गया ऐसा गुप्त टैब जिसे म्यूट किया गया है</translation>
 <translation id="2021896219286479412">पूरी स्क्रीन के साइट नियंत्रण</translation>
+<translation id="2022369817198611683">Chrome के टूलबार से, Gemini की बेहतरीन सुविधाएं ऐक्सेस करें. पसंद के मुताबिक बनाने के लिए, दबाकर रखें.</translation>
 <translation id="2024195579772565064">सर्च इंजन मिटाएं</translation>
 <translation id="2029669011553795746">सलाह से जुड़ी सूचनाओं के लिए ऑप्ट इन करने का विकल्प आधी स्क्रीन पर दिख रहा है</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटॉप साइट चालू करें</translation>
@@ -325,6 +328,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2366554533468315977">इस विकल्प के लिए वेब पर, कीमत के इतिहास से जुड़ा डेटा</translation>
 <translation id="2367818124433749493">डेवलपर के लिए शॉर्टकट</translation>
 <translation id="2369058545741334020">रीडिंग मोड में खोलें</translation>
+<translation id="2378656072948663224">ऑनलाइन खतरों से बचने के लिए, Google की बेहतरीन सुरक्षा</translation>
 <translation id="2385605401818128172">उन साइटों की समीक्षा की जा सकती है जो बहुत ज़्यादा सूचनाएं भेजती हैं. साथ ही, आने वाले समय में उन्हें और सूचनाएं भेजने से रोका जा सकता है</translation>
 <translation id="2386938421315164605">विषयों को छिपाएं और दिखाएं</translation>
 <translation id="2390510615457643724">क्या <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> को फिर से डाउनलोड करना है?</translation>
@@ -465,6 +469,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2923908459366352541">नाम अमान्य है</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> मेमोरी</translation>
 <translation id="2932222164150889403">आपका कीबोर्ड नहीं बदलेगा</translation>
+<translation id="2936830831577265247">लॉक किया गया गुप्त मोड</translation>
 <translation id="2936980480904111527">Chrome की सूचना की सुविधा से काम आसान हो जाते हैं</translation>
 <translation id="2939908794993783865">अन्य साइटें जो चालू नहीं हैं</translation>
 <translation id="2940075786175545812">किसी वेबसाइट को अनुमति देने या न देने का विकल्प</translation>
@@ -831,6 +836,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> में बुकमार्क किया गया</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, चुना गया ऐसा टैब जिसे पिन किया गया है और जिसका कॉन्टेंट रिकॉर्ड किया जा रहा है</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 बुकमार्क}one{# बुकमार्क}other{# बुकमार्क}}</translation>
+<translation id="4464892890754749268">एक टैप में अपना ब्राउज़िंग इतिहास मिटाएं</translation>
 <translation id="4478161224666880173">इस साइट पर, अपने <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते का इस्तेमाल किया जा सकता है. जारी रखने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते में साइन इन करें.</translation>
 <translation id="4479972344484327217">Chrome के लिए <ph name="MODULE" /> इंस्टॉल किया जा रहा है…</translation>
 <translation id="4487967297491345095">Chrome का सभी ऐप्लिकेशन डेटा हमेशा केे लिए हटा दिया जाएगा. इसमें सभी फ़ाइलें, सेटिंग, खाते, डेटाबेस वगैरह शामिल हैं.</translation>
@@ -1053,6 +1059,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5404274604891474619">PDF फ़ाइल में बदलाव नहीं किया जा सकता</translation>
 <translation id="5409881200985013443">क्या आप <ph name="CLIENT_NAME" /> पर <ph name="ONE_TIME_CODE" /> सबमिट करना चाहते हैं?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) ने आपसे टैब ग्रुप में शामिल होने का अनुरोध किया है. जिन लोगों के पास यह लिंक है वे हर टैब में बदलाव कर सकते हैं. इसलिए, सावधानी से शामिल हों. लिंक 48 घंटों के बाद काम नहीं करते हैं.</translation>
+<translation id="5413221660329682980">चुटकियों में अपना इतिहास मिटाएं</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
 <translation id="5415871492522952905">आपके सभी डिवाइसों पर टैब और ब्राउज़िंग इतिहास सेव रहेगा, ताकि आप अपने पिछले काम जारी रख सकें</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) के लिए “<ph name="GROUP_NAME" />” टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा</translation>

@@ -570,6 +570,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1871284979644508959">Būtinas laukas</translation>
 <translation id="1871739799120352748">Kaina yra didelė</translation>
 <translation id="1874224422119691492">Galite pakeisti, ar naudoti ekrano užraktą slaptažodžiams užpildyti, skiltyje „<ph name="SETTINGS" />“</translation>
+<translation id="1874749478353075307">Išsiųsta į „Chrome“ įrenginyje „<ph name="DEVICE_NAME" />“ • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Nuotraukų dėklas</translation>
 <translation id="1875512691959384712">„Google“ formos</translation>
 <translation id="1876399092304384674">Pagal datą</translation>
@@ -2113,6 +2114,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Marškinėliai</translation>
 <translation id="4253168017788158739">Pastaba</translation>
+<translation id="4255125583058870090">Įkeliama mokėjimų programa</translation>
 <translation id="4255487295905690262">Jei kurioje nors svetainėje sumažės kaina, gausite įspėjimą el. paštu.</translation>
 <translation id="425582637250725228">Atlikti pakeitimai gali nebūti išsaugoti.</translation>
 <translation id="4258748452823770588">Netinkamas parašas</translation>
@@ -2987,6 +2989,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5611398002774823980">Išsaugoti paskyroje</translation>
 <translation id="561165882404867731">Verskite šį puslapį naudodami „Google“ vertėją</translation>
 <translation id="5612720917913232150"><ph name="URL" /> nori naudoti kompiuterio vietovę</translation>
+<translation id="5613117810542399920">Komentaras grąžintas</translation>
 <translation id="5613958591683399697">Paklauskite „<ph name="ENGINE_NAME" />“</translation>
 <translation id="5614190747811328134">Naudotojo pastaba</translation>
 <translation id="5614520971155863709">Kortų žaidimai</translation>
@@ -3005,6 +3008,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5640474731385449758">Plėtinys „<ph name="EXTENSION_NAME" />“ nori atidaryti <ph name="PROTOCOL" /> nuorodas <ph name="ORIGIN" /> per „<ph name="HANDLER_HOSTNAME" />“</translation>
 <translation id="5642411781689336699">Stereofoninės sistemos ir komponentai</translation>
 <translation id="5642508497713047">CRL pasirašantis asmuo</translation>
+<translation id="5643946808525377120">Išsiųsta į „Chrome“ įrenginyje „<ph name="DEVICE_NAME" />“</translation>
 <translation id="5644090287519800334">1 pusė: sukti vaizdą pagal X ašį</translation>
 <translation id="5644128326840674462">Reklamjuostė</translation>
 <translation id="5645132789250840550">Plastikas (pusiau blizgus)</translation>
@@ -3046,6 +3050,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5715150588940290235">Ištrinti išsaugotus saugos kodus?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> iš <ph name="WINDOW_COUNT" /> šiame įrenginyje</translation>
 <translation id="5716325061445053985">Palieskite, kad atidarytumėte skirtuką telefone</translation>
+<translation id="5717281954932320486">Atsiskaitant internetu išsami kortelės informacija užpildoma automatiškai. Kortelės saugiai išsaugomos „Google Wallet“.</translation>
 <translation id="5717509257172454543">Čiuožimas</translation>
 <translation id="5718326209176373202">Pridėti teksto komentarų</translation>
 <translation id="5718601519531438273">Apima tokią informaciją kaip pasai ir vairuotojų pažymėjimai</translation>
@@ -4043,6 +4048,7 @@ Papildoma išsami informacija:
 <translation id="7257453341537973799">Karjeros šaltiniai ir planavimas</translation>
 <translation id="725866823122871198">Nepavyksta užmegzti privataus ryšio su <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, nes kompiuterio data ir laikas (<ph name="DATE_AND_TIME" />) yra netinkami.</translation>
 <translation id="7260075294900977274">Naujas išmanusis aplankas, kurį naudodami galite išsaugoti visus apsipirkimo puslapius vienoje vietoje ir automatiškai stebėti kainas, gauti kainų įžvalgų ir kt.</translation>
+<translation id="7261463765917514051">Saugiai atsiskaitykite naudodami automatinį pildymą</translation>
 <translation id="7265608370113700582">Adresas pasiekiamas tik šiame įrenginyje</translation>
 <translation id="7266094331715305887">programos įrenginyje</translation>
 <translation id="7269151392155523061">Spartusis klavišas negali būti toks pat kaip paieškos pasiūlymus kaupiančios svetainės raktinis žodis, kurį nustatė „<ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />“: <ph name="SHORTCUT_NAME" /></translation>
@@ -4616,6 +4622,7 @@ Papildoma išsami informacija:
 <translation id="8134058435519644366">Komplektavimas ir personalo poreikiai</translation>
 <translation id="8135546115396015134">kairįjį klavišą</translation>
 <translation id="8137456439814903304">Energija ir komunalinės paslaugos</translation>
+<translation id="8138591088112729119">Teikia Asmeninis intelektas</translation>
 <translation id="814071672416123670">Turinio nepavyko nukopijuoti dėl organizacijos politikos</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Sukurta prieš 1 mėnesį}one{Sukurta prieš {NUM_MONTHS} mėnesį}few{Sukurta prieš {NUM_MONTHS} mėnesius}many{Sukurta prieš {NUM_MONTHS} mėnesio}other{Sukurta prieš {NUM_MONTHS} mėnesių}}</translation>
 <translation id="8147389370274164212">„<ph name="SEARCH_ENGINE_NAME" />“, dabartinis numatytasis. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4630,6 +4637,7 @@ Papildoma išsami informacija:
 <translation id="81563721597823545">Ledo ritulio įranga</translation>
 <translation id="815805690561372740">„Chrome“ integruotos saugos funkcijos, skirtos apsaugoti jus, kai naršote, pvz., „Google“ saugaus naršymo funkcija, kurią naudojant <ph name="BEGIN_LINK" />neseniai buvo rasta kenkėjiška programa<ph name="END_LINK" /> svetainėje, kurioje bandėte apsilankyti.</translation>
 <translation id="8161095570253161196">Tęsti naršymą</translation>
+<translation id="8163468049564974856">Įjunkite automatinį pildymą, kad galėtumėte saugiai atsiskaityti internetu. Išsami kortelės informacija užšifruojama „Google Wallet“.</translation>
 <translation id="8163866351304776260">Keturios skylės kairėje</translation>
 <translation id="8164078261547504572">Norite gauti el. laiškus, kai kainos sumažės?</translation>
 <translation id="8169175551046720804">Klavišų „<ph name="DATA_CONTROLS_KEYS" />“ negalima nustatyti tame pačiame žodyne</translation>
@@ -4994,6 +5002,7 @@ Papildoma išsami informacija:
 <translation id="8758529215314160755">Galite redaguoti vardą <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Ši kortelė nebegalioja</translation>
 <translation id="87601671197631245">Šioje svetainėje naudojama pasenusi saugos konfigūracija, todėl gali būti atskleista į šią svetainę siunčiama informacija (pvz., slaptažodžiai, pranešimai ar kredito kortelių duomenys).</translation>
+<translation id="8762871163452985706">Komentaras anuliuotas</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Nuoroda išsiųsta iš „<ph name="DEVICE_NAME" />“}one{# nuoroda išsiųsta iš „<ph name="DEVICE_NAME" />“}few{# nuorodos išsiųstos iš „<ph name="DEVICE_NAME" />“}many{# nuorodos išsiųsta iš „<ph name="DEVICE_NAME" />“}other{# nuorodų išsiųsta iš „<ph name="DEVICE_NAME" />“}}</translation>
 <translation id="8763927697961133303">USB įrenginys</translation>
 <translation id="8763986294015493060">Uždaryti visus šiuo metu atidarytus inkognito langus</translation>

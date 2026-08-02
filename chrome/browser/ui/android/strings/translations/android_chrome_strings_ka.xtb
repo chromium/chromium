@@ -228,6 +228,8 @@
 <translation id="197288927597451399">შეინახეთ</translation>
 <translation id="1973912524893600642">მონაცემების შენარჩუნება</translation>
 <translation id="1974060860693918893">გაფართოებული</translation>
+<translation id="1975298278721498749">ძლიერი პაროლების შექმნა, შენახვა და ავტომატური შევსება</translation>
+<translation id="1975680286807856378">თქვენი პირადი ჩანართების ჩაკეტვა</translation>
 <translation id="1982274314082047220">წაკითხვის რეჟიმში გადაფურცლეთ ზემოთ უპირატესი პარამეტრების სანახავად</translation>
 <translation id="1984087999855033707">ტელეფონის ნომერი</translation>
 <translation id="1984417487208496350">დაცვის გარეშე (არარეკომენდებული)</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">გსურთ, დაურთოთ გარშემო ტექსტი Google ძიებებს?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ჩამაგრებული და დადუმებული ინკოგნიტო ჩანართი</translation>
 <translation id="2021896219286479412">სრულეკრანიანი რეჟიმის მართვა</translation>
+<translation id="2022369817198611683">მაქსიმალურად გამოიყენეთ Gemini Chrome-ის ხელსაწყოთა ზოლიდან. მოსარგებად ხანგრძლივად დააჭირეთ.</translation>
 <translation id="2024195579772565064">საძიებო სისტემის წაშლა</translation>
 <translation id="2029669011553795746">რჩევების შესახებ შეტყობინებებზე თანხმობის გვერდი გაიხსნა ნახევარ სიმაღლეზე</translation>
 <translation id="2038563949887743358">საიტის დესკტოპის ვერსიის მოთხოვნის ჩართვა</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">ფასების ისტორია ვებში ამ ვარიანტისთვის</translation>
 <translation id="2367818124433749493">დეველოპერთა მალსახმობები</translation>
 <translation id="2369058545741334020">წაკითხვის რეჟიმში გახსნა</translation>
+<translation id="2378656072948663224">Google-ის უმაღლესი დონის დაცვა ონლაინ საფრთხეებისგან</translation>
 <translation id="2385605401818128172">შეგიძლიათ გადახედოთ საიტებს, რომლებიც მეტისმეტად ბევრ შეტყობინებას გიგზავნით და შეწყვიტოთ მომავალში მათგან შეტყობინებების მიღება</translation>
 <translation id="2386938421315164605">თემების დამალვა და გამოჩენა</translation>
 <translation id="2390510615457643724">გსურთ, ხელახლა ჩამოტვირთოთ <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">სახელი არასწორია</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-ის მეხსიერება</translation>
 <translation id="2932222164150889403">თქვენი კლავიატურა არ შეიცვლება</translation>
+<translation id="2936830831577265247">ინკოგნიტო რეჟიმი ჩაკეტილია</translation>
 <translation id="2936980480904111527">Chrome-ის შეტყობინებები გაგიადვილებთ გარკვეულ რამეებს</translation>
 <translation id="2939908794993783865">დამატებითი უმოქმედო საიტები</translation>
 <translation id="2940075786175545812">ვებსაიტის დადასტურების ან უარყოფის ვარიანტი</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">სანიშნე შენახულია „<ph name="FOLDER_NAME" />“-ში</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, არჩეულია ჩამაგრებული ჩანართი, რომელშიც მიმდინარეობს ჩაწერა</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 სანიშნე}other{# სანიშნე}}</translation>
+<translation id="4464892890754749268">წაშალეთ დათვალიერების ისტორია ერთი შეხებით</translation>
 <translation id="4478161224666880173">ამ საიტზე შეგიძლიათ თქვენი <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ანგარიშის გამოყენება. გასაგრძელებლად შედით <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ში.</translation>
 <translation id="4479972344484327217">ინსტალირდება <ph name="MODULE" /> Chrome-ისთვის…</translation>
 <translation id="4487967297491345095">Chrome-ში არსებული აპების მონაცემები სამუდამოდ წაიშლება. მათ შორის, აპებთან დაკავშირებული ყველა ფაილი, პარამეტრი, ანგარიში, მონაცემთა ბაზა და ა.შ.</translation>
@@ -1053,6 +1059,7 @@
 <translation id="5404274604891474619">PDF-ის რედაქტირება შეუძლებელია</translation>
 <translation id="5409881200985013443">გსურთ, გადაუგზავნოთ <ph name="ONE_TIME_CODE" /> <ph name="CLIENT_NAME" />-ს?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) გთხოვთ, რომ გაწევრიანდეთ ჩანართების ჯგუფში. ყველას, ვისაც აქვს წვდომა ბმულზე, შეუძლია ნებისმიერი ჩანართის რედაქტირება, შესაბამისად გაწევრიანებისას გამოიჩინეთ სიფრთხილე. ბმულს მოქმედების ვადა ეწურება 48 საათში.</translation>
+<translation id="5413221660329682980">ისტორიის სწრაფად წაშლა</translation>
 <translation id="5414836363063783498">დადასტურება…</translation>
 <translation id="5415871492522952905">თქვენს ყველა მოწყობილობაზე გექნებათ ისტორია და ჩანართები, რომ მიტოვებული საქმის გაგრძელება შეძლოთ</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) მყისიერად დაკარგავს წვდომას „<ph name="GROUP_NAME" />“-ის ჩანართების ჯგუფზე</translation>

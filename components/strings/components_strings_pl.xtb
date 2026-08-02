@@ -570,6 +570,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1871284979644508959">Pole wymagane</translation>
 <translation id="1871739799120352748">Cena jest wysoka</translation>
 <translation id="1874224422119691492">Jeśli chcesz włączyć lub wyłączyć opcję używania blokady ekranu do wypełniania haseł, otwórz <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">Wysłano do Chrome na urządzeniu <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">Taca na zdjęcia</translation>
 <translation id="1875512691959384712">Formularze Google</translation>
 <translation id="1876399092304384674">Według daty</translation>
@@ -2111,6 +2112,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-shirty</translation>
 <translation id="4253168017788158739">Notatka</translation>
+<translation id="4255125583058870090">Wczytuję aplikację płatniczą</translation>
 <translation id="4255487295905690262">Otrzymasz alert e-mail, jeśli produkt stanieje w dowolnej witrynie.</translation>
 <translation id="425582637250725228">Wprowadzone zmiany mogą nie zostać zapisane.</translation>
 <translation id="4258748452823770588">Nieprawidłowy podpis</translation>
@@ -2985,6 +2987,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5611398002774823980">Zapisz na koncie</translation>
 <translation id="561165882404867731">Przetłumacz tę stronę w Tłumaczu Google</translation>
 <translation id="5612720917913232150"><ph name="URL" /> chce używać lokalizacji Twojego komputera</translation>
+<translation id="5613117810542399920">Adnotacja została ponowiona</translation>
 <translation id="5613958591683399697">Zapytaj <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Informacje dla użytkownika</translation>
 <translation id="5614520971155863709">Gry karciane</translation>
@@ -3003,6 +3006,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5640474731385449758">Rozszerzenie „<ph name="EXTENSION_NAME" />” chce otworzyć linki <ph name="PROTOCOL" /> w <ph name="ORIGIN" /> za pomocą <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Systemy i komponenty stereo</translation>
 <translation id="5642508497713047">Podmiot podpisujący listę CRL</translation>
+<translation id="5643946808525377120">Wysłano do Chrome na urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="5644090287519800334">Strona 1 – przesunięcie obrazu wzdłuż osi X</translation>
 <translation id="5644128326840674462">Baner promocyjny</translation>
 <translation id="5645132789250840550">Plastik (półpołysk)</translation>
@@ -3044,6 +3048,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5715150588940290235">Usunąć zapisane kody zabezpieczające?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> z <ph name="WINDOW_COUNT" /> na tym urządzeniu</translation>
 <translation id="5716325061445053985">Kliknij, aby otworzyć kartę na telefonie</translation>
+<translation id="5717281954932320486">Automatycznie uzupełniaj dane karty podczas płacenia online. Karty są zapisywane bezpiecznie w Portfelu Google.</translation>
 <translation id="5717509257172454543">Łyżwiarstwo</translation>
 <translation id="5718326209176373202">Dodaj adnotacje tekstowe</translation>
 <translation id="5718601519531438273">Obejmuje informacje takie jak paszporty i prawa jazdy</translation>
@@ -4041,6 +4046,7 @@ Dodatkowe informacje:
 <translation id="7257453341537973799">Informacje zawodowe i planowanie kariery</translation>
 <translation id="725866823122871198">Nie można nawiązać prywatnego połączenia z <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ data i godzina (<ph name="DATE_AND_TIME" />) ustawione na komputerze są nieprawidłowe.</translation>
 <translation id="7260075294900977274">Nowy inteligentny folder, który pozwala zapisać wszystkie strony zakupów w 1 miejscu, automatycznie obserwować ceny, sprawdzać statystyki dotyczące cen i korzystać z innych funkcji</translation>
+<translation id="7261463765917514051">Płać bezpiecznie dzięki autouzupełnianiu</translation>
 <translation id="7265608370113700582">Adres jest dostępny tylko na tym urządzeniu</translation>
 <translation id="7266094331715305887">aplikacje na urządzeniu</translation>
 <translation id="7269151392155523061">Skrót nie może być taki sam jak słowo kluczowe agregatora wyszukiwania zdefiniowane przez zasadę <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4612,6 +4618,7 @@ Dodatkowe informacje:
 <translation id="8134058435519644366">Rekrutacja i zatrudnianie</translation>
 <translation id="8135546115396015134">lewy klawisz</translation>
 <translation id="8137456439814903304">Energetyka i usługi komunalne</translation>
+<translation id="8138591088112729119">Wykorzystuje spersonalizowaną inteligencję</translation>
 <translation id="814071672416123670">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się skopiować treści</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Utworzono miesiąc temu}few{Utworzono {NUM_MONTHS} miesiące temu}many{Utworzono {NUM_MONTHS} miesięcy temu}other{Utworzono {NUM_MONTHS} miesiąca temu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, bieżąca przeglądarka domyślna. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4626,6 +4633,7 @@ Dodatkowe informacje:
 <translation id="81563721597823545">Sprzęt do hokeja</translation>
 <translation id="815805690561372740">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno ta funkcja <ph name="BEGIN_LINK" />wykryła złośliwe oprogramowanie<ph name="END_LINK" /> na stronie, którą chcesz odwiedzić.</translation>
 <translation id="8161095570253161196">Wznów przeglądanie</translation>
+<translation id="8163468049564974856">Włącz autouzupełnianie, aby bezpiecznie płacić online. Dane karty są zaszyfrowane w Portfelu Google.</translation>
 <translation id="8163866351304776260">Cztery otwory po lewej</translation>
 <translation id="8164078261547504572">Chcesz otrzymywać e-maile o obniżkach cen?</translation>
 <translation id="8169175551046720804">Nie można ustawić kluczy „<ph name="DATA_CONTROLS_KEYS" />” w tym samym słowniku</translation>
@@ -4989,6 +4997,7 @@ Dodatkowe informacje:
 <translation id="8758529215314160755">Imię i nazwisko możesz zmienić <ph name="BEGIN_LINK" />na koncie Google<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Ta karta straciła ważność</translation>
 <translation id="87601671197631245">Ta strona używa nieaktualnej konfiguracji zabezpieczeń, co oznacza, że Twoje dane (np. hasła, wiadomości i numery kart kredytowych) mogą być zagrożone podczas przesyłania na tę stronę.</translation>
+<translation id="8762871163452985706">Adnotacja została cofnięta</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Wysłano link z urządzenia <ph name="DEVICE_NAME" />}few{Wysłano # linki z urządzenia <ph name="DEVICE_NAME" />}many{Wysłano # linków z urządzenia <ph name="DEVICE_NAME" />}other{Wysłano # linku z urządzenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
 <translation id="8763986294015493060">Zamknij wszystkie otwarte okna incognito</translation>

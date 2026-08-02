@@ -570,6 +570,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1871284979644508959">Medan yang diperlukan</translation>
 <translation id="1871739799120352748">Harga tinggi</translation>
 <translation id="1874224422119691492">Anda boleh menukar sama ada anda menggunakan kunci skrin anda untuk mengisikan kata laluan atau tidak dalam <ph name="SETTINGS" /></translation>
+<translation id="1874749478353075307">Dihantar kepada Chrome pada <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /> anda</translation>
 <translation id="1875025161375567525">Dulang Foto</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">Mengikut tarikh</translation>
@@ -2113,6 +2114,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Kemeja-T</translation>
 <translation id="4253168017788158739">Nota</translation>
+<translation id="4255125583058870090">Memuatkan apl pembayaran</translation>
 <translation id="4255487295905690262">Anda akan mendapat makluman e-mel jika harga turun pada mana-mana laman.</translation>
 <translation id="425582637250725228">Perubahan yang anda buat mungkin tidak disimpan.</translation>
 <translation id="4258748452823770588">Tandatangan tidak elok</translation>
@@ -2987,6 +2989,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
 <translation id="561165882404867731">Terjemahkan halaman ini dengan Google Translate</translation>
 <translation id="5612720917913232150"><ph name="URL" /> mahu menggunakan lokasi komputer anda</translation>
+<translation id="5613117810542399920">Anotasi dibuat semula</translation>
 <translation id="5613958591683399697">Tanya <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Notis Pengguna</translation>
 <translation id="5614520971155863709">Permainan Kad</translation>
@@ -3005,6 +3008,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5640474731385449758">Sambungan "<ph name="EXTENSION_NAME" />" mahu membuka pautan <ph name="PROTOCOL" /> dalam <ph name="ORIGIN" /> melalui <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Sistem &amp; Komponen Stereo</translation>
 <translation id="5642508497713047">Penandatangan CRL</translation>
+<translation id="5643946808525377120">Dihantar kepada Chrome pada <ph name="DEVICE_NAME" /> anda</translation>
 <translation id="5644090287519800334">Anjakan X sisi 1 imej</translation>
 <translation id="5644128326840674462">Sepanduk promosi</translation>
 <translation id="5645132789250840550">Plastik (Separa Kilat)</translation>
@@ -3046,6 +3050,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5715150588940290235">Padamkan kod keselamatan yang disimpan?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> daripada <ph name="WINDOW_COUNT" /> pada peranti ini</translation>
 <translation id="5716325061445053985">Ketik untuk buka tab tersebut pada telefon anda</translation>
+<translation id="5717281954932320486">Isi butiran kad secara automatik apabila anda menyemak keluar dalam talian. Kad disimpan dalam Google Wallet dengan selamat.</translation>
 <translation id="5717509257172454543">Meluncur Ais</translation>
 <translation id="5718326209176373202">Tambahkan anotasi teks</translation>
 <translation id="5718601519531438273">Termasuk maklumat seperti pasport dan lesen memandu</translation>
@@ -4043,6 +4048,7 @@ Butiran tambahan:
 <translation id="7257453341537973799">Sumber &amp; Perancangan Kerjaya</translation>
 <translation id="725866823122871198">Sambungan peribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak boleh diwujudkan kerana tarikh dan masa komputer anda (<ph name="DATE_AND_TIME" />) tidak betul.</translation>
 <translation id="7260075294900977274">Folder pintar baharu yang membantu anda menyimpan semua halaman beli-belah anda pada satu tempat dan menjejaki harga, mendapatkan cerapan harga dan banyak lagi secara automatik</translation>
+<translation id="7261463765917514051">Semak keluar dengan selamat menggunakan autolengkap</translation>
 <translation id="7265608370113700582">Alamat tersedia hanya pada peranti ini</translation>
 <translation id="7266094331715305887">apl pada peranti</translation>
 <translation id="7269151392155523061">Pintasan tidak boleh sama dengan kata kunci pengagregat carian yang ditakrifkan oleh <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -4068,6 +4074,7 @@ Butiran tambahan:
 <translation id="7310392214323165548">Peranti akan dimulakan semula tidak lama lagi</translation>
 <translation id="7311244614769792472">Tiada hasil ditemukan</translation>
 <translation id="7313107491291103073">Organisasi anda telah membenderakan laman ini kerana laman tersebut mungkin telah melanggar dasar.</translation>
+<translation id="7315372670898739748">Gagal dipautkan, cuba sebentar lagi</translation>
 <translation id="7316521168101843192">Menyimpan fail pada Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bantuan Sambungan</translation>
@@ -4615,6 +4622,7 @@ Butiran tambahan:
 <translation id="8134058435519644366">Perekrutan &amp; Pengambilan Pekerja</translation>
 <translation id="8135546115396015134">kekunci kiri</translation>
 <translation id="8137456439814903304">Tenaga &amp; Utiliti</translation>
+<translation id="8138591088112729119">Dikuasakan oleh Kecerdasan Peribadi</translation>
 <translation id="814071672416123670">Kandungan tidak dapat disalin disebabkan oleh dasar organisasi anda</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Dibuat 1 bulan yang lalu}other{Dibuat {NUM_MONTHS} bulan yang lalu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, lalai semasa. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4629,6 +4637,7 @@ Butiran tambahan:
 <translation id="81563721597823545">Peralatan Hoki</translation>
 <translation id="815805690561372740">Chrome mengandungi ciri keselamatan terbina dalam untuk melindungi anda semasa menyemak imbas – seperti Penyemakan Imbas Selamat Google yang <ph name="BEGIN_LINK" />baru-baru ini menemukan perisian hasad<ph name="END_LINK" /> pada laman yang cuba anda lawati.</translation>
 <translation id="8161095570253161196">Teruskan menyemak imbas</translation>
+<translation id="8163468049564974856">Hidupkan autolengkap untuk menyemak keluar dalam talian dengan selamat. Butiran kad anda disulitkan dalam Google Wallet.</translation>
 <translation id="8163866351304776260">Empat tebukan kiri</translation>
 <translation id="8164078261547504572">Mahu dimaklumkan melalui e-mel apabila terdapat penurunan harga?</translation>
 <translation id="8169175551046720804">Kekunci "<ph name="DATA_CONTROLS_KEYS" />" tidak boleh ditetapkan dalam kamus yang sama</translation>
@@ -4993,6 +5002,7 @@ Butiran tambahan:
 <translation id="8758529215314160755">Anda boleh mengedit nama anda dalam <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> anda <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Kad ini telah tamat tempoh</translation>
 <translation id="87601671197631245">Tapak ini menggunakan konfigurasi keselamatan yang sudah lapuk, yang mungkin mendedahkan maklumat anda (contohnya, kata laluan, mesej atau nombor kad kredit) apabila dihantar kepada tapak ini.</translation>
+<translation id="8762871163452985706">Anotasi dibuat asal</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Pautan dihantar daripada <ph name="DEVICE_NAME" />}other{# pautan dihantar daripada <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Peranti USB</translation>
 <translation id="8763986294015493060">Tutup semua tetingkap Inkognito yang terbuka pada masa ini</translation>

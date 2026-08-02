@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} टैब}one{{count} टैब}other{{count} टैब}}</translation>
 <translation id="1082554859195167538">आपके लिए प्रॉडक्ट की समीक्षाएं</translation>
 <translation id="1084365883616172403">Facebook पोस्ट पूरी हुई.</translation>
+<translation id="108485301461714610">Google Search AI mode and connected apps</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> को खोला नहीं जा सका</translation>
 <translation id="1086486568852410168">Google Lens की मदद से खोजें</translation>
 <translation id="1096992026380844478">आपके पिछले बैकअप के आधार पर, सिंक करने की आपकी सेटिंग पहले जैसी कर दी जाएंगी. <ph name="BEGIN_LINK" />देखें कि क्या सिंक किया जा सकता है<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">इनऐक्टिव टैब</translation>
 <translation id="1231733316453485619">सिंक करना चालू करना है?</translation>
 <translation id="1238794841176717085">इस पेज को शेयर करें</translation>
+<translation id="1248901457873510750">Open Payments</translation>
 <translation id="1253032109800629289">"कीमत को ट्रैक करने की सुविधा से जुड़ी सूचनाएं पाएं" को छिपाएं</translation>
 <translation id="1254424942107648268">पिछला खोजें</translation>
 <translation id="1258491128795710625">नया क्या है</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">कैमरे की मदद से खरीदारी करें और टेक्स्ट का अनुवाद करें</translation>
+<translation id="4742142641516465928">Open Autofill and passwords</translation>
 <translation id="4742407542027196863">पासवर्ड मैनेज करें…</translation>
 <translation id="4744428388659507035">सभी डिवाइसों पर अपने बुकमार्क पाने के लिए, सेटिंग में “बुकमार्क” चालू करें.</translation>
 <translation id="4746926359847517643">इतिहास में जाकर, इन्हें कभी भी देखा जा सकता है.</translation>

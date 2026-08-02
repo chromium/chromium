@@ -569,6 +569,7 @@
 <translation id="1871284979644508959">必填欄位</translation>
 <translation id="1871739799120352748">價格偏高</translation>
 <translation id="1874224422119691492">你可以在 <ph name="SETTINGS" /> 中變更是否要使用螢幕鎖定功能填入密碼</translation>
+<translation id="1874749478353075307">已傳送到「<ph name="DEVICE_NAME" />」上的 Chrome (<ph name="USER_EMAIL" />)</translation>
 <translation id="1875025161375567525">相片匣</translation>
 <translation id="1875512691959384712">Google 表單</translation>
 <translation id="1876399092304384674">依日期分類</translation>
@@ -2109,6 +2110,7 @@
 <translation id="4250716950689692560">A4 x 4</translation>
 <translation id="4250937007454749162">T 恤</translation>
 <translation id="4253168017788158739">附註</translation>
+<translation id="4255125583058870090">正在載入付款應用程式</translation>
 <translation id="4255487295905690262">如果產品在任何網站上降價，系統會透過電子郵件快訊通知你。</translation>
 <translation id="425582637250725228">系統可能不會儲存你所做的變更。</translation>
 <translation id="4258748452823770588">簽名有誤</translation>
@@ -2983,6 +2985,7 @@
 <translation id="5611398002774823980">儲存到帳戶</translation>
 <translation id="561165882404867731">使用 Google 翻譯來翻譯這個頁面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 要求使用電腦的位置資訊</translation>
+<translation id="5613117810542399920">已重做標註</translation>
 <translation id="5613958591683399697">問問 <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">使用者通知</translation>
 <translation id="5614520971155863709">卡牌遊戲</translation>
@@ -3001,6 +3004,7 @@
 <translation id="5640474731385449758">擴充功能「<ph name="EXTENSION_NAME" />」想透過「<ph name="HANDLER_HOSTNAME" />」在「<ph name="ORIGIN" />」中開啟 <ph name="PROTOCOL" /> 連結</translation>
 <translation id="5642411781689336699">音響系統與設備</translation>
 <translation id="5642508497713047">CRL 簽署者</translation>
+<translation id="5643946808525377120">已傳送到「<ph name="DEVICE_NAME" />」上的 Chrome</translation>
 <translation id="5644090287519800334">側邊 1 圖片 X 批次</translation>
 <translation id="5644128326840674462">宣傳橫幅</translation>
 <translation id="5645132789250840550">塑膠 (半光面)</translation>
@@ -3042,6 +3046,7 @@
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
 <translation id="5715918316982363436">這部裝置上的 <ph name="TAB_COUNT" /> (<ph name="WINDOW_COUNT" />)</translation>
 <translation id="5716325061445053985">輕觸即可在手機上開啟分頁</translation>
+<translation id="5717281954932320486">在線上結帳時自動填入卡片資料。卡片會安全地儲存在 Google 錢包。</translation>
 <translation id="5717509257172454543">滑冰</translation>
 <translation id="5718326209176373202">新增文字註解</translation>
 <translation id="5718601519531438273">提供護照和駕照等資訊</translation>
@@ -4039,6 +4044,7 @@
 <translation id="7257453341537973799">職業資源與規劃</translation>
 <translation id="725866823122871198">你電腦的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法與 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私人連線。</translation>
 <translation id="7260075294900977274">新的智慧型資料夾可集中儲存所有購物頁面，並自動追蹤價格、取得價格分析資訊等等</translation>
+<translation id="7261463765917514051">使用自動填入功能安全結帳</translation>
 <translation id="7265608370113700582">這項地址資訊僅供此裝置存取</translation>
 <translation id="7266094331715305887">裝置上的應用程式</translation>
 <translation id="7269151392155523061">捷徑不得與 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 定義的搜尋聚合器關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
@@ -4610,6 +4616,7 @@
 <translation id="8134058435519644366">人才招募與人力派遣</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源與公用事業</translation>
+<translation id="8138591088112729119">採用個人化智慧服務</translation>
 <translation id="814071672416123670">根據貴機構的政策，無法複製內容</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" /> 是目前的預設搜尋引擎。<ph name="MARKETING_SNIPPET" /></translation>
@@ -4624,6 +4631,7 @@
 <translation id="81563721597823545">曲棍球裝備</translation>
 <translation id="815805690561372740">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近曾在你嘗試造訪的網站上<ph name="BEGIN_LINK" />發現惡意軟體<ph name="END_LINK" />。</translation>
 <translation id="8161095570253161196">繼續瀏覽</translation>
+<translation id="8163468049564974856">開啟自動填入功能，即可在線上安全結帳。卡片資料會加密儲存在 Google 錢包。</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
 <translation id="8164078261547504572">想在商品降價時收到電子郵件嗎？</translation>
 <translation id="8169175551046720804">無法在相同字典中設定「<ph name="DATA_CONTROLS_KEYS" />」鍵</translation>
@@ -4987,6 +4995,7 @@
 <translation id="8758529215314160755">你可以前往 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /> (<ph name="ACCOUNT" />) 編輯姓名</translation>
 <translation id="8759274551635299824">這張信用卡已過期</translation>
 <translation id="87601671197631245">這個網站的安全性設定過舊，因此你傳送給這個網站的的資訊 (例如密碼、訊息或信用卡資訊) 可能會外洩。</translation>
+<translation id="8762871163452985706">已取消註解</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{收到「<ph name="DEVICE_NAME" />」傳送的連結}other{收到「<ph name="DEVICE_NAME" />」傳送的 # 個連結}}</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8763986294015493060">關閉目前開啟的所有無痕視窗</translation>

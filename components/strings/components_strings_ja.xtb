@@ -570,6 +570,7 @@
 <translation id="1871284979644508959">必須フィールド</translation>
 <translation id="1871739799120352748">高価格</translation>
 <translation id="1874224422119691492">パスワード入力で画面ロックを使用するかどうかは、<ph name="SETTINGS" /> で変更できます</translation>
+<translation id="1874749478353075307"><ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /> の Chrome に送信しました</translation>
 <translation id="1875025161375567525">フォトトレイ</translation>
 <translation id="1875512691959384712">Google フォーム</translation>
 <translation id="1876399092304384674">日付別</translation>
@@ -2111,6 +2112,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T シャツ</translation>
 <translation id="4253168017788158739">メモ</translation>
+<translation id="4255125583058870090">決済アプリを読み込んでいます</translation>
 <translation id="4255487295905690262">値下げしたサイトがある場合、メールで通知します。</translation>
 <translation id="425582637250725228">行った変更が保存されない可能性があります。</translation>
 <translation id="4258748452823770588">署名が不適切です</translation>
@@ -2985,6 +2987,7 @@
 <translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="561165882404867731">Google 翻訳でこのページを翻訳します</translation>
 <translation id="5612720917913232150"><ph name="URL" /> から、パソコンの現在地情報の使用許可を求められています</translation>
+<translation id="5613117810542399920">アノテーションをやり直しました</translation>
 <translation id="5613958591683399697"><ph name="ENGINE_NAME" /> に質問する</translation>
 <translation id="5614190747811328134">ユーザー通知</translation>
 <translation id="5614520971155863709">カードゲーム</translation>
@@ -3003,6 +3006,7 @@
 <translation id="5640474731385449758">拡張機能「<ph name="EXTENSION_NAME" />」が <ph name="HANDLER_HOSTNAME" /> 経由で <ph name="ORIGIN" /> の <ph name="PROTOCOL" /> リンクを開くことを求めています</translation>
 <translation id="5642411781689336699">ステレオ システム、コンポーネント</translation>
 <translation id="5642508497713047">CRL の署名者</translation>
+<translation id="5643946808525377120"><ph name="DEVICE_NAME" /> の Chrome に送信しました</translation>
 <translation id="5644090287519800334">1 面の画像の X 軸移動</translation>
 <translation id="5644128326840674462">プロモーション バナー</translation>
 <translation id="5645132789250840550">プラスチック（半光沢）</translation>
@@ -3044,6 +3048,7 @@
 <translation id="5715150588940290235">保存済みのセキュリティ コードを削除しますか？</translation>
 <translation id="5715918316982363436">このデバイスの <ph name="WINDOW_COUNT" /> 個のウィンドウの <ph name="TAB_COUNT" /> 個のタブ</translation>
 <translation id="5716325061445053985">スマートフォンでタブを開くにはタップしてください</translation>
+<translation id="5717281954932320486">オンライン決済の際、カード情報が自動的に入力されます。カード情報は Google ウォレットに安全に保存されます。</translation>
 <translation id="5717509257172454543">アイススケート</translation>
 <translation id="5718326209176373202">テキスト アノテーションを追加</translation>
 <translation id="5718601519531438273">パスポートや運転免許証などの情報が含まれます</translation>
@@ -4041,6 +4046,7 @@
 <translation id="7257453341537973799">キャリア設計、プランニング</translation>
 <translation id="725866823122871198">パソコンの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
 <translation id="7260075294900977274">新しいスマート フォルダを使用すると、すべてのショッピング ページを 1 か所に保存して、価格のトラッキングや検討などを自動的に行えます</translation>
+<translation id="7261463765917514051">自動入力で安全にお支払い</translation>
 <translation id="7265608370113700582">住所はこのデバイスでのみ使用できます</translation>
 <translation id="7266094331715305887">デバイス上のアプリ</translation>
 <translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> で定義された検索アグリゲータのキーワードと同じショートカットを指定することはできません: <ph name="SHORTCUT_NAME" /></translation>
@@ -4612,6 +4618,7 @@
 <translation id="8134058435519644366">採用、人事</translation>
 <translation id="8135546115396015134">左矢印キー</translation>
 <translation id="8137456439814903304">エネルギー、公共事業</translation>
+<translation id="8138591088112729119">パーソナル インテリジェンスを活用</translation>
 <translation id="814071672416123670">組織のポリシーにより、コンテンツをコピーできませんでした</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 か月前に作成}other{{NUM_MONTHS} か月前に作成}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />、現在のデフォルト設定。<ph name="MARKETING_SNIPPET" /></translation>
@@ -4626,6 +4633,7 @@
 <translation id="81563721597823545">ホッケー用品</translation>
 <translation id="815805690561372740">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしたサイトで<ph name="BEGIN_LINK" />最近マルウェアが検出<ph name="END_LINK" />されました。</translation>
 <translation id="8161095570253161196">ブラウジングを再開</translation>
+<translation id="8163468049564974856">自動入力をオンにすると、オンラインで安全に決済できます。カード情報は Google ウォレットで暗号化されます。</translation>
 <translation id="8163866351304776260">4 穴パンチ（左）</translation>
 <translation id="8164078261547504572">値下げがあったときにメールで通知を受け取りますか？</translation>
 <translation id="8169175551046720804">キー「<ph name="DATA_CONTROLS_KEYS" />」は同じ辞書に設定できません</translation>
@@ -4990,6 +4998,7 @@
 <translation id="8758529215314160755">名前は <ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />（<ph name="ACCOUNT" />）で編集できます。</translation>
 <translation id="8759274551635299824">このカードは有効期限が切れています</translation>
 <translation id="87601671197631245">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワード、メッセージ、クレジット カードなどの情報を送信すると流出する恐れがあります。</translation>
+<translation id="8762871163452985706">アノテーションを元に戻しました</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> からリンクが送信されました}other{<ph name="DEVICE_NAME" /> から # 件のリンクが送信されました}}</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="8763986294015493060">現在開いているすべてのシークレット ウィンドウを閉じます</translation>

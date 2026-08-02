@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} flik}other{{count} flikar}}</translation>
 <translation id="1082554859195167538">Produktrecensioner för dig</translation>
 <translation id="1084365883616172403">Inlägg på Facebook klart.</translation>
+<translation id="108485301461714610">AI-läget i Google Sök och anslutna appar</translation>
 <translation id="1085677983426914530">Det gick inte att öppna <ph name="FILENAME" />.</translation>
 <translation id="1086486568852410168">Sök med Google Lens</translation>
 <translation id="1096992026380844478">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. <ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">Inaktiva flikar</translation>
 <translation id="1231733316453485619">Vill du aktivera synkronisering?</translation>
 <translation id="1238794841176717085">Dela sidan</translation>
+<translation id="1248901457873510750">Öppna Betalningar</translation>
 <translation id="1253032109800629289">Dölj Få aviseringar om prisbevakning</translation>
 <translation id="1254424942107648268">Hitta föregående</translation>
 <translation id="1258491128795710625">Nyheter</translation>
@@ -1109,6 +1111,7 @@
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">Shoppa och översätt med kameran</translation>
+<translation id="4742142641516465928">Öppna Autofyll och lösenord</translation>
 <translation id="4742407542027196863">Hantera lösenord …</translation>
 <translation id="4744428388659507035">Aktivera Bokmärken i inställningarna om du vill få tillgång till dina bokmärken på alla dina enheter.</translation>
 <translation id="4746926359847517643">Du kan alltid få tillbaka dem via historiken.</translation>

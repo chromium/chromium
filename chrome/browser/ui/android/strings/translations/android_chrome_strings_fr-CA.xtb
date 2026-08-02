@@ -228,6 +228,8 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="197288927597451399">Garder</translation>
 <translation id="1973912524893600642">Conserver les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
+<translation id="1975298278721498749">Créez, enregistrez et remplissez automatiquement des mots de passe forts</translation>
+<translation id="1975680286807856378">Gardez vos onglets privés verrouillés</translation>
 <translation id="1982274314082047220">Mode Lecture : balayez l'écran vers le haut pour afficher les préférences</translation>
 <translation id="1984087999855033707">numéro de téléphone</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
@@ -235,6 +237,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé avec son désactivé</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
+<translation id="2022369817198611683">Profitez du meilleur de Gemini directement dans votre barre d'outils Chrome. Maintenez le doigt pour la personnaliser.</translation>
 <translation id="2024195579772565064">Supprimer le moteur de recherche</translation>
 <translation id="2029669011553795746">Fenêtre d'activation des notifications de conseils ouverte à mi-hauteur</translation>
 <translation id="2038563949887743358">Activer l’option Demander site pour ordinateurs de bureau</translation>
@@ -325,6 +328,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2366554533468315977">Historique des prix sur le Web pour cette option</translation>
 <translation id="2367818124433749493">Raccourcis pour les développeurs</translation>
 <translation id="2369058545741334020">Ouvrir avec le mode de lecture</translation>
+<translation id="2378656072948663224">Le plus haut niveau de protection de Google contre les menaces en ligne</translation>
 <translation id="2385605401818128172">Vous pouvez examiner les sites qui envoient beaucoup de notifications et les empêcher d'en envoyer davantage à l'avenir</translation>
 <translation id="2386938421315164605">Masquer et afficher les sujets</translation>
 <translation id="2390510615457643724">Voulez-vous télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de nouveau?</translation>
@@ -465,6 +469,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2923908459366352541">Le nom est incorrect</translation>
 <translation id="2932150158123903946">Stockage de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Votre clavier restera le même</translation>
+<translation id="2936830831577265247">Mode Navigation privée verrouillé</translation>
 <translation id="2936980480904111527">Les notifications de Chrome vous simplifient la vie</translation>
 <translation id="2939908794993783865">Sites inactifs supplémentaires</translation>
 <translation id="2940075786175545812">Option d'approuver ou de ne pas approuver un site Web</translation>
@@ -831,6 +836,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4452548195519783679">Marqué comme favori dans <ph name="FOLDER_NAME" /></translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />, onglet épinglé sélectionné avec enregistrement en cours</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 favori}one{# favori}other{# favoris}}</translation>
+<translation id="4464892890754749268">Supprimez votre historique de navigation d'un simple toucher</translation>
 <translation id="4478161224666880173">Vous pouvez utiliser votre compte <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sur ce site. Pour continuer, connectez-vous à <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installation du <ph name="MODULE" /> dans Chrome en cours…</translation>
 <translation id="4487967297491345095">Toutes les données des applications de Chrome seront supprimées de façon définitive. Cela comprend tous les fichiers, les paramètres, les comptes, les bases de données, etc.</translation>
@@ -1053,6 +1059,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5404274604891474619">Impossible de modifier le PDF</translation>
 <translation id="5409881200985013443">Envoyez <ph name="ONE_TIME_CODE" /> à <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) souhaite que vous vous joigniez à un groupe d'onglets. Toute personne disposant du lien peut modifier l'ensemble des onglets, alors joignez-vous au groupe avec prudence. Le lien expire dans 48 heures.</translation>
+<translation id="5413221660329682980">Supprimer rapidement votre historique</translation>
 <translation id="5414836363063783498">Vérification...</translation>
 <translation id="5415871492522952905">Vous aurez accès à votre historique et à vos onglets sur tous vos appareils de sorte que vous pourrez reprendre le cours de vos activités</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> ».</translation>

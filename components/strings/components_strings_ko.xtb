@@ -570,6 +570,7 @@
 <translation id="1871284979644508959">필수 입력란</translation>
 <translation id="1871739799120352748">가격이 비쌈</translation>
 <translation id="1874224422119691492"><ph name="SETTINGS" />에서 비밀번호를 입력할 때 화면 잠금을 사용할지를 변경할 수 있습니다.</translation>
+<translation id="1874749478353075307"><ph name="DEVICE_NAME" />의 Chrome으로 전송됨 • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">사진 트레이</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">날짜순</translation>
@@ -2111,6 +2112,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">티셔츠</translation>
 <translation id="4253168017788158739">메모</translation>
+<translation id="4255125583058870090">결제 앱 로드 중</translation>
 <translation id="4255487295905690262">사이트에서 가격이 인하되면 이메일 알림을 받게 됩니다.</translation>
 <translation id="425582637250725228">변경사항이 저장되지 않을 수 있습니다.</translation>
 <translation id="4258748452823770588">잘못된 서명</translation>
@@ -2985,6 +2987,7 @@
 <translation id="5611398002774823980">계정에 저장</translation>
 <translation id="561165882404867731">Google 번역으로 이 페이지를 번역하세요.</translation>
 <translation id="5612720917913232150"><ph name="URL" />에서 내 컴퓨터의 위치에 액세스하려고 합니다</translation>
+<translation id="5613117810542399920">주석 재실행됨</translation>
 <translation id="5613958591683399697"><ph name="ENGINE_NAME" />에 물어보기</translation>
 <translation id="5614190747811328134">사용자 알림</translation>
 <translation id="5614520971155863709">카드 게임</translation>
@@ -3003,6 +3006,7 @@
 <translation id="5640474731385449758">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 <ph name="HANDLER_HOSTNAME" />을(를) 통해 <ph name="ORIGIN" />의 <ph name="PROTOCOL" /> 링크를 열려고 합니다.</translation>
 <translation id="5642411781689336699">스테레오 시스템 및 컴포넌트</translation>
 <translation id="5642508497713047">CRL 서명자</translation>
+<translation id="5643946808525377120"><ph name="DEVICE_NAME" />의 Chrome으로 전송됨</translation>
 <translation id="5644090287519800334">첫 번째 면 이미지 X 시프트</translation>
 <translation id="5644128326840674462">프로모션 배너</translation>
 <translation id="5645132789250840550">플라스틱(반광택)</translation>
@@ -3044,6 +3048,7 @@
 <translation id="5715150588940290235">저장된 보안 코드를 삭제하시겠습니까?</translation>
 <translation id="5715918316982363436">이 기기의 창 <ph name="WINDOW_COUNT" />개에 탭 <ph name="TAB_COUNT" />개</translation>
 <translation id="5716325061445053985">휴대전화에서 탭을 열려면 탭하세요.</translation>
+<translation id="5717281954932320486">온라인 결제 시 카드 세부정보를 자동으로 입력합니다. 카드는 Google 월렛에 안전하게 저장됩니다.</translation>
 <translation id="5717509257172454543">아이스 스케이팅</translation>
 <translation id="5718326209176373202">텍스트 주석 추가</translation>
 <translation id="5718601519531438273">여권, 운전면허증 등의 정보가 포함됩니다.</translation>
@@ -4041,6 +4046,7 @@
 <translation id="7257453341537973799">이직 정보 및 계획</translation>
 <translation id="725866823122871198">컴퓨터의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="7260075294900977274">새로운 스마트 폴더를 통해 모든 쇼핑 페이지를 한곳에 저장하고, 자동으로 가격을 추적하고, 가격 정보를 확인하는 등 다양한 작업을 할 수 있습니다.</translation>
+<translation id="7261463765917514051">자동 완성으로 안전하게 결제하기</translation>
 <translation id="7265608370113700582">주소는 이 기기에서만 사용할 수 있습니다</translation>
 <translation id="7266094331715305887">기기에 있는 앱</translation>
 <translation id="7269151392155523061">바로가기는 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />에서 정의한 검색 애그리게이터 키워드와 같을 수 없습니다. <ph name="SHORTCUT_NAME" /></translation>
@@ -4611,6 +4617,7 @@
 <translation id="8134058435519644366">신규모집 및 채용</translation>
 <translation id="8135546115396015134">왼쪽 키</translation>
 <translation id="8137456439814903304">에너지 및 공공사업</translation>
+<translation id="8138591088112729119">개인 인텔리전스 기반</translation>
 <translation id="814071672416123670">조직의 정책으로 인해 콘텐츠를 복사할 수 없습니다.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1개월 전 생성됨}other{{NUM_MONTHS}개월 전 생성됨}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, 현재 기본값. <ph name="MARKETING_SNIPPET" /></translation>
@@ -4625,6 +4632,7 @@
 <translation id="81563721597823545">하키 장비</translation>
 <translation id="815805690561372740">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있으며, 사용자님이 방문하려고 한 사이트에서 <ph name="BEGIN_LINK" />최근에 멀웨어를 발견<ph name="END_LINK" />했습니다.</translation>
 <translation id="8161095570253161196">둘러보기 재개</translation>
+<translation id="8163468049564974856">자동 완성을 사용 설정하여 온라인에서 안전하게 결제하세요. 카드 세부정보는 Google 월렛에 암호화되어 저장됩니다.</translation>
 <translation id="8163866351304776260">왼쪽 4공 펀칭</translation>
 <translation id="8164078261547504572">가격이 인하되면 이메일을 받고 싶으신가요?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" 키는 동일한 사전에 설정할 수 없습니다.</translation>
@@ -4988,6 +4996,7 @@
 <translation id="8758529215314160755"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" /> <ph name="ACCOUNT" />에서 이름을 수정할 수 있습니다</translation>
 <translation id="8759274551635299824">만료된 카드입니다.</translation>
 <translation id="87601671197631245">이 사이트에서는 오래된 보안 설정을 사용하므로 개인정보(예: 비밀번호, 메시지 또는 신용카드)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
+<translation id="8762871163452985706">주석 실행취소됨</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 링크 전송됨}other{<ph name="DEVICE_NAME" />에서 링크 #개 전송됨}}</translation>
 <translation id="8763927697961133303">USB 기기</translation>
 <translation id="8763986294015493060">현재 열려 있는 시크릿 창 모두 닫기</translation>

@@ -228,6 +228,8 @@
 <translation id="197288927597451399">Сохранить</translation>
 <translation id="1973912524893600642">Не удалять данные</translation>
 <translation id="1974060860693918893">Дополнительные настройки</translation>
+<translation id="1975298278721498749">Создавайте надежные пароли, сохраняйте их и используйте для автозаполнения.</translation>
+<translation id="1975680286807856378">Защитите личные вкладки с помощью блокировки.</translation>
 <translation id="1982274314082047220">Чтобы открыть настройки режима чтения, проведите вверх</translation>
 <translation id="1984087999855033707">номер телефона</translation>
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2004096469149679223">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
+<translation id="2022369817198611683">Лучшее от Gemini на панели инструментов Chrome. Нажмите и удерживайте, чтобы настроить.</translation>
 <translation id="2024195579772565064">Удалить поисковую систему?</translation>
 <translation id="2029669011553795746">Нижний экран с предложением включить уведомления открыт наполовину</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">История изменения цены на этот товар в каталогах разных ресурсов</translation>
 <translation id="2367818124433749493">Для разработчиков</translation>
 <translation id="2369058545741334020">Открыть в режиме чтения</translation>
+<translation id="2378656072948663224">Максимальный уровень защиты от угроз в интернете.</translation>
 <translation id="2385605401818128172">Вы можете проверить, какие сайты присылают много уведомлений, и запретить такое поведение в будущем.</translation>
 <translation id="2386938421315164605">Скрывайте и показывайте темы</translation>
 <translation id="2390510615457643724">Снова скачать файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">Имя недействительно</translation>
 <translation id="2932150158123903946">Хранилище Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Это не повлияет на вашу клавиатуру.</translation>
+<translation id="2936830831577265247">Блокировка в режиме инкогнито</translation>
 <translation id="2936980480904111527">С уведомлениями все в Chrome становится проще</translation>
 <translation id="2939908794993783865">Другие неактивные сайты</translation>
 <translation id="2940075786175545812">Нижний экран, с помощью которого можно одобрить или заблокировать сайт.</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">Закладка добавлена в папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4460822871039013969">Выбранная и закрепленная вкладка "<ph name="TAB_TITLE" />", на которой ведется запись</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 закладка}one{# закладка}few{# закладки}many{# закладок}other{# закладки}}</translation>
+<translation id="4464892890754749268">Удаляйте историю браузера одним нажатием.</translation>
 <translation id="4478161224666880173">Вы можете использовать аккаунт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на этом сайте. Чтобы продолжить, войдите в аккаунт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Установка модуля "<ph name="MODULE" />" для Chrome…</translation>
 <translation id="4487967297491345095">Все данные приложения Chrome, включая файлы, настройки, аккаунты и базы данных, будут безвозвратно удалены.</translation>
@@ -1053,6 +1059,7 @@
 <translation id="5404274604891474619">Невозможно отредактировать PDF-файл.</translation>
 <translation id="5409881200985013443">Отправить код <ph name="ONE_TIME_CODE" /> на устройство "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) хочет управлять с вами группой вкладок. Обратите внимание, что любой, у кого есть ссылка, может изменять все вкладки. Она действительна 48 часов.</translation>
+<translation id="5413221660329682980">Быстрое удаление истории</translation>
 <translation id="5414836363063783498">Проверка…</translation>
 <translation id="5415871492522952905">История и вкладки будут доступны на всех ваших устройствах. Вы сможете начать пользоваться браузером на одном устройстве и продолжить на другом.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) сразу потеряет доступ к группе вкладок "<ph name="GROUP_NAME" />".</translation>

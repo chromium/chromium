@@ -228,6 +228,8 @@
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留数据</translation>
 <translation id="1974060860693918893">高级</translation>
+<translation id="1975298278721498749">创建、保存和自动填充安全系数高的密码</translation>
+<translation id="1975680286807856378">让私密标签页保持锁定状态</translation>
 <translation id="1982274314082047220">在阅读模式下向上滑动即可查看偏好设置</translation>
 <translation id="1984087999855033707">电话号码</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
@@ -235,6 +237,7 @@
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，已固定的无痕式标签页，已设为静音</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
+<translation id="2022369817198611683">通过 Chrome 工具栏充分利用 Gemini。长按即可自定义。</translation>
 <translation id="2024195579772565064">删除搜索引擎</translation>
 <translation id="2029669011553795746">提示通知选择启用底部动作条已以一半高度显示</translation>
 <translation id="2038563949887743358">开启“请求切换到桌面版网站”</translation>
@@ -325,6 +328,7 @@
 <translation id="2366554533468315977">此选项的网上历史价格</translation>
 <translation id="2367818124433749493">开发者快捷键</translation>
 <translation id="2369058545741334020">在阅读模式下打开</translation>
+<translation id="2378656072948663224">Google 的最高级别保护，可抵御在线威胁</translation>
 <translation id="2385605401818128172">您可以查看发送大量通知的网站，并阻止它们日后继续发送通知</translation>
 <translation id="2386938421315164605">隐藏和取消隐藏主题</translation>
 <translation id="2390510615457643724">您想再次下载 <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) 吗？</translation>
@@ -465,6 +469,7 @@
 <translation id="2923908459366352541">名称无效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 存储数据</translation>
 <translation id="2932222164150889403">您的键盘不会有变化</translation>
+<translation id="2936830831577265247">已锁定无痕模式</translation>
 <translation id="2936980480904111527">Chrome 通知让一切更轻松</translation>
 <translation id="2939908794993783865">更多无效网站</translation>
 <translation id="2940075786175545812">选项表单，用于批准/禁止访问某个网站</translation>
@@ -831,6 +836,7 @@
 <translation id="4452548195519783679">已将书签添加到“<ph name="FOLDER_NAME" />”</translation>
 <translation id="4460822871039013969"><ph name="TAB_TITLE" />，已选择的固定标签页，正在录制内容</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 个书签}other{# 个书签}}</translation>
+<translation id="4464892890754749268">点按一下即可删除浏览记录</translation>
 <translation id="4478161224666880173">您可以在此网站上使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号。如需继续，请登录 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="4479972344484327217">正在为 Chrome 安装<ph name="MODULE" />…</translation>
 <translation id="4487967297491345095">Chrome 的所有应用数据都将被永久删除，其中包括所有文件、设置、账号、数据库等。</translation>
@@ -1053,6 +1059,7 @@
 <translation id="5404274604891474619">无法修改 PDF 文件</translation>
 <translation id="5409881200985013443">将“<ph name="ONE_TIME_CODE" />”提交至“<ph name="CLIENT_NAME" />”？</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) 邀请您加入一个标签页分组。知道链接的任何人都能修改所有标签页，因此请谨慎加入。链接将在 48 小时后失效。</translation>
+<translation id="5413221660329682980">快速删除历史记录</translation>
 <translation id="5414836363063783498">正在验证…</translation>
 <translation id="5415871492522952905">在您的所有设备上同步历史记录和标签页，以便您继续执行先前未完成的工作</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限</translation>
