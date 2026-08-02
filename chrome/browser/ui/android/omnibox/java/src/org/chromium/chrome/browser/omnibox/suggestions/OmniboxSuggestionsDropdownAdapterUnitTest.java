@@ -49,6 +49,7 @@ public class OmniboxSuggestionsDropdownAdapterUnitTest {
     private FrameLayout mContainer;
     private ModelList mModel;
     private OmniboxSuggestionsDropdownAdapter mAdapter;
+    private OmniboxResourceProvider mResourceProvider;
 
     @Before
     public void setUp() {
@@ -57,11 +58,8 @@ public class OmniboxSuggestionsDropdownAdapterUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mContainer = new FrameLayout(mContext);
         mModel = new ModelList();
-        OmniboxResourceProvider resourceProvider =
-                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
-        mAdapter =
-                new OmniboxSuggestionsDropdownAdapter(
-                        mModel, new OmniboxViewHolderFactory(resourceProvider));
+        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        mAdapter = new OmniboxSuggestionsDropdownAdapter(mModel, new OmniboxViewHolderFactory());
     }
 
     @Test
@@ -80,6 +78,7 @@ public class OmniboxSuggestionsDropdownAdapterUnitTest {
         // These properties must be respected by all Dropdown items.
         var commonModel =
                 new PropertyModel.Builder(SuggestionCommonProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider)
                         .with(SuggestionCommonProperties.SHOW_DIVIDER, true)
                         .with(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.MIDDLE)
                         .build();

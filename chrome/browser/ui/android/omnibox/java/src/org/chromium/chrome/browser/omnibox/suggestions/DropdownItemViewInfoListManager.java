@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -33,14 +34,17 @@ class DropdownItemViewInfoListManager {
     private @BrandedColorScheme int mBrandedColorScheme;
     private @FuseboxLayoutMode int mFuseboxLayoutMode = FuseboxLayoutMode.TOOLBAR;
     private boolean mApplySideSpacing = true;
+    private final OmniboxResourceProvider mResourceProvider;
     private List<DropdownItemViewInfo> mSourceViewInfoList;
 
     DropdownItemViewInfoListManager(
             ModelList managedModel,
             Context context,
-            NonNullObservableSupplier<Integer> roundSidesSupplier) {
+            NonNullObservableSupplier<Integer> roundSidesSupplier,
+            OmniboxResourceProvider resourceProvider) {
         assert managedModel != null : "Must specify a non-null model.";
         mContext = context;
+        mResourceProvider = resourceProvider;
         mLayoutDirection = View.LAYOUT_DIRECTION_INHERIT;
         mBrandedColorScheme = BrandedColorScheme.LIGHT_BRANDED_THEME;
         mSourceViewInfoList = Collections.emptyList();
@@ -115,6 +119,7 @@ class DropdownItemViewInfoListManager {
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
             final PropertyModel model = item.model;
+            model.set(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider);
             model.set(SuggestionCommonProperties.LAYOUT_DIRECTION, mLayoutDirection);
             model.set(SuggestionCommonProperties.APPLY_SIDE_SPACING, mApplySideSpacing);
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);

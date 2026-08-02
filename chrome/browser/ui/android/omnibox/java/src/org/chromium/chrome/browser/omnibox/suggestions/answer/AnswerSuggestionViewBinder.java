@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,9 +16,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** A mechanism binding AnswerSuggestion properties to its view. */
 @NullMarked
 public class AnswerSuggestionViewBinder extends BaseSuggestionViewBinder<View> {
-    public AnswerSuggestionViewBinder(OmniboxResourceProvider resourceProvider) {
-        super(resourceProvider);
-    }
 
     @Override
     protected void bindContent(PropertyModel model, View view, PropertyKey propertyKey) {

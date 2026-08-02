@@ -208,7 +208,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         // the pool is moved to the AutocompleteCoordinator so AutocompleteCoordinator can
         // tell the pool to start prewarming and then pass it to the dropdown.
         if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-            mViewHolderFactory = new OmniboxViewHolderFactory(resourceProvider);
+            mViewHolderFactory = new OmniboxViewHolderFactory();
             mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
         } else {
             mViewHolderFactory = null;

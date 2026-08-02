@@ -47,8 +47,8 @@ public class TailSuggestionViewBinderUnitTest {
         mBaseView = new BaseSuggestionView<>(mTailSuggestionView);
         mModel = new PropertyModel(TailSuggestionViewProperties.ALL_KEYS);
         mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
-        PropertyModelChangeProcessor.create(
-                mModel, mBaseView, new TailSuggestionViewBinder(mResourceProvider));
+        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider);
+        PropertyModelChangeProcessor.create(mModel, mBaseView, new TailSuggestionViewBinder());
     }
 
     @Test

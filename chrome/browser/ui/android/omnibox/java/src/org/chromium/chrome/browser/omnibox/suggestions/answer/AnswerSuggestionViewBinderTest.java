@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,8 +38,8 @@ public class AnswerSuggestionViewBinderTest {
         mModel = new PropertyModel(AnswerSuggestionViewProperties.ALL_KEYS);
         OmniboxResourceProvider resourceProvider =
                 new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
-        PropertyModelChangeProcessor.create(
-                mModel, mBaseView, new AnswerSuggestionViewBinder(resourceProvider));
+        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, resourceProvider);
+        PropertyModelChangeProcessor.create(mModel, mBaseView, new AnswerSuggestionViewBinder());
     }
 
     @Test

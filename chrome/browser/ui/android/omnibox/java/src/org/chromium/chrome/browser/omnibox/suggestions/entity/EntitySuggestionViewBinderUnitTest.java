@@ -18,6 +18,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -38,8 +39,8 @@ public class EntitySuggestionViewBinderUnitTest {
         mModel = new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
         OmniboxResourceProvider resourceProvider =
                 new OmniboxResourceProvider(mView.getContext(), BrandedColorScheme.APP_DEFAULT);
-        PropertyModelChangeProcessor.create(
-                mModel, mView, new EntitySuggestionViewBinder(resourceProvider));
+        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, resourceProvider);
+        PropertyModelChangeProcessor.create(mModel, mView, new EntitySuggestionViewBinder());
     }
 
     @Test

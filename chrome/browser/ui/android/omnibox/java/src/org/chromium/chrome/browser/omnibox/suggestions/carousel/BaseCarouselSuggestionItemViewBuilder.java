@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTileViewBinder;
 import org.chromium.components.browser_ui.widget.tile.TileView;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -45,19 +44,11 @@ public class BaseCarouselSuggestionItemViewBuilder {
      * Create standard Carousel Suggestion View capable of hosting any of the ViewTypes.
      *
      * @param parent ViewGroup that will host the Carousel view.
-     * @param resourceProvider Provider for omnibox resources.
      * @return BaseCarouselSuggestionView.
      */
-    public static BaseCarouselSuggestionView createView(
-            ViewGroup parent, OmniboxResourceProvider resourceProvider) {
-        if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-            assert resourceProvider != null;
-            return new BaseCarouselSuggestionView(
-                    parent.getContext(), createAdapter(resourceProvider));
-        }
-
-        // Defer adapter creation to UI thread to avoid ThreadChecker crashes.
-        return new BaseCarouselSuggestionView(parent.getContext(), null);
+    public static BaseCarouselSuggestionView createView(ViewGroup parent) {
+        // Defer adapter creation to UI thread binding to avoid ThreadChecker crashes.
+        return new BaseCarouselSuggestionView(parent.getContext(), /* adapter= */ null);
     }
 
     /**

@@ -29,8 +29,6 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -51,11 +49,9 @@ public class PreWarmingRecycledViewPoolTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        OmniboxResourceProvider resourceProvider =
-                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
         mFactory =
                 spy(
-                        new OmniboxViewHolderFactory(resourceProvider) {
+                        new OmniboxViewHolderFactory() {
                             @Override
                             protected SimpleRecyclerViewAdapter.ViewHolder createViewHolderForType(
                                     ViewGroup parent, int viewType) {

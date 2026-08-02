@@ -28,6 +28,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -49,6 +50,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
     private @Spy SuggestionProcessor mEditUrlSuggestionProcessor;
     private @Mock PropertyModel mModel;
     private @Mock ListObserver<Void> mListObserver;
+    private @Mock OmniboxResourceProvider mResourceProvider;
 
     private ModelList mSuggestionModels;
     private SettableNonNullObservableSupplier<Integer> mRoundSidesSupplier;
@@ -67,7 +69,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mRoundSidesSupplier = ObservableSuppliers.createNonNull(RoundSides.TOP_AND_BOTTOM);
         mManager =
                 new DropdownItemViewInfoListManager(
-                        mSuggestionModels, context, mRoundSidesSupplier);
+                        mSuggestionModels, context, mRoundSidesSupplier, mResourceProvider);
         mManager.onNativeInitialized();
     }
 

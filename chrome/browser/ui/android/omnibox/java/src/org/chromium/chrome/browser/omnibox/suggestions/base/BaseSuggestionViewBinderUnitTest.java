@@ -81,6 +81,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
         mModel = new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
         mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider);
         mBinder =
                 new TestBaseSuggestionViewBinder<>(
                         mResourceProvider,
@@ -575,7 +576,7 @@ public class BaseSuggestionViewBinderUnitTest {
         public TestBaseSuggestionViewBinder(
                 OmniboxResourceProvider resourceProvider,
                 ViewBinder<PropertyModel, T, PropertyKey> contentBinder) {
-            super(resourceProvider);
+            super();
             mContentBinder = contentBinder;
         }
 

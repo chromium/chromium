@@ -341,7 +341,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // scrollbar not dispatched to the underlying views.
             setVerticalScrollBarEnabled(false);
 
-            mViewHolderFactory = new OmniboxViewHolderFactory(mResourceProvider);
+            mViewHolderFactory = new OmniboxViewHolderFactory();
             if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
                 mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
             }

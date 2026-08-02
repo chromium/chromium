@@ -135,7 +135,7 @@ public class ClipboardSuggestionProcessorUnitTest {
         mRootView.addView(mContentTextView);
 
         mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
-        mBinder = new SuggestionViewViewBinder(mResourceProvider);
+        mBinder = new SuggestionViewViewBinder();
         mBaseView = new BaseSuggestionView<>(mRootView);
     }
 
@@ -171,6 +171,7 @@ public class ClipboardSuggestionProcessorUnitTest {
                         .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider);
         mBinder.bind(mModel, mBaseView, SuggestionViewProperties.TEXT_LINE_1_TEXT);
         mBinder.bind(mModel, mBaseView, SuggestionCommonProperties.COLOR_SCHEME);
         mBinder.bind(mModel, mBaseView, SuggestionViewProperties.IS_SEARCH_SUGGESTION);

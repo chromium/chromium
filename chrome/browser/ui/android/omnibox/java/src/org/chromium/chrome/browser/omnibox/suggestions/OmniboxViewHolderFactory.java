@@ -18,7 +18,6 @@ import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
@@ -38,7 +37,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 @NullMarked
 public class OmniboxViewHolderFactory {
     private final SparseArray<Pair<ViewBuilder, ViewBinder>> mViewBuilderMap = new SparseArray<>();
-
     private final RecyclerView.Adapter<SimpleRecyclerViewAdapter.ViewHolder> mAdapter =
             new RecyclerView.Adapter<>() {
                 @SuppressWarnings("unchecked")
@@ -58,59 +56,58 @@ public class OmniboxViewHolderFactory {
                 }
             };
 
-    public OmniboxViewHolderFactory(OmniboxResourceProvider resourceProvider) {
+    public OmniboxViewHolderFactory() {
         registerType(
                 OmniboxSuggestionUiType.DEFAULT,
                 parent ->
                         new BaseSuggestionView<>(
                                 parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new SuggestionViewViewBinder(resourceProvider));
+                new SuggestionViewViewBinder());
 
         registerType(
                 OmniboxSuggestionUiType.EDIT_URL_SUGGESTION,
                 parent ->
                         new BaseSuggestionView<>(
                                 parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new SuggestionViewViewBinder(resourceProvider));
+                new SuggestionViewViewBinder());
 
         registerType(
                 OmniboxSuggestionUiType.ANSWER_SUGGESTION,
                 parent ->
                         new BaseSuggestionView<>(
                                 parent.getContext(), R.layout.omnibox_answer_suggestion),
-                new AnswerSuggestionViewBinder(resourceProvider));
+                new AnswerSuggestionViewBinder());
 
         registerType(
                 OmniboxSuggestionUiType.ENTITY_SUGGESTION,
                 parent ->
                         new BaseSuggestionView<>(
                                 parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new EntitySuggestionViewBinder(resourceProvider));
+                new EntitySuggestionViewBinder());
 
         registerType(
                 OmniboxSuggestionUiType.TAIL_SUGGESTION,
                 parent -> new BaseSuggestionView<>(new TailSuggestionView(parent.getContext())),
-                new TailSuggestionViewBinder(resourceProvider));
+                new TailSuggestionViewBinder());
 
         registerType(
                 OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
                 parent ->
                         new BaseSuggestionView<>(
                                 parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new SuggestionViewViewBinder(resourceProvider));
+                new SuggestionViewViewBinder());
 
         registerType(
                 OmniboxSuggestionUiType.TAB_GROUP_SUGGESTION,
                 parent ->
                         new BaseSuggestionView<>(
                                 parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new SuggestionViewViewBinder(resourceProvider));
+                new SuggestionViewViewBinder());
 
         registerType(
                 OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-                parent ->
-                        BaseCarouselSuggestionItemViewBuilder.createView(parent, resourceProvider),
-                new BaseCarouselSuggestionViewBinder(resourceProvider));
+                parent -> BaseCarouselSuggestionItemViewBuilder.createView(parent),
+                new BaseCarouselSuggestionViewBinder());
     }
 
     private <T extends View> void registerType(
