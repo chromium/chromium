@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>drawElementImage does not draw cross-origin background images</title>
+  <title>drawElementImage does not draw cross-origin background images on the body when moved under canvas</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <script src='/html/canvas/resources/canvas-tests.js'></script>
@@ -9,15 +9,19 @@
 </head>
 
 <body>
+  <iframe id="iframe" src="support/subframe-cross-origin-background-image-on-body.https.sub.html"></iframe>
   <canvas id="canvas" width="300" height="150" layoutsubtree>
-    <div id="child">
-      <iframe id="iframe" src="support/subframe-cross-origin-background-image.https.sub.html"></iframe>
-    </div>
+    <div id="child"></div>
   </canvas>
 
   <script>
   window.onload = () => {
     promise_test(async function(t) {
+      await waitForCanvasPaint(canvas);
+
+      // Atomically move the iframe into the canvas.
+      child.moveBefore(iframe, null);
+
       await waitForCanvasPaint(canvas);
       const context = canvas.getContext("2d");
       context.drawElementImage(child, 0, 0);

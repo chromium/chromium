@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -65,6 +66,7 @@
 #include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
+#include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -244,6 +246,21 @@ void HTMLFrameOwnerElement::DidChangeIsInCanvasSubtree() {
   if (Document* inner_document = contentDocument()) {
     if (Element* root = inner_document->documentElement()) {
       root->SetIsInCanvasSubtree(IsInCanvasSubtree());
+      if (auto* layout_view = inner_document->GetLayoutView()) {
+        layout_view->SetNeedsPaintPropertyUpdate();
+        layout_view->Layer()->SetNeedsRepaint();
+        // At this point we do not know if the layout view background etc.
+        // will be painted by the layout view itself or the scrollable area.
+        // So invalidate both display item clients.
+        ObjectPaintInvalidator(*layout_view)
+            .InvalidateDisplayItemClient(
+                *layout_view, PaintInvalidationReason::kUncacheable);
+        ObjectPaintInvalidator(*layout_view)
+            .InvalidateDisplayItemClient(
+                layout_view->GetScrollableArea()
+                    ->GetScrollingBackgroundDisplayItemClient(),
+                PaintInvalidationReason::kUncacheable);
+      }
     }
   }
 }
