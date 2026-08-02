@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
@@ -28,11 +27,9 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
@@ -654,51 +651,3 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpNotRestricted) {
   EXPECT_EQ(1u, blink::CountDevices(stream_devices));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_MAC)
-TEST_F(DesktopCaptureAccessHandlerTest, FeedbackUIRequestWithPickerEnabled) {
-  NavigateAndCommit(GURL("chrome://feedback/"));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(media::kUseSCContentSharingPicker);
-
-  content::DesktopMediaID fake_screen_id(content::DesktopMediaID::TYPE_SCREEN,
-                                         2);
-  FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
-      {.expect_screens = true,
-       .expect_windows = true,
-       .expect_tabs = true,
-       .expect_audio = false,
-       .picker_result = fake_screen_id}};
-  picker_factory_->SetTestFlags(test_flags);
-
-  blink::mojom::MediaStreamRequestResult request_result;
-  blink::mojom::StreamDevices devices_result;
-
-  ProcessGenerateStreamRequest({}, GURL("chrome://feedback/"), nullptr,
-                               &request_result, &devices_result);
-
-  EXPECT_TRUE(test_flags[0].picker_created);
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, request_result);
-  EXPECT_EQ(fake_screen_id.ToString(), devices_result.video_device.value().id);
-}
-
-TEST_F(DesktopCaptureAccessHandlerTest, FeedbackUIRequestWithPickerDisabled) {
-  NavigateAndCommit(GURL("chrome://feedback/"));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(media::kUseSCContentSharingPicker);
-
-  picker_factory_->SetTestFlags({});
-
-  blink::mojom::MediaStreamRequestResult request_result;
-  blink::mojom::StreamDevices devices_result;
-
-  ProcessGenerateStreamRequest({}, GURL("chrome://feedback/"), nullptr,
-                               &request_result, &devices_result);
-
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, request_result);
-  EXPECT_EQ(content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
-                                    webrtc::kFullDesktopScreenId)
-                .ToString(),
-            devices_result.video_device.value().id);
-}
-#endif  // BUILDFLAG(IS_MAC)

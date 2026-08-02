@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
-
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
@@ -80,15 +77,9 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
 
     browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                     true);
-    MediaCaptureDevicesDispatcher::GetInstance()
-        ->desktop_capture_access_handler_for_test()
-        ->SetRequestApprovedForTest(true);
   }
 
   void TearDownOnMainThread() override {
-    MediaCaptureDevicesDispatcher::GetInstance()
-        ->desktop_capture_access_handler_for_test()
-        ->SetRequestApprovedForTest(false);
     autofill_context_menu_manager_.reset();
     render_view_context_menu_.reset();
 
