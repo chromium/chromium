@@ -7090,6 +7090,43 @@ void MathDepth::ApplyValue(StyleResolverState& state,
   }
 }
 
+const CSSValue* MaxContentSizing::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.MaxContentSizing());
+}
+
+void MaxContentSizing::ApplyInitial(StyleResolverState& state) const {
+  state.StyleBuilder().SetMaxContentSizing(EMaxContentSizing::kAuto);
+  state.StyleBuilder().SetIsInShrinkToFitSubtree(false);
+}
+
+void MaxContentSizing::ApplyInherit(StyleResolverState& state) const {
+  state.StyleBuilder().SetMaxContentSizing(
+      state.ParentStyle()->MaxContentSizing());
+  state.StyleBuilder().SetIsInShrinkToFitSubtree(
+      state.ParentStyle()->IsInShrinkToFitSubtree());
+}
+
+void MaxContentSizing::ApplyValue(StyleResolverState& state,
+                                  const CSSValue& value,
+                                  ValueModeFlags) const {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value) {
+    return;
+  }
+  CSSValueID value_id = identifier_value->GetValueID();
+  if (value_id == CSSValueID::kShrinkToFit) {
+    state.StyleBuilder().SetMaxContentSizing(EMaxContentSizing::kShrinkToFit);
+    state.StyleBuilder().SetIsInShrinkToFitSubtree(true);
+  } else if (value_id == CSSValueID::kAuto) {
+    state.StyleBuilder().SetMaxContentSizing(EMaxContentSizing::kAuto);
+    state.StyleBuilder().SetIsInShrinkToFitSubtree(false);
+  }
+}
+
 const CSSValue* MaxHeight::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

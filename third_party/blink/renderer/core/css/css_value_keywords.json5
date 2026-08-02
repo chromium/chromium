@@ -2148,5 +2148,8 @@
     // ruby-overhang
     // "auto",
     "spaces",
+
+    // max-content-sizing
+    "shrink-to-fit",
   ],
 }

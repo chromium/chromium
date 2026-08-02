@@ -290,6 +290,7 @@ math-depth: 0
 math-shift: normal
 math-style: normal
 max-block-size: none
+max-content-sizing: auto
 max-height: none
 max-inline-size: none
 max-lines: auto

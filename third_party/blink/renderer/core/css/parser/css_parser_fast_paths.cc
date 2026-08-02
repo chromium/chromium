@@ -1277,6 +1277,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kMathStyle:
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kCompact;
+    case CSSPropertyID::kMaxContentSizing:
+      return value_id == CSSValueID::kAuto ||
+             value_id == CSSValueID::kShrinkToFit;
     case CSSPropertyID::kObjectFit:
       return value_id == CSSValueID::kFill ||
              value_id == CSSValueID::kContain ||
@@ -1784,6 +1787,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kMaskType,
     CSSPropertyID::kMathShift,
     CSSPropertyID::kMathStyle,
+    CSSPropertyID::kMaxContentSizing,
     CSSPropertyID::kObjectFit,
     CSSPropertyID::kOutlineStyle,
     CSSPropertyID::kOverflowAnchor,

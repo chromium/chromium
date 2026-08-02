@@ -359,6 +359,7 @@ mathDepth
 mathShift
 mathStyle
 maxBlockSize
+maxContentSizing
 maxHeight
 maxInlineSize
 maxLines

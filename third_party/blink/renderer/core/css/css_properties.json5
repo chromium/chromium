@@ -4484,6 +4484,18 @@
       default_value: "normal",
     },
     {
+      name: "max-content-sizing",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["auto", "shrink-to-fit"],
+      default_value: "auto",
+      typedom_types: ["Keyword"],
+      invalidate: ["layout"],
+      runtime_flag: "CssMaxContentSizing",
+      style_builder_custom_functions: ["initial", "inherit", "value"],
+    },
+    {
       name: "max-height",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,

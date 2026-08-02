@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Max-Content Sizing Test: parsing max-content-sizing</title>
+<link rel="help" href="https://github.com/explainers-by-googlers/css-shrink-to-fit">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("max-content-sizing", "auto");
+test_valid_value("max-content-sizing", "shrink-to-fit");
+
+test_invalid_value("max-content-sizing", "none");
+test_invalid_value("max-content-sizing", "invalid");
+test_invalid_value("max-content-sizing", "auto shrink-to-fit");
+</script>
+</body>
+</html>

@@ -292,6 +292,7 @@ All changes to this list should go through Blink's feature review process: http:
     math-shift
     math-style
     max-block-size
+    max-content-sizing
     max-height
     max-inline-size
     max-lines

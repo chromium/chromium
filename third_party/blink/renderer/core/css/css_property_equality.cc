@@ -638,6 +638,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MathShift() == b.MathShift();
     case CSSPropertyID::kMathStyle:
       return a.MathStyle() == b.MathStyle();
+    case CSSPropertyID::kMaxContentSizing:
+      return a.MaxContentSizing() == b.MaxContentSizing();
     case CSSPropertyID::kMaxHeight:
       return a.MaxHeight() == b.MaxHeight();
     case CSSPropertyID::kMaxWidth:
