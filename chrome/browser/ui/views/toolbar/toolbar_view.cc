@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -185,8 +186,8 @@ ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
     return ToolbarView::DisplayMode::kCustomTab;
   }
 
-  if (browser->SupportsWindowFeature(
-          Browser::WindowFeature::kFeatureTabStrip)) {
+  if (WindowFeatureController::From(browser)->SupportsWindowFeature(
+          WindowFeatureController::WindowFeature::kFeatureTabStrip)) {
     return ToolbarView::DisplayMode::kNormal;
   }
 
@@ -1805,8 +1806,8 @@ const AppMenuControl* ToolbarView::GetAppMenuControl() const {
 }
 
 gfx::Rect ToolbarView::GetFindBarBoundingBox(int contents_bottom) {
-  if (!browser_->SupportsWindowFeature(
-          Browser::WindowFeature::kFeatureLocationBar)) {
+  if (!WindowFeatureController::From(browser_)->SupportsWindowFeature(
+          WindowFeatureController::WindowFeature::kFeatureLocationBar)) {
     return gfx::Rect();
   }
 

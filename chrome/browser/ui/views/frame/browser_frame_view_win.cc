@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/win/mica_titlebar.h"
@@ -159,7 +160,8 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* widget,
 
   Browser* browser = browser_view->browser();
   bool supports_title_bar =
-      browser->SupportsWindowFeature(Browser::WindowFeature::kFeatureTitleBar);
+      WindowFeatureController::From(browser)->SupportsWindowFeature(
+          WindowFeatureController::WindowFeature::kFeatureTitleBar);
 
   // Only show icons if the browser supports title bars.
   if (supports_title_bar) {

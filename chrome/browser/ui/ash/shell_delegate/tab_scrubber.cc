@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -38,9 +39,9 @@ BrowserDelegate* GetActiveBrowser() {
   BrowserDelegate* browser =
       BrowserController::GetInstance()->GetLastUsedBrowser();
   if (!browser ||
-      !browser->GetBrowser()
-           .GetBrowserForMigrationOnly()
-           ->SupportsWindowFeature(Browser::WindowFeature::kFeatureTabStrip) ||
+      !WindowFeatureController::From(&browser->GetBrowser())
+           ->SupportsWindowFeature(
+               WindowFeatureController::WindowFeature::kFeatureTabStrip) ||
       !browser->IsActive()) {
     return nullptr;
   }

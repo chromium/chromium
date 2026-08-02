@@ -813,19 +813,6 @@ void Browser::OnFindBarVisibilityChanged() {
   chrome::BrowserCommandController::From(this)->FindBarVisibilityChanged();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Browser, Assorted browser commands:
-
-bool Browser::SupportsWindowFeature(WindowFeature feature) const {
-  return WindowFeatureController::From(this)->SupportsWindowFeature(feature);
-}
-
-bool Browser::CanSupportWindowFeature(WindowFeature feature) const {
-  return WindowFeatureController::From(this)->CanSupportWindowFeature(feature);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 void Browser::UpdateUIForNavigationInTab(WebContents* contents,
                                          ui::PageTransition transition,
                                          NavigateParams::WindowAction action,

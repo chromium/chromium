@@ -113,10 +113,6 @@ class Browser : public TabStripModelObserver,
                 public WebContentsCollection::Observer,
                 public BrowserWindowInterface {
  public:
-  // Possible elements of the Browser window.
-  using WindowFeature = WindowFeatureController::WindowFeature;
-
-
   // Represents the source of a browser creation request.
   enum class CreationSource {
     kUnknown,
@@ -364,19 +360,6 @@ class Browser : public TabStripModelObserver,
   void FullscreenTopUIStateChanged();
 
   void OnFindBarVisibilityChanged();
-
-  // Assorted browser commands ////////////////////////////////////////////////
-
-  // NOTE: Within each of the following sections, the IDs are ordered roughly by
-  // how they appear in the GUI/menus (left to right, top to bottom, etc.).
-
-  // Deprecated: Use capabilities()->SupportsWindowFeature instead.
-  bool SupportsWindowFeature(WindowFeature feature) const;
-
-  // Deprecated: Use capabilities()->CanSupportWindowFeature instead.
-  bool CanSupportWindowFeature(WindowFeature feature) const;
-
-  /////////////////////////////////////////////////////////////////////////////
 
   // Called by Navigate() when a navigation has occurred in a tab in
   // this Browser. Updates the UI for the start of this navigation.

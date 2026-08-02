@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/common/channel_info.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
@@ -238,8 +239,8 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
       ProfileBrowserCollection::GetForProfile(source_profile_)
           ->GetLastActiveBrowser();
   bool has_browser_with_tab =
-      browser && browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
-                     Browser::WindowFeature::kFeatureTabStrip);
+      browser && WindowFeatureController::From(browser)->SupportsWindowFeature(
+                     WindowFeatureController::WindowFeature::kFeatureTabStrip);
 
   if (user_choice_for_testing_.has_value()) {
     CHECK_IS_TEST();

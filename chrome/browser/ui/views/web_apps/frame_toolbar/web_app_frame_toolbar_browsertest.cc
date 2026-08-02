@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/model/display_override.h"
@@ -2692,8 +2693,10 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
               "window.maximize() succeeded.");
     EXPECT_TRUE(helper()->browser_view()->IsMaximized());
     EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
-    EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
-        Browser::WindowFeature::kFeatureTitleBar));
+    EXPECT_TRUE(
+        WindowFeatureController::From(helper()->browser_view()->browser())
+            ->SupportsWindowFeature(
+                WindowFeatureController::WindowFeature::kFeatureTitleBar));
   }
 
   void MinimizeAndVerify(content::WebContents* web_contents) {
@@ -2707,12 +2710,16 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
               "document.documentElement.requestFullscreen() succeeded.");
     EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
 #if !BUILDFLAG(IS_MAC)
-    EXPECT_FALSE(helper()->browser_view()->browser()->SupportsWindowFeature(
-        Browser::WindowFeature::kFeatureTitleBar));
+    EXPECT_FALSE(
+        WindowFeatureController::From(helper()->browser_view()->browser())
+            ->SupportsWindowFeature(
+                WindowFeatureController::WindowFeature::kFeatureTitleBar));
 #else
     // On Mac the top bar is displayed for web apps even in fullscreen mode
-    EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
-        Browser::WindowFeature::kFeatureTitleBar));
+    EXPECT_TRUE(
+        WindowFeatureController::From(helper()->browser_view()->browser())
+            ->SupportsWindowFeature(
+                WindowFeatureController::WindowFeature::kFeatureTitleBar));
 #endif
   }
 
@@ -2721,8 +2728,10 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     EXPECT_EQ(
         EvalDisplayStateChange(web_contents, "restore", expected_js_state),
         "window.restore() succeeded.");
-    EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
-        Browser::WindowFeature::kFeatureTitleBar));
+    EXPECT_TRUE(
+        WindowFeatureController::From(helper()->browser_view()->browser())
+            ->SupportsWindowFeature(
+                WindowFeatureController::WindowFeature::kFeatureTitleBar));
     EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
     EXPECT_EQ(helper()->browser_view()->IsMaximized(),
               expected_js_state == "maximized");

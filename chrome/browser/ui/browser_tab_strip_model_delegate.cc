@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -91,8 +92,8 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
     std::vector<NewStripContents> tabs,
     const gfx::Rect& window_bounds,
     bool maximize) {
-  DCHECK(browser_->CanSupportWindowFeature(
-      Browser::WindowFeature::kFeatureTabStrip));
+  DCHECK(WindowFeatureController::From(browser_)->CanSupportWindowFeature(
+      WindowFeatureController::WindowFeature::kFeatureTabStrip));
 
   // Create an empty new browser window the same size as the old one.
   Browser::CreateParams params(browser_->GetProfile(), true);
@@ -202,8 +203,9 @@ std::optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
       TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
 
   // We only create historical tab entries for tabbed browser windows.
-  if (service && browser_->CanSupportWindowFeature(
-                     Browser::WindowFeature::kFeatureTabStrip)) {
+  if (service &&
+      WindowFeatureController::From(browser_)->CanSupportWindowFeature(
+          WindowFeatureController::WindowFeature::kFeatureTabStrip)) {
     return service->CreateHistoricalTab(
         sessions::ContentLiveTab::GetOrCreateForWebContents(contents),
         browser_->tab_strip_model()->GetIndexOfWebContents(contents));

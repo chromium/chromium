@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -223,9 +224,9 @@ void AvatarToolbarButtonTestAccessor::WaitForAvatarButton() {
 #if !BUILDFLAG(IS_ANDROID)
   // The avatar button is only added to normal browsers (those with a tab
   // strip).
-  if (Browser* const browser_ptr = browser_->GetBrowserForMigrationOnly();
-      !browser_ptr || !browser_ptr->SupportsWindowFeature(
-                          Browser::WindowFeature::kFeatureTabStrip)) {
+  if (!browser_ ||
+      !WindowFeatureController::From(browser_)->SupportsWindowFeature(
+          WindowFeatureController::WindowFeature::kFeatureTabStrip)) {
     return;
   }
 #endif

@@ -2409,6 +2409,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/webui_toolbar:browser_tests",
       "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
       "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/ui/window_feature_controller",
       "//chrome/browser/unified_consent",
       "//chrome/browser/unified_consent:browser_tests",
       "//chrome/browser/updater",

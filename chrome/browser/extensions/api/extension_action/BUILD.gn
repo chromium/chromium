@@ -35,4 +35,8 @@ source_set("extension_action") {
     "//ui/gfx",
     "//url",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/window_feature_controller" ]
+  }
 }

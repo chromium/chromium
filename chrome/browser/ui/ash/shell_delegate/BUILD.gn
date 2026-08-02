@@ -58,6 +58,7 @@ static_library("shell_delegate") {
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chrome/browser/ui/window_feature_controller",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/audio",
