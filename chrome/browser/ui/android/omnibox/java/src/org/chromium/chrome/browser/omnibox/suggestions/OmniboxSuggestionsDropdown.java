@@ -67,13 +67,13 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
     private final RecyclerViewSelectionController mSelectionController;
     private final Handler mHandler;
-    private final OmniboxResourceProvider mResourceProvider;
     private final OmniboxViewHolderFactory mViewHolderFactory;
     private @Nullable PreWarmingRecycledViewPool mRecycledViewPool;
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Nullable GestureObserver mGestureObserver;
     private @Nullable NavigationListener mNavigationListener;
+    private @Nullable OmniboxResourceProvider mResourceProvider;
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
 
@@ -334,8 +334,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mSelectionController =
                     new RecyclerViewSelectionController(mLayoutScrollListener, mSelectionMode);
             addOnChildAttachStateChangeListener(mSelectionController);
-            mResourceProvider =
-                    new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT);
 
             // Disable the scrollbar since it causes the hover events happening near the
             // scrollbar not dispatched to the underlying views.
@@ -349,11 +347,28 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /**
+     * Sets the resource provider. This is primarily called during binding which occurs on the UI
+     * thread post inflation.
+     *
+     * @param resourceProvider Provider for omnibox resources.
+     */
+    public void setResourceProvider(OmniboxResourceProvider resourceProvider) {
+        if (mResourceProvider == resourceProvider || resourceProvider == null) return;
+        mResourceProvider = resourceProvider;
+
+        setVerticalPadding(
+                mResourceProvider.getDropdownTopPadding(),
+                mResourceProvider.getDropdownBottomPadding());
+        mHeaderDecoration.setHeaderStartPadding(mResourceProvider.getHeaderStartPadding());
+    }
+
+    /**
      * Sets the branded color scheme for the dropdown.
      *
      * @param scheme The {@link BrandedColorScheme} to use.
      */
     public void setBrandedColorScheme(@BrandedColorScheme int scheme) {
+        assert mResourceProvider != null;
         mResourceProvider.setBrandedColorScheme(scheme);
         mHeaderDecoration.setIsIncognito(scheme == BrandedColorScheme.INCOGNITO);
     }
@@ -671,14 +686,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         return mBaseTopPadding;
     }
 
-    /** Initializes dropdown padding and group header start padding on the UI thread. */
-    public void initializeDropdownDimensions() {
-        setVerticalPadding(
-                mResourceProvider.getDropdownTopPadding(),
-                mResourceProvider.getDropdownBottomPadding());
-        setHeaderStartPadding(mResourceProvider.getHeaderStartPadding());
-    }
-
     /**
      * Sets the top and bottom padding for the dropdown list.
      *
@@ -689,15 +696,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mBaseTopPadding = topPadding;
         mBaseBottomPadding = bottomPadding;
         this.setPaddingRelative(0, mBaseTopPadding, 0, mBaseBottomPadding);
-    }
-
-    /**
-     * Sets the start padding for suggestion group headers.
-     *
-     * @param startPadding Start padding in pixels.
-     */
-    public void setHeaderStartPadding(int startPadding) {
-        mHeaderDecoration.setHeaderStartPadding(startPadding);
     }
 
     @VisibleForTesting

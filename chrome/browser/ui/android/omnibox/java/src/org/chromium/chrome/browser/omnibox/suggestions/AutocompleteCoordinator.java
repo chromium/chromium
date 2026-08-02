@@ -132,6 +132,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         ModelList listItems = new ModelList();
         PropertyModel listModel =
                 new PropertyModel.Builder(SuggestionListProperties.ALL_KEYS)
+                        .with(SuggestionListProperties.RESOURCE_PROVIDER, resourceProvider)
                         .with(SuggestionListProperties.EMBEDDER, dropdownEmbedder)
                         .with(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, false)
                         .with(
@@ -195,7 +196,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                 listModel,
                 SuggestionListProperties.OMNIBOX_SESSION_ACTIVE,
                 mViewProvider,
-                new SuggestionListViewBinder(resourceProvider));
+                new SuggestionListViewBinder());
 
         BaseSuggestionViewBinder.resetCachedResources();
 
@@ -280,7 +281,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         private @Nullable SuggestionListViewHolder mHolder;
         private boolean mForceSyncInflate;
         private final ModelList mListItems;
-
         SuggestionListViewHolderProvider(ModelList listItems) {
             mListItems = listItems;
         }
@@ -317,7 +317,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             OmniboxSuggestionsDropdown dropdown =
                     container.findViewById(R.id.omnibox_suggestions_dropdown);
 
-            dropdown.initializeDropdownDimensions();
             dropdown.setModelList(mListItems);
             mHolder = new SuggestionListViewHolder(suggestionsContainer, dropdown);
 

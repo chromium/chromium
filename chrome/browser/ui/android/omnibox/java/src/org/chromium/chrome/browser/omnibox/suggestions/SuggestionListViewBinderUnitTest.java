@@ -64,9 +64,11 @@ public class SuggestionListViewBinderUnitTest {
     @Before
     public void setUp() {
         mSuggestionModels = new ModelList();
+        mResourceProvider = new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT);
         mListModel =
                 new PropertyModel.Builder(SuggestionListProperties.ALL_KEYS)
                         .with(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels)
+                        .with(SuggestionListProperties.RESOURCE_PROVIDER, mResourceProvider)
                         .build();
 
         mContainer =
@@ -75,12 +77,10 @@ public class SuggestionListViewBinderUnitTest {
                                 .inflate(R.layout.suggestions_result_container, /* root= */ null);
         mDropdown = spy(mContainer.findViewById(R.id.omnibox_suggestions_dropdown));
 
-        mResourceProvider = new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT);
-
         PropertyModelChangeProcessor.create(
                 mListModel,
                 new SuggestionListViewHolder(mContainer, mDropdown),
-                new SuggestionListViewBinder(mResourceProvider));
+                new SuggestionListViewBinder());
     }
 
     @Test
