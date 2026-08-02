@@ -365,7 +365,6 @@ Browser::Browser(const CreateParams& params)
           (type_ == TYPE_APP || type_ == TYPE_APP_POPUP)
               ? nullptr
               : TabGroupModelFactory::GetInstance())),
-      app_name_(params.app_name),
       session_id_(SessionID::NewUnique()),
       window_has_shown_(false),
       keep_alive_(
@@ -972,7 +971,8 @@ void Browser::OnTabInsertedAt(WebContents* contents, int index) {
   SetAsDelegate(contents, true);
 
   // Disable pinch zooming in undocked dev tools window due to poor UX.
-  if (app_name() == DevToolsWindow::kDevToolsApp) {
+  if (BrowserInitState::From(this)->create_params().app_name ==
+      DevToolsWindow::kDevToolsApp) {
     contents->SetIgnoreZoomGestures(true);
   }
 

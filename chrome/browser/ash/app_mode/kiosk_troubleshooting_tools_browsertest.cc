@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -148,8 +149,9 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
   Browser& OpenForAppPopupBrowser() const {
     CurrentProfile().GetPrefs()->SetBoolean(
         ash::prefs::kNewWindowsInKioskAllowed, true);
-    Browser& popup_browser =
-        CreatePopupBrowser(CurrentProfile(), browser()->app_name(), GURL());
+    Browser& popup_browser = CreatePopupBrowser(
+        CurrentProfile(),
+        BrowserInitState::From(browser())->create_params().app_name, GURL());
     EXPECT_FALSE(DidKioskCloseNewWindow());
     return popup_browser;
   }

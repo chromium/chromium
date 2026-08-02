@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
@@ -467,7 +468,7 @@ BrowserWindowInterface* FindBrowserForApp(Profile* profile,
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
         std::string browser_app_id = web_app::GetAppIdFromApplicationName(
-            browser->GetBrowserForMigrationOnly()->app_name());
+            BrowserInitState::From(browser)->create_params().app_name);
         if (profile == browser->GetProfile() &&
             browser->GetType() == BrowserWindowInterface::TYPE_APP &&
             app_id == browser_app_id) {

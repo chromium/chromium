@@ -68,6 +68,7 @@ include_rules = [
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser_init_state.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/browser_window/public/profile_browser_collection.h",
   "+chrome/browser/ui/chrome_pages.h",

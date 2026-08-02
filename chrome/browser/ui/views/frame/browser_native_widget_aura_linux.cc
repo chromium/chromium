@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -46,7 +47,8 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
   params.wm_class_name =
       (browser.GetType() == BrowserWindowInterface::Type::TYPE_APP ||
        browser.GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)
-          ? shell_integration_linux::GetWMClassFromAppName(browser.app_name())
+          ? shell_integration_linux::GetWMClassFromAppName(
+                BrowserInitState::From(&browser)->create_params().app_name)
           // This window is a hosted app or v1 packaged app.
           // NOTE: v2 packaged app windows are created by
           // ChromeNativeAppWindowViews.
@@ -65,7 +67,8 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
        browser.GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) &&
       browser.GetProfile()) {
     params.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
-        browser.app_name(), browser.GetProfile()->GetPath());
+        BrowserInitState::From(&browser)->create_params().app_name,
+        browser.GetProfile()->GetPath());
   } else {
     params.wayland_app_id = params.wm_class_class;
   }

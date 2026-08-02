@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -233,7 +234,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInWindow) {
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   NavigateViaLinkClickToURLAndWait(app_browser, example_url);
 
-  EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
+  EXPECT_EQ(GetAppIdFromApplicationName(
+                BrowserInitState::From(app_browser)->create_params().app_name),
+            app_id);
 
   Histograms histograms;
   histograms[kHistogramInWindow] = true;
@@ -267,7 +270,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, DiyAppInWindow) {
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   NavigateViaLinkClickToURLAndWait(app_browser, example_url);
 
-  EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
+  EXPECT_EQ(GetAppIdFromApplicationName(
+                BrowserInitState::From(app_browser)->create_params().app_name),
+            app_id);
 
   Histograms histograms;
   histograms[kHistogramInWindow] = true;
@@ -373,7 +378,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppWithoutScope) {
 
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
 
-  EXPECT_EQ(GetAppIdFromApplicationName(browser->app_name()), app_id);
+  EXPECT_EQ(GetAppIdFromApplicationName(
+                BrowserInitState::From(browser)->create_params().app_name),
+            app_id);
   EXPECT_TRUE(web_app::AppBrowserController::From(browser));
   NavigateViaLinkClickToURLAndWait(browser, example_url);
 
@@ -424,9 +431,15 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, TwoApps) {
   Browser* app_browser2 = LaunchWebAppBrowserAndWait(app_id1);
   Browser* app_browser3 = LaunchWebAppBrowserAndWait(app_id2);
 
-  EXPECT_EQ(GetAppIdFromApplicationName(app_browser1->app_name()), app_id1);
-  EXPECT_EQ(GetAppIdFromApplicationName(app_browser2->app_name()), app_id1);
-  EXPECT_EQ(GetAppIdFromApplicationName(app_browser3->app_name()), app_id2);
+  EXPECT_EQ(GetAppIdFromApplicationName(
+                BrowserInitState::From(app_browser1)->create_params().app_name),
+            app_id1);
+  EXPECT_EQ(GetAppIdFromApplicationName(
+                BrowserInitState::From(app_browser2)->create_params().app_name),
+            app_id1);
+  EXPECT_EQ(GetAppIdFromApplicationName(
+                BrowserInitState::From(app_browser3)->create_params().app_name),
+            app_id2);
 
   Histograms histograms;
   histograms[kHistogramInWindow] = true;

@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -60,9 +61,13 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
                   BrowserWindowInterface::Type::TYPE_DEVTOOLS ||
               (browser->GetType() ==
                    BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE &&
-               !browser->app_name().empty())
+               !BrowserInitState::From(browser)
+                    ->create_params()
+                    .app_name.empty())
           ? shell_integration::win::GetAppUserModelIdForApp(
-                base::UTF8ToWide(browser->app_name()), profile->GetPath())
+                base::UTF8ToWide(
+                    BrowserInitState::From(browser)->create_params().app_name),
+                profile->GetPath())
           : shell_integration::win::GetAppUserModelIdForBrowser(
                 profile->GetPath());
   // Apps set their relaunch details based on app's details.
@@ -70,7 +75,8 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
     const extensions::Extension* extension = registry->GetExtensionById(
-        web_app::GetAppIdFromApplicationName(browser->app_name()),
+        web_app::GetAppIdFromApplicationName(
+            BrowserInitState::From(browser)->create_params().app_name),
         ExtensionRegistry::EVERYTHING);
     if (extension) {
       ui::win::SetAppIdForWindow(app_id, hwnd_);

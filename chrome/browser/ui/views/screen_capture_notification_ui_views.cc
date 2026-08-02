@@ -9,6 +9,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/screen_sharing_util.h"
@@ -442,7 +443,10 @@ void ScreenCaptureNotificationUIImpl::SetWindowsAppId(views::Widget* widget) {
   std::wstring app_user_model_id =
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP
           ? shell_integration::win::GetAppUserModelIdForApp(
-                base::UTF8ToWide(raw_browser->app_name()), profile_path)
+                base::UTF8ToWide(BrowserInitState::From(raw_browser)
+                                     ->create_params()
+                                     .app_name),
+                profile_path)
           : shell_integration::win::GetAppUserModelIdForBrowser(profile_path);
   if (!app_user_model_id.empty()) {
     ui::win::SetAppIdForWindow(app_user_model_id, views::HWNDForWidget(widget));

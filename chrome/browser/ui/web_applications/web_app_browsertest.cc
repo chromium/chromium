@@ -45,6 +45,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -503,7 +504,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ThemeColor) {
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
 
-    EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
+    EXPECT_EQ(
+        GetAppIdFromApplicationName(
+            BrowserInitState::From(app_browser)->create_params().app_name),
+        app_id);
     EXPECT_EQ(
         SkColorSetA(theme_color, SK_AlphaOPAQUE),
         web_app::AppBrowserController::From(app_browser)->GetThemeColor());
@@ -516,7 +520,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ThemeColor) {
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
 
-    EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
+    EXPECT_EQ(
+        GetAppIdFromApplicationName(
+            BrowserInitState::From(app_browser)->create_params().app_name),
+        app_id);
     EXPECT_EQ(
         std::nullopt,
         web_app::AppBrowserController::From(app_browser)->GetThemeColor());

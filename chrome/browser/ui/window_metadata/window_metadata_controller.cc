@@ -12,6 +12,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -241,8 +242,11 @@ std::u16string WindowMetadataController::GetWindowTitleFromWebContents(
       include_app_name) {
     auto* const app_browser_controller =
         web_app::AppBrowserController::From(browser_);
-    return app_browser_controller ? app_browser_controller->GetAppShortName()
-                                  : base::UTF8ToUTF16(browser_->app_name());
+    return app_browser_controller
+               ? app_browser_controller->GetAppShortName()
+               : base::UTF8ToUTF16(BrowserInitState::From(browser_)
+                                       ->create_params()
+                                       .app_name);
   }
   // Include the app name in window titles for tabbed browser windows when
   // requested with |include_app_name|.

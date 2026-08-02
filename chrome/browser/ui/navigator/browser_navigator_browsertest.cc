@@ -2118,7 +2118,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
   EXPECT_NE(browser(), params.browser);
   EXPECT_EQ(params.browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
-  EXPECT_EQ(params.browser->GetBrowserForMigrationOnly()->app_name(),
+  EXPECT_EQ(BrowserInitState::From(params.browser)->create_params().app_name,
             std::string());
 
   // The window should have respected the initial aspect ratio.
@@ -2252,7 +2252,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Should be PiP, with an app name.
   EXPECT_EQ(params.browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
-  EXPECT_NE(params.browser->GetBrowserForMigrationOnly()->app_name(),
+  EXPECT_NE(BrowserInitState::From(params.browser)->create_params().app_name,
             std::string());
 }
 

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -294,9 +295,9 @@ void KioskBrowserWindowHandler::CloseAllUnexpectedBrowserWindows() {
         // Do not close the main web app window (if any).
         bool is_web_app = web_app_name.has_value();
         bool is_web_app_window =
-            is_web_app &&
-            (browser_window_interface.GetBrowserForMigrationOnly()
-                 ->app_name() == web_app_name);
+            is_web_app && (BrowserInitState::From(&browser_window_interface)
+                               ->create_params()
+                               .app_name == web_app_name);
         return !is_web_app_window;
       });
 }
@@ -365,7 +366,8 @@ bool KioskBrowserWindowHandler::IsNewBrowserWindowAllowed(
   return kiosk_policies_.IsWindowCreationAllowed() &&
          browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP &&
          web_app_name_.has_value() &&
-         browser->app_name() == web_app_name_.value();
+         BrowserInitState::From(browser)->create_params().app_name ==
+             web_app_name_.value();
 }
 
 bool KioskBrowserWindowHandler::IsDevToolsAllowedBrowser(
@@ -406,8 +408,9 @@ void KioskBrowserWindowHandler::CloseBrowserWindowsIf(
           LOG(WARNING) << "kiosk: Closing unexpected browser window with url "
                        << GetUrlOfActiveTab(browser_window_interface)
                        << " of app "
-                       << browser_window_interface->GetBrowserForMigrationOnly()
-                              ->app_name();
+                       << BrowserInitState::From(browser_window_interface)
+                              ->create_params()
+                              .app_name;
           CloseBrowserAndSetTimer(browser_window_interface);
         }
         return true;

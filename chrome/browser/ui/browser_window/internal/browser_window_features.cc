@@ -804,7 +804,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   live_tab_context_ = std::make_unique<BrowserLiveTabContext>(
       browser, browser->GetTabStripModel(), profile, browser->GetWindow(),
-      browser->GetType(), browser->app_name(), browser->GetSessionID());
+      browser->GetType(),
+      BrowserInitState::From(browser)->create_params().app_name,
+      browser->GetSessionID());
 
   if (browser_view) {
     if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {

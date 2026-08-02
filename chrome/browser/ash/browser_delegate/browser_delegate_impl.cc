@@ -123,8 +123,8 @@ aura::Window* BrowserDelegateImpl::GetNativeWindow() const {
 std::optional<webapps::AppId> BrowserDelegateImpl::GetAppId() const {
   // The implementation of `GetAppIdFromApplicationName()` isn't specific to
   // WebApps, although the function resides in web_app_helpers.cc|h.
-  std::string app_id =
-      web_app::GetAppIdFromApplicationName(browser_->app_name());
+  std::string app_id = web_app::GetAppIdFromApplicationName(
+      BrowserInitState::From(&*browser_)->create_params().app_name);
   return app_id.empty() ? std::nullopt : std::optional<webapps::AppId>(app_id);
 }
 

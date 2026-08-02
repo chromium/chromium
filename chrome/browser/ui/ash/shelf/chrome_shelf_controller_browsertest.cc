@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -186,7 +187,7 @@ BrowserWindowInterface* FindBrowserForApp(const std::string& app_name) {
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [app_name, &found_browser](BrowserWindowInterface* browser) {
         if (web_app::GetAppIdFromApplicationName(
-                browser->GetBrowserForMigrationOnly()->app_name()) ==
+                BrowserInitState::From(browser)->create_params().app_name) ==
             app_name) {
           found_browser = browser;
         }

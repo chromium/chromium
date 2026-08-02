@@ -687,10 +687,11 @@ void SessionServiceBase::BuildCommandsForBrowser(
       sessions::CreateSetWindowTypeCommand(
           browser->session_id(), WindowTypeForBrowserType(browser->type())));
 
-  if (!browser->app_name().empty()) {
+  if (!BrowserInitState::From(browser)->create_params().app_name.empty()) {
     command_storage_manager()->AppendRebuildCommand(
-        sessions::CreateSetWindowAppNameCommand(browser->session_id(),
-                                                browser->app_name()));
+        sessions::CreateSetWindowAppNameCommand(
+            browser->session_id(),
+            BrowserInitState::From(browser)->create_params().app_name));
   }
 
   if (!WindowMetadataController::From(browser)->user_title().empty()) {

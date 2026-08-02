@@ -203,8 +203,9 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
        browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP));
 
-  params.init_properties_container.SetProperty(app_restore::kBrowserAppNameKey,
-                                               browser->app_name());
+  params.init_properties_container.SetProperty(
+      app_restore::kBrowserAppNameKey,
+      BrowserInitState::From(browser)->create_params().app_name);
   params.init_properties_container.SetProperty(
       chromeos::kShouldHaveHighlightBorderOverlay, true);
 

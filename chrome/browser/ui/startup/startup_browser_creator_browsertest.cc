@@ -977,9 +977,11 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     EXPECT_EQ(new_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
     // The browser's app_name should include the app's ID.
-    EXPECT_NE(new_browser->app_name().find(extension_app->id()),
+    EXPECT_NE(BrowserInitState::From(new_browser)
+                  ->create_params()
+                  .app_name.find(extension_app->id()),
               std::string::npos)
-        << new_browser->app_name();
+        << BrowserInitState::From(new_browser)->create_params().app_name;
   } else {
     ExpectBlockLaunch(extension_app->id(), /*force_install_dialog=*/false);
   }
@@ -1018,9 +1020,10 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 
     // The browser's app_name should not include the app's ID: it is in a normal
     // tabbed browser.
-    EXPECT_EQ(browser()->app_name().find(extension_app->id()),
+    EXPECT_EQ(BrowserInitState::From(browser())->create_params().app_name.find(
+                  extension_app->id()),
               std::string::npos)
-        << browser()->app_name();
+        << BrowserInitState::From(browser())->create_params().app_name;
 
     // It should have loaded the requested app.
     const std::u16string expected_title(

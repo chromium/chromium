@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -90,7 +91,7 @@ std::optional<std::string> GetInstanceAppIdForWebContents(
       (browser->GetType() == BrowserWindowInterface::TYPE_APP ||
        browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP)) {
     return web_app::GetAppIdFromApplicationName(
-        browser->GetBrowserForMigrationOnly()->app_name());
+        BrowserInitState::From(browser)->create_params().app_name);
   }
 
   const extensions::Extension* extension =

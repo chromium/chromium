@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -51,7 +52,8 @@ bool BrowserMatches(BrowserWindowInterface* browser,
                     const GURL& url) {
   return browser->GetProfile() == profile && browser->GetType() == type &&
          web_app::GetAppIdFromApplicationName(
-             browser->GetBrowserForMigrationOnly()->app_name()) == app_id &&
+             BrowserInitState::From(browser)->create_params().app_name) ==
+             app_id &&
          (url.is_empty() || BrowserMatchesURL(browser, url));
 }
 

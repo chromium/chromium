@@ -52,9 +52,10 @@ std::string GetWindowName(const Browser* browser) {
       return prefs::kBrowserWindowPlacementPopup;
     case Browser::TYPE_APP:
     case Browser::TYPE_DEVTOOLS:
-      return browser->app_name();
+      return BrowserInitState::From(browser)->create_params().app_name;
     case Browser::TYPE_APP_POPUP:
-      return browser->app_name() + "_popup";
+      return BrowserInitState::From(browser)->create_params().app_name +
+             "_popup";
   }
 }
 

@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreAppsV1) {
        &app2_count](BrowserWindowInterface* browser) {
         ++total_count;
         const std::string& app_name =
-            browser->GetBrowserForMigrationOnly()->app_name();
+            BrowserInitState::From(browser)->create_params().app_name;
         if (app_name == test_app_name1) {
           ++app1_count;
         } else if (app_name == test_app_name2) {
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreAppsPopup) {
        &app2_count](BrowserWindowInterface* browser) {
         ++total_count;
         const std::string& app_name =
-            browser->GetBrowserForMigrationOnly()->app_name();
+            BrowserInitState::From(browser)->create_params().app_name;
         if (app_name == test_app_name1) {
           ++app1_count;
         } else if (app_name == test_app_name2) {
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMaximized) {
         if (browser->GetWindow()->IsMaximized()) {
           ++total_maximized_count;
           const std::string& app_name =
-              browser->GetBrowserForMigrationOnly()->app_name();
+              BrowserInitState::From(browser)->create_params().app_name;
           if (app_name == test_app_name1) {
             ++app1_maximized_count;
           } else if (app_name == test_app_name2) {

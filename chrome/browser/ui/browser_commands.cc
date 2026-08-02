@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -281,8 +282,8 @@ void CreateAndShowNewWindowWithContents(
     const bool is_trusted_source =
         WindowFeatureController::From(original_browser)->IsTrustedSource();
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        browser->app_name(), is_trusted_source, gfx::Rect(),
-        original_browser->GetProfile(), true));
+        BrowserInitState::From(browser)->create_params().app_name,
+        is_trusted_source, gfx::Rect(), original_browser->GetProfile(), true));
   } else {
     new_browser = Browser::Create(Browser::CreateParams(
         original_browser->GetType(), original_browser->GetProfile(), true));
@@ -1588,8 +1589,9 @@ void MoveGroupToNewWindow(BrowserWindowInterface* browser,
       web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
     auto* app_controller = web_app::AppBrowserController::From(current_browser);
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        current_browser->app_name(), app_controller->IsTrustedSource(),
-        gfx::Rect(), current_browser->GetProfile(), true));
+        BrowserInitState::From(current_browser)->create_params().app_name,
+        app_controller->IsTrustedSource(), gfx::Rect(),
+        current_browser->GetProfile(), true));
     web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
   } else {
     new_browser = CreateNewBrowser(current_browser, true);
@@ -1611,8 +1613,9 @@ void MoveTabsToNewWindow(BrowserWindowInterface* browser,
       web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
     auto* app_controller = web_app::AppBrowserController::From(current_browser);
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        current_browser->app_name(), app_controller->IsTrustedSource(),
-        gfx::Rect(), current_browser->GetProfile(), true));
+        BrowserInitState::From(current_browser)->create_params().app_name,
+        app_controller->IsTrustedSource(), gfx::Rect(),
+        current_browser->GetProfile(), true));
     web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
   } else {
     new_browser = CreateNewBrowser(current_browser, true);

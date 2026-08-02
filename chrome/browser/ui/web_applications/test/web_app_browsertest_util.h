@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -134,8 +135,8 @@ enum AppMenuCommandState {
 // For a non-app browser, determines if the command is enabled/disabled/absent.
 AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser);
 
-// Searches for a Browser window for a given |app_id|. browser->app_name() must
-// be defined.
+// Searches for a Browser window for a given |app_id|.
+// BrowserInitState::From(browser)->create_params().app_name must be defined.
 Browser* FindWebAppBrowser(Profile* profile, const webapps::AppId& app_id);
 
 void CloseAndWait(BrowserWindowInterface* browser);

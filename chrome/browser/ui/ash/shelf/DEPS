@@ -79,6 +79,9 @@ specific_include_rules = {
     "+chrome/browser/ui/test",
     "+chrome/test",
   ],
+  "chrome_shelf_controller_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_init_state.h",
+  ],
   "chrome_shelf_controller_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h",

@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -77,6 +78,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest,
       trs->entries().front().get();
   ASSERT_EQ(sessions::tab_restore::Type::WINDOW, window_entry->type);
   const Window* restored_window = static_cast<const Window*>(window_entry);
-  EXPECT_EQ(app_browser->app_name(), restored_window->app_name);
+  EXPECT_EQ(BrowserInitState::From(app_browser)->create_params().app_name,
+            restored_window->app_name);
   EXPECT_EQ(1U, restored_window->tabs.size());
 }

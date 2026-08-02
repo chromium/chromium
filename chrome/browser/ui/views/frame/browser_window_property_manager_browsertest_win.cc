@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -240,7 +241,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
   Browser* pip_browser = Browser::Create(params);
   ASSERT_EQ(pip_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
-  ASSERT_EQ(app_name, pip_browser->app_name());
+  ASSERT_EQ(app_name,
+            BrowserInitState::From(pip_browser)->create_params().app_name);
 
   content::RunAllTasksUntilIdle();
 
@@ -270,7 +272,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
   Browser* pip_browser = Browser::Create(params);
   ASSERT_EQ(pip_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
-  ASSERT_TRUE(pip_browser->app_name().empty());
+  ASSERT_TRUE(
+      BrowserInitState::From(pip_browser)->create_params().app_name.empty());
 
   content::RunAllTasksUntilIdle();
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -63,7 +64,8 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
 
   Browser* const browser = browser_created_observer.Wait();
   DCHECK(browser);
-  EXPECT_EQ(web_app::GetAppIdFromApplicationName(browser->app_name()),
+  EXPECT_EQ(web_app::GetAppIdFromApplicationName(
+                BrowserInitState::From(browser)->create_params().app_name),
             extension_app->id());
   return browser;
 }
