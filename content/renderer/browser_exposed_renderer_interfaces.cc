@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/vrp_flags/buildflags.h"
 #include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/common/content_client.h"
@@ -33,6 +34,12 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-statistics.h"
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+#include "components/vrp_flags/vrp_flags.h"        // nogncheck
+#include "components/vrp_flags/vrp_flags.mojom.h"  // nogncheck
+#include "components/vrp_flags/vrp_flags_impl.h"   // nogncheck
+#endif
 
 namespace content {
 
@@ -220,6 +227,17 @@ void ExposeRendererInterfacesToBrowser(
                             render_thread),
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+  if (vrp_flags::IsEnabled()) {
+    binders->Add<vrp_flags::mojom::VrpFlags>(
+        base::BindRepeating(
+            [](mojo::PendingReceiver<vrp_flags::mojom::VrpFlags> receiver) {
+              vrp_flags::VrpFlagsImpl::GetInstance()->Bind(std::move(receiver));
+            }),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+#endif
 
   GetContentClient()->renderer()->ExposeInterfacesToBrowser(binders);
 }

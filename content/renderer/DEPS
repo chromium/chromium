@@ -11,6 +11,7 @@ include_rules = [
   "+components/url_formatter",
   "+components/viz/client",
   "+components/viz/common",
+  "+components/vrp_flags",
   # *********************************** NOTE ***********************************
   # If adding a new component dependency, email content/OWNERS first.
   # ****************************************************************************

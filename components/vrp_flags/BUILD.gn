@@ -33,6 +33,7 @@ if (enable_vrp_flags) {
       "//base",
       "//gpu/config",
       "//sandbox/policy",
+      "//services/network/public/cpp:flags_and_switches",
     ]
 
     public_deps = [

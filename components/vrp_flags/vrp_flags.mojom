@@ -31,6 +31,15 @@ interface VrpFlags {
   ReadAttempted(mojo_base.mojom.UnguessableToken flag) => (bool success);
 };
 
+// Disposition for creating the target victim web contents for cross-renderer
+// exploits.
+enum VictimDisposition {
+  // Spawns a new tab in the foreground.
+  kSpawnForegroundTab,
+  // Spawns a new tab in the background.
+  kSpawnBackgroundTab,
+};
+
 // Brokered by the Browser process to allow the renderer to connect to the
 // VrpFlags implementation in various privileged processes.
 // Only bound when --vrp-flags is provided.
@@ -43,4 +52,11 @@ interface VrpFlagsFactory {
 
   // Connects to the vrp_flags implementation running in the GPU process.
   BindGpuVrpFlags(pending_receiver<VrpFlags> receiver);
+
+  // Spawns a victim renderer process according to `disposition` and connects
+  // `receiver` to its VrpFlags implementation. Returns the port number used
+  // for the victim site.
+  StartRendererForVrpFlags(
+      VictimDisposition disposition,
+      pending_receiver<VrpFlags> receiver) => (uint16 port);
 };

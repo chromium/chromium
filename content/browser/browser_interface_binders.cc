@@ -1466,7 +1466,7 @@ void PopulateBinderMapWithContext(
     map->Add<vrp_flags::mojom::VrpFlagsFactory>(base::BindRepeating(
         [](content::RenderFrameHost* frame_host,
            mojo::PendingReceiver<vrp_flags::mojom::VrpFlagsFactory> receiver) {
-          VrpFlagsFactoryImpl::Bind(std::move(receiver));
+          VrpFlagsFactoryImpl::Bind(frame_host, std::move(receiver));
         }));
   }
 #endif

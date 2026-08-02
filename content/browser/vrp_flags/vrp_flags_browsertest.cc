@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "components/vrp_flags/vrp_flags_impl.h"
 #include "content/browser/vrp_flags/vrp_flags_factory_impl.h"
@@ -19,7 +20,13 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/host_port_pair.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "sandbox/policy/switches.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {
@@ -43,10 +50,35 @@ class VrpFlagsBrowserTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(vrp_flags::switches::kVrpFlags);
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP victim.test " +
+            net::HostPortPair::FromURL(embedded_test_server()->base_url())
+                .ToString() +
+            ",EXCLUDE localhost");
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == "/poc.html") {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/html");
+            response->set_content("<html><body>Victim</body></html>");
+            return response;
+          }
+          return nullptr;
+        }));
+    embedded_test_server()->StartAcceptingConnections();
   }
 
   mojo::Remote<vrp_flags::mojom::VrpFlags> GetRemote() {
-    VrpFlagsFactoryImpl::Bind(factory_.BindNewPipeAndPassReceiver());
+    VrpFlagsFactoryImpl::Bind(nullptr, factory_.BindNewPipeAndPassReceiver());
 
     mojo::Remote<vrp_flags::mojom::VrpFlags> remote;
     factory_->BindBrowserVrpFlags(remote.BindNewPipeAndPassReceiver());
@@ -54,7 +86,7 @@ class VrpFlagsBrowserTest : public ContentBrowserTest {
   }
 
   mojo::Remote<vrp_flags::mojom::VrpFlags> GetGpuRemote() {
-    VrpFlagsFactoryImpl::Bind(factory_.BindNewPipeAndPassReceiver());
+    VrpFlagsFactoryImpl::Bind(nullptr, factory_.BindNewPipeAndPassReceiver());
 
     mojo::Remote<vrp_flags::mojom::VrpFlags> remote;
     factory_->BindGpuVrpFlags(remote.BindNewPipeAndPassReceiver());
@@ -62,7 +94,7 @@ class VrpFlagsBrowserTest : public ContentBrowserTest {
   }
 
   mojo::Remote<vrp_flags::mojom::VrpFlags> GetNetworkRemote() {
-    VrpFlagsFactoryImpl::Bind(factory_.BindNewPipeAndPassReceiver());
+    VrpFlagsFactoryImpl::Bind(nullptr, factory_.BindNewPipeAndPassReceiver());
 
     mojo::Remote<vrp_flags::mojom::VrpFlags> remote;
     factory_->BindNetworkVrpFlags(remote.BindNewPipeAndPassReceiver());
@@ -128,6 +160,7 @@ IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest, WriteAttempted) {
     uint64_t* ptr = reinterpret_cast<uint64_t*>(location);
     *ptr = value + 1;
   });
+
   {
     base::RunLoop run_loop;
     remote->WriteAttempted(location,
@@ -237,6 +270,100 @@ IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest, BindNetworkVrpFlags) {
   mojo::Remote<vrp_flags::mojom::VrpFlags> remote = GetNetworkRemote();
   base::RunLoop run_loop;
   remote->GetWriteLocations(base::BindLambdaForTesting(
+      [&](const std::vector<uint64_t>& locations, uint64_t value) {
+        EXPECT_EQ(locations.size(), 5u);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Verifies spawning a victim renderer in a foreground tab and binding its
+// VrpFlags.
+IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest,
+                       StartRendererForVrpFlags_SpawnForegroundTab) {
+  // Navigate main browser window to test page and bind
+  // VrpFlagsFactoryImpl for the main frame to emulate the attacker render using
+  // MojoJS to communicate with VrpFlagsFactory.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/poc.html")));
+  VrpFlagsFactoryImpl::Bind(shell()->web_contents()->GetPrimaryMainFrame(),
+                            factory_.BindNewPipeAndPassReceiver());
+
+  // StartRendererForVrpFlags returns the port used for the victim page.
+  mojo::Remote<vrp_flags::mojom::VrpFlags> victim_remote;
+  uint16_t port = 0;
+  {
+    base::RunLoop run_loop;
+    factory_->StartRendererForVrpFlags(
+        vrp_flags::mojom::VictimDisposition::kSpawnForegroundTab,
+        victim_remote.BindNewPipeAndPassReceiver(),
+        base::BindLambdaForTesting([&](uint16_t assigned_port) {
+          port = assigned_port;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  EXPECT_NE(port, 0u);
+
+  // Verify a new browser window/tab was created and confirm host matching
+  // assigned port.
+  ASSERT_EQ(2u, Shell::windows().size());
+  WebContents* victim_contents = Shell::windows()[1]->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(victim_contents));
+  EXPECT_EQ(EvalJs(victim_contents, "window.location.host").ExtractString(),
+            base::StringPrintf("victim.test:%u", port));
+
+  // Invoke GetWriteLocations in the victim renderer remote and verify 5
+  // write locations are returned.
+  base::RunLoop run_loop;
+  victim_remote->GetWriteLocations(base::BindLambdaForTesting(
+      [&](const std::vector<uint64_t>& locations, uint64_t value) {
+        EXPECT_EQ(locations.size(), 5u);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Verifies spawning a victim renderer in a background tab and binding its
+// VrpFlags.
+IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest,
+                       StartRendererForVrpFlags_SpawnBackgroundTab) {
+  // Navigate main browser window to test page and bind
+  // VrpFlagsFactoryImpl for the main frame.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/poc.html")));
+  VrpFlagsFactoryImpl::Bind(shell()->web_contents()->GetPrimaryMainFrame(),
+                            factory_.BindNewPipeAndPassReceiver());
+
+  // Call StartRendererForVrpFlags with kSpawnBackgroundTab disposition
+  // and get assigned port.
+  mojo::Remote<vrp_flags::mojom::VrpFlags> victim_remote;
+  uint16_t port = 0;
+  {
+    base::RunLoop run_loop;
+    factory_->StartRendererForVrpFlags(
+        vrp_flags::mojom::VictimDisposition::kSpawnBackgroundTab,
+        victim_remote.BindNewPipeAndPassReceiver(),
+        base::BindLambdaForTesting([&](uint16_t assigned_port) {
+          port = assigned_port;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  EXPECT_NE(port, 0u);
+
+  // Verify a new background tab/window was created and confirm host matching
+  // assigned port.
+  ASSERT_EQ(2u, Shell::windows().size());
+  WebContents* victim_contents = Shell::windows()[1]->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(victim_contents));
+  EXPECT_EQ(EvalJs(victim_contents, "window.location.host").ExtractString(),
+            base::StringPrintf("victim.test:%u", port));
+
+  // Invoke GetWriteLocations in the victim renderer remote and verify 5
+  // write locations are returned.
+  base::RunLoop run_loop;
+  victim_remote->GetWriteLocations(base::BindLambdaForTesting(
       [&](const std::vector<uint64_t>& locations, uint64_t value) {
         EXPECT_EQ(locations.size(), 5u);
         run_loop.Quit();

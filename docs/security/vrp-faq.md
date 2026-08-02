@@ -145,7 +145,8 @@ reports:
 ### Demonstrating controlled read or write
 
 Mojom interfaces to demonstrate controlled reads or controlled writes in
-privileged processes are available in [vrp_flags.mojom](../../components/vrp_flags/vrp_flags.mojom).
+privileged processes or cross-site victim renderers are available in
+[vrp_flags.mojom](../../components/vrp_flags/vrp_flags.mojom).
 
 To prove a controlled read or write you must attach a small json file
 `vrp-flag.json` to your report:
@@ -155,7 +156,7 @@ To prove a controlled read or write you must attach a small json file
   "flag": "read",
   "params": {
     "process": "browser",
-    "poc": "poc-read.html",
+    "poc": "poc.html",
     "chrome_version": "123.6789.0.1",
     "os": "win",
     "arch": "x64",
@@ -164,16 +165,20 @@ To prove a controlled read or write you must attach a small json file
 }
 ```
 
-* attach a minimized `poc.html` that triggers the bug under ASAN
-* attach an additional `poc-read.html` or `poc-write.html`
+* attach a minimized `poc-asan.html` that triggers the bug under ASAN
+* attach an additional `poc.html` to demonstrate controlled read or write
 * provide additional command line arguments needed to run the poc
 * provide the full version of the released version of Chrome the poc targets
 * provide the operating system the poc targets
-* provide the process the poc targets
+* provide the process the poc targets (`browser`, `network`, `gpu`, or
+  `renderer`)
 
-`poc-read.html` or `poc-write.html` will be loaded from a local server, with
-mojojs files available under `/gen/`. If your poc reliably hits the VRP flag,
-your report will be eligible for the controlled read or controlled write reward.
+`poc.html` will be loaded from a local server served on `localhost:8000`, with
+mojojs files available under `/gen/`. For cross-renderer exploits, `poc.html`
+will also be loaded in the victim process with the origin
+`victim.test:<port_number>`, where the attacker can request an arbitrary
+number of port numbers. If your poc reliably hits the VRP flag, your report
+will be eligible for the controlled read or controlled write reward.
 
 If the controlled read or write is not reproducible or not reliable, but the
 minimized poc does trigger an ASAN report, your issue will receive the standard
