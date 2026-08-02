@@ -42,6 +42,9 @@ class MetricsReportingChoiceService {
   // Gets the current advanced metrics reporting choice.
   static bool IsAdvancedReportingEnabled(const PrefService* profile_prefs);
 
+  // Returns true if the profile has migrated to the restructured consent.
+  static bool IsMigrated(const PrefService* profile_prefs);
+
   // Returns true if basic metrics reporting is enabled.
   static bool IsBasicMetricsReportingEnabled(const PrefService* local_state);
 

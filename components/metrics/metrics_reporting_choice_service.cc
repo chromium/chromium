@@ -41,6 +41,14 @@ bool MetricsReportingChoiceService::IsAdvancedReportingEnabled(
 }
 
 // static
+bool MetricsReportingChoiceService::IsMigrated(
+    const PrefService* profile_prefs) {
+  CHECK(profile_prefs);
+  return profile_prefs->GetBoolean(
+      prefs::kAdvancedReportingProfileMigrationDone);
+}
+
+// static
 bool MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure() {
   return base::FeatureList::IsEnabled(
       features::kRestructureMetricsConsentSettings);
@@ -66,6 +74,10 @@ MetricsReportingChoiceService::~MetricsReportingChoiceService() = default;
 
 void MetricsReportingChoiceService::MonitorAdvancedReportingPref(
     PrefService* profile_prefs) {
+  if (ShouldUseMetricsConsentRestructure()) {
+    CHECK(IsMigrated(profile_prefs));
+  }
+
   if (monitored_profile_prefs_.contains(profile_prefs)) {
     return;
   }

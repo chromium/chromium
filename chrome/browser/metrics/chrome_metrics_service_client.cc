@@ -1247,8 +1247,8 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
       return false;
     }
     profile_observations_.AddObservation(profile);
-    MonitorAdvancedReportingPref(profile->GetPrefs());
     StartObserving(sync, profile->GetPrefs());
+    MonitorAdvancedReportingPref(profile->GetPrefs());
     return true;
   }
 #endif
@@ -1274,8 +1274,8 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
     return false;
   }
   profile_observations_.AddObservation(profile);
-  MonitorAdvancedReportingPref(profile->GetPrefs());
   StartObserving(sync, profile->GetPrefs());
+  MonitorAdvancedReportingPref(profile->GetPrefs());
   return true;
 }
 

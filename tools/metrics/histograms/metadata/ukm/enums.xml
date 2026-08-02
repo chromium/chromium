@@ -39,6 +39,12 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="DEPRECATED_XML_PROTO_MISMATCH"/>
 </enum>
 
+<enum name="UkmConsentStateBeforeRestructure">
+  <int value="0" label="MSBB disabled"/>
+  <int value="1" label="MSBB enabled, without App or Extension sync"/>
+  <int value="2" label="MSBB enabled, with App and Extension sync"/>
+</enum>
+
 <enum name="UkmDataDroppedReason">
   <int value="0" label="Not dropped"/>
   <int value="1" label="Recording disabled"/>

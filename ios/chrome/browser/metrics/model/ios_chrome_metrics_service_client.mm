@@ -583,8 +583,8 @@ bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
   }
 
   ObserveServiceForDeletions(history_service);
-  MonitorAdvancedReportingPref(profile->GetPrefs());
   StartObserving(sync, profile->GetPrefs());
+  MonitorAdvancedReportingPref(profile->GetPrefs());
   StartObservingBrowserList(browser_list);
   return true;
 }

@@ -4,6 +4,7 @@
 
 #include "components/metrics/metrics_reporting_choice_service.h"
 
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/metrics/metrics_features.h"
@@ -239,6 +240,25 @@ TEST_F(MetricsReportingChoiceServiceTest,
   EXPECT_TRUE(service.was_notified());
   EXPECT_FALSE(service.last_enabled());
   EXPECT_TRUE(service.last_reset_client_state());
+}
+
+TEST_F(MetricsReportingChoiceServiceTest,
+       MonitorAdvancedReportingPrefWithMigrationCheck) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kRestructureMetricsConsentSettings);
+
+  TestMetricsReportingChoiceService service;
+  TestingPrefServiceSimple prefs;
+  MetricsReportingChoiceService::RegisterProfilePrefs(prefs.registry());
+
+  // By default, migration done is false. Calling MonitorAdvancedReportingPref
+  // should CHECK-fail.
+  EXPECT_CHECK_DEATH(service.MonitorAdvancedReportingPref(&prefs));
+
+  // Mark migration as done. Now it should succeed.
+  prefs.SetBoolean(prefs::kAdvancedReportingProfileMigrationDone, true);
+  service.MonitorAdvancedReportingPref(&prefs);
 }
 
 }  // namespace metrics

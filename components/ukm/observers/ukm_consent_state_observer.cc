@@ -9,10 +9,16 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/metrics/metrics_features.h"
+#include "components/metrics/metrics_profile_pref_names.h"
 #include "components/metrics/metrics_switches.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -127,6 +133,82 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
 
 void UkmConsentStateObserver::StartObserving(syncer::SyncService* sync_service,
                                              PrefService* prefs) {
+  bool msbb_enabled = prefs->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
+  bool advanced_reporting_enabled = msbb_enabled;
+
+  bool is_signed_in = !sync_service->GetAccountInfo().IsEmpty();
+
+  if (is_signed_in) {
+    // We check the user's configured sync settings directly via the
+    // SyncUserSettings helper rather than using `GetProfileState()` or
+    // `CanUploadUkmForType()`. `GetSelectedTypes()` reads directly from the
+    // local profile preferences (`PrefService`) on disk, which are loaded
+    // immediately on startup and do not require the sync engine to have
+    // started. During early startup when migration runs, the sync engine has
+    // not started yet, which would cause `CanUploadUkmForType()` to return
+    // false. Since this migration runs only once (guarded by
+    // `kAdvancedReportingProfileMigrationDone`), we must fetch the user's local
+    // persistent preference state to avoid migrating them to a disabled state.
+    // Once migrated, advanced reporting consent is completely decoupled from
+    // sync preferences, meaning this is a one-time initialization.
+    bool apps_supported =
+        sync_service->GetUserSettings()->GetRegisteredSelectableTypes().Has(
+            syncer::UserSelectableType::kApps);
+    bool extensions_supported =
+        sync_service->GetUserSettings()->GetRegisteredSelectableTypes().Has(
+            syncer::UserSelectableType::kExtensions);
+
+    bool apps_sync_enabled =
+        !apps_supported ||
+        sync_service->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kApps);
+
+    bool extensions_sync_enabled =
+        !extensions_supported ||
+        sync_service->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kExtensions);
+
+    advanced_reporting_enabled =
+        msbb_enabled && apps_sync_enabled && extensions_sync_enabled;
+  }
+
+  // Log the pre-restructure consent state to quantify the coverage impact.
+  // 0: MSBB disabled
+  // 1: MSBB enabled, without App or Extension sync (will lose coverage)
+  // 2: MSBB enabled, with App and Extension sync (will keep coverage)
+  enum class ConsentStateBeforeRestructure {
+    kMsbbDisabled = 0,
+    kMsbbEnabledWithoutAppOrExtensionSync = 1,
+    kMsbbEnabledWithAppAndExtensionSync = 2,
+    kMaxValue = kMsbbEnabledWithAppAndExtensionSync,
+  };
+  ConsentStateBeforeRestructure pre_restructure_state =
+      ConsentStateBeforeRestructure::kMsbbDisabled;
+  if (msbb_enabled) {
+    if (!advanced_reporting_enabled) {
+      pre_restructure_state =
+          ConsentStateBeforeRestructure::kMsbbEnabledWithoutAppOrExtensionSync;
+    } else {
+      pre_restructure_state =
+          ConsentStateBeforeRestructure::kMsbbEnabledWithAppAndExtensionSync;
+    }
+  }
+  base::UmaHistogramEnumeration(
+      "UKM.ConsentObserver.ConsentStateBeforeRestructure",
+      pre_restructure_state);
+
+  if (base::FeatureList::IsEnabled(
+          metrics::features::kRestructureMetricsConsentSettings)) {
+    if (!prefs->GetBoolean(
+            metrics::prefs::kAdvancedReportingProfileMigrationDone)) {
+      prefs->SetBoolean(metrics::prefs::kAdvancedReportingEnabled,
+                        advanced_reporting_enabled);
+      prefs->SetBoolean(metrics::prefs::kAdvancedReportingProfileMigrationDone,
+                        true);
+    }
+  }
+
   std::unique_ptr<UrlKeyedDataCollectionConsentHelper> consent_helper =
       UrlKeyedDataCollectionConsentHelper::
           NewAnonymizedDataCollectionConsentHelper(prefs);

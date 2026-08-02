@@ -57,6 +57,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UKM.ConsentObserver.ConsentStateBeforeRestructure"
+    enum="UkmConsentStateBeforeRestructure" expires_after="2026-11-01">
+  <owner>heychirag@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Logged in the StartObserving call from the UkmConsentStateObserver during
+    profile migration. Records the user's consent state (MSBB and sync settings)
+    immediately before the restructure takes effect, to help quantify the
+    potential coverage impact.
+  </summary>
+</histogram>
+
 <histogram name="UKM.ConsentObserver.Purge" enum="Boolean"
     expires_after="2027-01-03">
   <owner>rkaplow@chromium.org</owner>

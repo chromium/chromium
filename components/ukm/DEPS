@@ -3,6 +3,7 @@ include_rules = [
   "+components/crx_file/id_util.h",
   "+components/metrics",
   "+components/prefs",
+  "+components/signin/public/identity_manager/account_info.h",
   "+components/unified_consent",
   "+components/variations",
   "+mojo/public",
@@ -16,6 +17,7 @@ specific_include_rules = {
     "+chromeos/components/kiosk/kiosk_test_utils.h",
     "+chromeos/components/mgs/managed_guest_session_test_utils.h",
     "+components/sync_preferences/testing_pref_service_syncable.h",
+    "+components/signin/public/base/consent_level.h",
     "+services/metrics/ukm_recorder_interface.h",
     "+services/metrics/ukm_recorder_factory_impl.h",
   ]
