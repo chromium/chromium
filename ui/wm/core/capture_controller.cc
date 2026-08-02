@@ -56,14 +56,15 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
     return;
   }
 
-  if (capture_window_ == new_capture_window)
+  if (capture_window_.get() == new_capture_window) {
     return;
+  }
 
   // Make sure window has a root window.
   DCHECK(!new_capture_window || new_capture_window->GetRootWindow());
   DCHECK(!capture_window_ || capture_window_->GetRootWindow());
 
-  aura::Window* old_capture_window = capture_window_;
+  aura::Window* old_capture_window = capture_window_.get();
   aura::client::CaptureDelegate* old_capture_delegate = capture_delegate_;
 
   // Copy the map in case it's modified out from under us.
@@ -92,7 +93,7 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
     }
   }
 
-  capture_window_ = new_capture_window;
+  capture_window_ = new_capture_window_weak;
   aura::Window* capture_root_window =
       capture_window_ ? capture_window_->GetRootWindow() : nullptr;
   capture_delegate_ = delegates_.find(capture_root_window) == delegates_.end()
@@ -118,21 +119,22 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
   }
 
   observers_.Notify(&aura::client::CaptureClientObserver::OnCaptureChanged,
-                    old_capture_window, capture_window_);
+                    old_capture_window, capture_window_.get());
 }
 
 void CaptureController::ReleaseCapture(aura::Window* window) {
-  if (capture_window_ != window)
+  if (capture_window_.get() != window) {
     return;
+  }
   SetCapture(nullptr);
 }
 
 aura::Window* CaptureController::GetCaptureWindow() {
-  return capture_window_;
+  return capture_window_.get();
 }
 
 aura::Window* CaptureController::GetGlobalCaptureWindow() {
-  return capture_window_;
+  return capture_window_.get();
 }
 
 void CaptureController::AddObserver(
