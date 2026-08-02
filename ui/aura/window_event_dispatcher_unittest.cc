@@ -2594,6 +2594,25 @@ class CaptureWindowTracker : public test::TestWindowDelegate {
   std::unique_ptr<aura::Window> capture_window_;
 };
 
+class DeleteOtherWindowOnCaptureLostDelegate : public test::TestWindowDelegate {
+ public:
+  DeleteOtherWindowOnCaptureLostDelegate() = default;
+  ~DeleteOtherWindowOnCaptureLostDelegate() override = default;
+
+  void set_other_window(Window* other) { other_ = other; }
+
+  // test::TestWindowDelegate:
+  void OnCaptureLost() override {
+    if (other_) {
+      Window* raw_other = std::exchange(other_, nullptr);
+      delete raw_other;
+    }
+  }
+
+ private:
+  raw_ptr<Window> other_ = nullptr;
+};
+
 }  // namespace
 
 // Verifies handling loss of capture by the capture window being hidden.
@@ -2610,6 +2629,29 @@ TEST_F(WindowEventDispatcherTest, CaptureWindowDestroyed) {
   capture_window_tracker.CreateCaptureWindow(root_window());
   capture_window_tracker.reset();
   EXPECT_EQ(NULL, capture_window_tracker.capture_window());
+}
+
+using WindowEventDispatcherDeathTest = WindowEventDispatcherTest;
+
+// Verifies that deleting the new capture window during OnCaptureLost of the
+// old capture window causes a crash (due to ScopedDeleteBlocker).
+TEST_F(WindowEventDispatcherDeathTest, DeleteNewCaptureDuringOnCaptureLost) {
+  DeleteOtherWindowOnCaptureLostDelegate d1;
+  test::TestWindowDelegate d2;
+  std::unique_ptr<Window> w1(CreateNormalWindow(1, root_window(), &d1));
+
+  Window* w2 = CreateNormalWindow(2, root_window(), &d2);
+
+  d1.set_other_window(w2);
+
+  client::GetCaptureClient(root_window())->SetCapture(w1.get());
+  EXPECT_EQ(w1.get(),
+            client::GetCaptureClient(root_window())->GetCaptureWindow());
+
+  // This will trigger UpdateCapture(w1, w2).
+  // w1's OnCaptureLost will delete w2, which should crash due to
+  // ScopedDeleteBlocker.
+  EXPECT_DEATH(client::GetCaptureClient(root_window())->SetCapture(w2), "");
 }
 
 namespace {
