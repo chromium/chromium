@@ -3607,6 +3607,8 @@ source_set("browser") {
     sources += [
       "vrp_flags/vrp_flags_factory_impl.cc",
       "vrp_flags/vrp_flags_factory_impl.h",
+      "vrp_flags/vrp_navigation_throttle.cc",
+      "vrp_flags/vrp_navigation_throttle.h",
     ]
     deps += [ "//components/vrp_flags" ]
     public_deps += [ "//components/vrp_flags:mojom" ]

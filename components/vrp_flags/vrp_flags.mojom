@@ -38,6 +38,9 @@ enum VictimDisposition {
   kSpawnForegroundTab,
   // Spawns a new tab in the background.
   kSpawnBackgroundTab,
+  // Does not open victim.test automatically; attacker must somehow open the
+  // URL, e.g. via window.open or an iframe.
+  kManualSpawn,
 };
 
 // Brokered by the Browser process to allow the renderer to connect to the

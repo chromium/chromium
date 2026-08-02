@@ -69,7 +69,12 @@ class VrpFlagsBrowserTest : public ContentBrowserTest {
                 std::make_unique<net::test_server::BasicHttpResponse>();
             response->set_code(net::HTTP_OK);
             response->set_content_type("text/html");
-            response->set_content("<html><body>Victim</body></html>");
+            response->set_content(
+                "<html><body>Victim<script>"
+                "window.addEventListener('message', (e) => {"
+                "  if (e.data === 'ping') e.source.postMessage('pong', '*');"
+                "});"
+                "</script></body></html>");
             return response;
           }
           return nullptr;
@@ -362,6 +367,172 @@ IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest,
 
   // Invoke GetWriteLocations in the victim renderer remote and verify 5
   // write locations are returned.
+  base::RunLoop run_loop;
+  victim_remote->GetWriteLocations(base::BindLambdaForTesting(
+      [&](const std::vector<uint64_t>& locations, uint64_t value) {
+        EXPECT_EQ(locations.size(), 5u);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Verifies Site Isolation guarantees when spawning a victim renderer tab.
+IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest,
+                       StartRendererForVrpFlags_SiteIsolation) {
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/poc.html")));
+  VrpFlagsFactoryImpl::Bind(shell()->web_contents()->GetPrimaryMainFrame(),
+                            factory_.BindNewPipeAndPassReceiver());
+
+  // Request spawning a victim renderer in a foreground tab.
+  mojo::Remote<vrp_flags::mojom::VrpFlags> victim_remote;
+  uint16_t port = 0;
+  {
+    base::RunLoop run_loop;
+    factory_->StartRendererForVrpFlags(
+        vrp_flags::mojom::VictimDisposition::kSpawnForegroundTab,
+        victim_remote.BindNewPipeAndPassReceiver(),
+        base::BindLambdaForTesting([&](uint16_t assigned_port) {
+          port = assigned_port;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  EXPECT_NE(port, 0u);
+
+  // Verify that the VrpFlags Mojo interface is correctly bound across process
+  // boundaries.
+  base::RunLoop run_loop;
+  victim_remote->GetWriteLocations(base::BindLambdaForTesting(
+      [&](const std::vector<uint64_t>& locations, uint64_t value) {
+        EXPECT_EQ(locations.size(), 5u);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  // Ensure that the attacker main frame and the newly spawned victim tab
+  // (navigated to victim.test:<port>) are hosted in completely separate
+  // RenderProcessHost instances.
+  ASSERT_GE(Shell::windows().size(), 2u);
+  RenderProcessHost* attacker_process =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  RenderProcessHost* victim_process =
+      Shell::windows()[1]->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_NE(attacker_process, victim_process);
+}
+
+// Verifies manual victim tab spawning initiated via JavaScript window.open().
+IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest,
+                       StartRendererForVrpFlags_WindowOpen) {
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/poc.html")));
+  VrpFlagsFactoryImpl::Bind(shell()->web_contents()->GetPrimaryMainFrame(),
+                            factory_.BindNewPipeAndPassReceiver());
+
+  // Register a victim receiver with kManualSpawn.
+  mojo::Remote<vrp_flags::mojom::VrpFlags> victim_remote;
+  uint16_t port = 0;
+  {
+    base::RunLoop run_loop;
+    factory_->StartRendererForVrpFlags(
+        vrp_flags::mojom::VictimDisposition::kManualSpawn,
+        victim_remote.BindNewPipeAndPassReceiver(),
+        base::BindLambdaForTesting([&](uint16_t assigned_port) {
+          port = assigned_port;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  EXPECT_NE(port, 0u);
+
+  // Attacker JS opens victim popup via window.open targeting
+  // victim.test:<port>, exercising VrpNavigationThrottle interception for
+  // popup window creations.
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      base::StringPrintf(
+          "window.w = window.open('http://victim.test:%u/poc.html');", port)));
+
+  ASSERT_EQ(2u, Shell::windows().size());
+  WebContents* popup_contents = Shell::windows()[1]->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(popup_contents));
+  EXPECT_EQ(EvalJs(popup_contents, "window.location.host").ExtractString(),
+            base::StringPrintf("victim.test:%u", port));
+
+  // Verify cross-origin postMessage communication between attacker window and
+  // popup.
+  EXPECT_EQ(
+      EvalJs(shell(),
+             "new Promise((resolve) => {"
+             "  window.addEventListener('message', (e) => resolve(e.data), "
+             "{once: true});"
+             "  window.w.postMessage('ping', '*');"
+             "});")
+          .ExtractString(),
+      "pong");
+
+  // Confirm VrpFlags Mojo IPC functionality with the popup's renderer.
+  base::RunLoop run_loop;
+  victim_remote->GetWriteLocations(base::BindLambdaForTesting(
+      [&](const std::vector<uint64_t>& locations, uint64_t value) {
+        EXPECT_EQ(locations.size(), 5u);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Verifies manual victim renderer spawning initiated via JavaScript iframe
+// injection.
+IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest, StartRendererForVrpFlags_Iframe) {
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/poc.html")));
+  VrpFlagsFactoryImpl::Bind(shell()->web_contents()->GetPrimaryMainFrame(),
+                            factory_.BindNewPipeAndPassReceiver());
+
+  // Register a victim receiver with kManualSpawn.
+  mojo::Remote<vrp_flags::mojom::VrpFlags> victim_remote;
+  uint16_t port = 0;
+  {
+    base::RunLoop run_loop;
+    factory_->StartRendererForVrpFlags(
+        vrp_flags::mojom::VictimDisposition::kManualSpawn,
+        victim_remote.BindNewPipeAndPassReceiver(),
+        base::BindLambdaForTesting([&](uint16_t assigned_port) {
+          port = assigned_port;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  EXPECT_NE(port, 0u);
+
+  // Attacker JS injects an iframe targeting victim.test:<port>, exercising
+  // VrpNavigationThrottle interception for out-of-process subframe (OOPIF)
+  // navigations.
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      base::StringPrintf("const iframe = document.createElement('iframe');"
+                         "iframe.id = 'victim_frame';"
+                         "iframe.src = 'http://victim.test:%u/poc.html';"
+                         "document.body.appendChild(iframe);",
+                         port)));
+
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Test cross-frame postMessage communication between parent frame and
+  // iframe.
+  EXPECT_EQ(
+      EvalJs(shell(),
+             "new Promise((resolve) => {"
+             "  window.addEventListener('message', (e) => resolve(e.data), "
+             "{once: true});"
+             "  "
+             "document.getElementById('victim_frame').contentWindow."
+             "postMessage('ping', '*');"
+             "});")
+          .ExtractString(),
+      "pong");
+
+  // Verify VrpFlags Mojo interface binding to the subframe renderer.
   base::RunLoop run_loop;
   victim_remote->GetWriteLocations(base::BindLambdaForTesting(
       [&](const std::vector<uint64_t>& locations, uint64_t value) {

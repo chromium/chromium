@@ -20,6 +20,11 @@ attacker page and the victim page:
   a victim renderer is spawned. The attacker can request an arbitrary
   number of unique port numbers from the browser.
 
+Victim renderers can be spawned directly by the browser in the foreground
+or background, or instead the attacker can spawn the victim renderer
+themselves by navigating to `http://victim.test:<port_number>/poc.html` (e.g.
+via `window.open(...)` or inserting an `<iframe>`).
+
 Scripts inside `poc.html` can check `window.location.hostname` to
 differentiate between attacker logic (on `localhost`) and victim logic (on
 `victim.test`).
@@ -119,10 +124,19 @@ differentiate between attacker logic (on `localhost`) and victim logic (on
       // 4. Victim Renderer
       try {
         const victimVrp = new VrpFlagsRemote();
+        // Automatic spawn (foreground tab):
         const res = await factory.startRendererForVrpFlags(
             VictimDisposition.kSpawnForegroundTab,
             victimVrp.$.bindNewPipeAndPassReceiver());
         log('Spawned victim renderer on port ' + res.port);
+
+        // Alternatively, for manual spawn (e.g. via window.open or iframe):
+        // const manualVrp = new VrpFlagsRemote();
+        // const manualRes = await factory.startRendererForVrpFlags(
+        //     VictimDisposition.kManualSpawn,
+        //     manualVrp.$.bindNewPipeAndPassReceiver());
+        // window.open(`http://victim.test:${manualRes.port}/poc.html`);
+
         const victimRes = await victimVrp.getWriteLocations();
         createProcessUI('Victim Renderer', victimVrp, victimRes.locations, victimRes.value);
       } catch (e) {

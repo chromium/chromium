@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/vrp_flags/buildflags.h"
 #include "content/browser/back_forward_cache/back_forward_cache_subframe_navigation_throttle.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/picture_in_picture/document_picture_in_picture_navigation_throttle.h"
@@ -37,6 +38,11 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/android_spare_renderer_navigation_throttle.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+#include "components/vrp_flags/vrp_flags.h"                     // nogncheck
+#include "content/browser/vrp_flags/vrp_navigation_throttle.h"  // nogncheck
+#endif
 
 namespace content {
 
@@ -87,6 +93,12 @@ void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
   // The NavigationRequest associated with the NavigationThrottles this
   // NavigationThrottleRunner manages.
   navigation_request_->GetDelegate()->CreateThrottlesForNavigation(*this);
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+  if (vrp_flags::IsEnabled()) {
+    VrpNavigationThrottle::MaybeCreateAndAdd(*this);
+  }
+#endif
 
   // Check for renderer-initiated main frame navigations to blocked URL schemes
   // (data, filesystem). This is done early as it may block the main frame
