@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.GlicButtonContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper.LeadingButtonDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
@@ -2481,7 +2482,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
                     if (mGlicButtonContextMenuCoordinator == null) {
                         mGlicButtonContextMenuCoordinator =
-                                new GlicButtonContextMenuCoordinator(mActivity);
+                                new GlicButtonContextMenuCoordinator(
+                                        mActivity, TabStripLayoutType.VERTICAL);
                     }
 
                     // Build and show the "Unpin" context menu for the VT toolbar Gemini button.
