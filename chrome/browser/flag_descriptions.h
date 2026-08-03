@@ -4474,6 +4474,11 @@ inline constexpr char kTabGroupsFocusingDescription[] =
     "When a tab group is focused, the tabstrip constrains visiblity to the "
     "tabs in that group.";
 
+inline constexpr char kTabGroupRibbonName[] = "Tab Group Ribbon";
+inline constexpr char kTabGroupRibbonDescription[] =
+    "Displays a vertical ribbon on the left side of the browser window for "
+    "quickly switching between tab groups.";
+
 inline constexpr char kTabStorageSqlitePrototypeName[] =
     "Tab Storage SQLite Prototype";
 inline constexpr char kTabStorageSqlitePrototypeDescription[] =

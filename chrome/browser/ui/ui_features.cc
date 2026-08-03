@@ -523,6 +523,12 @@ BASE_FEATURE_PARAM(bool,
                    "tab_groups_focusing_pinned_tabs",
                    false);
 
+BASE_FEATURE(kTabGroupRibbon, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabGroupRibbonEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupsFocusing) &&
+         base::FeatureList::IsEnabled(kTabGroupRibbon);
+}
 
 BASE_FEATURE(kVerticalTabsGrabHandleRemoval, base::FEATURE_DISABLED_BY_DEFAULT);
 

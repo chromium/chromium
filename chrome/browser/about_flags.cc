@@ -7069,6 +7069,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabGroupsFocusingVariations,
                                     "TabGroupsFocusing")},
 
+    {"tab-group-ribbon", flag_descriptions::kTabGroupRibbonName,
+     flag_descriptions::kTabGroupRibbonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabGroupRibbon)},
+
     {"split-view-tab-restore", flag_descriptions::kSplitViewTabRestoreName,
      flag_descriptions::kSplitViewTabRestoreDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kSplitViewTabRestore)},
