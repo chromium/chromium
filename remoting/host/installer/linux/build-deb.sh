@@ -130,7 +130,7 @@ cd "${tmpdir}/linux"
 # checkout time and vary between builders. This results in non-reproducible
 # builds. Explicitly set the timestamp of all files to the build timestamp
 # to ensure consistent, deterministic package output.
-find . -exec touch -d "@$BUILD_TIMESTAMP" {} +
+find . -exec touch -h -d "@$BUILD_TIMESTAMP" {} +
 
 if [[ ! "$OUTPUT_PATH" ]]; then
   OUTPUT_PATH="${SCRIPTDIR}/../../../../out/Release"
