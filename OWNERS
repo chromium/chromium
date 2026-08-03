@@ -221,6 +221,7 @@ per-file third_party/libc++/src=*
 per-file third_party/libc++abi/src=*
 per-file third_party/libdisplay-info/src=*
 per-file third_party/libdrm/src=*
+per-file third_party/libei/src=*
 per-file third_party/libFuzzer/src=*
 per-file third_party/libgav1/src=*
 per-file third_party/libgudev/src=*
