@@ -1415,7 +1415,7 @@ void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
   if (auth.has_oauth_token()) {
     params.oauth_token = auth.oauth_token();
   } else {
-    params.auth_data = auth.Clone();
+    params.auth_data = std::move(auth);
     params.oauth_token = std::string();
   }
   params.callback = base::BindOnce(
@@ -1443,7 +1443,7 @@ void CloudPolicyClient::UpdateDeviceAttributes(
   if (auth.has_oauth_token()) {
     params.oauth_token = auth.oauth_token();
   } else {
-    params.auth_data = auth.Clone();
+    params.auth_data = std::move(auth);
     params.oauth_token = std::string();
   }
   params.callback =
