@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,7 +24,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "net/base/url_util.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view_observer.h"
 
@@ -106,9 +104,6 @@ const std::vector<ManagedUserProfileNoticePixelTestParam>& GetTestParams() {
   return *params;
 }
 
-constexpr ManagedUserProfileNoticeUI::ScreenType kProfilePickerType =
-    ManagedUserProfileNoticeUI::ScreenType::kProfilePicker;
-
 // Creates a step to represent the managed-user-profile-notice.
 class ManagedUserProfileNoticeStepControllerForTest
     : public ProfileManagementStepController {
@@ -120,7 +115,7 @@ class ManagedUserProfileNoticeStepControllerForTest
       : ProfileManagementStepController(host),
         managed_user_notice_url_(
             use_refreshed_ui
-                ? ManagedUserProfileNoticeUI::GetURLForType(kProfilePickerType)
+                ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
                 : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
         account_info_(account_info) {}
 
@@ -148,7 +143,8 @@ class ManagedUserProfileNoticeStepControllerForTest
 
     CHECK(managed_user_notice_ui);
     managed_user_notice_ui->Initialize(
-        /*browser=*/nullptr, kProfilePickerType,
+        /*browser=*/nullptr,
+        ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
         CreateEnterpriseProfileCreationDialogParams(account_info_));
 
     if (!step_shown_callback->is_null()) {

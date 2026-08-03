@@ -5,15 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_UI_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/webui_url_constants.h"
@@ -57,12 +53,6 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
   };
   // LINT.ThenChange(//chrome/browser/resources/signin/managed_user_profile_notice/managed_user_profile_notice_browser_proxy.ts:ScreenType)
 
-  // Returns the URL for the managed user profile notice screen with the
-  // specified ScreenType as a query parameter.
-  static GURL GetURLForType(ScreenType type);
-
-  static ScreenType GetScreenTypeFromURLForTesting(const GURL& url);
-
   explicit ManagedUserProfileNoticeUI(content::WebUI* web_ui);
   ~ManagedUserProfileNoticeUI() override;
 
@@ -93,10 +83,6 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
   void UpdateBrowsingDataStringWithCounts(std::u16string domain,
                                           profiles::ProfileCategoryStats stats);
 
-  void InitializeForDeviceSignalsDisclaimer(
-      BrowserWindowInterface* browser,
-      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
-          create_param);
 
   // Stored for tests.
   raw_ptr<ManagedUserProfileNoticeHandler> handler_ = nullptr;

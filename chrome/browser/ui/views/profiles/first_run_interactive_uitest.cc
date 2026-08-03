@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_toolbar.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
-#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
@@ -84,7 +83,6 @@
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/base/url_util.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1571,10 +1569,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       // is managed and requiring to show the enterprise management opt-in.
       WaitForWebContentsNavigation(
           kWebContentsId,
-          UseRefreshedView()
-              ? ManagedUserProfileNoticeUI::GetURLForType(
-                    ManagedUserProfileNoticeUI::ScreenType::kFirstRun)
-              : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
+          UseRefreshedView() ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
+                             : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
       EnsurePresent(kWebContentsId, GetDeclineManagementButtonQuery()),
       PressJsButton(kWebContentsId, GetDeclineManagementButtonQuery()),
 
@@ -2271,8 +2267,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTestWithSyncService,
       WaitForWebContentsNavigation(
           kWebContentsId,
           UseRefreshedView()
-              ? ManagedUserProfileNoticeUI::GetURLForType(
-                    ManagedUserProfileNoticeUI::ScreenType::kFirstRun)
+              ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
               : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
       EnsurePresent(kWebContentsId, GetAcceptManagementButtonQuery()),
       PressJsButton(kWebContentsId, GetAcceptManagementButtonQuery()),
@@ -2738,8 +2733,7 @@ class FirstRunRevampPostSignInInteractiveUiTest
 
   GURL GetPostSignInPageUrl() const {
     if (is_managed()) {
-      return ManagedUserProfileNoticeUI::GetURLForType(
-          ManagedUserProfileNoticeUI::ScreenType::kFirstRun);
+      return GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL);
     }
     return GURL(chrome::kChromeUIIntroURL)
         .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage);
@@ -3324,9 +3318,7 @@ IN_PROC_BROWSER_TEST_F(
       // bypassing Sign-in Celebration.
       WaitForWebContentsNavigation(
           kWebContentsId,
-          ManagedUserProfileNoticeUI::GetURLForType(
-              ManagedUserProfileNoticeUI::ScreenType::
-                  kConsumerAccountSyncDisabled)),
+          GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)),
       WaitForStateChange(
           kWebContentsId,
           IsVisible({"managed-user-profile-notice-app-refresh"})),

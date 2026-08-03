@@ -11,8 +11,6 @@
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -51,36 +49,11 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/browser/extension_registry.h"
-#include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/webui_util.h"
-
-namespace {
-
-constexpr char kTypeQueryParam[] = "type";
-
-ManagedUserProfileNoticeUI::ScreenType GetScreenTypeFromURL(const GURL& url) {
-  std::string type_str;
-  int type_int = 0;
-  if (net::GetValueForKeyInQuery(url, kTypeQueryParam, &type_str) &&
-      base::StringToInt(type_str, &type_int)) {
-    bool is_type_in_enum_bounds =
-        type_int >= 0 &&
-        type_int <=
-            static_cast<int>(ManagedUserProfileNoticeUI::ScreenType::kMaxValue);
-    if (is_type_in_enum_bounds) {
-      return static_cast<ManagedUserProfileNoticeUI::ScreenType>(type_int);
-    }
-  }
-  // Default to profile picker type as the UI for this type is more generic.
-  return ManagedUserProfileNoticeUI::ScreenType::kProfilePicker;
-}
-
-}  // namespace
 
 ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -168,8 +141,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
        IDR_SIGNIN_IMAGES_PROFILE_PICKER_DARK_BACKGROUND_SVG},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
-      {"tangible_sync_style_shared.css.js",
-       IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS},
       {"tangible_sync_style_shared.css.js",
        IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS},
   };
@@ -268,6 +239,8 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddBoolean("enforcedByPolicy", false);
   source->AddInteger("initialState",
                      ManagedUserProfileNoticeHandler::State::kDisclosure);
+  source->AddInteger("screenType",
+                     static_cast<int>(ScreenType::kProfilePicker));
   source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
                      base::FeatureList::IsEnabled(
                          switches::kUsePrimaryAndTonalButtonsForPromos));
@@ -304,54 +277,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                       GetForProfile(profile))
           .IsInSearchEngineChoiceScreenRegion();
 
-  bool is_first_run_desktop_refresh_enabled =
-      switches::IsFirstRunDesktopRefreshEnabled(
-          is_in_search_engine_choice_region);
-  // TODO(crbug.com/526570381): Unify WebUI data source initialization.
-  // Currently, there are multiple ways data is initialized: default values
-  // in the constructor, the `kFirstRun` workaround below, and the `Initialize`
-  // call triggered after navigation commits.
-  //
-  // The workaround below is necessary because the WebUI page reads from
-  // `loadTimeData` synchronously on page load, which races with the
-  // asynchronous `Initialize` call that updates the data source.
-  //
-  // To clean this up, we should pass initialization parameters synchronously
-  // before navigation for each screen type.
-  if (is_first_run_desktop_refresh_enabled) {
-    const ScreenType screen_type =
-        GetScreenTypeFromURL(web_ui->GetWebContents()->GetVisibleURL());
-
-    source->AddInteger("screenType", static_cast<int>(screen_type));
-
-    if (screen_type == ScreenType::kFirstRun) {
-      const signin::IdentityManager& identity_manager =
-          CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile));
-      CoreAccountInfo account_info =
-          identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-      AccountInfo extended_info =
-          identity_manager.FindExtendedAccountInfo(account_info);
-      const std::string given_name =
-          !extended_info.IsEmpty()
-              ? std::string(
-                    extended_info.GetGivenName().value_or(extended_info.email))
-              : account_info.email;
-
-      if (!given_name.empty()) {
-        source->AddString("profileDisclosureTitle",
-                          l10n_util::GetStringFUTF16(
-                              IDS_FRE_SIGN_IN_CELEBRATION_WELCOME_TITLE,
-                              base::UTF8ToUTF16(given_name)));
-        source->AddString(
-            "profileDisclosureSubtitle",
-            l10n_util::GetStringFUTF16(
-                IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE,
-                base::UTF8ToUTF16(
-                    enterprise_util::GetDomainFromEmail(account_info.email))));
-      }
-    }
-  }
-
   bool is_first_run_desktop_revamp_enabled =
       switches::IsFirstRunDesktopRevampEnabled(
           is_in_search_engine_choice_region);
@@ -366,42 +291,44 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   }
 }
 
-// static
-GURL ManagedUserProfileNoticeUI::GetURLForType(
-    ManagedUserProfileNoticeUI::ScreenType type) {
-  return net::AppendQueryParameter(
-      GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL),
-      kTypeQueryParam, base::ToString(static_cast<int>(type)));
-}
-
-// static
-ManagedUserProfileNoticeUI::ScreenType
-ManagedUserProfileNoticeUI::GetScreenTypeFromURLForTesting(const GURL& url) {
-  return GetScreenTypeFromURL(url);
-}
-
 ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;
 
+// TODO(crbug.com/526570381): Move data initialization to constructor.
 void ManagedUserProfileNoticeUI::Initialize(
     BrowserWindowInterface* browser,
     ManagedUserProfileNoticeUI::ScreenType type,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
+  auto* profile = Profile::FromWebUI(web_ui());
   if (type == ScreenType::kDeviceSignalsDisclaimer) {
-    InitializeForDeviceSignalsDisclaimer(browser, std::move(create_param));
+    base::DictValue update_data =
+        base::DictValue()
+            .Set("screenType",
+                 static_cast<int>(ScreenType::kDeviceSignalsDisclaimer))
+            .Set("isModalDialog",
+                 create_param->is_device_signals_disclaimer_modal)
+            .Set("initialState",
+                 ManagedUserProfileNoticeHandler::State::kSignalsDisclaimer);
+    content::WebUIDataSource::Update(
+        profile, chrome::kChromeUIManagedUserProfileNoticeHost,
+        std::move(update_data));
+
+    auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
+        browser, ScreenType::kDeviceSignalsDisclaimer, std::move(create_param));
+    handler_ = handler.get();
+
+    web_ui()->AddMessageHandler(std::move(handler));
     return;
   }
 
-  auto* profile = Profile::FromWebUI(web_ui());
-  bool is_school_account =
+  const bool is_school_account =
       create_param->account_info.GetAccountCapabilities()
           .can_use_edu_features() == signin::Tribool::kTrue;
   base::DictValue update_data;
-  std::string domain =
+  const std::string domain =
       enterprise_util::GetDomainFromEmail(create_param->account_info.email);
   update_data.Set("screenType", static_cast<int>(type));
-  if (type ==
-      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
+  if (type == ScreenType::kEnterpriseAccountCreation) {
     update_data.Set("isModalDialog", true);
 
     int title_id = create_param->profile_creation_required_by_policy
@@ -439,7 +366,7 @@ void ManagedUserProfileNoticeUI::Initialize(
     }
     update_data.Set("enforcedByPolicy",
                     create_param->profile_creation_required_by_policy);
-  } else if (type == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+  } else if (type == ScreenType::kEnterpriseOIDC) {
     update_data.Set("initialState",
                     ManagedUserProfileNoticeHandler::State::kDisclosure);
     update_data.Set("isModalDialog", true);
@@ -503,8 +430,7 @@ void ManagedUserProfileNoticeUI::Initialize(
         l10n_util::GetStringFUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_ALREADY_SIGNED_IN_DETAILS,
             base::UTF8ToUTF16(domain)));
-    if (type ==
-        ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
+    if (type == ScreenType::kEnterpriseAccountCreation) {
       update_data.Set("cancelLabel",
                       l10n_util::GetStringUTF16(
                           create_param->profile_creation_required_by_policy
@@ -531,13 +457,39 @@ void ManagedUserProfileNoticeUI::Initialize(
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE));
   }
+  if (type == ScreenType::kFirstRun) {
+    const signin::IdentityManager& identity_manager =
+        CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile));
+    CoreAccountInfo account_info =
+        identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    AccountInfo extended_info =
+        identity_manager.FindExtendedAccountInfo(account_info);
+    const std::string given_name =
+        !extended_info.IsEmpty()
+            ? std::string(
+                  extended_info.GetGivenName().value_or(extended_info.email))
+            : account_info.email;
+
+    if (!given_name.empty()) {
+      update_data.Set(
+          "profileDisclosureTitle",
+          l10n_util::GetStringFUTF16(IDS_FRE_SIGN_IN_CELEBRATION_WELCOME_TITLE,
+                                     base::UTF8ToUTF16(given_name)));
+      update_data.Set(
+          "profileDisclosureSubtitle",
+          l10n_util::GetStringFUTF16(
+              IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE,
+              base::UTF8ToUTF16(
+                  enterprise_util::GetDomainFromEmail(account_info.email))));
+    }
+  }
 
   // Change the text so that the "(Recommended)" label is not shown when the
   // admin has set merging data as the default option.
-  bool profile_separation_data_migration_settings_optout =
+  const bool profile_separation_data_migration_settings_optout =
       profile->GetPrefs()->GetInteger(
           prefs::kProfileSeparationDataMigrationSettings) == 2;
-  bool check_link_data_checkbox_by_default_from_legacy_policy =
+  const bool check_link_data_checkbox_by_default_from_legacy_policy =
       g_browser_process->local_state()->GetBoolean(
           prefs::kEnterpriseProfileCreationKeepBrowsingData);
   if (create_param->show_link_data_option &&
@@ -564,31 +516,6 @@ void ManagedUserProfileNoticeUI::Initialize(
 
   auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
       browser, type, std::move(create_param));
-  handler_ = handler.get();
-
-  web_ui()->AddMessageHandler(std::move(handler));
-}
-
-void ManagedUserProfileNoticeUI::InitializeForDeviceSignalsDisclaimer(
-    BrowserWindowInterface* browser,
-    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
-        create_param) {
-  base::DictValue update_data =
-      base::DictValue()
-          .Set("screenType",
-               static_cast<int>(ManagedUserProfileNoticeUI::ScreenType::
-                                    kDeviceSignalsDisclaimer))
-          .Set("isModalDialog",
-               create_param->is_device_signals_disclaimer_modal)
-          .Set("initialState",
-               ManagedUserProfileNoticeHandler::State::kSignalsDisclaimer);
-  auto* profile = Profile::FromWebUI(web_ui());
-  content::WebUIDataSource::Update(
-      profile, chrome::kChromeUIManagedUserProfileNoticeHost,
-      std::move(update_data));
-
-  auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
-      browser, ScreenType::kDeviceSignalsDisclaimer, std::move(create_param));
   handler_ = handler.get();
 
   web_ui()->AddMessageHandler(std::move(handler));

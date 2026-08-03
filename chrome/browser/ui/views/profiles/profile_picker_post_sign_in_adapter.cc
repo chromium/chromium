@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
@@ -257,12 +256,11 @@ void ProfilePickerPostSignInAdapter::SwitchToManagedUserProfileNotice(
       switches::IsFirstRunDesktopRefreshEnabled(
           is_in_search_engine_choice_region);
 
-  GURL managed_user_profile_notice_url =
+  host_->ShowScreen(
+      contents(),
       use_refreshed_ui
-          ? ManagedUserProfileNoticeUI::GetURLForType(type)
-          : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl);
-
-  host_->ShowScreen(contents(), managed_user_profile_notice_url,
+          ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
+          : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                     /*navigation_finished_closure=*/
                     base::BindOnce(&ProfilePickerPostSignInAdapter::
                                        SwitchToManagedUserProfileNoticeFinished,
