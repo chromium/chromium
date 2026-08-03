@@ -187,22 +187,22 @@ void JSONStringifyCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
           bool writable = false;
           v8::Local<v8::Value> tmp_val;
           if (desc_obj
-                  ->Get(context,
-                        v8_helpers::ToV8StringUnsafe(isolate, "configurable"))
+                  ->GetRealNamedProperty(context, v8_helpers::ToV8StringUnsafe(
+                                                      isolate, "configurable"))
                   .ToLocal(&tmp_val) &&
               tmp_val->IsBoolean()) {
             configurable = tmp_val.As<v8::Boolean>()->Value();
           }
           if (desc_obj
-                  ->Get(context,
-                        v8_helpers::ToV8StringUnsafe(isolate, "enumerable"))
+                  ->GetRealNamedProperty(context, v8_helpers::ToV8StringUnsafe(
+                                                      isolate, "enumerable"))
                   .ToLocal(&tmp_val) &&
               tmp_val->IsBoolean()) {
             enumerable = tmp_val.As<v8::Boolean>()->Value();
           }
           if (desc_obj
-                  ->Get(context,
-                        v8_helpers::ToV8StringUnsafe(isolate, "writable"))
+                  ->GetRealNamedProperty(context, v8_helpers::ToV8StringUnsafe(
+                                                      isolate, "writable"))
                   .ToLocal(&tmp_val) &&
               tmp_val->IsBoolean()) {
             writable = tmp_val.As<v8::Boolean>()->Value();
@@ -211,12 +211,14 @@ void JSONStringifyCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
           v8::Local<v8::Value> get_fn, set_fn, val_val;
           bool has_get =
               desc_obj
-                  ->Get(context, v8_helpers::ToV8StringUnsafe(isolate, "get"))
+                  ->GetRealNamedProperty(
+                      context, v8_helpers::ToV8StringUnsafe(isolate, "get"))
                   .ToLocal(&get_fn) &&
               !get_fn->IsUndefined();
           bool has_set =
               desc_obj
-                  ->Get(context, v8_helpers::ToV8StringUnsafe(isolate, "set"))
+                  ->GetRealNamedProperty(
+                      context, v8_helpers::ToV8StringUnsafe(isolate, "set"))
                   .ToLocal(&set_fn) &&
               !set_fn->IsUndefined();
           if (has_get || has_set) {
@@ -231,8 +233,9 @@ void JSONStringifyCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
             std::ignore =
                 item.proto->DefineProperty(context, to_json_key, desc);
           } else if (desc_obj
-                         ->Get(context,
-                               v8_helpers::ToV8StringUnsafe(isolate, "value"))
+                         ->GetRealNamedProperty(
+                             context,
+                             v8_helpers::ToV8StringUnsafe(isolate, "value"))
                          .ToLocal(&val_val)) {
             // Restore data descriptor.
             v8::PropertyDescriptor desc(val_val, writable);
@@ -289,20 +292,12 @@ void JSONStringifyCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
           }
           if (desc_val->IsObject()) {
             v8::Local<v8::Object> desc_obj = desc_val.As<v8::Object>();
-            bool has_val = false;
-            if (!desc_obj
-                     ->HasOwnProperty(context, v8_helpers::ToV8StringUnsafe(
-                                                   isolate, "value"))
-                     .To(&has_val)) {
-              return;
-            }
-            if (has_val) {
-              v8::Local<v8::Value> val_val;
-              if (desc_obj
-                      ->Get(context,
-                            v8_helpers::ToV8StringUnsafe(isolate, "value"))
-                      .ToLocal(&val_val) &&
-                  val_val != orig_to_json_val) {
+            v8::Local<v8::Value> val_val;
+            if (desc_obj
+                    ->GetRealNamedProperty(
+                        context, v8_helpers::ToV8StringUnsafe(isolate, "value"))
+                    .ToLocal(&val_val)) {
+              if (val_val != orig_to_json_val) {
                 // The property exists and has a value different from the
                 // original.
                 needs_override = true;
@@ -323,17 +318,14 @@ void JSONStringifyCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
         if (needs_override) {
           // Save the original property descriptor if the prototype had its own
           // `toJSON` property, so we can restore it exactly.
-          bool had_own = false;
-          if (!proto->HasOwnProperty(context, restorer.to_json_key)
-                   .To(&had_own)) {
+          v8::Local<v8::Value> descriptor;
+          if (!proto->GetOwnPropertyDescriptor(context, restorer.to_json_key)
+                   .ToLocal(&descriptor)) {
             return;
           }
-          v8::Local<v8::Value> descriptor;
-          if (had_own) {
-            if (!proto->GetOwnPropertyDescriptor(context, restorer.to_json_key)
-                     .ToLocal(&descriptor)) {
-              return;
-            }
+          bool had_own = !descriptor.IsEmpty() && descriptor->IsObject();
+          if (!had_own) {
+            descriptor.Clear();
           }
           // Temporarily define the original `toJSON` as a plain data property.
           // This will shadow any inherited overrides and replace any own
@@ -547,7 +539,7 @@ v8::Local<v8::Object> SafeBuiltins::CreateSafeBuiltin(
           .ToLocalChecked();
 
   if (!ctor.IsEmpty()) {
-    std::ignore = safe->Set(
+    std::ignore = safe->CreateDataProperty(
         v8_context, v8_helpers::ToV8StringUnsafe(isolate, "self"), ctor);
   }
 
@@ -559,9 +551,9 @@ v8::Local<v8::Object> SafeBuiltins::CreateSafeBuiltin(
     v8::Local<v8::Function> method =
         v8::Function::New(v8_context, CallInstanceMethodCallback, fn)
             .ToLocalChecked();
-    std::ignore =
-        safe->Set(v8_context,
-                  v8_helpers::ToV8StringUnsafe(isolate, name.c_str()), method);
+    std::ignore = safe->CreateDataProperty(
+        v8_context, v8_helpers::ToV8StringUnsafe(isolate, name.c_str()),
+        method);
   }
 
   for (const auto& [name, global_fn] : static_methods) {
@@ -579,9 +571,9 @@ v8::Local<v8::Object> SafeBuiltins::CreateSafeBuiltin(
     v8::Local<v8::Function> method =
         v8::Function::New(v8_context, CallStaticMethodCallback, data)
             .ToLocalChecked();
-    std::ignore =
-        safe->Set(v8_context,
-                  v8_helpers::ToV8StringUnsafe(isolate, name.c_str()), method);
+    std::ignore = safe->CreateDataProperty(
+        v8_context, v8_helpers::ToV8StringUnsafe(isolate, name.c_str()),
+        method);
   }
 
   return safe;
@@ -649,7 +641,7 @@ v8::Local<v8::Object> SafeBuiltins::GetJSON() const {
     v8::Local<v8::Function> method =
         v8::Function::New(v8_context, CallStaticMethodCallback, data)
             .ToLocalChecked();
-    std::ignore = json_obj->Set(
+    std::ignore = json_obj->CreateDataProperty(
         v8_context, v8_helpers::ToV8StringUnsafe(isolate, "parse"), method);
   }
 
@@ -675,7 +667,7 @@ v8::Local<v8::Object> SafeBuiltins::GetJSON() const {
     v8::Local<v8::Function> method =
         v8::Function::New(v8_context, JSONStringifyCallback, data)
             .ToLocalChecked();
-    std::ignore = json_obj->Set(
+    std::ignore = json_obj->CreateDataProperty(
         v8_context, v8_helpers::ToV8StringUnsafe(isolate, "stringify"), method);
   }
 
@@ -733,7 +725,7 @@ v8::Local<v8::Object> SafeBuiltins::GetSymbol() const {
 
     v8::Local<v8::Object> safe = v8::Object::New(isolate);
     if (!untainted_->symbol_to_string_tag.IsEmpty()) {
-      std::ignore = safe->Set(
+      std::ignore = safe->CreateDataProperty(
           v8_context, v8_helpers::ToV8StringUnsafe(isolate, "toStringTag"),
           untainted_->symbol_to_string_tag.Get(isolate));
     }

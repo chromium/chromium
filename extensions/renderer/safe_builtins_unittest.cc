@@ -455,5 +455,93 @@ TEST_F(SafeBuiltinsUnittest, TestJSONStringifySwallowsExceptions) {
   env()->module_system()->Require("test");
 }
 
+// Tests that scripts that set custom setters before safe builtins are accessed
+// don't intercept calls to certain properties. Regression test for
+// https://crbug.com/538798091.
+TEST_F(SafeBuiltinsUnittest,
+       TestInheritedSetterPropertyClobberingBeforeSafeBuiltinAccess) {
+  ModuleSystem::NativesEnabledScope natives_enabled_scope(
+      env()->module_system());
+
+  v8::Local<v8::Context> v8_context = env()->context()->v8_context();
+  v8::Context::Scope context_scope(v8_context);
+  v8::Isolate* isolate = env()->isolate();
+  const char* clobber_script = R"(
+    Object.defineProperty(Function.prototype, 'self', {
+      set: function(val) { throw new Error('clobbered self setter'); },
+      configurable: true,
+    });
+    Object.defineProperty(Function.prototype, 'push', {
+      set: function(val) { throw new Error('clobbered push setter'); },
+      configurable: true,
+    });
+    Object.defineProperty(Object.prototype, 'parse', {
+      set: function(val) { throw new Error('clobbered parse setter'); },
+      configurable: true,
+    });
+    Object.defineProperty(Object.prototype, 'toStringTag', {
+      set: function(val) { throw new Error('clobbered toStringTag setter'); },
+      configurable: true,
+    });
+  )";
+  v8::Script::Compile(
+      v8_context,
+      v8::String::NewFromUtf8(isolate, clobber_script).ToLocalChecked())
+      .ToLocalChecked()
+      ->Run(v8_context)
+      .ToLocalChecked();
+
+  env()->RegisterModule("test", R"(
+        var assert = requireNative('assert');
+        assert.AssertTrue(typeof $Array.push === 'function');
+        assert.AssertTrue($Function.self === Function);
+        assert.AssertTrue(typeof $JSON.parse === 'function');
+        assert.AssertTrue($Symbol.toStringTag === Symbol.toStringTag);
+      )");
+  env()->module_system()->Require("test");
+}
+
+// Tests that other calls to Get() can't be intercepted.
+TEST_F(SafeBuiltinsUnittest, TestJSONStringifyPrototypeGetterClobbering) {
+  ModuleSystem::NativesEnabledScope natives_enabled_scope(
+      env()->module_system());
+
+  v8::Local<v8::Context> v8_context = env()->context()->v8_context();
+  v8::Context::Scope context_scope(v8_context);
+  v8::Isolate* isolate = env()->isolate();
+  const char* clobber_script = R"(
+    var getterCalled = false;
+    Object.defineProperty(Object.prototype, 'configurable', {
+      get: function() {
+        getterCalled = true;
+        return true;
+      },
+      configurable: true
+    });
+    Object.defineProperty(Object.prototype, 'writable', {
+      get: function() {
+        getterCalled = true;
+        return true;
+      },
+      configurable: true
+    });
+    Array.prototype.toJSON = function() { return 'override'; };
+  )";
+  v8::Script::Compile(
+      v8_context,
+      v8::String::NewFromUtf8(isolate, clobber_script).ToLocalChecked())
+      .ToLocalChecked()
+      ->Run(v8_context)
+      .ToLocalChecked();
+
+  env()->RegisterModule("test", R"(
+        var assert = requireNative('assert');
+        var str = $JSON.stringify([1, 2]);
+        assert.AssertTrue(str === '[1,2]');
+        assert.AssertTrue(!getterCalled);
+      )");
+  env()->module_system()->Require("test");
+}
+
 }  // namespace
 }  // namespace extensions
