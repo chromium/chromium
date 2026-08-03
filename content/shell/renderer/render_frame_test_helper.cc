@@ -27,6 +27,12 @@ void RenderFrameTestHelper::GetDocumentToken(
   std::move(callback).Run(render_frame()->GetWebFrame()->GetDocument().Token());
 }
 
+void RenderFrameTestHelper::GetInitiatorStateToken(
+    GetInitiatorStateTokenCallback callback) {
+  std::move(callback).Run(
+      render_frame()->GetWebFrame()->GetInitiatorStateToken());
+}
+
 void RenderFrameTestHelper::OnDestruct() {
   delete this;
 }

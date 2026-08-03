@@ -18,6 +18,7 @@ namespace blink {
 WebNavigationParams::WebNavigationParams()
     : http_method(http_names::kGET),
       devtools_navigation_token(base::UnguessableToken::Create()),
+      initiator_state_token(base::UnguessableToken::Create()),
       base_auction_nonce(base::Uuid::GenerateRandomV4()),
       content_settings(CreateDefaultRendererContentSettings()) {}
 
@@ -26,10 +27,12 @@ WebNavigationParams::~WebNavigationParams() = default;
 WebNavigationParams::WebNavigationParams(
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
+    const base::UnguessableToken& initiator_state_token,
     const base::Uuid& base_auction_nonce)
     : http_method(http_names::kGET),
       document_token(document_token),
       devtools_navigation_token(devtools_navigation_token),
+      initiator_state_token(initiator_state_token),
       base_auction_nonce(base_auction_nonce),
       content_settings(CreateDefaultRendererContentSettings()) {}
 

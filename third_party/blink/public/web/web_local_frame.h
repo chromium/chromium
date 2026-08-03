@@ -226,6 +226,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   }
 
   virtual WebDocument GetDocument() const = 0;
+  virtual base::UnguessableToken GetInitiatorStateToken() const = 0;
 
   // The name of this frame. If no name is given, empty string is returned.
   virtual WebString AssignedName() const = 0;

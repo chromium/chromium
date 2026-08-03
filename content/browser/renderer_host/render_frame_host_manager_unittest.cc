@@ -573,7 +573,8 @@ class RenderFrameHostManagerTest
     CHECK(frame_host);
 
     frame_host->SetPolicyContainerHost(
-        base::MakeRefCounted<PolicyContainerHost>());
+        base::MakeRefCounted<PolicyContainerHost>(),
+        base::UnguessableToken::Create());
     return frame_host;
   }
 

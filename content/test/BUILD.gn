@@ -1645,6 +1645,7 @@ test("content_browsertests") {
     "../browser/renderer_host/document_user_data_browsertest.cc",
     "../browser/renderer_host/embedding_token_browsertest.cc",
     "../browser/renderer_host/frame_tree_browsertest.cc",
+    "../browser/renderer_host/initiator_state_token_browsertest.cc",
     "../browser/renderer_host/input/autoscroll_browsertest.cc",
     "../browser/renderer_host/input/composited_scrolling_browsertest.cc",
     "../browser/renderer_host/input/compositor_event_ack_browsertest.cc",

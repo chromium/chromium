@@ -382,7 +382,8 @@ TEST_F(NavigationPolicyContainerBuilderTest, ParentPoliciesWithParent) {
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
+  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -396,7 +397,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
+  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
   MockNavigationHandle navigation_handle(AboutSrcdocUrl(), nullptr);
@@ -458,7 +460,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   parent_policies.is_web_secure_context = false;
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
+  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -481,7 +484,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   parent_policies.is_web_secure_context = true;
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
+  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -508,7 +512,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   parent_policies.is_web_secure_context = true;
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
+  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -538,7 +543,8 @@ TEST_F(NavigationPolicyContainerBuilderTest, IsSecureContextRootOverride) {
   parent_policies.is_web_secure_context = false;
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
+  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -567,7 +573,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   parent_policies.is_web_secure_context = true;
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
+  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -589,7 +596,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
+  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -637,7 +645,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
        AccessParentAfterComputingPolicies) {
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
+  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
   EXPECT_THAT(builder.ParentPolicies(), Pointee(Eq(ByRef(parent_policies))));
@@ -660,7 +669,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
+  parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
+                                 base::UnguessableToken::Create());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
   MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);

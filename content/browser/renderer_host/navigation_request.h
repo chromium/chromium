@@ -1894,6 +1894,13 @@ class CONTENT_EXPORT NavigationRequest
     before_unload_execution_mode_ = mode;
   }
 
+  // Returns a token that will be used to retrieve the InitiatorNavigationState
+  // of the document created by this navigation at commit time (if any). Note
+  // that this does not identify the initiator of this navigation.
+  const base::UnguessableToken& initiator_state_token_to_commit() const {
+    return initiator_state_token_to_commit_;
+  }
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
@@ -3803,6 +3810,12 @@ class CONTENT_EXPORT NavigationRequest
   // Set to true if an early navigation failure has already been recorded
   // for this navigation, preventing duplicate recordings in the destructor.
   bool early_navigation_failure_recorded_ = false;
+
+  // A token that will be used to retrieve the InitiatorNavigationState of the
+  // document created by this navigation at commit time (if any). Note that this
+  // does not identify the initiator of this navigation. See
+  // `initiator_navigation_state` for this.
+  base::UnguessableToken initiator_state_token_to_commit_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

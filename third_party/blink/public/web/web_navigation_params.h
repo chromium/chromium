@@ -134,6 +134,8 @@ struct BLINK_EXPORT WebNavigationInfo {
   // navigation with the tool that caused it.
   std::optional<base::UnguessableToken> script_tool_invocation_id;
 
+  base::UnguessableToken initiator_state_token;
+
   // Whether the navigation initiator frame has the
   // |network::mojom::blink::WebSandboxFlags::kDownloads| bit set in its sandbox
   // flags set.
@@ -257,10 +259,12 @@ struct BLINK_EXPORT WebNavigationParams {
   ~WebNavigationParams();
 
   // Construct with a specific `document_token`, `devtools_navigation_token`,
-  // and `base_auction_nonce` rather than randomly creating new ones.
+  // `initiator_state_token` and `base_auction_nonce` rather than randomly
+  // creating new ones.
   explicit WebNavigationParams(
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
+      const base::UnguessableToken& initiator_state_token,
       const base::Uuid& base_auction_nonce);
 
   // Shortcut for navigating based on WebNavigationInfo parameters.
@@ -416,6 +420,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // The devtools token for this navigation. See DocumentLoader
   // for details.
   base::UnguessableToken devtools_navigation_token;
+
+  // An unguessable token used to retrieve the complete set of policies to pass
+  // to navigations initiated from the document resulting in this navigation
+  // commit.
+  base::UnguessableToken initiator_state_token;
 
   // Token used to derive a consistent opaque origin for the initial empty
   // document of a newly created sandboxed frame (e.g., `<iframe sandbox>`) or

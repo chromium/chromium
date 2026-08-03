@@ -108,6 +108,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
           fetch_later_loader_factory,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
+      const base::UnguessableToken& initiator_state_token,
       const base::Uuid& base_auction_nonce,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
@@ -130,6 +131,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
+      const base::UnguessableToken& initiator_state_token,
       blink::mojom::PolicyContainerPtr policy_container,
       mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
       CommitFailedNavigationCallback callback) override {
@@ -309,6 +311,7 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
       /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote(),
       /*document_token=*/blink::DocumentToken(),
       /*devtools_navigation_token=*/base::UnguessableToken::Create(),
+      /*initiator_state_token=*/base::UnguessableToken::Create(),
       /*base_auction_nonce=*/base::Uuid::GenerateRandomV4(),
       CreateStubPolicyContainer(), /*code_cache_host=*/mojo::NullRemote(),
       /*code_cache_host_for_background=*/mojo::NullRemote(),

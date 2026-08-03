@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
@@ -14,4 +15,8 @@ interface RenderFrameTestHelper {
   // can be reused for a cross-document navigation; after the navigation, the
   // newly-committed document is considered the active document.
   GetDocumentToken() => (blink.mojom.DocumentToken token);
+
+  // Get the initiator state token for the RenderFrame's active document's
+  // LocalDomWindow.
+  GetInitiatorStateToken() => (mojo_base.mojom.UnguessableToken token);
 };

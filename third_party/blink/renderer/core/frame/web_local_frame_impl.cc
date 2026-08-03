@@ -948,6 +948,13 @@ WebDocument WebLocalFrameImpl::GetDocument() const {
   return WebDocument(GetFrame()->GetDocument());
 }
 
+base::UnguessableToken WebLocalFrameImpl::GetInitiatorStateToken() const {
+  if (!GetFrame() || !GetFrame()->DomWindow()) {
+    return base::UnguessableToken();
+  }
+  return GetFrame()->DomWindow()->GetInitiatorStateToken();
+}
+
 WebPerformanceMetricsForReporting
 WebLocalFrameImpl::PerformanceMetricsForReporting() const {
   if (!GetFrame())

@@ -265,6 +265,10 @@ void FrameLoader::Init(
   }
   navigation_params->storage_key = storage_key;
   navigation_params->document_token = document_token;
+  // TODO(crbug.com/510258191): Plumb an initiator state token from the browser
+  // process when initializing a document following an IPC from the browser
+  // process.
+  navigation_params->initiator_state_token = base::UnguessableToken::Create();
   navigation_params->frame_policy =
       frame_->Owner() ? frame_->Owner()->GetFramePolicy() : FramePolicy();
   navigation_params->document_ukm_source_id = document_ukm_source_id;

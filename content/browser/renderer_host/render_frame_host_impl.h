@@ -649,6 +649,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // - the RenderFrameHost is speculative
   const blink::DocumentToken& GetDocumentToken() const;
 
+  const base::UnguessableToken& current_initiator_state_token() const {
+    return current_initiator_state_token_;
+  }
+
   // Retrieving the document token is disallowed during times when the result
   // might be misleading / confusing (kPendingCommit or kSpeculative).
   // Internally, the content implementation may still need to retrieve the
@@ -4322,8 +4326,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Sets |policy_container_host_| and associates it with the current frame.
   // |policy_container_host| must not be nullptr.
+  // `current_initiator_state_token_` will also be set to
+  // `new_initiator_state_token` to reflect the update of policies in the
+  // RenderFrameHost.
   void SetPolicyContainerHost(
-      scoped_refptr<PolicyContainerHost> policy_container_host);
+      scoped_refptr<PolicyContainerHost> policy_container_host,
+      const base::UnguessableToken& new_initiator_state_token);
 
   // PolicyContainerHost::Client:
   void DidChangeReferrerPolicy(
@@ -5460,6 +5468,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // PolicyContainer. Cf. the documentation string of the PolicyContainerHost
   // class for more information.
   scoped_refptr<PolicyContainerHost> policy_container_host_;
+
+  // Used to identify the current state of the RenderFrameHost and retrieve an
+  // InitiatorNavigationState to pass to navigations started from this
+  // RenderFrameHost in this state. Note that this doesn't always correspond to
+  // the InitiatorNavigationState set at the time this document was created,
+  // because it could've changed with dynamic CSP policies set via meta tags,
+  // or the referrer policy being updated in the renderer process.
+  // TODO(crbug.com/510258191): Actually have the InitiatorNavigationState be
+  // indexed on an initiator state token, once the initiator state token is
+  // properly set in the browser and renderer processes.
+  base::UnguessableToken current_initiator_state_token_;
 
   // The current document's HTTP response head. This is used by back-forward
   // cache, for navigating a second time toward the same document.

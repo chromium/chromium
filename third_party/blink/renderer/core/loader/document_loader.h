@@ -699,6 +699,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   const std::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode_;
   const FramePolicy frame_policy_;
   std::optional<uint64_t> visited_link_salt_;
+  base::UnguessableToken initiator_state_token_;
 
   Member<LocalFrame> frame_;
 

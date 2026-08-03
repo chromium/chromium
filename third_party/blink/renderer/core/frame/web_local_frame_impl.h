@@ -135,6 +135,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebContentCaptureClient* ContentCaptureClient() const override;
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
   WebDocument GetDocument() const override;
+  base::UnguessableToken GetInitiatorStateToken() const override;
   WebString AssignedName() const override;
   ui::AXTreeID GetAXTreeID() const override;
   void SetName(const WebString&) override;

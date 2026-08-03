@@ -2693,6 +2693,7 @@ void RenderFrameImpl::CommitNavigation(
         fetch_later_loader_factory,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
+    const base::UnguessableToken& initiator_state_token,
     const base::Uuid& base_auction_nonce,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
@@ -2807,7 +2808,8 @@ void RenderFrameImpl::CommitNavigation(
   bool is_client_redirect =
       !!(common_params->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
   auto navigation_params = std::make_unique<WebNavigationParams>(
-      document_token, devtools_navigation_token, base_auction_nonce);
+      document_token, devtools_navigation_token, initiator_state_token,
+      base_auction_nonce);
   navigation_params->navigation_delivery_type =
       commit_params->navigation_delivery_type;
   navigation_params->is_client_redirect = is_client_redirect;
@@ -3153,6 +3155,7 @@ void RenderFrameImpl::CommitFailedNavigation(
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
+    const base::UnguessableToken& initiator_state_token,
     blink::mojom::PolicyContainerPtr policy_container,
     mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     mojom::NavigationClient::CommitFailedNavigationCallback callback) {
@@ -3216,7 +3219,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   commit_params->content_settings =
       blink::CreateDefaultRendererContentSettings();
   auto navigation_params = std::make_unique<WebNavigationParams>(
-      document_token, devtools_navigation_token,
+      document_token, devtools_navigation_token, initiator_state_token,
       /*base_auction_nonce=*/base::Uuid::GenerateRandomV4());
   FillNavigationParamsRequest(*common_params, *commit_params,
                               navigation_params.get());

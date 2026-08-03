@@ -264,6 +264,9 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
   MockPolicyContainerHost mock_policy_container_host;
+  base::UnguessableToken initiator_state_token =
+      base::UnguessableToken::Create();
+  params->initiator_state_token = initiator_state_token;
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies{
           network::ConnectionAllowlists(),
@@ -278,18 +281,21 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_EQ(*mojom::blink::PolicyContainerPolicies::New(
-                network::ConnectionAllowlists(),
-                network::CrossOriginEmbedderPolicy(
-                    network::mojom::CrossOriginEmbedderPolicyValue::kNone),
-                network::IntegrityPolicy(), network::IntegrityPolicy(),
-                network::mojom::ReferrerPolicy::kAlways,
-                Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-                /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
-                network::mojom::blink::IPAddressSpace::kUnknown,
-                /*can_navigate_top_without_user_gesture=*/true,
-                /*cross_origin_isolation_enabled_by_dip=*/false),
-            local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
+  EXPECT_EQ(
+      *mojom::blink::PolicyContainerPolicies::New(
+          network::ConnectionAllowlists(),
+          network::CrossOriginEmbedderPolicy(
+              network::mojom::CrossOriginEmbedderPolicyValue::kNone),
+          network::IntegrityPolicy(), network::IntegrityPolicy(),
+          network::mojom::ReferrerPolicy::kAlways,
+          Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+          /*is_credentialless=*/false, network::mojom::WebSandboxFlags::kNone,
+          network::mojom::blink::IPAddressSpace::kUnknown,
+          /*can_navigate_top_without_user_gesture=*/true,
+          /*cross_origin_isolation_enabled_by_dip=*/false),
+      local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
+  EXPECT_EQ(initiator_state_token,
+            local_frame->DomWindow()->GetInitiatorStateToken());
 }
 
 TEST_F(FrameLoaderSimTest, DirectLaunchSchemeBlocked) {

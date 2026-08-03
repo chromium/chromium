@@ -25,6 +25,7 @@ class RenderFrameTestHelper : public mojom::RenderFrameTestHelper,
 
   // mojom::RenderFrameTestHelper overrides:
   void GetDocumentToken(GetDocumentTokenCallback callback) override;
+  void GetInitiatorStateToken(GetInitiatorStateTokenCallback callback) override;
 
   // RenderFrameObserver overrides:
   void OnDestruct() override;

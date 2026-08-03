@@ -2612,6 +2612,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       cookie_observers_(
           base::BindRepeating(&RenderFrameHostImpl::NotifyCookiesAccessed,
                               base::Unretained(this))),
+      // TODO(crbug.com/510258191): Plumb an initiator state token from the
+      // renderer process when the RenderFrameHost is for an initial empty
+      // document first created in the renderer process.
+      current_initiator_state_token_(base::UnguessableToken::Create()),
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(fenced_frame_status),
@@ -4398,11 +4402,15 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   // This will register this RFH as the PolicyContainerHost::Client, and the
   // PolicyContainerHost will no longer be modifiable (except by IPCs received
   // from the renderer process).
-  SetPolicyContainerHost(std::move(policy_container_host));
+  // Since this is the initialization of the frame, we do not need to generate a
+  // new initiator state token, as there was not previous state.
+  SetPolicyContainerHost(std::move(policy_container_host),
+                         current_initiator_state_token_);
 }
 
 void RenderFrameHostImpl::SetPolicyContainerHost(
-    scoped_refptr<PolicyContainerHost> policy_container_host) {
+    scoped_refptr<PolicyContainerHost> policy_container_host,
+    const base::UnguessableToken& new_initiator_state_token) {
   // Reset an existing PolicyContainerHost::Client now that it will no longer be
   // associated with this RenderFrameHost.
   if (policy_container_host_) {
@@ -4415,6 +4423,13 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
   // open windows using noopener.
   devtools_instrumentation::DidUpdatePolicyContainerHost(frame_tree_node_);
   CHECK(parent_ || !IsCredentialless());
+
+  current_initiator_state_token_ = new_initiator_state_token;
+
+  // TODO(crbug.com/510258191): Here, we should generate a new
+  // InitiatorNavigationState tied to the updated initiator state token and
+  // store it in the RenderFrameHost, so that it can be passed to navigations
+  // started from the document.
 }
 
 void RenderFrameHostImpl::DidChangeReferrerPolicy(
@@ -16978,7 +16993,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // about:blank (because otherwise we would overwrite the PolicyContainerHost
   // of the new document, inherited at RenderFrameHost creation time, with an
   // empty PolicyContainerHost).
-  SetPolicyContainerHost(navigation_request->TakePolicyContainerHost());
+  SetPolicyContainerHost(navigation_request->TakePolicyContainerHost(),
+                         navigation_request->initiator_state_token_to_commit());
 
   if (navigation_request->response()) {
     last_response_head_ = navigation_request->response()->Clone();
@@ -17364,9 +17380,10 @@ void RenderFrameHostImpl::SendCommitNavigation(
         std::move(subresource_proxying_loader_factory),
         std::move(keep_alive_loader_factory),
         std::move(fetch_later_loader_factory), document_token,
-        devtools_navigation_token, base::Uuid::GenerateRandomV4(),
-        std::move(policy_container), std::move(code_cache_host),
-        std::move(code_cache_host_for_background),
+        devtools_navigation_token,
+        navigation_request->initiator_state_token_to_commit(),
+        base::Uuid::GenerateRandomV4(), std::move(policy_container),
+        std::move(code_cache_host), std::move(code_cache_host_for_background),
         std::move(cookie_manager_info), std::move(storage_info),
         BuildCommitNavigationCallback(navigation_request));
   }
@@ -17413,7 +17430,9 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
         has_stale_copy_in_cache, error_code, extended_error_code,
         navigation_request->GetResolveErrorInfo(), error_page_content,
         std::move(subresource_loader_factories), document_token,
-        devtools_navigation_token, std::move(policy_container),
+        devtools_navigation_token,
+        navigation_request->initiator_state_token_to_commit(),
+        std::move(policy_container),
         GetContentClient()->browser()->GetAlternativeErrorPageOverrideInfo(
             navigation_request->GetURL(), this, GetBrowserContext(),
             error_code),
@@ -19787,7 +19806,13 @@ void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(
   // to DCHECK because of a past crash spike. See crbug.com/517224615.
   DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kSpeculative);
   DCHECK(!policy_container_host_);
-  SetPolicyContainerHost(std::move(policy_container_host));
+
+  // We're using `current_initiator_state_token_` here because this is a
+  // speculative RenderFrameHost that does not have an associated
+  // InitiatorNavigationState yet since it does not have a
+  // `policy_container_host_`.
+  SetPolicyContainerHost(std::move(policy_container_host),
+                         current_initiator_state_token_);
 }
 
 void RenderFrameHostImpl::OnDidRunInsecureContent(
