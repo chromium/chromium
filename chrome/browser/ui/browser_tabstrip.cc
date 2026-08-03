@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_close_types_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -33,10 +32,6 @@ content::WebContents* AddAndReturnTabAt(
     bool foreground,
     std::optional<tab_groups::TabGroupId> group,
     bool pinned) {
-  // Time new tab page creation time.  We keep track of the timing data in
-  // WebContents, but we want to include the time it takes to create the
-  // WebContents object too.
-  base::TimeTicks new_tab_start_time = base::TimeTicks::Now();
   const GURL resolved_url =
       url.is_empty() ? browser->GetBrowserForMigrationOnly()->GetNewTabURL()
                      : url;
@@ -56,10 +51,6 @@ content::WebContents* AddAndReturnTabAt(
   if (!params.navigated_or_inserted_contents) {
     return nullptr;
   }
-
-  CoreTabHelper* core_tab_helper =
-      CoreTabHelper::FromWebContents(params.navigated_or_inserted_contents);
-  core_tab_helper->set_new_tab_start_time(new_tab_start_time);
 
   return params.navigated_or_inserted_contents;
 }

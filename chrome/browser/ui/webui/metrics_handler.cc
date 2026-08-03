@@ -10,9 +10,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 

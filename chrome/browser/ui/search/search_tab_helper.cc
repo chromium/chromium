@@ -11,7 +11,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/search/search_ipc_router_policy_impl.h"
-#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/common/url_constants.h"
@@ -82,21 +80,6 @@ bool InInstantProcess(const InstantService* instant_service,
 
   return instant_service->IsInstantProcess(
       contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
-}
-
-// Called when an NTP finishes loading. If the load start time was noted,
-// calculates and logs the total load time.
-void RecordNewTabLoadTime(content::WebContents* contents) {
-  CoreTabHelper* core_tab_helper = CoreTabHelper::FromWebContents(contents);
-  // CoreTabHelper can be null in unittests.
-  if (!core_tab_helper) {
-    return;
-  }
-  if (core_tab_helper->new_tab_start_time().is_null()) {
-    return;
-  }
-
-  core_tab_helper->set_new_tab_start_time(base::TimeTicks());
 }
 
 void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
@@ -226,14 +209,6 @@ void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
     web_contents()->UpdateTitleForEntry(
         entry, l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
     is_setting_title_ = false;
-  }
-}
-
-void SearchTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                                    const GURL& /* validated_url */) {
-  if (render_frame_host->IsInPrimaryMainFrame() &&
-      search::IsInstantNTP(web_contents())) {
-    RecordNewTabLoadTime(web_contents());
   }
 }
 

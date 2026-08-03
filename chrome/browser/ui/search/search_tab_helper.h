@@ -79,8 +79,6 @@ class SearchTabHelper : public content::WebContentsObserver,
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
 

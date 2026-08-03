@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -252,13 +250,9 @@
   // the container and property are set here.
   [aTab setContainer:self property:AppleScript::kTabsProperty];
 
-  // Set how long it takes a tab to be created.
-  base::TimeTicks newTabStartTime = base::TimeTicks::Now();
   content::WebContents* contents = chrome::AddSelectedTabWithURL(
       _browser->GetBrowserForMigrationOnly(), GURL(chrome::kChromeUINewTabURL),
       ui::PAGE_TRANSITION_TYPED);
-  CoreTabHelper* core_tab_helper = CoreTabHelper::FromWebContents(contents);
-  core_tab_helper->set_new_tab_start_time(newTabStartTime);
   [aTab setWebContents:contents];
 }
 
@@ -271,16 +265,11 @@
   // the container and property are set here.
   [aTab setContainer:self property:AppleScript::kTabsProperty];
 
-  // Set how long it takes a tab to be created.
-  base::TimeTicks newTabStartTime = base::TimeTicks::Now();
   NavigateParams params(_browser.get(), GURL(chrome::kChromeUINewTabURL),
                         ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.tabstrip_index = index;
   Navigate(&params);
-  CoreTabHelper* core_tab_helper =
-      CoreTabHelper::FromWebContents(params.navigated_or_inserted_contents);
-  core_tab_helper->set_new_tab_start_time(newTabStartTime);
 
   [aTab setWebContents:params.navigated_or_inserted_contents];
 }

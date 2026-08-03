@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/search_engines/template_url.h"
@@ -94,11 +93,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   // the request will open in side panel instead of a new tab.
   void SearchByImage(const gfx::Image& image);
 
-  void set_new_tab_start_time(const base::TimeTicks& time) {
-    new_tab_start_time_ = time;
-  }
-
-  base::TimeTicks new_tab_start_time() const { return new_tab_start_time_; }
   int content_restrictions() const { return content_restrictions_; }
 
  private:
@@ -162,10 +156,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   // Searches the `original_image`, which will be downscaled if needed.
   void SearchByImageImpl(const gfx::Image& original_image,
                          const std::string& additional_query_params);
-
-  // The time when we started to create the new tab page.  This time is from
-  // before we created this WebContents.
-  base::TimeTicks new_tab_start_time_;
 
   // Content restrictions, used to disable print/copy etc based on content's
   // (full-page plugins for now only) permissions.
