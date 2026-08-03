@@ -94,7 +94,8 @@ HeapVector<Member<Node>> CollectFlattenedAssignedNodes(
     const HTMLSlotElement& slot) {
   DCHECK(slot.SupportsAssignment());
 
-  const HeapVector<Member<Node>>& assigned_nodes = slot.AssignedNodes();
+  // Copy the array - code inside the loop can modify assigned nodes.
+  const HeapVector<Member<Node>> assigned_nodes = slot.AssignedNodes();
   HeapVector<Member<Node>> nodes;
   if (assigned_nodes.empty()) {
     // Fallback contents.
