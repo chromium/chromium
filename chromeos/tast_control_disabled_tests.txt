@@ -151,4 +151,7 @@ tast.hwsec.CrossVersionChromeLogin.ti50_r125
 # b/539379110
 tast.cryptohome.UssMigrationChallengeCredential.rsassa_all
 
+# b/382134667
+tast.camera.PlatformServiceSmoke@brya
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
