@@ -81,8 +81,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
 
   void OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) override;
 
-  NSDictionary* GetUserInfoForSelectedTextChangedNotification(
-      std::initializer_list<NSString*> omit_keys = {});
+  NSDictionary* GetUserInfoForSelectedTextChangedNotification();
 
   NSDictionary* GetUserInfoForValueChangedNotification(
       const BrowserAccessibilityCocoa* native_node,
