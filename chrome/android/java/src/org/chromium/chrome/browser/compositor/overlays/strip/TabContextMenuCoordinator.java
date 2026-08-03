@@ -386,6 +386,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         modalDialogManager);
             } else if (menuId == R.id.toggle_tab_layout_menu_id) {
                 boolean isEnablingVerticalTabs = tabStripLayout == TabStripLayoutType.HORIZONTAL;
+                if (isEnablingVerticalTabs) {
+                    VerticalTabUtils.markNewBadgeAsDismissed();
+                }
                 VerticalTabUtils.recordLayoutToggle(
                         LayoutSwitchEntryPoint.TAB_CONTEXT_MENU, isEnablingVerticalTabs);
                 if (activity instanceof MenuOrKeyboardActionController controller) {
@@ -1020,29 +1023,41 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private void addVerticalTabsItems(ModelList itemList, boolean isIncognito) {
-        if (VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
-            if (itemList.isEmpty()
-                    || itemList.get(itemList.size() - 1).type != ListItemType.DIVIDER) {
-                itemList.add(buildMenuDivider(isIncognito));
-            }
-            int layoutTitleRes =
-                    mTabStripLayout == TabStripLayoutType.VERTICAL
-                            ? R.string.show_tabs_horizontally
-                            : R.string.show_tabs_vertically;
-
-            boolean enabled =
-                    mCanActivateTabLayoutToggleMenuSupplier == null
-                            || mCanActivateTabLayoutToggleMenuSupplier.getAsBoolean();
-
-            itemList.add(
-                    new ListItemBuilder()
-                            .withTitleRes(layoutTitleRes)
-                            .withMenuId(R.id.toggle_tab_layout_menu_id)
-                            .withIsIncognito(isIncognito)
-                            .withEnabled(enabled)
-                            .build());
+        if (!VerticalTabUtils.isVerticalTabsEligible(mActivity)) return;
+        if (itemList.isEmpty() || itemList.get(itemList.size() - 1).type != ListItemType.DIVIDER) {
             itemList.add(buildMenuDivider(isIncognito));
         }
+
+        boolean isEnablingVerticalTabs = mTabStripLayout == TabStripLayoutType.HORIZONTAL;
+        int layoutTitleRes =
+                isEnablingVerticalTabs
+                        ? R.string.show_tabs_vertically
+                        : R.string.show_tabs_horizontally;
+
+        boolean enabled =
+                mCanActivateTabLayoutToggleMenuSupplier == null
+                        || mCanActivateTabLayoutToggleMenuSupplier.getAsBoolean();
+
+        boolean showNewBadge =
+                isEnablingVerticalTabs
+                        && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(mActivity);
+
+        CharSequence title;
+        if (showNewBadge) {
+            VerticalTabUtils.incrementNewBadgeViewCount();
+            title = VerticalTabUtils.getTitleWithNewBadge(mActivity, layoutTitleRes);
+        } else {
+            title = mActivity.getString(layoutTitleRes);
+        }
+
+        itemList.add(
+                new ListItemBuilder()
+                        .withTitle(title)
+                        .withMenuId(R.id.toggle_tab_layout_menu_id)
+                        .withIsIncognito(isIncognito)
+                        .withEnabled(enabled)
+                        .build());
+        itemList.add(buildMenuDivider(isIncognito));
     }
 
     private ListItem createCloseItem(boolean isIncognito) {
