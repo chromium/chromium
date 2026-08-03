@@ -495,6 +495,10 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kDeskTemplateSync};
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove this.
+    webui_omnibox_feature_list_.InitFromCommandLine(
+        "", "WebUIOmniboxPopup,WebUIOmniboxAimPopup");
 
     // Suppress the multitask menu nudge as we'll be checking the stacking order
     // and the count of the active desk children.
@@ -581,6 +585,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 // Tests that a browser's urls can be captured correctly in the desk template.

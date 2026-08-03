@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -511,8 +512,9 @@ WebUIToolbarWebView* SetUpAndPinHomeButton(Browser* browser) {
 class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
  public:
   WebUIToolbarWebViewPixelBrowserTest() {
-    // All features for Webium Production should be included here.
     feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        // All features for Webium Production should be included here.
         {features::kInitialWebUI, features::kWebUIReloadButton,
          features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
          features::kWebUIHomeButton, features::kWebUIPinnedToolbarActions,
@@ -523,7 +525,11 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
          ash::features::kBatterySaver,
 #endif
          features::kWebUIBatterySaverButton},
-        {});
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
 
   void SetUp() override {
@@ -1588,9 +1594,23 @@ class WebUIToolbarWebViewStabilityAboutBlankTest
  public:
   WebUIToolbarWebViewStabilityAboutBlankTest() {
     if (AllowAboutBlank()) {
-      param_feature_list_.InitAndEnableFeature(features::kDebugTopChromeWebUI);
+      param_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {features::kDebugTopChromeWebUI},
+          /*disabled_features=*/
+          // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+          // Omnibox is enabled and then remove these two Features.
+          {omnibox::internal::kWebUIOmniboxPopup,
+           omnibox::internal::kWebUIOmniboxAimPopup});
     } else {
-      param_feature_list_.InitAndDisableFeature(features::kDebugTopChromeWebUI);
+      param_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/
+          // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+          // Omnibox is enabled and then remove the two omnibox Features below.
+          {features::kDebugTopChromeWebUI,
+           omnibox::internal::kWebUIOmniboxPopup,
+           omnibox::internal::kWebUIOmniboxAimPopup});
     }
   }
 

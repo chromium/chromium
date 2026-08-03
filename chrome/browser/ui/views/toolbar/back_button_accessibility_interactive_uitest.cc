@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_accessibility_test.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
@@ -28,13 +30,23 @@ class BackButtonAccessibilityTest : public ToolbarAccessibilityTest {
   BackButtonAccessibilityTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
+          /*enabled_features=*/
           {features::kInitialWebUI, features::kWebUIBackForwardButton,
            features::kWebUIReloadButton},
-          {});
+          // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+          // Omnibox is enabled and then remove the omnibox features here and
+          // below.
+          /*disabled_features=*/
+          {omnibox::internal::kWebUIOmniboxPopup,
+           omnibox::internal::kWebUIOmniboxAimPopup});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {features::kInitialWebUI, features::kWebUIBackForwardButton,
-               features::kWebUIReloadButton});
+          /*enabled_features=*/
+          {},
+          /*disabled_features=*/
+          {features::kInitialWebUI, features::kWebUIBackForwardButton,
+           features::kWebUIReloadButton, omnibox::internal::kWebUIOmniboxPopup,
+           omnibox::internal::kWebUIOmniboxAimPopup});
     }
   }
 

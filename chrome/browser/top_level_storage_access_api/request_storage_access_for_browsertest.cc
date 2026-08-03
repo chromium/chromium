@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -641,6 +642,13 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     return {{blink::features::kStorageAccessAPIRelatedWebsiteSets, {}}};
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove this.
+    return {omnibox::internal::kWebUIOmniboxPopup,
+            omnibox::internal::kWebUIOmniboxAimPopup};
   }
 
   RequestStorageAccessForWithFirstPartySetsBrowserTest() {

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
@@ -89,7 +90,13 @@ class FirstNonEmptyPaintObserver : public content::WebContentsObserver {
 
 class FirstWebContentsProfilerAshTest : public InProcessBrowserTest {
  public:
-  FirstWebContentsProfilerAshTest() { set_launch_browser_for_testing(nullptr); }
+  FirstWebContentsProfilerAshTest() {
+    set_launch_browser_for_testing(nullptr);
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove this.
+    webui_omnibox_feature_list_.InitFromCommandLine(
+        "", "WebUIOmniboxPopup,WebUIOmniboxAimPopup");
+  }
   FirstWebContentsProfilerAshTest(const FirstWebContentsProfilerAshTest&) =
       delete;
   FirstWebContentsProfilerAshTest& operator=(
@@ -106,6 +113,7 @@ class FirstWebContentsProfilerAshTest : public InProcessBrowserTest {
 
  protected:
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 // Creates browser window that will be restored in the main test.

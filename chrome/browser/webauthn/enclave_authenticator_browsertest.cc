@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -931,7 +932,11 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
     scoped_feature_list_.InitWithFeatures(
         {device::kWebAuthnCreatePinWhenSystemUvDisabled,
          device::kWebAuthnEnclaveUseAuthDataFromEnclave},
-        {});
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove the two omnibox features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
   ~EnclaveAuthenticatorBrowserTest() override = default;
 

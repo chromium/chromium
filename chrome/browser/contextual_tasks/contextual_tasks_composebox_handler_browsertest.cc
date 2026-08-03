@@ -296,9 +296,14 @@ class ContextualTasksComposeboxHandlerTest
   explicit ContextualTasksComposeboxHandlerTest(
       const std::map<std::string, std::string>& parameters) {
     feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {{contextual_tasks::kContextualTasks, parameters},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
-        {});
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
   ~ContextualTasksComposeboxHandlerTest() override = default;
 

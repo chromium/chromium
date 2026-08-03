@@ -37,6 +37,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -160,6 +161,10 @@ class DownloadDeepScanningBrowserTestBase
                          enterprise_obfuscation::kEnterpriseFileObfuscation)
                    : disabled_features_.push_back(
                          enterprise_obfuscation::kEnterpriseFileObfuscation);
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // is enabled and then remove these two Features.
+    disabled_features_.push_back(omnibox::internal::kWebUIOmniboxPopup);
+    disabled_features_.push_back(omnibox::internal::kWebUIOmniboxAimPopup);
   }
 
   void OnDownloadCreated(content::DownloadManager* manager,

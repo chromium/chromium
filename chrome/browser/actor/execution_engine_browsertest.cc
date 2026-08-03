@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
@@ -830,8 +831,12 @@ class ExecutionEngineFileSystemAccessApiBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   ExecutionEngineFileSystemAccessApiBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        kGlicBlockFileSystemAccessApiFilePicker, should_block_file_picker());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{kGlicBlockFileSystemAccessApiFilePicker, should_block_file_picker()},
+         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+         // Omnibox is enabled and then remove these two Features.
+         {omnibox::internal::kWebUIOmniboxPopup, false},
+         {omnibox::internal::kWebUIOmniboxAimPopup, false}});
   }
 
   bool should_block_file_picker() { return GetParam(); }

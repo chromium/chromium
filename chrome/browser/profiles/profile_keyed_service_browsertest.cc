@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -372,7 +373,15 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 class ProfileKeyedServiceGuestBrowserTest
     : public ProfileKeyedServiceBrowserTest {
  public:
-  ProfileKeyedServiceGuestBrowserTest() = default;
+  ProfileKeyedServiceGuestBrowserTest() {
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove this.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
   ~ProfileKeyedServiceGuestBrowserTest() override = default;
 
   // ProfileKeyedServiceBrowserTest:
@@ -384,9 +393,27 @@ class ProfileKeyedServiceGuestBrowserTest
         ash::switches::kLoginUser,
         user_manager::GuestAccountId().GetUserEmail());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 #else
-using ProfileKeyedServiceGuestBrowserTest = ProfileKeyedServiceBrowserTest;
+class ProfileKeyedServiceGuestBrowserTest
+    : public ProfileKeyedServiceBrowserTest {
+ public:
+  ProfileKeyedServiceGuestBrowserTest() {
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove this.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup,
+                               omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+  ~ProfileKeyedServiceGuestBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 #endif
 
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,

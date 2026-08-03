@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -177,9 +178,13 @@ namespace contextual_tasks {
 class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
  public:
   ContextualTasksInteractiveUiTest() {
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove the two omnibox features below.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kContextualTasks},
-        /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes});
+        /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes,
+                               omnibox::internal::kWebUIOmniboxPopup,
+                               omnibox::internal::kWebUIOmniboxAimPopup});
     tab_context_override_ =
         tabs::TabFeatures::GetUserDataFactoryForTesting()
             .AddOverrideForTesting<
