@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -50,8 +51,11 @@ class ResolveWebAppPendingMigrationInfoCommandTest : public WebAppTest {
 };
 
 TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, NoApps) {
+  base::HistogramTester histogram_tester;
   RunCommand();
   EXPECT_EQ(0u, provider()->registrar_unsafe().GetAppIds().size());
+  histogram_tester.ExpectTotalCount(
+      "WebApp.ResolvePendingMigrationInfoCommand.UpdatesApplied", 1);
 }
 
 TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, SingleMigration) {
@@ -72,6 +76,7 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, SingleMigration) {
     app_target->SetValidatedMigrationSources(std::move(sources));
   }
 
+  base::HistogramTester histogram_tester;
   RunCommand();
 
   const WebApp* app_source =
@@ -81,6 +86,8 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, SingleMigration) {
             app_source->pending_migration_info()->manifest_id().spec());
   EXPECT_EQ(MigrationBehavior::kForce,
             app_source->pending_migration_info()->behavior());
+  histogram_tester.ExpectTotalCount(
+      "WebApp.ResolvePendingMigrationInfoCommand.UpdatesApplied", 1);
 }
 
 TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, CleanupOldMigration) {
@@ -97,11 +104,14 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, CleanupOldMigration) {
     app_source->SetPendingMigrationInfo(info);
   }
 
+  base::HistogramTester histogram_tester;
   RunCommand();
 
   const WebApp* app_source =
       provider()->registrar_unsafe().GetAppById(app_id_source);
   EXPECT_FALSE(app_source->pending_migration_info().has_value());
+  histogram_tester.ExpectTotalCount(
+      "WebApp.ResolvePendingMigrationInfoCommand.UpdatesApplied", 1);
 }
 
 TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, PreservesLastIgnoredTime) {
@@ -136,6 +146,7 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, PreservesLastIgnoredTime) {
     app_target->SetValidatedMigrationSources(std::move(sources));
   }
 
+  base::HistogramTester histogram_tester;
   RunCommand();
 
   const WebApp* app_source =
@@ -147,6 +158,8 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, PreservesLastIgnoredTime) {
             app_source->pending_migration_info()->behavior());
   EXPECT_EQ(expected_ignored_time,
             app_source->pending_migration_info()->last_ignored_time());
+  histogram_tester.ExpectTotalCount(
+      "WebApp.ResolvePendingMigrationInfoCommand.UpdatesApplied", 1);
 }
 
 }  // namespace web_app

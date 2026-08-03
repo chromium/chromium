@@ -2801,7 +2801,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.ResolvePendingMigrationInfoCommand.Result"
+<histogram name="WebApp.ResolvePendingMigrationInfoCommand.UpdatesApplied"
     units="count" expires_after="2027-03-11">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
