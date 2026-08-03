@@ -105,6 +105,9 @@ BASE_DECLARE_FEATURE(kContextualTasksPdfCitations);
 // When enabled, the back button can expand the side panel.
 BASE_DECLARE_FEATURE(kContextualTasksBackButtonExpandsSidePanel);
 
+// When enabled, close tab actions can expand the side panel.
+BASE_DECLARE_FEATURE(kContextualTasksCloseTabExpandsSidePanel);
+
 // Enables lazy fetching of cluster info for multimodal queries.
 BASE_DECLARE_FEATURE(kContextualTasksLazyFetchClusterInfo);
 
@@ -481,6 +484,8 @@ extern const char kContextualTasksJavaFuseboxName[];
 extern const char kContextualTasksJavaFuseboxDescription[];
 extern const char kContextualTasksBackButtonExpandsSidePanelName[];
 extern const char kContextualTasksBackButtonExpandsSidePanelDescription[];
+extern const char kContextualTasksCloseTabExpandsSidePanelName[];
+extern const char kContextualTasksCloseTabExpandsSidePanelDescription[];
 extern const char kContextualTasksOverrideShowBottomSheetOnLargeScreenName[];
 extern const char
     kContextualTasksOverrideShowBottomSheetOnLargeScreenDescription[];

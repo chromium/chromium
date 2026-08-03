@@ -11708,6 +11708,8 @@ from previous Chrome versions.
   <int value="-896040242" label="PrefetchFontLookupTables:enabled"/>
   <int value="-895071695" label="DesktopScreenshots:enabled"/>
   <int value="-894774400" label="FiltersInRecentsV2:enabled"/>
+  <int value="-894222549"
+      label="ContextualTasksCloseTabExpandsSidePanel:disabled"/>
   <int value="-894214299" label="fill-on-account-select:enabled"/>
   <int value="-894185031" label="HighDynamicRange:disabled"/>
   <int value="-893673593" label="BentoOffline:disabled"/>
@@ -18871,6 +18873,8 @@ from previous Chrome versions.
   <int value="1369663360"
       label="MayLaunchUrlUsesSeparateStoragePartition:enabled"/>
   <int value="1370104897" label="NtpFooter:enabled"/>
+  <int value="1370424105"
+      label="ContextualTasksCloseTabExpandsSidePanel:enabled"/>
   <int value="1370797930" label="ShowBluetoothDeviceBattery:enabled"/>
   <int value="1370921804" label="ToolbarPhoneCleanup:enabled"/>
   <int value="1371065824"
