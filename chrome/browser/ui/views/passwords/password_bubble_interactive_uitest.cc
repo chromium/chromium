@@ -544,14 +544,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-// TODO(crbug.com/539700715): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TwoTabsWithBubbleSwitch DISABLED_TwoTabsWithBubbleSwitch
-#else
-#define MAYBE_TwoTabsWithBubbleSwitch TwoTabsWithBubbleSwitch
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
-                       MAYBE_TwoTabsWithBubbleSwitch) {
+                       TwoTabsWithBubbleSwitch) {
   RunTestSequence(
       // 1. Show bubble on tab 0.
       Do([this]() { SetupPendingPassword(); }),
@@ -564,10 +558,18 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
         browser()->tab_strip_model()->ActivateTabAt(
             1, TabStripUserGestureDetails(
                    TabStripUserGestureDetails::GestureType::kOther));
+#if BUILDFLAG(IS_MAC)
+        // On Mac, tab switches in swarming test environments do not reliably
+        // call WasHidden() via OS window visibility signals. Explicitly notify
+        // the tab (crbug.com/542160939).
+        browser()->tab_strip_model()->GetWebContentsAt(0)->WasHidden();
+#endif
       }),
       // 3. Wait for the bubble to hide due to the tab switch.
       WaitForHide(PasswordSaveUpdateView::kPasswordBubbleElementId),
-      Check([this]() { return browser()->tab_strip_model()->active_index() == 1; }),
+      Check([this]() {
+        return browser()->tab_strip_model()->active_index() == 1;
+      }),
       // 4. Show bubble on tab 1.
       Do([this]() { SetupPendingPassword(); }),
       WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
@@ -576,6 +578,9 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
         browser()->tab_strip_model()->ActivateTabAt(
             0, TabStripUserGestureDetails(
                    TabStripUserGestureDetails::GestureType::kOther));
+#if BUILDFLAG(IS_MAC)
+        browser()->tab_strip_model()->GetWebContentsAt(1)->WasHidden();
+#endif
       }),
       // 6. Wait for the bubble to hide again.
       WaitForHide(PasswordSaveUpdateView::kPasswordBubbleElementId));
