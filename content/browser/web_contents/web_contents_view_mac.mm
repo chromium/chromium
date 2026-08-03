@@ -734,8 +734,7 @@ void WebContentsViewMac::DragPromisedFileTo(
 // WebContentsViewMac, ViewsHostableView:
 
 void WebContentsViewMac::ViewsHostableAttach(
-    ViewsHostableView::Host* views_host,
-    bool initially_visible) {
+    ViewsHostableView::Host* views_host) {
   views_host_ = views_host;
   // Create an NSView in the target process, if one exists.
   auto* remote_cocoa_application = views_host_->GetRemoteCocoaApplication();
@@ -759,7 +758,6 @@ void WebContentsViewMac::ViewsHostableAttach(
 
     remote_cocoa_application->CreateWebContentsNSView(
         ns_view_id_, std::move(stub_host), std::move(stub_ns_view_receiver));
-    remote_ns_view_->SetVisible(initially_visible);
     remote_ns_view_->SetParentNSView(views_host_->GetNSViewId());
 
     // Because this view is being displayed from a remote process, reset the

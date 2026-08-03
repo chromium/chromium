@@ -120,13 +120,6 @@ void NativeViewHostMac::AttachNativeView() {
   }
   EnsureNativeViewHasNoChildWidgets(native_view_);
 
-  // AttachNativeView() runs before Layout(), so hide the native view before
-  // adding it to its new hierarchy when the host has no visible bounds.
-  const bool initially_visible = !host_->GetVisibleBounds().IsEmpty();
-  if (!initially_visible) {
-    SetVisible(false);
-  }
-
   auto* window_host = GetNSWindowHost();
   CHECK(window_host);
 
@@ -151,7 +144,7 @@ void NativeViewHostMac::AttachNativeView() {
   }
 
   if (native_view_hostable_) {
-    native_view_hostable_->ViewsHostableAttach(this, initially_visible);
+    native_view_hostable_->ViewsHostableAttach(this);
     // Initially set the parent to match the views::Views parent. Note that this
     // may be overridden (e.g, by views::WebView).
     native_view_hostable_->ViewsHostableSetParentAccessible(

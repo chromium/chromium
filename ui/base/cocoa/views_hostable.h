@@ -50,9 +50,9 @@ class ViewsHostableView {
   // - Adding the WebContentsView's ui::Layer to the parent's ui::Layer tree.
   // - Stitching together the accessibility tree between the views::View and
   //   the WebContentsView.
-  // - Setting the WebContentsView's visibility to `initially_visible` before
-  //   adding its NSViews to the views::View's NSViews.
-  virtual void ViewsHostableAttach(Host* host, bool initially_visible) = 0;
+  // - Adding the WebContents browser-side and app-shim-side NSViews as children
+  //   to the views::View's NSViews.
+  virtual void ViewsHostableAttach(Host* host) = 0;
 
   // Called when the WebContentsView's NSView has been removed from the
   // views::View's NSView. This is responsible for un-doing all of the actions
