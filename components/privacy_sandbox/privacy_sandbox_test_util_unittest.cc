@@ -97,8 +97,7 @@ class PrivacySandboxTestUtilTest {
     privacy_sandbox_test_util::ApplyTestState(
         key, value, task_environment(), prefs(), host_content_settings_map(),
         mock_delegate(), mock_privacy_sandbox_service(),
-        mock_browsing_topics_service(), mock_privacy_sandbox_settings(),
-        user_provider_, managed_provider_);
+        mock_privacy_sandbox_settings(), user_provider_, managed_provider_);
   }
 
   void ProvideInput(InputKey key, TestCaseItemValue value) {
@@ -116,9 +115,6 @@ class PrivacySandboxTestUtilTest {
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
   content::BrowserTaskEnvironment* task_environment() {
     return &browser_task_environment_;
-  }
-  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
-    return &mock_browsing_topics_service_;
   }
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
   mock_delegate() {
@@ -147,7 +143,6 @@ class PrivacySandboxTestUtilTest {
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   MockPrivacySandboxSettingsDelegate mock_delegate_;
-  browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
   MockPrivacySandboxServiceTestInterface mock_privacy_sandbox_service_;
   MockPrivacySandboxSettings mock_privacy_sandbox_settings_;
   raw_ptr<content_settings::MockProvider> user_provider_;
@@ -204,13 +199,6 @@ TEST_P(PrivacySandboxTestUtilBoolTest, VerifyIsRestrictedAccountStateKey) {
   EXPECT_EQ(mock_delegate()->IsPrivacySandboxRestricted(), state);
 }
 
-TEST_P(PrivacySandboxTestUtilBoolTest, VerifyHasCurrentTopicsStateKey) {
-  bool state = GetParam();
-  ApplyTestState(StateKey::kHasCurrentTopics, state);
-  EXPECT_EQ(
-      mock_browsing_topics_service()->GetTopTopicsForDisplay().size() > 0u,
-      state);
-}
 
 TEST_P(PrivacySandboxTestUtilBoolTest, VerifyHasBlockedTopicsStateKey) {
   bool state = GetParam();

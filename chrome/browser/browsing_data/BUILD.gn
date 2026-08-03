@@ -146,7 +146,6 @@ source_set("impl") {
     "//chrome/browser/webid",
     "//components/browsing_data/content",
     "//components/browsing_data/core",
-    "//components/browsing_topics",
     "//components/commerce/core:feature_utils",
     "//components/commerce/core:shopping_service",
     "//components/content_settings/browser",

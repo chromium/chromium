@@ -1,7 +1,6 @@
 include_rules = [
   "+components/browser_ui",
   "+components/browsing_topics/common",
-  "+components/browsing_topics/test_util.h",
   "+components/content_settings/core",
   "+components/embedder_support/android",
   "+components/keyed_service/core",

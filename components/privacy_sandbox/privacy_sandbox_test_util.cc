@@ -84,7 +84,6 @@ void ApplyTestState(
     HostContentSettingsMap* map,
     MockPrivacySandboxSettingsDelegate* mock_delegate,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
-    browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     content_settings::MockProvider* user_content_setting_provider,
     content_settings::MockProvider* managed_content_setting_provider) {
@@ -148,21 +147,6 @@ void ApplyTestState(
       SCOPED_TRACE("State Setup: User restricted");
       mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
           GetItemValue<bool>(value));
-      return;
-    }
-    case (StateKey::kHasCurrentTopics): {
-      auto has_current_topics = GetItemValue<bool>(value);
-      if (!has_current_topics) {
-        // By default, there are no blocked topics.
-        return;
-      }
-      const auto kTopic = privacy_sandbox::CanonicalTopic(
-          browsing_topics::Topic(24),  // "Blues"
-          kTestTaxonomyVersion);
-      const std::vector<privacy_sandbox::CanonicalTopic> topics = {kTopic};
-
-      EXPECT_CALL(*mock_browsing_topics_service, GetTopTopicsForDisplay())
-          .WillRepeatedly(testing::Return(topics));
       return;
     }
     case (StateKey::kHasBlockedTopics): {
@@ -986,7 +970,6 @@ void RunTestCase(
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* host_content_settings_map,
     MockPrivacySandboxSettingsDelegate* mock_delegate,
-    browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service_,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     content_settings::MockProvider* user_content_setting_provider,
@@ -998,8 +981,8 @@ void RunTestCase(
   for (const auto& [key, value] : UnpackKeys<StateKey>(test_state)) {
     ApplyTestState(key, value, task_environment, testing_pref_service,
                    host_content_settings_map, mock_delegate,
-                   privacy_sandbox_service, mock_browsing_topics_service_,
-                   privacy_sandbox_settings, user_content_setting_provider,
+                   privacy_sandbox_service, privacy_sandbox_settings,
+                   user_content_setting_provider,
                    managed_content_setting_provider);
   }
 

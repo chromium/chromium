@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/values.h"
-#include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
@@ -141,9 +140,6 @@ class PrivacySandboxSettingsTest : public testing::Test {
   content::BrowserTaskEnvironment* task_environment() {
     return &browser_task_environment_;
   }
-  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
-    return &mock_browsing_topics_service_;
-  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -153,7 +149,6 @@ class PrivacySandboxSettingsTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
   raw_ptr<MockPrivacySandboxSettingsDelegate, DanglingUntriaged> mock_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   ScopedPrivacySandboxAttestations scoped_attestations_;
@@ -544,8 +539,7 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
 
     privacy_sandbox_test_util::RunTestCase(
         task_environment(), prefs(), host_content_settings_map(),
-        mock_delegate(), mock_browsing_topics_service(),
-        privacy_sandbox_settings(), nullptr, user_provider_raw,
+        mock_delegate(), privacy_sandbox_settings(), nullptr, user_provider_raw,
         managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
 

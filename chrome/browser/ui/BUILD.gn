@@ -845,7 +845,6 @@ static_library("ui") {
     "//components/browsing_data/content",
     "//components/browsing_data/core",
     "//components/browsing_data/core:cookie_or_cache_deletion_choice",
-    "//components/browsing_topics",
     "//components/captive_portal/content",
     "//components/client_hints/browser",
     "//components/commerce/content/browser",

@@ -28,7 +28,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -316,9 +315,9 @@ class PrivacySandboxServiceTest : public testing::Test {
 
     privacy_sandbox_test_util::RunTestCase(
         browser_task_environment(), prefs(), host_content_settings_map(),
-        mock_delegate(), mock_browsing_topics_service(),
-        privacy_sandbox_settings(), &service_wrapper, user_provider_raw,
-        managed_provider_raw, TestCase(test_state, test_input, test_output));
+        mock_delegate(), privacy_sandbox_settings(), &service_wrapper,
+        user_provider_raw, managed_provider_raw,
+        TestCase(test_state, test_input, test_output));
   }
 
   PrefService* local_state() {
@@ -343,9 +342,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
   content::BrowsingDataRemover* browsing_data_remover() {
     return profile()->GetBrowsingDataRemover();
-  }
-  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
-    return &mock_browsing_topics_service_;
   }
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
   mock_delegate() {
@@ -410,7 +406,6 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   base::test::ScopedFeatureList outer_feature_list_;
   base::test::ScopedFeatureList inner_feature_list_;
-  browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
 
   first_party_sets::ScopedMockFirstPartySetsHandler
       mock_first_party_sets_handler_;
@@ -478,14 +473,6 @@ class PrivacySandboxServiceAdPrivacyUxDeprecationDisabledTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationDisabledTest,
-       TopicsDataNotCleared) {
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
-  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
-  CreateService();
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
-}
 
 TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationDisabledTest,
        FledgeDataNotCleared) {
@@ -573,8 +560,7 @@ TEST_F(PrivacySandboxServiceTest, FledgeBlockDeletesData) {
 
 TEST_F(PrivacySandboxServiceTest, DisablingFledgePrefClearsData) {
   // Confirm that when the fledge preference is disabled, a browsing data
-  // remover task is started. Topics data isn't deleted.
-  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
+  // remover task is started.
   // Enabling should not cause a removal task.
   prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
   constexpr uint64_t kNoRemovalTask = -1ull;
@@ -596,8 +582,7 @@ TEST_F(PrivacySandboxServiceTest, DisablingFledgePrefClearsData) {
 
 TEST_F(PrivacySandboxServiceTest, DisablingAdMeasurementePrefClearsData) {
   // Confirm that when the ad measurement preference is disabled, a browsing
-  // data remover task is started. Topics data isn't deleted.
-  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
+  // data remover task is started.
   // Enabling should not cause a removal task.
   prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
   constexpr uint64_t kNoRemovalTask = -1ull;

@@ -121,7 +121,7 @@ if (use_blink) {
       ":privacy_sandbox",
       ":privacy_sandbox_prefs",
       "//base/test:test_support",
-      "//components/browsing_topics:test_support",
+      "//components/browsing_topics/common",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",
       "//components/content_settings/core/test:test_support",
@@ -170,7 +170,6 @@ source_set("unit_tests") {
     deps += [
       ":privacy_sandbox",
       ":test_support",
-      "//components/browsing_topics:test_support",
       "//components/content_settings/core/test:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",

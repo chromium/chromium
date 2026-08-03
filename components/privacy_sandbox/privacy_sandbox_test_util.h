@@ -9,10 +9,11 @@
 #include <string>
 #include <variant>
 
-#include "components/browsing_topics/test_util.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -280,7 +281,6 @@ void RunTestCase(
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* host_content_settings_map,
     MockPrivacySandboxSettingsDelegate* mock_delegate,
-    browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     content_settings::MockProvider* user_content_setting_provider,
@@ -298,7 +298,6 @@ void ApplyTestState(
     HostContentSettingsMap* map,
     MockPrivacySandboxSettingsDelegate* mock_delegate,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
-    browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     content_settings::MockProvider* user_content_setting_provider,
     content_settings::MockProvider* managed_content_setting_provider);

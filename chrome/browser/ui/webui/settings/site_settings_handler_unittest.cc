@@ -89,8 +89,6 @@
 #include "components/browsing_data/content/fake_browsing_data_model.h"
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_local_storage_helper.h"
-#include "components/browsing_topics/browsing_topics_service.h"
-#include "components/browsing_topics/test_util.h"
 #include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -404,7 +402,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     scoped_user_manager_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)
     mock_privacy_sandbox_service_ = nullptr;
-    mock_browsing_topics_service_ = nullptr;
     incognito_profile_ = nullptr;
     profile_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
@@ -433,9 +430,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   Profile* incognito_profile() { return incognito_profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
   SiteSettingsHandler* handler() { return handler_.get(); }
-  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
-    return mock_browsing_topics_service_;
-  }
   MockPrivacySandboxService* mock_privacy_sandbox_service() {
     return mock_privacy_sandbox_service_.get();
   }
@@ -1196,8 +1190,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
-  raw_ptr<browsing_topics::MockBrowsingTopicsService>
-      mock_browsing_topics_service_;
   raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
 };
 
