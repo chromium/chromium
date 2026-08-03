@@ -1767,7 +1767,13 @@ source_set("views_interactive_ui_tests") {
   }
 }
 
-test("views_perftests") {
+if (is_fuchsia) {
+  views_perftests_target_name = "views_perftests_fuchsia"
+} else {
+  views_perftests_target_name = "views_perftests"
+}
+
+test(views_perftests_target_name) {
   sources = [
     "controls/label_perftest.cc",
     "views_perftests.cc",
@@ -1787,4 +1793,16 @@ test("views_perftests") {
     "//testing:run_perf_test",
     "//ui/resources:ui_test_pak_data",
   ]
+
+  if (is_fuchsia) {
+    # These tests use SwiftShader (crbug.com/1022542), which uses JIT.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/fonts.shard.test-cml",
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+      "//build/config/fuchsia/test/present_view.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+    ]
+  }
 }
