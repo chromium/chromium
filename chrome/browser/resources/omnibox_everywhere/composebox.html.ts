@@ -27,7 +27,11 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
       </search-animated-glow>
     ` : ''}
     <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
-      @keydown="${this.onKeydown}">
+      @keydown="${this.onKeydown}"
+      @dragenter="${this.dragAndDropHandler.handleDragEnter}"
+      @dragover="${this.dragAndDropHandler.handleDragOver}"
+      @dragleave="${this.dragAndDropHandler.handleDragLeave}"
+      @drop="${this.dragAndDropHandler.handleDrop}">
       <div id="inputContainer" part="input-container">
         <!-- Note: Copied from omnibox_composebox.html.ts. Cancel button title
              and cancel click handler may be needed if added to mixin in the

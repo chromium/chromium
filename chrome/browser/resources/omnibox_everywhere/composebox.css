@@ -51,6 +51,10 @@
   min-height: unset;
 }
 
+:host([is-dragging-file]) #composebox * {
+  pointer-events: none;
+}
+
 #inputContainer {
   box-sizing: border-box;
   display: flex;
