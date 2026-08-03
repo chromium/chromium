@@ -180,12 +180,7 @@ jobs:
         with:
           targets: wasm32-unknown-emscripten
           components: rust-src
-      - name: Disable initramfs update
-        run: sudo sed -i 's/^update_initramfs=yes$/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
-      - name: Disable man-db update
-        run: sudo rm -f /var/lib/man-db/auto-update
-      - name: Install emscripten
-        run: sudo apt-get install emscripten
+      - uses: emscripten-core/setup-emsdk@v16
       - run: cargo build --target=wasm32-unknown-emscripten --manifest-path=demo/Cargo.toml --release -Zbuild-std
         env:
           RUSTFLAGS: -Clink-arg=--emrun ${{env.RUSTFLAGS}}

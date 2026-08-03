@@ -18,9 +18,9 @@ use syn::punctuated::Punctuated;
 use syn::{
     Abi, Attribute, Error, Expr, Fields, FnArg, ForeignItem, ForeignItemFn, ForeignItemType,
     GenericArgument, GenericParam, Generics, Ident, ItemEnum, ItemImpl, ItemStruct, Lit, LitStr,
-    Pat, PathArguments, Result, ReturnType, Signature as RustSignature, Token, TraitBound,
-    TraitBoundModifier, Type as RustType, TypeArray, TypeBareFn, TypeParamBound, TypePath, TypePtr,
-    TypeReference, Variant as RustVariant, Visibility,
+    Pat, PathArguments, PointerMutability, ReceiverKind, Result, ReturnType, Safety,
+    Signature as RustSignature, Token, TraitBound, Type as RustType, TypeArray, TypeFnPtr,
+    TypeParamBound, TypePath, TypePtr, TypeReference, Variant as RustVariant, Visibility,
 };
 
 pub(crate) mod kw {
@@ -611,40 +611,44 @@ fn parse_extern_fn(
         let (arg, comma) = arg.into_tuple();
         match arg {
             FnArg::Receiver(arg) => {
-                if let Some((ampersand, lifetime)) = &arg.reference {
-                    receiver = Some(Receiver {
-                        pinned: false,
-                        ampersand: *ampersand,
-                        lifetime: lifetime.clone(),
-                        mutable: arg.mutability.is_some(),
-                        var: arg.self_token,
-                        colon_token: Token![:](arg.self_token.span),
-                        ty: NamedType::new(Ident::new("Self", arg.self_token.span)),
-                        shorthand: true,
-                        pin_tokens: None,
-                        mutability: arg.mutability,
-                    });
-                    continue;
-                }
-                if let Some(colon_token) = arg.colon_token {
-                    let ty = parse_type(&arg.ty)?;
-                    if let Type::Ref(reference) = ty {
-                        if let Type::Ident(ident) = reference.inner {
-                            receiver = Some(Receiver {
-                                pinned: reference.pinned,
-                                ampersand: reference.ampersand,
-                                lifetime: reference.lifetime,
-                                mutable: reference.mutable,
-                                var: Token![self](ident.rust.span()),
-                                colon_token,
-                                ty: ident,
-                                shorthand: false,
-                                pin_tokens: reference.pin_tokens,
-                                mutability: reference.mutability,
-                            });
-                            continue;
+                match &arg.kind {
+                    ReceiverKind::Value => {}
+                    ReceiverKind::Reference(ampersand, lifetime, mutability) => {
+                        receiver = Some(Receiver {
+                            pinned: false,
+                            ampersand: *ampersand,
+                            lifetime: lifetime.clone(),
+                            mutable: mutability.is_some(),
+                            var: arg.self_token,
+                            colon_token: Token![:](arg.self_token.span),
+                            ty: NamedType::new(Ident::new("Self", arg.self_token.span)),
+                            shorthand: true,
+                            pin_tokens: None,
+                            mutability: *mutability,
+                        });
+                        continue;
+                    }
+                    ReceiverKind::Typed(colon_token, ty) => {
+                        let ty = parse_type(ty)?;
+                        if let Type::Ref(reference) = ty {
+                            if let Type::Ident(ident) = reference.inner {
+                                receiver = Some(Receiver {
+                                    pinned: reference.pinned,
+                                    ampersand: reference.ampersand,
+                                    lifetime: reference.lifetime,
+                                    mutable: reference.mutable,
+                                    var: Token![self](ident.rust.span()),
+                                    colon_token: *colon_token,
+                                    ty: ident,
+                                    shorthand: false,
+                                    pin_tokens: reference.pin_tokens,
+                                    mutability: reference.mutability,
+                                });
+                                continue;
+                            }
                         }
                     }
+                    _ => {}
                 }
                 return Err(Error::new_spanned(arg, "unsupported method receiver"));
             }
@@ -694,7 +698,10 @@ fn parse_extern_fn(
     let ret = parse_return_type(&foreign_fn.sig.output, &mut throws_tokens)?;
     let throws = throws_tokens.is_some();
     let asyncness = foreign_fn.sig.asyncness;
-    let unsafety = foreign_fn.sig.unsafety;
+    let unsafety = match foreign_fn.sig.safety {
+        Safety::Safe(_) | Safety::Default => None,
+        Safety::Unsafe(unsafety) => Some(unsafety),
+    };
     let fn_token = foreign_fn.sig.fn_token;
     let inherited_span = unsafety.map_or(fn_token.span, |unsafety| unsafety.span);
     let visibility = visibility_pub(&foreign_fn.vis, inherited_span);
@@ -948,15 +955,21 @@ fn parse_extern_type_bounded(
             match input.parse()? {
                 TypeParamBound::Trait(TraitBound {
                     paren_token: None,
-                    modifier: TraitBoundModifier::None,
                     lifetimes: None,
+                    modifiers,
+                    maybe: None,
                     path,
                 }) if if let Some(derive) = path.get_ident().and_then(Derive::from) {
                     bounds.push(derive);
                     true
                 } else {
                     false
-                } => {}
+                } =>
+                {
+                    if let Err(unsupported) = modifiers.require_empty() {
+                        cx.push(unsupported);
+                    }
+                }
                 bound => cx.error(bound, "unsupported trait"),
             }
 
@@ -1035,14 +1048,20 @@ fn parse_impl(cx: &mut Errors, imp: ItemImpl) -> Result<Api> {
         return Err(Error::new_spanned(span, "expected an empty impl block"));
     }
 
-    if let Some((bang, path, for_token)) = &imp.trait_ {
+    if let Some((path, for_token)) = &imp.trait_ {
         let self_ty = &imp.self_ty;
-        let span = quote!(#bang #path #for_token #self_ty);
+        let span = quote!(#path #for_token #self_ty);
         return Err(Error::new_spanned(
             span,
             "unexpected impl, expected something like `impl UniquePtr<T> {}`",
         ));
     }
+
+    if let Some(bang) = &imp.modifiers.polarity {
+        return Err(Error::new_spanned(bang, "unexpected impl polarity"));
+    }
+
+    imp.modifiers.require_empty()?;
 
     if let Some(where_clause) = imp.generics.where_clause {
         return Err(Error::new_spanned(
@@ -1158,7 +1177,7 @@ fn parse_type(ty: &RustType) -> Result<Type> {
         RustType::Ptr(ty) => parse_type_ptr(ty),
         RustType::Path(ty) => parse_type_path(ty),
         RustType::Array(ty) => parse_type_array(ty),
-        RustType::BareFn(ty) => parse_type_fn(ty),
+        RustType::FnPtr(ty) => parse_type_fn(ty),
         RustType::Tuple(ty) if ty.elems.is_empty() => Ok(Type::Void(ty.paren_token.span.join())),
         _ => Err(Error::new_spanned(ty, "unsupported type")),
     }
@@ -1209,9 +1228,11 @@ fn parse_type_reference(ty: &TypeReference) -> Result<Type> {
 
 fn parse_type_ptr(ty: &TypePtr) -> Result<Type> {
     let star = ty.star_token;
-    let mutable = ty.mutability.is_some();
-    let constness = ty.const_token;
-    let mutability = ty.mutability;
+    let mutability = ty.mutability.clone();
+    let mutable = match &mutability {
+        PointerMutability::Const(_) => false,
+        PointerMutability::Mut(_) => true,
+    };
 
     let inner = parse_type(&ty.elem)?;
 
@@ -1220,7 +1241,6 @@ fn parse_type_ptr(ty: &TypePtr) -> Result<Type> {
         mutable,
         inner,
         mutability,
-        constness,
     })))
 }
 
@@ -1375,7 +1395,7 @@ fn parse_type_array(ty: &TypeArray) -> Result<Type> {
     })))
 }
 
-fn parse_type_fn(ty: &TypeBareFn) -> Result<Type> {
+fn parse_type_fn(ty: &TypeFnPtr) -> Result<Type> {
     if ty.lifetimes.is_some() {
         return Err(Error::new_spanned(
             ty,

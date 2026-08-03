@@ -1,6 +1,6 @@
 [package]
 name = "cxxbridge-cmd"
-version = "1.0.197"
+version = "1.0.198"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::build-utils", "development-tools::ffi"]
 description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."
@@ -22,7 +22,7 @@ codespan-reporting = "0.13.1"
 indexmap = "2.9.0"
 proc-macro2 = { version = "1.0.74", default-features = false, features = ["span-locations"] }
 quote = { version = "1.0.35", default-features = false }
-syn = { version = "2.0.46", default-features = false, features = ["clone-impls", "full", "parsing", "printing"] }
+syn = { version = "3", default-features = false, features = ["clone-impls", "full", "parsing", "printing"] }
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]

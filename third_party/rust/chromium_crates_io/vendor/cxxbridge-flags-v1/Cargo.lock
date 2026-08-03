@@ -4,4 +4,4 @@ version = 4
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.197"
+version = "1.0.198"
