@@ -995,7 +995,8 @@ void ContextualCueingController::ShowCue(
   action->SetImage(target.GetOmniboxChipIcon());
   action->SetInvokeActionCallback(base::BindRepeating(
       &ContextualCueingController::OnCueClicked, weak_ptr_factory_.GetWeakPtr(),
-      cue_type, cue.suggested_cuj(), action_data, cue_id));
+      cue_type, cue, tabs_to_show, background_tabs, cue.suggested_cuj(),
+      action_data, cue_id));
 
   page_actions::PageActionController* page_action_controller =
       tab_->GetTabFeatures()->page_action_controller();
@@ -1025,8 +1026,9 @@ void ContextualCueingController::ShowCue(
       base::UTF8ToUTF16(strings.action_text()));
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
-      tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type,
-      cue.suggested_cuj(), std::move(action_data), cue_id);
+      tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type, cue,
+      tabs_to_show, background_tabs, cue.suggested_cuj(),
+      std::move(action_data), cue_id);
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,
@@ -1190,6 +1192,9 @@ void ContextualCueingController::OnSidePanelShown() {
 
 void ContextualCueingController::OnCueClicked(
     CueTargetType cue_type,
+    optimization_guide::proto::ContextualCue cue,
+    std::vector<tabs::TabHandle> tabs_to_show,
+    std::vector<optimization_guide::proto::Tab> background_tabs,
     std::string cuj,
     CueActionData action,
     std::string cue_id,
@@ -1221,13 +1226,17 @@ void ContextualCueingController::OnCueClicked(
   }
 #endif
 
-  OnCueInteraction(ContextualCueingInteraction::kCueClicked, cue_type, cuj,
-                   std::move(action), cue_id);
+  OnCueInteraction(ContextualCueingInteraction::kCueClicked, cue_type, cue,
+                   tabs_to_show, background_tabs, cuj, std::move(action),
+                   cue_id);
 }
 
 void ContextualCueingController::OnCueInteraction(
     ContextualCueingInteraction interaction_type,
     CueTargetType cue_type,
+    const optimization_guide::proto::ContextualCue& cue,
+    const std::vector<tabs::TabHandle>& tabs_to_show,
+    const std::vector<optimization_guide::proto::Tab>& background_tabs,
     const std::string& cuj,
     CueActionData action,
     std::string cue_id) {
@@ -1237,8 +1246,9 @@ void ContextualCueingController::OnCueInteraction(
   RecordContextualCueingInteraction(interaction_type, cuj, source_id,
                                     shown_duration);
 
-  RecordCueingInteractionToPrivateInsights(tab_->GetProfile(), cue_id,
-                                           interaction_type, cuj);
+  RecordCueingInteractionToPrivateInsights(
+      tab_->GetProfile(), cue_id, cue_type, cue, tab_, tabs_to_show,
+      background_tabs, interaction_type, cuj);
 
   HideCue();
 

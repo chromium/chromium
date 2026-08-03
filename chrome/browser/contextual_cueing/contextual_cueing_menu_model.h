@@ -7,6 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
+#include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/menus/simple_menu_model.h"
 
 class Profile;
@@ -24,6 +26,9 @@ class ContextualCueingMenuModel : public ui::SimpleMenuModel,
       Profile* profile,
       base::WeakPtr<ContextualCueingController> controller,
       CueTargetType cue_type,
+      optimization_guide::proto::ContextualCue cue,
+      std::vector<tabs::TabHandle> tabs_to_show,
+      std::vector<optimization_guide::proto::Tab> background_tabs,
       std::string cuj,
       CueActionData data,
       std::string cue_id);
@@ -40,6 +45,9 @@ class ContextualCueingMenuModel : public ui::SimpleMenuModel,
   raw_ptr<ContextualCueingService> contextual_cueing_service_;
   base::WeakPtr<ContextualCueingController> controller_;
   CueTargetType cue_type_;
+  optimization_guide::proto::ContextualCue cue_;
+  std::vector<tabs::TabHandle> tabs_to_show_;
+  std::vector<optimization_guide::proto::Tab> background_tabs_;
   std::string cuj_;
   CueActionData data_;
   std::string cue_id_;

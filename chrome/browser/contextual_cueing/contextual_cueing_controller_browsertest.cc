@@ -998,10 +998,17 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   ASSERT_TRUE(action);
 
   // Expect Clicked event
-  EXPECT_CALL(*GetMockPrivateInsightsService(),
-              LogContextualCueEvent(testing::Property(
-                  &private_insights::events::ContextualCueLogEvent::event_type,
-                  private_insights::events::ContextualCueLogEvent::CLICKED)))
+  EXPECT_CALL(
+      *GetMockPrivateInsightsService(),
+      LogContextualCueEvent(testing::AllOf(
+          testing::Property(
+              &private_insights::events::ContextualCueLogEvent::event_type,
+              private_insights::events::ContextualCueLogEvent::CLICKED),
+          testing::Property(
+              &private_insights::events::ContextualCueLogEvent::cue_context,
+              testing::ResultOf(
+                  [](const auto& ctx) { return ctx.active_page().url(); },
+                  testing::Eq("https://www.activetab.com/abc"))))))
       .Times(1);
 
   action->InvokeAction();
@@ -2019,5 +2026,81 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerShowInSplitViewBrowserTest,
 #endif
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       RecordsCueInteractionDismissed) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto response = MakeCompleteResponse();
+  response.mutable_contextual_cues(0)->set_suggested_cuj("test_cuj_string");
+  SeedExecutionResult(response);
+
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // Directly call OnCueInteraction to simulate the Menu Delegate
+  auto* cue = &response.contextual_cues(0);
+  contextual_cueing_controller()->OnCueInteraction(
+      ContextualCueingInteraction::kCueDismissed, CueTargetType::kGlic, *cue,
+      {}, {}, "test_cuj_string", {}, "fake_id");
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueInteraction.Dismissed",
+      base::HashMetricName("test_cuj_string"), 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_CueInteraction::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0].get(),
+      ukm::builders::ContextualCueing_CueInteraction::
+          kProactiveCueInteractionName,
+      static_cast<int64_t>(ContextualCueingInteraction::kCueDismissed));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       RecordsCueInteractionEditPrompt) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto response = MakeCompleteResponse();
+  response.mutable_contextual_cues(0)->set_suggested_cuj("test_cuj_string");
+  SeedExecutionResult(response);
+
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  auto* cue = &response.contextual_cues(0);
+  contextual_cueing_controller()->OnCueInteraction(
+      ContextualCueingInteraction::kCueEditPrompt, CueTargetType::kGlic, *cue,
+      {}, {}, "test_cuj_string", {}, "fake_id");
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueInteraction.EditPrompt",
+      base::HashMetricName("test_cuj_string"), 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_CueInteraction::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0].get(),
+      ukm::builders::ContextualCueing_CueInteraction::
+          kProactiveCueInteractionName,
+      static_cast<int64_t>(ContextualCueingInteraction::kCueEditPrompt));
+}
 }  // namespace
 }  // namespace contextual_cueing

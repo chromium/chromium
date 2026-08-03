@@ -64,6 +64,11 @@ void RecordCueShownToPrivateInsights(
 void RecordCueingInteractionToPrivateInsights(
     Profile* profile,
     const std::string& cue_id,
+    CueTargetType cue_type,
+    const optimization_guide::proto::ContextualCue& cue,
+    tabs::TabInterface* active_tab,
+    const std::vector<tabs::TabHandle>& tabs_to_show,
+    const std::vector<optimization_guide::proto::Tab>& background_tabs,
     ContextualCueingInteraction interaction_type,
     const std::string& cuj);
 
@@ -71,7 +76,8 @@ namespace internal {
 
 // Builds the event structure without logging it.
 // Exposed here so it can be verified in lightweight unit tests.
-private_insights::events::ContextualCueLogEvent CreateContextualCueShownEvent(
+private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
+    private_insights::events::ContextualCueLogEvent::EventType event_type,
     const std::string& cue_id,
     CueTargetType cue_type,
     const optimization_guide::proto::ContextualCue& cue,

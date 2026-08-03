@@ -112,11 +112,16 @@ class ContextualCueingController
   // Returns the CueTarget for the given CueTargetType, or nullptr if there is
   // none.
   CueTarget* GetTarget(CueTargetType type);
-  void OnCueInteraction(ContextualCueingInteraction interaction_type,
-                        CueTargetType cue_type,
-                        const std::string& cuj,
-                        CueActionData action,
-                        std::string cue_id);
+
+  void OnCueInteraction(
+      ContextualCueingInteraction interaction_type,
+      CueTargetType cue_type,
+      const optimization_guide::proto::ContextualCue& cue,
+      const std::vector<tabs::TabHandle>& tabs_to_show,
+      const std::vector<optimization_guide::proto::Tab>& background_tabs,
+      const std::string& cuj,
+      CueActionData action,
+      std::string cue_id);
 
  private:
   // Initiates a model execution request to MES for the current window state,
@@ -204,6 +209,9 @@ class ContextualCueingController
       const std::vector<tabs::TabHandle>& tabs_to_show);
 #endif
   void OnCueClicked(CueTargetType cue_type,
+                    optimization_guide::proto::ContextualCue cue,
+                    std::vector<tabs::TabHandle> tabs_to_show,
+                    std::vector<optimization_guide::proto::Tab> background_tabs,
                     std::string cuj,
                     CueActionData action,
                     std::string cue_id,
