@@ -20,6 +20,7 @@
 #include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/shared_dictionary/shared_dictionary_cache.h"
@@ -548,7 +549,16 @@ void SharedDictionaryManagerOnDisk::GetUsageInfo(
              const std::vector<net::SharedDictionaryUsageInfo>&)> callback,
          net::SQLitePersistentSharedDictionaryStore::UsageInfoOrError result) {
         if (result.has_value()) {
-          std::move(callback).Run(std::move(result.value()));
+          const net::SharedDictionaryIsolationKey& pervasive_key =
+              net::SharedDictionaryIsolationKey::GetPervasiveIsolationKey();
+          std::vector<net::SharedDictionaryUsageInfo> filtered;
+          for (auto& info : result.value()) {
+            // Skip reporting on the shared pervasive dictionary partition
+            if (info.isolation_key != pervasive_key) {
+              filtered.push_back(std::move(info));
+            }
+          }
+          std::move(callback).Run(std::move(filtered));
         } else {
           std::move(callback).Run({});
         }
@@ -593,8 +603,19 @@ void SharedDictionaryManagerOnDisk::GetOriginsBetween(
           [](base::OnceCallback<void(const std::vector<url::Origin>&)> callback,
              net::SQLitePersistentSharedDictionaryStore::OriginListOrError
                  result) {
-            std::move(callback).Run(
-                result.value_or(std::vector<url::Origin>()));
+            std::vector<url::Origin> origins;
+            if (result.has_value()) {
+              const url::Origin& pervasive_origin =
+                  net::SharedDictionaryIsolationKey::GetPervasiveIsolationKey()
+                      .frame_origin();
+              for (auto& origin : result.value()) {
+                // Skip reporting on the shared pervasive dictionary partition
+                if (origin != pervasive_origin) {
+                  origins.push_back(std::move(origin));
+                }
+              }
+            }
+            std::move(callback).Run(std::move(origins));
           },
           std::move(callback)));
 }
@@ -797,6 +818,11 @@ void SharedDictionaryManagerOnDisk::OnDictionaryDeleted(
   }
   for (auto& it : storages()) {
     reinterpret_cast<SharedDictionaryStorageOnDisk*>(it.second.get())
+        ->OnDictionaryDeleted(disk_cache_key_tokens);
+  }
+  if (GetPervasiveStorage()) {
+    reinterpret_cast<SharedDictionaryStorageOnDisk*>(
+        GetPervasiveStorage().get())
         ->OnDictionaryDeleted(disk_cache_key_tokens);
   }
 }

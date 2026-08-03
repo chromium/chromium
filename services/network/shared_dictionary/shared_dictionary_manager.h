@@ -90,6 +90,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
   scoped_refptr<SharedDictionaryStorage> GetStorage(
       const net::SharedDictionaryIsolationKey& isolation_key);
 
+  // Returns the unpartitioned pervasive SharedDictionaryStorage instance.
+  scoped_refptr<SharedDictionaryStorage> GetPervasiveStorage();
+
   // Called when the SharedDictionaryStorage for the `isolation_key` is
   // deleted.
   void OnStorageDeleted(const net::SharedDictionaryIsolationKey& isolation_key);
@@ -159,6 +162,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
 
   void DeletePreloadedDictionaries(
       PreloadedDictionaries* preloaded_dictionaries);
+
+  scoped_refptr<SharedDictionaryStorage> pervasive_storage_;
 
   base::LRUCache<net::SharedDictionaryIsolationKey,
                  scoped_refptr<SharedDictionaryStorage>>

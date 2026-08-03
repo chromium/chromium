@@ -689,6 +689,7 @@ mojom::URLResponseHeadPtr BuildResponseHead(
   response->did_send_available_dictionary =
       response_info.did_send_available_dictionary;
   response->did_use_shared_dictionary = response_info.did_use_shared_dictionary;
+  response->is_shared_resource = url_request.is_shared_resource();
   response->did_use_server_http_auth = response_info.did_use_server_http_auth;
   response->device_bound_session_usage =
       static_cast<network::mojom::DeviceBoundSessionUsage>(

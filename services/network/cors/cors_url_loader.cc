@@ -645,15 +645,27 @@ void CorsURLLoader::OnReceiveResponse(
       *response_head, shared_dictionary::kUseAsDictionaryHeaderName);
   if (use_as_dictionary_header &&
       !net::IsCertStatusError(response_head->cert_status)) {
+    // Write pervasive dictionary responses into the pervasive-specific storage
+    // if it is enabled.
+    SharedDictionaryStorage* dictionary_storage =
+        shared_dictionary_storage_.get();
+    scoped_refptr<SharedDictionaryStorage> pervasive_storage;
+    if (dictionary_storage && response_head->is_shared_resource &&
+        context_->GetSharedDictionaryManager()) {
+      pervasive_storage =
+          context_->GetSharedDictionaryManager()->GetPervasiveStorage();
+      if (pervasive_storage) {
+        dictionary_storage = pervasive_storage.get();
+      }
+    }
     base::expected<scoped_refptr<SharedDictionaryWriter>,
                    mojom::SharedDictionaryError>
         writer_or_error = SharedDictionaryStorage::MaybeCreateWriter(
             *use_as_dictionary_header,
-            request_.shared_dictionary_writer_enabled,
-            shared_dictionary_storage_.get(), request_.mode, response_tainting_,
-            request_.url, response_head->request_time,
-            response_head->response_time, *response_head->headers,
-            response_head->was_fetched_via_cache,
+            request_.shared_dictionary_writer_enabled, dictionary_storage,
+            request_.mode, response_tainting_, request_.url,
+            response_head->request_time, response_head->response_time,
+            *response_head->headers, response_head->was_fetched_via_cache,
             base::BindOnce(
                 &SharedDictionaryAccessChecker::CheckAllowedToWriteAndReport,
                 std::make_unique<SharedDictionaryAccessChecker>(

@@ -298,6 +298,9 @@ struct URLResponseHead {
   // True if the response used a shared dictionary for decoding its body.
   bool did_use_shared_dictionary = false;
 
+  // True if this request used the pervasive/unpartitioned cache-key scope.
+  bool is_shared_resource = false;
+
   // True if the client should load the response content after setting the
   // environment's `has storage access` bit.
   bool load_with_storage_access = false;

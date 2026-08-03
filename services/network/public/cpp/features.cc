@@ -524,6 +524,8 @@ BASE_FEATURE(kCSPScriptSrcHashesInV1,
 BASE_FEATURE(kCacheSharingForPervasiveResources,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPervasiveSharedDictionaries, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSendSameSiteLaxForFedCM, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedDictionaryCache, base::FEATURE_ENABLED_BY_DEFAULT);

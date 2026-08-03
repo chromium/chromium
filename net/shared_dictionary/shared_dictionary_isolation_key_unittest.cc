@@ -5,6 +5,7 @@
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -73,6 +74,17 @@ TEST(SharedDictionaryIsolationKeyTest, SameFrameOriginDifferentTopFrameSite) {
   SharedDictionaryIsolationKey isolation_key2(url::Origin::Create(kUrl1),
                                               kSite2);
   EXPECT_NE(isolation_key1, isolation_key2);
+}
+
+TEST(SharedDictionaryIsolationKeyTest, DeniedForPervasiveIsolationKey) {
+  url::Origin origin =
+      url::Origin::Create(GURL("https://shared-dictionary-pervasive.invalid"));
+  EXPECT_FALSE(SharedDictionaryIsolationKey::MaybeCreate(IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, origin, origin, SiteForCookies())));
+
+  SchemefulSite site(origin);
+  NetworkIsolationKey nik(site, site);
+  EXPECT_FALSE(SharedDictionaryIsolationKey::MaybeCreate(nik, origin));
 }
 
 }  // namespace net

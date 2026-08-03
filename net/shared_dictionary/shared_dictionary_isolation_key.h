@@ -31,6 +31,9 @@ class NET_EXPORT SharedDictionaryIsolationKey {
       const NetworkIsolationKey& network_isolation_key,
       const std::optional<url::Origin>& frame_origin);
 
+  // Returns the pervasive unpartitioned storage scope isolation key.
+  static const SharedDictionaryIsolationKey& GetPervasiveIsolationKey();
+
   SharedDictionaryIsolationKey() = default;
   SharedDictionaryIsolationKey(const url::Origin& frame_origin,
                                const SchemefulSite& top_frame_site);
