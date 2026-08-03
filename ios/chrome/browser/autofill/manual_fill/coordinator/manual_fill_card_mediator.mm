@@ -381,7 +381,8 @@ std::vector<CreditCard> FetchCards(
   // have to unlock it again, if needed.
   [self.contentInjector userDidPickContent:fillValue
                              passwordField:NO
-                             requiresHTTPS:YES];
+                             requiresHTTPS:YES
+                           jumpToNextField:YES];
 }
 
 @end

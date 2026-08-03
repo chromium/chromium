@@ -30,11 +30,14 @@
 // @param content The selected string.
 // @param passwordField YES if the user selected content that requires a
 // password field to be injected.
-// @param requiresHTTPS YES if the user selected a field, that requires an HTTPS
+// @param requiresHTTPS YES if the user selected a field that requires an HTTPS
 // context to be injected.
+// @param jumpToNextField YES if focus should move to the next form field after
+// filling.
 - (void)userDidPickContent:(NSString*)content
              passwordField:(BOOL)passwordField
-             requiresHTTPS:(BOOL)requiresHTTPS;
+             requiresHTTPS:(BOOL)requiresHTTPS
+           jumpToNextField:(BOOL)jumpToNextField;
 
 // Called when the user wants to entirely fill the current password form with a
 // credential. No-op if the current form is not a password form.

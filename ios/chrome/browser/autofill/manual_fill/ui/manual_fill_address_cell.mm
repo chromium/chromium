@@ -621,7 +621,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   [self.contentInjector userDidPickContent:sender.titleLabel.text
                              passwordField:NO
-                             requiresHTTPS:NO];
+                             requiresHTTPS:NO
+                           jumpToNextField:YES];
 }
 
 // Called when the "Autofill Form" button is tapped. Fills the current form with

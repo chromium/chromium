@@ -45,6 +45,7 @@
   _mediator = [[AtMemorySearchMediator alloc]
       initWithAtMemoryQueryService:atMemoryQueryService
                           webState:webState];
+  _mediator.fillHandler = self.fillHandler;
 
   [self.baseNavigationController
       pushViewController:_atMemorySearchViewController

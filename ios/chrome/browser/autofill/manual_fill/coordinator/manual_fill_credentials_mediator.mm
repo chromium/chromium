@@ -668,11 +668,13 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
 - (void)userDidPickContent:(NSString*)content
              passwordField:(BOOL)passwordField
-             requiresHTTPS:(BOOL)requiresHTTPS {
+             requiresHTTPS:(BOOL)requiresHTTPS
+           jumpToNextField:(BOOL)jumpToNextField {
   [self.delegate manualFillCredentialsMediatorWillInjectContent:self];
   [self.contentInjector userDidPickContent:content
                              passwordField:passwordField
-                             requiresHTTPS:requiresHTTPS];
+                             requiresHTTPS:requiresHTTPS
+                           jumpToNextField:jumpToNextField];
 }
 
 - (void)autofillFormWithCredential:(ManualFillCredential*)credential

@@ -7,6 +7,7 @@ source_set("public") {
     "at_memory_commands.h",
     "at_memory_constants.h",
     "at_memory_constants.mm",
+    "at_memory_fill_commands.h",
     "at_memory_search_provider.h",
     "at_memory_search_result_commands.h",
   ]

@@ -9,10 +9,15 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol AtMemoryFillCommands;
+
 // Child coordinator for the AtMemory granular fill UI. Managed by
 // AtMemoryCoordinator, it displays detailed fields for a selected
 // AtMemoryResult item inside the shared navigation controller.
 @interface AtMemoryGranularFillCoordinator : ChromeCoordinator
+
+// Handler for fill commands.
+@property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController

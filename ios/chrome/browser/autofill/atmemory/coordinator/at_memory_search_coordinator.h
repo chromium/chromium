@@ -9,12 +9,16 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol AtMemoryFillCommands;
 @protocol AtMemorySearchResultCommands;
 
 // Child coordinator for the AtMemory search UI. Managed by AtMemoryCoordinator,
 // it is the main UI to handle typing, displaying results, showing notices, and
 // handling errors.
 @interface AtMemorySearchCoordinator : ChromeCoordinator
+
+// Handler for filling commands.
+@property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
 
 // Handler for search result commands.
 @property(nonatomic, weak) id<AtMemorySearchResultCommands> searchResultHandler;

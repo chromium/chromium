@@ -7,8 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol AtMemoryFillCommands;
+
 // Mediator for AtMemory granular fill.
 @interface AtMemoryGranularFillMediator : NSObject
+
+// Handler for filling commands.
+@property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
 
 @end
 

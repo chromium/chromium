@@ -733,7 +733,8 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   }
   _atMemoryCoordinator = [[AtMemoryCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
+                         browser:self.browser
+                 contentInjector:self.injectionHandler];
 
   [self.childCoordinators addObject:_atMemoryCoordinator];
 

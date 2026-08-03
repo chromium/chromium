@@ -15,8 +15,13 @@ namespace web {
 class WebState;
 }
 
+@protocol AtMemoryFillCommands;
+
 // Mediator for AtMemory search feature page.
 @interface AtMemorySearchMediator : NSObject
+
+// Handler for filling commands.
+@property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
 
 // The designated initializer. `atMemoryQueryService` takes the string provided
 // by the user and provides results to the user if available. If not, the

@@ -443,7 +443,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
       base::UserMetricsAction("ManualFallback_Password_SelectUsername"));
   [self.contentInjector userDidPickContent:self.credential.username
                              passwordField:NO
-                             requiresHTTPS:NO];
+                             requiresHTTPS:NO
+                           jumpToNextField:YES];
 }
 
 - (void)userDidTapPasswordButton:(UIButton*)button {
@@ -456,7 +457,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
                                 : "ManualFallback_Password_SelectPassword"));
   [self.contentInjector userDidPickContent:self.credential.password
                              passwordField:YES
-                             requiresHTTPS:YES];
+                             requiresHTTPS:YES
+                           jumpToNextField:YES];
 }
 
 // Called when the "Autofill Form" button is tapped. Fills the current form with

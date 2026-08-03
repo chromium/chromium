@@ -35,6 +35,7 @@
           initWithStyle:ChromeTableViewStyle()];
 
   _mediator = [[AtMemoryGranularFillMediator alloc] init];
+  _mediator.fillHandler = self.fillHandler;
 
   [self.baseNavigationController
       pushViewController:_atMemoryGranularFillViewController
