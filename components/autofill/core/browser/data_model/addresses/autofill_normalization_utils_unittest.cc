@@ -13,73 +13,73 @@
 namespace autofill::normalization {
 
 TEST(AutofillNormalizationUtilsTest, NormalizeForComparison) {
-  EXPECT_EQ(u"timothe", NormalizeForComparison(u"Timothé"));
-  EXPECT_EQ(u"sven ake", NormalizeForComparison(u" sven-åke "));
-  EXPECT_EQ(u"c 㸐", NormalizeForComparison(u"Ç 㸐"));
-  EXPECT_EQ(u"902103214",
-            NormalizeForComparison(u"90210-3214", WhitespaceSpec::kDiscard));
-  EXPECT_EQ(u"timothe noel etienne perier",
-            NormalizeForComparison(u"Timothé-Noël Étienne Périer"));
-  EXPECT_EQ(u"strasse", NormalizeForComparison(u"Straße"));
+  EXPECT_EQ(NormalizeForComparison(u"Timothé"), u"timothe");
+  EXPECT_EQ(NormalizeForComparison(u" sven-åke "), u"sven ake");
+  EXPECT_EQ(NormalizeForComparison(u"Ç 㸐"), u"c 㸐");
+  EXPECT_EQ(NormalizeForComparison(u"90210-3214", WhitespaceSpec::kDiscard),
+            u"902103214");
+  EXPECT_EQ(NormalizeForComparison(u"Timothé-Noël Étienne Périer"),
+            u"timothe noel etienne perier");
+  EXPECT_EQ(NormalizeForComparison(u"Straße"), u"strasse");
   // NOP.
   EXPECT_EQ(std::u16string(), NormalizeForComparison(std::u16string()));
 
   // Simple punctuation removed.
-  EXPECT_EQ(u"1600 amphitheatre pkwy",
-            NormalizeForComparison(u"1600 Amphitheatre, Pkwy."));
+  EXPECT_EQ(NormalizeForComparison(u"1600 Amphitheatre, Pkwy."),
+            u"1600 amphitheatre pkwy");
 
   // Unicode punctuation (hyphen and space), multiple spaces collapsed.
-  EXPECT_EQ(u"mid island plaza",
-            NormalizeForComparison(u"Mid\x2013Island\x2003 Plaza"));
+  EXPECT_EQ(NormalizeForComparison(u"Mid\x2013Island\x2003 Plaza"),
+            u"mid island plaza");
 
   // Newline character removed.
-  EXPECT_EQ(u"1600 amphitheatre pkwy app 2",
-            NormalizeForComparison(u"1600 amphitheatre pkwy \n App. 2"));
+  EXPECT_EQ(NormalizeForComparison(u"1600 amphitheatre pkwy \n App. 2"),
+            u"1600 amphitheatre pkwy app 2");
 
   // Diacritics removed.
-  EXPECT_EQ(u"まeoa정", NormalizeForComparison(u"まéÖä정"));
+  EXPECT_EQ(NormalizeForComparison(u"まéÖä정"), u"まeoa정");
 
   // Spaces removed.
-  EXPECT_EQ(u"유재석",
-            NormalizeForComparison(u"유 재석", WhitespaceSpec::kDiscard));
+  EXPECT_EQ(NormalizeForComparison(u"유 재석", WhitespaceSpec::kDiscard),
+            u"유재석");
 
   // Punctuation removed, Japanese kana normalized.
-  EXPECT_EQ(u"ヒルケイツ",
-            NormalizeForComparison(u"ビル・ゲイツ", WhitespaceSpec::kDiscard));
+  EXPECT_EQ(NormalizeForComparison(u"ビル・ゲイツ", WhitespaceSpec::kDiscard),
+            u"ヒルケイツ");
 }
 
 TEST(AutofillNormalizationUtilsTest,
      NormalizeForComparisonWithGermanTransliteration) {
   base::test::ScopedFeatureList features{
       features::kAutofillEnableGermanTransliteration};
-  EXPECT_EQ(u"haensel str",
-            NormalizeForComparison(u"Hänsel Str.", WhitespaceSpec::kRetain,
-                                   AddressCountryCode("DE")));
-  EXPECT_EQ(u"hansel str",
-            NormalizeForComparison(u"Hänsel Str.", WhitespaceSpec::kRetain,
-                                   AddressCountryCode("US")));
+  EXPECT_EQ(NormalizeForComparison(u"Hänsel Str.", WhitespaceSpec::kRetain,
+                                   AddressCountryCode("DE")),
+            u"haensel str");
+  EXPECT_EQ(NormalizeForComparison(u"Hänsel Str.", WhitespaceSpec::kRetain,
+                                   AddressCountryCode("US")),
+            u"hansel str");
 }
 
 TEST(AutofillNormalizationUtilsTest, NormalizeForComparisonWithGlobalRules) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillIntroduceGlobalEmptyValueRewriterRules);
 
-  EXPECT_EQ(u"", NormalizeForComparison(u"null"));
-  EXPECT_EQ(u"", NormalizeForComparison(u"none"));
-  EXPECT_EQ(u"", NormalizeForComparison(u"nan"));
-  EXPECT_EQ(u"", NormalizeForComparison(u"undefined"));
-  EXPECT_EQ(u"", NormalizeForComparison(u"not applicable"));
-  EXPECT_EQ(u"", NormalizeForComparison(u"n a"));
-  EXPECT_EQ(u"", NormalizeForComparison(u"N/A"));
-  EXPECT_EQ(u"", NormalizeForComparison(u"null, none, nan"));
-  EXPECT_EQ(u"", NormalizeForComparison(u"(NULL)-NULL-NULL"));
-  EXPECT_EQ(u"123 main st", NormalizeForComparison(u"123 Main St null"));
-  EXPECT_EQ(u"123 main st", NormalizeForComparison(u"null 123 Main St"));
-  EXPECT_EQ(u"123 main st", NormalizeForComparison(u"123 Main null St"));
+  EXPECT_EQ(NormalizeForComparison(u"null"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"none"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"nan"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"undefined"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"not applicable"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"n a"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"N/A"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"null, none, nan"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"(NULL)-NULL-NULL"), u"");
+  EXPECT_EQ(NormalizeForComparison(u"123 Main St null"), u"123 main st");
+  EXPECT_EQ(NormalizeForComparison(u"null 123 Main St"), u"123 main st");
+  EXPECT_EQ(NormalizeForComparison(u"123 Main null St"), u"123 main st");
 
   // Ensure it doesn't remove parts of words.
-  EXPECT_EQ(u"banana", NormalizeForComparison(u"banana"));
-  EXPECT_EQ(u"nonevent", NormalizeForComparison(u"nonevent"));
+  EXPECT_EQ(NormalizeForComparison(u"banana"), u"banana");
+  EXPECT_EQ(NormalizeForComparison(u"nonevent"), u"nonevent");
 }
 
 TEST(AutofillNormalizationUtilsTest,
