@@ -538,17 +538,17 @@ enum class QuickActionsVisibility {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   if ([self.name containsString:@"testPremiumAvatarRingWithAiTier"]) {
-    config.features_enabled.push_back(kAiAvatarRingIos);
+    config.features_enabled.push_back(kAiSubscriptionAvatarRingIOS);
     config.additional_args.push_back("--force-ai-subscription-tier=1");
   } else if ([self.name containsString:@"testPremiumAvatarRingWithoutAiTier"]) {
-    config.features_enabled.push_back(kAiAvatarRingIos);
+    config.features_enabled.push_back(kAiSubscriptionAvatarRingIOS);
     config.additional_args.push_back("--force-ai-subscription-tier=0");
   } else if ([self.name containsString:@"testPremiumAvatarRingWithError"]) {
-    config.features_enabled.push_back(kAiAvatarRingIos);
+    config.features_enabled.push_back(kAiSubscriptionAvatarRingIOS);
     config.additional_args.push_back("--force-ai-subscription-tier=1");
   } else if ([self.name containsString:
                             @"testPremiumAvatarRingWithDynamicTierChange"]) {
-    config.features_enabled.push_back(kAiAvatarRingIos);
+    config.features_enabled.push_back(kAiSubscriptionAvatarRingIOS);
   }
   return config;
 }

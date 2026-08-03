@@ -2768,7 +2768,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kDownloadListPagination)},
     {"ai-avatar-ring-ios", flag_descriptions::kAiAvatarRingIosName,
      flag_descriptions::kAiAvatarRingIosDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAiAvatarRingIos)},
+     FEATURE_VALUE_TYPE(kAiSubscriptionAvatarRingIOS)},
     {"app-bar-hide-in-fullscreen",
      flag_descriptions::kAppBarHideInFullscreenName,
      flag_descriptions::kAppBarHideInFullscreenDescription, flags_ui::kOsIos,

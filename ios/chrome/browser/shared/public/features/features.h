@@ -957,11 +957,12 @@ BASE_DECLARE_FEATURE(kIdentityAwareness);
 // Returns true if the IdentityAwareness feature is enabled.
 bool IsIdentityAwarenessEnabled();
 
-// Display a ring around the avatar if the user has a AI Tier
-BASE_DECLARE_FEATURE(kAiAvatarRingIos);
+// Finch experiment flag to display a ring around the avatar for users with an
+// AI subscription.
+BASE_DECLARE_FEATURE(kAiSubscriptionAvatarRingIOS);
 
-// Returns true if the AiAvatarRing feature is enabled.
-bool IsAiAvatarRingIosEnabled();
+// Returns true if the AiSubscriptionAvatarRingIOS feature is enabled.
+bool IsAiSubscriptionAvatarRingIOSEnabled();
 
 // Feature flag to enable the Infobar Banner Revamp (UI Refactor of the
 // Infobar/Banner Component).

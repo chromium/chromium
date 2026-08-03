@@ -1168,10 +1168,10 @@ bool IsIdentityAwarenessEnabled() {
   return base::FeatureList::IsEnabled(kIdentityAwareness);
 }
 
-BASE_FEATURE(kAiAvatarRingIos, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAiSubscriptionAvatarRingIOS, base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsAiAvatarRingIosEnabled() {
-  return base::FeatureList::IsEnabled(kAiAvatarRingIos);
+bool IsAiSubscriptionAvatarRingIOSEnabled() {
+  return base::FeatureList::IsEnabled(kAiSubscriptionAvatarRingIOS);
 }
 
 BASE_FEATURE(kInfobarBannerRevamp, base::FEATURE_DISABLED_BY_DEFAULT);

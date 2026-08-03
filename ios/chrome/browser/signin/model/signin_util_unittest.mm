@@ -159,7 +159,7 @@ TEST_F(SigninUtilTest, GetSizeForIdentityAvatarSize) {
   // The avatar should be its default size.
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(kAiAvatarRingIos);
+    scoped_feature_list.InitAndDisableFeature(kAiSubscriptionAvatarRingIOS);
     EXPECT_EQ(GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large,
                                            AITierRingSize::kNoRing)
                   .width,
@@ -168,7 +168,7 @@ TEST_F(SigninUtilTest, GetSizeForIdentityAvatarSize) {
   // The avatar should be its default size as the ring is around it.
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kAiAvatarRingIos);
+    scoped_feature_list.InitAndEnableFeature(kAiSubscriptionAvatarRingIOS);
     EXPECT_EQ(GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large,
                                            AITierRingSize::kImageSize)
                   .width,
@@ -177,7 +177,7 @@ TEST_F(SigninUtilTest, GetSizeForIdentityAvatarSize) {
   // The avatar should be smaller so that the ring takes the usual avatar size.
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kAiAvatarRingIos);
+    scoped_feature_list.InitAndEnableFeature(kAiSubscriptionAvatarRingIOS);
     EXPECT_EQ(GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large,
                                            AITierRingSize::kViewSize)
                   .width,

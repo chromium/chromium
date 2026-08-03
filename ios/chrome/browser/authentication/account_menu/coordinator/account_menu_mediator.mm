@@ -314,7 +314,7 @@
   _error = newError;
   [self.consumer updateErrorSection:_error];
   if (_subscriptionEligibilityService->GetAiSubscriptionTier() > 0 &&
-      IsAiAvatarRingIosEnabled()) {
+      IsAiSubscriptionAvatarRingIOSEnabled()) {
     // We may need to add/remove the AI Tier rings and chip.
     [self.consumer updatePrimaryAccount];
   }
@@ -602,7 +602,7 @@
 #pragma mark - Private
 
 - (NSInteger)AITier {
-  if (_error || !IsAiAvatarRingIosEnabled()) {
+  if (_error || !IsAiSubscriptionAvatarRingIOSEnabled()) {
     // In case of error, we do not want to display any AI Tier information. Even
     // in the case where the error does not impact the tier feature access. That
     // ensures the Account Menu and the NTP displays are consistent.

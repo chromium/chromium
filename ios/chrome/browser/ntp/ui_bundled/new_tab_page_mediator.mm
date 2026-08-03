@@ -877,9 +877,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
             _signedInIdentity, IdentityAvatarSize::SmallSize);
 
     BOOL hasAITier =
-        IsAiAvatarRingIosEnabled() &&
+        IsAiSubscriptionAvatarRingIOSEnabled() &&
         _subscriptionEligibilityService->GetAiSubscriptionTier() > 0;
-
     [self.imageUpdater updateAccountWithName:_signedInIdentity.userFullName
                                        email:_signedInIdentity.userEmail
                                  avatarImage:avatarImage

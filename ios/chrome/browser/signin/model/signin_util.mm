@@ -134,7 +134,7 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size,
       break;
   }
   DCHECK_NE(size, 0);
-  if (IsAiAvatarRingIosEnabled()) {
+  if (IsAiSubscriptionAvatarRingIOSEnabled()) {
     switch (ring_size) {
       case AITierRingSize::kNoRing:
       case AITierRingSize::kImageSize:
