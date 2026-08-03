@@ -66,7 +66,6 @@ import java.util.List;
 public class DefaultBrowserPromoFirstRunFragmentRenderTest {
     private static final int REVISION = 0;
     private static final int DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH = 600;
-    private static final int STANDARD_PHONE_PORTRAIT_VIEW_WIDTH = 360;
 
     /**
      * * Custom version of the fragment to allow manual injection of the delegate since we aren't
@@ -125,6 +124,7 @@ public class DefaultBrowserPromoFirstRunFragmentRenderTest {
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
     private CustomDefaultBrowserPromoFirstRunFragment mFragment;
+    private int mOriginalScreenWidthDp;
 
     // Inject the params into the test environment.
     @UseMethodParameterBefore(NightModeAndOrientationParameterProvider.class)
@@ -149,6 +149,8 @@ public class DefaultBrowserPromoFirstRunFragmentRenderTest {
                 .enable(UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING)
                 .apply();
         mActivityTestRule.launchActivity(null);
+        mOriginalScreenWidthDp =
+                mActivityTestRule.getActivity().getResources().getConfiguration().screenWidthDp;
 
         // Explicitly set the background color of the container to match the theme
         ThreadUtils.runOnUiThreadBlocking(
@@ -167,30 +169,30 @@ public class DefaultBrowserPromoFirstRunFragmentRenderTest {
 
     @After
     public void tearDown() {
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
-
-        // Reset configuration width to a standard phone portrait value.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Configuration config =
-                            mActivityTestRule.getActivity().getResources().getConfiguration();
-                    config.screenWidthDp = STANDARD_PHONE_PORTRAIT_VIEW_WIDTH;
-                    mActivityTestRule
-                            .getActivity()
-                            .getResources()
-                            .updateConfiguration(
-                                    config,
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getResources()
-                                            .getDisplayMetrics());
-                });
+        // Reset configuration width to original value.
+        if (mOriginalScreenWidthDp != 0 && mActivityTestRule.getActivity() != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Configuration config =
+                                mActivityTestRule.getActivity().getResources().getConfiguration();
+                        config.screenWidthDp = mOriginalScreenWidthDp;
+                        mActivityTestRule
+                                .getActivity()
+                                .getResources()
+                                .updateConfiguration(
+                                        config,
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getResources()
+                                                .getDisplayMetrics());
+                    });
+        }
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 });
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     private void launchFragmentWithArm(String arm, int orientation) {

@@ -110,6 +110,7 @@ public class HistorySyncTest {
                     });
         }
         mSigninTestRule.forceSignOut();
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     @Test

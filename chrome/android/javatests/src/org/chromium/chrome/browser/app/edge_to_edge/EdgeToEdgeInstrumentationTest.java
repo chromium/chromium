@@ -126,10 +126,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     @After
     public void tearDown() {
-        if (mActivity.getResources().getConfiguration().orientation
-                != Configuration.ORIENTATION_PORTRAIT) {
-            rotate(Configuration.ORIENTATION_PORTRAIT);
-        }
+        ActivityTestUtils.clearActivityOrientation(mActivity);
     }
 
     /** Puts the screen ToEdge by loading a page that has the appropriate HTML. */

@@ -328,6 +328,9 @@ public class CustomTabActivityTest {
                 });
 
         CustomTabsTestUtils.cleanupSessions();
+        if (getActivity() != null) {
+            ActivityTestUtils.clearActivityOrientation(getActivity());
+        }
     }
 
     private CustomTabActivity getActivity() {

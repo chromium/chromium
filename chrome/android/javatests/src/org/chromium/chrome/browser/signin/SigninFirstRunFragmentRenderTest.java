@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -192,6 +193,11 @@ public class SigninFirstRunFragmentRenderTest {
                     when(mFirstRunPageDelegateMock.getChildAccountStatusSupplier())
                             .thenReturn(childAccountStatusListener);
                 });
+    }
+
+    @After
+    public void tearDown() {
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     @Test

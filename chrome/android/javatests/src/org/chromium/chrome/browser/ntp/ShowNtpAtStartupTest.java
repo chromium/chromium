@@ -33,6 +33,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -112,6 +113,13 @@ public class ShowNtpAtStartupTest {
         EducationalTipModuleUtils.setEducationalTipActiveForTesting(false);
         // TODO(https://crbug.com/454091341): Enable incognito mode on this test suite.
         IncognitoUtils.setEnabledForTesting(false);
+    }
+
+    @After
+    public void tearDown() {
+        if (mActivityTestRule.getActivity() != null) {
+            ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        }
     }
 
     @Test

@@ -142,6 +142,7 @@ public class HistorySyncRenderTest {
                         mHistorySyncCoordinator = null;
                     });
         }
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     @Test

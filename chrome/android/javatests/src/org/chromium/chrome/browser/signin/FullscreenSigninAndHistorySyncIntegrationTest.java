@@ -156,6 +156,9 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @After
     public void tearDown() {
+        if (mActivity != null) {
+            ActivityTestUtils.clearActivityOrientation(mActivity);
+        }
         ApplicationTestUtils.finishActivity(mActivity);
     }
 
