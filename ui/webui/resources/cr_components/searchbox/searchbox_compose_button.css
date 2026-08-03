@@ -203,16 +203,16 @@
   z-index: var(--cr-searchbox-compose-button-z-index, 100);
 }
 
-:host-context([ntp-realbox-next-enabled]) {
+:host([is-fusebox-enabled]) {
   --cr-button-height: 36px;
 }
 
-:host-context([ntp-realbox-next-enabled]) #composeButton {
+:host([is-fusebox-enabled]) #composeButton {
   font-size: 13px;
   font-weight: 500;
 }
 
-:host-context([ntp-realbox-next-enabled]) .glow-container {
+:host([is-fusebox-enabled]) .glow-container {
   height: var(--cr-searchbox-icon-size);
   top: 8px;
 }
@@ -244,7 +244,7 @@
   filter: blur(40px);
 }
 
-:host([ntp-realbox-next-enabled_]) .outer-glow {
+:host([is-fusebox-enabled]) .outer-glow {
   filter: blur(2px);
 }
 
@@ -252,7 +252,7 @@
   filter: none;
 }
 
-:host([ntp-realbox-next-enabled_]) #glowAnimationWrapper:hover .outer-glow {
+:host([is-fusebox-enabled]) #glowAnimationWrapper:hover .outer-glow {
   filter: blur(2px);
 }
 
@@ -293,16 +293,16 @@
   rotate: var(--mask-angle-start);
 }
 
-:host([ntp-realbox-next-enabled_]) .gradient-and-mask-wrapper .gradient:before {
+:host([is-fusebox-enabled]) .gradient-and-mask-wrapper .gradient:before {
   background: var(--glif-gradient);
   rotate: calc(var(--glif-angle-start) + var(--mouse-angle, 0deg));
 }
 
-:host([ntp-realbox-next-enabled_]) .play .gradient-and-mask-wrapper .gradient:before {
+:host([is-fusebox-enabled]) .play .gradient-and-mask-wrapper .gradient:before {
   animation: fade-in-out var(--anim-duration) linear forwards;
 }
 
-:host([ntp-realbox-next-enabled_]) .gradient-and-mask-wrapper .mask:before {
+:host([is-fusebox-enabled]) .gradient-and-mask-wrapper .mask:before {
   background: var(--mask-gradient);
   rotate: calc(var(--mask-angle-start) + var(--mouse-angle, 0deg));
 }
@@ -323,12 +323,12 @@
              fade-in-out-infinite var(--anim-duration) linear forwards;
 }
 
-:host([ntp-realbox-next-enabled_]) #glowAnimationWrapper:hover .gradient-and-mask-wrapper .mask:before {
+:host([is-fusebox-enabled]) #glowAnimationWrapper:hover .gradient-and-mask-wrapper .mask:before {
   --anim-duration: 8s;
   animation: fade-in-out-infinite var(--anim-duration) linear forwards;
 }
 
-:host([ntp-realbox-next-enabled_])
+:host([is-fusebox-enabled])
 #glowAnimationWrapper:hover
 .gradient-and-mask-wrapper
 .gradient:before {

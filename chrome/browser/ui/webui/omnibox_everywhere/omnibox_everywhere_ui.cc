@@ -171,8 +171,7 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
                      omnibox::kShowComposeboxImageSuggestions.Get());
 
   source->AddBoolean("searchboxShowComposeEntrypoint", IsAimEligible(profile_));
-  source->AddBoolean("ntpRealboxNextEnabled", IsFuseboxEligible(profile_));
-
+  source->AddBoolean("isFuseboxEnabled", IsFuseboxEligible(profile_));
   source->AddBoolean("composeboxShowTypedSuggest",
                      omnibox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());

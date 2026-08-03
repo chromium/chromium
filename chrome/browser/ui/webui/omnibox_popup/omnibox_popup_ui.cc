@@ -138,7 +138,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::IsAimPopupFeatureEnabled());
   // TODO(b/504670497): Replace this NTP-specific flag with a generic flag.
   // TODO(b/474406096): Replace this NTP-specific flag with a generic flag.
-  source->AddBoolean("ntpRealboxNextEnabled", false);
+  source->AddBoolean("isFuseboxEnabled", false);
   source->AddBoolean("searchboxDynamicColorScheme",
                      omnibox::kWebUIOmniboxDynamicColorScheme.Get());
   source->AddBoolean("searchboxDynamicAnimation",
