@@ -567,7 +567,7 @@ public class AutofillOptionsTest {
         verify(mPrefs)
                 .setString(
                         eq(Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL),
-                        eq(EXAMPLE_SERVICE_PACKAGE.flattenToString()));
+                        eq(EXAMPLE_SERVICE_PACKAGE.getPackageName()));
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
     }
 
