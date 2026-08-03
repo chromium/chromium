@@ -303,7 +303,8 @@ TEST_F(BookmarksHomeViewControllerTest,
   [controller viewWillAppear:NO];
 }
 
-// Tests that deallocating the view controller without calling shutdown does not crash.
+// Tests that deallocating the view controller without calling shutdown does not
+// crash.
 TEST_F(BookmarksHomeViewControllerTest, DeallocWithoutShutdownDoesNotCrash) {
   @autoreleasepool {
     BookmarksHomeViewController* controller =

@@ -1054,4 +1054,10 @@ BASE_DECLARE_FEATURE(kGlassToolbar);
 // Returns true if the GlassToolbar feature is enabled.
 bool IsGlassToolbarEnabled();
 
+// Enables the NextOldDesign feature.
+BASE_DECLARE_FEATURE(kNextOldDesign);
+
+// Returns true if the NextOldDesign feature is enabled.
+bool IsNextOldDesignEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
