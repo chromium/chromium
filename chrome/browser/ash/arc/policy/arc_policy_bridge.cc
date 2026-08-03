@@ -19,6 +19,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
@@ -826,8 +827,18 @@ void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
       });
   if (hasForceInstallApps) {
     VLOG(1) << "Force install apps found, allowing ARC activation.";
-    arc::ArcSessionManager::Get()->AllowActivation(
-        arc::ArcSessionManager::AllowActivationReason::kForcedByPolicy);
+    // PostTask is used here to avoid re-entrancy issues with ArcSessionManager
+    // observers, as this function can be called from within an observer
+    // callback.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce([]() {
+          auto* manager = arc::ArcSessionManager::Get();
+          if (manager) {
+            manager->AllowActivation(
+                arc::ArcSessionManager::AllowActivationReason::
+                    kForcedByPolicy);
+          }
+        }));
   }
 }
 

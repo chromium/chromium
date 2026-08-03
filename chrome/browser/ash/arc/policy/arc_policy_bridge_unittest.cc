@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
@@ -764,6 +765,29 @@ TEST_F(ArcPolicyBridgeTest, ReportDPCVersionTest) {
   ReportDPCVersionAndVerifyObserverCallback("100");
 }
 
+TEST_F(ArcPolicyBridgeTest, OnArcStartDelayedReentrancyCrash) {
+  // Setup conditions for ARC on demand to delay activation.
+  policy_bridge()->OverrideIsManagedForTesting(true);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(arc::prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(arc::prefs::kArcSignedIn, true);
+  prefs->SetBoolean(arc::prefs::kArcPackagesIsUpToDate, true);
+
+  policy_map().Set(
+      policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value("{\"applications\":"
+                  "[{\"packageName\":\"com.google.android.apps.youtube.kids\","
+                  "\"installType\":\"FORCE_INSTALLED\"}]}"),
+      nullptr);
+
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+}
+
 // This and the following test send the policies through a mojo connection
 // between a PolicyInstance and the PolicyBridge.
 TEST_F(ArcPolicyBridgeTest, PolicyInstanceUnmanagedTest) {
@@ -840,6 +864,7 @@ TEST_F(ArcPolicyBridgeTest, ActivateArcIfRequiredByPolicy_ForceInstalledApps) {
                   "}]}"),
       nullptr);
   policy_bridge()->OnArcStartDelayed();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 
