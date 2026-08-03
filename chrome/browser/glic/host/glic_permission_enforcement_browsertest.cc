@@ -2,36 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/interaction/interactive_test.h"
 
 namespace glic {
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
-
-// TODO(crbug.com/537847154): Migrate this test suite to GlicApiBrowserTest.
-class GlicPermissionEnforcementUiTest : public NonInteractiveGlicTest {
+class GlicPermissionEnforcementBrowserTest : public GlicApiBrowserTest {
  public:
-  GlicPermissionEnforcementUiTest()
-      : geolocation_overrider_(
-            std::make_unique<device::ScopedGeolocationOverrider>(
-                fake_latitude_,
-                fake_longitude_)) {}
-  ~GlicPermissionEnforcementUiTest() override = default;
-  double fake_latitude() const { return fake_latitude_; }
-  double fake_longitude() const { return fake_longitude_; }
+  GlicPermissionEnforcementBrowserTest()
+      : GlicApiBrowserTest("./glic_permission_enforcement_browsertest.js") {
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(fake_latitude_,
+                                                             fake_longitude_);
+  }
+  ~GlicPermissionEnforcementBrowserTest() override = default;
 
  protected:
-  // The values used for the position override.
   double fake_latitude_ = 1.23;
   double fake_longitude_ = 4.56;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
@@ -39,114 +30,70 @@ class GlicPermissionEnforcementUiTest : public NonInteractiveGlicTest {
 
 // TODO(crbug.com/409118577): Microphone permissions are not actually gated by
 // the microphone permission yet.
-IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
-                       DISABLED_MicrophonePermissionTestDeny) {
-  const InteractiveBrowserTest::DeepQuery kAudioCaptureStart = {
-      "#audioCapStart"};
-  const InteractiveBrowserTest::DeepQuery kAudioCaptureStop = {"#audioCapStop"};
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicMicrophoneEnabled, false);
-  RunTestSequence(
-      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
-                               GlicInstrumentMode::kHostAndContents),
-      WaitForElementVisible(kGlicContentsElementId, {"body"}),
-      ClickMockGlicElement(kAudioCaptureStart),
-      WaitForJsResult(kGlicContentsElementId,
-                      "() => document.querySelector('#audioStatus').innerText",
-                      "Caught error: NotAllowedError: Permission denied"));
+IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
+                       DISABLED_testMicrophonePermissionTestDeny) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, false);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
-                       MicrophonePermissionTestAllow) {
-  const InteractiveBrowserTest::DeepQuery kAudioCaptureStart = {
-      "#audioCapStart"};
-  const InteractiveBrowserTest::DeepQuery kAudioCaptureStop = {"#audioCapStop"};
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicMicrophoneEnabled, true);
-  RunTestSequence(
-      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
-                               GlicInstrumentMode::kHostAndContents),
-      WaitForElementVisible(kGlicContentsElementId, {"body"}),
-      ClickMockGlicElement(kAudioCaptureStart),
-      WaitForJsResult(kGlicContentsElementId,
-                      "() => document.querySelector('#audioStatus').innerText",
-                      "Recording..."),
-      ClickMockGlicElement(kAudioCaptureStop),
-      WaitForJsResult(kGlicContentsElementId,
-                      "() => document.querySelector('#audioStatus').innerText",
-                      "Recording Stopped"));
+#if BUILDFLAG(IS_ANDROID)
+// TODO: Android does not support microphone input.
+#define MAYBE_testMicrophonePermissionTestAllow \
+  DISABLED_testMicrophonePermissionTestAllow
+#else
+#define MAYBE_testMicrophonePermissionTestAllow \
+  testMicrophonePermissionTestAllow
+#endif
+IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
+                       MAYBE_testMicrophonePermissionTestAllow) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, true);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
-                       TabContextPermissionTestDeny) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
-  const InteractiveBrowserTest::DeepQuery kContextToggle = {"#getpagecontext"};
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicTabContextEnabled, false);
-  RunTestSequence(
-      InstrumentTab(kActiveTabId),
-      NavigateWebContents(kActiveTabId, embedded_test_server()->GetURL("/")),
-      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
-                               GlicInstrumentMode::kHostAndContents),
-      WaitForElementVisible(kGlicContentsElementId, {"body"}),
-      ClickMockGlicElement(kContextToggle),
-      WaitForJsResult(
-          kGlicContentsElementId,
-          "() => document.querySelector('#getPageContextStatus').innerText",
-          "Error getting page context: Error: tabContext failed: permission "
-          "denied: context permission not enabled"));
+IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
+                       testTabContextPermissionTestDeny) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, false);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
+                                       false);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
-                       TabContextPermissionTestAllow) {
-  const InteractiveBrowserTest::DeepQuery kContextToggle = {"#getpagecontext"};
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicTabContextEnabled, true);
-  RunTestSequence(
-      InstrumentTab(kActiveTabId),
-      NavigateWebContents(kActiveTabId, embedded_test_server()->GetURL("/")),
-      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
-                               GlicInstrumentMode::kHostAndContents),
-      WaitForElementVisible(kGlicContentsElementId, {"body"}),
-      ClickMockGlicElement(kContextToggle),
-      WaitForJsResult(
-          kGlicContentsElementId,
-          "() => document.querySelector('#getPageContextStatus').innerText",
-          "Finished Get Page Context."));
+IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
+                       testTabContextPermissionTestAllow) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, true);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
-                       LocationPermissionTestDeny) {
-  const InteractiveBrowserTest::DeepQuery kGetLocationButton = {"#getlocation"};
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicGeolocationEnabled, false);
-  RunTestSequence(
-      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
-                               GlicInstrumentMode::kHostAndContents),
-      WaitForElementVisible(kGlicContentsElementId, {"body"}),
-      ClickMockGlicElement(kGetLocationButton),
-      WaitForJsResult(
-          kGlicContentsElementId,
-          "() => document.querySelector('#locationStatus').innerText",
-          "Permission Denied."));
+#if BUILDFLAG(IS_ANDROID)
+// TODO(b/519278240): Enable once geolocation is fixed on android
+#define MAYBE_testLocationPermissionTestDeny \
+  DISABLED_testLocationPermissionTestDeny
+#else
+#define MAYBE_testLocationPermissionTestDeny testLocationPermissionTestDeny
+#endif
+IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
+                       MAYBE_testLocationPermissionTestDeny) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicGeolocationEnabled, false);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
-                       LocationPermissionTestAllow) {
-  const InteractiveBrowserTest::DeepQuery kGetLocationButton = {"#getlocation"};
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicGeolocationEnabled, true);
-  RunTestSequence(
-      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
-                               GlicInstrumentMode::kHostAndContents),
-      WaitForElementVisible(kGlicContentsElementId, {"body"}),
-      ClickMockGlicElement(kGetLocationButton),
-      WaitForJsResult(
-          kGlicContentsElementId,
-          "() => document.querySelector('#locationStatus').innerText",
-          "Location Received."));
+#if BUILDFLAG(IS_ANDROID)
+// TODO(b/519278240): Enable once geolocation is fixed on android
+#define MAYBE_testLocationPermissionTestAllow \
+  DISABLED_testLocationPermissionTestAllow
+#else
+#define MAYBE_testLocationPermissionTestAllow testLocationPermissionTestAllow
+#endif
+IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
+                       MAYBE_testLocationPermissionTestAllow) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicGeolocationEnabled, true);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
 }
+
 }  // namespace glic
