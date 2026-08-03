@@ -9,6 +9,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -457,8 +458,15 @@ bool VerifyNavigationInitiator(
 
 bool VerifyNavigationHeaders(RenderProcessHost* process,
                              const std::string& headers) {
+  // Navigation headers may be LF-separated and are normalized to CRLF
+  // before being applied to the outgoing request.
+  // AddHeadersFromString() splits only on CRLF, so apply the same normalization
+  // here to ensure consistent header verification.
+  std::string headers_crlf;
+  base::ReplaceChars(headers, "\n", "\r\n", &headers_crlf);
+
   net::HttpRequestHeaders parsed_headers;
-  parsed_headers.AddHeadersFromString(headers);
+  parsed_headers.AddHeadersFromString(headers_crlf);
   for (net::HttpRequestHeaders::Iterator header(parsed_headers);
        header.GetNext();) {
     // Headers should be strictly allowlisted because there can be security
