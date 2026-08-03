@@ -80,10 +80,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
       const std::string& device_id,
       VideoCaptureApi capture_api,
       const bool banned_for_d3d11,
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager,
       IMFMediaSource** source_out);
   virtual MFSourceOutcome CreateDeviceSourceMediaFoundation(
       Microsoft::WRL::ComPtr<IMFAttributes> attributes,
       const bool banned_for_d3d11,
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager,
       IMFMediaSource** source);
   virtual bool EnumerateDeviceSourcesMediaFoundation(
       Microsoft::WRL::ComPtr<IMFAttributes> attributes,
@@ -95,7 +97,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   virtual VideoCaptureFormats GetSupportedFormatsMediaFoundation(
       Microsoft::WRL::ComPtr<IMFMediaSource> source,
       const bool banned_for_d3d11,
-      const std::string& display_name);
+      const std::string& display_name,
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
 
   bool use_d3d11_with_media_foundation_for_testing() {
     return use_d3d11_with_media_foundation_;
@@ -106,7 +109,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
  private:
   void DeviceInfoReady(std::vector<VideoCaptureDeviceInfo> devices_info,
                        GetDevicesInfoCallback result_callback);
-  std::vector<VideoCaptureDeviceInfo> GetDevicesInfoMediaFoundation();
+  std::vector<VideoCaptureDeviceInfo> GetDevicesInfoMediaFoundation(
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
   void AugmentDevicesListWithDirectShowOnlyDevices(
       std::vector<VideoCaptureDeviceInfo>* devices_info);
   // Queries DirectShow devices, skips over devices listed in |known_devices|

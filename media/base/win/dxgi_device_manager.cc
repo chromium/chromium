@@ -114,9 +114,7 @@ DXGIDeviceManager::DXGIDeviceManager(
     CHROME_LUID luid)
     : mf_dxgi_device_manager_(std::move(mf_dxgi_device_manager)),
       d3d_device_reset_token_(d3d_device_reset_token),
-      luid_(luid) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+      luid_(luid) {}
 
 DXGIDeviceManager::DXGIDeviceManager(
     Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager,
@@ -131,7 +129,7 @@ DXGIDeviceManager::~DXGIDeviceManager() = default;
 
 HRESULT DXGIDeviceManager::ResetDevice(
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock lock(lock_);
 
   constexpr uint32_t kDeviceFlags =
       D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_BGRA_SUPPORT;
@@ -184,6 +182,7 @@ HRESULT DXGIDeviceManager::ResetDevice(
 
 HRESULT DXGIDeviceManager::ResetDeviceWithSharedDevice(
     ID3D11Device* shared_device) {
+  base::AutoLock lock(lock_);
   HRESULT hr = mf_dxgi_device_manager_->ResetDevice(shared_device,
                                                     d3d_device_reset_token_);
   RETURN_ON_HR_FAILURE(hr, "Failed to reset device on MF DXGI device manager",
@@ -193,8 +192,6 @@ HRESULT DXGIDeviceManager::ResetDeviceWithSharedDevice(
 
 HRESULT DXGIDeviceManager::CheckDeviceRemovedAndGetDevice(
     Microsoft::WRL::ComPtr<ID3D11Device>* new_device) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   Microsoft::WRL::ComPtr<ID3D11Device> device = GetDevice();
   HRESULT hr = device ? device->GetDeviceRemovedReason() : MF_E_UNEXPECTED;
   if (FAILED(hr)) {
@@ -216,6 +213,7 @@ HRESULT DXGIDeviceManager::CheckDeviceRemovedAndGetDevice(
 
 HRESULT DXGIDeviceManager::RegisterInCaptureEngineAttributes(
     IMFAttributes* attributes) {
+  base::AutoLock lock(lock_);
   HRESULT hr = attributes->SetUnknown(MF_CAPTURE_ENGINE_D3D_MANAGER,
                                       mf_dxgi_device_manager_.Get());
   RETURN_ON_HR_FAILURE(
@@ -225,6 +223,7 @@ HRESULT DXGIDeviceManager::RegisterInCaptureEngineAttributes(
 
 HRESULT DXGIDeviceManager::RegisterInSourceReaderAttributes(
     IMFAttributes* attributes) {
+  base::AutoLock lock(lock_);
   HRESULT hr = attributes->SetUnknown(MF_SOURCE_READER_D3D_MANAGER,
                                       mf_dxgi_device_manager_.Get());
   RETURN_ON_HR_FAILURE(
@@ -234,6 +233,7 @@ HRESULT DXGIDeviceManager::RegisterInSourceReaderAttributes(
 
 HRESULT DXGIDeviceManager::RegisterWithMediaSource(
     Microsoft::WRL::ComPtr<IMFMediaSource> media_source) {
+  base::AutoLock lock(lock_);
   Microsoft::WRL::ComPtr<IMFMediaSourceEx> source_ext;
   HRESULT hr = media_source.As(&source_ext);
   RETURN_ON_HR_FAILURE(hr, "Failed to query IMFMediaSourceEx", hr);
@@ -243,22 +243,27 @@ HRESULT DXGIDeviceManager::RegisterWithMediaSource(
 }
 
 Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceManager::GetDevice() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  base::AutoLock lock(lock_);
   DXGIDeviceScopedHandle device_handle(mf_dxgi_device_manager_.Get());
   return device_handle.GetDevice();
 }
 
 Microsoft::WRL::ComPtr<IMFDXGIDeviceManager>
 DXGIDeviceManager::GetMFDXGIDeviceManager() {
+  base::AutoLock lock(lock_);
   return mf_dxgi_device_manager_;
 }
 
 void DXGIDeviceManager::OnGpuInfoUpdate(CHROME_LUID luid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (luid.HighPart != luid_.HighPart || luid.LowPart != luid_.LowPart) {
-    luid_ = luid;
+  bool needs_reset = false;
+  {
+    base::AutoLock lock(lock_);
+    if (luid.HighPart != luid_.HighPart || luid.LowPart != luid_.LowPart) {
+      luid_ = luid;
+      needs_reset = true;
+    }
+  }
+  if (needs_reset) {
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     ResetDevice(device);
   }
