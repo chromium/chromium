@@ -486,9 +486,9 @@ public class MultiInstanceManagerApi31UnitTest {
         // instance 2.
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
 
-        // Check that the flag was reset to NORMAL.
+        // Check that the flag was reset to DEFAULT.
         assertEquals(
-                LastSessionExitType.NORMAL,
+                LastSessionExitType.DEFAULT,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
     }
 
@@ -533,9 +533,9 @@ public class MultiInstanceManagerApi31UnitTest {
         // instance 2.
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
 
-        // Check that the flag was reset to NORMAL.
+        // Check that the flag was reset to DEFAULT.
         assertEquals(
-                LastSessionExitType.NORMAL,
+                LastSessionExitType.DEFAULT,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
     }
 
@@ -2041,6 +2041,32 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    public void
+            testWriteLastAccessedTime_OnTopResumedActivityChanged_whenFinishing_doesNotUpdateAccessTime() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+
+        // Setup instance for |mTabbedActivityTask62| with index 0.
+        MultiInstanceManagerApi31 multiInstanceManager0 =
+                createTestMultiInstanceManager(mTabbedActivityTask62);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        multiInstanceManager0.initialize(0, TASK_ID_62, SupportedProfileType.MIXED);
+        multiInstanceManager0.onTopResumedActivityChanged(/* isTopResumedActivity= */ true);
+        long initialAccessTime = ChromeMultiInstancePersistentStore.readLastAccessedTime(0);
+
+        mFakeTimeTestRule.advanceMillis(1);
+        when(mTabbedActivityTask62.isFinishing()).thenReturn(true);
+
+        // Act: Signal top resumed activity changed while finishing.
+        multiInstanceManager0.onTopResumedActivityChanged(/* isTopResumedActivity= */ true);
+
+        // Verify: Access time for instance 0 should NOT be updated.
+        assertEquals(
+                "Access time should not be updated when activity is finishing.",
+                initialAccessTime,
+                ChromeMultiInstancePersistentStore.readLastAccessedTime(0));
+    }
+
+    @Test
     public void triggerInstanceLimitDowngrade() {
         // Set initial instance limit and allocate ids for max instances.
         MultiWindowUtils.setMaxInstancesForTesting(3);
@@ -2568,6 +2594,70 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testOnDestroy_whenFinishing_relaunch_keepsInstanceRecoverable() {
+        // Setup.
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+        ChromeMultiInstancePersistentStore.writeTabCount(
+                instanceId, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        when(mCurrentActivity.isFinishing()).thenReturn(true);
+
+        // Act.
+        mMultiInstanceManager.onDestroy();
+
+        // Verify.
+        assertTrue(
+                "Instance should still be recoverable after onDestroy() when relaunching.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testOnDestroy_whenFinishing_relaunch_noNormalTabs_makesInstanceNonRecoverable() {
+        // Setup.
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+        ChromeMultiInstancePersistentStore.writeTabCount(
+                instanceId, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        when(mCurrentActivity.isFinishing()).thenReturn(true);
+
+        // Act.
+        mMultiInstanceManager.onDestroy();
+
+        // Verify.
+        assertFalse(
+                "Instance should not be recoverable after onDestroy() when it has no normal tabs.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
     public void testOnStopWithNative_whenFinishing_makesInstanceNonRecoverable() {
         // Setup sData so that isRecoverable is supported.
         ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
@@ -2589,6 +2679,72 @@ public class MultiInstanceManagerApi31UnitTest {
         // Verify isRecoverable is cleared.
         assertFalse(
                 "Instance should not be recoverable after onStopWithNative() when finishing.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testOnStopWithNative_whenFinishing_relaunch_keepsInstanceRecoverable() {
+        // Setup.
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+        ChromeMultiInstancePersistentStore.writeTabCount(
+                instanceId, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        when(mCurrentActivity.isFinishing()).thenReturn(true);
+
+        // Act.
+        mMultiInstanceManager.onStopWithNative();
+
+        // Verify.
+        assertTrue(
+                "Instance should still be recoverable after onStopWithNative() when relaunching.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void
+            testOnStopWithNative_whenFinishing_relaunch_noNormalTabs_makesInstanceNonRecoverable() {
+        // Setup.
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+        ChromeMultiInstancePersistentStore.writeTabCount(
+                instanceId, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        when(mCurrentActivity.isFinishing()).thenReturn(true);
+
+        // Act.
+        mMultiInstanceManager.onStopWithNative();
+
+        // Verify.
+        assertFalse(
+                "Instance should not be recoverable after onStopWithNative() when it has no normal"
+                        + " tabs.",
                 ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
                         .anyMatch(info -> info.windowId == instanceId));
 

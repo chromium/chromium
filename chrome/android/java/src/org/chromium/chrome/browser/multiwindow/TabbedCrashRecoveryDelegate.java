@@ -121,7 +121,7 @@ public class TabbedCrashRecoveryDelegate {
                 if (windowId == hostActivity.getWindowId()) continue;
                 // Since recovery is cancelled, mark all windows as non-recoverable. Additionally,
                 // finish tasks for windows without any normal tabs to avoid keeping unusable tasks.
-                cleanUpWindow(windowId, appTasks, hasNoNormalTabs(windowId));
+                cleanUpWindow(windowId, appTasks, MultiWindowUtils.hasNoNormalTabs(windowId));
             }
             return false;
         }
@@ -144,14 +144,13 @@ public class TabbedCrashRecoveryDelegate {
             // not be usable after a crash. Clean them up (e.g. finish their live tasks and mark
             // them as non-recoverable) so we don't restore them or leave orphaned, unusable tasks
             // in Android Recents.
-            if (hasNoNormalTabs(windowId)) {
+            if (MultiWindowUtils.hasNoNormalTabs(windowId)) {
                 cleanUpWindow(windowId, appTasks, /* shouldFinishTask= */ true);
                 continue;
             }
 
             nonHostCrashedWindowCount++;
-            int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
-            if (appTasks.containsKey(persistedTaskId)) {
+            if (MultiWindowUtils.isTaskAlive(windowId, appTasks)) {
                 crashedWindowTaskCount++;
             }
 
@@ -446,13 +445,6 @@ public class TabbedCrashRecoveryDelegate {
                 appTasks.remove(persistedTaskId);
             }
         }
-    }
-
-    /**
-     * @return {@code true} if the window has no regular/normal tabs.
-     */
-    private boolean hasNoNormalTabs(int windowId) {
-        return ChromeMultiInstancePersistentStore.readNormalTabCount(windowId) == 0;
     }
 
     @VisibleForTesting

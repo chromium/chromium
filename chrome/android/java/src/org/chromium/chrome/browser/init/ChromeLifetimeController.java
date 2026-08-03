@@ -20,6 +20,8 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.BrowserRestartActivity;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.LastSessionExitType;
+import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate;
 
 /**
  * Answers requests to kill and (potentially) restart Chrome's main browser process.
@@ -77,6 +79,10 @@ class ChromeLifetimeController
     @Override
     public void onTerminate(boolean restart) {
         mRestartChromeOnDestroy = restart;
+        if (restart) {
+            TabbedStartupWindowPolicyDelegate.getInstance()
+                    .maybeSaveWindowStateOnSessionTermination(LastSessionExitType.RELAUNCH);
+        }
 
         // Tell all Chrome Activities to finish themselves.
         for (Activity activity : ApplicationStatus.getRunningActivities()) {

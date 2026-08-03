@@ -25,7 +25,9 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -44,6 +46,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -57,6 +60,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.LastSessionExitType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -1000,6 +1004,36 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Verify: Not called a second time.
         verify(mTabbedCrashRecoveryDelegate, times(1)).initializeCrashRecoveryMetadata();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testOnInitialize_relaunch_restoresWindows() {
+        // Setup.
+        ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
+        DeviceInfo.setIsDesktopForTesting(true);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 0, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 0);
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+
+        ActivityManager activityManager = mock(ActivityManager.class);
+        doReturn(activityManager).when(mTabbedActivity1).getSystemService(Context.ACTIVITY_SERVICE);
+        doReturn(0).when(mTabbedActivity1).getWindowId();
+
+        // Act.
+        mMultiInstanceOrchestrator.onInitialize(mTabbedActivity1, mMultiInstanceManager1);
+
+        // Verify.
+        verify(mTabbedActivity1).startActivity(any());
+        assertEquals(
+                LastSessionExitType.DEFAULT,
+                ChromeMultiInstancePersistentStore.readLastSessionExitType());
+        assertFalse(
+                "isRecoverable should be cleared when restoring window on relaunch.",
+                ChromeMultiInstancePersistentStore.readIsRecoverable(1));
     }
 
     @Test

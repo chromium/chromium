@@ -1752,6 +1752,15 @@ public class MultiWindowUtils implements ActivityStateListener {
         return null;
     }
 
+    /**
+     * Returns whether the new startup window policy feature is enabled.
+     *
+     * @return {@code true} if the feature is enabled; {@code false} otherwise.
+     */
+    public static boolean isNewStartupWindowPolicyEnabled() {
+        return ChromeFeatureList.sOnStartupWindowPolicy.isEnabled() && DeviceInfo.isDesktop();
+    }
+
     /* package */ static int getRunningTabbedActivityCount() {
         int numActivities = 0;
         List<Activity> activities = ApplicationStatus.getRunningActivities();
@@ -1777,6 +1786,15 @@ public class MultiWindowUtils implements ActivityStateListener {
         return results;
     }
 
+    /* package */ static boolean hasNoNormalTabs(int windowId) {
+        return ChromeMultiInstancePersistentStore.readNormalTabCount(windowId) == 0;
+    }
+
+    /* package */ static boolean isTaskAlive(int windowId, Map<Integer, AppTask> appTasksById) {
+        int taskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
+        return appTasksById.containsKey(taskId);
+    }
+
     /* package */ static Map<Integer, AppTask> getAppTasksById(Context context) {
         ActivityManager activityManager =
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -1787,10 +1805,6 @@ public class MultiWindowUtils implements ActivityStateListener {
             if (info != null) results.put(info.taskId, task);
         }
         return results;
-    }
-
-    /* package */ static boolean isNewStartupWindowPolicyEnabled() {
-        return ChromeFeatureList.sOnStartupWindowPolicy.isEnabled() && DeviceInfo.isDesktop();
     }
 
     /* package */ static void setAppTaskIdsForTesting(Set<Integer> appTaskIds) {

@@ -58,7 +58,8 @@ public abstract class MultiInstanceManager {
         NewWindowAppSource.DEV_TOOLS,
         NewWindowAppSource.BROWSER_WINDOW_CREATOR,
         NewWindowAppSource.ANDROID_S_UPDATE,
-        NewWindowAppSource.CRASH_RECOVERY
+        NewWindowAppSource.CRASH_RECOVERY,
+        NewWindowAppSource.RELAUNCH
     })
     public @interface NewWindowAppSource {
         int UNKNOWN = 0;
@@ -74,7 +75,8 @@ public abstract class MultiInstanceManager {
         int BROWSER_WINDOW_CREATOR = 10;
         int ANDROID_S_UPDATE = 11;
         int CRASH_RECOVERY = 12;
-        int NUM_ENTRIES = 13;
+        int RELAUNCH = 13;
+        int NUM_ENTRIES = 14;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)
@@ -125,11 +127,28 @@ public abstract class MultiInstanceManager {
         int INVALID_INSTANCE = 7;
     }
 
-    @IntDef({LastSessionExitType.NORMAL, LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP})
+    /**
+     * Types of app-controlled session exits that determine how windows are restored on subsequent
+     * app launch.
+     */
+    @IntDef({
+        LastSessionExitType.DEFAULT,
+        LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP,
+        LastSessionExitType.RELAUNCH
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LastSessionExitType {
-        int NORMAL = 0;
+        /** Default session termination type. */
+        int DEFAULT = 0;
+
+        /**
+         * The last active window was closed by an app action that triggered {@link
+         * #closeWindows(boolean)}.
+         */
         int LAST_WINDOW_CLOSED_BY_APP = 1;
+
+        /** The session was terminated to perform an app relaunch. */
+        int RELAUNCH = 2;
     }
 
     /** A class that holds information about an allocated instance ID. */

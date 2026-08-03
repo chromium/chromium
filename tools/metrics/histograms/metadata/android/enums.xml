@@ -1639,6 +1639,7 @@ chromium-metrics-reviews@google.com.
       label="Browser window creation from native feature (eg. extensions)"/>
   <int value="11" label="Upgrade to Android S multi-instance support"/>
   <int value="12" label="Crash recovery"/>
+  <int value="13" label="Relaunch"/>
 </enum>
 
 <enum name="NTPImpressionType">

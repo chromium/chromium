@@ -125,6 +125,9 @@ specific_include_rules = {
   "TabbedCrashRecoveryDelegate\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
+  "TabbedStartupWindowPolicyDelegate\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
   "ChromeAsyncTabLauncher\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
