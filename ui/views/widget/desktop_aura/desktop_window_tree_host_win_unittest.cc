@@ -397,5 +397,38 @@ TEST_F(DesktopWindowTreeHostWinTest, IsInNativeMoveResizeLoopAcrossWindows) {
   EXPECT_FALSE(host_b->IsInNativeMoveResizeLoop());
 }
 
+// The native size/move modal loop is already on the stack once WM_ENTERSIZEMOVE
+// has been delivered, but no WM_SIZING/WM_MOVING arrives until the user moves
+// the mouse. That loop pumps application tasks (including Mojo IPCs from
+// renderers), so IsInNativeMoveResizeLoop() must already report true at
+// WM_ENTERSIZEMOVE. Otherwise a task running in the gap sees false and can
+// start an OS-level drag while the user is holding a resize border.
+TEST_F(DesktopWindowTreeHostWinTest, IsInNativeMoveResizeLoopOnEnterSizeMove) {
+  Widget widget;
+  widget.Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                           Widget::InitParams::TYPE_WINDOW));
+  widget.Show();
+
+  DesktopWindowTreeHostWin* host = static_cast<DesktopWindowTreeHostWin*>(
+      widget.GetNativeWindow()->GetHost());
+  EXPECT_FALSE(host->IsInNativeMoveResizeLoop());
+
+  HWND hwnd = widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+
+  // The user has pressed the mouse on a resize border. Windows has entered the
+  // modal loop, but the mouse has not moved yet.
+  ::SendMessage(hwnd, WM_ENTERSIZEMOVE, 0, 0);
+  EXPECT_TRUE(host->IsInNativeMoveResizeLoop());
+
+  // The user now drags, producing the first WM_SIZING.
+  RECT rect = {};
+  ::GetWindowRect(hwnd, &rect);
+  ::SendMessage(hwnd, WM_SIZING, WMSZ_RIGHT, reinterpret_cast<LPARAM>(&rect));
+  EXPECT_TRUE(host->IsInNativeMoveResizeLoop());
+
+  ::SendMessage(hwnd, WM_EXITSIZEMOVE, 0, 0);
+  EXPECT_FALSE(host->IsInNativeMoveResizeLoop());
+}
+
 }  // namespace test
 }  // namespace views

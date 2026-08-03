@@ -19,12 +19,14 @@ UserResizeMoveDetector::UserResizeMoveDetector(
 void UserResizeMoveDetector::OnEnterSizeMove() {
   if (state_ == State::kNotResizing) {
     state_ = State::kInSizeMove;
+    // The native modal size/move loop is on the stack from here until
+    // WM_EXITSIZEMOVE.
+    g_in_move_resize_loop = true;
   }
 }
 
 void UserResizeMoveDetector::OnSizing() {
   if (state_ == State::kInSizeMove) {
-    g_in_move_resize_loop = true;
     state_ = State::kInSizing;
     hwnd_delegate_->HandleBeginUserResize();
   }
@@ -32,7 +34,6 @@ void UserResizeMoveDetector::OnSizing() {
 
 void UserResizeMoveDetector::OnMoving() {
   if (state_ == State::kInSizeMove) {
-    g_in_move_resize_loop = true;
     state_ = State::kInMoving;
     hwnd_delegate_->HandleBeginUserDrag();
   }
