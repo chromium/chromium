@@ -10297,6 +10297,8 @@ from previous Chrome versions.
   <int value="-1339679303" label="UseAdHocSigningForWebAppShims:enabled"/>
   <int value="-1338701593"
       label="OmniboxMostVisitedTilesTitleWrapAround:enabled"/>
+  <int value="-1338528179"
+      label="AlwaysShowInstallDisambiguationDialog:disabled"/>
   <int value="-1338306372" label="BrowserTouchBar:enabled"/>
   <int value="-1338237485" label="HardwareSecureDecryptionExperiment:disabled"/>
   <int value="-1337873095" label="CompareManagementInterface:disabled"/>
@@ -12991,6 +12993,8 @@ from previous Chrome versions.
   <int value="-491131428" label="OmniboxNewAnswerLayout:disabled"/>
   <int value="-490652941" label="WebViewZeroCopyVideo:enabled"/>
   <int value="-489672760" label="ImeFstDecoderParamsUpdate:disabled"/>
+  <int value="-489303384"
+      label="AlwaysShowInstallDisambiguationDialog:enabled"/>
   <int value="-489165842"
       label="ProfileCreationDeclineSigninCTAExperiment:enabled"/>
   <int value="-489122628" label="ShowTabListAnimations:disabled"/>

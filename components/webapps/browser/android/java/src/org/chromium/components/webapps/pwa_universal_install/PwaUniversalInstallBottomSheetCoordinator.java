@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.AppType;
 import org.chromium.components.webapps.R;
+import org.chromium.components.webapps.WebappsFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.Toast;
@@ -298,9 +299,10 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         // to the install dialog. Both outcomes mean that we can stop listening for this flag.
         mWaitingToShow = false;
 
-        // We haven't shown the dialog yet, so there's an opportunity to skip this dialog and
-        // redirect straight to the Install App/Create Shortcut dialog.
-        if (mAppType == AppType.SHORTCUT || (mIsRoot && isInstallable(mAppType))) {
+        boolean canSkipInstallCreateShortcutDisambiguationDialog =
+                (isInstallable(mAppType) && mIsRoot) || mAppType == AppType.SHORTCUT;
+        if (!isAlwaysShowInstallDisambiguationDialogEnabled()
+                && canSkipInstallCreateShortcutDisambiguationDialog) {
             switch (mAppType) {
                 case AppType.SHORTCUT:
                     mAddShortcutCallback.run();
@@ -345,6 +347,11 @@ public class PwaUniversalInstallBottomSheetCoordinator {
             default:
                 return false;
         }
+    }
+
+    public boolean isAlwaysShowInstallDisambiguationDialogEnabled() {
+        return WebappsFeatureMap.isEnabled(
+                WebappsFeatureMap.ALWAYS_SHOW_INSTALL_DISAMBIGUATION_DIALOG);
     }
 
     @NativeMethods

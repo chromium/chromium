@@ -230,6 +230,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "always-show-install-disambiguation-dialog",
+    "owners": [
+      "dibyapal@chromium.org",
+      "pwa-team@chromium.org"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "android-adaptive-frame-rate",
     "owners": [ "boliu@chromium.org", "//components/viz/OWNERS" ],
     "expiry_milestone": 160
