@@ -34,6 +34,7 @@ features:
 
 future_on:
 - chrome.*
+- chrome_os
 - android
 
 owners:

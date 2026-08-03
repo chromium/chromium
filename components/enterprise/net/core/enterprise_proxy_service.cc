@@ -120,11 +120,9 @@ EnterpriseProxyService::GetDynamicRoutingConfig() const {
 
 void EnterpriseProxyService::Shutdown() {
   pref_change_registrar_.RemoveAll();
-  for (auto& manager : provisioning_domain_managers_) {
-    manager->RemoveObserver(this);
-  }
-  provisioning_domain_managers_.clear();
   refreshing_managers_.clear();
+  provisioning_domain_observations_.RemoveAllObservations();
+  provisioning_domain_managers_.clear();
   observers_.Clear();
 }
 
@@ -192,8 +190,9 @@ void EnterpriseProxyService::OnPolicyPrefChanged() {
 
 void EnterpriseProxyService::RecreateProvisioningDomainManagers(
     const base::ListValue& policy_domains) {
-  provisioning_domain_managers_.clear();
   refreshing_managers_.clear();
+  provisioning_domain_observations_.RemoveAllObservations();
+  provisioning_domain_managers_.clear();
 
   const base::DictValue& cached_configs_dict =
       pref_service_->GetDict(kProvisioningDomainProxyConfigs);
@@ -210,7 +209,7 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
     if (!policy_hash.empty()) {
       active_policy_hashes.insert(policy_hash);
     }
-    manager->AddObserver(this);
+    provisioning_domain_observations_.AddObservation(manager.get());
     OnProvisioningDomainStateChanged(manager.get());
     provisioning_domain_managers_.push_back(std::move(manager));
   }

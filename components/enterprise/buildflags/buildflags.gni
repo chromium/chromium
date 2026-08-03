@@ -38,7 +38,7 @@ declare_args() {
       is_win || is_mac || is_linux || is_chromeos || is_android
 
   # Indicates support for Enterprise Proxy policy and service.
-  enterprise_proxy = is_win || is_mac || is_linux || is_android
+  enterprise_proxy = is_win || is_mac || is_linux || is_chromeos || is_android
 }
 
 declare_args() {

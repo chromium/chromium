@@ -16,7 +16,7 @@
 
 namespace enterprise_net {
 
-// Controls whether dynamic route fetching is enabled.
+// Feature flag controlling dynamic route fetching.
 BASE_DECLARE_FEATURE(kEnableDynamicRouteFetching);
 
 // Feature param for the maximum size limit (in bytes) for Provisioning Domain

@@ -436,10 +436,10 @@
 #include "chrome/browser/enterprise/client_certificates/certificate_store_factory.h"
 #endif
 
-#if BUILDFLAG(ENTERPRISE_PROXY) && BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENTERPRISE_PROXY)
 #include "chrome/browser/enterprise/net/enterprise_network_auth_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_service_factory.h"
-#endif
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -1030,10 +1030,10 @@ void ChromeBrowserMainExtraPartsProfiles::
   enterprise_idle::IdleServiceFactory::GetInstance();
 #endif
   enterprise_signals::SignalsAggregatorFactory::GetInstance();
-#if BUILDFLAG(ENTERPRISE_PROXY) && BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENTERPRISE_PROXY)
   EnterpriseNetworkAuthServiceFactory::GetInstance();
   EnterpriseProxyServiceFactory::GetInstance();
-#endif
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
   enterprise_reporting::CloudProfileReportingServiceFactory::GetInstance();
   enterprise_reporting::LegacyTechServiceFactory::GetInstance();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

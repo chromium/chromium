@@ -65,3 +65,7 @@ EnterpriseProxyServiceFactory::BuildServiceInstanceForBrowserContext(
 bool EnterpriseProxyServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
+
+bool EnterpriseProxyServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}

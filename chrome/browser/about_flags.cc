@@ -13277,7 +13277,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENTERPRISE_PROXY)
     {"enable-dynamic-route-fetching",
      flag_descriptions::kEnableDynamicRouteFetchingName,
-     flag_descriptions::kEnableDynamicRouteFetchingDescription, kOsAndroid,
+     flag_descriptions::kEnableDynamicRouteFetchingDescription, kOsAll,
      FEATURE_VALUE_TYPE(enterprise_net::kEnableDynamicRouteFetching)},
 #endif
 

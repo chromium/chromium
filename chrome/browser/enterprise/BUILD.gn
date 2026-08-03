@@ -93,7 +93,7 @@ source_set("enterprise") {
     "//url",
   ]
 
-  if (enterprise_proxy && is_android) {
+  if (enterprise_proxy) {
     public += [
       "net/enterprise_network_auth_service_factory.h",
       "net/enterprise_proxy_service_factory.h",
@@ -731,7 +731,7 @@ source_set("impl") {
     }
   }
 
-  if (enterprise_proxy && is_android) {
+  if (enterprise_proxy) {
     sources += [
       "net/enterprise_network_auth_service_factory.cc",
       "net/enterprise_proxy_service_factory.cc",

@@ -37,6 +37,7 @@ class EnterpriseProxyServiceFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_NET_ENTERPRISE_PROXY_SERVICE_FACTORY_H_

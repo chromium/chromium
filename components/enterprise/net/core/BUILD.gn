@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
+
 static_library("core") {
   public = [
     "features.h",
@@ -18,7 +20,7 @@ static_library("core") {
     "//components/prefs",
   ]
 
-  if (is_android) {
+  if (enterprise_proxy) {
     public += [
       "enterprise_network_auth_service.h",
       "enterprise_proxy_service.h",

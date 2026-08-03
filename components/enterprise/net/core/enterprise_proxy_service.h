@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
 #include "components/enterprise/net/core/proxy_provisioning_domain_manager.h"
 #include "components/enterprise/net/core/types.h"
@@ -135,6 +136,11 @@ class EnterpriseProxyService : public KeyedService,
   // In-memory list of provisioning domain state machines matching policy.
   std::vector<std::unique_ptr<ProxyProvisioningDomainManager>>
       provisioning_domain_managers_;
+
+  // Automatically manages observation of domain manager instances.
+  base::ScopedMultiSourceObservation<ProxyProvisioningDomainManager,
+                                     ProxyProvisioningDomainManager::Observer>
+      provisioning_domain_observations_{this};
 
   // Set of managers currently executing a background fetch.
   base::flat_set<raw_ptr<ProxyProvisioningDomainManager>> refreshing_managers_;
