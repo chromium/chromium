@@ -254,6 +254,20 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
     }
   }
 
+  void ResetNetworkState(net::test_server::ConnectionTracker& tracker) {
+    auto* network_context = shell()
+                                ->web_contents()
+                                ->GetBrowserContext()
+                                ->GetDefaultStoragePartition()
+                                ->GetNetworkContext();
+    base::RunLoop close_all_connections_loop;
+    network_context->CloseAllConnections(
+        close_all_connections_loop.QuitClosure());
+    close_all_connections_loop.Run();
+
+    tracker.ResetCounts();
+  }
+
  protected:
   std::unique_ptr<net::test_server::HttpResponse> ServeResponses(
       const net::test_server::HttpRequest& request) {
@@ -522,18 +536,17 @@ class AlwaysPreconnectContentBrowserClient
   }
 };
 
-// TODO(https://crbug.com/497205155): Fix flakiness and enable this test.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
-                       DISABLED_NavigationRequestPreconnectAllowed) {
+                       NavigationRequestPreconnectAllowed) {
   net::test_server::ConnectionTracker connection_tracker(
       &embedded_https_test_server());
   AlwaysPreconnectContentBrowserClient client;
 
   std::string_view title_page{"/title.html"};
-  RegisterResponse(
-      kSameOriginAllowlistedPage,
-      ResponseEntry("<html><body>Hello</body></html>",
-                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse(kCrossOriginAllowlistedPage,
+                   ResponseEntry("<html><body>Hello</body></html>",
+                                 {{"Connection-Allowlist",
+                                   R"((response-origin "*://b.test:*/*"))"}}));
   RegisterResponse(
       std::string{title_page},
       ResponseEntry("<html><head><title>Title</title></head></html>", {}));
@@ -547,13 +560,16 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
 
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_https_test_server().GetURL(
-                                 "a.test", kSameOriginAllowlistedPage)));
+                                 "a.test", kCrossOriginAllowlistedPage)));
 
-  connection_tracker.ResetCounts();
-  // Navigation to url allowed by connection allowlist succeeds.
+  ResetNetworkState(connection_tracker);
+  // Navigation to url allowed by connection allowlist succeeds. Use a
+  // cross-origin url to avoid the keep-alive socket for "a.test" being reused.
+  // Otherwise, no new connection is made, then `connection_tracker` will not
+  // record the connection.
   EXPECT_TRUE(NavigateToURLFromRenderer(
       shell()->web_contents(),
-      embedded_https_test_server().GetURL("a.test", title_page)));
+      embedded_https_test_server().GetURL("b.test", title_page)));
 
   // Preconnect to the same url also succeeds.
   connection_tracker.WaitForAcceptedConnections(1u);
@@ -586,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
       NavigateToURL(shell(), embedded_https_test_server().GetURL(
                                  "a.test", kSameOriginAllowlistedPage)));
 
-  connection_tracker.ResetCounts();
+  ResetNetworkState(connection_tracker);
   // Navigation to url blocked by connection allowlist fails.
   EXPECT_FALSE(NavigateToURLFromRenderer(
       shell()->web_contents(),
@@ -604,17 +620,17 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
 
   std::string_view title_page{"/title.html"};
   std::string_view nested_page{"/nested.html"};
-  RegisterResponse(
-      kSameOriginAllowlistedPage,
-      ResponseEntry(JsReplace(R"(
+  RegisterResponse(kCrossOriginAllowlistedPage,
+                   ResponseEntry(JsReplace(R"(
         <html>
           <body>
             <iframe id="iframe" src=$1>
           </body>
         </html>
       )",
-                              nested_page),
-                    {{"Connection-Allowlist", "(response-origin)"}}));
+                                           nested_page),
+                                 {{"Connection-Allowlist",
+                                   R"((response-origin "*://b.test:*/*"))"}}));
   RegisterResponse(
       std::string{nested_page},
       ResponseEntry("<html><head><title>Nested</title></head></html>",
@@ -632,21 +648,24 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
 
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_https_test_server().GetURL(
-                                 "a.test", kSameOriginAllowlistedPage)));
+                                 "a.test", kCrossOriginAllowlistedPage)));
 
   RenderFrameHost* child_frame =
       ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child_frame);
 
-  connection_tracker.ResetCounts();
+  ResetNetworkState(connection_tracker);
 
   // Navigating the iframe to url allowed by the initiator connection allowlist
   // succeeds. Note the iframe document has an empty connection allowlist, which
   // blocks all network connections. However, it is the initiator connection
-  // allowlist that should be enforced.
+  // allowlist that should be enforced. Use a cross-origin url to avoid the
+  // keep-alive socket for "a.test" being reused. Otherwise, no new connection
+  // is made, then `connection_tracker` will not record the connection.
   EXPECT_TRUE(ExecJs(
       shell()->web_contents(),
-      JsReplace("document.getElementById('iframe').src = $1", title_page)));
+      JsReplace("document.getElementById('iframe').src = $1",
+                embedded_https_test_server().GetURL("b.test", title_page))));
 
   // Preconnect to the same url also succeeds.
   connection_tracker.WaitForAcceptedConnections(1u);
@@ -695,12 +714,14 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
       ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child_frame);
 
-  connection_tracker.ResetCounts();
+  ResetNetworkState(connection_tracker);
 
   // Navigating the iframe to url blocked by the initiator connection allowlist
   // fails. Note the iframe document has a connection allowlist that matches the
   // navigation url. However, it is the initiator connection allowlist that
-  // should be enforced.
+  // should be enforced. Use a cross-origin url to avoid the keep-alive socket
+  // for "a.test" being reused. Otherwise, no new connection is made, then
+  // `connection_tracker` will not record the connection.
   EXPECT_TRUE(ExecJs(
       shell()->web_contents(),
       JsReplace("document.getElementById('iframe').src = $1",
