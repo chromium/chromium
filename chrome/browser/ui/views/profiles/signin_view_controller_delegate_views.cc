@@ -257,17 +257,12 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
       create_param->is_device_signals_disclaimer;
   auto width = kManagedUserNoticeConfirmationDialogWidth;
   auto height = kManagedUserNoticeConfirmationDialogHeight;
-  std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
-      browser.GetBrowserForMigrationOnly(),
-      GURL(chrome::kChromeUIManagedUserProfileNoticeUrl), height, width,
-      InitializeSigninWebDialogUI(false));
-
-  ManagedUserProfileNoticeUI* web_dialog_ui =
-      web_view->GetWebContents()
-          ->GetWebUI()
-          ->GetController()
-          ->GetAs<ManagedUserProfileNoticeUI>();
-  DCHECK(web_dialog_ui);
+  // WebView here is created manually instead of using CreateDialogWebView(),
+  // because the params need to be attached to the WebContents before loading
+  // the URL (to avoid a race condition between initialization and navigation).
+  std::unique_ptr<views::WebView> web_view =
+      std::make_unique<views::WebView>(browser.GetProfile());
+  web_view->SetPreferredSize(gfx::Size(width, height));
 
   ManagedUserProfileNoticeUI::ScreenType screen_type =
       ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation;
@@ -280,8 +275,11 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
   } else if (is_oidc_account) {
     screen_type = ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC;
   }
-  web_dialog_ui->Initialize(&browser, screen_type, std::move(create_param));
 
+  ManagedUserProfileNoticeParams::CreateForWebContents(
+      web_view->GetWebContents(), &browser, screen_type,
+      std::move(create_param));
+  web_view->LoadInitialURL(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
   return web_view;
 }
 #endif

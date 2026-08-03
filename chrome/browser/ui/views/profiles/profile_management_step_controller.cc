@@ -239,7 +239,6 @@ class PostSignInStepController : public ProfileManagementStepController {
 
  private:
   std::unique_ptr<ProfilePickerPostSignInAdapter> signed_in_flow_;
-  base::WeakPtrFactory<PostSignInStepController> weak_ptr_factory_{this};
 };
 
 class FinishFlowAndRunInBrowserStepController
@@ -394,30 +393,8 @@ class DeviceSignalsDisclaimerStepController
     base::UmaHistogramBoolean(kEnterpriseSignalsDisclaimerProfilePickerShown,
                               true);
 
-    base::OnceClosure navigation_finished_closure =
-        base::BindOnce(std::move(step_shown_callback.value()), true)
-            .Then(base::BindOnce(
-                &DeviceSignalsDisclaimerStepController::OnLoadFinished,
-                weak_ptr_factory_.GetWeakPtr()));
-
-    // TODO(b/535164842): Once the refreshed profile picker UI is launched this
-    // screen will be inconsistent with the rest of the flow. This screen should
-    // be then updated to match the new flow.
-    host()->ShowScreen(web_contents_,
-                       GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
-                       std::move(navigation_finished_closure));
-  }
-
- private:
-  void OnLoadFinished() {
-    auto* managed_user_profile_notice_ui =
-        web_contents_->GetWebUI()
-            ->GetController()
-            ->GetAs<ManagedUserProfileNoticeUI>();
-    CHECK(managed_user_profile_notice_ui);
-    CHECK(callback_);
-
-    Profile* profile = Profile::FromWebUI(web_contents_->GetWebUI());
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     CHECK(identity_manager);
@@ -431,20 +408,34 @@ class DeviceSignalsDisclaimerStepController
     auto params = signin::EnterpriseProfileCreationDialogParams::
         CreateForDeviceSignalsDisclaimer(account_info, std::move(callback_),
                                          /*is_modal_dialog=*/false);
-    managed_user_profile_notice_ui->Initialize(
-        /*browser=*/nullptr,
+    ManagedUserProfileNoticeParams::CreateForWebContents(
+        web_contents_, /*browser=*/nullptr,
         ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer,
         std::move(params));
+
+    base::OnceClosure navigation_finished_closure = base::BindOnce(
+        [](base::OnceCallback<void(bool)> callback,
+           content::WebContents* web_contents) {
+          CHECK(!ManagedUserProfileNoticeParams::FromWebContents(web_contents))
+              << "ManagedUserProfileNoticeParams was not consumed.";
+          std::move(callback).Run(true);
+        },
+        std::move(step_shown_callback.value()), web_contents_);
+
+    // TODO(b/535164842): Once the refreshed profile picker UI is launched this
+    // screen will be inconsistent with the rest of the flow. This screen should
+    // be then updated to match the new flow.
+    host()->ShowScreen(web_contents_,
+                       GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+                       std::move(navigation_finished_closure));
   }
 
+ private:
   // The web contents in which we want to display the screen.
   raw_ptr<content::WebContents> web_contents_;
 
   // Callback called when the user makes a choice on the dialog.
   base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback_;
-
-  base::WeakPtrFactory<DeviceSignalsDisclaimerStepController> weak_ptr_factory_{
-      this};
 };
 }  // namespace
 

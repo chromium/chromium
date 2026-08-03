@@ -248,6 +248,19 @@ void ProfilePickerPostSignInAdapter::SwitchToManagedUserProfileNotice(
     std::move(step_switch_callback_.value()).Run(true);
   }
 
+  ManagedUserProfileNoticeParams::CreateForWebContents(
+      contents(), /*browser=*/nullptr, type,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          GetAccountInfo(),
+          /*is_oidc_account=*/type ==
+              ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          std::move(process_user_choice_callback),
+          /*done_callback=*/base::OnceClosure()));
+
   const bool is_in_search_engine_choice_region =
       CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
                       GetForProfile(profile_))
@@ -261,13 +274,24 @@ void ProfilePickerPostSignInAdapter::SwitchToManagedUserProfileNotice(
       use_refreshed_ui
           ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
           : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
-                    /*navigation_finished_closure=*/
-                    base::BindOnce(&ProfilePickerPostSignInAdapter::
-                                       SwitchToManagedUserProfileNoticeFinished,
-                                   // Unretained is enough as the callback is
-                                   // called by the owner of this instance.
-                                   base::Unretained(this), type,
-                                   std::move(process_user_choice_callback)));
+      /*navigation_finished_closure=*/
+      base::BindOnce(
+          [](content::WebContents* web_contents) {
+            CHECK(
+                !ManagedUserProfileNoticeParams::FromWebContents(web_contents))
+                << "ManagedUserProfileNoticeParams were not consumed.";
+          },
+          contents()));
+}
+
+AccountInfo ProfilePickerPostSignInAdapter::GetAccountInfo() const {
+  AccountInfo extended_info =
+      IdentityManagerFactory::GetForProfile(profile_)->FindExtendedAccountInfo(
+          account_info_);
+  if (!extended_info.IsEmpty()) {
+    return extended_info;
+  }
+  return AccountInfo::Builder(account_info_).Build();
 }
 
 void ProfilePickerPostSignInAdapter::ShowSignInCelebration(
@@ -376,34 +400,6 @@ void ProfilePickerPostSignInAdapter::SwitchToHistorySyncOptinFinished() {
       // no effect when `browser` is set to null.
       /*should_close_modal_dialog=*/std::nullopt,
       std::move(on_post_signin_in_finished_callback_));
-}
-
-void ProfilePickerPostSignInAdapter::SwitchToManagedUserProfileNoticeFinished(
-    ManagedUserProfileNoticeUI::ScreenType type,
-    signin::SigninChoiceCallback process_user_choice_callback) {
-  DCHECK(IsInitialized());
-  // Initialize the WebUI page once we know it's committed.
-  ManagedUserProfileNoticeUI* managed_user_profile_notice_ui =
-      contents()
-          ->GetWebUI()
-          ->GetController()
-          ->GetAs<ManagedUserProfileNoticeUI>();
-
-  // Here `done_callback` does nothing because lifecycle of
-  // `managed_user_profile_notice_ui` is controlled by this class.
-  managed_user_profile_notice_ui->Initialize(
-      /*browser=*/nullptr, type,
-      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
-          IdentityManagerFactory::GetForProfile(profile_)
-              ->FindExtendedAccountInfoByEmailAddress(email_),
-          /*is_oidc_account=*/type ==
-              ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC,
-          /*user_already_signed_in=*/false,
-          /*profile_creation_required_by_policy=*/false,
-          /*show_link_data_option=*/false,
-          /*process_user_choice_callback=*/
-          std::move(process_user_choice_callback),
-          /*done_callback=*/base::OnceClosure()));
 }
 
 bool ProfilePickerPostSignInAdapter::IsInitialized() const {

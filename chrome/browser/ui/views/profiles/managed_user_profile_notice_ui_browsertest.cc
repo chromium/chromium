@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
-
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
@@ -123,6 +121,12 @@ class ManagedUserProfileNoticeStepControllerForTest
 
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
+    ManagedUserProfileNoticeParams::CreateForWebContents(
+        host()->GetPickerContents(),
+        /*browser=*/nullptr,
+        ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
+        CreateEnterpriseProfileCreationDialogParams(account_info_));
+
     // Reload the WebUI in the picker contents.
     host()->ShowScreenInPickerContents(
         managed_user_notice_url_,
@@ -134,19 +138,6 @@ class ManagedUserProfileNoticeStepControllerForTest
 
   void OnManagedUserProfileNoticeLoaded(
       StepSwitchFinishedCallback step_shown_callback) {
-    ManagedUserProfileNoticeUI* managed_user_notice_ui =
-        host()
-            ->GetPickerContents()
-            ->GetWebUI()
-            ->GetController()
-            ->GetAs<ManagedUserProfileNoticeUI>();
-
-    CHECK(managed_user_notice_ui);
-    managed_user_notice_ui->Initialize(
-        /*browser=*/nullptr,
-        ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
-        CreateEnterpriseProfileCreationDialogParams(account_info_));
-
     if (!step_shown_callback->is_null()) {
       std::move(step_shown_callback.value()).Run(/*success=*/true);
     }

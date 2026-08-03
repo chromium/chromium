@@ -146,14 +146,14 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   // Callbacks that finalize initialization of WebUI pages.
   void SwitchToSyncConfirmationFinished();
   void SwitchToHistorySyncOptinFinished();
-  void SwitchToManagedUserProfileNoticeFinished(
-      ManagedUserProfileNoticeUI::ScreenType type,
-      signin::SigninChoiceCallback process_user_choice_callback);
   void SwitchToSignInCelebrationFinished(base::OnceClosure celebration_finished);
 
   // Returns whether the flow is initialized (i.e. whether `Init()` has been
   // called).
   bool IsInitialized() const;
+
+  // Returns the account info for the signed-in account.
+  AccountInfo GetAccountInfo() const;
 
   // The host object, must outlive this object.
   raw_ptr<ProfilePickerWebContentsHost> host_;
