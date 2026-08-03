@@ -49,7 +49,6 @@ wenyufu@chromium.org
 # Temporary reviewers for the purposes of work on the Ash //chrome refactor
 # (go/ash-chrome-refactor). Please only send mechanical changes for this project
 # to these reviewers; other CLs should be sent to the reviewers above.
-khorimoto@chromium.org
 neis@chromium.org
 
 # Reviews for code that is built only for chromeos-chrome as a part of OS
