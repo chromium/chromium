@@ -126,8 +126,14 @@ class AutofillFieldPromoViewImplBrowserTest : public InProcessBrowserTest {
   base::WeakPtr<AutofillFieldPromoView> view_;
 };
 
+// TODO(crbug.com/542108808): Re-enable the test when the issue is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BoundsAreCorrect DISABLED_BoundsAreCorrect
+#else
+#define MAYBE_BoundsAreCorrect BoundsAreCorrect
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
-                       BoundsAreCorrect) {
+                       MAYBE_BoundsAreCorrect) {
   // Set custom web contents bounds.
 #if BUILDFLAG(IS_MAC)
   ChangeBrowserWindowBoundsForDesiredWebContentsBounds(
