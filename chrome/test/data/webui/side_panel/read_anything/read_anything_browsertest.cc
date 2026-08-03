@@ -346,28 +346,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WebSpeechTtsClient) {
                    "mocha.run()");
 }
 
-class ImmersiveReadAnythingMochaTest : public ReadAnythingMochaBrowserTest {
- protected:
-  ImmersiveReadAnythingMochaTest() {
-    scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
-                                          {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingMochaTest, PresentationMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, PresentationMenu) {
   RunSidePanelTest("side_panel/read_anything/presentation_menu_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingMochaTest, SettingsMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SettingsMenu) {
   RunSidePanelTest("side_panel/read_anything/settings_menu_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingMochaTest, ToolbarSettingsMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarSettingsMenu) {
   RunSidePanelTest("side_panel/read_anything/toolbar_settings_menu_test.js",
                    "mocha.run()");
 }
