@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>@position-try - aliases for allowed properties</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @position-try --pt {}
+</style>
+<script>
+  const decl = document.styleSheets[0].cssRules[0].style;
+
+  test(() => {
+    decl.setProperty("-webkit-margin-start", "5px");
+    assert_equals(decl.getPropertyValue("margin-inline-start"), "5px");
+    assert_equals(decl.getPropertyValue("-webkit-margin-start"), "5px");
+  }, "-webkit-margin-start is an alias of margin-inline-start");
+
+  test(() => {
+    decl.setProperty("-webkit-align-content", "end");
+    assert_equals(decl.getPropertyValue("align-content"), "");
+    assert_equals(decl.getPropertyValue("-webkit-align-content"), "");
+  }, "-webkit-align-content is an alias of align-content, which is not a valid @position-try property");
+
+</script>

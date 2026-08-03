@@ -19,7 +19,8 @@ bool CSSPositionTryDescriptors::IsPropertyValid(
   if (property_id == CSSPropertyID::kVariable) {
     return false;
   }
-  return CSSProperty::Get(property_id).IsValidForPositionTry();
+  return CSSProperty::Get(ResolveCSSPropertyID(property_id))
+      .IsValidForPositionTry();
 }
 
 void CSSPositionTryDescriptors::Trace(Visitor* visitor) const {
