@@ -76,12 +76,12 @@ namespace internal {
 // Returns the offset at the visual start of a text fragment.
 // For LTR fragments: TextStartOffset()
 // For RTL fragments: TextEndOffset()
-CORE_EXPORT unsigned VisualStartOffset(const InlineCursor& cursor);
+CORE_EXPORT wtf_size_t VisualStartOffset(const InlineCursor& cursor);
 
 // Returns the offset at the visual end of a text fragment.
 // For LTR fragments: TextEndOffset()
 // For RTL fragments: TextStartOffset()
-CORE_EXPORT unsigned VisualEndOffset(const InlineCursor& cursor);
+CORE_EXPORT wtf_size_t VisualEndOffset(const InlineCursor& cursor);
 
 }  // namespace internal
 

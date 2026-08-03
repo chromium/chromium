@@ -72,12 +72,12 @@ class VisualFragment {
     return line_cursor_.Current().BidiLevel();
   }
 
-  unsigned TextStartOffset() const {
+  wtf_size_t TextStartOffset() const {
     DCHECK(!IsNull());
     return line_cursor_.Current().TextStartOffset();
   }
 
-  unsigned TextEndOffset() const {
+  wtf_size_t TextEndOffset() const {
     DCHECK(!IsNull());
     return line_cursor_.Current().TextEndOffset();
   }
@@ -141,7 +141,7 @@ class VisualFragment {
 // correct for logical movement but wrong for visual movement.
 VisualFragment FindFragmentForPosition(
     const PositionInFlatTree& position,
-    unsigned* out_offset,
+    wtf_size_t* out_offset,
     std::optional<UBiDiLevel> bidi_level = std::nullopt) {
   if (position.IsNull()) {
     return VisualFragment();
@@ -189,13 +189,13 @@ VisualFragment FindFragmentForPosition(
     return VisualFragment();
   }
 
-  std::optional<unsigned> text_content_offset =
+  std::optional<wtf_size_t> text_content_offset =
       mapping->GetTextContentOffset(dom_pos);
   if (!text_content_offset.has_value()) {
     return VisualFragment();
   }
 
-  unsigned tc_offset = *text_content_offset;
+  wtf_size_t tc_offset = *text_content_offset;
 
   // Scan all fragments for this layout object. At bidi boundaries, multiple
   // fragments match the same offset. We track the best match using bidi level
@@ -207,8 +207,8 @@ VisualFragment FindFragmentForPosition(
   iter.MoveTo(*layout_object);
   while (iter) {
     if (iter.Current().IsText()) {
-      unsigned start = iter.Current().TextStartOffset();
-      unsigned end = iter.Current().TextEndOffset();
+      wtf_size_t start = iter.Current().TextStartOffset();
+      wtf_size_t end = iter.Current().TextEndOffset();
       if (tc_offset >= start && tc_offset <= end) {
         // Interior of fragment — unambiguous.
         if (tc_offset > start && tc_offset < end) {
@@ -248,7 +248,7 @@ VisualFragment FindFragmentForPosition(
 
 PositionInFlatTree TextContentOffsetToFlatTreePosition(
     const VisualFragment& box,
-    unsigned text_content_offset) {
+    wtf_size_t text_content_offset) {
   const LayoutObject* layout_object = box.GetLayoutObject();
   if (!layout_object) {
     return PositionInFlatTree();
@@ -269,7 +269,7 @@ PositionInFlatTree TextContentOffsetToFlatTreePosition(
 
 PositionInFlatTreeWithAffinity MakePositionWithAffinity(
     const VisualFragment& box,
-    unsigned text_content_offset,
+    wtf_size_t text_content_offset,
     TextAffinity affinity) {
   PositionInFlatTree pos =
       TextContentOffsetToFlatTreePosition(box, text_content_offset);
@@ -300,7 +300,7 @@ PositionInFlatTreeWithAffinity MakeAtomicInlinePosition(
 // Grapheme-cluster-aware offset advancement
 // ---------------------------------------------------------------------------
 
-unsigned NextGraphemeOffset(const VisualFragment& box, unsigned offset) {
+wtf_size_t NextGraphemeOffset(const VisualFragment& box, wtf_size_t offset) {
   const LayoutObject* layout_object = box.GetLayoutObject();
   if (!layout_object || !layout_object->GetNode()) {
     return offset;
@@ -323,16 +323,17 @@ unsigned NextGraphemeOffset(const VisualFragment& box, unsigned offset) {
     return offset;
   }
 
-  unsigned dom_offset = unit->ConvertTextContentToFirstDOMOffset(offset);
-  int next_dom = NextGraphemeBoundaryOf(node, static_cast<int>(dom_offset));
-  if (next_dom < 0 || static_cast<unsigned>(next_dom) <= dom_offset) {
+  wtf_size_t dom_offset = unit->ConvertTextContentToFirstDOMOffset(offset);
+  wtf_size_t next_dom = NextGraphemeBoundaryOf(node, dom_offset);
+  if (next_dom <= dom_offset) {
     return offset;
   }
 
-  return unit->ConvertDOMOffsetToTextContent(static_cast<unsigned>(next_dom));
+  return unit->ConvertDOMOffsetToTextContent(next_dom);
 }
 
-unsigned PreviousGraphemeOffset(const VisualFragment& box, unsigned offset) {
+wtf_size_t PreviousGraphemeOffset(const VisualFragment& box,
+                                  wtf_size_t offset) {
   const LayoutObject* layout_object = box.GetLayoutObject();
   if (!layout_object || !layout_object->GetNode()) {
     return offset;
@@ -355,13 +356,13 @@ unsigned PreviousGraphemeOffset(const VisualFragment& box, unsigned offset) {
     return offset;
   }
 
-  unsigned dom_offset = unit->ConvertTextContentToFirstDOMOffset(offset);
-  int prev_dom = PreviousGraphemeBoundaryOf(node, static_cast<int>(dom_offset));
-  if (prev_dom < 0 || static_cast<unsigned>(prev_dom) >= dom_offset) {
+  wtf_size_t dom_offset = unit->ConvertTextContentToFirstDOMOffset(offset);
+  wtf_size_t prev_dom = PreviousGraphemeBoundaryOf(node, dom_offset);
+  if (prev_dom >= dom_offset) {
     return offset;
   }
 
-  return unit->ConvertDOMOffsetToTextContent(static_cast<unsigned>(prev_dom));
+  return unit->ConvertDOMOffsetToTextContent(prev_dom);
 }
 
 // ---------------------------------------------------------------------------
@@ -386,7 +387,7 @@ VisualCaretMoveResult MoveToStartOfNextVisualLine(
 
   VisualFragment first_on_line(descendants);
   if (first_on_line.IsText()) {
-    unsigned start_offset =
+    wtf_size_t start_offset =
         internal::VisualStartOffset(first_on_line.GetCursor());
     PositionInFlatTreeWithAffinity pos = MakePositionWithAffinity(
         first_on_line, start_offset, TextAffinity::kDownstream);
@@ -427,7 +428,7 @@ VisualCaretMoveResult MoveToEndOfPreviousVisualLine(
   }
 
   if (last_on_line.IsText()) {
-    unsigned end_offset = internal::VisualEndOffset(last_on_line.GetCursor());
+    wtf_size_t end_offset = internal::VisualEndOffset(last_on_line.GetCursor());
     PositionInFlatTreeWithAffinity pos = MakePositionWithAffinity(
         last_on_line, end_offset, TextAffinity::kUpstream);
     if (pos.IsNotNull()) {
@@ -453,7 +454,7 @@ struct VisualMovementState {
 
  public:
   VisualFragment box;
-  unsigned offset = 0;
+  wtf_size_t offset = 0;
   bool is_after_atomic = false;
   bool is_before_atomic = false;
 };
@@ -465,7 +466,7 @@ VisualMovementState ResolveStartState(
   const PositionInFlatTree& position = position_with_affinity.GetPosition();
 
   // Try direct fragment resolution with bidi level disambiguation.
-  unsigned tc_offset = 0;
+  wtf_size_t tc_offset = 0;
   state.box = FindFragmentForPosition(position, &tc_offset, bidi_level);
 
   if (!state.box.IsNull() && state.box.IsText()) {
@@ -515,7 +516,7 @@ VisualMovementState ResolveStartState(
 // ---------------------------------------------------------------------------
 
 VisualCaretMoveResult MakeTextResult(const VisualFragment& box,
-                                     unsigned offset,
+                                     wtf_size_t offset,
                                      TextAffinity affinity) {
   PositionInFlatTreeWithAffinity pos =
       MakePositionWithAffinity(box, offset, affinity);
@@ -544,14 +545,14 @@ VisualCaretMoveResult MakeAtomicResult(const VisualFragment& box,
 
 namespace internal {
 
-unsigned VisualStartOffset(const InlineCursor& cursor) {
+wtf_size_t VisualStartOffset(const InlineCursor& cursor) {
   if (IsLtr(cursor.Current().ResolvedDirection())) {
     return cursor.Current().TextStartOffset();
   }
   return cursor.Current().TextEndOffset();
 }
 
-unsigned VisualEndOffset(const InlineCursor& cursor) {
+wtf_size_t VisualEndOffset(const InlineCursor& cursor) {
   if (IsLtr(cursor.Current().ResolvedDirection())) {
     return cursor.Current().TextEndOffset();
   }
@@ -587,7 +588,7 @@ VisualCaretMoveResult MoveCaretVisuallyRight(
   }
 
   VisualFragment box = state.box;
-  unsigned offset = state.offset;
+  wtf_size_t offset = state.offset;
 
   // Handle "after atomic inline" — move to next visual fragment.
   if (state.is_after_atomic && box.IsAtomicInline()) {
@@ -596,7 +597,7 @@ VisualCaretMoveResult MoveCaretVisuallyRight(
       return MoveToStartOfNextVisualLine(box.LineCursor());
     }
     if (next.IsText()) {
-      unsigned entry = internal::VisualStartOffset(next.GetCursor());
+      wtf_size_t entry = internal::VisualStartOffset(next.GetCursor());
       return MakeTextResult(next, entry, TextAffinity::kDownstream);
     }
     if (next.IsAtomicInline()) {
@@ -615,7 +616,7 @@ VisualCaretMoveResult MoveCaretVisuallyRight(
   if (box.IsText()) {
     if (IsLtr(box.Direction())) {
       if (offset < box.TextEndOffset()) {
-        unsigned new_offset = NextGraphemeOffset(box, offset);
+        wtf_size_t new_offset = NextGraphemeOffset(box, offset);
         if (new_offset > offset && new_offset <= box.TextEndOffset()) {
           VisualCaretMoveResult result =
               MakeTextResult(box, new_offset, TextAffinity::kDownstream);
@@ -625,7 +626,7 @@ VisualCaretMoveResult MoveCaretVisuallyRight(
       }
     } else {
       if (offset > box.TextStartOffset()) {
-        unsigned new_offset = PreviousGraphemeOffset(box, offset);
+        wtf_size_t new_offset = PreviousGraphemeOffset(box, offset);
         if (new_offset < offset && new_offset >= box.TextStartOffset()) {
           VisualCaretMoveResult result =
               MakeTextResult(box, new_offset, TextAffinity::kUpstream);
@@ -665,7 +666,7 @@ VisualCaretMoveResult MoveCaretVisuallyRight(
   VisualFragment next = box.NextLeafOnLine();
   if (!next.IsNull()) {
     if (next.IsText()) {
-      unsigned entry = internal::VisualStartOffset(next.GetCursor());
+      wtf_size_t entry = internal::VisualStartOffset(next.GetCursor());
       TextAffinity aff = IsLtr(next.Direction()) ? TextAffinity::kDownstream
                                                  : TextAffinity::kUpstream;
 
@@ -686,7 +687,7 @@ VisualCaretMoveResult MoveCaretVisuallyRight(
         //
         // EXIT (entered_bidi_run=true): Returning from a bidi run we
         //   previously entered. Advance one step and clear the flag.
-        unsigned advanced = entry;
+        wtf_size_t advanced = entry;
         if (IsLtr(next.Direction())) {
           advanced = NextGraphemeOffset(next, entry);
         } else {
@@ -702,7 +703,7 @@ VisualCaretMoveResult MoveCaretVisuallyRight(
         // Single-char or edge fragment: try the fragment after that.
         VisualFragment after_next = next.NextLeafOnLine();
         if (!after_next.IsNull() && after_next.IsText()) {
-          unsigned after_entry =
+          wtf_size_t after_entry =
               internal::VisualStartOffset(after_next.GetCursor());
           TextAffinity after_aff = IsLtr(after_next.Direction())
                                        ? TextAffinity::kDownstream
@@ -724,7 +725,7 @@ VisualCaretMoveResult MoveCaretVisuallyRight(
             result.position.GetPosition() == position) {
           // Entry point is the same as current position. Advance
           // one grapheme into the next fragment.
-          unsigned advanced = entry;
+          wtf_size_t advanced = entry;
           if (IsLtr(next.Direction())) {
             advanced = NextGraphemeOffset(next, entry);
           } else {
@@ -775,7 +776,7 @@ VisualCaretMoveResult MoveCaretVisuallyLeft(
   }
 
   VisualFragment box = state.box;
-  unsigned offset = state.offset;
+  wtf_size_t offset = state.offset;
 
   // Handle "before atomic inline" — move to previous visual fragment.
   if (state.is_before_atomic && box.IsAtomicInline()) {
@@ -784,7 +785,7 @@ VisualCaretMoveResult MoveCaretVisuallyLeft(
       return MoveToEndOfPreviousVisualLine(box.LineCursor());
     }
     if (prev.IsText()) {
-      unsigned entry = internal::VisualEndOffset(prev.GetCursor());
+      wtf_size_t entry = internal::VisualEndOffset(prev.GetCursor());
       return MakeTextResult(prev, entry, TextAffinity::kUpstream);
     }
     if (prev.IsAtomicInline()) {
@@ -800,7 +801,7 @@ VisualCaretMoveResult MoveCaretVisuallyLeft(
   if (box.IsText()) {
     if (IsLtr(box.Direction())) {
       if (offset > box.TextStartOffset()) {
-        unsigned new_offset = PreviousGraphemeOffset(box, offset);
+        wtf_size_t new_offset = PreviousGraphemeOffset(box, offset);
         if (new_offset < offset && new_offset >= box.TextStartOffset()) {
           VisualCaretMoveResult result =
               MakeTextResult(box, new_offset, TextAffinity::kUpstream);
@@ -810,7 +811,7 @@ VisualCaretMoveResult MoveCaretVisuallyLeft(
       }
     } else {
       if (offset < box.TextEndOffset()) {
-        unsigned new_offset = NextGraphemeOffset(box, offset);
+        wtf_size_t new_offset = NextGraphemeOffset(box, offset);
         if (new_offset > offset && new_offset <= box.TextEndOffset()) {
           VisualCaretMoveResult result =
               MakeTextResult(box, new_offset, TextAffinity::kDownstream);
@@ -829,7 +830,7 @@ VisualCaretMoveResult MoveCaretVisuallyLeft(
   VisualFragment prev = box.PrevLeafOnLine();
   if (!prev.IsNull()) {
     if (prev.IsText()) {
-      unsigned entry = internal::VisualEndOffset(prev.GetCursor());
+      wtf_size_t entry = internal::VisualEndOffset(prev.GetCursor());
       TextAffinity aff = IsLtr(prev.Direction()) ? TextAffinity::kUpstream
                                                  : TextAffinity::kDownstream;
 
@@ -839,7 +840,7 @@ VisualCaretMoveResult MoveCaretVisuallyLeft(
       if (is_bidi_boundary) {
         // Mirror of MoveRight: both ENTRY and EXIT advance one step past
         // the shared boundary point to produce visible movement.
-        unsigned retreated = entry;
+        wtf_size_t retreated = entry;
         if (IsLtr(prev.Direction())) {
           retreated = PreviousGraphemeOffset(prev, entry);
         } else {
@@ -852,7 +853,7 @@ VisualCaretMoveResult MoveCaretVisuallyLeft(
         }
         VisualFragment before_prev = prev.PrevLeafOnLine();
         if (!before_prev.IsNull() && before_prev.IsText()) {
-          unsigned before_entry =
+          wtf_size_t before_entry =
               internal::VisualEndOffset(before_prev.GetCursor());
           TextAffinity before_aff = IsLtr(before_prev.Direction())
                                         ? TextAffinity::kUpstream
@@ -869,7 +870,7 @@ VisualCaretMoveResult MoveCaretVisuallyLeft(
         VisualCaretMoveResult result = MakeTextResult(prev, entry, aff);
         if (result.position.IsNotNull() &&
             result.position.GetPosition() == position) {
-          unsigned retreated = entry;
+          wtf_size_t retreated = entry;
           if (IsLtr(prev.Direction())) {
             retreated = PreviousGraphemeOffset(prev, entry);
           } else {

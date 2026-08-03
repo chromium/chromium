@@ -219,7 +219,7 @@ TEST_F(VisiblePositionTest, NormalizationAroundLineBreak) {
 
   StaticElementList* tests =
       GetDocument().QuerySelectorAll(AtomicString("div"));
-  for (unsigned i = 0; i < tests->length(); ++i) {
+  for (wtf_size_t i = 0; i < tests->length(); ++i) {
     Element* test = tests->item(i);
     Node* node1 = test->firstChild();
     Node* node2 = test->lastChild();
