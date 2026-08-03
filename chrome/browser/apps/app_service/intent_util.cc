@@ -428,6 +428,9 @@ apps::IntentFilters CreateIntentFiltersForExtension(
       patterns.push_back(URLPatternToFileSystemPattern(pattern, true));
       patterns.push_back(URLPatternToFileSystemPattern(pattern, false));
     }
+    if (patterns.empty()) {
+      continue;
+    }
     filters.push_back(
         CreateFileURLFilter(patterns, handler->id(), handler->title()));
   }

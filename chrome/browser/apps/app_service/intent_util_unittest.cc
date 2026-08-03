@@ -379,6 +379,33 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
             R"(filesystem:chrome://file-manager/.*\..*)");
 }
 
+// Verifies that an extension providing a file_browser_handler with empty
+// file_filters does not generate intent filters or trigger a DCHECK failure in
+// CreateFileURLFilter when generating file URL patterns.
+// Regression test for crbug.com/40225745.
+TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_EmptyFileFilters) {
+  extensions::ExtensionBuilder foo_ext("Foo");
+  static constexpr char kManifest[] = R"(
+    "manifest_version": 2,
+    "permissions": ["fileBrowserHandler"],
+    "version": "1.0.0",
+    "background": {
+      "persistent": false,
+      "scripts": ["background.js"]
+    },
+    "file_browser_handlers": [ {
+      "default_title": "Open nothing!",
+      "file_filters": [],
+      "id": "open_nothing"
+    }]
+  )";
+  foo_ext.AddJSON(kManifest).BuildManifest();
+  scoped_refptr<const extensions::Extension> foo = foo_ext.Build();
+
+  IntentFilters filters = apps_util::CreateIntentFiltersForExtension(foo.get());
+  EXPECT_TRUE(filters.empty());
+}
+
 TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_WebFileHandlers) {
   // Create extension that provides file_handlers.
   extensions::ExtensionBuilder extension_builder("Test");
