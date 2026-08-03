@@ -346,7 +346,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
       run.style.font_size = font_sizes[i];
       if (i < styles.size()) {
         run.style.font_name = styles[i].font_name;
-        run.style.is_bold = styles[i].is_bold;
+        run.style.font_weight = styles[i].font_weight;
         run.style.is_italic = styles[i].is_italic;
       }
       if (i < bounds.size()) {
@@ -450,7 +450,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     run1.start_index = 0;
     run1.len = 5;
     run1.style.font_name = "Arial";
-    run1.style.is_bold = false;
+    run1.style.font_weight = 400;
     run1.style.is_italic = false;
     run1.bounds = gfx::RectF(0.0f, 0.0f, 50.0f, 10.0f);
 
@@ -458,15 +458,15 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     run2.start_index = 5;
     run2.len = 5;
     run2.style.font_name = "Arial";
-    run2.style.is_bold = true;
     run2.style.is_italic = false;
+    run2.style.font_weight = 700;
     run2.bounds = gfx::RectF(50.0f, 0.0f, 50.0f, 10.0f);
 
     chrome_pdf::AccessibilityTextRunInfo run3;
     run3.start_index = 10;
     run3.len = 5;
     run3.style.font_name = "Arial";
-    run3.style.is_bold = false;
+    run3.style.font_weight = 400;
     run3.style.is_italic = false;
     run3.bounds = gfx::RectF(100.0f, 0.0f, 50.0f, 10.0f);
 
@@ -716,8 +716,11 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicStyleSplittingEnabled) {
   EXPECT_EQ(ax::mojom::Role::kStaticText, child2->GetRole());
   EXPECT_EQ("fghij",
             child2->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  // Verify the bold text style is added to the static text node.
+  // Verify the bold text style and font weight attribute are added to the
+  // static text node.
   EXPECT_TRUE(child2->data().HasTextStyle(ax::mojom::TextStyle::kBold));
+  EXPECT_FLOAT_EQ(700.0f, child2->data().GetFloatAttribute(
+                              ax::mojom::FloatAttribute::kFontWeight));
 
   ui::AXNode* child3 = paragraph_node->GetChildAtIndex(2);
   EXPECT_EQ(ax::mojom::Role::kStaticText, child3->GetRole());
@@ -947,9 +950,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicBoldHeadingFollowedByNonBoldNewLine) {
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
   chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.is_bold = true;
+  bold_style.font_weight = 700;
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f},
@@ -983,9 +986,9 @@ TEST_F(PdfAccessibilityTreeTest,
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
   chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.is_bold = true;
+  bold_style.font_weight = 700;
 
   // First two runs are on the same line (y = 0.0f), while the third run is on a
   // different line (y = 30.0f).
@@ -1019,9 +1022,9 @@ TEST_F(PdfAccessibilityTreeTest,
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
   chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.is_bold = true;
+  bold_style.font_weight = 700;
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f},
@@ -1051,7 +1054,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f},
@@ -1085,7 +1088,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
 
   // First two runs are on the same line (y = 0.0f), while the third run is on a
   // different line (y = 30.0f).
@@ -1118,7 +1121,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f},
@@ -1147,9 +1150,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicBoldRunSmallerThanMedianNotPromoted) {
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
   chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.is_bold = true;
+  bold_style.font_weight = 700;
 
   // 5 runs: 1 bold run (size 8.0f), 4 normal runs (size 10.0f).
   // Median is 10.0f. Bold run font size 8.0f < median 10.0f.
@@ -1178,7 +1181,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
 
   // 5 runs: 1 all-caps run (size 8.0f), 4 normal runs (size 10.0f).
   // Median is 10.0f. All-caps run font size 8.0f < median 10.0f.
@@ -1206,9 +1209,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicStyledHeadingUsesMappedHeadingLevel) {
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
   chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.is_bold = true;
+  bold_style.font_weight = 700;
 
   // Font sizes (median = 10.0f, heading threshold = 12.0f):
   // - 24.0f: font-size heading (> threshold 12.0f) -> Level 1 (H1)
@@ -1281,9 +1284,9 @@ TEST_F(PdfAccessibilityTreeTest,
       {chrome_pdf::features::kPdfTags});
 
   chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.is_bold = false;
+  normal_style.font_weight = 400;
   chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.is_bold = true;
+  bold_style.font_weight = 700;
 
   // Font sizes:
   // - 24.0f: font-size heading (> threshold 12.0f) -> Level 1 (H1)

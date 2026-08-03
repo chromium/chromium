@@ -270,12 +270,9 @@ AccessibilityTextStyleInfo CalculateTextRunStyleInfo(FPDF_TEXTPAGE text_page,
     style_info.is_italic = (font_flags & kFlagItalic);
   }
 
-  // Bold text is considered bold when greater than or equal to 700.
-  constexpr int kStandardBoldValue = 700;
   int font_weight = FPDFFont_GetWeight(font);
   if (font_weight != -1) {
     style_info.font_weight = font_weight;
-    style_info.is_bold = style_info.font_weight >= kStandardBoldValue;
   }
 
   unsigned int fill_r;
@@ -336,8 +333,7 @@ bool AreTextStyleEqual(FPDF_TEXTPAGE text_page,
          char_style.render_mode == style.render_mode &&
          char_style.fill_color == style.fill_color &&
          char_style.stroke_color == style.stroke_color &&
-         char_style.is_italic == style.is_italic &&
-         char_style.is_bold == style.is_bold;
+         char_style.is_italic == style.is_italic;
 }
 
 gfx::RectF GetRotatedRectF(PageRotation rotation,

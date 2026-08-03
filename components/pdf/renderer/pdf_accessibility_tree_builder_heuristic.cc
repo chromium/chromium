@@ -340,7 +340,7 @@ HeadingClassifier GetHeadingClassifier(
     return HeadingClassifier::kNone;
   }
 
-  if (style.is_bold) {
+  if (PdfAccessibilityTreeBuilder::IsBoldStyle(style)) {
     return HeadingClassifier::kBoldStyle;
   }
 

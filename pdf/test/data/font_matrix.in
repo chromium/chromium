@@ -16,6 +16,7 @@ endobj
   /Resources <<
     /Font <<
       /F1 4 0 R
+      /F2 6 0 R
     >>
   >>
   /Contents 5 0 R
@@ -51,7 +52,29 @@ BT
 50 60 Td /F1 12 Tf (A3) Tj
 ET
 Q
+BT
+/F2 12 Tf
+50 100 Td (A4) Tj
+ET
 endstream
+endobj
+{{object 6 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+  /FontDescriptor 7 0 R
+>>
+endobj
+{{object 7 0}} <<
+  /Type /FontDescriptor
+  /FontName /Helvetica
+  /Flags 32
+  /ItalicAngle 0
+  /Ascent 890
+  /Descent -210
+  /CapHeight 700
+  /StemV 300
+>>
 endobj
 {{xref}}
 {{trailer}}

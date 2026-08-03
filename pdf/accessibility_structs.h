@@ -48,8 +48,7 @@ struct AccessibilityTextStyleInfo {
                              float font_size,
                              uint32_t fill_color,
                              uint32_t stroke_color,
-                             bool is_italic,
-                             bool is_bold);
+                             bool is_italic);
   AccessibilityTextStyleInfo(const AccessibilityTextStyleInfo& other);
   ~AccessibilityTextStyleInfo();
 
@@ -62,7 +61,6 @@ struct AccessibilityTextStyleInfo {
   uint32_t fill_color = 0;
   uint32_t stroke_color = 0;
   bool is_italic = false;
-  bool is_bold = false;
 };
 
 enum class AccessibilityTextDirection {
