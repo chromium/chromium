@@ -28,6 +28,11 @@
           android:exported="true"
           android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"/>
 
+        <activity android:name="org.chromium.chrome.browser.settings.SettingsInTabTestActivity"
+            android:theme="@style/Theme.Chromium.Settings"
+            android:exported="true"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"/>
+
         <activity android:name="org.chromium.components.signin.test.util.FakeAccountManagerFacade$AddAccountActivityStub"
             android:theme="@style/Theme.Chromium.Activity"
             android:exported="true"/>

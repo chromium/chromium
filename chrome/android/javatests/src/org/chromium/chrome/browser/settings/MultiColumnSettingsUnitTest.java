@@ -81,8 +81,8 @@ public class MultiColumnSettingsUnitTest {
                     new ParameterSet().value(true).name("IdentityManagerSource"));
 
     @Rule
-    public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(MainSettings.class);
+    public SettingsTestRule<MainSettings> mSettingsTestRule =
+            new SettingsTestRule<>(MainSettings.class);
 
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mBlankUiActivityTestRule =
@@ -90,8 +90,8 @@ public class MultiColumnSettingsUnitTest {
 
     @After
     public void tearDown() {
-        if (mSettingsActivityTestRule.getActivity() != null) {
-            mSettingsActivityTestRule.getActivity().finish();
+        if (mSettingsTestRule.getActivity() != null) {
+            mSettingsTestRule.getActivity().finish();
         }
         if (mBlankUiActivityTestRule.getActivity() != null) {
             mBlankUiActivityTestRule.getActivity().finish();
@@ -273,10 +273,8 @@ public class MultiColumnSettingsUnitTest {
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSinglePane() {
-        startSettings();
-
-        SettingsActivity activity = mSettingsActivityTestRule.getActivity();
-        MultiColumnSettings settings = activity.getMultiColumnSettings();
+        SettingsActivityInterface activity = startSettings();
+        MultiColumnSettings settings = (MultiColumnSettings) activity.getMultiColumnSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -297,9 +295,7 @@ public class MultiColumnSettingsUnitTest {
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testTwoPane() {
-        startSettings();
-
-        SettingsActivity activity = mSettingsActivityTestRule.getActivity();
+        SettingsActivityInterface activity = startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -308,7 +304,7 @@ public class MultiColumnSettingsUnitTest {
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        MultiColumnSettings settings = activity.getMultiColumnSettings();
+        MultiColumnSettings settings = (MultiColumnSettings) activity.getMultiColumnSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -471,7 +467,7 @@ public class MultiColumnSettingsUnitTest {
                 });
     }
 
-    private void startSettings() {
-        mSettingsActivityTestRule.startSettingsActivity();
+    private SettingsActivityInterface startSettings() {
+        return mSettingsTestRule.startSettingsActivity();
     }
 }

@@ -124,7 +124,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 AppHeaderObserver,
                 PreferenceUpdateObserver,
                 SettingsMenuHelper.Delegate,
-                SettingsContainmentHelper.Delegate {
+                SettingsContainmentHelper.Delegate,
+                SettingsActivityInterface {
     private static final String TAG = "SettingsActivity";
 
     // Key used to store activity start time in the Bundle to have it survive activity re-creation.

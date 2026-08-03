@@ -1,0 +1,20 @@
+specific_include_rules = {
+
+  # ChromeBaseAppCompatActivity is the common base class for SettingsActivity
+  # and SettingsInTabTestActivity and is required by the test activity rule.
+  'SettingsTestRule\\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivity.java"
+  ],
+
+  # This activity needs to provide all settings fragment dependencies, similar
+  # to the production non-tab SettingsActivity.
+  'SettingsInTabTestActivity\\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/init/ChromeBrowserInitializer.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsPageFragmentDelegateImpl.java",
+    "+components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerFactory.java",
+    "+components/browser_ui/bottomsheet/android/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetController.java",
+    "+components/browser_ui/bottomsheet/android/java/src/org/chromium/components/browser_ui/bottomsheet/ManagedBottomSheetController.java",
+    "+components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/AppModalPresenter.java"
+  ]
+}
