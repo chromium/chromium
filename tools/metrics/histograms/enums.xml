@@ -1278,6 +1278,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Registration is a duplicate"/>
 </enum>
 
+<enum name="BooleanRejected">
+  <int value="0" label="Not Rejected"/>
+  <int value="1" label="Rejected"/>
+</enum>
+
 <enum name="BooleanRequested">
   <int value="0" label="Not requested"/>
   <int value="1" label="Requested"/>

@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/browser_actuator/internal/features.h"
 #include "components/browser_actuator/internal/transport_session_impl.h"
 
@@ -89,7 +90,14 @@ TransportSessionImpl* TransportSessionRegistryImpl::GetOrCreateSession(
 TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (sessions_.size() >= max_concurrent_sessions_) {
+  base::UmaHistogramExactLinear(
+      "Browser.Actuator.SessionRegistry.ExistingSessionsCount",
+      static_cast<int>(sessions_.size()),
+      /*exclusive_max=*/20);
+  const bool limit_reached = sessions_.size() >= max_concurrent_sessions_;
+  base::UmaHistogramBoolean(
+      "Browser.Actuator.SessionRegistry.SessionLimitReached", limit_reached);
+  if (limit_reached) {
     DLOG(WARNING) << "Max concurrent sessions limit ("
                   << max_concurrent_sessions_
                   << ") reached. Rejecting new session.";

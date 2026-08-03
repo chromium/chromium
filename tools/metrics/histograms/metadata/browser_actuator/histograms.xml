@@ -20,6 +20,36 @@ chromium-metrics-reviews@google.com.
 
 <histogram-configuration>
 
-<histograms/>
+<histograms>
+
+<histogram name="Browser.Actuator.SessionRegistry.ExistingSessionsCount"
+    units="sessions" expires_after="2027-08-01">
+  <owner>andylky@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/browser_actuator/OWNERS</owner>
+  <summary>
+    Records the number of active transport sessions in
+    TransportSessionRegistryImpl when a request is made for a session ID that is
+    not currently in the registry.
+  </summary>
+</histogram>
+
+<histogram name="Browser.Actuator.SessionRegistry.SessionLimitReached"
+    enum="BooleanRejected" expires_after="2027-08-01">
+  <owner>andylky@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/browser_actuator/OWNERS</owner>
+  <summary>
+    Records whether a request to create a transport session in
+    TransportSessionRegistryImpl was rejected because the maximum concurrent
+    active transport sessions limit was reached. Recorded only when a request is
+    made for a session ID that is not currently in the registry (false = session
+    created, true = limit reached).
+  </summary>
+</histogram>
+
+</histograms>
 
 </histogram-configuration>

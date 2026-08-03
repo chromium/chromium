@@ -25,8 +25,8 @@ import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 # The allowlist of namespaces (histogram prefixes, case insensitive) that are
 # split across multiple files.
 _NAMESPACES_IN_MULTIPLE_FILES = [
-    'ash', 'autocomplete', 'chromeos', 'fcminvalidations', 'graphics', 'launch',
-    'net', 'networkservice', 'usereducation'
+    'ash', 'autocomplete', 'browser', 'chromeos', 'fcminvalidations',
+    'graphics', 'launch', 'net', 'networkservice', 'usereducation'
 ]
 
 
