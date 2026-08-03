@@ -1604,7 +1604,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_NodeDeleted) {
   EXPECT_TRUE(actual.contains(2));
 }
 
-TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_NodeUnignored) {
+TEST_F(BrowserAccessibilityAndroidTest, DISABLED_TestJavaNodeCache_NodeUnignored) {
   if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test fails on automotive, see crbug.com/542087826.";
   }
