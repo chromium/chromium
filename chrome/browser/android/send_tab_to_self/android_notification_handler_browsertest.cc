@@ -90,8 +90,9 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
@@ -126,8 +127,9 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   WaitForTabCount(initial_tab_count + 1);
@@ -167,8 +169,9 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerModelNotReadyBrowserTest,
 
   // Add entry while model is not ready.
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
@@ -215,8 +218,9 @@ IN_PROC_BROWSER_TEST_F(
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   // Since there is no active visible web contents and flag is disabled, it
@@ -247,8 +251,9 @@ IN_PROC_BROWSER_TEST_F(
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   WaitForTabCount(initial_tab_count + 1);

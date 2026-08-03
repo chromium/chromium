@@ -128,8 +128,9 @@ TEST_F(AndroidNotificationHandlerTest,
 
   // Add a remote entry to the model first.
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   // Ensure no system notification is shown since Chrome is active.
@@ -159,8 +160,9 @@ TEST_F(AndroidNotificationHandlerTest, ShouldNotAutoOpenNewEntriesIfNotActive) {
   // Do NOT add tab_model_ to TabModelList (simulating Chrome running in
   // background or not started).
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   // Expect a standard system notification to be shown with the correct GUID.
@@ -184,11 +186,13 @@ TEST_F(AndroidNotificationHandlerTest,
   base::HistogramTester histogram_tester;
   // Simulate multiple unread entries stored in the model.
   const SendTabToSelfEntry* entry1 =
-      model()->AddEntryRemotely(GURL("https://www.google.com/"), "Google",
-                                kDeviceId, PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL("https://www.google.com/"),
+                                 .title = "Google",
+                                 .target_device_cache_guid = kDeviceId});
   const SendTabToSelfEntry* entry2 =
-      model()->AddEntryRemotely(GURL("https://www.youtube.com/"), "YouTube",
-                                kDeviceId, PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL("https://www.youtube.com/"),
+                                 .title = "YouTube",
+                                 .target_device_cache_guid = kDeviceId});
 
   const std::string guid1 = entry1->GetGUID();
   const std::string guid2 = entry2->GetGUID();
@@ -232,8 +236,9 @@ TEST_F(AndroidNotificationHandlerTest,
   TabModelList::AddTabModel(&otr_tab_model);
 
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   // Expect a system notification because OTR tab models are ignored for
@@ -262,8 +267,9 @@ TEST_F(AndroidNotificationHandlerTest, ShouldEnqueueMessageBannerOnAutoOpen) {
   TabModelList::AddTabModel(tab_model_.get());
 
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   // Expect the message banner to be shown upon auto-opening the entry.
@@ -308,8 +314,9 @@ TEST_F(AndroidNotificationHandlerModelNotReadyTest,
 
   // Add a remote entry to the model.
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
 
@@ -340,8 +347,9 @@ TEST_F(AndroidNotificationHandlerTest,
   base::HistogramTester histogram_tester;
   // Simulate pending entries.
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   // Create an EMPTY owning tab model. It automatically adds itself to
@@ -385,8 +393,9 @@ TEST_F(AndroidNotificationHandlerTest,
        ShouldNotAutoOpenIfTabModelRemovedBeforeTabAdded) {
   // Simulate pending entries.
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   // Create an EMPTY owning tab model.
@@ -408,8 +417,9 @@ TEST_F(AndroidNotificationHandlerTest,
        ShouldAutoOpenOnFirstTabAddedWithMultipleEmptyModels) {
   // Simulate pending entries.
   const SendTabToSelfEntry* entry =
-      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
-                                PageContext(), NavigationHistory());
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
   const std::string guid = entry->GetGUID();
 
   // Create two EMPTY owning tab models.

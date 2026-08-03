@@ -80,8 +80,8 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   };
 
   // Simulates an entry being added from a remote device.
-  // TODO(crbug.com/488072250): Optionally, use RemoteEntryParams instead of
-  // individual parameters, or an overload that does.
+  const SendTabToSelfEntry* AddEntryRemotely(RemoteEntryParams params);
+
   const SendTabToSelfEntry* AddEntryRemotely(
       const GURL& url,
       const std::string& title,
