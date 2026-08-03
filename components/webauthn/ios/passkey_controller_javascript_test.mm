@@ -257,6 +257,43 @@ const char kModalTestNameSubstring[] = "Modal";
 const char kConditionalTestNameSubstring[] = "Conditional";
 const char kUnsupportedResolvesWithNullTestNameSubstring[] =
     "UnsupportedResolvesWithNull";
+const char kPassthroughNullAttachmentTestNameSubstring[] =
+    "PassthroughNullAttachment";
+
+NSString* const kMockCredentialWithNullAttachmentJs =
+    @"if (typeof PublicKeyCredential === 'undefined') {"
+    @"  window.PublicKeyCredential = class PublicKeyCredential {};"
+    @"}"
+    @"if (typeof AuthenticatorAttestationResponse === 'undefined') {"
+    @"  window.AuthenticatorAttestationResponse = "
+    @"      class AuthenticatorAttestationResponse {};"
+    @"}"
+    @"const mockCredential = {"
+    @"  id: 'credential_id',"
+    @"  type: 'public-key',"
+    @"  authenticatorAttachment: null,"
+    @"  rawId: new ArrayBuffer(8),"
+    @"  response: {"
+    @"    clientDataJSON: new ArrayBuffer(8),"
+    @"    attestationObject: new ArrayBuffer(8),"
+    @"    getAuthenticatorData: () => new ArrayBuffer(128),"
+    @"    getPublicKey: () => new ArrayBuffer(64),"
+    @"    getPublicKeyAlgorithm: () => -7,"
+    @"    getTransports: () => [],"
+    @"  },"
+    @"  getClientExtensionResults: () => ({}),"
+    @"  toJSON: () => ({}),"
+    @"};"
+    @"Object.setPrototypeOf(mockCredential, PublicKeyCredential.prototype);"
+    @"Object.setPrototypeOf(mockCredential.response, "
+    @"AuthenticatorAttestationResponse.prototype);"
+    @"if (!navigator.credentials) {"
+    @"  Object.defineProperty(navigator, 'credentials', {"
+    @"    value: {}, writable: true, configurable: true"
+    @"  });"
+    @"}"
+    @"navigator.credentials.create = async (options) => mockCredential;"
+    @"navigator.credentials.get = async (options) => mockCredential;";
 
 NSString* const kEventKey = @"event";
 NSString* const kFrameIdKey = @"frameId";
@@ -354,6 +391,15 @@ class PasskeyControllerJavaScriptTest : public web::JavascriptTest {
           forMainFrameOnly:NO];
       [web_view().configuration.userContentController
           addUserScript:disableScript];
+    }
+
+    if (test_name.find(kPassthroughNullAttachmentTestNameSubstring) !=
+        std::string::npos) {
+      WKUserScript* mockScript = [[WKUserScript alloc]
+            initWithSource:kMockCredentialWithNullAttachmentJs
+             injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+          forMainFrameOnly:NO];
+      [web_view().configuration.userContentController addUserScript:mockScript];
     }
 
     // Get the script string directly from PasskeyJavaScriptFeature so that
@@ -1043,6 +1089,46 @@ TEST_F(PasskeyControllerJavaScriptTest,
   id firstByte =
       web::test::ExecuteJavaScript(web_view(), kGetFirstByteOfPublicKeyJs);
   EXPECT_NSEQ(@1, firstByte);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       PassthroughNullAttachment_RegistrationSucceeds) {
+  GURL create_url = server().GetURL(kNavigatorCredentialsCreateWithResultUrl);
+
+  ASSERT_TRUE(LoadUrl(create_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        if (message_handler().lastReceivedMessage == nil) {
+          return NO;
+        }
+        NSDictionary* body = message_handler().lastReceivedMessage.body;
+        return [body[kEventKey] isEqualToString:@"logCreateResolved"];
+      }));
+
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(@"logCreateResolved", body[kEventKey]);
+  EXPECT_NSEQ(@NO, body[@"isGpm"]);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       PassthroughNullAttachment_AssertionSucceeds) {
+  GURL get_url = server().GetURL(kNavigatorCredentialsGetWithResultUrl);
+
+  ASSERT_TRUE(LoadUrl(get_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        if (message_handler().lastReceivedMessage == nil) {
+          return NO;
+        }
+        NSDictionary* body = message_handler().lastReceivedMessage.body;
+        return [body[kEventKey] isEqualToString:@"logGetResolved"];
+      }));
+
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(@"logGetResolved", body[kEventKey]);
+  EXPECT_NSEQ(@"credential_id", body[@"credentialId"]);
 }
 
 }  // namespace webauthn

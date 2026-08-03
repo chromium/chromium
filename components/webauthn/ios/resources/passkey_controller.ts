@@ -394,14 +394,15 @@ function isPublicKeyCredential(credential: Credential):
 
   // Verify that the PublicKeyCredential interface matches the webauthn spec as
   // described here: https://w3c.github.io/webauthn/#iface-pkcredential
-  // Note that, while `authenticatorAttachment` is nullable, this attribute
-  // reports the authenticator attachment modality in effect at the time the
-  // navigator.credentials.create() or navigator.credentials.get() methods
-  // successfully complete, so it should not be null.
+  // Note that, while `authenticatorAttachment` is nullable, it reports the
+  // authenticator attachment modality in effect at the time the methods
+  // successfully complete. Under some circumstances (e.g. authenticators or
+  // WebKit returning null), it can be null.
   const publicKeyCredential: PublicKeyCredential =
       (credential as PublicKeyCredential);
   return publicKeyCredential.rawId instanceof ArrayBuffer &&
-      typeof publicKeyCredential.authenticatorAttachment === 'string' &&
+      (typeof publicKeyCredential.authenticatorAttachment === 'string' ||
+       publicKeyCredential.authenticatorAttachment === null) &&
       publicKeyCredential.response.clientDataJSON instanceof ArrayBuffer &&
       typeof (publicKeyCredential.getClientExtensionResults) === 'function' &&
       typeof (publicKeyCredential.toJSON) === 'function';
@@ -804,10 +805,8 @@ function createEmptyCredential(): PublicKeyCredential {
 
 // Returns whether a credential is non empty.
 function isValidCredential(credential: Credential|null): boolean {
-  return !!credential && !!credential.type && !!credential.id &&
-      isPublicKeyCredential(credential) &&
-      !!credential.authenticatorAttachment && !!credential.rawId &&
-      !!credential.response && !!credential.response.clientDataJSON;
+  return !!credential && isPublicKeyCredential(credential) &&
+      credential.id !== '';
 }
 
 // Creates a valid AuthenticatorAttestationResponse from the provided list of
