@@ -776,12 +776,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     private void setThirdPartyCookieSettingsPreference(@CookieControlsMode int mode) {
         assert mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES;
-        getSiteSettingsDelegate().dismissPrivacySandboxSnackbar();
 
-        // Display the Privacy Sandbox snackbar whenever third-party cookies are blocked.
         if (mode == CookieControlsMode.BLOCK_THIRD_PARTY) {
             RecordUserAction.record("Settings.PrivacySandbox.Block3PCookies");
-            getSiteSettingsDelegate().maybeDisplayPrivacySandboxSnackbar();
         }
         PrefService prefService = UserPrefs.get(getBrowserContextHandle());
         prefService.setInteger(COOKIE_CONTROLS_MODE, mode);

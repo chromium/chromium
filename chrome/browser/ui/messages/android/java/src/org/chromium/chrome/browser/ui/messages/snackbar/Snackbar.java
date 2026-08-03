@@ -93,7 +93,7 @@ public class Snackbar {
     // Obsolete; don't use: UMA_CONDITIONAL_TAB_STRIP_DISMISS_UNDO = 35;
     public static final int UMA_PAINT_PREVIEW_UPGRADE_NOTIFICATION = 36;
     public static final int UMA_READING_LIST_BOOKMARK_ADDED = 37;
-    public static final int UMA_PRIVACY_SANDBOX_PAGE_OPEN = 38;
+    // Obsolete; don't use: public static final int UMA_PRIVACY_SANDBOX_PAGE_OPEN = 38;
     // Obsolete; don't use: public static final int UMA_WEB_FEED_FOLLOW_SUCCESS = 39;
     // Obsolete; don't use: public static final int UMA_WEB_FEED_FOLLOW_FAILURE = 40;
     // Obsolete; don't use: public static final int UMA_WEB_FEED_UNFOLLOW_SUCCESS = 41;

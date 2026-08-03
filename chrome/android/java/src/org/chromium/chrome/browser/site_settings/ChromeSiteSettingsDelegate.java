@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
@@ -59,7 +58,6 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.permissions.PermissionUtil;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -82,7 +80,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private @Nullable BrowsingDataModel mBrowsingDataModel;
     private @Nullable ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private @Nullable SnackbarManager mSnackbarManager;
-    private @Nullable PrivacySandboxSnackbarController mPrivacySandboxController;
     private @Nullable LargeIconBridge mLargeIconBridge;
 
     public ChromeSiteSettingsDelegate(Context context, Profile profile) {
@@ -110,8 +107,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         snackbarManagerSupplier.onAvailable(
                 (snackbarManager) -> {
                     mSnackbarManager = snackbarManager;
-                    mPrivacySandboxController =
-                            new PrivacySandboxSnackbarController(mContext, snackbarManager);
                 });
     }
 
@@ -314,32 +309,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                             Snackbar.TYPE_NOTIFICATION,
                             Snackbar.UMA_REVOKE_FILE_EDIT_GRANT);
             mSnackbarManager.showSnackbar(snackbar);
-        }
-    }
-
-    @Override
-    public void maybeDisplayPrivacySandboxSnackbar() {
-        if (mPrivacySandboxController == null) return;
-
-        // Only show the snackbar when Privacy Sandbox APIs are enabled.
-        if (!isAnyPrivacySandboxApiEnabledV4()) return;
-
-        if (mPrivacySandboxBridge.isPrivacySandboxRestricted()) return;
-
-        mPrivacySandboxController.showSnackbar();
-    }
-
-    private boolean isAnyPrivacySandboxApiEnabledV4() {
-        PrefService prefs = UserPrefs.get(mProfile);
-        return prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)
-                || prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED)
-                || prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
-    }
-
-    @Override
-    public void dismissPrivacySandboxSnackbar() {
-        if (mPrivacySandboxController != null) {
-            mPrivacySandboxController.dismissSnackbar();
         }
     }
 

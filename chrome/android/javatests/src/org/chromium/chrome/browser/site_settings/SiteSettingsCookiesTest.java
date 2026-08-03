@@ -59,14 +59,11 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -90,7 +87,6 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -1022,86 +1018,6 @@ public class SiteSettingsCookiesTest {
                 });
 
         settingsActivity.finish();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287320
-    public void testBlockAllThirdPartyCookiesSnackbarDisplayedWhenTopicsEnabled() {
-        var userActionTester = new UserActionTester();
-        // Enable Topics API.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    PrefService prefService =
-                            UserPrefs.get(SiteSettingsTestHelper.getBrowserContextHandle());
-                    prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, true);
-                });
-        SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        waitForCookieToggleToBeBound(settingsActivity);
-        // Select the block all 3PC option.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    clickButtonAndVerifyItsChecked(
-                            getCookieToggle(settingsActivity),
-                            CookieControlsMode.BLOCK_THIRD_PARTY);
-                });
-        // The snackbar should be displayed.
-        onView(withText(R.string.privacy_sandbox_snackbar_message)).check(matches(isDisplayed()));
-        Assert.assertTrue(
-                "User action is not recorded",
-                userActionTester.getActions().contains("Settings.PrivacySandbox.Block3PCookies"));
-        // Click a different button, check that the snackbar was dismissed.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    clickButtonAndVerifyItsChecked(
-                            getCookieToggle(settingsActivity), CookieControlsMode.INCOGNITO_ONLY);
-                });
-        onView(withText(R.string.privacy_sandbox_snackbar_message)).check(doesNotExist());
-        // Click back, click on the more button to test that the settings fragment was open.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    clickButtonAndVerifyItsChecked(
-                            getCookieToggle(settingsActivity),
-                            CookieControlsMode.BLOCK_THIRD_PARTY);
-                });
-        onView(withText(R.string.privacy_sandbox_snackbar_message)).check(matches(isDisplayed()));
-        onView(withText(R.string.more)).perform(click());
-        waitForView(withText(R.string.ad_privacy_page_title));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
-    public void testBlockAllThirdPartyCookiesSnackbarHiddenWhenDeprecationEnabled() {
-        var userActionTester = new UserActionTester();
-        // Enable Topics API.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    PrefService prefService =
-                            UserPrefs.get(SiteSettingsTestHelper.getBrowserContextHandle());
-                    prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, true);
-                });
-        SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        waitForCookieToggleToBeBound(settingsActivity);
-        // Select the block all 3PC option.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    clickButtonAndVerifyItsChecked(
-                            getCookieToggle(settingsActivity),
-                            CookieControlsMode.BLOCK_THIRD_PARTY);
-                });
-        // The snackbar should not be displayed, but user action is still recorded.
-        onView(withText(R.string.privacy_sandbox_snackbar_message)).check(doesNotExist());
-        Assert.assertTrue(
-                "User action should have been recorded",
-                userActionTester.getActions().contains("Settings.PrivacySandbox.Block3PCookies"));
     }
 
     /**

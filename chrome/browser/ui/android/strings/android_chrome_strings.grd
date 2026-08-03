@@ -1040,11 +1040,6 @@ For example, some websites may respond to this request by showing you ads that a
         Access payment methods
       </message>
 
-      <!-- Privacy Sandbox Settings. Used by //chrome/browser/privacy_sandbox. -->
-      <message name="IDS_PRIVACY_SANDBOX_SNACKBAR_MESSAGE" desc="The text displayed in the snackbar, which gives the user an option to navigate to the Privacy Sandbox settings page. 'Privacy sandbox' has TC ID 5753235213964358658.">
-        Learn about and control new technologies that aim to replace third-party cookies
-      </message>
-
       <!-- Privacy Sandbox v4 - Ad Privacy Page -->
       <message name="IDS_AD_PRIVACY_PAGE_TITLE" desc="A new page title for a page that includes 3 settings. This same text appears as a label on chrome://settings/privacy between 'Third-party cookies' and 'Security'. This same pair of words is used in the Consent and Notice flow and must be consistently translated in both contexts. We mean privacy associated with ads, and not privacy from ads. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an “Ad privacy” page in Chrome settings. For an equivalent structure, see “Security” on chrome://settings/privacy that opens chrome://settings/security. Likewise, “Ad privacy” on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
         Ad privacy

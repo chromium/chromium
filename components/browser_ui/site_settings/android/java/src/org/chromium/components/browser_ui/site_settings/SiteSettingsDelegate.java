@@ -157,15 +157,6 @@ public interface SiteSettingsDelegate {
     void revokeFileSystemAccessGrant(String origin, String file);
 
     /**
-     * Displays a snackbar, informing the user about the Privacy Sandbox settings page, when the
-     * corresponding flag is enabled.
-     */
-    void maybeDisplayPrivacySandboxSnackbar();
-
-    /** Dismisses the Privacy Sandbox snackbar, if active. */
-    void dismissPrivacySandboxSnackbar();
-
-    /**
      * @return true if Related Website Sets data access is enabled.
      */
     boolean isRelatedWebsiteSetsDataAccessEnabled();
