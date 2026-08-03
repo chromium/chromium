@@ -6108,6 +6108,61 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
                 {url::Origin::Create(embedder_url).Serialize()}));
 }
 
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, SandboxedIframeOpaqueOrigin) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url = embedded_https_test_server().GetURL("a.test", "/main.html");
+  GURL iframe_url =
+      embedded_https_test_server().GetURL("a.test", "/iframe.html");
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
+
+  RegisterResponse(
+      "/main.html",
+      ResponseEntry(
+          JsReplace("<html><body>"
+                    "<iframe id='test_iframe' sandbox='allow-scripts' "
+                    "src=$1></iframe></body></html>",
+                    iframe_url),
+          {}));
+
+  RegisterResponse(
+      "/iframe.html",
+      ResponseEntry("<html><body>Hello from iframe</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse("/allow.js",
+                   ResponseEntry("console.log('allow');",
+                                 {{"Access-Control-Allow-Origin", "*"}}));
+  RegisterResponse("/deny.js",
+                   ResponseEntry("console.log('deny');",
+                                 {{"Access-Control-Allow-Origin", "*"}}));
+
+  URLLoaderMonitor monitor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_TRUE(iframe->GetLastCommittedOrigin().opaque());
+
+  // Run fetch from the iframe.
+  EXPECT_EQ("blocked", EvalJs(iframe, content::JsReplace(R"(
+      fetch($1, {mode: 'no-cors'}).then(() => 'allowed').catch(() => 'blocked');
+    )",
+                                                         denied_url)));
+
+  EXPECT_EQ("allowed", EvalJs(iframe, content::JsReplace(R"(
+      fetch($1, {mode: 'no-cors'}).then(() => 'allowed').catch(() => 'blocked');
+    )",
+                                                         allowed_url)));
+
+  monitor.WaitForUrls({allowed_url, denied_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(denied_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+}
+
 }  // namespace
 
 }  // namespace content
