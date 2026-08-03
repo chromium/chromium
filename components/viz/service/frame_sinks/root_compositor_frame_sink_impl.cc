@@ -527,6 +527,11 @@ void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
     exact_supported_refresh_rates_[interval] = rate;
   }
 
+  if (!exact_supported_refresh_rates_.empty() && display_) {
+    display_->NotifyMinSupportedVsyncInterval(
+        exact_supported_refresh_rates_.begin()->first);
+  }
+
   UpdateFrameIntervalDeciderSettings();
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)

@@ -36,6 +36,11 @@ FrameDeadlineDecider::FrameDeadlineDecider(
 
 FrameDeadlineDecider::~FrameDeadlineDecider() = default;
 
+void FrameDeadlineDecider::NotifyMinSupportedVsyncInterval(
+    base::TimeDelta min_vsync_interval) {
+  min_supported_vsync_interval_ = min_vsync_interval;
+}
+
 bool FrameDeadlineDecider::IsPartOfOngoingFrameSequence(
     base::TimeTicks frame_time,
     bool is_handling_interaction) const {
@@ -85,6 +90,16 @@ size_t FrameDeadlineDecider::QueryDeadline(
   CHECK_GT(target_present_multiplier, 0);
   base::TimeDelta target_present_delta =
       target_present_multiplier * vsync_interval;
+
+  // Always cap custom presentation deltas so that an imminent switch to
+  // higher refresh rates never exceeds the display's maximum sustainable
+  // presentation delta.
+  base::TimeDelta min_interval_presentation_cap =
+      min_supported_vsync_interval_.has_value()
+          ? max_allowed_buffers * (*min_supported_vsync_interval_)
+          : base::TimeDelta::Max();
+  target_present_delta =
+      std::min(target_present_delta, min_interval_presentation_cap);
 
   if (earliest_input_time.has_value()) {
     // The earliest input time can be in the future relative to frame_time

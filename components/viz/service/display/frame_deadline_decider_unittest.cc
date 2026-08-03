@@ -204,6 +204,71 @@ TEST_F(FrameDeadlineDeciderTest, NonInteractiveToInteractiveTransitionTimeout) {
                              /*is_handling_interaction=*/true),
       1u);
 }
+
+TEST_F(FrameDeadlineDeciderTest,
+       NotifyMinSupportedVsyncIntervalCapsPresentationDelta) {
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+
+  auto deadlines_60hz = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(16), base::Milliseconds(32)),
+          PossibleDeadline(3, base::Milliseconds(32), base::Milliseconds(48)),
+          PossibleDeadline(4, base::Milliseconds(48), base::Milliseconds(64))});
+
+  // 1. Without NotifyMinSupportedVsyncInterval, target_present_delta (48ms)
+  // selects Index 2 (48ms).
+  EXPECT_EQ(decider.SelectDeadline(deadlines_60hz, base::Milliseconds(16),
+                                   /*max_allowed_buffers=*/3,
+                                   base::TimeTicks::Now(), std::nullopt,
+                                   /*is_handling_interaction=*/true),
+            2u);
+
+  decider.OnDisplayInvisible();
+
+  // 2. After NotifyMinSupportedVsyncInterval(8ms) [120 Hz peak -> presentation
+  // cap = 24ms], target_present_delta is capped to <= 24ms, selecting Index 0
+  // (16ms) instead of Index 2.
+  decider.NotifyMinSupportedVsyncInterval(base::Milliseconds(8));
+  EXPECT_EQ(decider.SelectDeadline(deadlines_60hz, base::Milliseconds(16),
+                                   /*max_allowed_buffers=*/3,
+                                   base::TimeTicks::Now(), std::nullopt,
+                                   /*is_handling_interaction=*/true),
+            0u);
+}
+
+TEST_F(FrameDeadlineDeciderTest,
+       NotifyMinSupportedVsyncIntervalUpdatedDuringSession) {
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+
+  auto deadlines_60hz = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(16), base::Milliseconds(32)),
+          PossibleDeadline(3, base::Milliseconds(32), base::Milliseconds(48)),
+          PossibleDeadline(4, base::Milliseconds(48), base::Milliseconds(64))});
+
+  // 1. Notify 16ms min supported vsync interval (60 Hz only display ->
+  // presentation cap = 48ms). Target present delta (48ms) <= presentation cap
+  // (48ms), so Index 2 (48ms) is selected.
+  decider.NotifyMinSupportedVsyncInterval(base::Milliseconds(16));
+  EXPECT_EQ(decider.SelectDeadline(deadlines_60hz, base::Milliseconds(16),
+                                   /*max_allowed_buffers=*/3,
+                                   base::TimeTicks::Now(), std::nullopt,
+                                   /*is_handling_interaction=*/true),
+            2u);
+
+  decider.OnDisplayInvisible();
+
+  // 2. Display capabilities change (e.g., external 120 Hz display connected,
+  // 8ms min vsync interval). Presentation cap is now 24ms. Target present delta
+  // is capped to <= 24ms, selecting Index 0 (16ms).
+  decider.NotifyMinSupportedVsyncInterval(base::Milliseconds(8));
+  EXPECT_EQ(decider.SelectDeadline(deadlines_60hz, base::Milliseconds(16),
+                                   /*max_allowed_buffers=*/3,
+                                   base::TimeTicks::Now(), std::nullopt,
+                                   /*is_handling_interaction=*/true),
+            0u);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class AndroidFrameDeadlineDeciderTest : public FrameDeadlineDeciderTest {
  public:

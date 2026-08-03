@@ -22,6 +22,8 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   explicit FrameDeadlineDecider(bool use_platform_preferred_deadlines);
   ~FrameDeadlineDecider();
 
+  void NotifyMinSupportedVsyncInterval(base::TimeDelta min_vsync_interval);
+
   FrameDeadlineDecider(const FrameDeadlineDecider&) = delete;
   FrameDeadlineDecider& operator=(const FrameDeadlineDecider&) = delete;
 
@@ -69,6 +71,7 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   };
 
   std::optional<FrameSequenceState> frame_sequence_state_;
+  std::optional<base::TimeDelta> min_supported_vsync_interval_;
   const base::TimeDelta max_non_interactive_idle_duration_;
   const base::TimeDelta max_interactive_idle_duration_;
   const bool use_platform_preferred_deadlines_;

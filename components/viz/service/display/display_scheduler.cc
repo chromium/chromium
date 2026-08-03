@@ -323,6 +323,11 @@ void DisplayScheduler::OnPresentationFeedback(
   }
 }
 
+void DisplayScheduler::NotifyMinSupportedVsyncInterval(
+    base::TimeDelta min_vsync_interval) {
+  decider_.NotifyMinSupportedVsyncInterval(min_vsync_interval);
+}
+
 bool DisplayScheduler::DrawAndSwap(const BeginFrameArgs& begin_frame_args) {
   TRACE_EVENT0("viz", "DisplayScheduler::DrawAndSwap");
   DCHECK_LT(pending_swaps_,
