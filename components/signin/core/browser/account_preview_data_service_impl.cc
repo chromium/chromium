@@ -314,7 +314,6 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
     return;
   }
 
-  CHECK(!network_delay_helper_->AreNetworkCallsDelayed());
   active_fetchers_[gaia_id] = std::make_unique<AccountPreviewDataFetcher>(
       gaia_id, identity_manager_, url_loader_factory_, channel_,
       base::BindOnce(&AccountPreviewDataServiceImpl::OnSingleFetchCompleted,
