@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.85.0"
 name = "uuid"
-version = "1.23.4"
+version = "1.24.0"
 authors = [
     "Ashley Mannix<ashleymannix@live.com.au>",
     "Dylan DPC<dylan.dpc@gmail.com>",
@@ -209,7 +209,7 @@ version = "1.0.56"
 version = "1.0.52"
 
 [target.'cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))'.dependencies.uuid-rng-internal-lib]
-version = "1.23.4"
+version = "1.24.0"
 optional = true
 package = "uuid-rng-internal"
 
@@ -236,6 +236,9 @@ optional = true
 [target.'cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))'.dependencies.rand]
 version = "0.10"
 optional = true
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.gungraun]
+version = "=0.19.2"
 
 [lints.rust.unexpected_cfgs]
 level = "allow"

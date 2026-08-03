@@ -360,7 +360,7 @@ pub mod compact {
     }
 }
 
-/// Serialize a [`Uuid`] as [`uuid::fmt::Simple`]([crate::fmt::Simple]).
+/// Serialize a [`Uuid`] as [`uuid::fmt::Simple`](crate::fmt::Simple).
 ///
 /// [`Uuid`]: ../../struct.Uuid.html
 ///

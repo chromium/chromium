@@ -29,7 +29,7 @@ homepage = "https://github.com/uuid-rs/uuid"
 name = "uuid"
 readme = "README.md"
 repository = "https://github.com/uuid-rs/uuid"
-version = "1.23.4" # remember to update html_root_url in lib.rs
+version = "1.24.0" # remember to update html_root_url in lib.rs
 rust-version = "1.85.0"
 
 [package.metadata.docs.rs]
@@ -140,7 +140,7 @@ optional = true
 [target.'cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))'.dependencies.uuid-rng-internal-lib]
 # Work-around lack of support for both `dep:x` and `x/` in MSRV
 package = "uuid-rng-internal"
-version = "1.23.4"
+version = "1.24.0"
 path = "rng"
 optional = true
 
@@ -202,6 +202,25 @@ version = "1.0.52"
 
 [dev-dependencies.rustversion]
 version = "1"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.gungraun]
+version = "=0.19.2"
+
+[[bench]]
+name = "gungraun_format_str"
+harness = false
+
+[[bench]]
+name = "gungraun_parse_str"
+harness = false
+
+[[bench]]
+name = "gungraun_v4"
+harness = false
+
+[[bench]]
+name = "gungraun_v7"
+harness = false
 
 [workspace]
 members = [

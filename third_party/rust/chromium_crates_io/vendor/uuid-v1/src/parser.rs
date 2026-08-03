@@ -202,35 +202,26 @@ pub(crate) const fn parse_simple(
         ));
     }
 
-    let mut buf: [u8; 16] = [0; 16];
+    // Copy the hex characters into a fixed-size array so the decoder's
+    // bounds are statically known.
+    let mut hex = [0u8; 32];
     let mut i = 0;
-
-    while i < 16 {
-        // Convert a two-char hex value (like `A8`)
-        // into a byte (like `10101000`)
-        let h1 = HEX_TABLE[s[i * 2] as usize];
-        let h2 = HEX_TABLE[s[i * 2 + 1] as usize];
-
-        // We use `0xff` as a sentinel value to indicate
-        // an invalid hex character sequence (like the letter `G`)
-        if h1 | h2 == 0xff {
-            return Err(InvalidUuid(
-                s,
-                if speculative {
-                    RequestedUuid::Any
-                } else {
-                    RequestedUuid::Simple
-                },
-            ));
-        }
-
-        // The upper nibble needs to be shifted into position
-        // to produce the final byte value
-        buf[i] = SHL4_TABLE[h1 as usize] | h2;
+    while i < 32 {
+        hex[i] = s[i];
         i += 1;
     }
 
-    Ok(buf)
+    match decode_hex32(&hex) {
+        Some(buf) => Ok(buf),
+        None => Err(InvalidUuid(
+            s,
+            if speculative {
+                RequestedUuid::Any
+            } else {
+                RequestedUuid::Simple
+            },
+        )),
+    }
 }
 
 #[inline]
@@ -241,8 +232,7 @@ pub(crate) const fn parse_hyphenated(s: &'_ [u8]) -> Result<[u8; 16], InvalidUui
         return Err(InvalidUuid(s, RequestedUuid::Hyphenated));
     }
 
-    // We look at two hex-encoded values (4 chars) at a time because
-    // that's the size of the smallest group in a hyphenated UUID.
+    // The hex characters are split into five groups separated by hyphens.
     // The indexes we're interested in are:
     //
     // uuid     : 936da01f-9abd-4d9d-80c7-02af85c822a8
@@ -256,66 +246,80 @@ pub(crate) const fn parse_hyphenated(s: &'_ [u8]) -> Result<[u8; 16], InvalidUui
         _ => return Err(InvalidUuid(s, RequestedUuid::Hyphenated)),
     }
 
-    let positions: [u8; 8] = [0, 4, 9, 14, 19, 24, 28, 32];
-    let mut buf: [u8; 16] = [0; 16];
-    let mut j = 0;
-
-    while j < 8 {
-        let i = positions[j];
-
-        // The decoding here is the same as the simple case
-        // We're just dealing with two values instead of one
-        let h1 = HEX_TABLE[s[i as usize] as usize];
-        let h2 = HEX_TABLE[s[(i + 1) as usize] as usize];
-        let h3 = HEX_TABLE[s[(i + 2) as usize] as usize];
-        let h4 = HEX_TABLE[s[(i + 3) as usize] as usize];
-
-        if h1 | h2 | h3 | h4 == 0xff {
-            return Err(InvalidUuid(s, RequestedUuid::Hyphenated));
-        }
-
-        buf[j * 2] = SHL4_TABLE[h1 as usize] | h2;
-        buf[j * 2 + 1] = SHL4_TABLE[h3 as usize] | h4;
-        j += 1;
+    // Gather the hex characters, skipping the four hyphens, so they're
+    // contiguous for the decoder.
+    let mut hex = [0u8; 32];
+    let mut i = 0;
+    while i < 8 {
+        hex[i] = s[i];
+        i += 1;
+    }
+    while i < 12 {
+        hex[i] = s[i + 1];
+        i += 1;
+    }
+    while i < 16 {
+        hex[i] = s[i + 2];
+        i += 1;
+    }
+    while i < 20 {
+        hex[i] = s[i + 3];
+        i += 1;
+    }
+    while i < 32 {
+        hex[i] = s[i + 4];
+        i += 1;
     }
 
-    Ok(buf)
+    match decode_hex32(&hex) {
+        Some(buf) => Ok(buf),
+        None => Err(InvalidUuid(s, RequestedUuid::Hyphenated)),
+    }
 }
 
-const HEX_TABLE: &[u8; 256] = &{
-    let mut buf = [0; 256];
-    let mut i: u8 = 0;
+/// Decodes 32 hexadecimal ASCII characters into 16 bytes, returning `None` if
+/// any character is not a valid hexadecimal digit.
+#[inline]
+const fn decode_hex32(hex: &[u8; 32]) -> Option<[u8; 16]> {
+    let mut nibbles = [0u8; 32];
+    let mut bad = 0u8;
 
-    loop {
-        buf[i as usize] = match i {
-            b'0'..=b'9' => i - b'0',
-            b'a'..=b'f' => i - b'a' + 10,
-            b'A'..=b'F' => i - b'A' + 10,
-            _ => 0xff,
+    let mut i = 0;
+    while i < 32 {
+        let c = hex[i];
+
+        // '0'..='9' map to 0..=9; 'a'..='f' and 'A'..='F' (via `| 0x20`) map to
+        // 0..=5, offset by 10 to land in 10..=15.
+        let digit = c.wrapping_sub(b'0');
+        let alpha = (c | 0x20).wrapping_sub(b'a');
+
+        let is_digit = digit < 10;
+        let is_alpha = alpha < 6;
+
+        nibbles[i] = if is_digit {
+            digit
+        } else {
+            alpha.wrapping_add(10)
         };
 
-        if i == 255 {
-            break buf;
-        }
-
-        i += 1
-    }
-};
-
-const SHL4_TABLE: &[u8; 256] = &{
-    let mut buf = [0; 256];
-    let mut i: u8 = 0;
-
-    loop {
-        buf[i as usize] = i.wrapping_shl(4);
-
-        if i == 255 {
-            break buf;
-        }
+        bad |= if is_digit | is_alpha { 0 } else { 1 };
 
         i += 1;
     }
-};
+
+    if bad != 0 {
+        return None;
+    }
+
+    let mut buf = [0u8; 16];
+    let mut j = 0;
+    while j < 16 {
+        buf[j] = (nibbles[j * 2] << 4) | nibbles[j * 2 + 1];
+        j += 1;
+    }
+
+    Some(buf)
+}
 
 #[cfg(test)]
 mod tests {
