@@ -31,6 +31,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/manta/manta_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/network_change_notifier.h"
@@ -232,6 +233,26 @@ std::vector<std::string> GetAllowedInputMethodEngines() {
   return allowed_imes;
 }
 
+bool IsGoogleInternalAccountEmailFromProfile(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
+    return true;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return false;
+  }
+
+  return gaia::IsGoogleInternalAccountEmail(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email);
+}
+
 }  // namespace
 
 bool IsAllowedForUseInDemoMode(std::string_view country_code) {
@@ -287,6 +308,10 @@ bool EditorSwitch::IsAllowedForUse() const {
 
   if (chromeos::IsKioskSession()) {
     return false;
+  }
+
+  if (IsGoogleInternalAccountEmailFromProfile(profile_)) {
+    return true;
   }
 
   return base::FeatureList::IsEnabled(ash::features::kOrcaSupportDemoMode) &&

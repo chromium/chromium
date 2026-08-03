@@ -932,5 +932,21 @@ TEST_P(EditorSwitchAllFlagsEnabledTest, EditorModeHasCorrectState) {
   EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
 }
 
+TEST(EditorSwitchTest, AllowedForUseForGooglers) {
+  content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<TestingProfile> profile =
+      CreateTestingProfile("testuser@google.com");
+  FakeSystem system;
+  FakeEditorContextObserver context_observer;
+  FakeEditorSwitchObserver switch_observer;
+  EditorGeolocationMockProvider geolocation_provider("unknown_country");
+  EditorContext context(&context_observer, &system, &geolocation_provider);
+  EditorSwitch editor_switch(/*observer=*/&switch_observer,
+                             /*profile=*/profile.get(),
+                             /*context=*/&context);
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+}
+
 }  // namespace
 }  // namespace ash::input_method
