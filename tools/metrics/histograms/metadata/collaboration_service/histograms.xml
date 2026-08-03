@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="CollaborationService.JoinFlow"
-    enum="CollaborationServiceJoinEvent" expires_after="2026-06-28">
+    enum="CollaborationServiceJoinEvent" expires_after="2027-08-03">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CollaborationService.JoinFlow.EntryPoint"
-    enum="CollaborationServiceJoinEntryPoint" expires_after="2026-06-28">
+    enum="CollaborationServiceJoinEntryPoint" expires_after="2027-08-03">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CollaborationService.Latency.{CollaborationServiceStep}"
-    units="ms" expires_after="2026-06-28">
+    units="ms" expires_after="2027-08-03">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CollaborationService.LeaveOrDeleteFlow.EntryPoint"
     enum="CollaborationServiceLeaveOrDeleteEntryPoint"
-    expires_after="2026-05-24">
+    expires_after="2027-08-03">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CollaborationService.ShareOrManageFlow"
-    enum="CollaborationServiceShareOrManageEvent" expires_after="2026-08-30">
+    enum="CollaborationServiceShareOrManageEvent" expires_after="2027-08-03">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CollaborationService.ShareOrManageFlow.EntryPoint"
     enum="CollaborationServiceShareOrManageEntryPoint"
-    expires_after="2026-06-28">
+    expires_after="2027-08-03">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CollaborationService.{CollaborationServiceFlow}.Events"
-    enum="CollaborationServiceFlowEvent" expires_after="2026-02-22">
+    enum="CollaborationServiceFlowEvent" expires_after="2027-08-03">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
