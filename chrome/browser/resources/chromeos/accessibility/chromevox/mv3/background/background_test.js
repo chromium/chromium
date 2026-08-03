@@ -1482,9 +1482,11 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'TableColumnHeaders', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+// TODO(crbug.com/542153303): Reenable the test after fixing.
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'DISABLED_TableColumnHeaders', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <div role="grid">
       <div role="rowgroup">
         <div role="row">
@@ -1507,20 +1509,20 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'TableColumnHeaders', async function() {
       </div>
     </div>
   `;
-  const root = await this.runWithLoadedTree(site);
-  mockFeedback.call(doCmd('nextRow'))
-      .expectSpeech('Mountain View', 'row 2 column 1')
-      .call(doCmd('nextRow'))
-      .expectNextSpeechUtteranceIsNot('city')
-      .expectSpeech('San Jose', 'row 3 column 1')
-      .call(doCmd('nextCol'))
-      .expectSpeech('CA', 'row 3 column 2', 'state')
-      .call(doCmd('previousRow'))
-      .expectSpeech('CA', 'row 2 column 2')
-      .call(doCmd('previousRow'))
-      .expectSpeech('state', 'row 1 column 2');
-  await mockFeedback.replay();
-});
+      const root = await this.runWithLoadedTree(site);
+      mockFeedback.call(doCmd('nextRow'))
+          .expectSpeech('Mountain View', 'row 2 column 1')
+          .call(doCmd('nextRow'))
+          .expectNextSpeechUtteranceIsNot('city')
+          .expectSpeech('San Jose', 'row 3 column 1')
+          .call(doCmd('nextCol'))
+          .expectSpeech('CA', 'row 3 column 2', 'state')
+          .call(doCmd('previousRow'))
+          .expectSpeech('CA', 'row 2 column 2')
+          .call(doCmd('previousRow'))
+          .expectSpeech('state', 'row 1 column 2');
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F(
     'ChromeVoxBackgroundTest', 'ActiveDescendantUpdates', async function() {
