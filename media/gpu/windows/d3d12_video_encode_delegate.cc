@@ -70,11 +70,9 @@ bool IsVBRSupported(ID3D12VideoDevice3* video_device,
   return SUCCEEDED(hr) && vbr.IsSupported;
 }
 
-DXGI_FORMAT GetDxgiInputFormat(VideoCodecProfile output_profile,
-                               VideoPixelFormat input_format) {
-  if ((output_profile == H264PROFILE_HIGH10PROFILE ||
-       output_profile == HEVCPROFILE_MAIN10) &&
-      input_format == PIXEL_FORMAT_P010LE) {
+DXGI_FORMAT GetDxgiInputFormat(VideoCodecProfile output_profile) {
+  if (output_profile == H264PROFILE_HIGH10PROFILE ||
+      output_profile == HEVCPROFILE_MAIN10) {
     return DXGI_FORMAT_P010;
   } else if (output_profile == AV1PROFILE_PROFILE_HIGH) {
     return DXGI_FORMAT_AYUV;
@@ -228,7 +226,7 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   input_size_.Width = config.input_visible_size.width();
   input_size_.Height = config.input_visible_size.height();
 
-  input_format_ = GetDxgiInputFormat(output_profile_, config.input_format);
+  input_format_ = GetDxgiInputFormat(output_profile_);
   processed_input_frame_.Reset();
 
   bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);
@@ -269,10 +267,12 @@ bool D3D12VideoEncodeDelegate::UpdateRateControl(
 }
 
 EncoderStatus::Or<D3D12VideoEncodeDelegate::EncodeResult>
-D3D12VideoEncodeDelegate::Encode(D3D12PictureBuffer picture_buffer,
-                                 const gfx::ColorSpace& input_frame_color_space,
-                                 const BitstreamBuffer& bitstream_buffer,
-                                 const VideoEncoder::EncodeOptions& options) {
+D3D12VideoEncodeDelegate::Encode(
+    D3D12PictureBuffer picture_buffer,
+    const gfx::ColorSpace& input_frame_color_space,
+    const BitstreamBuffer& bitstream_buffer,
+    const VideoEncoder::EncodeOptions& options,
+    const gfx::HDRMetadata& input_frame_hdr_metadata) {
   if (options.reference_buffers.size() > GetMaxNumOfManualRefBuffers()) {
     return {EncoderStatus::Codes::kBadReferenceBuffer,
             "Number of manual reference buffers exceeds that is supported by "
@@ -308,6 +308,20 @@ D3D12VideoEncodeDelegate::Encode(D3D12PictureBuffer picture_buffer,
       input_frame_desc.Format != input_format_ ||
       input_frame_color_space != output_color_space) {
     if (!processed_input_frame_) {
+      // The actual input DXGI format and color space are only known here, at
+      // Encode() time (e.g. an RGB(A) HDR shared image that must be converted
+      // to P010). Validate that the video processor can perform this conversion
+      // before allocating resources or submitting any GPU work, so we fail with
+      // a clear error rather than deep inside the video processor.
+      if (!video_processor_wrapper_->CheckVideoProcessorSupport(
+              static_cast<UINT>(input_frame_desc.Width),
+              static_cast<UINT>(input_frame_desc.Height),
+              input_frame_desc.Format, input_frame_color_space, input_format_,
+              output_color_space)) {
+        return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                "D3D12 video processor does not support the required input "
+                "format conversion"};
+      }
       D3D12_RESOURCE_DESC processed_input_frame_desc =
           CD3DX12_RESOURCE_DESC::Tex2D(input_format_, input_size_.Width,
                                        input_size_.Height, 1, 1);
@@ -346,7 +360,7 @@ D3D12VideoEncodeDelegate::Encode(D3D12PictureBuffer picture_buffer,
   }
   auto impl_result =
       EncodeImpl(picture_buffer.resource.Get(), picture_buffer.subresource,
-                 options, output_color_space);
+                 options, output_color_space, input_frame_hdr_metadata);
   if (!impl_result.is_ok()) {
     // EncodeImpl() may bail (e.g. kBadReferenceBuffer) after
     // D3D12VideoProcessorWrapper::ProcessFrames() has already submitted work

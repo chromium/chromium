@@ -95,6 +95,37 @@ bool D3D12VideoProcessorWrapper::Wait(D3D12FenceAndValue fence_and_value) {
   return true;
 }
 
+bool D3D12VideoProcessorWrapper::CheckVideoProcessorSupport(
+    UINT input_width,
+    UINT input_height,
+    DXGI_FORMAT input_format,
+    const gfx::ColorSpace& input_color_space,
+    DXGI_FORMAT output_format,
+    const gfx::ColorSpace& output_color_space) {
+  D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT support{
+      .InputSample = {.Width = input_width,
+                      .Height = input_height,
+                      .Format = {.Format = input_format,
+                                 .ColorSpace =
+                                     gfx::ColorSpaceWin::GetDXGIColorSpace(
+                                         input_color_space)}},
+      .InputFrameRate = {30, 1},
+      .OutputFormat = {.Format = output_format,
+                       .ColorSpace = gfx::ColorSpaceWin::GetDXGIColorSpace(
+                           output_color_space)},
+      .OutputFrameRate = {30, 1},
+  };
+  HRESULT hr = video_device_->CheckFeatureSupport(
+      D3D12_FEATURE_VIDEO_PROCESS_SUPPORT, &support, sizeof(support));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "CheckFeatureSupport for "
+                   "D3D12_FEATURE_VIDEO_PROCESS_SUPPORT failed: "
+                << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  return support.SupportFlags == D3D12_VIDEO_PROCESS_SUPPORT_FLAG_SUPPORTED;
+}
+
 D3D12FenceAndValue D3D12VideoProcessorWrapper::ProcessFrames(
     ID3D12Resource* input_texture,
     UINT input_subresource,
@@ -132,24 +163,11 @@ D3D12FenceAndValue D3D12VideoProcessorWrapper::ProcessFrames(
       UNSAFE_TODO(memcmp(&output_stream_desc, &output_stream_desc_,
                          sizeof(D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC))) !=
           0) {
-    D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT support{
-        .InputSample = {.Width = static_cast<UINT>(input_texture_desc.Width),
-                        .Height = input_texture_desc.Height,
-                        .Format = {.Format = input_texture_desc.Format,
-                                   .ColorSpace = input_stream_desc.ColorSpace}},
-        .InputFrameRate = {30, 1},
-        .OutputFormat = {.Format = output_texture_desc.Format,
-                         .ColorSpace = output_stream_desc.ColorSpace},
-        .OutputFrameRate = {30, 1},
-    };
-    hr = video_device_->CheckFeatureSupport(D3D12_FEATURE_VIDEO_PROCESS_SUPPORT,
-                                            &support, sizeof(support));
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "CheckFeatureSupport for "
-                     "D3D12_FEATURE_VIDEO_PROCESS_SUPPORT failed: "
-                  << logging::SystemErrorCodeToString(hr);
-    }
-    if (support.SupportFlags != D3D12_VIDEO_PROCESS_SUPPORT_FLAG_SUPPORTED) {
+    if (!CheckVideoProcessorSupport(
+            static_cast<UINT>(input_texture_desc.Width),
+            input_texture_desc.Height, input_texture_desc.Format,
+            input_color_space, output_texture_desc.Format,
+            output_color_space)) {
       DLOG(ERROR) << "D3D12 cannot support video processing.";
       return {};
     }

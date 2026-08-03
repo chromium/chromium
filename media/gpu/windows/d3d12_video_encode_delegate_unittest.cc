@@ -37,7 +37,8 @@ class MockD3D12VideoEncodeDelegate : public D3D12VideoEncodeDelegate {
   EncoderStatus EncodeImpl(ID3D12Resource*,
                            UINT,
                            const VideoEncoder::EncodeOptions&,
-                           const gfx::ColorSpace&) override {
+                           const gfx::ColorSpace&,
+                           const gfx::HDRMetadata&) override {
     return EncoderStatus::Codes::kOk;
   }
 
@@ -76,6 +77,8 @@ D3D12VideoEncodeDelegateTestBase::CreateVideoProcessorWrapper(
   // outlives the lambda stored in ON_CALL.
   auto fence = MakeComPtr<NiceMock<D3D12FenceMock>>();
   ON_CALL(*video_processor_wrapper, Init).WillByDefault(Return(true));
+  ON_CALL(*video_processor_wrapper, CheckVideoProcessorSupport)
+      .WillByDefault(Return(true));
   ON_CALL(*video_processor_wrapper, ProcessFrames)
       .WillByDefault([fence](ID3D12Resource*, UINT, const gfx::ColorSpace&,
                              const gfx::Rect&, ID3D12Resource*, UINT,
@@ -226,6 +229,50 @@ TEST_F(D3D12VideoEncodeDelegateTest, P010InputFormatFor10BitProfile) {
   config.output_profile = H264PROFILE_HIGH10PROFILE;
   EXPECT_TRUE(encoder_delegate_->Initialize(config).is_ok());
   EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010);
+}
+
+TEST_F(D3D12VideoEncodeDelegateTest,
+       P010InputFormatForRGBInputWith10BitProfile) {
+  // RGB(A) inputs feeding a 10-bit profile (e.g. HDR content delivered via an
+  // RGBA shared image) must select P010 as the encoder input format so the
+  // video processor converts to 10-bit before encoding.
+  for (VideoPixelFormat rgb_format : {PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB,
+                                      PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR}) {
+    VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+    config.input_format = rgb_format;
+    config.output_profile = H264PROFILE_HIGH10PROFILE;
+    EXPECT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+    EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010)
+        << "Unexpected input format for RGB pixel format "
+        << VideoPixelFormatToString(rgb_format);
+  }
+}
+
+TEST_F(D3D12VideoEncodeDelegateTest, EncodeFailsWhenVideoProcessorUnsupported) {
+  // The encoder input format and the required conversion are only resolved at
+  // Encode() time, when the actual input frame format is known. If the video
+  // processor cannot perform the conversion, Encode() should fail with an
+  // unsupported-config error before submitting any GPU work.
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  ON_CALL(*GetVideoProcessorWrapper(), CheckVideoProcessorSupport)
+      .WillByDefault(Return(false));
+
+  // An ARGB input frame differs from the NV12 encoder input format, so the
+  // encoder must run the video processor to convert it.
+  auto input_frame =
+      CreateResource(config.input_visible_size, PIXEL_FORMAT_ARGB);
+  constexpr size_t kPayloadSize = 1024;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kPayloadSize);
+  EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
+  auto result_or_error = encoder_delegate_->Encode(
+      input_frame, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+      VideoEncoder::EncodeOptions());
+  ASSERT_FALSE(result_or_error.has_value());
+  EXPECT_EQ(std::move(result_or_error).error().code(),
+            EncoderStatus::Codes::kEncoderUnsupportedConfig);
 }
 
 TEST_F(D3D12VideoEncodeDelegateTest, ExternalRateControl) {

@@ -42,6 +42,17 @@ class MEDIA_GPU_EXPORT D3D12VideoProcessorWrapper {
   // them.
   virtual D3D11Status WaitForInFlightWork();
 
+  // Returns whether the D3D12 video processor can convert an input of
+  // |input_format| in |input_color_space| to an output of |output_format| in
+  // |output_color_space| for the given input size.
+  virtual bool CheckVideoProcessorSupport(
+      UINT input_width,
+      UINT input_height,
+      DXGI_FORMAT input_format,
+      const gfx::ColorSpace& input_color_space,
+      DXGI_FORMAT output_format,
+      const gfx::ColorSpace& output_color_space);
+
   // Processes the |input_texture| and writes the result to |output_texture|.
   // Returns {nullptr, 0} on failure, otherwise returns a valid fence and value.
   virtual D3D12FenceAndValue ProcessFrames(

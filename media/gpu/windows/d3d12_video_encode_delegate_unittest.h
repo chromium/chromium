@@ -22,6 +22,14 @@ class MockD3D12VideoProcessorWrapper : public D3D12VideoProcessorWrapper {
   ~MockD3D12VideoProcessorWrapper() override;
 
   MOCK_METHOD(bool, Init, ());
+  MOCK_METHOD(bool,
+              CheckVideoProcessorSupport,
+              (UINT,
+               UINT,
+               DXGI_FORMAT,
+               const gfx::ColorSpace&,
+               DXGI_FORMAT,
+               const gfx::ColorSpace&));
   MOCK_METHOD(D3D12FenceAndValue,
               ProcessFrames,
               (ID3D12Resource*,

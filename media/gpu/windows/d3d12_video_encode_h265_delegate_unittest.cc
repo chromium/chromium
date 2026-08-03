@@ -8,6 +8,7 @@
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
+#include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/mf_video_encoder_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -380,6 +381,298 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeFrame) {
   EXPECT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
   ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
   EXPECT_EQ(nalu.nal_unit_type, H265NALU::PPS_NUT);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeMain10HDRFrame) {
+  // Accept the Main10 profile in the codec configuration support query, since
+  // the default fixture mock only accepts Main.
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(
+              D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+        auto* codec_config = static_cast<
+            D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT*>(
+            data);
+        EXPECT_EQ(*codec_config->Profile.pHEVCProfile,
+                  D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10);
+        codec_config->IsSupported =
+            codec_config->Codec == D3D12_VIDEO_ENCODER_CODEC_HEVC &&
+            *codec_config->Profile.pHEVCProfile ==
+                D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10;
+        *codec_config->CodecSupportLimits.pHEVCSupport = {
+            .SupportFlags =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_NONE,
+            .MinLumaCodingUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_8x8,
+            .MaxLumaCodingUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_64x64,
+            .MinLumaTransformUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_4x4,
+            .MaxLumaTransformUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_32x32,
+            .max_transform_hierarchy_depth_inter = 0,
+            .max_transform_hierarchy_depth_intra = 0,
+        };
+        return S_OK;
+      });
+
+  VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+  config.output_profile = HEVCPROFILE_MAIN10;
+  config.input_format = PIXEL_FORMAT_P010LE;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  auto input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  constexpr size_t kBufferSize = 1024;
+  constexpr size_t kStreamSize = 512;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata())
+      .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kStreamSize)));
+  EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
+      .WillOnce(Return(EncoderStatus::Codes::kOk));
+  EXPECT_CALL(*GetVideoEncoderWrapper(), ReadbackBitstream)
+      .WillOnce([&](base::span<uint8_t> bitstream_buffer) {
+        constexpr base::span kStartCode = base::span_from_cstring("\0\0\1");
+        EXPECT_GE(bitstream_buffer.size(), kStartCode.size());
+        std::ranges::copy(kStartCode, bitstream_buffer.begin());
+        return EncoderStatus::Codes::kOk;
+      });
+
+  // BT.2020 PQ HDR10 input with mastering display and content light level.
+  gfx::ColorSpace hdr_color_space(
+      gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::TransferID::PQ,
+      gfx::ColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
+  gfx::HDRMetadata hdr_metadata;
+  skhdr::MasteringDisplayColorVolume mdcv;
+  mdcv.fDisplayPrimaries = {0.680f, 0.320f, 0.265f,  0.690f,
+                            0.150f, 0.060f, 0.3127f, 0.3290f};
+  mdcv.fMaximumDisplayMasteringLuminance = 1000.0f;
+  mdcv.fMinimumDisplayMasteringLuminance = 0.05f;
+  hdr_metadata.SetMDCV(mdcv);
+  hdr_metadata.SetCLLI(
+      skhdr::ContentLightLevelInformation::MakeUint16(/*maxCLL=*/1000,
+                                                      /*maxFALL=*/400));
+
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, hdr_color_space, bitstream_buffer,
+                                VideoEncoder::EncodeOptions(), hdr_metadata);
+  ASSERT_TRUE(result_or_error.has_value());
+
+  BitstreamBufferMetadata metadata =
+      std::move(result_or_error).value().metadata;
+  ASSERT_GT(metadata.payload_size_bytes, kStreamSize);
+  ASSERT_LE(metadata.payload_size_bytes, kBufferSize);
+
+  H265Parser parser;
+  base::WritableSharedMemoryMapping map = shared_memory.Map();
+  parser.SetStream(map.GetMemoryAsSpan<uint8_t>());
+
+  // VPS.
+  H265NALU nalu;
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::VPS_NUT);
+  int vps_id;
+  ASSERT_EQ(parser.ParseVPS(&vps_id), H265Parser::Result::kOk);
+
+  // SPS: verify Main10 bit depth and HDR VUI colour signalling.
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
+  int sps_id;
+  ASSERT_EQ(parser.ParseSPS(&sps_id), H265Parser::Result::kOk);
+  const H265SPS* sps = parser.GetSPS(sps_id);
+  ASSERT_TRUE(sps);
+  EXPECT_EQ(sps->bit_depth_luma_minus8, 2);
+  EXPECT_EQ(sps->bit_depth_chroma_minus8, 2);
+  EXPECT_TRUE(sps->vui_parameters_present_flag);
+  EXPECT_TRUE(sps->vui_parameters.colour_description_present_flag);
+  EXPECT_EQ(sps->vui_parameters.colour_primaries, 9);           // BT.2020
+  EXPECT_EQ(sps->vui_parameters.transfer_characteristics, 16);  // PQ
+  EXPECT_EQ(sps->vui_parameters.matrix_coeffs, 9);              // BT.2020-NCL
+
+  // PPS.
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::PPS_NUT);
+  int pps_id;
+  ASSERT_EQ(parser.ParsePPS(nalu, &pps_id), H265Parser::Result::kOk);
+
+  // Prefix SEI carrying the HDR static metadata.
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::PREFIX_SEI_NUT);
+  H265SEI sei;
+  ASSERT_EQ(parser.ParseSEI(&sei), H265Parser::Result::kOk);
+  bool found_mdcv = false;
+  bool found_clli = false;
+  for (const auto& sei_msg : sei.msgs) {
+    if (const auto* info = std::get_if<H26xSEIMasteringDisplayInfo>(&sei_msg)) {
+      found_mdcv = true;
+      EXPECT_EQ(info->display_primaries[0][0], 13250u);  // G x
+      EXPECT_EQ(info->display_primaries[0][1], 34500u);  // G y
+      EXPECT_EQ(info->display_primaries[1][0], 7500u);   // B x
+      EXPECT_EQ(info->display_primaries[1][1], 3000u);   // B y
+      EXPECT_EQ(info->display_primaries[2][0], 34000u);  // R x
+      EXPECT_EQ(info->display_primaries[2][1], 16000u);  // R y
+      EXPECT_EQ(info->white_points[0], 15635u);
+      EXPECT_EQ(info->white_points[1], 16450u);
+      EXPECT_EQ(info->max_luminance, 10000000u);
+      EXPECT_EQ(info->min_luminance, 500u);
+    } else if (const auto* clli_info =
+                   std::get_if<H26xSEIContentLightLevelInfo>(&sei_msg)) {
+      found_clli = true;
+      EXPECT_EQ(clli_info->max_content_light_level, 1000u);
+      EXPECT_EQ(clli_info->max_picture_average_light_level, 400u);
+    }
+  }
+  EXPECT_TRUE(found_mdcv);
+  EXPECT_TRUE(found_clli);
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeMain10HDRFrameFromRGBInput) {
+  // Accept the Main10 profile in the codec configuration support query, since
+  // the default fixture mock only accepts Main.
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(
+              D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+        auto* codec_config = static_cast<
+            D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT*>(
+            data);
+        EXPECT_EQ(*codec_config->Profile.pHEVCProfile,
+                  D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10);
+        codec_config->IsSupported =
+            codec_config->Codec == D3D12_VIDEO_ENCODER_CODEC_HEVC &&
+            *codec_config->Profile.pHEVCProfile ==
+                D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10;
+        *codec_config->CodecSupportLimits.pHEVCSupport = {
+            .SupportFlags =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_NONE,
+            .MinLumaCodingUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_8x8,
+            .MaxLumaCodingUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_64x64,
+            .MinLumaTransformUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_4x4,
+            .MaxLumaTransformUnitSize =
+                D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_32x32,
+            .max_transform_hierarchy_depth_inter = 0,
+            .max_transform_hierarchy_depth_intra = 0,
+        };
+        return S_OK;
+      });
+
+  // A BT.2020 PQ HDR frame delivered as an RGBA shared image should select
+  // P010 as the encoder input format so that the D3D12 video processor
+  // converts the RGB input to 10-bit before encoding.
+  VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+  config.output_profile = HEVCPROFILE_MAIN10;
+  config.input_format = PIXEL_FORMAT_ARGB;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+  EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010);
+
+  auto input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  constexpr size_t kBufferSize = 1024;
+  constexpr size_t kStreamSize = 512;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+
+  // BT.2020 PQ HDR10 input carried in an RGB frame (matrix RGB).
+  gfx::ColorSpace hdr_rgb_color_space(
+      gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::TransferID::PQ,
+      gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL);
+  gfx::ColorSpace expected_output_color_space =
+      GetEncoderOutputColorSpaceFromInputColorSpace(hdr_rgb_color_space);
+
+  // The video processor must be invoked to convert the RGB input to P010,
+  // using the HDR input color space and the derived YUV output color space.
+  EXPECT_CALL(*GetVideoProcessorWrapper(),
+              ProcessFrames(_, _, hdr_rgb_color_space, _, _, _,
+                            expected_output_color_space, _))
+      .Times(1);
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata())
+      .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kStreamSize)));
+  EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
+      .WillOnce(Return(EncoderStatus::Codes::kOk));
+  EXPECT_CALL(*GetVideoEncoderWrapper(), ReadbackBitstream)
+      .WillOnce([&](base::span<uint8_t> bitstream_buffer) {
+        constexpr base::span kStartCode = base::span_from_cstring("\0\0\1");
+        EXPECT_GE(bitstream_buffer.size(), kStartCode.size());
+        std::ranges::copy(kStartCode, bitstream_buffer.begin());
+        return EncoderStatus::Codes::kOk;
+      });
+
+  gfx::HDRMetadata hdr_metadata;
+  skhdr::MasteringDisplayColorVolume mdcv;
+  mdcv.fDisplayPrimaries = {0.680f, 0.320f, 0.265f,  0.690f,
+                            0.150f, 0.060f, 0.3127f, 0.3290f};
+  mdcv.fMaximumDisplayMasteringLuminance = 1000.0f;
+  mdcv.fMinimumDisplayMasteringLuminance = 0.05f;
+  hdr_metadata.SetMDCV(mdcv);
+  hdr_metadata.SetCLLI(
+      skhdr::ContentLightLevelInformation::MakeUint16(/*maxCLL=*/1000,
+                                                      /*maxFALL=*/400));
+
+  auto result_or_error = encoder_delegate_->Encode(
+      input_frame, hdr_rgb_color_space, bitstream_buffer,
+      VideoEncoder::EncodeOptions(), hdr_metadata);
+  ASSERT_TRUE(result_or_error.has_value());
+
+  BitstreamBufferMetadata metadata =
+      std::move(result_or_error).value().metadata;
+  ASSERT_GT(metadata.payload_size_bytes, kStreamSize);
+  ASSERT_LE(metadata.payload_size_bytes, kBufferSize);
+  // The encoded stream should be tagged with the derived HDR output color
+  // space.
+  EXPECT_EQ(metadata.encoded_color_space, expected_output_color_space);
+
+  H265Parser parser;
+  base::WritableSharedMemoryMapping map = shared_memory.Map();
+  parser.SetStream(map.GetMemoryAsSpan<uint8_t>());
+
+  // VPS.
+  H265NALU nalu;
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::VPS_NUT);
+  int vps_id;
+  ASSERT_EQ(parser.ParseVPS(&vps_id), H265Parser::Result::kOk);
+
+  // SPS: verify Main10 bit depth and HDR VUI colour signalling.
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
+  int sps_id;
+  ASSERT_EQ(parser.ParseSPS(&sps_id), H265Parser::Result::kOk);
+  const H265SPS* sps = parser.GetSPS(sps_id);
+  ASSERT_TRUE(sps);
+  EXPECT_EQ(sps->bit_depth_luma_minus8, 2);
+  EXPECT_EQ(sps->bit_depth_chroma_minus8, 2);
+  EXPECT_TRUE(sps->vui_parameters_present_flag);
+  EXPECT_TRUE(sps->vui_parameters.colour_description_present_flag);
+  EXPECT_EQ(sps->vui_parameters.colour_primaries, 9);           // BT.2020
+  EXPECT_EQ(sps->vui_parameters.transfer_characteristics, 16);  // PQ
+  EXPECT_EQ(sps->vui_parameters.matrix_coeffs, 9);              // BT.2020-NCL
+
+  // PPS.
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::PPS_NUT);
+  int pps_id;
+  ASSERT_EQ(parser.ParsePPS(nalu, &pps_id), H265Parser::Result::kOk);
+
+  // Prefix SEI carrying the HDR static metadata.
+  ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::PREFIX_SEI_NUT);
+  H265SEI sei;
+  ASSERT_EQ(parser.ParseSEI(&sei), H265Parser::Result::kOk);
+  bool found_mdcv = false;
+  bool found_clli = false;
+  for (const auto& sei_msg : sei.msgs) {
+    if (std::holds_alternative<H26xSEIMasteringDisplayInfo>(sei_msg)) {
+      found_mdcv = true;
+    } else if (std::holds_alternative<H26xSEIContentLightLevelInfo>(sei_msg)) {
+      found_clli = true;
+    }
+  }
+  EXPECT_TRUE(found_mdcv);
+  EXPECT_TRUE(found_clli);
 }
 
 TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeFramesAndVerifyKeyFrameFlag) {

@@ -1011,7 +1011,8 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::EncodeImpl(
     ID3D12Resource* input_frame,
     UINT input_frame_subresource,
     const VideoEncoder::EncodeOptions& options,
-    const gfx::ColorSpace& input_color_space) {
+    const gfx::ColorSpace& input_color_space,
+    const gfx::HDRMetadata& input_hdr_metadata) {
   input_arguments_.SequenceControlDesc.Flags =
       D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_NONE;
   input_arguments_.SequenceControlDesc.RateControl =

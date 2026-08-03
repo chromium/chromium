@@ -53,18 +53,21 @@ class MockVideoEncoderDelegate : public D3D12VideoEncodeDelegate {
   MOCK_METHOD(size_t, GetMaxNumOfRefFrames, (), (const override));
   MOCK_METHOD(size_t, GetMaxNumOfManualRefBuffers, (), (const override));
   MOCK_METHOD(bool, SupportsRateControlReconfiguration, (), (const override));
-  MOCK_METHOD4(
-      Encode,
-      EncoderStatus::Or<EncodeResult>(D3D12PictureBuffer,
-                                      const gfx::ColorSpace&,
-                                      const BitstreamBuffer&,
-                                      const VideoEncoder::EncodeOptions&));
+  MOCK_METHOD(EncoderStatus::Or<EncodeResult>,
+              Encode,
+              (D3D12PictureBuffer,
+               const gfx::ColorSpace&,
+               const BitstreamBuffer&,
+               const VideoEncoder::EncodeOptions&,
+               const gfx::HDRMetadata&),
+              (override));
   MOCK_METHOD(EncoderStatus,
               EncodeImpl,
               (ID3D12Resource*,
                UINT,
                const VideoEncoder::EncodeOptions&,
-               const gfx::ColorSpace&),
+               const gfx::ColorSpace&,
+               const gfx::HDRMetadata&),
               (override));
 
  protected:
@@ -91,10 +94,11 @@ class MockVideoEncoderDelegateFactory
         .WillByDefault(Return(16));
     ON_CALL(*encoder_delegate, GetMaxNumOfManualRefBuffers())
         .WillByDefault(Return(0));
-    ON_CALL(*encoder_delegate, Encode(_, _, _, _))
+    ON_CALL(*encoder_delegate, Encode(_, _, _, _, _))
         .WillByDefault([](D3D12PictureBuffer, const gfx::ColorSpace&,
                           const BitstreamBuffer& bitstream_buffer,
-                          const VideoEncoder::EncodeOptions&)
+                          const VideoEncoder::EncodeOptions&,
+                          const gfx::HDRMetadata&)
                            -> D3D12VideoEncodeDelegate::EncodeResult {
           return {bitstream_buffer.id()};
         });
@@ -511,11 +515,12 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, EncodeErrorStopsProcessingNextFrames) {
           .WillByDefault(Return(16));
       ON_CALL(*encoder_delegate, GetMaxNumOfManualRefBuffers())
           .WillByDefault(Return(0));
-      ON_CALL(*encoder_delegate, Encode(_, _, _, _))
+      ON_CALL(*encoder_delegate, Encode(_, _, _, _, _))
           .WillByDefault(
               [this](D3D12PictureBuffer, const gfx::ColorSpace&,
                      const BitstreamBuffer& bitstream_buffer,
-                     const VideoEncoder::EncodeOptions&)
+                     const VideoEncoder::EncodeOptions&,
+                     const gfx::HDRMetadata&)
                   -> EncoderStatus::Or<D3D12VideoEncodeDelegate::EncodeResult> {
                 ++encode_call_count_;
                 if (encode_call_count_ == 1) {

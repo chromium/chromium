@@ -352,7 +352,8 @@ EncoderStatus D3D12VideoEncodeH264Delegate::EncodeImpl(
     ID3D12Resource* input_frame,
     UINT input_frame_subresource,
     const VideoEncoder::EncodeOptions& options,
-    const gfx::ColorSpace& input_color_space) {
+    const gfx::ColorSpace& input_color_space,
+    const gfx::HDRMetadata& input_hdr_metadata) {
   // Filling the |input_arguments_| according to
   // https://github.com/microsoft/DirectX-Specs/blob/master/d3d/D3D12VideoEncoding.md#6120-struct-d3d12_video_encoder_input_arguments
 

@@ -954,7 +954,7 @@ bool D3D12VideoEncodeAccelerator::DoEncodeTask(
 
   auto result_or_error =
       encoder_->Encode(picture_buffer, frame->ColorSpace(), bitstream_buffer,
-                       input_frame.options);
+                       input_frame.options, frame->hdr_metadata());
   if (!result_or_error.has_value()) {
     NotifyError(std::move(result_or_error).error());
     return false;

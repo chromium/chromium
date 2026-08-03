@@ -80,7 +80,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate
   EncoderStatus EncodeImpl(ID3D12Resource* input_frame,
                            UINT input_frame_subresource,
                            const VideoEncoder::EncodeOptions& options,
-                           const gfx::ColorSpace& input_color_space) override;
+                           const gfx::ColorSpace& input_color_space,
+                           const gfx::HDRMetadata& input_hdr_metadata) override;
 
  private:
   EncoderStatus InitializeVideoEncoder(
