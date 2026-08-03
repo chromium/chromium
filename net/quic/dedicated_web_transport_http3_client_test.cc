@@ -391,6 +391,13 @@ class HeaderCapturingBackend : public quic::test::QuicTestBackend {
 class DedicatedWebTransportHttp3HeadersTest
     : public DedicatedWebTransportHttp3Test {
  public:
+  ~DedicatedWebTransportHttp3HeadersTest() override {
+    if (server_ != nullptr) {
+      server_->Shutdown();
+      server_.reset();
+    }
+  }
+
   void StartServerWithCapture() {
     capturing_backend_.set_enable_webtransport(true);
     server_ = std::make_unique<QuicSimpleServer>(
@@ -406,20 +413,10 @@ class DedicatedWebTransportHttp3HeadersTest
   HeaderCapturingBackend capturing_backend_;
 };
 
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-// TODO(https://crbug.com/541015755): Destructor order causes MSan
-// use-of-uninitialized-value.
-#define MAYBE_AdditionalHeadersCasingAndDuplicates \
-  DISABLED_AdditionalHeadersCasingAndDuplicates
-#else
-#define MAYBE_AdditionalHeadersCasingAndDuplicates \
-  AdditionalHeadersCasingAndDuplicates
-#endif
-
 // Verify that additional_headers with mixed casing are lowercased and that
 // duplicate names (differing only in case) have their values combined.
 TEST_F(DedicatedWebTransportHttp3HeadersTest,
-       MAYBE_AdditionalHeadersCasingAndDuplicates) {
+       AdditionalHeadersCasingAndDuplicates) {
   StartServerWithCapture();
   WebTransportParameters parameters;
   parameters.additional_headers = {
