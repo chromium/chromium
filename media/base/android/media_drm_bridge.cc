@@ -16,6 +16,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -171,12 +172,11 @@ class KeySystemManager {
 
 KeySystemManager::KeySystemManager() {
   // Widevine is always supported in Android.
-  key_system_uuid_map_[kWidevineKeySystem] = UUID(
-      kWidevineUuid, UNSAFE_TODO(kWidevineUuid + std::size(kWidevineUuid)));
+  key_system_uuid_map_[kWidevineKeySystem] = base::ToVector(kWidevineUuid);
   // External Clear Key is supported only for testing.
   if (base::FeatureList::IsEnabled(kExternalClearKeyForTesting)) {
-    key_system_uuid_map_[kExternalClearKeyKeySystem] = UUID(
-        kClearKeyUuid, UNSAFE_TODO(kClearKeyUuid + std::size(kClearKeyUuid)));
+    key_system_uuid_map_[kExternalClearKeyKeySystem] =
+        base::ToVector(kClearKeyUuid);
   }
   MediaDrmBridgeClient* client = GetMediaDrmBridgeClient();
   if (client) {

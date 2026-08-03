@@ -5,6 +5,9 @@
 #ifndef WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
 #define WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
 
+#include <array>
+#include <cstdint>
+
 #include "build/build_config.h"
 #include "media/cdm/cdm_type.h"  // nogncheck
 
@@ -50,8 +53,8 @@ inline constexpr media::CdmType kMediaFoundationWidevineCdmType{
 // in Android for creating MediaDRM objects that support the DRM scheme required
 // by content.
 #if BUILDFLAG(IS_ANDROID)
-inline constexpr uint8_t kWidevineUuid[16] = {
+inline constexpr auto kWidevineUuid = std::to_array<uint8_t>({
     0xED, 0xEF, 0x8B, 0xA9, 0x79, 0xD6, 0x4A, 0xCE,  //
-    0xA3, 0xC8, 0x27, 0xDC, 0xD5, 0x1D, 0x21, 0xED};
+    0xA3, 0xC8, 0x27, 0xDC, 0xD5, 0x1D, 0x21, 0xED});
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
