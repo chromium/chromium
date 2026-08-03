@@ -242,8 +242,6 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       GetProfile(), send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
 
-  // TODO(crbug.com/40817150): This duplicates the ShouldOfferFeature() check,
-  // instead the 2 codepaths should share code.
   SendTabToSelfPageHandler* handler =
       SendTabToSelfPageHandler::GetOrCreateForWebContents(&GetWebContents());
 
