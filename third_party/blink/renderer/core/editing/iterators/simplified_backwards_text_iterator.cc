@@ -148,11 +148,8 @@ void SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::Init(
       end_offset = Position::LastOffsetInNode(*end_node);
     }
   }
-  if (RuntimeEnabledFeatures::
-          AdjustDOMOffsetToLayoutOffsetForSecureTextEnabled()) {
-    start_offset = AdjustedOffsetForSecureText(start_node, start_offset);
-    end_offset = AdjustedOffsetForSecureText(end_node, end_offset);
-  }
+  start_offset = AdjustedOffsetForSecureText(start_node, start_offset);
+  end_offset = AdjustedOffsetForSecureText(end_node, end_offset);
 
   node_ = end_node;
   fully_clipped_stack_.SetUpFullyClippedStack(node_);

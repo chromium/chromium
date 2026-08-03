@@ -60,11 +60,8 @@ EphemeralRange PlainTextRange::CreateRange(const ContainerNode& scope) const {
 
 EphemeralRange PlainTextRange::CreateRangeForSelection(
     const ContainerNode& scope) const {
-  const TextIteratorBehavior behavior =
-      RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
-          ? TextIteratorBehavior::
-                AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
-          : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
+  const TextIteratorBehavior behavior = TextIteratorBehavior::
+      AllVisiblePositionsIncludingShadowRootRangeLengthBehavior();
   return CreateRangeFor(scope, behavior);
 }
 

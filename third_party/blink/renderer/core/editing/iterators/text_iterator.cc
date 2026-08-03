@@ -310,10 +310,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
 
   if (HandleRememberedProgress())
     return;
-  bool should_continue_iteration = (node_ != past_end_node_ || shadow_depth_);
-  if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
-    should_continue_iteration = (node_ != past_end_node_);
-  }
+  bool should_continue_iteration = (node_ != past_end_node_);
   while (node_ && should_continue_iteration) {
     // TODO(crbug.com/1296290): Disable this DCHECK as it's troubling CrOS engs.
     // TODO(crbug.com/421311110): Disable this DCHECK as it's troubling android
@@ -530,11 +527,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
     if (text_state_.PositionNode())
       return;
 
-    if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
-      should_continue_iteration = (node_ != past_end_node_);
-    } else {
-      should_continue_iteration = (node_ != past_end_node_ || shadow_depth_);
-    }
+    should_continue_iteration = (node_ != past_end_node_);
   }
 }
 

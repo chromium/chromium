@@ -606,8 +606,7 @@ void InsertListCommand::ToggleSelectedListItem(
     return;
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  if (RuntimeEnabledFeatures::PlaceholderVisibilityEnabled() &&
-      EnsureNodeVisibility(placeholder)) {
+  if (EnsureNodeVisibility(placeholder)) {
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   }
 

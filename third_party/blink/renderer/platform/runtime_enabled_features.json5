@@ -302,11 +302,6 @@
       implied_by: ["Fledge", "Parakeet"],
       public: true,
     },
-    // Fix for crbug.com/403358869
-    {
-      name: "AdjustDOMOffsetToLayoutOffsetForSecureText",
-      status: "stable",
-    },
     // Adjust the end of the next paragraph if the end position for the
     // paragraph is updated while moving the paragraph. See
     // https://crbug.com/329121649
@@ -1122,13 +1117,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      // Changes the caret's affinity to upstream, preventing spaces
-      // from appearing in the previous line when typing at the start
-      // of a wrapped line. See https://crbug.com/40677155
-      name: "CaretWithTextAffinityUpstream",
-      status: "stable",
-    },
-    {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
       // Signals. See https://crrev.com/c/4544201 and https://crbug.com/1458640.
       name: "CCTNewRFMPushBehavior",
@@ -1154,12 +1142,6 @@
     },
     {
       name: "CheckableInputTypeLayoutInline",
-      status: "stable",
-    },
-    {
-      // If focus is not at canonical position then spellcheck should be deactivated.
-      // crbug.com/396485529
-      name: "CheckForCanonicalPositionInIdleSpellCheck",
       status: "stable",
     },
     {
@@ -2716,11 +2698,6 @@
     },
     {
       name: "EnforceAnonymityExposure",
-      status: "stable",
-    },
-    {
-      // See: crbug.com/40771555
-      name: "EnterInOpenShadowRoots",
       status: "stable",
     },
     // When enabled, the LCP algorithm ignores image entropy for the first
@@ -4752,11 +4729,6 @@
     {
       name: "PermissionsRequestRevoke",
       status: "experimental",
-    },
-    {
-      // crbug.com/398955086
-      name: "PlaceholderVisibility",
-      status: "stable",
     },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374

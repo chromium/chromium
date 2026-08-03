@@ -1679,11 +1679,8 @@ bool CompositeEditCommand::DestinationStillEditableForPaste(
 
 wtf_size_t CompositeEditCommand::ComputeDestinationIndex(
     const VisiblePosition& destination) {
-  const TextIteratorBehavior behavior =
-      RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
-          ? TextIteratorBehavior::
-                AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
-          : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
+  const TextIteratorBehavior behavior = TextIteratorBehavior::
+      AllVisiblePositionsIncludingShadowRootRangeLengthBehavior();
   return TextIterator::RangeLength(
       Position::FirstPositionInNode(*GetDocument().documentElement()),
       destination.ToParentAnchoredPosition(), behavior);
@@ -1826,11 +1823,8 @@ CompositeEditCommand::ComputePreservedSelectionIndices(
       ComparePositions(selection_start, start_of_paragraph) >= 0;
   bool end_in_paragraph =
       ComparePositions(selection_end, end_of_paragraph) <= 0;
-  const TextIteratorBehavior behavior =
-      RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
-          ? TextIteratorBehavior::
-                AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
-          : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
+  const TextIteratorBehavior behavior = TextIteratorBehavior::
+      AllVisiblePositionsIncludingShadowRootRangeLengthBehavior();
 
   wtf_size_t start_index = 0;
   if (start_in_paragraph) {

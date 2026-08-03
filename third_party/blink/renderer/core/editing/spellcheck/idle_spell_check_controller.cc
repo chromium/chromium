@@ -334,17 +334,14 @@ void IdleSpellCheckController::Invoke(IdleDeadline* deadline) {
 
   // If focus node has canonical position null then spellcheck should not
   // be executed.
-  if (RuntimeEnabledFeatures::
-          CheckForCanonicalPositionInIdleSpellCheckEnabled()) {
-    Position selection_focus =
-        GetWindow().GetFrame()->Selection().GetSelectionInDomTree().Focus();
-    if (selection_focus) {
-      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-      if (CanonicalPositionOf(EphemeralRange(selection_focus).StartPosition())
-              .IsNull()) {
-        Deactivate();
-        return;
-      }
+  Position selection_focus =
+      GetWindow().GetFrame()->Selection().GetSelectionInDomTree().Focus();
+  if (selection_focus) {
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+    if (CanonicalPositionOf(EphemeralRange(selection_focus).StartPosition())
+            .IsNull()) {
+      Deactivate();
+      return;
     }
   }
 

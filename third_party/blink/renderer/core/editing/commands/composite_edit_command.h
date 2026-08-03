@@ -282,8 +282,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   bool DestinationStillEditableForPaste(const VisiblePosition& destination);
 
   // Returns the plain-text offset of `destination` from the document root,
-  // selecting the TextIteratorBehavior based on the EnterInOpenShadowRoots
-  // flag. Requires clean layout.
+  // selecting the TextIteratorBehavior. Requires clean layout.
   wtf_size_t ComputeDestinationIndex(const VisiblePosition& destination);
 
   // Sets the ending selection to `destination` (mirroring into the raw-DOM

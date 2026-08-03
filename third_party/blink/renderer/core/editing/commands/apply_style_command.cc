@@ -291,11 +291,8 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
       Position::FirstPositionInNode(scope),
       visible_end.DeepEquivalent().ParentAnchoredEquivalent());
 
-  const TextIteratorBehavior behavior =
-      RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
-          ? TextIteratorBehavior::
-                AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
-          : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
+  const TextIteratorBehavior behavior = TextIteratorBehavior::
+      AllVisiblePositionsIncludingShadowRootRangeLengthBehavior();
   const wtf_size_t start_index =
       TextIterator::RangeLength(start_range, behavior);
   const wtf_size_t end_index = TextIterator::RangeLength(end_range, behavior);

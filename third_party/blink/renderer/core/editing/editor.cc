@@ -142,33 +142,6 @@ EditingBehavior Editor::Behavior() const {
   return EditingBehavior(GetFrame().GetSettings()->GetEditingBehaviorType());
 }
 
-static bool IsCaretAtStartOfWrappedLine(const FrameSelection& selection) {
-  if (!selection.ComputeVisibleSelectionInDomTree().IsCaret()) {
-    return false;
-  }
-  if (selection.GetSelectionInDomTree().Affinity() !=
-      TextAffinity::kDownstream) {
-    return false;
-  }
-  const Position& position =
-      selection.ComputeVisibleSelectionInDomTree().Start();
-  if (InSameLine(PositionWithAffinity(position, TextAffinity::kUpstream),
-                 PositionWithAffinity(position, TextAffinity::kDownstream)))
-    return false;
-
-  // Only when the previous character is a space to avoid undesired side
-  // effects. There are cases where a new line is desired even if the previous
-  // character is not a space, but typing another space will do.
-  Position prev =
-      PreviousPositionOf(position, PositionMoveType::kGraphemeCluster);
-  const auto* prev_node = DynamicTo<Text>(prev.ComputeContainerNode());
-  if (!prev_node)
-    return false;
-  int prev_offset = prev.ComputeOffsetInContainerNode();
-  UChar prev_char = prev_node->data()[prev_offset];
-  return prev_char == uchar::kSpace;
-}
-
 bool Editor::HandleTextEvent(TextEvent* event) {
   // Default event handling for Drag and Drop will be handled by DragController
   // so we leave the event for it.
@@ -205,18 +178,6 @@ bool Editor::HandleTextEvent(TextEvent* event) {
     if (event->IsLineBreak())
       return InsertLineBreak();
     return InsertParagraphSeparator();
-  }
-
-  // Typing spaces at the beginning of wrapped line is confusing, because
-  // inserted spaces would appear in the previous line.
-  // Insert a line break automatically so that the spaces appear at the caret.
-  // TODO(kojii): rich editing has the same issue, but has more options and
-  // needs coordination with JS. Enable for plaintext only for now and collect
-  // feedback.
-  if (!RuntimeEnabledFeatures::CaretWithTextAffinityUpstreamEnabled() &&
-      data == " " && !CanEditRichly() &&
-      IsCaretAtStartOfWrappedLine(GetFrameSelection())) {
-    InsertLineBreak();
   }
 
   EditCommand::PasswordEchoBehavior password_echo_behavior =
