@@ -22,38 +22,6 @@ namespace privacy_sandbox {
 class Notice;
 enum class SurfaceType;
 
-// TODO(crbug.com/392088228): Remove this once all values are migrated and
-// histograms are migrated to use UA. This is deprecated and should only be used
-// for histograms.
-// LINT.IfChange(NoticeActionTaken)
-enum class NoticeActionTaken {
-  kMinValue = 0,
-  // No Ack action set.
-  kNotSet = 0,
-  // ACK'ed the notice using 'GotIt' or some other form of acknowledgement.
-  kAck = 1,
-  // Action taken clicking the 'x' button.
-  kClosed = 2,
-  // TODO(crbug.com/392088228): In the process of deprecating, do not use.
-  kLearnMore_Deprecated = 3,
-  // Opted in/Consented to the notice using 'Turn it on' or some other form of
-  // explicit consent.
-  kOptIn = 4,
-  // Action taken to dismiss or opt out of the notice using 'No Thanks' or some
-  // other form of dismissal.
-  kOptOut = 5,
-  // Action taken some other way.
-  kOther = 6,
-  // Action taken clicking the settings button.
-  kSettings = 7,
-  // Action taken unknown as it was recorded pre-migration.
-  kUnknownActionPreMigration = 8,
-  // No action taken, the notice timed out.
-  kTimedOut = 9,
-  kMaxValue = kTimedOut,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxNoticeAction)
-
 // Different notice action outcomes. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused.
 // LINT.IfChange(NoticeActionBehavior)
@@ -97,9 +65,6 @@ struct NoticeStorageData {
 
 std::string GetNoticeActionStringFromEvent(
     notice::mojom::PrivacySandboxNoticeEvent event);
-
-std::optional<notice::mojom::PrivacySandboxNoticeEvent> NoticeActionToEvent(
-    NoticeActionTaken action);
 
 class NoticeStorage {
  public:

@@ -96,23 +96,6 @@ std::optional<T> ConvertTo(const base::Value* value) {
   return value ? ConvertTo<T>(value->GetIfDict()) : std::nullopt;
 }
 
-NoticeActionTaken NoticeEventToNoticeAction(Event action) {
-  switch (action) {
-    case kAck:
-      return NoticeActionTaken::kAck;
-    case kClosed:
-      return NoticeActionTaken::kClosed;
-    case kOptIn:
-      return NoticeActionTaken::kOptIn;
-    case kOptOut:
-      return NoticeActionTaken::kOptOut;
-    case kSettings:
-      return NoticeActionTaken::kSettings;
-    default:
-      return NoticeActionTaken::kNotSet;
-  }
-}
-
 base::DictValue BuildDictEntryEvent(Event event,
                                     base::Time event_time = base::Time::Now()) {
   return base::DictValue()
@@ -155,10 +138,6 @@ void EmitNewEventHistograms(
     Event new_event) {
   // Emit NoticeEvent for all Events.
   RecordEnum("NoticeEvent", notice, new_event);
-  // Deprecated histograms.
-  new_event == kShown ? RecordBool("NoticeShown", notice, true)
-                      : RecordEnum("NoticeAction", notice,
-                                   NoticeEventToNoticeAction(new_event));
 
   if (!existing_notice_data) {
     existing_notice_data.emplace();
@@ -307,23 +286,6 @@ std::string GetNoticeActionStringFromEvent(Event event) {
       return "Settings";
     case kShown:
       NOTREACHED();
-  }
-}
-
-std::optional<Event> NoticeActionToEvent(NoticeActionTaken action) {
-  switch (action) {
-    case NoticeActionTaken::kAck:
-      return kAck;
-    case NoticeActionTaken::kClosed:
-      return kClosed;
-    case NoticeActionTaken::kOptIn:
-      return kOptIn;
-    case NoticeActionTaken::kOptOut:
-      return kOptOut;
-    case NoticeActionTaken::kSettings:
-      return kSettings;
-    default:
-      return std::nullopt;
   }
 }
 

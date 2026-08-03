@@ -1097,7 +1097,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
-    units="ms" expires_after="2026-08-07">
+    units="ms" expires_after="2026-12-07">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1110,7 +1110,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.Notice.LastShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
-    units="ms" expires_after="2026-08-07">
+    units="ms" expires_after="2026-12-07">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1121,20 +1121,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNoticeAction" variants="PSNoticeAction"/>
 </histogram>
 
-<!-- DO NOT USE. To be deprecated soon, use PrivacySandbox.Notice.NoticeEvent.{PSNotice} instead. -->
-
-<histogram name="PrivacySandbox.Notice.NoticeAction.{PSNotice}"
-    enum="PrivacySandboxNoticeAction" expires_after="2026-07-12">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the action performed on a notice {PSNotice} for a profile.
-  </summary>
-  <token key="PSNotice" variants="PSNotice"/>
-</histogram>
-
 <histogram name="PrivacySandbox.Notice.NoticeActionTakenBehavior.{PSNotice}"
-    enum="PrivacySandboxNoticeActionBehavior" expires_after="2026-08-07">
+    enum="PrivacySandboxNoticeActionBehavior" expires_after="2026-12-07">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1145,7 +1133,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.NoticeEvent.{PSNotice}"
-    enum="PrivacySandboxNoticeEvent" expires_after="2026-07-12">
+    enum="PrivacySandboxNoticeEvent" expires_after="2026-12-12">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1154,18 +1142,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNotice" variants="PSNotice"/>
 </histogram>
 
-<!-- DO NOT USE. To be deprecated soon, use PrivacySandbox.Notice.NoticeEvent.{PSNotice} instead. -->
-
-<histogram name="PrivacySandbox.Notice.NoticeShown.{PSNotice}" enum="Boolean"
-    expires_after="2026-07-12">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>Records if a notice {PSNotice} was shown to a profile.</summary>
-  <token key="PSNotice" variants="PSNotice"/>
-</histogram>
-
 <histogram name="PrivacySandbox.Notice.NoticeShownForFirstTime.{PSNotice}"
-    enum="Boolean" expires_after="2026-07-12">
+    enum="Boolean" expires_after="2026-12-12">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1176,7 +1154,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.Startup.LastRecordedEvent.{PSNotice}"
-    enum="PrivacySandboxNoticeEvent" expires_after="2026-07-12">
+    enum="PrivacySandboxNoticeEvent" expires_after="2026-12-12">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

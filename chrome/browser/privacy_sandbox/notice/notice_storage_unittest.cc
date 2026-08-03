@@ -187,8 +187,6 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeStorageStartupTest,
 TEST_F(PrivacySandboxNoticeStorageTest, EventShownHistogramsEmitSuccessfully) {
   notice_storage()->RecordEvent(notice_1(), kShown);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.Notice1StorageName", true, 1);
-  histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kShown, 1);
 }
 
@@ -198,9 +196,6 @@ TEST_F(PrivacySandboxNoticeStorageTest, ActionEventHistogramsEmitSuccessfully) {
   notice_storage()->RecordEvent(notice_1(), kAck);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kAck, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.Notice1StorageName",
-      NoticeActionTaken::kAck, 1);
   histogram_tester_.ExpectTimeBucketCount(
       "PrivacySandbox.Notice.FirstShownToInteractedDuration."
       "Notice1StorageName_Ack",
@@ -278,9 +273,6 @@ TEST_F(PrivacySandboxNoticeStorageTest, ReActionRegistersAndEmitsHistogram) {
   EXPECT_EQ(*actual, expected);
 
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.Notice1StorageName",
-      NoticeActionTaken::kSettings, 1);
-  histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kSettings, 1);
 
   t2 = AdvanceMs(50);
@@ -296,9 +288,6 @@ TEST_F(PrivacySandboxNoticeStorageTest, ReActionRegistersAndEmitsHistogram) {
 
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kAck, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.Notice1StorageName",
-      NoticeActionTaken::kAck, 1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeActionTakenBehavior."
       "Notice1StorageName",
@@ -320,9 +309,6 @@ TEST_F(PrivacySandboxNoticeStorageTest,
       1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kSettings, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.Notice1StorageName",
-      NoticeActionTaken::kSettings, 1);
   histogram_tester_.ExpectTimeBucketCount(
       "PrivacySandbox.Notice.FirstShownToInteractedDuration."
       "Notice1StorageName_Settings",
@@ -331,8 +317,6 @@ TEST_F(PrivacySandboxNoticeStorageTest,
       "PrivacySandbox.Notice.LastShownToInteractedDuration."
       "Notice1StorageName_Settings",
       base::Milliseconds(100), 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.Notice1StorageName", true, 1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kShown, 1);
 
@@ -373,9 +357,6 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   ASSERT_TRUE(actual_notice2.has_value());
 
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.Notice1StorageName",
-      NoticeActionTaken::kSettings, 1);
-  histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kSettings, 1);
   histogram_tester_.ExpectTimeBucketCount(
       "PrivacySandbox.Notice.FirstShownToInteractedDuration."
@@ -388,11 +369,6 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice1StorageName", kShown, 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.Notice1StorageName", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.Notice2StorageName",
-      NoticeActionTaken::kAck, 1);
-  histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice2StorageName", kAck, 1);
   histogram_tester_.ExpectTimeBucketCount(
       "PrivacySandbox.Notice.FirstShownToInteractedDuration."
@@ -403,8 +379,6 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
       "PrivacySandbox.Notice.LastShownToInteractedDuration."
       "Notice2StorageName_Ack",
       base::Milliseconds(20), 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.Notice2StorageName", true, 1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeEvent.Notice2StorageName", kShown, 1);
 }

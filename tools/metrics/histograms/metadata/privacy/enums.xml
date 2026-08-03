@@ -254,23 +254,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Downloaded"/>
 </enum>
 
-<!-- LINT.IfChange(PrivacySandboxNoticeAction) -->
-
-<enum name="PrivacySandboxNoticeAction">
-  <int value="0" label="NotSet"/>
-  <int value="1" label="Ack"/>
-  <int value="2" label="Closed"/>
-  <int value="3" label="LearnMore"/>
-  <int value="4" label="OptIn"/>
-  <int value="5" label="OptOut"/>
-  <int value="6" label="Other"/>
-  <int value="7" label="Settings"/>
-  <int value="8" label="UnknownActionPreMigration"/>
-  <int value="9" label="TimedOut"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/notice/notice_storage.h:NoticeActionTaken) -->
-
 <!-- LINT.IfChange(PrivacySandboxNoticeActionBehavior) -->
 
 <enum name="PrivacySandboxNoticeActionBehavior">
