@@ -311,7 +311,7 @@ void ReorderMetadataByUniqueness(std::vector<MemorySearchResult>& results) {
 // returned. If `filter_words` is provided but no entry matches any filter word,
 // an empty vector is returned.
 std::vector<MemorySearchResult> FilterResults(
-    const std::vector<MemorySearchResult>& entries,
+    std::vector<MemorySearchResult> entries,
     const base::flat_set<std::u16string>& filter_words) {
   if (filter_words.empty()) {
     return entries;
@@ -319,18 +319,18 @@ std::vector<MemorySearchResult> FilterResults(
 
   std::vector<MemorySearchResult> filtered_entries;
   size_t max_matches = 0;
-  for (const MemorySearchResult& entry : entries) {
+  for (MemorySearchResult& entry : entries) {
     size_t count = CountFilterWordMatchesInEntry(entry, filter_words);
-    if (count <= 0) {
+    if (count == 0) {
       continue;
     }
 
     if (count > max_matches) {
       max_matches = count;
       filtered_entries.clear();
-      filtered_entries.push_back(entry);
+      filtered_entries.push_back(std::move(entry));
     } else if (count == max_matches) {
-      filtered_entries.push_back(entry);
+      filtered_entries.push_back(std::move(entry));
     }
   }
 
@@ -851,7 +851,7 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
       local_results.size());
 
   std::vector<MemorySearchResult> filtered_local_results =
-      FilterResults(local_results, filter_words);
+      FilterResults(std::move(local_results), filter_words);
   std::vector<MemorySearchResult> ranked_results =
       RankResults(std::move(filtered_local_results), std::move(remote_results));
   DeduplicateResults(ranked_results);
