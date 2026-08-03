@@ -22,7 +22,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/cursor/cursor_factory.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
@@ -770,7 +769,9 @@ bool IsValidThemeName(ThemeProperty property, const char* theme) {
   if (theme_str.empty()) {
     return is_key_theme;
   }
-  return ui::IsValidCursorThemeName(theme_str);
+  base::FilePath theme_path(theme_str);
+  return theme_str != "." && !theme_path.IsAbsolute() &&
+         !theme_path.ReferencesParent() && theme_path.BaseName() == theme_path;
 }
 
 const char* GetThemeFallback(ThemeProperty property) {
@@ -778,7 +779,6 @@ const char* GetThemeFallback(ThemeProperty property) {
     case ThemeProperty::kIconThemeName:
       return "hicolor";
     case ThemeProperty::kThemeName:
-    case ThemeProperty::kCursorThemeName:
       return "Adwaita";
     case ThemeProperty::kKeyThemeName:
       return nullptr;
@@ -807,18 +807,6 @@ void GtkSettingsSetProperty(GObject* object,
       property = ThemeProperty::kIconThemeName;
     } else if (prop_name == "gtk-key-theme-name") {
       property = ThemeProperty::kKeyThemeName;
-    } else if (prop_name == "gtk-cursor-theme-name") {
-      property = ThemeProperty::kCursorThemeName;
-    } else if (prop_name == "gtk-cursor-theme-size") {
-      int size = g_value_get_int(value);
-      if (!ui::IsValidCursorThemeSize(size)) {
-        GValue sanitized_value = G_VALUE_INIT;
-        g_value_init(&sanitized_value, G_TYPE_INT);
-        g_value_set_int(&sanitized_value, 24);
-        g_orig_set_property(object, property_id, &sanitized_value, pspec);
-        g_value_unset(&sanitized_value);
-        return;
-      }
     }
     if (property) {
       const gchar* name = g_value_get_string(value);

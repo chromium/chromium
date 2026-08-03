@@ -17,10 +17,8 @@ namespace gtk {
 TEST(GtkUtilTest, IsValidThemeName) {
   EXPECT_TRUE(IsValidThemeName(ThemeProperty::kThemeName, "Adwaita"));
   EXPECT_TRUE(IsValidThemeName(ThemeProperty::kIconThemeName, "hicolor"));
-  EXPECT_TRUE(IsValidThemeName(ThemeProperty::kCursorThemeName, "Adwaita"));
   EXPECT_TRUE(IsValidThemeName(ThemeProperty::kKeyThemeName, ""));
   EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, ""));
-  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kCursorThemeName, ""));
   EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, "../invalid"));
   EXPECT_FALSE(
       IsValidThemeName(ThemeProperty::kThemeName, "/absolute/invalid"));
@@ -30,7 +28,6 @@ TEST(GtkUtilTest, IsValidThemeName) {
 TEST(GtkUtilTest, GetThemeFallback) {
   EXPECT_STREQ(GetThemeFallback(ThemeProperty::kIconThemeName), "hicolor");
   EXPECT_STREQ(GetThemeFallback(ThemeProperty::kThemeName), "Adwaita");
-  EXPECT_STREQ(GetThemeFallback(ThemeProperty::kCursorThemeName), "Adwaita");
   EXPECT_EQ(GetThemeFallback(ThemeProperty::kKeyThemeName), nullptr);
 }
 
@@ -91,55 +88,6 @@ TEST_F(GtkUtilInterceptorTest, IconThemeNamesSanitizedAtWriteTime) {
   // The interceptor should have triggered and sanitized the theme name to
   // "hicolor" before the notify callback ran!
   EXPECT_EQ(observed_theme_name, "hicolor");
-}
-
-TEST_F(GtkUtilInterceptorTest, CursorThemeNamesSanitizedAtWriteTime) {
-  GtkSettings* settings = GetDefaultGtkSettings();
-  ASSERT_TRUE(settings);
-
-  std::string observed_theme_name;
-  auto callback = base::BindRepeating(
-      [](std::string* out_str, GtkSettings* settings, GParamSpec* pspec) {
-        gchar* name = nullptr;
-        g_object_get(settings, "gtk-cursor-theme-name", &name, nullptr);
-        if (name) {
-          *out_str = name;
-          g_free(name);
-        }
-      },
-      base::Unretained(&observed_theme_name));
-
-  ScopedGSignal signal(settings, "notify::gtk-cursor-theme-name", callback);
-
-  // Set to an invalid value (path traversal)
-  g_object_set(settings, "gtk-cursor-theme-name",
-               "../../../../tmp/w8_evil_cursor", nullptr);
-
-  // The interceptor should have triggered and sanitized the cursor theme name
-  // to "Adwaita" before the notify callback ran!
-  EXPECT_EQ(observed_theme_name, "Adwaita");
-}
-
-TEST_F(GtkUtilInterceptorTest, CursorThemeSizeSanitizedAtWriteTime) {
-  GtkSettings* settings = GetDefaultGtkSettings();
-  ASSERT_TRUE(settings);
-
-  int observed_size = 0;
-  auto callback = base::BindRepeating(
-      [](int* out_size, GtkSettings* settings, GParamSpec* pspec) {
-        gint size = 0;
-        g_object_get(settings, "gtk-cursor-theme-size", &size, nullptr);
-        *out_size = size;
-      },
-      base::Unretained(&observed_size));
-
-  ScopedGSignal signal(settings, "notify::gtk-cursor-theme-size", callback);
-
-  // Set to an invalid value (-1)
-  g_object_set(settings, "gtk-cursor-theme-size", -1, nullptr);
-
-  // The interceptor should have triggered and sanitized the cursor size to 24.
-  EXPECT_EQ(observed_size, 24);
 }
 
 }  // namespace gtk

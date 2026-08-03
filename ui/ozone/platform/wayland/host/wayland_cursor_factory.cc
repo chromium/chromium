@@ -190,9 +190,6 @@ wl_cursor* WaylandCursorFactory::GetCursorFromTheme(wl_cursor_theme* theme,
 void WaylandCursorFactory::OnCursorThemeNameChanged(
     const std::string& cursor_theme_name) {
   CHECK(!cursor_theme_name.empty());
-  if (!IsValidCursorThemeName(cursor_theme_name)) {
-    return;
-  }
 
   if (name_ == cursor_theme_name)
     return;
@@ -202,9 +199,6 @@ void WaylandCursorFactory::OnCursorThemeNameChanged(
 }
 
 void WaylandCursorFactory::OnCursorThemeSizeChanged(int cursor_theme_size) {
-  if (!IsValidCursorThemeSize(cursor_theme_size)) {
-    return;
-  }
   size_ = cursor_theme_size;
 }
 
@@ -250,9 +244,7 @@ WaylandCursorFactory::ThemeData* WaylandCursorFactory::GetThemeForScale(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
-          wl_cursor_theme_load,
-          (!name_.empty() && IsValidCursorThemeName(name_)) ? name_.c_str()
-                                                            : nullptr,
+          wl_cursor_theme_load, name_.empty() ? nullptr : name_.c_str(),
           GetScaledSize(scale), connection_->buffer_factory()->shm()),
       base::BindOnce(&WaylandCursorFactory::FinishThemeLoad,
                      weak_factory_.GetWeakPtr(), cache_entry->GetWeakPtr()));
