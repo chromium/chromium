@@ -180,6 +180,18 @@ public class SettingsSearchCoordinatorUnitTest {
         assertEquals(appBarLayout, searchBox.getParent());
     }
 
+    @Test
+    public void testEmptyFragmentClear_whenViewsDetached_doesNotCrash() {
+        EmptyFragment emptyFragment = new EmptyFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(emptyFragment, "empty")
+                .commitNow();
+        // Clear when R.id.empty_state_icon is not present in Activity view hierarchy.
+        emptyFragment.clear();
+    }
+
     private void setFragmentField(Fragment fragment, String fieldName, Object value)
             throws Exception {
         java.lang.reflect.Field field = Fragment.class.getDeclaredField(fieldName);
