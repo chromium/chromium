@@ -256,7 +256,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
 // fail. Skip LoadRestoredTabIfVisible if OS_MAC && the browser is an app
 // browser.
 #if BUILDFLAG(IS_MAC)
-  should_load = (browser->type() != Browser::Type::TYPE_APP);
+  should_load = (browser->GetType() != Browser::Type::TYPE_APP);
 #endif  // BUILDFLAG(IS_MAC)
 
   if (should_load) {

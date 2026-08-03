@@ -3256,14 +3256,14 @@ class SiteSettingsHandlerInfobarTest
     handler()->AllowJavascript();
     web_ui()->ClearTrackedCalls();
 
-    browser2_ = CreateBrowser(profile(), browser()->type(), false);
+    browser2_ = CreateBrowser(profile(), browser()->GetType(), false);
 
     // Creates the second profile used by this test.
     TestingProfile* profile2_ = profile_manager()->CreateTestingProfile(
         "testing_profile2@test", nullptr, std::u16string(), 0,
         GetTestingFactories());
 
-    browser3_ = CreateBrowser(profile2_, browser()->type(), false);
+    browser3_ = CreateBrowser(profile2_, browser()->GetType(), false);
 
     extensions::TestExtensionSystem* extension_system =
         static_cast<extensions::TestExtensionSystem*>(

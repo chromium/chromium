@@ -200,7 +200,7 @@ bool SessionService::ShouldRestore(Browser* browser) {
   }
 
   // App windows should not be restored.
-  auto window_type = WindowTypeForBrowserType(browser->type());
+  auto window_type = WindowTypeForBrowserType(browser->GetType());
   if (window_type == sessions::SessionWindow::TYPE_APP ||
       window_type == sessions::SessionWindow::TYPE_APP_POPUP) {
     return false;
@@ -405,7 +405,7 @@ void SessionService::WindowOpened(Browser* browser) {
   }
 
   RestoreIfNecessary(StartupTabs(), browser, /* restore_apps */ false);
-  SetWindowType(browser->session_id(), browser->type());
+  SetWindowType(browser->session_id(), browser->GetType());
   SetWindowAppName(browser->session_id(),
                    BrowserInitState::From(browser)->create_params().app_name);
   SetWindowUserTitle(browser->session_id(),

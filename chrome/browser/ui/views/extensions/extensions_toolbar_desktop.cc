@@ -1313,7 +1313,7 @@ void ExtensionsToolbarDesktop::MaybeShowIPH() {
 
   // The Extensions Zero State promo prompts users without extensions to
   // explore the Chrome Web Store. Only triggered for normal browser types.
-  if (browser_->type() == Browser::TYPE_NORMAL) {
+  if (browser_->GetType() == Browser::TYPE_NORMAL) {
     if (!g_zero_state_promo_next_show_time_opt.has_value()) {
       g_zero_state_promo_next_show_time_opt =
           base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;

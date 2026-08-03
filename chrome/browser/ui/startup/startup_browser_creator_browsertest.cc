@@ -2315,7 +2315,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
       web_app::LaunchWebAppBrowserAndWait(test_profile, app_id);
 
   ASSERT_NE(app_browser, nullptr);
-  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
+  ASSERT_EQ(app_browser->GetType(), Browser::Type::TYPE_APP);
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 
   chrome::AttemptRestart();

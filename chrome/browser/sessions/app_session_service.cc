@@ -77,7 +77,7 @@ void AppSessionService::WindowOpened(Browser* browser) {
     return;
   }
 
-  SetWindowType(browser->session_id(), browser->type());
+  SetWindowType(browser->session_id(), browser->GetType());
   SetWindowAppName(browser->session_id(),
                    BrowserInitState::From(browser)->create_params().app_name);
 

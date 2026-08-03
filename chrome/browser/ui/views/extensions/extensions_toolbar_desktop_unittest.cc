@@ -318,8 +318,8 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
         ->IsActionVisibleOnToolbar(extension_id);
   };
 
-  Browser* browser2 =
-      CreateBrowserWithBrowserView(browser()->GetProfile(), browser()->type());
+  Browser* browser2 = CreateBrowserWithBrowserView(browser()->GetProfile(),
+                                                   browser()->GetType());
 
   // Verify extension is unpinned in both windows.
   EXPECT_FALSE(is_action_visible_on_toolbar(browser()));
@@ -334,8 +334,8 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
   EXPECT_TRUE(is_action_visible_on_toolbar(browser()));
   EXPECT_TRUE(is_action_visible_on_toolbar(browser2));
 
-  Browser* browser3 =
-      CreateBrowserWithBrowserView(browser()->GetProfile(), browser()->type());
+  Browser* browser3 = CreateBrowserWithBrowserView(browser()->GetProfile(),
+                                                   browser()->GetType());
 
   // Brand-new window also gets the pinned extension.
   EXPECT_TRUE(is_action_visible_on_toolbar(browser3));

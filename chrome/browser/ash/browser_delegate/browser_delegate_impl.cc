@@ -45,7 +45,7 @@ BrowserWindowInterface& BrowserDelegateImpl::GetBrowser() const {
 }
 
 BrowserType BrowserDelegateImpl::GetType() const {
-  return FromInternalBrowserType(browser_->type());
+  return FromInternalBrowserType(browser_->GetType());
 }
 
 SessionID BrowserDelegateImpl::GetSessionID() const {
@@ -199,7 +199,7 @@ content::WebContents* BrowserDelegateImpl::NavigateWebApp(
     std::optional<webapps::LaunchParams> launch_params) {
   CHECK(GetType() == BrowserType::kApp || GetType() == BrowserType::kAppPopup)
       << "Unexpected browser type " << static_cast<int>(GetType()) << "("
-      << browser_->type() << ")";
+      << browser_->GetType() << ")";
 
   NavigateParams nav_params(&browser_.get(), url,
                             ui::PAGE_TRANSITION_AUTO_BOOKMARK);

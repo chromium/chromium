@@ -44,7 +44,7 @@ bool ParseCommaSeparatedIntegers(const std::string& str,
 }  // namespace
 
 std::string GetWindowName(const Browser* browser) {
-  switch (browser->type()) {
+  switch (browser->GetType()) {
     case Browser::TYPE_NORMAL:
       return prefs::kBrowserWindowPlacement;
     case Browser::TYPE_POPUP:

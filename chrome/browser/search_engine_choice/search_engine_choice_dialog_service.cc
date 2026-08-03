@@ -50,7 +50,7 @@ using ::search_engines::SearchEngineChoiceScreenEvents;
 bool g_dialog_disabled_for_testing = false;
 
 bool IsBrowserTypeSupported(const Browser& browser) {
-  switch (browser.type()) {
+  switch (browser.GetType()) {
     case Browser::TYPE_NORMAL:
     case Browser::TYPE_POPUP:
       return true;

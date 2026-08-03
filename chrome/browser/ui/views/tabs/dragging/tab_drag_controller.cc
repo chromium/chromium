@@ -2930,7 +2930,7 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
   }
 
   // Ensure that browser types and app names are the same.
-  if (other_browser->type() != browser->type() ||
+  if (other_browser->GetType() != browser->GetType() ||
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
        BrowserInitState::From(browser)->create_params().app_name !=
            BrowserInitState::From(other_browser)->create_params().app_name)) {

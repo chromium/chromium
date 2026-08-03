@@ -1545,7 +1545,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
 
       // Check the new popup browser
       login_browser = browser_created_observer.Wait();
-      EXPECT_EQ(Browser::TYPE_POPUP, login_browser->type());
+      EXPECT_EQ(Browser::TYPE_POPUP, login_browser->GetType());
       login_tab = login_browser->GetTabStripModel()->GetWebContentsAt(0);
       EXPECT_TRUE(
           captive_portal::CaptivePortalTabHelper::FromWebContents(login_tab)

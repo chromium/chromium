@@ -685,7 +685,7 @@ void SessionServiceBase::BuildCommandsForBrowser(
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetWindowTypeCommand(
-          browser->session_id(), WindowTypeForBrowserType(browser->type())));
+          browser->session_id(), WindowTypeForBrowserType(browser->GetType())));
 
   if (!BrowserInitState::From(browser)->create_params().app_name.empty()) {
     command_storage_manager()->AppendRebuildCommand(
