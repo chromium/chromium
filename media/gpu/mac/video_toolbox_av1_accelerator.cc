@@ -188,14 +188,18 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
       break;
   }
 
-  // TODO(crbug.com/40936765): Should this be the current frame size, or the
-  // sequence max frame size?
   gfx::Size coded_size(base::strict_cast<int>(pic.frame_header.width),
                        base::strict_cast<int>(pic.frame_header.height));
+  gfx::Size max_coded_size(
+      base::strict_cast<int>(sequence_header.max_frame_width),
+      base::strict_cast<int>(sequence_header.max_frame_height));
+
+  int bit_depth = sequence_header.color_config.bitdepth;
 
   // If the parameters have changed, generate a new format.
   if (color_space != active_color_space_ || profile != active_profile_ ||
-      coded_size != active_coded_size_) {
+      coded_size != active_coded_size_ || bit_depth != active_bit_depth_ ||
+      max_coded_size != active_max_coded_size_) {
     active_format_.reset();
 
     // Generate the av1c.
@@ -203,13 +207,17 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     std::unique_ptr<uint8_t[]> av1c =
         libgav1::ObuParser::GetAV1CodecConfigurationBox(
             data.data(), data.size(), &av1c_size);
+    if (!av1c || av1c_size < 4) {
+      MEDIA_LOG(ERROR, media_log_.get())
+          << "Failed to extract valid AV1CodecConfigurationBox";
+      return false;
+    }
     auto av1c_span =
         UNSAFE_TODO(base::span<const uint8_t>(av1c.get(), av1c_size));
 
     // Build a format configuration with AV1 extensions.
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
-        CreateFormatExtensions(kCMVideoCodecType_AV1, profile,
-                               sequence_header.color_config.bitdepth,
+        CreateFormatExtensions(kCMVideoCodecType_AV1, profile, bit_depth,
                                color_space, av1c_span);
     if (!format_config) {
       MEDIA_LOG(ERROR, media_log_.get())
@@ -235,6 +243,8 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     active_color_space_ = color_space;
     active_profile_ = profile;
     active_coded_size_ = coded_size;
+    active_max_coded_size_ = max_coded_size;
+    active_bit_depth_ = bit_depth;
 
     // Update session configuration.
     session_metadata_ = VideoToolboxDecompressionSessionMetadata{
