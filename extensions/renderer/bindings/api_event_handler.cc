@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_response_validator.h"
 #include "extensions/renderer/bindings/event_emitter.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
@@ -110,15 +111,24 @@ void DispatchEvent(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (iter == data->emitters.end()) {
     return;
   }
-  v8::Global<v8::Object>& v8_emitter = iter->second;
+  v8::Local<v8::Object> v8_emitter = iter->second.Get(isolate);
 
+  // Converting `info[0]` to a vector of arguments can fail if script execution
+  // (such as running getters during property conversion) throws an exception.
   v8::LocalVector<v8::Value> args(isolate);
-  CHECK(gin::Converter<v8::LocalVector<v8::Value>>::FromV8(isolate, info[0],
-                                                           &args));
+  if (!gin::Converter<v8::LocalVector<v8::Value>>::FromV8(isolate, info[0],
+                                                          &args)) {
+    return;
+  }
+
+  // The conversion above re-enters JS (e.g., via getters on array properties)
+  // which can synchronously invalidate the context (e.g., detaching an iframe).
+  if (!binding::IsContextValid(context)) {
+    return;
+  }
 
   EventEmitter* emitter = nullptr;
-  gin::Converter<EventEmitter*>::FromV8(isolate, v8_emitter.Get(isolate),
-                                        &emitter);
+  gin::Converter<EventEmitter*>::FromV8(isolate, v8_emitter, &emitter);
   CHECK(emitter);
   // Note: It's safe to use EventEmitter::FireSync() here because this should
   // only be triggered from a JS call, so we know JS is running.
