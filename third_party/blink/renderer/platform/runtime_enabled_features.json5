@@ -5696,7 +5696,6 @@
       // https://issues.chromium.org/issues/41273490
       // Enabled in M152, safe to remove in M154
       name: "SelectWebViewUntrustedEventRemoval",
-      status: "stable",
     },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
