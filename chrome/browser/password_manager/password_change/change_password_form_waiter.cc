@@ -43,6 +43,11 @@ std::optional<DiscardReason> GetDiscardReason(
     return DiscardReason::kUnknown;
   }
 
+  if (!form_manager->GetDriver() ||
+      !form_manager->GetDriver()->IsInPrimaryMainFrame()) {
+    return DiscardReason::kNotInPrimaryMainFrame;
+  }
+
   // New password field must be present in a change password form.
   if (!parsed_form->new_password_element_renderer_id) {
     return DiscardReason::kNoNewPasswordField;

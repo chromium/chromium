@@ -37,6 +37,7 @@ class ModelQualityLogsUploader {
     kFieldToIgnore = 4,
     kNoDriver = 5,
     kFormNotVisible = 6,
+    kNotInPrimaryMainFrame = 7,
   };
 
   using LoggingData =

@@ -277,6 +277,11 @@ ToProtoDiscardReason(FormDiscardReason reason) {
     case FormDiscardReason::kFormNotVisible:
       return optimization_guide::proto::
           PasswordChangeQuality_FormData_DiscardReason_FORM_NOT_VISIBLE;
+    case FormDiscardReason::kNotInPrimaryMainFrame:
+      // TODO(crbug.com/541869870): Add a dedicated value for
+      // kNotInPrimaryMainFrame.
+      return optimization_guide::proto::
+          PasswordChangeQuality_FormData_DiscardReason_UNKNOWN_REASON;
   }
 }
 
