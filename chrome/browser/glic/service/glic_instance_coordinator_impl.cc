@@ -1173,6 +1173,17 @@ void GlicInstanceCoordinatorImpl::UnbindTabFromAnyInstance(
   }
 }
 
+void GlicInstanceCoordinatorImpl::UnbindTabGroupFromAnyInstance(
+    tab_groups::TabGroupId group_id,
+    GlicInstanceImpl* excluding_instance) {
+  for (const auto& [id, instance] : instances_) {
+    if (instance.get() != excluding_instance &&
+        instance->GetTabGroup() == group_id) {
+      instance->UnbindTabGroup();
+    }
+  }
+}
+
 void GlicInstanceCoordinatorImpl::ContextAccessIndicatorChanged(
     GlicInstanceImpl& source_instance,
     bool enabled) {

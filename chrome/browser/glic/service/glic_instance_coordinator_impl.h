@@ -98,6 +98,9 @@ class GlicInstanceCoordinatorImpl
   // per profile.
   void OnWillCreateFloaty() override;
   void UnbindTabFromAnyInstance(tabs::TabInterface* tab) override;
+  void UnbindTabGroupFromAnyInstance(
+      tab_groups::TabGroupId group_id,
+      GlicInstanceImpl* excluding_instance) override;
   // Sorts conversations by recency and returns the ConversationInfoPtr of each
   // conversation. Used by the web client to get recent conversations.
   std::vector<glic::mojom::ConversationInfoPtr> GetRecentlyActiveConversations(

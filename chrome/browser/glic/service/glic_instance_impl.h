@@ -63,6 +63,10 @@ BASE_DECLARE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing);
 BASE_DECLARE_FEATURE(kGlicUnbindOnClose);
 BASE_DECLARE_FEATURE(kGlicRemoveBlankInstancesOnClose);
 
+struct TabGroupBinding {
+  tab_groups::TabGroupId id;
+};
+
 // A GlicInstance owns a single host keeping any state that must exist for the
 // lifetime of the host. When a host is showing, the GlicInstance creates a
 // GlicUiEmbedder to display the webcontents in. An instance (and host) exist
@@ -93,6 +97,9 @@ class GlicInstanceImpl : public GlicInstance,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
 
     virtual void UnbindTabFromAnyInstance(tabs::TabInterface* tab) = 0;
+    virtual void UnbindTabGroupFromAnyInstance(
+        tab_groups::TabGroupId group_id,
+        GlicInstanceImpl* excluding_instance) = 0;
 
     // Called by an instance when user requests to undock to Floaty.
     virtual void OnWillCreateFloaty() = 0;
@@ -150,12 +157,8 @@ class GlicInstanceImpl : public GlicInstance,
   void Shutdown();
   void CloseInstanceAndShutdown();
   void UnbindTabGroup();
-  std::optional<tab_groups::TabGroupId> GetTabGroup() const {
-    return tab_group_id_;
-  }
-  void SetTabGroup(tab_groups::TabGroupId group_id) {
-    tab_group_id_ = group_id;
-  }
+  std::optional<tab_groups::TabGroupId> GetTabGroup() const;
+  void BindTabGroup(tab_groups::TabGroupId group_id);
   void ShowForTabGroup(tab_groups::TabGroupId group_id);
   void OnTabGroupingChanged(tabs::TabInterface* tab, bool is_added);
   void BindTabWithoutShowing(tabs::TabInterface* tab,
@@ -497,7 +500,7 @@ class GlicInstanceImpl : public GlicInstance,
   // True if we should suppress showing the panel when a tab is added to a task.
   bool suppress_show_on_tab_added_to_task_ = false;
 
-  std::optional<tab_groups::TabGroupId> tab_group_id_;
+  std::optional<TabGroupBinding> tab_group_binding_;
   bool is_contents_in_tab_ = false;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
