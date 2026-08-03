@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -55,6 +56,42 @@ TEST_F(FrameDeadlineDeciderTest, FeatureDisabledFallback) {
                                        k120HzAllowedBuffers, base::TimeTicks(),
                                        std::nullopt,
                                        /*is_handling_interaction=*/false));
+}
+
+TEST_F(FrameDeadlineDeciderTest, SelectedSustainableDeadline_True) {
+  base::HistogramTester histogram_tester;
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/true);
+
+  // k120HzAllowedBuffers = 5, k120HzVsyncInterval = 8 ms.
+  // max_sustainable_delta = (5 * 8 ms) + 1 ms = 41 ms.
+  // 41 ms <= 41 ms -> sustainable (true).
+  auto deadlines = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(41))});
+
+  decider.SelectDeadline(deadlines, k120HzVsyncInterval, k120HzAllowedBuffers,
+                         base::TimeTicks(), std::nullopt,
+                         /*is_handling_interaction=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Viz.FrameDeadlineDecider.SelectedSustainableDeadline", true, 1);
+}
+
+TEST_F(FrameDeadlineDeciderTest, SelectedSustainableDeadline_False) {
+  base::HistogramTester histogram_tester;
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/true);
+
+  // k120HzAllowedBuffers = 5, k120HzVsyncInterval = 8 ms.
+  // max_sustainable_delta = (5 * 8 ms) + 1 ms = 41 ms.
+  // 42 ms > 41 ms -> unsustainable (false).
+  auto deadlines = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(42))});
+
+  decider.SelectDeadline(deadlines, k120HzVsyncInterval, k120HzAllowedBuffers,
+                         base::TimeTicks(), std::nullopt,
+                         /*is_handling_interaction=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Viz.FrameDeadlineDecider.SelectedSustainableDeadline", false, 1);
 }
 
 TEST_F(FrameDeadlineDeciderTest, OngoingInteractionSequenceRetention) {

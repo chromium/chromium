@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
@@ -145,13 +146,16 @@ size_t FrameDeadlineDecider::SelectDeadline(
   size_t result_index =
       QueryDeadline(possible_deadlines, vsync_interval, max_allowed_buffers,
                     frame_time, earliest_input_time, is_handling_interaction);
+  const auto& selected_deadline = possible_deadlines.deadlines[result_index];
 
   frame_sequence_state_ = FrameSequenceState{
-      .present_delta = possible_deadlines.deadlines[result_index].present_delta,
+      .present_delta = selected_deadline.present_delta,
       .deadline_index = result_index,
       .last_frame_time = frame_time,
       .is_interaction_active = is_handling_interaction,
   };
+  RecordSelectedSustainableDeadlineHistogram(
+      selected_deadline.present_delta, vsync_interval, max_allowed_buffers);
   TRACE_EVENT_END(
       "toplevel,graphics.pipeline,viz", [&](perfetto::EventContext ctx) {
         auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
@@ -159,8 +163,6 @@ size_t FrameDeadlineDecider::SelectDeadline(
         auto frame_time_us = frame_time.since_origin().InMicroseconds();
         data->set_frame_time_us(frame_time_us);
         auto* timeline = data->set_chrome_preferred_frame_timeline();
-        const auto& selected_deadline =
-            possible_deadlines.deadlines[result_index];
         selected_deadline.SetTraceTimelineData(*timeline);
       });
 
@@ -205,6 +207,22 @@ size_t FrameDeadlineDecider::FindClosestDeadlineByPresentation(
     }
   }
   return best_index;
+}
+
+void FrameDeadlineDecider::RecordSelectedSustainableDeadlineHistogram(
+    base::TimeDelta selected_present_delta,
+    base::TimeDelta vsync_interval,
+    int max_allowed_buffers) const {
+  // A presentation deadline is sustainable if its present delta does not exceed
+  // the total time spanned by the allowed buffer queue (`max_allowed_buffers *
+  // vsync_interval`). Selecting a target beyond this threshold requires
+  // queueing more buffers in flight than allowed, causing multiple-vsync swap
+  // throttling (`swaps throttled`) and pipeline stalls.
+  const base::TimeDelta max_sustainable_delta =
+      (max_allowed_buffers * vsync_interval) + base::Milliseconds(1);
+  const bool is_sustainable = selected_present_delta <= max_sustainable_delta;
+  base::UmaHistogramBoolean(
+      "Viz.FrameDeadlineDecider.SelectedSustainableDeadline", is_sustainable);
 }
 
 }  // namespace viz
