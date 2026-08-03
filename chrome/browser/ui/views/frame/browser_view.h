@@ -77,7 +77,6 @@ class BookmarkBarView;
 class Browser;
 class BrowserViewLayout;
 class ContentsContainerView;
-class ContentsLayoutManager;
 struct DropData;
 class ExclusiveAccessBubbleViews;
 class ExclusiveAccessBubbleViewsContext;
@@ -254,8 +253,8 @@ class BrowserView : public BrowserWindow,
   }
 #endif
 
-  // Container for the web contents.
-  views::View* contents_container() { return contents_container_; }
+  // Container for multiple contents container views.
+  views::View* contents_container();
 
   views::View* main_shadow_overlay() { return main_shadow_overlay_; }
 
@@ -1098,10 +1097,14 @@ class BrowserView : public BrowserWindow,
   // |------------------------------------------------------------------------|
   // | All infobars (infobar_container_)                                      |
   // |------------------------------------------------------------------------|
-  // | Contents container (contents_container_)                               |
-  // |  --------------------------------------------------------------------  |
-  // |  |  MultiContentsView (multi_contents_view_)                        |  |
-  // |  --------------------------------------------------------------------  |
+  // |------------------------------------------------------------------------|
+  // | MultiContentsView (multi_contents_view_)                               |
+  // |  |------------------------------------------------------------------|  |
+  // |  | ContentsContainerView (web contents, devtools, overlay, borders) |  |
+  // |  |------------------------------------------------------------------|  |
+  // |  | ContentsContainerView (web contents, devtools, overlay, borders) |  |
+  // |  -------------------------------------------------------------------|  |
+  // |------------------------------------------------------------------------|
   // |------------------------------------------------------------------------|
   // | SidePanel (side_panel_)                                                |
   // |------------------------------------------------------------------------|
@@ -1198,9 +1201,6 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains all visible WebContents.
   raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
-
-  // Handled by ContentsLayoutManager.
-  raw_ptr<views::View> contents_container_ = nullptr;
 
   // The view responsible for housing the contents of the vertical tab strip.
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_region_view_ = nullptr;

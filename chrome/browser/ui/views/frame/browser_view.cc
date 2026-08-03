@@ -154,7 +154,6 @@
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
-#include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
@@ -930,18 +929,11 @@ BrowserView::BrowserView(Browser* browser)
   top_container_separator_->SetProperty(views::kElementIdentifierKey,
                                         kContentsSeparatorTopEdgeElementId);
 
-  auto contents_container = std::make_unique<views::View>();
-
   auto multi_contents_view = std::make_unique<MultiContentsView>(
       this, std::make_unique<MultiContentsViewDelegateImpl>(*browser_));
-  multi_contents_view_ =
-      contents_container->AddChildView(std::move(multi_contents_view));
+  multi_contents_view_ = AddChildView(std::move(multi_contents_view));
 
-  contents_container->SetLayoutManager(
-      std::make_unique<ContentsLayoutManager>(multi_contents_view_));
-
-  contents_container_ = AddChildView(std::move(contents_container));
-  set_contents_view(contents_container_);
+  set_contents_view(multi_contents_view_);
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -1127,7 +1119,6 @@ BrowserView::~BrowserView() {
   multi_contents_view_ = nullptr;
   main_shadow_overlay_ = nullptr;
   window_scrim_view_ = nullptr;
-  contents_container_ = nullptr;
   vertical_tab_strip_region_view_ = nullptr;
   vertical_tab_strip_background_blur_backdrop_ = nullptr;
   vertical_tab_strip_top_corner_ = nullptr;
@@ -1193,8 +1184,8 @@ void BrowserView::SetDisableRevealerDelayForTesting(bool disable) {
 }
 
 gfx::Rect BrowserView::GetFindBarBoundingBox() const {
-  gfx::Rect contents_bounds = contents_container_->ConvertRectToWidget(
-      contents_container_->GetLocalBounds());
+  gfx::Rect contents_bounds = multi_contents_view_->ConvertRectToWidget(
+      multi_contents_view_->GetLocalBounds());
 
   // If the location bar is visible use it to position the bounding box,
   // otherwise use the contents container.
@@ -1211,7 +1202,7 @@ gfx::Rect BrowserView::GetFindBarBoundingBox() const {
   }
 
   contents_bounds.Inset(gfx::Insets::TLBR(0, 0, 0, gfx::scrollbar_size()));
-  return contents_container_->GetMirroredRect(contents_bounds);
+  return multi_contents_view_->GetMirroredRect(contents_bounds);
 }
 
 ClientFrameElementInfo BrowserView::GetFrameElementInfo() const {
@@ -1274,6 +1265,10 @@ TabStrip* BrowserView::horizontal_tab_strip_for_testing() {
         ->tab_strip();
   }
   return nullptr;
+}
+
+views::View* BrowserView::contents_container() {
+  return multi_contents_view_;
 }
 
 TabStripRegionView* BrowserView::tab_strip_view() const {
@@ -1940,7 +1935,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
 
   WebContentsObserver::Observe(new_contents);
 
-  // If |contents_container_| already has the correct WebContents, we can save
+  // If |contents_web_view| already has the correct WebContents, we can save
   // some work.  This also prevents extra events from being reported by the
   // Visibility API under Windows, as ChangeWebContents will briefly hide
   // the WebContents window.
@@ -2044,7 +2039,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     const bool original_fast_resize =
         multi_contents_view_->GetActiveContentsView()->GetFastResize();
     UpdateFastResizeForContentViews(false);
-    contents_container_->DeprecatedLayoutImmediately();
+    multi_contents_view_->DeprecatedLayoutImmediately();
     UpdateFastResizeForContentViews(original_fast_resize);
   } else if (tab_change_in_split_view) {
     UpdateActiveTabInSplitView();
@@ -2247,7 +2242,7 @@ void BrowserView::FullscreenStateChanged() {
           ? overlay_widget_.get()
           : nullptr;
 
-  contents_container()->SetProperty(views::kWidgetForAnchoringKey,
+  multi_contents_view_->SetProperty(views::kWidgetForAnchoringKey,
                                     widget_for_anchoring);
   GetFrameView()->OnFullscreenStateChanged();
 
@@ -2383,14 +2378,14 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   }
 
   // When transitioning from animating to not animating we need to make sure the
-  // contents_container_ gets layed out. If we don't do this and the bounds
-  // haven't changed contents_container_ won't get a Layout and we'll end up
+  // multi_contents_view_ gets laid out. If we don't do this and the bounds
+  // haven't changed multi_contents_view_ won't get a Layout and we'll end up
   // with a gray rect because the clip wasn't updated.
   if (!is_animating) {
     for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
       contents_web_view->InvalidateLayout();
     }
-    contents_container_->DeprecatedLayoutImmediately();
+    multi_contents_view_->DeprecatedLayoutImmediately();
   }
 
   // Web apps that use Window Controls Overlay (WCO) revert back to the
@@ -2417,7 +2412,7 @@ void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
     for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
       contents_web_view->InvalidateLayout();
     }
-    contents_container_->DeprecatedLayoutImmediately();
+    multi_contents_view_->DeprecatedLayoutImmediately();
   }
 #endif
 }
@@ -4781,7 +4776,7 @@ void BrowserView::Layout(PassKey) {
     // including "always show toolbar" mode on Mac, where it is not possible to
     // position the dialog safely.
     dialog_anchor_->SetHidden(
-        contents_container_->bounds().Contains(rect.bottom_center()));
+        multi_contents_view_->bounds().Contains(rect.bottom_center()));
     dialog_anchor_->MaybeUpdateAnchor(rect);
   }
 
@@ -4944,7 +4939,6 @@ void BrowserView::AddedToWidget() {
   layout_views.organizer_panel_container = organizer_panel_container_;
   layout_views.toolbar = toolbar_;
   layout_views.infobar_container = infobar_container_;
-  layout_views.contents_container = contents_container_;
   layout_views.multi_contents_view = multi_contents_view_;
   layout_views.side_panel = side_panel_;
   layout_views.top_container_separator = top_container_separator_;

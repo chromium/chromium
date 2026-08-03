@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
 
@@ -369,7 +370,7 @@ int BrowserViewLayoutImpl::GetDialogTop(const ProposedLayout& layout) const {
 int BrowserViewLayoutImpl::GetDialogBottom(const ProposedLayout& layout) const {
   const auto* const browser_view = views().browser_view.get();
   if (const auto contents_rect =
-          layout.GetBoundsFor(views().contents_container, browser_view)) {
+          layout.GetBoundsFor(views().multi_contents_view, browser_view)) {
     return contents_rect->bottom();
   }
   return browser_view->height();

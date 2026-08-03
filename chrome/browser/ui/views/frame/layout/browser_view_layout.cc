@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/views/view.h"
@@ -187,7 +188,7 @@ void BrowserViewLayout::UpdateBubbles() {
   // geometry of the contents pane actually changes in a way that could affect
   // the positioning of the bar.
   const gfx::Rect new_contents_bounds =
-      views().contents_container->GetBoundsInScreen();
+      views().multi_contents_view->GetBoundsInScreen();
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, unlike macOS, the find bar can be shown without revealing the
   // immersive frame, so we should always try to update the position even if

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.h"
 
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "ui/views/controls/separator.h"
@@ -98,11 +99,11 @@ BrowserViewPopupLayoutImpl::CalculateProposedLayout(
   }
 
   // Lay out contents container.
-  CHECK(
-      IsParentedToAndVisible(views().contents_container, views().browser_view));
+  CHECK(IsParentedToAndVisible(views().multi_contents_view,
+                               views().browser_view));
   gfx::Rect contents_bounds = params.visual_client_area;
   contents_bounds.set_height(std::max(contents_bounds.height(), 1));
-  layout.AddChild(views().contents_container, contents_bounds);
+  layout.AddChild(views().multi_contents_view, contents_bounds);
 
   return layout;
 }

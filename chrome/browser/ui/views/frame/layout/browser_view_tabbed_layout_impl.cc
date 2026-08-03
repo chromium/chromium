@@ -557,7 +557,7 @@ gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumMainAreaSize(
           : gfx::Size();
   const gfx::Size infobar_container_size =
       views().infobar_container->GetMinimumSize();
-  const gfx::Size contents_size = views().contents_container->GetMinimumSize();
+  const gfx::Size contents_size = views().multi_contents_view->GetMinimumSize();
 
   int width = std::max({toolbar_size.width(), bookmark_bar_size.width(),
                         infobar_container_size.width(),
@@ -1104,9 +1104,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // Lay out contents container. The contents container contains the multi-
   // contents view when multi-contents are enabled. The checks here are to
   // force the logic to be updated when multi-contents is fully rolled-out.
-  CHECK(
-      IsParentedToAndVisible(views().contents_container, views().browser_view));
-  CHECK(views().contents_container->Contains(views().multi_contents_view));
+  CHECK(IsParentedToAndVisible(views().multi_contents_view,
+                               views().browser_view));
 
   // Because side panels have minimum width, in a small browser, it is possible
   // for the combination of minimum-sized contents pane and minimum-sized side
@@ -1124,7 +1123,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         std::min(content_right, browser_params.visual_client_area.right());
   }
   auto& contents_layout =
-      layout.AddChild(views().contents_container,
+      layout.AddChild(views().multi_contents_view,
                       gfx::Rect(content_left, params.visual_client_area.y(),
                                 content_right - content_left,
                                 params.visual_client_area.height()));

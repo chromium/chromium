@@ -3777,8 +3777,6 @@ static_library("ui") {
       "views/frame/contents_container_outline.h",
       "views/frame/contents_container_view.cc",
       "views/frame/contents_container_view.h",
-      "views/frame/contents_layout_manager.cc",
-      "views/frame/contents_layout_manager.h",
       "views/frame/contents_separator.cc",
       "views/frame/contents_separator.h",
       "views/frame/contents_web_view.cc",
