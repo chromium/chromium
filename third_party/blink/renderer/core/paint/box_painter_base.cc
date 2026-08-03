@@ -135,12 +135,6 @@ Animation* GetCompositableBackgroundColorAnimation(Node* node) {
     return nullptr;
   }
 
-  if (animation->CheckCanStartAnimationOnCompositor(
-          nullptr, StartOnCompositorReason::kGeneric) !=
-      CompositorAnimations::kNoFailure) {
-    return nullptr;
-  }
-
   return animation;
 }
 

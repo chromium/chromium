@@ -136,7 +136,9 @@ NativePaintWorkletData* ElementAnimations::EnsureClipPathNpwData(
   return clip_path_npw_data_;
 }
 
-void ElementAnimations::RecalcCompositedStatus(Element* element) {
+void ElementAnimations::RecalcCompositedStatus(
+    Element* element,
+    Animation::CompositorPendingReason pending_reason) {
   Animation::NativePaintWorkletReasons reasons = Animation::kNoPaintWorklet;
   // Multiple animations targeting the same property cannot be composited as
   // the compositor does not support composite-ordering. The overlapping_reasons
@@ -166,6 +168,14 @@ void ElementAnimations::RecalcCompositedStatus(Element* element) {
   if (background_color_npw_data_) {
     background_color_npw_data_->UpdateCompositedPaintStatus(
         reasons, overlapping_reasons);
+    if (pending_reason ==
+        Animation::CompositorPendingReason::kPendingEffectChange) {
+      // TODO(kevers): We are over invalidating if the effect is invalidated
+      // on a different animation from the one animating background color.
+      // Recalc compositedStatus could take the animation instead of the
+      // element as a parameter to remedy.
+      background_color_npw_data_->SetAnimationCurve(nullptr);
+    }
   }
 
   if (clip_path_npw_data_) {

@@ -146,7 +146,6 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
     return from * (1 - progress) + to * progress;
   }
 
- private:
   std::optional<double> Progress(
       const std::optional<double>& main_thread_progress,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&

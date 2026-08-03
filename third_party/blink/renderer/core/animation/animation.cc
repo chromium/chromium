@@ -871,31 +871,31 @@ bool Animation::PreCommit(
   }
 
   // If we fail to start an animation on the compositor that animates via a
-  // native paint wprklet, then update the corresponding paint status bit.
+  // native paint worklet, then update the corresponding paint status entry.
+  // A preliminary compositing decision made during PrePaint or Paint is a
+  // necessary but insufficient condition for compositing. PreCommit has final
+  // say and if not composited, we need to downgrade the compositor paint
+  // status. An exception on the downgrade for the case of no visible change.
+  // For example, a box with a background-color animation that is outside the
+  // paint apron, might be still in the kNeedsRepaint state. Once painted, the
+  // animation may be able to start on the compositor.
   NativePaintWorkletReasons npw_reasons = GetNativePaintWorkletReasons();
   if (should_start && !compositor_state_ &&
       npw_reasons != NativePaintWorkletProperties::kNoPaintWorklet &&
-      RuntimeEnabledFeatures::ConcurrentNativePaintWorkletsEnabled()) {
+      compositing_decision_.disposition !=
+          CompositorAnimations::kAnimationHasNoVisibleChange) {
     KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
     Element* target =
         keyframe_effect ? keyframe_effect->EffectTarget() : nullptr;
     ElementAnimations* element_animations =
         target ? target->GetElementAnimations() : nullptr;
     if (element_animations) {
-      // We only fall back the NPW status if it has received an eligibility
-      // determination. If it hasn't, this could mean its target is outside the
-      // paint apron or been made invisible with CSS, and is still potentially
-      // compositable.
       if (npw_reasons &
-              NativePaintWorkletProperties::kBackgroundColorPaintWorklet &&
-          element_animations->CompositedBackgroundColorStatus() !=
-              ElementAnimations::CompositedPaintStatus::kNeedsRepaint) {
+          NativePaintWorkletProperties::kBackgroundColorPaintWorklet) {
         element_animations->SetCompositedBackgroundColorStatus(
             ElementAnimations::CompositedPaintStatus::kNotComposited);
       }
-      if (npw_reasons & NativePaintWorkletProperties::kClipPathPaintWorklet &&
-          element_animations->CompositedClipPathStatus() !=
-              ElementAnimations::CompositedPaintStatus::kNeedsRepaint) {
+      if (npw_reasons & NativePaintWorkletProperties::kClipPathPaintWorklet) {
         element_animations->SetCompositedClipPathStatus(
             ElementAnimations::CompositedPaintStatus::kNotComposited);
       }
@@ -2795,7 +2795,7 @@ void Animation::SetCompositorPending(CompositorPendingReason reason) {
     reason = CompositorPendingReason::kPendingRestart;
     // Composited paint status has already be set so we can skip the update.
   } else {
-    UpdateCompositedPaintStatus();
+    UpdateCompositedPaintStatus(reason);
   }
 
   if (compositor_state_ &&
@@ -3307,7 +3307,8 @@ bool Animation::Update(TimingUpdateReason reason) {
     // finished before PreCommit has run the first time and a compositor state
     // has been created.
     if (!inactive_ && !HasActiveAnimationsOnCompositor()) {
-      UpdateCompositedPaintStatus();
+      UpdateCompositedPaintStatus(
+          CompositorPendingReason::kPendingEffectChange);
     }
 
     // Animations linked to scroll-timelines remain active since a scroll update
@@ -3610,7 +3611,7 @@ void Animation::PauseForTesting(AnimationTimeDelta pause_time) {
   pending_play_ = false;
   hold_time_ = pause_time;
   start_time_ = std::nullopt;
-  UpdateCompositedPaintStatus();
+  UpdateCompositedPaintStatus(CompositorPendingReason::kPendingUpdate);
 }
 
 void Animation::SetEffectSuppressed(bool suppressed) {
@@ -3928,7 +3929,7 @@ bool Animation::IsInDisplayLockedSubtree() {
   return is_in_display_locked_subtree_;
 }
 
-void Animation::UpdateCompositedPaintStatus() {
+void Animation::UpdateCompositedPaintStatus(CompositorPendingReason reason) {
   // Calling Animation::setEffect can result in a change to the animation
   // effect target. In such cases, we need to update the composited paint
   // status on the old target.
@@ -3939,7 +3940,7 @@ void Animation::UpdateCompositedPaintStatus() {
       // Possible to not have element animations on the old target if the
       // effect change introduced ahead of a style update.
       element_animations->RecalcCompositedStatus(
-          prior_native_paint_worklet_target_);
+          prior_native_paint_worklet_target_, reason);
     }
     prior_native_paint_worklet_target_ = nullptr;
   }
@@ -3968,7 +3969,7 @@ void Animation::UpdateCompositedPaintStatus() {
   ElementAnimations* element_animations = target->GetElementAnimations();
   DCHECK(element_animations);
 
-  element_animations->RecalcCompositedStatus(target);
+  element_animations->RecalcCompositedStatus(target, reason);
 }
 
 void Animation::Trace(Visitor* visitor) const {

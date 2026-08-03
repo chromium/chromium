@@ -52,6 +52,14 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
                                                  ValueFilter value_filter) {
   const KeyframeEffect* effect = To<KeyframeEffect>(animation->effect());
   const KeyframeEffectModelBase* model = effect->Model();
+  // The CheckCanStart... call from Animation::PreCommit will force a main
+  // thread fallback if the keyframes are not strictly using the 'replace'
+  // composite-mode, but since keyframe generation is potentially expensive, it
+  // seems prudent to run a quick check here to avoid throwaway work.
+  if (model->AffectedByUnderlyingAnimations()) {
+    return false;
+  }
+
   Element* element = effect->EffectTarget();
   const PropertySpecificKeyframeVector* frames =
       model->GetPropertySpecificKeyframes(PropertyHandle(PropertyName()));

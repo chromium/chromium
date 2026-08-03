@@ -612,14 +612,11 @@ class CORE_EXPORT Animation : public EventTarget,
   // Tracking the state of animations in dev tools.
   void NotifyProbe();
 
-  // Reset the cached value for the status of a possible background color
-  // animation if required. Any time an animation affecting background color
-  // changes we need to reset the flag so that Paint can make a fresh
-  // compositing decision and create a fresh paint worklet image from the
-  // keyframes.
-  // TODO(crbug.com/1310961): Investigate if we need a similar fix for
-  // non-native paint worklets.
-  void UpdateCompositedPaintStatus();
+  // Update the cached value for the status of native paint worklets. Any
+  // time an animation becomes compositor pending that affects one or more
+  // properties animated via native paint worklets, a fresh decision is required
+  // in PrePaint or Paint to determine eligibility to run on the compositor.
+  void UpdateCompositedPaintStatus(CompositorPendingReason reason);
 
   // Updates the start time for a running animation that is linked to a scroll
   // timeline. As the animation is linked to a timeline range, we don't

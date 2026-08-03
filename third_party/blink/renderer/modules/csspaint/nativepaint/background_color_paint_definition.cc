@@ -6,6 +6,7 @@
 
 #include "cc/paint/paint_recorder.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
+#include "third_party/blink/renderer/core/animation/compositor_animation_color_curve.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
@@ -30,24 +31,6 @@ namespace {
 
 using ColorKeyframe = NativeCssPaintDefinition::TypedKeyframe<Color>;
 using ColorKeyframeVector = Vector<ColorKeyframe>;
-
-Color InterpolateColor(unsigned index,
-                       double progress,
-                       const ColorKeyframeVector& keyframes) {
-  Color first = keyframes[index].value;
-  Color second = keyframes[index + 1].value;
-
-  // Interpolation is in legacy srgb if and only if both endpoints are legacy
-  // srgb. Otherwise, use OkLab for interpolation.
-  if (first.GetColorSpace() != Color::ColorSpace::kSRGBLegacy ||
-      second.GetColorSpace() != Color::ColorSpace::kSRGBLegacy) {
-    first.ConvertToColorSpace(Color::ColorSpace::kOklab);
-    second.ConvertToColorSpace(Color::ColorSpace::kOklab);
-  }
-
-  return Color::InterpolateColors(first.GetColorSpace(), std::nullopt, first,
-                                  second, progress);
-}
 
 // Check for ancestor node with filter that moves pixels. The compositor cannot
 // easily track the filters applied within a layer (i.e. composited filters) and
@@ -88,136 +71,30 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
   BackgroundColorPaintWorkletInput(
       const gfx::SizeF& container_size,
       int worklet_id,
-      ColorKeyframeVector keyframes,
-      const std::optional<double>& main_thread_progress,
+      scoped_refptr<CompositorAnimationColorCurve> color_curve,
+      Color main_thread_value,
       cc::PaintWorkletInput::PropertyKeys property_keys)
       : PaintWorkletInput(container_size, worklet_id, std::move(property_keys)),
-        keyframes_(std::move(keyframes)),
-        main_thread_progress_(main_thread_progress) {
-    for (const auto& item : keyframes_) {
-      if (!item.value.IsOpaque()) {
-        is_opaque_ = false;
-        break;
-      }
-    }
-  }
+        color_curve_(std::move(color_curve)),
+        main_thread_value_(main_thread_value) {}
 
   ~BackgroundColorPaintWorkletInput() override = default;
 
-  const ColorKeyframeVector& keyframes() const { return keyframes_; }
-  const std::optional<double>& MainThreadProgress() const {
-    return main_thread_progress_;
+  const Color& MainThreadValue() const { return main_thread_value_; }
+  bool KnownToBeOpaque() const override { return color_curve_->IsOpaque(); }
+
+  Color Interpolate(double progress) const {
+    return color_curve_->Interpolate(progress);
   }
-  bool KnownToBeOpaque() const override { return is_opaque_; }
 
   PaintWorkletInputType GetType() const override {
     return PaintWorkletInputType::kBackgroundColor;
   }
 
  private:
-  ColorKeyframeVector keyframes_;
-  std::optional<double> main_thread_progress_;
-  bool is_opaque_ = true;
+  scoped_refptr<CompositorAnimationColorCurve> color_curve_;
+  Color main_thread_value_;
 };
-
-Color GetColorFromKeyframe(const PropertySpecificKeyframe* frame,
-                           const KeyframeEffectModelBase* model,
-                           const Element* element) {
-  if (model->IsStringKeyframeEffectModel()) {
-    const CSSValue* value = To<CSSPropertySpecificKeyframe>(frame)->Value();
-    const CSSPropertyName property_name =
-        CSSPropertyName(CSSPropertyID::kBackgroundColor);
-    const CSSValue* computed_value = StyleResolver::ComputeValue(
-        const_cast<Element*>(element), property_name, *value);
-    auto& color_value = To<cssvalue::CSSColor>(*computed_value);
-    return color_value.Value();
-  }
-
-  const auto* keyframe =
-      To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
-  InterpolableValue* value =
-      keyframe->GetValue()->Value().interpolable_value.Get();
-
-  const auto& list = To<InterpolableList>(*value);
-  DCHECK(CSSColorInterpolationType::IsNonKeywordColor(*(list.Get(0))));
-
-  return CSSColorInterpolationType::GetColor(*(list.Get(0)));
-}
-
-void ExtractKeyframes(const Element* element,
-                      const Animation* compositable_animation,
-                      ColorKeyframeVector& color_keyframes) {
-  element->GetLayoutObject()->GetMutableForPainting().EnsureId();
-  const AnimationEffect* effect = compositable_animation->effect();
-  const KeyframeEffectModelBase* model = To<KeyframeEffect>(effect)->Model();
-  DCHECK_EQ(model->Composite(), EffectModel::kCompositeReplace);
-  const PropertySpecificKeyframeVector* frames =
-      model->GetPropertySpecificKeyframes(
-          PropertyHandle(GetCSSPropertyBackgroundColor()));
-  for (const auto& frame : *frames) {
-    Color color = GetColorFromKeyframe(frame, model, element);
-    double offset = frame->Offset();
-    std::unique_ptr<gfx::TimingFunction> timing_function_copy;
-    const TimingFunction& timing_function = frame->Easing();
-    // LinearTimingFunction::CloneToCC() returns nullptr as it is shared.
-    timing_function_copy = timing_function.CloneToCC();
-    color_keyframes.push_back(
-        ColorKeyframe(offset, timing_function_copy, color));
-  }
-}
-
-bool ValidateColorValue(const Element* element,
-                        const CSSValue* value,
-                        const TypedInterpolationValue* interpolation_value) {
-  if (value) {
-    if (value->IsIdentifierValue()) {
-      CSSValueID value_id = To<CSSIdentifierValue>(value)->GetValueID();
-      if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
-        // The color depends on the color-scheme. Though we can resolve the
-        // color values, we presently lack a method to update the colors should
-        // the color-scheme change during the course of the animation.
-        // TODO(crbug.com/40795239): handle system color.
-        return false;
-      }
-      if (value_id == CSSValueID::kCurrentcolor) {
-        // Do not composite a background color animation that depends on
-        // currentcolor until we have a mechanism to update the compositor
-        // keyframes when currentcolor changes.
-        return false;
-      }
-    } else if (value->IsColorMixValue()) {
-      const cssvalue::CSSColorMixValue* color_mix =
-          To<cssvalue::CSSColorMixValue>(value);
-      if (!ValidateColorValue(element, &color_mix->Color1(), nullptr) ||
-          !ValidateColorValue(element, &color_mix->Color2(), nullptr)) {
-        // Unresolved color mix or a color mix with a system color dependency.
-        // Either way, fall back to main.
-        return false;
-      }
-    }
-
-    const CSSPropertyName property_name =
-        CSSPropertyName(CSSPropertyID::kBackgroundColor);
-    const CSSValue* computed_value = StyleResolver::ComputeValue(
-        const_cast<Element*>(element), property_name, *value);
-    return computed_value->IsColorValue();
-  } else if (interpolation_value) {
-    // Transition keyframes store a pair of color values: one for the actual
-    // color and one for the reported color (conditionally resolved). This is to
-    // prevent JavaScript code from snooping the visited status of links. The
-    // color to use for the animation is stored first in the list.
-    // We need to further check that the color is a simple RGBA color and does
-    // not require blending with other colors (e.g. currentcolor).
-    const InterpolableValue* interpolable_value =
-        interpolation_value->Value().interpolable_value.Get();
-    if (!interpolable_value->IsList())
-      return false;
-
-    const InterpolableList& list = To<InterpolableList>(*interpolable_value);
-    return CSSColorInterpolationType::IsNonKeywordColor(*(list.Get(0)));
-  }
-  return false;
-}
 
 }  // namespace
 
@@ -236,12 +113,47 @@ struct DowncastTraits<BackgroundColorPaintWorkletInput> {
 
 Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  if (!element_animations) {
+    return nullptr;
+  }
+
+  NativePaintWorkletData* npw_data =
+      element_animations->GetBackgroundColorNpwData();
+  if (!npw_data) {
+    return nullptr;
+  }
+
+  Animation* candidate = npw_data->GetAnimation();
+  if (!candidate) {
+    return nullptr;
+  }
+
+  // TODO(crbug.com/40901295): Support start delay.
+  AnimationTimeDelta start_delay =
+      candidate->effect()->SpecifiedTiming().start_delay.AsTimeValue();
+  if (start_delay.InSecondsF() > 0.f) {
+    return nullptr;
+  }
+
   if (CompositorMayHaveIncorrectDamageRect(element)) {
     return nullptr;
   }
 
-  return GetAnimationForProperty(element, GetCSSPropertyBackgroundColor(),
-                                 ValidateColorValue);
+  if (npw_data->GetAnimationCurve() != nullptr) {
+    // The keyframes have already been validated.
+    return candidate;
+  }
+
+  scoped_refptr<CompositorAnimationColorCurve> color_curve =
+      CompositorAnimationColorCurve::Create(
+          candidate, CSSPropertyName(CSSPropertyID::kBackgroundColor));
+  if (color_curve) {
+    npw_data->SetAnimationCurve(std::move(color_curve));
+    return candidate;
+  }
+
+  return nullptr;
 }
 
 // static
@@ -263,24 +175,24 @@ PaintRecord BackgroundColorPaintDefinition::Paint(
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
   const auto* input = To<BackgroundColorPaintWorkletInput>(compositor_input);
-  KeyframeIndexAndProgress keyframe_index_and_progress =
-      ComputeKeyframeIndexAndProgress(input->MainThreadProgress(),
-                                      animated_property_values,
-                                      input->keyframes());
 
-  Color color = InterpolateColor(keyframe_index_and_progress.index,
-                                 keyframe_index_and_progress.progress,
-                                 input->keyframes());
+  Color color = input->MainThreadValue();
+  if (!animated_property_values.empty()) {
+    DCHECK_EQ(animated_property_values.size(), 1u);
+    const auto& entry = animated_property_values.begin();
+    double progress = entry->second.float_value.value();
+    color = input->Interpolate(progress);
+  }
 
   // TODO(crbug/1308932): Remove toSkColor4f and make all SkColor4f.
-  SkColor4f current_color = color.toSkColor4f();
+  SkColor4f sk_color = color.toSkColor4f();
 
   cc::InspectablePaintRecorder paint_recorder;
   // When render this element, we always do pixel snapping to its nearest pixel,
   // therefore we use rounded |container_size| to create the rendering context.
   const gfx::Size container_size(gfx::ToRoundedSize(input->ContainerSize()));
   cc::PaintCanvas* canvas = paint_recorder.beginRecording(container_size);
-  canvas->drawColor(current_color);
+  canvas->drawColor(sk_color);
   return paint_recorder.finishRecordingAsPicture();
 }
 
@@ -293,9 +205,14 @@ scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
     return nullptr;
   }
 
-  ColorKeyframeVector color_keyframes;
-  ExtractKeyframes(element, compositable_animation, color_keyframes);
+  element->GetLayoutObject()->GetMutableForPainting().EnsureId();
 
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  NativePaintWorkletData* npw_data =
+      element_animations->GetBackgroundColorNpwData();
+  scoped_refptr<CompositorAnimationColorCurve> color_curve =
+      base::WrapRefCounted(static_cast<CompositorAnimationColorCurve*>(
+          npw_data->GetAnimationCurve().get()));
   CompositorElementId element_id = CompositorElementIdFromUniqueObjectId(
       node->GetLayoutObject()->UniqueId(),
       CompositorAnimations::CompositorElementNamespaceForProperty(
@@ -305,13 +222,13 @@ scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
       CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
       element_id);
 
-  std::optional<double> main_thread_progress =
-      compositable_animation->effect()->Progress();
+  Color main_thread_value =
+      element->GetLayoutObject()->ResolveColor(GetCSSPropertyBackgroundColor());
 
   scoped_refptr<BackgroundColorPaintWorkletInput> input =
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(
-          container_size, worklet_id_, std::move(color_keyframes),
-          main_thread_progress, std::move(input_property_keys));
+          container_size, worklet_id_, std::move(color_curve),
+          main_thread_value, std::move(input_property_keys));
   return PaintWorkletDeferredImage::Create(std::move(input), container_size);
 }
 
@@ -321,18 +238,13 @@ PaintRecord BackgroundColorPaintDefinition::PaintForTest(
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
   gfx::SizeF container_size(100, 100);
-  std::optional<double> progress = 0;
   CompositorPaintWorkletInput::PropertyKeys property_keys;
-  ColorKeyframeVector color_keyframes;
-  for (unsigned i = 0; i < animated_colors.size(); i++) {
-    std::unique_ptr<gfx::TimingFunction> tf;
-    color_keyframes.push_back(
-        TypedKeyframe<Color>(offsets[i], tf, animated_colors[i]));
-  }
-
+  scoped_refptr color_curve = CompositorAnimationColorCurve::CreateForTesting(
+      animated_colors, offsets,
+      CSSPropertyName(CSSPropertyID::kBackgroundColor));
   scoped_refptr<BackgroundColorPaintWorkletInput> input =
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(
-          container_size, 1u, std::move(color_keyframes), progress,
+          container_size, 1u, std::move(color_curve), Color(),
           std::move(property_keys));
   return Paint(input.get(), animated_property_values);
 }

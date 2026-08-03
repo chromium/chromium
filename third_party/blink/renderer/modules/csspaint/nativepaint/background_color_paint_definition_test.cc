@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/core/animation/compositor_animation_color_curve.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -33,6 +35,8 @@
 
 namespace blink {
 
+// TODO(kevers): Deprecate in favor of a setting to enable generators for
+// testing. Currently, the generator requires a compositor thread.
 class FakeBackgroundColorPaintImageGenerator
     : public BackgroundColorPaintImageGenerator {
  public:
@@ -42,6 +46,13 @@ class FakeBackgroundColorPaintImageGenerator
                              const Node* node) override {
     LayoutObject* layout_object = node->GetLayoutObject();
     layout_object->GetMutableForPainting().FirstFragment().EnsureId();
+    ElementAnimations* element_animations =
+        To<Element>(node)->GetElementAnimations();
+    NativePaintWorkletData* npw_data =
+        element_animations->GetBackgroundColorNpwData();
+    if (!npw_data || !npw_data->GetAnimationCurve()) {
+      return nullptr;
+    }
     return BitmapImage::Create();
   }
 
@@ -75,6 +86,33 @@ class BackgroundColorPaintDefinitionTest : public RenderingTest {
         MakeGarbageCollected<BackgroundColorPaintDefinition>(
             BackgroundColorPaintDefinition::KeyForTest());
     definition->PaintForTest(animated_colors, offsets, property_values);
+  }
+
+  Animation* GetAnimation(Element* element) {
+    ElementAnimations* element_animations = element->GetElementAnimations();
+    for (auto& entry : element_animations->Animations()) {
+      if (entry.key->CalculateAnimationPlayState() ==
+          V8AnimationPlayState::Enum::kIdle) {
+        continue;
+      }
+      return entry.key;
+    }
+    return nullptr;
+  }
+
+  scoped_refptr<CompositorAnimationColorCurve> ColorCurve(
+      Animation* animation) {
+    Element* element = To<KeyframeEffect>(animation->effect())->EffectTarget();
+    ElementAnimations* element_animations = element->GetElementAnimations();
+    NativePaintWorkletData* npw_data =
+        element_animations->GetBackgroundColorNpwData();
+    scoped_refptr<CompositorAnimationCurve> curve =
+        npw_data->GetAnimationCurve();
+    if (!curve) {
+      return nullptr;
+    }
+    return base::WrapRefCounted(
+        static_cast<CompositorAnimationColorCurve*>(curve.get()));
   }
 
  private:
@@ -1049,6 +1087,114 @@ TEST_F(BackgroundColorPaintDefinitionTest, OffscreenToOnScreen) {
   EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
             ElementAnimations::CompositedPaintStatus::kComposited);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+}
+
+TEST_F(BackgroundColorPaintDefinitionTest, AnimationCurve) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes colorize {
+        from { background-color: red; }
+        to   { background-color: green; }
+      }
+      @keyframes colorize-2 {
+        from { background-color: var(--color1); }
+        to   { background-color: var(--color2); }
+      }
+      #target {
+        animation: colorize 1s forwards;
+        height: 100px;
+        width: 100px;
+        --color1: black;
+        --color2: white;
+        --color3: blue;
+      }
+      #target.update-1 {
+        animation-name: colorize-2;
+      }
+      #target.update-2 {
+        --color3: yellow;
+      }
+      #target.update-3 {
+        --color1: maroon;
+    }
+    }
+    </style>
+    <div id ="target"></div>
+  )HTML");
+
+  // Initial animation has non-style-dependent keyframes.
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  Animation* animation = GetAnimation(element);
+  KeyframeEffect* original_effect = To<KeyframeEffect>(animation->effect());
+  scoped_refptr<CompositorAnimationColorCurve> color_curve =
+      ColorCurve(animation);
+  ASSERT_TRUE(color_curve.get());
+  EXPECT_FALSE(color_curve->HasStyleDependency());
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value, Color(255, 0, 0));
+  EXPECT_EQ(color_curve->GetTypedKeyframe(1).value, Color(0, 128, 0));
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  // Reuse the same animation curve on next Paint call.
+  animation->SetCompositorPending(
+      Animation::CompositorPendingReason::kPendingRestart);
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_EQ(color_curve.get(), ColorCurve(animation).get());
+
+  // Rinse repeat with style dependent keyframes.
+  element->classList().add({"update-1"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  animation = GetAnimation(element);
+  color_curve = ColorCurve(animation);
+  ASSERT_TRUE(color_curve.get());
+  EXPECT_TRUE(color_curve->HasStyleDependency());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value, Color::kBlack);
+  EXPECT_EQ(color_curve->GetTypedKeyframe(1).value, Color::kWhite);
+  // Keyframes resolve to the same values. Reuse the same animation curve on
+  // next Paint call.
+  element->classList().add({"update-2"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_EQ(color_curve.get(), ColorCurve(animation).get());
+  // Next change affects a keyframe's value. A new animation curve is required.
+  EXPECT_EQ(color_curve.get(), ColorCurve(animation).get());
+  element->classList().add({"update-3"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  scoped_refptr<CompositorAnimationColorCurve> updated_color_curve =
+      ColorCurve(animation);
+  EXPECT_NE(color_curve.get(), updated_color_curve.get());
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value, Color::kBlack);
+  EXPECT_EQ(color_curve->GetTypedKeyframe(1).value, Color::kWhite);
+  EXPECT_EQ(updated_color_curve->GetTypedKeyframe(0).value, Color(128, 0, 0));
+  EXPECT_EQ(updated_color_curve->GetTypedKeyframe(1).value, Color::kWhite);
+
+  // Invalidate the keyframe effect.
+  animation->setEffect(nullptr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNoAnimation);
+
+  // Reset to original effect.
+  animation->setEffect(original_effect);
+  UpdateAllLifecyclePhasesForTest();
+  color_curve = ColorCurve(animation);
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value, Color(255, 0, 0));
+  EXPECT_EQ(color_curve->GetTypedKeyframe(1).value, Color(0, 128, 0));
 }
 
 }  // namespace blink

@@ -68,15 +68,49 @@ bool NativePaintWorkletData::UpdateCompositedPaintStatus(
 }
 
 void NativePaintWorkletData::SetNeedsKeyframeSnapshot() {
+  if (animation_curve_ && !animation_curve_->HasStyleDependency()) {
+    return;
+  }
   if (composited_paint_status_ == CompositedPaintStatus::kComposited) {
     bool changed = SetStatus(CompositedPaintStatus::kNeedsRepaint);
     if (changed) {
       TriggerPaintInvalidation();
-      // TODO(kevers): Once the worklet input is stored in this case, we'll need
-      // to invalidate the input here as well to ensure we don't used the cached
-      // keyframes.
     }
   }
+  needs_keyframes_snapshot_update_ = true;
+}
+
+void NativePaintWorkletData::SetAnimation(Animation* animation) {
+  if (animation_ != animation) {
+    animation_ = animation;
+    SetAnimationCurve(nullptr);
+  }
+}
+
+scoped_refptr<CompositorAnimationCurve>
+NativePaintWorkletData::GetAnimationCurve() {
+  if (!animation_curve_) {
+    return nullptr;
+  }
+
+  if (!needs_keyframes_snapshot_update_) {
+    return animation_curve_;
+  }
+
+  needs_keyframes_snapshot_update_ = false;
+
+  if (!animation_curve_->HasStyleDependency()) {
+    return animation_curve_;
+  }
+
+  scoped_refptr<CompositorAnimationCurve> updated =
+      animation_curve_->UpdateKeyframeSnapshot(GetAnimation());
+
+  if (updated.get() != animation_curve_.get()) {
+    animation_curve_ = updated;
+  }
+
+  return updated;
 }
 
 void NativePaintWorkletData::Trace(Visitor* visitor) const {
