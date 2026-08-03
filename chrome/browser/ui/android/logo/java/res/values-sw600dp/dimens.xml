@@ -7,6 +7,9 @@ found in the LICENSE file.
 <resources>
   <dimen name="ntp_logo_height">72dp</dimen>
   <dimen name="ntp_logo_margin_top">64dp</dimen>
+  <dimen name="ntp_logo_margin_top_small">@dimen/ntp_logo_margin_top</dimen>
+  <dimen name="ntp_logo_margin_top_medium">@dimen/ntp_logo_margin_top</dimen>
+  <dimen name="ntp_logo_margin_top_large">@dimen/ntp_logo_margin_top</dimen>
   <dimen name="doodle_height">104dp</dimen>
   <dimen name="doodle_margin_top">@dimen/ntp_logo_margin_top</dimen>
 </resources>
