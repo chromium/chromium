@@ -706,8 +706,16 @@ void ClipboardHostImpl::WriteBookmark(const std::string& url,
           DisallowActivationReasonId::kClipboard)) {
     return;
   }
+
+  GURL gurl(url);
+  // Drop file:// URLs so a renderer cannot place a local path on the clipboard
+  // via WriteBookmark and read it back via ReadFiles().
+  if (gurl.SchemeIsFile()) {
+    return;
+  }
+
   clipboard_writer_->WriteURL(
-      ui::ClipboardUrlInfo{.url = GURL(url), .title = title});
+      ui::ClipboardUrlInfo{.url = std::move(gurl), .title = title});
 }
 
 void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {

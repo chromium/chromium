@@ -545,6 +545,25 @@ TEST_F(ClipboardHostImplWriteTest, WriteBookmark_EmptyUrl) {
   EXPECT_TRUE(title.empty());
 }
 
+// file:// URLs are dropped so a renderer cannot place a local path on the
+// clipboard via WriteBookmark and read it back via ReadFiles.
+TEST_F(ClipboardHostImplWriteTest, WriteBookmark_FileUrl) {
+  clipboard_host_impl()->WriteBookmark("file:///etc/passwd", u"some title");
+  clipboard_host_impl()->CommitWrite();
+
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(system_clipboard(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_TRUE(url.empty()) << "Got url='" << url << "'";
+  EXPECT_TRUE(title.empty()) << "Got title='" << title << "'";
+
+  std::vector<ui::FileInfo> files = ui::clipboard_test_util::ReadFilenames(
+      system_clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_TRUE(files.empty());
+}
+
 TEST_F(ClipboardHostImplWriteTest, WriteBitmap) {
   const SkBitmap kBitmap = gfx::test::CreateBitmap(3, 2);
   clipboard_host_impl()->WriteImage(kBitmap);
