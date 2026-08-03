@@ -404,7 +404,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
   std::vector<AutofillProfile> profiles = GetProfilesToSuggestForTest(
       address_data(), test::GetFormFieldData({.value = u"123"}),
       ADDRESS_HOME_STREET_ADDRESS, types);
-  ASSERT_EQ(2U, profiles.size());
+  ASSERT_EQ(profiles.size(), 2U);
   EXPECT_EQ(profiles[0].GetRawInfo(ADDRESS_HOME_STATE), u"CA");
   EXPECT_EQ(profiles[1].GetRawInfo(ADDRESS_HOME_STATE), u"TX");
 }
@@ -439,7 +439,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
 
   ASSERT_EQ(2 * kMaxDeduplicatedProfilesForSuggestion,
             address_data().GetProfiles().size());
-  ASSERT_EQ(kMaxDeduplicatedProfilesForSuggestion, suggested_profiles.size());
+  ASSERT_EQ(suggested_profiles.size(), kMaxDeduplicatedProfilesForSuggestion);
 }
 
 // Deduping takes noticeable time when there are more than 50 profiles.
@@ -501,7 +501,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
 
   ASSERT_EQ(kMaxPrefixMatchedProfilesForSuggestion + 1,
             address_data().GetProfiles().size());
-  ASSERT_EQ(1U, suggested_profiles.size());
+  ASSERT_EQ(suggested_profiles.size(), 1U);
   EXPECT_EQ(suggested_profiles.front().GetRawInfo(NAME_FIRST),
             profiles.front().GetRawInfo(NAME_FIRST));
 }
@@ -573,7 +573,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
 
   std::vector<AutofillProfile> suggested_profiles = GetProfilesToSuggestForTest(
       address_data(), test::GetFormFieldData({.value = u"Ma"}), NAME_FIRST, {});
-  ASSERT_EQ(3U, suggested_profiles.size());
+  ASSERT_EQ(suggested_profiles.size(), 3U);
   EXPECT_EQ(suggested_profiles[0].GetRawInfo(NAME_FIRST), u"Marion1");
   EXPECT_EQ(suggested_profiles[1].GetRawInfo(NAME_FIRST), u"Marion2");
   EXPECT_EQ(suggested_profiles[2].GetRawInfo(NAME_FIRST), u"Marion3");
@@ -640,7 +640,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   // Verify that all the profiles are suggested.
   std::vector<AutofillProfile> suggested_profiles = GetProfilesToSuggestForTest(
       address_data(), FormFieldData(), NAME_FIRST, {});
-  EXPECT_EQ(3U, suggested_profiles.size());
+  EXPECT_EQ(suggested_profiles.size(), 3U);
 }
 
 // Tests that phone number types are correctly deduplicated for suggestions.
@@ -661,28 +661,28 @@ TEST_F(AddressSuggestionGeneratorTest,
     std::vector<AutofillProfile> suggested_profiles =
         GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                     {NAME_FULL, PHONE_HOME_WHOLE_NUMBER});
-    EXPECT_EQ(2U, suggested_profiles.size());
+    EXPECT_EQ(suggested_profiles.size(), 2U);
   }
   {
     std::vector<AutofillProfile> suggested_profiles =
         GetProfilesToSuggestForTest(
             address_data(), FormFieldData(), NAME_FULL,
             {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_AND_NUMBER});
-    EXPECT_EQ(2U, suggested_profiles.size());
+    EXPECT_EQ(suggested_profiles.size(), 2U);
   }
   {
     std::vector<AutofillProfile> suggested_profiles =
         GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                     {NAME_FULL, PHONE_HOME_COUNTRY_CODE,
                                      PHONE_HOME_CITY_CODE, PHONE_HOME_NUMBER});
-    EXPECT_EQ(2U, suggested_profiles.size());
+    EXPECT_EQ(suggested_profiles.size(), 2U);
   }
   {
     std::vector<AutofillProfile> suggested_profiles =
         GetProfilesToSuggestForTest(
             address_data(), FormFieldData(), NAME_FULL,
             {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE});
-    EXPECT_EQ(1U, suggested_profiles.size());
+    EXPECT_EQ(suggested_profiles.size(), 1U);
   }
 }
 
@@ -704,7 +704,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_NameDeduplication) {
 
   std::vector<AutofillProfile> suggested_profiles = GetProfilesToSuggestForTest(
       address_data(), FormFieldData(), NAME_FULL, {NAME_FULL});
-  EXPECT_EQ(1U, suggested_profiles.size());
+  EXPECT_EQ(suggested_profiles.size(), 1U);
 }
 
 // Tests that whitespaces and punctuation are properly ignored for the
@@ -726,7 +726,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   std::vector<AutofillProfile> suggested_profiles =
       GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                   {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS});
-  EXPECT_EQ(1U, suggested_profiles.size());
+  EXPECT_EQ(suggested_profiles.size(), 1U);
 }
 
 // Tests that email addresses are not deduplicated if they contain different
@@ -752,13 +752,13 @@ TEST_F(AddressSuggestionGeneratorTest,
     std::vector<AutofillProfile> suggested_profiles =
         GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                     {NAME_FULL});
-    EXPECT_EQ(1U, suggested_profiles.size());
+    EXPECT_EQ(suggested_profiles.size(), 1U);
   }
   {
     std::vector<AutofillProfile> suggested_profiles =
         GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                     {NAME_FULL, EMAIL_ADDRESS});
-    EXPECT_EQ(3U, suggested_profiles.size());
+    EXPECT_EQ(suggested_profiles.size(), 3U);
   }
 }
 
@@ -814,7 +814,7 @@ TEST_F(AddressSuggestionGeneratorTest,
     std::vector<AutofillProfile> suggested_profiles =
         GetProfilesToSuggestForTest(address_data(), FormFieldData(),
                                     ADDRESS_HOME_STREET_ADDRESS, {});
-    EXPECT_EQ(1U, suggested_profiles.size());
+    EXPECT_EQ(suggested_profiles.size(), 1U);
   }
 
   // Query with non-alpha-numeric string only returns profile2.
@@ -823,7 +823,7 @@ TEST_F(AddressSuggestionGeneratorTest,
         GetProfilesToSuggestForTest(address_data(),
                                     test::GetFormFieldData({.value = u"--"}),
                                     ADDRESS_HOME_STREET_ADDRESS, {});
-    EXPECT_EQ(1U, suggested_profiles.size());
+    EXPECT_EQ(suggested_profiles.size(), 1U);
   }
 
   // Query with prefix for profile1 returns profile1.
@@ -832,8 +832,8 @@ TEST_F(AddressSuggestionGeneratorTest,
         GetProfilesToSuggestForTest(address_data(),
                                     test::GetFormFieldData({.value = u"123"}),
                                     ADDRESS_HOME_STREET_ADDRESS, {});
-    ASSERT_EQ(1U, suggested_profiles.size());
-    EXPECT_EQ(u"Marion1", suggested_profiles[0].GetRawInfo(NAME_FIRST));
+    ASSERT_EQ(suggested_profiles.size(), 1U);
+    EXPECT_EQ(suggested_profiles[0].GetRawInfo(NAME_FIRST), u"Marion1");
   }
 
   // Query with prefix for profile2 returns profile2.
@@ -842,8 +842,8 @@ TEST_F(AddressSuggestionGeneratorTest,
         GetProfilesToSuggestForTest(address_data(),
                                     test::GetFormFieldData({.value = u"456"}),
                                     ADDRESS_HOME_STREET_ADDRESS, {});
-    EXPECT_EQ(1U, suggested_profiles.size());
-    EXPECT_EQ(u"Marion2", suggested_profiles[0].GetRawInfo(NAME_FIRST));
+    EXPECT_EQ(suggested_profiles.size(), 1U);
+    EXPECT_EQ(suggested_profiles[0].GetRawInfo(NAME_FIRST), u"Marion2");
   }
 }
 
@@ -860,7 +860,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_SingleDedupe) {
       GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FIRST,
                                   {});
 
-  ASSERT_EQ(1U, profiles_to_suggest.size());
+  ASSERT_EQ(profiles_to_suggest.size(), 1U);
 }
 
 // Given two suggestions with the same name and one with a different, and also
@@ -886,7 +886,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_MultipleDedupe) {
       GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FIRST,
                                   {NAME_FIRST, NAME_LAST});
 
-  EXPECT_EQ(3U, profiles_to_suggest.size());
+  EXPECT_EQ(profiles_to_suggest.size(), 3U);
 }
 
 // Test the limit of number of deduplicated profiles.
@@ -906,7 +906,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
       GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                   {NAME_FULL});
 
-  ASSERT_EQ(kMaxDeduplicatedProfilesForSuggestion, profiles_to_suggest.size());
+  ASSERT_EQ(profiles_to_suggest.size(), kMaxDeduplicatedProfilesForSuggestion);
 
   // All profiles are different.
   for (size_t i = 0; i < profiles_to_suggest.size(); ++i) {
@@ -916,9 +916,10 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
 
 TEST_F(AddressSuggestionGeneratorTest,
        GetProfilesToSuggest_EmptyMatchingProfiles) {
-  ASSERT_EQ(0U, GetProfilesToSuggestForTest(address_data(), FormFieldData(),
-                                            NAME_FIRST, {})
-                    .size());
+  ASSERT_EQ(GetProfilesToSuggestForTest(address_data(), FormFieldData(),
+                                        NAME_FIRST, {})
+                .size(),
+            0U);
 }
 
 // Tests that `kAccount` profiles are preferred over `kLocalOrSyncable` profile
@@ -944,10 +945,10 @@ TEST_F(AddressSuggestionGeneratorTest,
       GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                   {NAME_FULL});
 
-  ASSERT_EQ(1u, profiles_to_suggest.size());
+  ASSERT_EQ(profiles_to_suggest.size(), 1u);
   EXPECT_EQ(profile_1.guid(), profiles_to_suggest[0].guid());
-  EXPECT_EQ(AutofillProfile::RecordType::kAccount,
-            profiles_to_suggest[0].record_type());
+  EXPECT_EQ(profiles_to_suggest[0].record_type(),
+            AutofillProfile::RecordType::kAccount);
 }
 
 TEST_F(AddressSuggestionGeneratorTest,
@@ -967,7 +968,7 @@ TEST_F(AddressSuggestionGeneratorTest,
                                   test::GetFormFieldData({.value = u"Mar"}),
                                   NAME_FIRST, {});
 
-  ASSERT_EQ(1U, profiles_to_suggest.size());
+  ASSERT_EQ(profiles_to_suggest.size(), 1U);
   EXPECT_EQ(marion_profile.guid(), profiles_to_suggest[0].guid());
 }
 
@@ -1084,8 +1085,8 @@ TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
       {profile}, {ADDRESS_HOME_STREET_ADDRESS}, SuggestionType::kAddressEntry,
       ADDRESS_HOME_STREET_ADDRESS, triggering_field);
   ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
-            suggestions[0].main_text.value);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            u"123 Zoo St., Second Line, Third line, unit 5");
 }
 
 TEST_F(AddressSuggestionGeneratorTest,
@@ -1113,7 +1114,7 @@ TEST_F(AddressSuggestionGeneratorTest,
       {profile}, {PHONE_HOME_WHOLE_NUMBER}, SuggestionType::kAddressEntry,
       PHONE_HOME_WHOLE_NUMBER, triggering_field);
   ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"+1 234-567-8910", suggestions[0].main_text.value);
+  EXPECT_EQ(suggestions[0].main_text.value, u"+1 234-567-8910");
 }
 
 // Tests that suggestions are not offered on non address fields.
