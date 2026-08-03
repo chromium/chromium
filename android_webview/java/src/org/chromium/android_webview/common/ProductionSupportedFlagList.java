@@ -1430,6 +1430,10 @@ public final class ProductionSupportedFlagList {
                 "ConversionMeasurement",
                 "Controls whether the Attribution Reporting API stub is enabled."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_USE_WVLES_FOR_LAYERED_STUDY,
+                "When enabled, WebView uses the nonembedded low entropy source for layered studies."
+                        + " This requires 2 restarts of the WebView-based app to take effect."),
+        Flag.baseFeature(
                 PaymentFeatureList.PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD,
                 "When enabled, the merchant site is set as the initiator for the web payment"
                         + " handler modal dialog popup."),

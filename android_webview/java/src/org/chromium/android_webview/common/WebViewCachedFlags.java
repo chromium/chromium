@@ -147,7 +147,9 @@ public class WebViewCachedFlags {
                     Map.entry(AwFeatures.WEBVIEW_REMOVE_INSTANT_APP_SUPPORT, DefaultState.DISABLED),
                     Map.entry(
                             AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP,
-                            DefaultState.DISABLED));
+                            DefaultState.DISABLED),
+                    Map.entry(
+                            AwFeatures.WEBVIEW_USE_WVLES_FOR_LAYERED_STUDY, DefaultState.DISABLED));
 
     /**
      * Initializes the singleton instance and reads the cached values from prefs. This method must

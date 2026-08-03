@@ -13,6 +13,7 @@ source_set("variations") {
   ]
   deps = [
     "//android_webview:browser_jni_headers",
+    "//android_webview/common",
     "//android_webview/proto:aw_variations_seed_proto",
     "//components/metrics",
     "//components/variations",

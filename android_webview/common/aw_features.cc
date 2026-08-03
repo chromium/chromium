@@ -391,6 +391,11 @@ BASE_FEATURE(kWebViewUnreducedProductVersion, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, all the layered studies in WebView will use WebView low entropy
+// source instead of the app's low entropy source.
+BASE_FEATURE(kWebViewUseWVLESForLayeredStudy,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, binds FrameSinkManager as a DirectReceiver, allowing IPCs
 // targeting that interface, and any other interfaces passed through it to
 // arrive without the intermediate I/O thread hop.
