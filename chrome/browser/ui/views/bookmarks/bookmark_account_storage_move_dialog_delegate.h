@@ -9,8 +9,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
-#include "chrome/browser/ui/browser.h"
 #include "ui/base/models/dialog_model.h"
+
+class Browser;
 
 namespace bookmarks {
 class BookmarkNode;

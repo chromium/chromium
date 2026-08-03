@@ -12,7 +12,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -22,6 +21,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
+class Browser;
 class ExpandOnHoverLock;
 
 namespace tab_groups {
