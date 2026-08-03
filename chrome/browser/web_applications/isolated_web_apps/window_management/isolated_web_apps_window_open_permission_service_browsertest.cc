@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/i18n/message_formatter.h"
+#include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
@@ -26,16 +28,24 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 class Browser;
 
@@ -501,5 +511,98 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
   OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                 GURL("https://example.com/child1"));
   EXPECT_EQ(0u, GetNotificationCount());
+}
+
+class IsolatedWebAppsWindowOpenPermissionServiceScopeExtensionBrowserTest
+    : public IsolatedWebAppsWindowOpenPermissionServiceBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    IsolatedWebAppsWindowOpenPermissionServiceBrowserTest::SetUpOnMainThread();
+
+    auto fetcher =
+        std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
+    origin_association_fetcher_ = fetcher.get();
+    provider().origin_association_manager().SetFetcherForTest(
+        std::move(fetcher));
+  }
+
+  void TearDownOnMainThread() override {
+    origin_association_fetcher_ = nullptr;
+    IsolatedWebAppsWindowOpenPermissionServiceBrowserTest::
+        TearDownOnMainThread();
+  }
+
+ protected:
+  webapps::AppId InstallIsolatedWebAppWithScopeExtension(
+      const url::Origin& scope_extension_origin) {
+    origin_association_fetcher_->SetData(
+        {{scope_extension_origin,
+          *base::WriteJson(base::DictValue().Set(
+              base::StringPrintf(
+                  "isolated-app://%s/",
+                  web_package::test::GetDefaultEd25519WebBundleId()
+                      .id()
+                      .c_str()),
+              base::DictValue().Set("scope", "/")))}});
+
+    webapps::AppId app_id =
+        IsolatedWebAppBuilder(
+            ManifestBuilder()
+                .SetName(kIsolatedApp1DefaultName)
+                .SetVersion(kIsolatedAppVersion)
+                .AddScopeExtension(scope_extension_origin,
+                                   /*has_origin_wildcard=*/false))
+            .BuildBundle(web_package::test::GetDefaultEd25519KeyPair())
+            ->InstallChecked(profile())
+            .app_id();
+    EXPECT_EQ(1u, provider()
+                      .registrar_unsafe()
+                      .GetValidatedScopeExtensions(app_id)
+                      .size());
+    return app_id;
+  }
+
+ private:
+  raw_ptr<webapps::TestWebAppOriginAssociationFetcher>
+      origin_association_fetcher_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppsWindowOpenPermissionServiceScopeExtensionBrowserTest,
+    NoNotificationForTabOpenedFromScopeExtensionOrigin) {
+  url::Origin scope_extension_origin = embedded_https_test_server().GetOrigin();
+  webapps::AppId app_id =
+      InstallIsolatedWebAppWithScopeExtension(scope_extension_origin);
+
+  // Open the scope-extension origin in a regular browser tab (not in the IWA).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("/simple.html")));
+  content::WebContents* opener_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(scope_extension_origin,
+            opener_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  // Open a new background tab from the scope-extension page, as the renderer
+  // does for e.g. a middle-click on a link.
+  content::OpenURLParams params(
+      GURL("https://example.com/destination"), content::Referrer(),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
+  params.initiator_origin = scope_extension_origin;
+  params.source_site_instance =
+      opener_contents->GetPrimaryMainFrame()->GetSiteInstance();
+  params.user_gesture = true;
+
+  content::WebContentsAddedObserver new_contents_observer;
+  opener_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+  content::WebContents* new_contents = new_contents_observer.GetWebContents();
+  WaitForLoadStopWithoutSuccessCheck(new_contents);
+
+  // The IWA itself never opened a window, so it must not be attributed as the
+  // opener.
+  EXPECT_EQ(0u, GetNotificationCount());
+  EXPECT_FALSE(
+      display_service_tester_->GetNotification(GetNotificationIdForApp(app_id))
+          .has_value());
 }
 }  // namespace web_app
