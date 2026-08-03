@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/sandboxed_process_launcher_delegate.h"
+#include "content/browser/sandboxed_process_launcher_delegate.h"
 
 #include <optional>
 #include <string>
@@ -15,7 +15,6 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/access_token.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #endif  // BUILDFLAG(IS_WIN)

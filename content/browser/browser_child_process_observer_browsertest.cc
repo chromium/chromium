@@ -9,11 +9,11 @@
 #include "build/build_config.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_host_impl.h"
+#include "content/browser/sandboxed_process_launcher_delegate.h"
 #include "content/browser/service_host/utility_process_host.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/child_process_data.h"
-#include "content/public/browser/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 #include "content/public/test/browser_test.h"
@@ -196,7 +196,9 @@ class TestProcessHost final : public BrowserChildProcessHostDelegate {
   }
 
   TestProcessHost()
-      : process_(BrowserChildProcessHost::Create(PROCESS_TYPE_UTILITY, this)) {}
+      : process_(
+            std::make_unique<BrowserChildProcessHostImpl>(PROCESS_TYPE_UTILITY,
+                                                          this)) {}
   ~TestProcessHost() override = default;
 
   // Returns the ID of the child process.
@@ -270,7 +272,7 @@ class TestProcessHost final : public BrowserChildProcessHostDelegate {
  private:
   sandbox::mojom::Sandbox sandbox_type_ = sandbox::mojom::Sandbox::kUtility;
 
-  std::unique_ptr<BrowserChildProcessHost> process_;
+  std::unique_ptr<BrowserChildProcessHostImpl> process_;
 
   mojo::Remote<mojom::TestService> test_service_;
 

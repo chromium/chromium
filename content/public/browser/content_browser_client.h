@@ -1670,9 +1670,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This may be called on the PROCESS_LAUNCHER thread before the child process
   // configuration is set. It gives the embedder a chance to modify the sandbox
   // configuration. Returns false if configuration is invalid and the child
-  // should not spawn. Only use this for embedder-specific policies, since the
-  // bulk of sandbox policies should go inside the relevant
-  // SandboxedProcessLauncherDelegate.
+  // should not spawn. Only use this for embedder-specific policies, as
+  // standard sandbox policies are configured by the content layer.
   virtual bool PreSpawnChild(sandbox::TargetConfig* config,
                              sandbox::mojom::Sandbox sandbox_type,
                              ChildSpawnFlags flags);
@@ -1682,7 +1681,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // not be compatible with Hardware-enforced Stack Protection (CET).
   // |utility_sub_type| should match that provided on the command line to the
   // child process. Only use this for embedder-specific processes, and prefer to
-  // key off Sandbox in the relevant SandboxedProcessLauncherDelegate.
+  // key off the sandbox where possible.
   virtual bool IsUtilityCetCompatible(const std::string& utility_sub_type);
 
   // Returns the AppContainer SID for the specified sandboxed process type, or

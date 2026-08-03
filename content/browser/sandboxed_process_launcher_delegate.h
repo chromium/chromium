@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
-#define CONTENT_PUBLIC_BROWSER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
+#ifndef CONTENT_BROWSER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
+#define CONTENT_BROWSER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
 
 #include <optional>
 #include <string>
 
 #include "base/environment.h"
-#include "base/files/scoped_file.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -26,14 +25,13 @@
 
 namespace content {
 
-// Allows a caller of StartSandboxedProcess or
-// BrowserChildProcessHost/ChildProcessLauncher to control the sandbox policy,
-// i.e. to loosen it if needed.
+// Allows a caller of BrowserChildProcessHostImpl or ChildProcessLauncher to
+// control the sandbox policy, i.e. to loosen it if needed.
 // The methods below will be called on the PROCESS_LAUNCHER thread.
 class CONTENT_EXPORT SandboxedProcessLauncherDelegate
     : public sandbox::policy::SandboxDelegate {
  public:
-  ~SandboxedProcessLauncherDelegate() override {}
+  ~SandboxedProcessLauncherDelegate() override = default;
 
 #if BUILDFLAG(IS_WIN)
   // sandbox::policy::SandboxDelegate:
@@ -87,4 +85,4 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
+#endif  // CONTENT_BROWSER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_

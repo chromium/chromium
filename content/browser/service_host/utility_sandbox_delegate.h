@@ -11,8 +11,8 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "content/browser/sandboxed_process_launcher_delegate.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 

@@ -1935,6 +1935,8 @@ source_set("browser") {
     "resource_coordinator_service.cc",
     "sandboxed_opaque_origin_creator.cc",
     "sandboxed_opaque_origin_creator.h",
+    "sandboxed_process_launcher_delegate.cc",
+    "sandboxed_process_launcher_delegate.h",
     "scheduler/browser_io_thread_delegate.cc",
     "scheduler/browser_io_thread_delegate.h",
     "scheduler/browser_task_executor.cc",

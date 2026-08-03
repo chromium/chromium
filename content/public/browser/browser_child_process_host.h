@@ -24,14 +24,12 @@
 #endif
 
 namespace base {
-class CommandLine;
 class PersistentMemoryAllocator;
 }
 
 namespace content {
 
 class BrowserChildProcessHostDelegate;
-class SandboxedProcessLauncherDelegate;
 struct ChildProcessData;
 
 // This represents child processes of the browser process, i.e. plugins. They
@@ -51,11 +49,6 @@ class CONTENT_EXPORT BrowserChildProcessHost {
   static BrowserChildProcessHost* FromID(int child_process_id);
 
   virtual ~BrowserChildProcessHost() = default;
-
-  // Derived classes call this to launch the child process asynchronously.
-  virtual void Launch(
-      std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
-      std::unique_ptr<base::CommandLine> cmd_line) = 0;
 
   virtual const ChildProcessData& GetData() = 0;
 
