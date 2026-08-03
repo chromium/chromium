@@ -636,6 +636,28 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void updateLayoutAndBackground() {
+        // This may be invoked synchronously while an autocomplete state observer is being
+        // registered during a tab switch (e.g. closing a tab on tablet). At that moment the
+        // LocationBar can be in a transient reparenting / activity-recreation state where it is
+        // temporarily attached to an unexpected parent, so getLayoutParams() no longer returns
+        // FrameLayout.LayoutParams (and mHolder's params are not LinearLayout.LayoutParams).
+        // Casting blindly then throws a ClassCastException. Bail out until the view settles back
+        // into its normal parent; a subsequent layout pass will refresh correctly. The assert
+        // fires in dcheck-enabled builds so we can still collect stack traces for the scenarios
+        // that reach this state, while release builds gracefully return.
+        if (mHolder == null
+                || !(getLayoutParams() instanceof FrameLayout.LayoutParams)
+                || !(mHolder.getLayoutParams() instanceof LinearLayout.LayoutParams)) {
+            assert false
+                    : "updateLayoutAndBackground() invoked while LocationBarTablet is in an "
+                            + "unexpected parent state: mHolder="
+                            + mHolder
+                            + ", layoutParams="
+                            + getLayoutParams()
+                            + ", holderLayoutParams="
+                            + (mHolder == null ? null : mHolder.getLayoutParams());
+            return;
+        }
         adjustVerticalTranslationForFuseboxState(mFuseboxState);
         updateStatusViewMargin();
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
