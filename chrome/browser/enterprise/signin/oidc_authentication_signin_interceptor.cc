@@ -663,6 +663,10 @@ void OidcAuthenticationSigninInterceptor::FinalizeSigninInterception() {
     if (web_contents_) {
       web_contents_->Close();
     }
+    if (base::FeatureList::IsEnabled(
+            profile_management::features::kOidcNavigationThrottleAsyncMode)) {
+      oidc_callback_.Reset();
+    }
   }
   Reset();
 }

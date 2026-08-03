@@ -33,6 +33,12 @@ class MockOidcAuthenticationSigninInterceptor
               (override));
 
   MOCK_METHOD(void, CreateBrowserAfterSigninInterception, (), (override));
+
+  void FinalizeSigninInterceptionForTesting() { FinalizeSigninInterception(); }
+
+  void SetNewProfileForTesting(base::WeakPtr<Profile> new_profile) {
+    new_profile_ = new_profile;
+  }
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_SIGNIN_MOCK_OIDC_AUTHENTICATION_SIGNIN_INTERCEPTOR_H_

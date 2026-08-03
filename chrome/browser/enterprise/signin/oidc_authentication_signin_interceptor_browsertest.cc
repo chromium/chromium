@@ -563,9 +563,14 @@ class OidcAuthenticationSigninInterceptorTest
         RegistrationResult::kNoRegistrationExpected) {
       register_run_loop.Run();
     }
-
-    if (intercepted &&
-        expect_registration_attempt != RegistrationResult::kTimeout) {
+    if (expect_profile_created ||
+        (std::holds_alternative<OidcProfileCreationResult>(
+             expected_enrollment_result) &&
+         std::get<OidcProfileCreationResult>(expected_enrollment_result) ==
+             OidcProfileCreationResult::kSwitchedToExistingProfile)) {
+      ASSERT_TRUE(base::test::RunUntil([&]() { return !!added_profile_; }));
+    } else if (intercepted &&
+               expect_registration_attempt != RegistrationResult::kTimeout) {
       run_loop.Run();
     }
 
@@ -574,7 +579,6 @@ class OidcAuthenticationSigninInterceptorTest
     EXPECT_EQ(expected_num_profiles_after, num_profiles_after);
 
     if (expect_profile_created) {
-      ASSERT_TRUE(base::test::RunUntil([&]() { return !!added_profile_; }));
       auto* entry =
           g_browser_process->profile_manager()
               ->GetProfileAttributesStorage()
@@ -940,6 +944,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
                        InterceptionAlreadyInProgress) {
+  if (!base::FeatureList::IsEnabled(
+          profile_management::features::kOidcNavigationThrottleAsyncMode)) {
+    GTEST_SKIP() << "Test only relevant when async mode is enabled.";
+  }
   base::HistogramTester histogram_tester;
   AddTabToCurrentBrowser(GURL("about:blank"));
 
@@ -954,6 +962,62 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.OidcEnrollment.Interception.Result",
       OidcInterceptionResult::kInterceptionInProgress, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
+                       OidcCallbackResetOnSuccess) {
+  if (!base::FeatureList::IsEnabled(
+          profile_management::features::kOidcNavigationThrottleAsyncMode)) {
+    GTEST_SKIP() << "Test only relevant when async mode is enabled.";
+  }
+  number_of_windows_ = 1;
+  AddTabToCurrentBrowser(GURL("about:blank"));
+  AddTabToCurrentBrowser(GURL("about:blank"));
+  bool callback_called = false;
+
+  EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
+      .WillOnce(testing::Return(nullptr));
+
+  EXPECT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
+      web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, std::string(),
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called)));
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& new_profile =
+      profiles::testing::CreateProfileSync(profile_manager, new_path);
+
+  auto* mock_interceptor =
+      static_cast<MockOidcAuthenticationSigninInterceptor*>(interceptor_.get());
+
+  mock_interceptor->SetNewProfileForTesting(new_profile.GetWeakPtr());
+  mock_interceptor->FinalizeSigninInterceptionForTesting();
+
+  EXPECT_FALSE(callback_called);
+}
+
+IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
+                       OidcCallbackRunOnFailure) {
+  if (!base::FeatureList::IsEnabled(
+          profile_management::features::kOidcNavigationThrottleAsyncMode)) {
+    GTEST_SKIP() << "Test only relevant when async mode is enabled.";
+  }
+  AddTabToCurrentBrowser(GURL("about:blank"));
+  bool callback_called = false;
+
+  EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
+      .WillOnce(testing::Return(nullptr));
+
+  EXPECT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
+      web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, std::string(),
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called)));
+
+  // Finalize without creating new profile (cancellation or failure)
+  static_cast<MockOidcAuthenticationSigninInterceptor*>(interceptor_.get())
+      ->FinalizeSigninInterceptionForTesting();
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace policy
