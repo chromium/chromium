@@ -4,6 +4,8 @@
 
 #include "components/download/public/common/download_url_parameters.h"
 
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
 #include "base/types/pass_key.h"
 
 namespace download {
@@ -56,5 +58,16 @@ DownloadUrlParameters::DownloadUrlParameters(
       skip_service_worker_interception_(false) {}
 
 DownloadUrlParameters::~DownloadUrlParameters() = default;
+
+void DownloadUrlParameters::set_url_loader_factory(
+    std::unique_ptr<network::PendingSharedURLLoaderFactory>
+        url_loader_factory) {
+  url_loader_factory_ = std::move(url_loader_factory);
+}
+
+std::unique_ptr<network::PendingSharedURLLoaderFactory>
+DownloadUrlParameters::take_url_loader_factory() {
+  return std::move(url_loader_factory_);
+}
 
 }  // namespace download

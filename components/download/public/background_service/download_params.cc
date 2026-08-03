@@ -6,6 +6,8 @@
 
 #include "components/download/public/background_service/clients.h"
 
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
 namespace download {
 
 SchedulingParams::SchedulingParams()
@@ -27,6 +29,9 @@ RequestParams::RequestParams()
       credentials_mode(::network::mojom::CredentialsMode::kInclude) {}
 
 RequestParams::RequestParams(const RequestParams& other) = default;
+RequestParams& RequestParams::operator=(const RequestParams& other) = default;
+RequestParams::RequestParams(RequestParams&& other) = default;
+RequestParams& RequestParams::operator=(RequestParams&& other) = default;
 RequestParams::~RequestParams() = default;
 
 DownloadParams::DownloadParams() : client(DownloadClient::INVALID) {}

@@ -41,6 +41,8 @@ component("public") {
   deps = [
     "//build:blink_buildflags",
     "//components/keyed_service/core",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
     "//services/network/public/mojom:url_loader_base",
   ]
 

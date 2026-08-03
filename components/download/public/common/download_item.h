@@ -49,6 +49,10 @@ namespace net {
 class HttpResponseHeaders;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace download {
 class DownloadFile;
 class DownloadItemRenameHandler;
@@ -289,6 +293,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // The complete URL chain including redirects. URL at index i redirected to
   // URL at index i+1.
   virtual const std::vector<GURL>& GetUrlChain() const = 0;
+
+  virtual void SetURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // The URL that the download request originally attempted to fetch. This may
   // differ from GetURL() if there were redirects. The return value from this

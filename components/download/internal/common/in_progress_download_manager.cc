@@ -277,8 +277,11 @@ void InProgressDownloadManager::DownloadUrl(
       params->download_source());
 
   // Start the new download, the download should be saved to the file path
-  // specifcied in the |params|.
-  BeginDownload(std::move(params), url_loader_factory_->Clone(),
+  // specified in the |params|.
+  std::unique_ptr<network::PendingSharedURLLoaderFactory> factory =
+      params->url_loader_factory() ? params->take_url_loader_factory()
+                                   : url_loader_factory_->Clone();
+  BeginDownload(std::move(params), std::move(factory),
                 true /* is_new_download */,
                 std::string() /* serialized_embedder_download_data */,
                 GURL() /* tab_url */, GURL() /* tab_referral_url */);
@@ -288,7 +291,7 @@ bool InProgressDownloadManager::CanDownload(DownloadUrlParameters* params) {
   if (!params->is_transient())
     return false;
 
-  if (!url_loader_factory_)
+  if (!url_loader_factory_ && !params->url_loader_factory())
     return false;
 
   if (params->require_safety_checks())
@@ -463,7 +466,7 @@ void InProgressDownloadManager::DetermineDownloadTarget(
 void InProgressDownloadManager::ResumeInterruptedDownload(
     std::unique_ptr<DownloadUrlParameters> params,
     const std::string& serialized_embedder_download_data) {
-  if (!url_loader_factory_)
+  if (!url_loader_factory_ && !params->url_loader_factory())
     return;
 
   // If the original response came from a Service Worker, the bytes on disk
@@ -479,7 +482,11 @@ void InProgressDownloadManager::ResumeInterruptedDownload(
     return;
   }
 
-  BeginDownload(std::move(params), url_loader_factory_->Clone(), false,
+  std::unique_ptr<network::PendingSharedURLLoaderFactory> factory =
+      params->url_loader_factory() ? params->take_url_loader_factory()
+                                   : url_loader_factory_->Clone();
+
+  BeginDownload(std::move(params), std::move(factory), false,
                 serialized_embedder_download_data, GURL(), GURL());
 }
 

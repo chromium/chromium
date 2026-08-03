@@ -5,6 +5,7 @@
 #include "components/download/internal/background_service/controller_impl.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -90,11 +91,11 @@ class UploadClient : public test::MockClient {
 
 void UploadClient::GetUploadData(const std::string& guid,
                                  GetUploadDataCallback callback) {
-  scoped_refptr<network::ResourceRequestBody> post_body =
-      new network::ResourceRequestBody();
+  DownloadRequestParameters params;
+  params.post_body = base::MakeRefCounted<network::ResourceRequestBody>();
   unsigned int delay = upload_response_delay_[guid];
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(std::move(callback), post_body),
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(params)),
       base::Seconds(delay));
 }
 

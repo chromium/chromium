@@ -477,7 +477,8 @@ void BackgroundFetchDelegateBase::GetUploadData(
   if (job_it == download_job_id_map_.end()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), /* request_body= */ nullptr));
+        base::BindOnce(std::move(callback),
+                       download::DownloadRequestParameters()));
     return;
   }
 
@@ -487,7 +488,8 @@ void BackgroundFetchDelegateBase::GetUploadData(
       JobDetails::RequestData::Status::kAbsent) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), /* request_body= */ nullptr));
+        base::BindOnce(std::move(callback),
+                       download::DownloadRequestParameters()));
     return;
   }
 
@@ -506,13 +508,13 @@ void BackgroundFetchDelegateBase::DidGetUploadData(
     download::GetUploadDataCallback callback,
     blink::mojom::SerializedBlobPtr blob) {
   if (!blob || blob->uuid.empty()) {
-    std::move(callback).Run(/* request_body= */ nullptr);
+    std::move(callback).Run(download::DownloadRequestParameters());
     return;
   }
 
   JobDetails* job_details = GetJobDetails(job_id, /*allow_null=*/true);
   if (!job_details) {
-    std::move(callback).Run(/* request_body= */ nullptr);
+    std::move(callback).Run(download::DownloadRequestParameters());
     return;
   }
 
@@ -528,7 +530,9 @@ void BackgroundFetchDelegateBase::DidGetUploadData(
   auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
   request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
 
-  std::move(callback).Run(request_body);
+  download::DownloadRequestParameters params;
+  params.post_body = std::move(request_body);
+  std::move(callback).Run(std::move(params));
 }
 
 base::WeakPtr<content::BackgroundFetchDelegate::Client>

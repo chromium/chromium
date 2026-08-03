@@ -35,6 +35,10 @@ namespace content {
 class RenderFrameHostImpl;
 }  // namespace content
 
+namespace network {
+class PendingSharedURLLoaderFactory;
+}  // namespace network
+
 namespace download {
 
 class DownloadItem;
@@ -126,6 +130,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   void set_initiator(std::optional<url::Origin> initiator) {
     initiator_ = std::move(initiator);
   }
+
+  void set_url_loader_factory(
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          url_loader_factory);
 
   // If this is a request for resuming an HTTP/S download, |last_modified|
   // should be the value of the last seen Last-Modified response header.
@@ -325,6 +333,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   net::ReferrerPolicy referrer_policy() const { return referrer_policy_; }
   const std::string& referrer_encoding() const { return referrer_encoding_; }
   const std::optional<url::Origin>& initiator() const { return initiator_; }
+  std::unique_ptr<network::PendingSharedURLLoaderFactory>
+  take_url_loader_factory();
+  network::PendingSharedURLLoaderFactory* url_loader_factory() {
+    return url_loader_factory_.get();
+  }
   const std::string& request_origin() const { return request_origin_; }
 
   // These will be -1 if the request is not associated with a frame. See
@@ -408,6 +421,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   GURL referrer_;
   net::ReferrerPolicy referrer_policy_;
   std::optional<url::Origin> initiator_;
+  std::unique_ptr<network::PendingSharedURLLoaderFactory> url_loader_factory_;
   std::string referrer_encoding_;
   int render_process_host_id_;
   int render_frame_host_routing_id_;

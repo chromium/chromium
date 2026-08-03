@@ -40,7 +40,8 @@ bool EmptyClient::CanServiceRemoveDownloadedFile(const std::string& guid,
 void EmptyClient::GetUploadData(const std::string& guid,
                                 GetUploadDataCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), DownloadRequestParameters()));
 }
 
 }  // namespace test

@@ -3,8 +3,20 @@
 // found in the LICENSE file.
 
 #include "components/download/public/background_service/client.h"
+#include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace download {
+
+DownloadRequestParameters::DownloadRequestParameters() = default;
+
+DownloadRequestParameters::~DownloadRequestParameters() = default;
+
+DownloadRequestParameters::DownloadRequestParameters(
+    DownloadRequestParameters&& other) = default;
+
+DownloadRequestParameters& DownloadRequestParameters::operator=(
+    DownloadRequestParameters&& other) = default;
 
 void Client::OnDownloadStarted(
     const std::string& guid,
@@ -18,5 +30,9 @@ void Client::OnDownloadUpdated(const std::string& guid,
 void Client::OnDownloadFailed(const std::string& guid,
                               const download::CompletionInfo& completion_info,
                               download::Client::FailureReason reason) {}
+
+bool Client::RequiresCustomRequestParameters() const {
+  return false;
+}
 
 }  // namespace download

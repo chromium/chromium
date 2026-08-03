@@ -142,7 +142,9 @@ void InMemoryDownloadDriver::Pause(const std::string& guid) {
   }
 }
 
-void InMemoryDownloadDriver::Resume(const std::string& guid) {
+void InMemoryDownloadDriver::ResumeWithFactory(
+    const std::string& guid,
+    scoped_refptr<network::SharedURLLoaderFactory> factory) {
   auto it = downloads_.find(guid);
   if (it != downloads_.end()) {
     it->second->Resume();

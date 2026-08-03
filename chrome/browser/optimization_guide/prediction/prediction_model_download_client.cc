@@ -131,7 +131,8 @@ void PredictionModelDownloadClient::GetUploadData(
     const std::string& guid,
     download::GetUploadDataCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                download::DownloadRequestParameters()));
 }
 
 }  // namespace optimization_guide

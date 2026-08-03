@@ -52,11 +52,10 @@ void TransitTo(Entry* entry, Entry::State new_state, Model* model) {
 }
 
 // Helper function to post the callback once again before starting a download.
-void RunOnDownloadReadyToStart(
-    GetUploadDataCallback callback,
-    scoped_refptr<network::ResourceRequestBody> post_body) {
+void RunOnDownloadReadyToStart(GetUploadDataCallback callback,
+                               DownloadRequestParameters params) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), post_body));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(params)));
 }
 
 // Helper function to move from a CompletionType to a Client::FailureReason.
@@ -417,6 +416,7 @@ void ControllerImpl::RemoveCleanupEligibleDownloads() {
 
   for (auto* entry : entries_to_remove) {
     DCHECK_EQ(Entry::State::COMPLETE, entry->state);
+    guids_with_custom_request_params_.erase(entry->guid);
     model_->Remove(entry->guid);
   }
 }
@@ -802,6 +802,7 @@ void ControllerImpl::CancelOrphanedRequests() {
 
   for (const auto& guid : guids_to_remove) {
     driver_->Remove(guid, false);
+    guids_with_custom_request_params_.erase(guid);
     model_->Remove(guid);
   }
 
@@ -1034,14 +1035,19 @@ void ControllerImpl::UpdateDriverState(Entry* entry) {
       }
     }
 
-    if (driver_entry.has_value()) {
-      // For uploads, we should never call resume unless it is already in
-      // progress, since we have to re-supply the upload data from client.
-      DCHECK(!entry->has_upload_data ||
-             driver_entry->state == DriverEntry::State::IN_PROGRESS);
+    download::Client* client = clients_->GetClient(entry->client);
+    bool requires_custom_params =
+        (entry->has_upload_data ||
+         (client && client->RequiresCustomRequestParameters())) &&
+        !guids_with_custom_request_params_.contains(entry->guid);
 
+    if (driver_entry.has_value() && !requires_custom_params) {
       driver_->Resume(entry->guid);
     } else {
+      if (driver_entry.has_value() && entry->has_upload_data) {
+        // HTTP POST requests cannot be resumed, they must be restarted.
+        driver_->Remove(entry->guid, /*remove_file=*/false);
+      }
       stats::LogEntryEvent(stats::DownloadEvent::START);
       PrepareToStartDownload(entry);
     }
@@ -1072,20 +1078,33 @@ void ControllerImpl::PrepareToStartDownload(Entry* entry) {
       config_->pending_upload_timeout_delay);
 }
 
-void ControllerImpl::OnDownloadReadyToStart(
-    const std::string& guid,
-    scoped_refptr<network::ResourceRequestBody> post_body) {
+void ControllerImpl::OnDownloadReadyToStart(const std::string& guid,
+                                            DownloadRequestParameters params) {
   DCHECK(pending_uploads_.find(guid) != pending_uploads_.end());
   pending_uploads_.erase(guid);
+  guids_with_custom_request_params_.insert(guid);
 
   auto* entry = model_->Get(guid);
   if (!entry) {
     return;
   }
 
-  if (post_body) {
+  if (params.post_body) {
     entry->has_upload_data = true;
     model_->Update(*entry);
+  }
+
+  if (params.url_loader_factory) {
+    entry->request_params.url_loader_factory =
+        std::move(params.url_loader_factory);
+  }
+
+  if (params.initiator) {
+    entry->request_params.initiator = std::move(params.initiator);
+  }
+
+  if (params.isolation_info) {
+    entry->request_params.isolation_info = std::move(params.isolation_info);
   }
 
   auto blockage_status = IsDownloadBlocked(entry);
@@ -1097,12 +1116,14 @@ void ControllerImpl::OnDownloadReadyToStart(
 
   auto driver_entry = driver_->Find(guid);
   if (driver_entry.has_value()) {
-    DVLOG(1) << "Download already exists.";
+    DVLOG(1) << "Download already exists. Resuming.";
+    driver_->ResumeWithFactory(entry->guid,
+                               entry->request_params.url_loader_factory);
     return;
   }
 
   driver_->Start(entry->request_params, entry->guid, entry->target_file_path,
-                 post_body,
+                 params.post_body,
                  net::NetworkTrafficAnnotationTag(entry->traffic_annotation));
 }
 
@@ -1174,6 +1195,7 @@ void ControllerImpl::HandleStartDownloadResponse(
   if (result != DownloadParams::StartResult::ACCEPTED &&
       result != DownloadParams::StartResult::UNEXPECTED_GUID &&
       model_->Get(guid) != nullptr) {
+    guids_with_custom_request_params_.erase(guid);
     model_->Remove(guid);
   }
 
@@ -1239,6 +1261,7 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
     // TODO(dtrainor): Handle the case where we crash before the model write
     // happens and we have no driver entry.
     driver_->Remove(entry->guid, false);
+    guids_with_custom_request_params_.erase(guid);
     model_->Remove(guid);
   }
 

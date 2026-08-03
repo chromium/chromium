@@ -1639,7 +1639,9 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
   DCHECK_EQ(params->url().SchemeIsBlob(), bool{blob_url_loader_factory});
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
       pending_url_loader_factory;
-  if (blob_url_loader_factory) {
+  if (params->url_loader_factory()) {
+    pending_url_loader_factory = params->take_url_loader_factory();
+  } else if (blob_url_loader_factory) {
     DCHECK(params->url().SchemeIsBlob());
     pending_url_loader_factory = blob_url_loader_factory->Clone();
   } else if (params->url().SchemeIsFile()) {

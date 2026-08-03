@@ -224,7 +224,8 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
                      download::GetUploadDataCallback callback) override {
     if (!guid_to_request_body_mapping_[guid]) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    download::DownloadRequestParameters()));
       return;
     }
 
@@ -243,7 +244,9 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
 
     auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
     request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
-    std::move(callback).Run(std::move(request_body));
+    download::DownloadRequestParameters params;
+    params.post_body = std::move(request_body);
+    std::move(callback).Run(std::move(params));
   }
 
   const base::WeakPtr<content::BackgroundFetchDelegate::Client>& client()

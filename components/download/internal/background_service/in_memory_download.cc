@@ -56,9 +56,17 @@ InMemoryDownloadImpl::~InMemoryDownloadImpl() {
 void InMemoryDownloadImpl::Start() {
   DCHECK(state_ == State::INITIAL) << "Only call Start() for new download.";
   state_ = State::RETRIEVE_URL_LOADER_FACTIORY;
-  delegate_->RetrievedURLLoaderFactory(
-      base::BindOnce(&InMemoryDownloadImpl::OnRetrievedURLLoaderFactory,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (request_params_.url_loader_factory) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&InMemoryDownloadImpl::OnRetrievedURLLoaderFactory,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       request_params_.url_loader_factory));
+  } else {
+    delegate_->RetrievedURLLoaderFactory(
+        base::BindOnce(&InMemoryDownloadImpl::OnRetrievedURLLoaderFactory,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void InMemoryDownloadImpl::OnRetrievedURLLoaderFactory(

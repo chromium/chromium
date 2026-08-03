@@ -287,6 +287,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   int32_t GetAutoResumeCount() const override;
   const GURL& GetURL() const override;
   const std::vector<GURL>& GetUrlChain() const override;
+  void SetURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      override;
   const GURL& GetOriginalUrl() const override;
   const GURL& GetReferrerUrl() const override;
   const std::string& GetSerializedEmbedderDownloadData() const override;
@@ -924,6 +927,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 #endif  // BUILDFLAG(IS_ANDROID)
 
   THREAD_CHECKER(thread_checker_);
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<DownloadItemImpl> weak_ptr_factory_{this};
 };

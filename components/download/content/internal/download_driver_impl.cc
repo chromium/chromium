@@ -232,6 +232,10 @@ void DownloadDriverImpl::Start(
   if (request_params.initiator) {
     download_url_params->set_initiator(request_params.initiator.value());
   }
+  if (request_params.url_loader_factory) {
+    download_url_params->set_url_loader_factory(
+        request_params.url_loader_factory->Clone());
+  }
 
   download_manager_coordinator_->DownloadUrl(std::move(download_url_params));
 }
@@ -269,12 +273,18 @@ void DownloadDriverImpl::Pause(const std::string& guid) {
     item->Pause();
 }
 
-void DownloadDriverImpl::Resume(const std::string& guid) {
+void DownloadDriverImpl::ResumeWithFactory(
+    const std::string& guid,
+    scoped_refptr<network::SharedURLLoaderFactory> factory) {
   if (!download_manager_coordinator_)
     return;
   DownloadItem* item = download_manager_coordinator_->GetDownloadByGuid(guid);
-  if (item)
+  if (item) {
+    if (factory) {
+      item->SetURLLoaderFactory(std::move(factory));
+    }
     item->Resume(true);
+  }
 }
 
 std::optional<DriverEntry> DownloadDriverImpl::Find(const std::string& guid) {

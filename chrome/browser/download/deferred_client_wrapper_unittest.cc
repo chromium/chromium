@@ -50,7 +50,7 @@ TEST_F(DeferredClientWrapperTest, Reentrancy) {
                     uint64_t bytes_downloaded) {
         deferred_wrapper->GetUploadData(
             guid,
-            base::BindOnce([](scoped_refptr<network::ResourceRequestBody>) {}));
+            base::BindOnce([](download::DownloadRequestParameters) {}));
       });
 
   deferred_wrapper_->OnDownloadUpdated("guid", 0, 0);

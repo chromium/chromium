@@ -148,6 +148,10 @@ void DownloadClient::GetUploadData(const std::string& guid,
   GetDelegate()->GetUploadData(guid, std::move(callback));
 }
 
+bool DownloadClient::RequiresCustomRequestParameters() const {
+  return true;
+}
+
 BackgroundFetchDelegateBase* DownloadClient::GetDelegate() {
   return static_cast<BackgroundFetchDelegateBase*>(
       browser_context_->GetBackgroundFetchDelegate());
