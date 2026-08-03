@@ -900,7 +900,7 @@ TEST(ParseCapabilities, MobileEmulationDeviceMetrics) {
 TEST(ParseCapabilities, MobileEmulationDeviceName) {
   Capabilities capabilities;
   base::DictValue mobile_emulation;
-  mobile_emulation.Set("deviceName", "Nexus 5");
+  mobile_emulation.Set("deviceName", "Pixel 10");
   base::DictValue caps;
   caps.SetByDottedPath("goog:chromeOptions.mobileEmulation",
                        std::move(mobile_emulation));
@@ -910,13 +910,12 @@ TEST(ParseCapabilities, MobileEmulationDeviceName) {
   ASSERT_TRUE(capabilities.mobile_device->user_agent.has_value());
   ASSERT_TRUE(base::MatchPattern(
       capabilities.mobile_device->user_agent.value(),
-      "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
-      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s Mobile "
-      "Safari/537.36"));
+      "Mozilla/5.0 (Linux; Android 16; Pixel 10) AppleWebKit/537.36 (KHTML, "
+      "like Gecko) Chrome/%s Mobile Safari/537.36"));
 
-  ASSERT_EQ(360, capabilities.mobile_device->device_metrics->width);
-  ASSERT_EQ(640, capabilities.mobile_device->device_metrics->height);
-  ASSERT_EQ(3.0,
+  ASSERT_EQ(412, capabilities.mobile_device->device_metrics->width);
+  ASSERT_EQ(924, capabilities.mobile_device->device_metrics->height);
+  ASSERT_EQ(2.625,
             capabilities.mobile_device->device_metrics->device_scale_factor);
 }
 

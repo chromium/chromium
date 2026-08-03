@@ -64,12 +64,12 @@ TEST(MobileDevicePreset, CanFindKnownDevices) {
 TEST(MobileDevicePreset, CheckAnyDeviceWithClientHints) {
   // Check that we parse client hints of any known device correctly
   MobileDevice device;
-  ASSERT_TRUE(StatusOk(MobileDevice::FindMobileDevice("Nexus 5", &device)));
+  ASSERT_TRUE(StatusOk(MobileDevice::FindMobileDevice("Pixel 10", &device)));
   ASSERT_TRUE(device.client_hints.has_value());
   const ClientHints& client_hints = device.client_hints.value();
   EXPECT_EQ("Android", client_hints.platform);
-  EXPECT_EQ("6.0", client_hints.platform_version);
-  EXPECT_EQ("Nexus 5", client_hints.model);
+  EXPECT_EQ("16", client_hints.platform_version);
+  EXPECT_EQ("Pixel 10", client_hints.model);
   EXPECT_EQ(true, client_hints.mobile);
 }
 
