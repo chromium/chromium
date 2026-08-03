@@ -34,7 +34,6 @@ class PreinstalledWebAppManager;
 class WebAppCommandManager;
 class WebAppCommandScheduler;
 class WebAppIconManager;
-class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppOriginAssociationManager;
 class WebAppPolicyManager;
@@ -143,8 +142,6 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetOsIntegrationManager(
       std::unique_ptr<OsIntegrationManager> os_integration_manager);
   void SetInstallManager(std::unique_ptr<WebAppInstallManager> install_manager);
-  void SetInstallFinalizer(
-      std::unique_ptr<WebAppInstallFinalizer> install_finalizer);
   void SetExternallyManagedAppManager(
       std::unique_ptr<ExternallyManagedAppManager>
           externally_managed_app_manager);

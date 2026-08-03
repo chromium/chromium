@@ -52,7 +52,6 @@ class WebAppAudioFocusIdMap;
 class WebAppCommandManager;
 class WebAppCommandScheduler;
 class WebAppIconManager;
-class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppOriginAssociationManager;
 class WebAppPolicyManager;
@@ -168,8 +167,6 @@ class WebAppProvider : public KeyedService {
   WebAppSyncBridge& sync_bridge_unsafe();
   // UIs can use WebAppInstallManager for user-initiated Web Apps install.
   WebAppInstallManager& install_manager();
-  // Implements persistence for Web Apps install.
-  WebAppInstallFinalizer& install_finalizer();
   // Keeps app metadata up to date with site manifests.
   ManifestUpdateManager& manifest_update_manager();
   // Clients can use ExternallyManagedAppManager to install, uninstall, and
@@ -304,7 +301,6 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<WebAppTranslationManager> translation_manager_;
-  std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;

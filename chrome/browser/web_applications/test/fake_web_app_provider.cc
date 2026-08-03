@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
@@ -162,12 +161,6 @@ void FakeWebAppProvider::SetInstallManager(
     std::unique_ptr<WebAppInstallManager> install_manager) {
   CheckNotStartedAndDisconnect();
   install_manager_ = std::move(install_manager);
-}
-
-void FakeWebAppProvider::SetInstallFinalizer(
-    std::unique_ptr<WebAppInstallFinalizer> install_finalizer) {
-  CheckNotStartedAndDisconnect();
-  install_finalizer_ = std::move(install_finalizer);
 }
 
 void FakeWebAppProvider::SetExternallyManagedAppManager(
@@ -332,8 +325,6 @@ void FakeWebAppProvider::Shutdown() {
   web_app_policy_manager_->Shutdown();
   if (icon_manager_)
     icon_manager_->Shutdown();
-  if (install_finalizer_)
-    install_finalizer_->Shutdown();
   if (profile_deletion_manager_) {
     profile_deletion_manager_->Shutdown();
   }

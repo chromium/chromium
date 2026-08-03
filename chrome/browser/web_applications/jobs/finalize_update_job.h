@@ -11,7 +11,6 @@
 #include "chrome/browser/web_applications/jobs/finalizer_delegate.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 
 namespace web_app {
@@ -31,9 +30,6 @@ struct OriginAssociations;
 // An finalizer job for updates in the installation process.
 // Takes WebAppInstallInfo as input, writes data to disk (e.g icons, shortcuts)
 // and registers the app.
-//
-// This is a job based on web_app_install_finalizer. It is currently only
-// triggered by web_app_install_finalizer until refactoring is complete.
 class FinalizeUpdateJob {
  public:
   FinalizeUpdateJob(
@@ -47,8 +43,6 @@ class FinalizeUpdateJob {
   void Start(InstallFinalizedCallback callback);
 
  private:
-  friend class WebAppInstallFinalizer;
-
   WebAppRegistrar& registrar() const;
   WebAppSyncBridge& sync_bridge() const;
   WebAppInstallManager& install_manager() const;
