@@ -3112,6 +3112,22 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_all_linux_release_gtests",
+    targets = [
+        "gpu_desktop_passthrough_gtests",
+        "gpu_fyi_linux_release_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_all_linux_release_telemetry_tests",
+    targets = [
+        "gpu_linux_release_telemetry_tests",
+        "gpu_fyi_linux_release_telemetry_tests",
+    ],
+)
+
+targets.bundle(
     name = "gpu_angle_fuchsia_unittests_isolated_scripts",
     targets = [
         "angle_unittests",
@@ -4074,7 +4090,7 @@ targets.bundle(
 )
 
 # TODO(crbug.com/40130073): Merge with an existing set of tests such as
-# gpu_fyi_linux_release_gtests once all CrOS tests have been enabled.
+# gpu_all_linux_release_gtests once all CrOS tests have been enabled.
 targets.bundle(
     name = "gpu_fyi_chromeos_release_gtests",
     targets = [
@@ -4136,8 +4152,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_linux_release_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
         "mappable_buffer_tests_suite",
         "gpu_vulkan_gtests",
     ],
@@ -4146,11 +4160,18 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_linux_release_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+        "webrtc_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_linux_release_vulkan_telemetry_tests",
+    targets = [
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
+        "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
     ],
 )
 
@@ -4298,6 +4319,15 @@ targets.bundle(
             "gpu_integration_test_common_args",
         ],
     },
+)
+
+targets.bundle(
+    name = "gpu_linux_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+    ],
 )
 
 # Copy of gpu_passthrough_telemetry_tests that forces running with Skia/Ganesh.

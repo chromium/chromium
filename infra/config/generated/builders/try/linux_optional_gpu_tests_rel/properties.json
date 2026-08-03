@@ -8,12 +8,12 @@
         "entries": [
           {
             "builder_id": {
-              "bucket": "try",
-              "builder": "linux_optional_gpu_tests_rel",
+              "bucket": "ci",
+              "builder": "GPU FYI Linux Builder",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "tryserver.chromium.linux",
+              "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -28,13 +28,85 @@
                 "config": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Linux FYI Release (Intel UHD 630)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Linux Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Linux FYI Release (NVIDIA)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Linux Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
+            }
           }
         ]
       },
       "builder_ids": [
         {
-          "bucket": "try",
-          "builder": "linux_optional_gpu_tests_rel",
+          "bucket": "ci",
+          "builder": "GPU FYI Linux Builder",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "Linux FYI Release (Intel UHD 630)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Linux FYI Release (NVIDIA)",
           "project": "chromium"
         }
       ],

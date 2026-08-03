@@ -47,10 +47,10 @@ targets.legacy_compound_suite(
 
 # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
 # paths are merged. This should mirror
-# `gpu_fyi_linux_release_telemetry_tests` but with additional
+# `gpu_all_linux_release_telemetry_tests` but with additional
 # `gpu_skia_renderer_vulkan_passthrough_telemetry_tests`
 targets.legacy_compound_suite(
-    name = "gpu_fyi_linux_release_vulkan_telemetry_tests",
+    name = "gpu_all_linux_release_vulkan_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",

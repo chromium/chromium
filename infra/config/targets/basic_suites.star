@@ -988,6 +988,7 @@ targets.legacy_basic_suite(
     name = "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
     tests = {
         "vulkan_pixel_skia_gold_test": targets.legacy_test_config(
+            ci_only = True,
             mixins = [
                 "gpu_integration_test_common_args",
             ],

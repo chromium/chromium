@@ -547,6 +547,10 @@
         {
           "builder": "gpu-fyi-try-linux-nvidia-rtx-5080-exp",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux_optional_gpu_tests_rel",
+          "group": "tryserver.chromium.linux"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Linux Builder/targets"
