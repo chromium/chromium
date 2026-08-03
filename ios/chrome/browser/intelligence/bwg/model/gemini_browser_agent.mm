@@ -1904,6 +1904,12 @@ bool GeminiBrowserAgent::UpdateLiveModeUIAndMaybeContext() {
       browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
   if (tab_helper && tab_helper->IsGeminiChatAvailableForWebState()) {
+    // If the user is speaking (i.e., transcribing), we block page context
+    // updates, to maintain the full context of the page that the user was on
+    // when they started wording their query.
+    if (processing_status_ == ios::provider::GeminiClientMode::kTranscribing) {
+      return true;
+    }
     UpdateFloatyWithPartialPageContext();
     RequestPageContextGeneration();
     return true;
@@ -2074,6 +2080,7 @@ NSArray<GeminiPageContext*>* GeminiBrowserAgent::GetSharedTabs() const {
 }
 
 void GeminiBrowserAgent::UpdateFloatyWithPartialPageContext() {
+
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
