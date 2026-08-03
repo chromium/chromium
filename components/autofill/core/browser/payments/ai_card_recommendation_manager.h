@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 
 namespace autofill {
@@ -20,6 +21,10 @@ namespace autofill::payments {
 // Owned by `BrowserAutofillManager`. This class manages the flow of AI card
 // recommendation, which uses Gemini to recommend and reorder card
 // suggestions based on the cards' benefits.
+// This class is initialized when the user accepts the "Maximize rewards"
+// suggestion, and is destroyed on user navigation or page refresh.
+// TODO(crbug.com/539582738): Improve the lifecycle of this class to align with
+// similar features.
 class AiCardRecommendationManager : public AutofillManager::Observer {
  public:
   explicit AiCardRecommendationManager(
@@ -36,6 +41,11 @@ class AiCardRecommendationManager : public AutofillManager::Observer {
   // AutofillManager::Observer:
   void OnSuggestionsHidden(AutofillManager& manager,
                            SuggestionHidingReason reason) override;
+
+  // Invoked once the AI-based amount extraction process completes, and
+  // notifies AiCardRecommendationManager of the result.
+  virtual void OnAmountExtractionReturnedFromAi(
+      const AiAmountExtractionResult::ResultType result);
 
  private:
   // The owner, BrowserAutofillManager.
