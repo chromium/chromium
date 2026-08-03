@@ -72,8 +72,6 @@ export {SettingsAppearancePageElement, SystemTheme} from './appearance_page/appe
 export {SettingsAppearancePageIndexElement} from './appearance_page/appearance_page_index.js';
 export {HomeUrlInputElement} from './appearance_page/home_url_input.js';
 export {SettingsAutofillAiEntriesListElement} from './autofill_page/autofill_ai_entries_list.js';
-export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
-export {SettingsAutofillPageIndexElement} from './autofill_page/autofill_page_index.js';
 export {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerPage} from './autofill_page/password_manager_proxy.js';
 export type {PasswordManagerProxy} from './autofill_page/password_manager_proxy.js';
 export {BaseMixin} from './base_mixin.js';
