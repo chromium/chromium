@@ -103,6 +103,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -117,6 +118,7 @@
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
@@ -1444,6 +1446,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_NEW_INCOGNITO_WINDOW);
       break;
+    case IDC_NEW_ISOLATED_WINDOW:
+      LogMenuAction(MENU_ACTION_NEW_ISOLATED_WINDOW);
+      break;
 
     // Bookmarks sub menu.
     case IDC_SHOW_BOOKMARK_BAR:
@@ -2134,6 +2139,10 @@ bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
 bool AppMenuModel::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
+  if (command_id == IDC_NEW_ISOLATED_WINDOW) {
+    return provider_->GetAcceleratorForCommandId(IDC_NEW_INCOGNITO_WINDOW,
+                                                 accelerator);
+  }
   return provider_->GetAcceleratorForCommandId(command_id, accelerator);
 }
 
@@ -2198,6 +2207,18 @@ void AppMenuModel::Build() {
     SetElementIdentifierAt(
         GetIndexOfCommandId(IDC_NEW_INCOGNITO_WINDOW).value(),
         kIncognitoMenuItem);
+
+    bool isolated_mode_enabled =
+        enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+            *browser_->GetProfile()->GetPrefs(), chrome::GetChannel());
+
+    if (isolated_mode_enabled) {
+      AddItemWithStringIdAndVectorIcon(
+          this, IDC_NEW_ISOLATED_WINDOW, IDS_NEW_ISOLATED_WINDOW,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kDomainIcon
+              : vector_icons::kBusinessChromeRefreshOldIcon);
+    }
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);

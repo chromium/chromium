@@ -50,6 +50,7 @@
 // Window management commands
 #define IDC_NEW_WINDOW                  34000
 #define IDC_NEW_INCOGNITO_WINDOW        34001
+#define IDC_NEW_ISOLATED_WINDOW         34002
 #define IDC_CLOSE_WINDOW                34012
 #define IDC_NEW_TAB                     34014
 #define IDC_CLOSE_TAB                   34015

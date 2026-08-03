@@ -1442,6 +1442,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_NEW_INCOGNITO_WINDOW" desc="The text label of a menu item for opening a new Incognito window">
             New &amp;Incognito window
           </message>
+          <message name="IDS_NEW_ISOLATED_WINDOW" desc="The text label of a menu item for opening a new Isolated window">
+            New &amp;Isolated window
+          </message>
           <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL" desc="Label that lets the user know what email they are signed into their profile as.">
             Signed in as <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>
           </message>
@@ -1583,6 +1586,9 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_NEW_INCOGNITO_WINDOW" desc="In Title Case: The text label of a menu item for opening a new Incognito window">
             New &amp;Incognito Window
+          </message>
+          <message name="IDS_NEW_ISOLATED_WINDOW" desc="In Title Case: The text label of a menu item for opening a new Isolated window">
+            New &amp;Isolated Window
           </message>
           <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL" desc="In Title Case: Label that lets the user know what email they are signed into their profile as.">
             Signed in as <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>
@@ -15819,6 +15825,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_NEW_INCOGNITO_WINDOW_MAC" desc="In Title Case: The Mac menu item for opening a new Incognito window in the file menu.">
           New Incognito Window
+        </message>
+        <message name="IDS_NEW_ISOLATED_WINDOW_MAC" desc="In Title Case: The Mac menu item for opening a new Isolated window in the file menu.">
+          New Isolated Window
         </message>
         <message name="IDS_REOPEN_CLOSED_TABS_MAC" desc="In Title Case: The Mac menu item reopen recently closed tabs in the file menu.">
           Reopen Closed Tab

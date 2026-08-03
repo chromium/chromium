@@ -1209,6 +1209,7 @@ chromium-metrics-reviews@google.com.
   <int value="101" label="Contact info"/>
   <int value="102"
       label="(Obsolete) Show contextual tasks side panel. Removed 12/18/25"/>
+  <int value="103" label="New isolated window"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

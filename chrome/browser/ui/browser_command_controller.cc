@@ -103,6 +103,7 @@
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/content_restriction.h"
 #include "chrome/common/pref_names.h"
@@ -112,6 +113,7 @@
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/lens/buildflags.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -741,6 +743,9 @@ void BrowserCommandController::HandleCommandWithDisposition(
       NewWindow(browser_);
       break;
     case IDC_NEW_INCOGNITO_WINDOW:
+      NewIncognitoWindow(profile());
+      break;
+    case IDC_NEW_ISOLATED_WINDOW:
       NewIncognitoWindow(profile());
       break;
     case IDC_CLOSE_WINDOW:
@@ -2050,10 +2055,17 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
   command_updater->UpdateCommandEnabled(
       IDC_NEW_WINDOW,
       incognito_availability != policy::IncognitoModeAvailability::kForced);
+  bool isolated_mode_enabled =
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+          *profile->GetPrefs(), chrome::GetChannel());
+
   command_updater->UpdateCommandEnabled(
       IDC_NEW_INCOGNITO_WINDOW,
       incognito_availability != policy::IncognitoModeAvailability::kDisabled &&
           !profile->IsGuestSession());
+
+  command_updater->UpdateCommandEnabled(IDC_NEW_ISOLATED_WINDOW,
+                                        isolated_mode_enabled);
 
   const bool forced_incognito =
       incognito_availability == policy::IncognitoModeAvailability::kForced;
