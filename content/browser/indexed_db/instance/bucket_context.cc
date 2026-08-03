@@ -84,10 +84,6 @@
 namespace content::indexed_db {
 namespace {
 
-// This flag enables the SQLite backing store for in-memory contexts.
-BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<SqliteRolloutStage>::Option
     kIdbSqliteOnDiskRolloutStages[] = {
         {SqliteRolloutStage::kUseLevelDbOnly, "UseLevelDbOnly"},
@@ -202,9 +198,7 @@ SqliteRolloutStage GetSqliteRolloutStage(bool in_memory) {
     return SqliteRolloutStage::kUseSqliteOnly;
   }
   if (in_memory) {
-    return base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)
-               ? SqliteRolloutStage::kUseSqliteOnly
-               : SqliteRolloutStage::kUseLevelDbOnly;
+    return SqliteRolloutStage::kUseSqliteOnly;
   }
   if (base::FeatureList::IsEnabled(features::kIdbSqliteOnDiskRollout)) {
     return kIdbSqliteOnDiskRolloutStage.Get();
