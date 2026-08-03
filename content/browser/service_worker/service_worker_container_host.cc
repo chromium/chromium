@@ -750,6 +750,27 @@ bool ServiceWorkerContainerHostForClient::AllowServiceWorker(
   if (!browser_context) {
     return false;
   }
+
+  // A WebContents created with PrivilegedParams may forbid service worker
+  // control of the pages it hosts. Every container-host method (register,
+  // getRegistration(s), and the registration-object methods) funnels through
+  // here, so denying access closes all of them: such a page can neither
+  // register a service worker nor reach an existing registration.
+  if (service_worker_client().IsContainerForWindowClient()) {
+    auto* rfh = RenderFrameHostImpl::FromID(
+        service_worker_client().GetRenderFrameHostId());
+    auto* web_contents =
+        static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
+    if (web_contents) {
+      const std::optional<WebContents::PrivilegedParams>& privileged_params =
+          web_contents->privileged_params();
+      if (privileged_params &&
+          privileged_params->disallow_service_worker_control) {
+        return false;
+      }
+    }
+  }
+
   auto start_time = base::TimeTicks::Now();
   AllowServiceWorkerResult allowed =
       GetContentClient()->browser()->AllowServiceWorker(

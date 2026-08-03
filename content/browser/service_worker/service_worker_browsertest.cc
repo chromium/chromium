@@ -1128,6 +1128,42 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, GetRunningServiceWorkerInfos) {
       running_info.render_process_id);
 }
 
+// A WebContents created with PrivilegedParams
+// (`disallow_service_worker_control`) must not be able to register a service
+// worker or reach a registration; an ordinary WebContents at the same URL still
+// can. register() and the other container-host methods all funnel through
+// AllowServiceWorker, which denies them for such a WebContents.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       PrivilegedWebContentsCannotRegisterServiceWorker) {
+  StartServerAndNavigateToSetup();
+  const GURL page_url = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+
+  // A privileged WebContents that disallows service worker control has its
+  // register() rejected with a permission-denied error.
+  WebContents::CreateParams privileged_params(
+      shell()->web_contents()->GetBrowserContext());
+  WebContents::PrivilegedParams marker;
+  marker.feature_id = 42;
+  marker.disallow_service_worker_control = true;
+  privileged_params.privileged_params = marker;
+  std::unique_ptr<WebContents> privileged(
+      WebContents::Create(privileged_params));
+  ASSERT_TRUE(NavigateToURL(privileged.get(), page_url));
+  EXPECT_THAT(
+      EvalJs(privileged.get(), "register('fetch_event.js');").ExtractString(),
+      ::testing::HasSubstr("denied permission to use Service Worker"));
+
+  // Control: an ordinary WebContents at the same URL registers successfully.
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('fetch_event.js');"));
+
+  // TODO(crbug.com/539909218): This CL only blocks registration from a
+  // privileged WebContents. Add coverage that a service worker already
+  // registered for the origin (e.g. by the ordinary tab above) cannot control
+  // a same-origin privileged WebContents, once that control restriction lands.
+}
+
 // A document that commits with an opaque origin because its response carries a
 // `Content-Security-Policy: sandbox` header (without `allow-same-origin`) must
 // not be given a service worker container in the browser process, even if its
