@@ -257,15 +257,15 @@ a new file type that meets that condition, we’d like to hear about it.
 ### I found a local file or directory that may be security-sensitive and is not blocked by File System Access API - is this a security bug?
 
 The File System Access API maintains a [blocklist](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/file_system_access/chrome_file_system_access_permission_context.cc;l=266-346)
-of directories and files that may be sensitive such as systems file, and if user
+of directories and files that may be sensitive, such as systems files, and if user
 chooses a file or a directory matching the list on a site using File System
 Access API, the access is blocked.
 
-The blocklist is designed to help mitigate accidental granting by users by
-listing well-known, security-sensitive locations, as a defense in-depth
-strategy. Therefore, the blocklist coverage is not deemed as a security bug,
-especially as it requires user's explicit selection on a file or a directory
-from the file picker.
+The blocklist is designed to prevent users from *accidentally* granting access
+to sensitive files, by listing well-known, security-sensitive locations, as a
+defense in-depth strategy. Therefore, evading the blocklist in some manner is
+not deemed as a security bug, especially as it requires user's explicit
+selection on a file or a directory from the file picker.
 
 <a name="TOC-I-can-download-a-file-with-an-unsafe-extension-but-a-different-extension-or-file-type-is-shown-to-the-user-"></a>
 ### I can download a file with an unsafe extension but a different extension or file type is shown to the user - is this a security bug?
