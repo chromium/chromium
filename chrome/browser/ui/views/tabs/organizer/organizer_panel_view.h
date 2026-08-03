@@ -67,6 +67,7 @@ class OrganizerPanelView : public views::View,
   bool is_elevated() { return elevated_; }
 
   // views::View:
+  void AddedToWidget() override;
   void Layout(PassKey) override;
   void RemovedFromWidget() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

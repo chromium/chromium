@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_controls_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -201,6 +202,28 @@ void OrganizerPanelView::SetTargetWidth(int target_width) {
   target_width_ = target_width;
 
   InvalidateLayout();
+}
+
+void OrganizerPanelView::AddedToWidget() {
+  gfx::RoundedCornersF window_corners;
+  if (auto* non_client_view = GetWidget()->non_client_view()) {
+    if (auto* frame_view = views::AsViewClass<BrowserFrameView>(
+            non_client_view->frame_view())) {
+      window_corners = frame_view->GetWindowRoundedCorners();
+    }
+  }
+
+  // Apply the window corners to the layer. This ensures the browser window has
+  // a consistent corner radius as the panel slides in.
+  gfx::RoundedCornersF panel_layer_corners;
+  if (base::i18n::IsRTL()) {
+    panel_layer_corners = gfx::RoundedCornersF(0, window_corners.upper_right(),
+                                               window_corners.lower_right(), 0);
+  } else {
+    panel_layer_corners = gfx::RoundedCornersF(window_corners.upper_left(), 0,
+                                               0, window_corners.lower_left());
+  }
+  layer()->SetRoundedCornerRadius(panel_layer_corners);
 }
 
 void OrganizerPanelView::SetIsElevated(bool elevated) {
