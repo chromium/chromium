@@ -640,9 +640,21 @@ As part of installing or updating an application, the updater executes the
 application's installer. The API for the application installer is platform-
 specific.
 
-Application installers are run with a 15-minute timeout. If the installer runs
-for longer than this, the updater assumes failure and continues operation.
-However, the updater does not kill the installer process.
+Application installers are run with a 15-minute timeout (`kWaitForAppInstaller`).
+If the installer runs for longer than this, the updater logs the failure,
+reports `GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT` (`0x80040904`), cleans up its
+unpacked temporary files, and continues operation. However, **the updater does
+not kill the installer process**—it will continue running in the background.
+
+Because a timed-out installer process remains running in the background,
+subsequent install or update attempts may launch a concurrent instance of the
+installer. Therefore, application installers should implement a single-instance
+mechanism (such as a system-wide named mutex). If an installer process detects
+another instance running, it should exit with `ERROR_INSTALL_ALREADY_RUNNING`
+(`1618` / `0x652`). When the updater encounters this exit code on Windows, it
+retries launching the installer up to 4 times with exponential backoff (starting
+at 5 seconds) before failing with `GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING`
+(`0x80040907`).
 
 The application installer API varies by platform.
 [macOS](installer_api_mac.md),
