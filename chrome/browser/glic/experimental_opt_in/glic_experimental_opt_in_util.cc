@@ -60,8 +60,6 @@ GURL DecorateGlicOptInUrl(Profile* profile, GURL url) {
   url = net::AppendOrReplaceQueryParameter(url, "theme", theme_value);
 #endif
 
-  url = MaybeAddMultiInstanceParameter(url);
-
   // Localize to Chrome UI language.
   return GetLocalizedGuestURL(url);
 }

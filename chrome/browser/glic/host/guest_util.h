@@ -31,8 +31,6 @@ class TabInterface;
 
 namespace glic {
 
-BASE_DECLARE_FEATURE(kGlicGuestUrlMultiInstanceParam);
-
 // Returns the URL/origin from where the guest web client will be loaded from.
 GURL GetGuestURL();
 url::Origin GetGuestOrigin();
@@ -45,10 +43,6 @@ GURL MaybeApplyPresetGuestUrl(GURL guest_url);
 // browser's UI language. If the parameter is already present, its current value
 // will not be changed.
 GURL GetLocalizedGuestURL(const GURL& guest_url);
-
-// If multi-instance is enabled return the guest_url with the multi-instance
-// parameter added. Otherwise return the guest_url unchanged.
-GURL MaybeAddMultiInstanceParameter(const GURL& guest_url);
 
 // Returns true if `web_contents` contains the Glic WebUI application.
 bool IsGlicWebUI(const content::WebContents* web_contents);

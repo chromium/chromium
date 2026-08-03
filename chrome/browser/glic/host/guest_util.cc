@@ -110,7 +110,6 @@ enum class GlicPasteFailedEligibilityReason {
   kMaxValue = kCrossProfile,
 };
 #endif
-BASE_FEATURE(kGlicGuestUrlMultiInstanceParam, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -260,8 +259,6 @@ GURL GetGuestURL() {
     return GURL();
   }
 
-  url = MaybeAddMultiInstanceParameter(url);
-
   return GetLocalizedGuestURL(url);
 }
 
@@ -312,13 +309,6 @@ GURL GetLocalizedGuestURL(const GURL& guest_url) {
   std::string application_locale = g_browser_process->GetApplicationLocale();
   std::string google_locale = google_util::GetGoogleLocale(application_locale);
   return net::AppendQueryParameter(guest_url, "hl", google_locale);
-}
-
-GURL MaybeAddMultiInstanceParameter(const GURL& guest_url) {
-  if (base::FeatureList::IsEnabled(kGlicGuestUrlMultiInstanceParam)) {
-    return net::AppendOrReplaceQueryParameter(guest_url, "mode", "mi");
-  }
-  return guest_url;
 }
 
 bool IsGlicWebUI(const content::WebContents* web_contents) {

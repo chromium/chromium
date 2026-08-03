@@ -72,50 +72,7 @@ TEST(GuestUtilTest, GetLocalizedGuestURLForDifferentLocales) {
   }
 }
 
-TEST_F(GuestUtilMultiInstanceTest,
-       MaybeAddMultiInstanceParameterAddsParameter) {
-  EXPECT_EQ(MaybeAddMultiInstanceParameter(GURL("https://www.google.com")),
-            GURL("https://www.google.com?mode=mi"));
-  EXPECT_EQ(MaybeAddMultiInstanceParameter(GURL("https://www.google.com/")),
-            GURL("https://www.google.com/?mode=mi"));
-  EXPECT_EQ(MaybeAddMultiInstanceParameter(GURL("https://www.google.com/?")),
-            GURL("https://www.google.com/?mode=mi"));
-  EXPECT_EQ(MaybeAddMultiInstanceParameter(GURL("https://www.google.com/?&")),
-            GURL("https://www.google.com/?mode=mi"));
-  EXPECT_EQ(MaybeAddMultiInstanceParameter(GURL("https://www.google.com/?a=b")),
-            GURL("https://www.google.com/?a=b&mode=mi"));
-  EXPECT_EQ(
-      MaybeAddMultiInstanceParameter(GURL("https://www.google.com/?a=b&")),
-      GURL("https://www.google.com/?a=b&mode=mi"));
-  EXPECT_EQ(MaybeAddMultiInstanceParameter(GURL("https://www.google.com/?c")),
-            GURL("https://www.google.com/?c&mode=mi"));
-}
-
-TEST_F(GuestUtilMultiInstanceTest,
-       MaybeAddMultiInstanceParameterReplacesParameter) {
-  EXPECT_EQ(
-      MaybeAddMultiInstanceParameter(GURL("https://www.google.com?mode=si")),
-      GURL("https://www.google.com?mode=mi"));
-  EXPECT_EQ(
-      MaybeAddMultiInstanceParameter(GURL("https://www.google.com/?mode=si")),
-      GURL("https://www.google.com/?mode=mi"));
-  EXPECT_EQ(MaybeAddMultiInstanceParameter(
-                GURL("https://www.google.com/?a=b&mode=si")),
-            GURL("https://www.google.com/?a=b&mode=mi"));
-  EXPECT_EQ(MaybeAddMultiInstanceParameter(
-                GURL("https://www.google.com/?mode=si&a=b")),
-            GURL("https://www.google.com/?mode=mi&a=b"));
-}
-
 TEST_F(GuestUtilMultiInstanceTest, GetGlicGuestURLs) {
-    EXPECT_EQ(GURL("https://www.example.com/glic?mode=mi&hl=en"),
-              GetGuestURL());
-}
-
-TEST_F(GuestUtilMultiInstanceTest, MaybeAddMultiInstanceParameterDisabled) {
-  // Test that disabling the feature does not add any multi-instance params.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kGlicGuestUrlMultiInstanceParam);
   EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"), GetGuestURL());
 }
 
