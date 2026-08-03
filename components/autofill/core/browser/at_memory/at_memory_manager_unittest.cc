@@ -38,6 +38,8 @@
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
@@ -149,6 +151,19 @@ class MockAutofillAiAccessManager : public AutofillAiAccessManager {
               (EntityInstance entity,
                bool will_fill_sensitive_info,
                OnEntityInstanceFetchedCallback callback),
+              (override));
+};
+
+class MockCreditCardAccessManager : public CreditCardAccessManager {
+ public:
+  explicit MockCreditCardAccessManager(BrowserAutofillManager* manager)
+      : CreditCardAccessManager(manager) {}
+  ~MockCreditCardAccessManager() override = default;
+
+  MOCK_METHOD(void,
+              FetchCreditCard,
+              (const CreditCard*,
+               CreditCardAccessManager::OnCreditCardFetchedCallback),
               (override));
 };
 
@@ -267,6 +282,42 @@ class AtMemoryManagerTest : public Test,
     manager().OnPopupShown(form_id, field_id, trigger_source,
                            parent_suggestion_metadata, is_context_secure,
                            update_callback_.Get(), ukm_source_id);
+    return {form_id, field_id};
+  }
+
+  // Sets up a test form, adds `card` to the PersonalDataManager, mocks search
+  // results returning `card`, submits the search, and injects a
+  // MockCreditCardAccessManager on the BrowserAutofillManager.
+  // Returns the pair of the form id and field id.
+  std::pair<FormGlobalId, FieldGlobalId> SetUpCreditCardAsyncSearch(
+      CreditCard& card,
+      std::vector<Suggestion>& suggestions,
+      MockCreditCardAccessManager*& mock_ccam) {
+    card = test::GetCreditCard();
+    card.set_guid(test::MakeGuid(1));
+    autofill_client()
+        .GetPersonalDataManager()
+        .payments_data_manager()
+        .AddCreditCard(card);
+
+    auto [form_id, field_id] = SeeFormAndShowPopup();
+
+    MemorySearchResult entry(MemoryDataType::kCreditCardNumber, u"Card",
+                             u"some text");
+    entry.identifier = card.guid();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, suggestions);
+    manager().OnSearchSubmitted(u"query");
+    EXPECT_EQ(suggestions.size(), 1u);
+
+    auto mock_ccam_unique =
+        std::make_unique<NiceMock<MockCreditCardAccessManager>>(
+            &autofill_manager());
+    mock_ccam = mock_ccam_unique.get();
+    test_api(autofill_manager())
+        .set_credit_card_access_manager(std::move(mock_ccam_unique));
     return {form_id, field_id};
   }
 
@@ -1100,6 +1151,9 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
   manager().OnSearchSubmitted(u"query");
   ASSERT_EQ(final_suggestions.size(), 1u);
 
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                              std::optional(FillingProduct::kAtMemory)));
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -1124,6 +1178,223 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
                                        .GetCreditCardByGUID(test::MakeGuid(1));
   ASSERT_TRUE(updated_card);
   EXPECT_EQ(updated_card->usage_history().use_count(), initial_use_count + 1);
+}
+
+// Tests that fetching an unmasked Credit Card asynchronously returns
+// `IsAsync(true)`, hides suggestions when the fetch completes, fills the
+// field, and records metrics.
+TEST_F(AtMemoryManagerTest, FillCreditCard_AsyncSuccess) {
+  base::HistogramTester histogram_tester;
+  CreditCard card;
+  std::vector<Suggestion> final_suggestions;
+  MockCreditCardAccessManager* mock_ccam_ptr = nullptr;
+  auto [form_id, field_id] =
+      SetUpCreditCardAsyncSearch(card, final_suggestions, mock_ccam_ptr);
+
+  CreditCardAccessManager::OnCreditCardFetchedCallback fetch_callback;
+  {
+    InSequence seq;
+    EXPECT_CALL(*mock_ccam_ptr, FetchCreditCard)
+        .WillOnce([&](const CreditCard* card_to_fetch,
+                      CreditCardAccessManager::OnCreditCardFetchedCallback
+                          callback) {
+          fetch_callback = std::move(callback);
+          test_api(*mock_ccam_ptr)
+              .NotifyObservers(
+                  &CreditCardAccessManager::Observer::OnCreditCardFetchStarted,
+                  *card_to_fetch);
+        });
+
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                std::optional(FillingProduct::kAtMemory)));
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewField(mojom::ActionPersistence::kFill,
+                           mojom::FieldActionType::kReplaceAtMemoryTrigger, _,
+                           _, card.number(), FillingProduct::kAtMemory, _));
+  }
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+
+  std::move(fetch_callback).Run(card);
+  test_api(*mock_ccam_ptr)
+      .NotifyObservers(
+          &CreditCardAccessManager::Observer::OnCreditCardFetchSucceeded, card);
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.AtMemory.Latency.FetchPii.CreditCard", 1);
+}
+
+// Tests that when an asynchronous Credit Card fetch fails, suggestions are
+// hidden and failure metrics are recorded.
+TEST_F(AtMemoryManagerTest, FillCreditCard_FetchFailed) {
+  base::HistogramTester histogram_tester;
+  CreditCard card;
+  std::vector<Suggestion> final_suggestions;
+  MockCreditCardAccessManager* mock_ccam_ptr = nullptr;
+  auto [form_id, field_id] =
+      SetUpCreditCardAsyncSearch(card, final_suggestions, mock_ccam_ptr);
+
+  {
+    InSequence seq;
+    EXPECT_CALL(*mock_ccam_ptr, FetchCreditCard)
+        .WillOnce([&](const CreditCard* card_to_fetch,
+                      CreditCardAccessManager::OnCreditCardFetchedCallback
+                          callback) {
+          test_api(*mock_ccam_ptr)
+              .NotifyObservers(
+                  &CreditCardAccessManager::Observer::OnCreditCardFetchStarted,
+                  *card_to_fetch);
+        });
+
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                std::optional(FillingProduct::kAtMemory)));
+  }
+  EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+
+  test_api(*mock_ccam_ptr)
+      .NotifyObservers(
+          &CreditCardAccessManager::Observer::OnCreditCardFetchFailed, &card);
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      false, 1);
+}
+
+// Tests that calling FillCreditCard while an asynchronous fetch is already in
+// progress immediately returns IsAsync(true) without calling FetchCreditCard
+// a second time on CreditCardAccessManager.
+TEST_F(AtMemoryManagerTest, FillCreditCard_OverlappingRequests) {
+  CreditCard card;
+  std::vector<Suggestion> final_suggestions;
+  MockCreditCardAccessManager* mock_ccam_ptr = nullptr;
+  auto [form_id, field_id] =
+      SetUpCreditCardAsyncSearch(card, final_suggestions, mock_ccam_ptr);
+
+  EXPECT_CALL(*mock_ccam_ptr, FetchCreditCard)
+      .WillOnce([&](const CreditCard* card_to_fetch,
+                    CreditCardAccessManager::OnCreditCardFetchedCallback
+                        callback) {
+        test_api(*mock_ccam_ptr)
+            .NotifyObservers(
+                &CreditCardAccessManager::Observer::OnCreditCardFetchStarted,
+                *card_to_fetch);
+      });
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+
+  // A second overlapping call should return IsAsync(true) without calling
+  // FetchCreditCard again.
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+}
+
+// Tests that when CreditCardAccessManager is destroyed while an asynchronous
+// fetch is in progress, fetch state is reset.
+TEST_F(AtMemoryManagerTest, FillCreditCard_AccessManagerDestroyedMidFetch) {
+  CreditCard card;
+  std::vector<Suggestion> final_suggestions;
+  MockCreditCardAccessManager* mock_ccam_ptr = nullptr;
+  auto [form_id, field_id] =
+      SetUpCreditCardAsyncSearch(card, final_suggestions, mock_ccam_ptr);
+
+  EXPECT_CALL(*mock_ccam_ptr, FetchCreditCard)
+      .WillOnce([&](const CreditCard* card_to_fetch,
+                    CreditCardAccessManager::OnCreditCardFetchedCallback
+                        callback) {
+        test_api(*mock_ccam_ptr)
+            .NotifyObservers(
+                &CreditCardAccessManager::Observer::OnCreditCardFetchStarted,
+                *card_to_fetch);
+      });
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+
+  test_api(*mock_ccam_ptr)
+      .NotifyObservers(&CreditCardAccessManager::Observer::
+                           OnCreditCardAccessManagerDestroyed);
+
+  // After CCAM is destroyed, fetch state should be reset so a subsequent fill
+  // attempt is permitted to start a new fetch.
+  EXPECT_CALL(*mock_ccam_ptr, FetchCreditCard)
+      .WillOnce([&](const CreditCard* card_to_fetch,
+                    CreditCardAccessManager::OnCreditCardFetchedCallback
+                        callback) {
+        test_api(*mock_ccam_ptr)
+            .NotifyObservers(
+                &CreditCardAccessManager::Observer::OnCreditCardFetchStarted,
+                *card_to_fetch);
+      });
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+}
+
+// Tests that when OnPopupHidden() is called during an asynchronous fetch,
+// fetch state is reset cleanly so subsequent sessions are not blocked.
+TEST_F(AtMemoryManagerTest, FillCreditCard_PopupHiddenResetsFetchInProgress) {
+  CreditCard card;
+  std::vector<Suggestion> final_suggestions;
+  MockCreditCardAccessManager* mock_ccam_ptr = nullptr;
+  auto [form_id, field_id] =
+      SetUpCreditCardAsyncSearch(card, final_suggestions, mock_ccam_ptr);
+
+  EXPECT_CALL(*mock_ccam_ptr, FetchCreditCard)
+      .WillOnce([&](const CreditCard* card_to_fetch,
+                    CreditCardAccessManager::OnCreditCardFetchedCallback
+                        callback) {
+        test_api(*mock_ccam_ptr)
+            .NotifyObservers(
+                &CreditCardAccessManager::Observer::OnCreditCardFetchStarted,
+                *card_to_fetch);
+      });
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+
+  manager().OnPopupHidden();
+
+  // After hiding popup, a new fetch should be allowed to start rather than
+  // returning IsAsync(true) immediately without calling FetchCreditCard.
+  EXPECT_CALL(*mock_ccam_ptr, FetchCreditCard)
+      .WillOnce([&](const CreditCard* card_to_fetch,
+                    CreditCardAccessManager::OnCreditCardFetchedCallback
+                        callback) {
+        test_api(*mock_ccam_ptr)
+            .NotifyObservers(
+                &CreditCardAccessManager::Observer::OnCreditCardFetchStarted,
+                *card_to_fetch);
+      });
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
 }
 
 // Tests that fetching an unmasked IBAN asynchronously returns `IsAsync(true)`,

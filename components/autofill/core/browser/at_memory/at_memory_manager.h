@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
@@ -37,7 +39,7 @@ class BrowserAutofillManager;
 // Manager for the AtMemory feature. It handles queries to the
 // `AtMemoryQueryService` and manages session-based metrics. Owned by
 // `BrowserAutofillManager`, its lifetime is tied to it.
-class AtMemoryManager {
+class AtMemoryManager : public CreditCardAccessManager::Observer {
  public:
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
@@ -48,7 +50,7 @@ class AtMemoryManager {
   AtMemoryManager(const AtMemoryManager&) = delete;
   AtMemoryManager& operator=(const AtMemoryManager&) = delete;
 
-  ~AtMemoryManager();
+  ~AtMemoryManager() override;
 
   // Called when suggestions are shown. The manager initiates an @memory
   // session if the `trigger_source` is an @memory one.
@@ -158,12 +160,24 @@ class AtMemoryManager {
       const Suggestion& suggestion,
       std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
-  // Fills the unmasked credit card value after fetching it.
-  void FillCreditCard(const std::string& credit_card_guid,
-                      const FormGlobalId& form_id,
-                      const FieldGlobalId& field_id,
-                      const Suggestion& suggestion,
-                      std::unique_ptr<AtMemoryMetricsRecorder> metrics);
+  // Fills the unmasked credit card value after fetching it. Returns
+  // `IsAsync(true)` if the operation involves reauthentication or server
+  // communication.
+  IsAsync FillCreditCard(const std::string& credit_card_guid,
+                         const FormGlobalId& form_id,
+                         const FieldGlobalId& field_id,
+                         const Suggestion& suggestion,
+                         std::unique_ptr<AtMemoryMetricsRecorder> metrics);
+
+  // CreditCardAccessManager::Observer:
+  void OnCreditCardFetchStarted(CreditCardAccessManager& manager,
+                                const CreditCard& credit_card) override;
+  void OnCreditCardFetchSucceeded(CreditCardAccessManager& manager,
+                                  const CreditCard& credit_card) override;
+  void OnCreditCardFetchFailed(CreditCardAccessManager& manager,
+                               const CreditCard* credit_card) override;
+  void OnCreditCardAccessManagerDestroyed(
+      CreditCardAccessManager& manager) override;
 
   // Triggers reauthentication and fetching of the unmasked Personal Context
   // value, which fills the field upon completion. Returns `IsAsync(true)` if
@@ -220,6 +234,12 @@ class AtMemoryManager {
       AutofillSuggestionTriggerSource::kUnspecified;
 
   UpdateSuggestionsCallback update_callback_;
+
+  base::ScopedObservation<CreditCardAccessManager,
+                          CreditCardAccessManager::Observer>
+      ccam_observation_{this};
+
+  bool credit_card_fetch_in_progress_ = false;
 
   std::unique_ptr<AtMemoryMetricsRecorder> at_memory_metrics_recorder_;
 
