@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -356,8 +355,8 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgent) {
   EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 
   ProfileState* profile_state = CreateProfileState(ProfileInitStage::kFinal);
-  [scene_controller connectWithOptions:{.profile_state = profile_state,
-                                        .identifier = "other-id"}];
+  [scene_controller connectWithProfileState:profile_state
+                             sceneSessionID:"other-id"];
 
   EXPECT_NE(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 }
@@ -372,8 +371,8 @@ TEST_F(SceneControllerTest, CreateSceneStatePrefsOnProfileLoad) {
 
   // The profile is not yet loaded, so the -prefs property should still be nil.
   ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
-  [scene_controller connectWithOptions:{.profile_state = profile_state,
-                                        .identifier = "other-id"}];
+  [scene_controller connectWithProfileState:profile_state
+                             sceneSessionID:"other-id"];
   EXPECT_EQ(scene_state.prefs, nil);
 
   // Pretend the profile is loaded, -prefs should be created.
@@ -395,8 +394,8 @@ TEST_F(SceneControllerTest, CreateSceneStatePrefsOnConnectionIfProfileLoaded) {
   ASSERT_EQ(scene_state.prefs, nil);
 
   // The profile is already loaded, so the -prefs property should be created.
-  [scene_controller connectWithOptions:{.profile_state = profile_state,
-                                        .identifier = "other-id"}];
+  [scene_controller connectWithProfileState:profile_state
+                             sceneSessionID:"other-id"];
   EXPECT_NE(scene_state.prefs, nil);
 }
 
@@ -410,8 +409,8 @@ TEST_F(SceneControllerTest, SceneStatePrefsNotRecreatedAsProfileStageAdvance) {
 
   // The profile is not yet loaded, so the -prefs property should still be nil.
   ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
-  [scene_controller connectWithOptions:{.profile_state = profile_state,
-                                        .identifier = "other-id"}];
+  [scene_controller connectWithProfileState:profile_state
+                             sceneSessionID:"other-id"];
   EXPECT_EQ(scene_state.prefs, nil);
 
   // Pretend the profile is loaded, -prefs should be created.

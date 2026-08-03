@@ -109,7 +109,6 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller+OTRProfileDeletion.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
@@ -1724,16 +1723,15 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 }
 
-- (void)connectWithOptions:(SceneStateOptions)options {
+- (void)connectWithProfileState:(ProfileState*)profileState
+                 sceneSessionID:(std::string_view)sceneSessionID {
   DCHECK(!_sceneState.profileState);
-
-  ProfileState* profileState = options.profile_state;
+  DCHECK(!sceneSessionID.empty());
   DCHECK(profileState);
 
   // Set the properties to SceneState.
-  DCHECK(!options.identifier.empty());
   _sceneState.profileState = profileState;
-  _sceneState.sceneSessionID = options.identifier;
+  _sceneState.sceneSessionID = sceneSessionID;
 
   // Connect the ProfileState with the SceneState.
   [profileState sceneStateConnected:_sceneState];

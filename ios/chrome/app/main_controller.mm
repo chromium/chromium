@@ -111,7 +111,6 @@
 #import "ios/chrome/browser/share_extension/model/share_extension_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -1884,9 +1883,8 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   DCHECK(iterator->second.state != nil);
 
   // Connects the SceneState to the ProfileState.
-  [sceneState.controller
-      connectWithOptions:{.profile_state = iterator->second.state,
-                          .identifier = sceneStateID}];
+  [sceneState.controller connectWithProfileState:iterator->second.state
+                                  sceneSessionID:sceneStateID];
 }
 
 // Drops all unused profile controllers. This will cause the corresponding

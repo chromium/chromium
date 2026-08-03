@@ -32,7 +32,6 @@ source_set("scene_state_header") {
     "scene_controller.h",
     "scene_delegate.h",
     "scene_state.h",
-    "scene_state_options.h",
     "scene_state_prefs.h",
     "scene_ui_provider.h",
   ]
