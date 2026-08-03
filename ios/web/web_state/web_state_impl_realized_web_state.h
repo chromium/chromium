@@ -18,7 +18,6 @@ class WebStateStorage;
 }  // namespace proto
 
 class WebUIIOS;
-class MojoFacade;
 
 // Internal implementation of a realized WebStateImpl.
 //
@@ -299,9 +298,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // `WebUIIOS` object for the current page if it is a WebUI page that
   // uses the web-based WebUI framework, or nullptr otherwise.
   std::unique_ptr<WebUIIOS> web_ui_;
-
-  // `MojoFacade` object for a WebState presenting a WebUI page.
-  std::unique_ptr<MojoFacade> mojo_facade_;
 
   // The current page MIME type.
   std::string mime_type_;

@@ -19,6 +19,7 @@
 #import "ios/web/public/webui/web_ui_ios_controller.h"
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
+#import "ios/web/webui/mojo_facade.h"
 
 using web::WebUIIOSController;
 
@@ -40,7 +41,9 @@ std::u16string WebUIIOS::GetJavascriptCall(
   return base::ASCIIToUTF16(function_name) + u'(' + parameters + u");";
 }
 
-WebUIIOSImpl::WebUIIOSImpl(WebState* web_state) : web_state_(web_state) {}
+WebUIIOSImpl::WebUIIOSImpl(WebState* web_state)
+    : mojo_facade_(std::make_unique<MojoFacade>(web_state)),
+      web_state_(web_state) {}
 
 WebUIIOSImpl::~WebUIIOSImpl() {
   controller_.reset();
