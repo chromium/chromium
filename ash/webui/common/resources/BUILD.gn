@@ -564,43 +564,6 @@ copy("copy_checked_in_dts_files") {
   outputs = [ "$preprocessed_dir/{{source_target_relative}}" ]
 }
 
-group("closure_compile") {
-  deps = [
-    ":closure_compile_local",
-    "cr_picture:closure_compile_module",
-    "multidevice_setup:closure_compile_module",
-    "post_message_api:closure_compile",
-    "smb_shares:closure_compile_module",
-  ]
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  deps = [
-    ":assert",
-    ":cr.m",
-    ":cr_deprecated",
-    ":event_tracker",
-    ":fake_method_resolver",
-    ":fake_observables",
-    ":focus_row_behavior",
-    ":focus_row_js",
-    ":focus_without_ink_js",
-    ":keyboard_diagram",
-    ":keyboard_key",
-    ":keyboard_layouts",
-    ":keyboard_shortcut_list_js",
-    ":list_property_update_behavior",
-    ":load_time_data.m",
-    ":navigation_selector",
-    ":navigation_view_panel",
-    ":page_toolbar",
-    ":parse_html_subset",
-    ":promise_resolver",
-    ":webui_resource_test",
-  ]
-}
-
 js_library("assert") {
 }
 
@@ -611,57 +574,7 @@ js_library("cr_deprecated") {
 js_library("cr.m") {
 }
 
-js_library("cr_container_shadow_behavior") {
-  deps = [ ":assert" ]
-}
-
-js_library("cr_policy_indicator_behavior") {
-  deps = [ ":assert" ]
-}
-
-js_library("cr_scrollable_behavior") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("event_target") {
-}
-
-js_library("event_tracker") {
-}
-
-js_library("fake_observables") {
-  deps = [ ":cr.m" ]
-}
-
-js_library("fake_method_resolver") {
-  deps = [ ":cr.m" ]
-}
-
-js_library("focus_row_js") {
-  deps = [
-    ":assert",
-    ":event_tracker",
-    ":util",
-  ]
-}
-
-js_library("focus_row_behavior") {
-  deps = [
-    ":assert",
-    ":focus_row_js",
-    ":focus_without_ink_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("focus_without_ink_js") {
-  deps = [
-    ":assert",
-    ":cr.m",
-  ]
 }
 
 js_library("i18n_behavior") {
@@ -671,55 +584,7 @@ js_library("i18n_behavior") {
   ]
 }
 
-js_library("keyboard_diagram") {
-  deps = [
-    ":keyboard_key",
-    ":keyboard_layouts",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("keyboard_key") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("keyboard_layouts") {
-  sources = [ "keyboard_layouts.js" ]
-}
-
-js_library("keyboard_shortcut_list_js") {
-}
-
-js_library("list_property_update_behavior") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("load_time_data.m") {
-}
-
-js_library("navigation_selector") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("navigation_view_panel") {
-  deps = [
-    ":navigation_selector",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("page_toolbar") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
 }
 
 js_library("parse_html_subset") {
@@ -731,10 +596,6 @@ js_library("promise_resolver") {
 
 js_library("web_ui_listener_behavior") {
   deps = [ ":cr.m" ]
-}
-
-js_library("webui_resource_test") {
-  externs_list = [ "dom_automation_controller.js" ]
 }
 
 js_library("util") {

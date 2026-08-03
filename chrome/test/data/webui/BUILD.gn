@@ -477,13 +477,6 @@ source_set("interactive_ui_tests") {
   }
 }
 
-if (is_chromeos) {
-  group("closure_compile") {
-    testonly = true
-    deps = [ "chromeos:closure_compile" ]
-  }
-}
-
 grit("resources") {
   testonly = true
   defines = chrome_grit_defines

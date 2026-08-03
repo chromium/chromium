@@ -5,7 +5,6 @@
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../build_webui_tests.gni")
@@ -44,43 +43,6 @@ if (include_js2gtest_tests) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path("//chrome/test/data/webui/",
-                                                    root_build_dir),
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
-  deps = [
-    ":chai_assert",
-    ":mock_controller.m",
-    ":test_browser_proxy",
-    ":test_util",
-  ]
-}
-
-js_library("chai_assert") {
-  externs_list = [ "//third_party/closure_compiler/externs/chai-3.5.js" ]
-}
-
-js_library("mock_controller.m") {
-}
-
-js_library("test_browser_proxy") {
-  deps = [ "//ash/webui/common/resources:promise_resolver" ]
-}
-
-js_library("test_util") {
-  deps = [ "//ash/webui/common/resources:event_target" ]
-}
-
-group("closure_compile") {
-  public_deps = [
-    ":closure_compile_local",
-    "ash_common:closure_compile",
-  ]
 }
 
 build_webui_tests("build") {

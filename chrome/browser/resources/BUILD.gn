@@ -10,7 +10,6 @@ import("//components/safe_browsing/buildflags.gni")
 import("//content/browser/devtools/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//ui/webui/webui_features.gni")
@@ -233,15 +232,6 @@ if (enable_webui_generate_code_cache) {
       "side_panel/shared:code_cache_resources",
       "side_panel/tabs_from_other_devices:code_cache_resources",
       "webui_toolbar:code_cache_resources",
-    ]
-  }
-}
-
-if (is_chromeos && enable_js_type_check) {
-  group("closure_compile") {
-    deps = [
-      "chromeos:closure_compile",
-      "gaia_auth_host:closure_compile",
     ]
   }
 }

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Only ChromeOS resources in //c/b/resources/chromeos.")
@@ -83,8 +82,4 @@ grit("multidevice_setup_resources") {
   deps = [ "//chrome/browser/resources/chromeos/multidevice_setup:build_grd" ]
   enable_input_discovery_for_gn_analyze = false
   output_dir = "$root_gen_dir/chrome"
-}
-
-group("closure_compile") {
-  deps = [ "multidevice_internals:closure_compile" ]
 }

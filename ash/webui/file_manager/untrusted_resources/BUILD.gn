@@ -2,29 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos)
-
-js_library("files_media_content") {
-  externs_list = [ "//ui/file_manager/file_manager/definitions/quick_view.js" ]
-}
-
-js_library("files_browsable_content") {
-}
-
-js_library("url_constants") {
-}
-
-js_type_check("closure_compile") {
-  deps = [
-    ":files_browsable_content",
-    ":files_media_content",
-    ":url_constants",
-  ]
-}
 
 generated_untrusted_grd = "$target_gen_dir/file_manager_untrusted_resources.grd"
 

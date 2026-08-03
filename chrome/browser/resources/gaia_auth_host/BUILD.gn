@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -79,126 +78,6 @@ grit("resources") {
     "gaia_auth_host_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-}
-
-# Limit closure targets to ChromeOS, since closure is deprecated on Desktop.
-if (is_chromeos) {
-  js_type_check("closure_compile") {
-    deps = [
-      ":authenticator",
-      ":channel",
-      ":password_change_authenticator",
-      ":post_message_channel",
-      ":saml_handler",
-      ":saml_password_attributes",
-      ":saml_timestamps",
-      ":saml_username_autofill",
-      ":scroll_helper_injected",
-      ":webview_event_manager",
-    ]
-  }
-
-  js_library("safe_xml_utils") {
-    sources = [ "$preprocess_folder/safe_xml_utils.js" ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("channel") {
-    sources = [ "$preprocess_folder/channel.js" ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("webview_event_manager") {
-    sources = [ "$preprocess_folder/webview_event_manager.js" ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("post_message_channel") {
-    sources = [ "$preprocess_folder/post_message_channel.js" ]
-    deps = [ ":channel" ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("saml_password_attributes") {
-    sources = [ "$preprocess_folder/saml_password_attributes.js" ]
-    deps = [
-      ":safe_xml_utils",
-      ":saml_timestamps",
-    ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("saml_timestamps") {
-    sources = [ "$preprocess_folder/saml_timestamps.js" ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("scroll_helper_injected") {
-    sources = [ "$preprocess_folder/scroll_helper_injected.js" ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("saml_username_autofill") {
-    sources = [ "$preprocess_folder/scroll_helper_injected.js" ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("saml_handler") {
-    sources = [ "$preprocess_folder/saml_handler.js" ]
-    deps = [
-      ":channel",
-      ":post_message_channel",
-      ":safe_xml_utils",
-      ":saml_password_attributes",
-      ":saml_username_autofill",
-      ":webview_event_manager",
-      "//ash/webui/common/resources:event_target",
-    ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("saml_injected") {
-    sources = [ "$preprocess_folder/saml_injected.js" ]
-    deps = [
-      ":channel",
-      ":post_message_channel",
-      ":scroll_helper_injected",
-    ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("authenticator") {
-    sources = [ "$preprocess_folder/authenticator.js" ]
-    deps = [
-      ":saml_handler",
-      ":saml_password_attributes",
-      "//ash/webui/common/resources:assert",
-      "//ash/webui/common/resources:cr.m",
-      "//ash/webui/common/resources:event_target",
-      "//ash/webui/common/resources:util",
-    ]
-    externs_list = [
-      "$externs_path/chrome_extensions.js",
-      "$externs_path/chrome_send.js",
-      "$externs_path/webview_tag.js",
-    ]
-    extra_deps = [ ":preprocess_src" ]
-  }
-
-  js_library("password_change_authenticator") {
-    sources = [ "$preprocess_folder/password_change_authenticator.js" ]
-    deps = [
-      ":saml_handler",
-      "//ash/webui/common/resources:assert",
-      "//ash/webui/common/resources:event_target",
-      "//ash/webui/common/resources:util",
-    ]
-    externs_list = [
-      "$externs_path/chrome_extensions.js",
-      "$externs_path/webview_tag.js",
-    ]
-    extra_deps = [ ":preprocess_src" ]
-  }
 }
 
 stage_folder = "$target_gen_dir/stage"
