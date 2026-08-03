@@ -4136,7 +4136,7 @@
       status: "stable",
     },
     {
-      // Shipping in M148, so should be removed around M150.
+      // Shipping in M148, revised in M151, so should be removed around M153.
       name: "RecheckParentDuringNodeVectorInsertion",
       status: "stable",
     },
