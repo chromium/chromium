@@ -46,7 +46,6 @@ class ChromotingHostServicesServer;
 class DesktopSession;
 class PeerConnectionProcessHandler;
 class HostEventLogger;
-class ScreenResolution;
 
 // This class implements core of the daemon process. It manages the networking
 // process running at lower privileges and maintains the list of desktop
@@ -58,8 +57,8 @@ class DaemonProcess : public ConfigWatcher::Delegate,
                       public mojom::ChromotingHostServices {
  public:
   using StoppedCallback = base::OnceCallback<void(int /*exit_code*/)>;
-  using DesktopSessionList =
-      base::circular_deque<raw_ptr<DesktopSession, CtnExperimental>>;
+  using DesktopSessionMap =
+      std::map<int, raw_ptr<DesktopSession, CtnExperimental>>;
 
   DaemonProcess(const DaemonProcess&) = delete;
   DaemonProcess& operator=(const DaemonProcess&) = delete;
@@ -92,19 +91,11 @@ class DaemonProcess : public ConfigWatcher::Delegate,
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // mojom::DesktopSessionManager implementation.
-  void CreateDesktopSession(int terminal_id,
-                            mojom::DesktopSessionOptionsPtr options) override;
-  void ReconnectDesktopSession(
-      int terminal_id,
-      mojom::DesktopSessionOptionsPtr options) override;
-  void CloseDesktopSession(int terminal_id) override;
+  void CloseDesktopSession(int terminal_id);
   void CloseDesktopSessionWithError(int terminal_id,
                                     ErrorCode error_code,
                                     const std::string& error_details,
                                     const SourceLocation& error_location);
-  void SetScreenResolution(int terminal_id,
-                           const ScreenResolution& resolution) override;
 
   // Called when a desktop integration process attaches to |terminal_id|.
   // |desktop_pipe| specifies the client end of the desktop pipe. Returns true
@@ -120,6 +111,17 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // implementation may cleanup resources such as closing desktop sessions.
   // `callback` is called once the cleanup has complete.
   virtual void Cleanup(base::OnceClosure callback);
+
+  void CreateDesktopSession(
+      int terminal_id,
+      mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+      mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+      mojom::DesktopSessionOptionsPtr options);
+  void ReconnectDesktopSession(
+      int terminal_id,
+      mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+      mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+      mojom::DesktopSessionOptionsPtr options);
 
  protected:
   DaemonProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
@@ -198,7 +200,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
   // Let the test code analyze the list of desktop sessions.
   friend class DaemonProcessTest;
-  const DesktopSessionList& desktop_sessions() const {
+  const DesktopSessionMap& desktop_sessions() const {
     return desktop_sessions_;
   }
 
@@ -209,8 +211,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   }
 
   bool IsNetworkProcessReady() const {
-    return remoting_host_control_.is_bound() &&
-           desktop_session_connection_events_.is_bound();
+    return remoting_host_control_.is_bound();
   }
 
   void SetNetworkLauncherDelegate(
@@ -220,11 +221,13 @@ class DaemonProcess : public ConfigWatcher::Delegate,
     return remoting_host_control_.get();
   }
 
-  mojom::DesktopSessionConnectionEvents* desktop_session_connection_events() {
-    return desktop_session_connection_events_.get();
-  }
-
  private:
+  // mojom::DesktopSessionManager implementation.
+  void GetDesktopSession(
+      mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+      mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+      mojom::DesktopSessionOptionsPtr options) override;
+
   // Launches the peer connection process for |terminal_id| and establishes an
   // IPC channel with it.
   void LaunchPeerConnectionProcess(int terminal_id);
@@ -256,8 +259,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
   std::unique_ptr<WorkerProcessLauncher> network_launcher_;
 
-  mojo::AssociatedRemote<mojom::DesktopSessionConnectionEvents>
-      desktop_session_connection_events_;
   mojo::AssociatedRemote<mojom::RemotingHostControl> remoting_host_control_;
 
   std::unique_ptr<ConfigWatcher> config_watcher_;
@@ -265,8 +266,8 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // The configuration file contents.
   std::string serialized_config_;
 
-  // The list of active desktop sessions.
-  DesktopSessionList desktop_sessions_;
+  // The list of active desktop sessions. Keys are `terminal_id`.
+  DesktopSessionMap desktop_sessions_;
 
   // The highest desktop session ID that has been seen so far.
   int next_terminal_id_;

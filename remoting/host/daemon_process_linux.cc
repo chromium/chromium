@@ -265,9 +265,9 @@ void DaemonProcessLinux::BindSessionServices(
 
   uid_t uid = host_services_receivers().current_context()->credentials.uid;
   DesktopSession* session = desktop_session_factory_.GetSessionByUid(uid);
-  if (session) {
-    desktop_session_connection_events()->OnSessionServicesClientConnected(
-        session->id(), std::move(receiver));
+  if (session && session->events_remote()) {
+    session->events_remote()->OnSessionServicesClientConnected(
+        std::move(receiver));
   } else {
     LOG(WARNING) << "No desktop session found for UID " << uid;
   }

@@ -102,7 +102,6 @@ void DaemonProcess::OnWorkerProcessStopped() {
   // Reset our IPC remote so it's ready to re-init if the network process is
   // re-launched.
   remoting_host_control_.reset();
-  desktop_session_connection_events_.reset();
   peer_connection_launchers_.clear();
   DeleteAllDesktopSessions();
 }
@@ -168,26 +167,24 @@ void DaemonProcess::CloseDesktopSessionWithError(
     return;
   }
 
-  DesktopSessionList::iterator i;
-  for (i = desktop_sessions_.begin(); i != desktop_sessions_.end(); ++i) {
-    if ((*i)->id() == terminal_id) {
-      break;
-    }
-  }
-
-  // It is OK if the terminal ID wasn't found. There is a race between
+  // CloseDesktopSession() can be called multiple times for the same terminal ID
+  // because CloseDesktopSession() and OnDesktopSessionAgentDisconnected() can
+  // be called concurrently from different threads. It is also called when we
+  // close the desktop session ourselves, or receive a request to close it from
   // the network and daemon processes. Each frees its own resources first and
   // notifies the other party if there was something to clean up.
+  auto i = desktop_sessions_.find(terminal_id);
   if (i == desktop_sessions_.end()) {
     return;
   }
 
-  delete *i;
+  SendTerminalDisconnected(terminal_id, error_code, error_details,
+                           error_location);
+
+  delete i->second;
   desktop_sessions_.erase(i);
 
   VLOG(1) << "Daemon: closed desktop session " << terminal_id;
-  SendTerminalDisconnected(terminal_id, error_code, error_details,
-                           error_location);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kEnablePeerConnectionProcessSwitch)) {
@@ -241,8 +238,33 @@ DaemonProcess::DaemonProcess(
   }
 }
 
+void DaemonProcess::GetDesktopSession(
+    mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+    mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+    mojom::DesktopSessionOptionsPtr options) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+
+  std::string client_id = options->client_id;
+  auto it = std::ranges::find_if(desktop_sessions_, [&](const auto& pair) {
+    return !client_id.empty() && pair.second->client_id() == client_id;
+  });
+
+  if (it != desktop_sessions_.end()) {
+    int terminal_id = it->first;
+    ReconnectDesktopSession(terminal_id, std::move(control_receiver),
+                            std::move(events_remote), std::move(options));
+    return;
+  }
+
+  int terminal_id = next_terminal_id_;
+  CreateDesktopSession(terminal_id, std::move(control_receiver),
+                       std::move(events_remote), std::move(options));
+}
+
 void DaemonProcess::CreateDesktopSession(
     int terminal_id,
+    mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+    mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
     mojom::DesktopSessionOptionsPtr options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
@@ -263,13 +285,20 @@ void DaemonProcess::CreateDesktopSession(
       DoCreateDesktopSession(terminal_id, *options);
   if (!session) {
     LOG(ERROR) << "Failed to create a desktop session.";
-    SendTerminalDisconnected(terminal_id, ErrorCode::HOST_CONFIGURATION_ERROR,
-                             "Failed to create a desktop session.", FROM_HERE);
+    if (events_remote.is_valid()) {
+      mojo::Remote<mojom::DesktopSessionEvents>(std::move(events_remote))
+          ->OnTerminalDisconnected(ErrorCode::HOST_CONFIGURATION_ERROR,
+                                   "Failed to create a desktop session.",
+                                   FROM_HERE);
+    }
     return;
   }
 
+  session->set_client_id(options->client_id);
+  session->SetReceiver(std::move(control_receiver));
+  session->SetEventsRemote(std::move(events_remote));
   VLOG(1) << "Daemon: opened desktop session " << terminal_id;
-  desktop_sessions_.push_back(session.release());
+  desktop_sessions_[terminal_id] = session.release();
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kEnablePeerConnectionProcessSwitch)) {
@@ -279,13 +308,12 @@ void DaemonProcess::CreateDesktopSession(
 
 void DaemonProcess::ReconnectDesktopSession(
     int terminal_id,
+    mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+    mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
     mojom::DesktopSessionOptionsPtr options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  auto it = std::ranges::find_if(desktop_sessions_,
-                                 [terminal_id](DesktopSession* session) {
-                                   return session->id() == terminal_id;
-                                 });
+  auto it = desktop_sessions_.find(terminal_id);
 
   if (it == desktop_sessions_.end()) {
     LOG(ERROR) << "Invalid terminal ID: " << terminal_id;
@@ -293,44 +321,9 @@ void DaemonProcess::ReconnectDesktopSession(
     return;
   }
   VLOG(1) << "Daemon: reconnecting desktop session " << terminal_id;
-  (*it)->ReconnectNetworkChannel(*options);
-}
-
-void DaemonProcess::SetScreenResolution(int terminal_id,
-                                        const ScreenResolution& resolution) {
-  DCHECK(caller_task_runner()->BelongsToCurrentThread());
-
-  // Validate the supplied terminal ID. An attempt to use a desktop session ID
-  // that couldn't possibly have been allocated is considered a protocol error
-  // and the network process will be restarted.
-  if (!WasTerminalIdAllocated(terminal_id)) {
-    LOG(ERROR) << "Invalid terminal ID: " << terminal_id;
-    CrashNetworkProcess(FROM_HERE);
-    return;
-  }
-
-  // Validate |resolution| and restart the sender if it is not valid.
-  if (resolution.IsEmpty()) {
-    LOG(ERROR) << "Invalid resolution specified: " << resolution;
-    CrashNetworkProcess(FROM_HERE);
-    return;
-  }
-
-  DesktopSessionList::iterator i;
-  for (i = desktop_sessions_.begin(); i != desktop_sessions_.end(); ++i) {
-    if ((*i)->id() == terminal_id) {
-      break;
-    }
-  }
-
-  // It is OK if the terminal ID wasn't found. There is a race between
-  // the network and daemon processes. Each frees its own resources first and
-  // notifies the other party if there was something to clean up.
-  if (i == desktop_sessions_.end()) {
-    return;
-  }
-
-  (*i)->SetScreenResolution(resolution);
+  it->second->SetReceiver(std::move(control_receiver));
+  it->second->SetEventsRemote(std::move(events_remote));
+  it->second->ReconnectNetworkChannel(*options);
 }
 
 void DaemonProcess::CrashNetworkProcess(const base::Location& location) {
@@ -369,9 +362,12 @@ bool DaemonProcess::OnDesktopSessionAgentAttached(
     return true;
   }
 
-  if (desktop_session_connection_events_) {
-    desktop_session_connection_events_->OnDesktopSessionAgentAttached(
-        terminal_id, std::move(desktop_pipe));
+  auto session_it = desktop_sessions_.find(terminal_id);
+
+  if (session_it != desktop_sessions_.end() &&
+      session_it->second->events_remote()) {
+    session_it->second->events_remote()->OnDesktopSessionAgentAttached(
+        std::move(desktop_pipe));
   }
 
   return true;
@@ -382,9 +378,12 @@ void DaemonProcess::SendTerminalDisconnected(
     ErrorCode error_code,
     const std::string& error_details,
     const SourceLocation& error_location) {
-  if (desktop_session_connection_events_) {
-    desktop_session_connection_events_->OnTerminalDisconnected(
-        terminal_id, error_code, error_details, error_location);
+  auto session_it = desktop_sessions_.find(terminal_id);
+
+  if (session_it != desktop_sessions_.end() &&
+      session_it->second->events_remote()) {
+    session_it->second->events_remote()->OnTerminalDisconnected(
+        error_code, error_details, error_location);
   }
 }
 
@@ -418,9 +417,6 @@ void DaemonProcess::BindAssociatedInterfaces() {
   remoting_host_control_.reset();
   network_launcher_->GetRemoteAssociatedInterface(
       remoting_host_control_.BindNewEndpointAndPassReceiver());
-  desktop_session_connection_events_.reset();
-  network_launcher_->GetRemoteAssociatedInterface(
-      desktop_session_connection_events_.BindNewEndpointAndPassReceiver());
 }
 
 bool DaemonProcess::OnInitAfterChannelConnected(int32_t peer_pid) {
@@ -542,10 +538,10 @@ void DaemonProcess::OnHostShutdown() {
 }
 
 void DaemonProcess::DeleteAllDesktopSessions() {
-  while (!desktop_sessions_.empty()) {
-    delete desktop_sessions_.front();
-    desktop_sessions_.pop_front();
+  for (auto& [id, session] : desktop_sessions_) {
+    delete session;
   }
+  desktop_sessions_.clear();
 }
 
 // static

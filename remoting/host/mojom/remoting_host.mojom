@@ -40,35 +40,6 @@ interface RemotingHostControl {
   BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver);
 };
 
-// Provides a set of methods to allow the Daemon process to notify the network
-// (a.k.a. host) process of changes in the desktop environment.
-// The remote for this interface is owned in the high-privilege daemon process
-// and the receiver is bound in the low-privilege network process.
-[EnableIf=is_win|is_linux]
-interface DesktopSessionConnectionEvents {
-  // Notifies the network process that the daemon has disconnected the desktop
-  // session from the associated desktop environment.
-  // |error_details| is a human-readable diagnostic string and must not be
-  // parsed programmatically to execute logic.
-  OnTerminalDisconnected(int32 terminal_id,
-                         ProtocolErrorCode error_code,
-                         string error_details,
-                         SourceLocation error_location);
-
-  // Notifies the network process that |terminal_id| is now attached to
-  // a desktop integration process. |desktop_pipe| is the client end of the
-  // message pipe which will be used for IPC communication between the desktop
-  // process and the network process.
-  OnDesktopSessionAgentAttached(int32 terminal_id,
-                                handle<message_pipe> desktop_pipe);
-
-  // Requests the network process to bind a pending receiver of
-  // ChromotingSessionServices coming from a user-launched process for the
-  // desktop session identified by |terminal_id|.
-  OnSessionServicesClientConnected(
-      int32 terminal_id,
-      pending_receiver<ChromotingSessionServices> receiver);
-};
 
 // This enum mirrors the remoting::protocol::TransportRoute::RouteType enum.
 [EnableIf=is_win|is_linux]

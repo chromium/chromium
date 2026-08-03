@@ -22,6 +22,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/notreached.h"
@@ -198,7 +199,54 @@ __attribute__((used)) __attribute__((section(
 
 #endif  // BUILDFLAG(IS_APPLE)
 
+namespace remoting {
+
 namespace {
+
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
+class DesktopSessionManagerClient
+    : public base::RefCountedDeleteOnSequence<DesktopSessionManagerClient> {
+ public:
+  DesktopSessionManagerClient(
+      scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
+      mojo::PendingAssociatedRemote<mojom::DesktopSessionManager>
+          pending_remote)
+      : base::RefCountedDeleteOnSequence<DesktopSessionManagerClient>(
+            network_task_runner),
+        network_task_runner_(network_task_runner),
+        pending_remote_(std::move(pending_remote)) {}
+
+  DesktopSessionManagerClient(const DesktopSessionManagerClient&) = delete;
+  DesktopSessionManagerClient& operator=(const DesktopSessionManagerClient&) =
+      delete;
+
+  void GetDesktopSession(
+      mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+      mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+      mojom::DesktopSessionOptionsPtr options) {
+    DCHECK(network_task_runner_->BelongsToCurrentThread());
+    if (!remote_.is_bound() && pending_remote_.is_valid()) {
+      remote_.Bind(std::move(pending_remote_), network_task_runner_);
+    }
+    if (remote_.is_bound()) {
+      remote_->GetDesktopSession(std::move(control_receiver),
+                                 std::move(events_remote), std::move(options));
+    }
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<DesktopSessionManagerClient>;
+  friend class base::RefCountedDeleteOnSequence<DesktopSessionManagerClient>;
+  friend class base::DeleteHelper<DesktopSessionManagerClient>;
+  ~DesktopSessionManagerClient() = default;
+
+  scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
+  mojo::PendingAssociatedRemote<mojom::DesktopSessionManager> pending_remote_;
+  mojo::AssociatedRemote<mojom::DesktopSessionManager> remote_;
+};
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
+
+}  // namespace
 
 // This is used for tagging system event logs.
 const char kApplicationName[] = "chromoting";
@@ -256,7 +304,7 @@ bool IsInAllowlist(std::string_view value,
                       }) != allowlist.end();
 }
 
-}  // namespace
+}  // namespace remoting
 
 namespace remoting {
 
@@ -1089,13 +1137,6 @@ void HostProcess::OnAssociatedInterfaceRequest(
     mojo::PendingAssociatedReceiver<mojom::WorkerProcessControl>
         pending_receiver(std::move(handle));
     worker_process_control_.Bind(std::move(pending_receiver));
-  } else if (interface_name == mojom::DesktopSessionConnectionEvents::Name_) {
-    if (!desktop_session_connector_->BindConnectionEventsReceiver(
-            std::move(handle))) {
-      LOG(ERROR) << "Failed to bind Receiver for associated interface: "
-                 << mojom::DesktopSessionConnectionEvents::Name_;
-      CrashProcess(__FUNCTION__, __FILE__, __LINE__);
-    }
   } else {
     LOG(ERROR) << "Unknown associated interface requested: " << interface_name
                << ", crashing the network process";
@@ -1174,15 +1215,20 @@ void HostProcess::StartOnUiThread() {
     // We need to do a little dance here using a pending associated receiver so
     // that the remote is associated with the proper task_runner since it will
     // be invoked on the network thread.
-    mojo::AssociatedRemote<mojom::DesktopSessionManager> remote;
+    mojo::PendingAssociatedRemote<mojom::DesktopSessionManager>
+        desktop_session_manager;
     mojo::GenericPendingAssociatedReceiver pending_receiver =
-        remote.BindNewEndpointAndPassReceiver(context_->network_task_runner());
+        desktop_session_manager.InitWithNewEndpointAndPassReceiver();
     daemon_channel_->GetRemoteAssociatedInterface(std::move(pending_receiver));
+
+    auto client = base::MakeRefCounted<DesktopSessionManagerClient>(
+        context_->network_task_runner(), std::move(desktop_session_manager));
 
     auto desktop_environment_factory =
         std::make_unique<IpcDesktopEnvironmentFactory>(
             context_->network_task_runner(), context_->network_task_runner(),
-            std::move(remote));
+            base::BindRepeating(&DesktopSessionManagerClient::GetDesktopSession,
+                                client));
     desktop_session_connector_ = desktop_environment_factory.get();
     desktop_environment_factory_ = std::move(desktop_environment_factory);
   } else

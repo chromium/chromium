@@ -8,9 +8,11 @@ import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "remoting/host/mojom/chromoting_host_services.mojom";
 import "remoting/host/mojom/common.mojom";
 import "remoting/host/mojom/keyboard_layout.mojom";
 import "remoting/host/mojom/remote_security_key.mojom";
+import "remoting/host/mojom/remoting_host.mojom";
 import "remoting/host/mojom/webrtc_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -266,41 +268,70 @@ struct DesktopSessionOptions {
   // If non-empty, the login user of the desktop session must match `username`.
   string required_username;
 
-  // The identifier of the client connected to the desktop session. This may
-  // be used to recover a desktop session across host process restarts.
+  // The identifier of the client connected to the desktop session. This can be
+  // any string chosen by the caller of DesktopSessionManager. It may be used to
+  // recover a desktop session across host process restarts.
   string client_id;
+};
+
+// Allows the session owner (network process or peer connection process) to
+// control a specific desktop session.
+// The remote for this interface is owned by the session owner and the receiver
+// is bound in the high-privilege daemon process.
+// Note that closing or resetting the `DesktopSession` Mojo remote endpoint
+// disconnects host control without terminating the underlying desktop session,
+// allowing subsequent peer connection processes or clients to reconnect.
+[EnableIf=is_win|is_linux]
+interface DesktopSession {
+  // Sends the updated screen resolution to the desktop agent running in this
+  // session.
+  SetScreenResolution(ScreenResolution screen_resolution);
+
+  // Closes this desktop session.
+  CloseDesktopSession();
+};
+
+// Provides a set of methods to allow the Daemon process to notify the session
+// owner (network process or peer connection process) of changes in the desktop
+// environment.
+// The remote for this interface is owned in the high-privilege daemon process
+// and the receiver is bound in the session owner process.
+[EnableIf=is_win|is_linux]
+interface DesktopSessionEvents {
+  // Notifies the session owner that the daemon has disconnected the desktop
+  // session from the associated desktop environment.
+  // `error_details` is a human-readable diagnostic string and must not be
+  // parsed programmatically to execute logic.
+  OnTerminalDisconnected(ProtocolErrorCode error_code,
+                         string error_details,
+                         SourceLocation error_location);
+
+  // Notifies the session owner that the session is now attached to
+  // a desktop integration process. `desktop_pipe` is the client end of the
+  // message pipe which will be used for IPC communication between the desktop
+  // process and the session owner.
+  OnDesktopSessionAgentAttached(handle<message_pipe> desktop_pipe);
+
+  // Requests the session owner to bind a pending receiver of
+  // ChromotingSessionServices coming from a user-launched process for this
+  // desktop session.
+  OnSessionServicesClientConnected(
+      pending_receiver<ChromotingSessionServices> receiver);
 };
 
 // Allows the network process to ask the daemon process to create, update, or
 // destroy the current desktop session.
-// The remote for this interface is owned in the low-privilege network process
-// and the receiver is bound in the high-privilege daemon process.
+// The remote for this interface is owned in the trusted network process and the
+// receiver is bound in the high-privilege daemon process.
+[EnableIf=is_win|is_linux]
 interface DesktopSessionManager {
-  // Creates a chromoting desktop environment for the session identified by
-  // `terminal_id`. This is done by injecting a desktop agent process and
-  // establishing IPC channels between the daemon, desktop, and network
-  // processes.
-  CreateDesktopSession(int32 terminal_id, DesktopSessionOptions options);
-
-  // Request the desktop process to reconnect the network channel, i.e. create
-  // a new DesktopSessionAgent and pass a new desktop pipe to the network
-  // process via the daemon process. `terminal_id` must be the terminal ID of
-  // a previously created desktop session that has been disconnected from the
-  // network process, but not closed by calling CloseDesktopSession(). The
-  // desktop process will look at `options` and may terminate itself if the
-  // session is deemed not reconnectable, e.g. `required_username` has changed.
-  ReconnectDesktopSession(int32 terminal_id, DesktopSessionOptions options);
-
-  // Closes the desktop session identified by `terminal_id`. This involves
-  // terminating the desktop agent process and removing any references to the
-  // session being closed in the daemon and network processes. Not changes are
-  // made at an OS level, meaning the user can reconnect to the same session
-  // without a loss of state.
-  CloseDesktopSession(int32 terminal_id);
-
-  // Sends the updated screen resolution to the desktop agent running in the
-  // `terminal_id` session.
-  SetScreenResolution(int32 terminal_id, ScreenResolution screen_resolution);
+  // Requests a desktop environment for the session identified by
+  // `options.client_id`. If an existing persistent session exists for
+  // `client_id`, it is reconnected; otherwise a new session is spawned.
+  GetDesktopSession(
+      pending_receiver<DesktopSession> control_receiver,
+      pending_remote<DesktopSessionEvents> events_remote,
+      DesktopSessionOptions options);
 };
 
 // A set of options used to customize the desktop session behavior.

@@ -158,12 +158,12 @@ IpcDesktopEnvironmentFactory::DesktopConnection&
 IpcDesktopEnvironmentFactory::DesktopConnection::operator=(
     DesktopConnection&&) = default;
 
-class IpcDesktopEnvironmentFactory::Core {
+class IpcDesktopEnvironmentFactory::Core : public mojom::DesktopSessionEvents {
  public:
-  explicit Core(mojo::AssociatedRemote<mojom::DesktopSessionManager> remote);
+  explicit Core(GetDesktopSessionCallback get_desktop_session_callback);
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
-  ~Core();
+  ~Core() override;
 
   void ConnectTerminal(DesktopSessionProxy* desktop_session_proxy,
                        const ScreenResolution& resolution,
@@ -186,6 +186,18 @@ class IpcDesktopEnvironmentFactory::Core {
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);
 #endif
 
+  // mojom::DesktopSessionEvents implementation.
+  void OnDesktopSessionAgentAttached(
+      mojo::ScopedMessagePipeHandle desktop_pipe) override;
+  void OnTerminalDisconnected(ErrorCode error_code,
+                              const std::string& error_details,
+                              const SourceLocation& error_location) override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  void OnSessionServicesClientConnected(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override;
+#endif
+
   void set_persist_desktop_sessions_for_testing(bool persistent) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     persist_desktop_sessions_ = persistent;
@@ -197,13 +209,16 @@ class IpcDesktopEnvironmentFactory::Core {
   const DesktopConnection* GetConnectionForTesting(int terminal_id) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto it = connections_.find(terminal_id);
-    return it != connections_.end() ? &it->second : nullptr;
+    return it != connections_.end() ? it->second.get() : nullptr;
   }
 
  private:
   // List of DesktopEnvironment instances we've told the daemon process about.
-  using ConnectionsList = absl::flat_hash_map<int, DesktopConnection>;
+  using ConnectionsList =
+      absl::flat_hash_map<int, std::unique_ptr<DesktopConnection>>;
   ConnectionsList::iterator FindConnection(const DesktopSessionProxy* proxy);
+  mojo::ReceiverSet<mojom::DesktopSessionEvents, int>& GetEventsReceivers();
+  void OnDesktopSessionRemoteDisconnected(int terminal_id);
 
   // If `persist_desktop_sessions_` is true, instead of closing the desktop
   // session when the client disconnects, the session will remain active while
@@ -226,19 +241,31 @@ class IpcDesktopEnvironmentFactory::Core {
 
   // See DesktopSessionConnector::SetRequiredUsername().
   std::string required_username_;
-  mojo::AssociatedRemote<mojom::DesktopSessionManager> desktop_session_manager_;
+  GetDesktopSessionCallback get_desktop_session_callback_;
+  std::unique_ptr<mojo::ReceiverSet<mojom::DesktopSessionEvents, int>>
+      desktop_session_events_receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 IpcDesktopEnvironmentFactory::Core::Core(
-    mojo::AssociatedRemote<mojom::DesktopSessionManager> remote)
-    : desktop_session_manager_(std::move(remote)) {
+    GetDesktopSessionCallback get_desktop_session_callback)
+    : get_desktop_session_callback_(std::move(get_desktop_session_callback)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 IpcDesktopEnvironmentFactory::Core::~Core() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+mojo::ReceiverSet<mojom::DesktopSessionEvents, int>&
+IpcDesktopEnvironmentFactory::Core::GetEventsReceivers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!desktop_session_events_receivers_) {
+    desktop_session_events_receivers_ =
+        std::make_unique<mojo::ReceiverSet<mojom::DesktopSessionEvents, int>>();
+  }
+  return *desktop_session_events_receivers_;
 }
 
 void IpcDesktopEnvironmentFactory::Core::ConnectTerminal(
@@ -265,37 +292,58 @@ void IpcDesktopEnvironmentFactory::Core::ConnectTerminal(
   if (persist_desktop_sessions_) {
     auto it =
         std::ranges::find_if(connections_, [&client_id](const auto& pair) {
-          return pair.second.client_id == client_id &&
+          return pair.second->client_id == client_id &&
                  // Find an unused session.
-                 !pair.second.desktop_session_proxy;
+                 !pair.second->desktop_session_proxy;
         });
     if (it != connections_.end()) {
       int id = it->first;
       VLOG(1) << "Network: reconnecting desktop session " << id;
-      it->second.desktop_session_proxy = desktop_session_proxy;
-      if (it->second.pending_desktop_pipe.is_valid()) {
+      it->second->desktop_session_proxy = desktop_session_proxy;
+      if (it->second->pending_desktop_pipe.is_valid()) {
         VLOG(1) << "Network: using buffered desktop pipe for session " << id;
         desktop_session_proxy->AttachToDesktop(
-            std::move(it->second.pending_desktop_pipe));
+            std::move(it->second->pending_desktop_pipe));
       } else {
-        desktop_session_manager_->ReconnectDesktopSession(id,
-                                                          std::move(options));
+        it->second->desktop_session.reset();
+        mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote;
+        GetEventsReceivers().Add(
+            this, events_remote.InitWithNewPipeAndPassReceiver(), id);
+        if (get_desktop_session_callback_) {
+          get_desktop_session_callback_.Run(
+              it->second->desktop_session.BindNewPipeAndPassReceiver(),
+              std::move(events_remote), std::move(options));
+        }
+        if (it->second->desktop_session.is_bound()) {
+          it->second->desktop_session.set_disconnect_handler(
+              base::BindOnce(&Core::OnDesktopSessionRemoteDisconnected,
+                             base::Unretained(this), id));
+        }
       }
       return;
     }
   }
 
   int id = next_id_++;
-  bool inserted =
-      connections_
-          .insert(std::make_pair(
-              id, DesktopConnection{desktop_session_proxy, client_id}))
-          .second;
+  auto connection =
+      std::make_unique<DesktopConnection>(desktop_session_proxy, client_id);
+  auto [it, inserted] = connections_.emplace(id, std::move(connection));
   CHECK(inserted);
 
   VLOG(1) << "Network: registered desktop session " << id;
 
-  desktop_session_manager_->CreateDesktopSession(id, std::move(options));
+  mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote;
+  GetEventsReceivers().Add(this, events_remote.InitWithNewPipeAndPassReceiver(),
+                           id);
+  if (get_desktop_session_callback_) {
+    get_desktop_session_callback_.Run(
+        it->second->desktop_session.BindNewPipeAndPassReceiver(),
+        std::move(events_remote), std::move(options));
+  }
+  if (it->second->desktop_session.is_bound()) {
+    it->second->desktop_session.set_disconnect_handler(base::BindOnce(
+        &Core::OnDesktopSessionRemoteDisconnected, base::Unretained(this), id));
+  }
 }
 
 void IpcDesktopEnvironmentFactory::Core::DisconnectTerminal(
@@ -308,15 +356,17 @@ void IpcDesktopEnvironmentFactory::Core::DisconnectTerminal(
   }
 
   if (persist_desktop_sessions_) {
-    it->second.desktop_session_proxy = nullptr;
+    it->second->desktop_session_proxy = nullptr;
     return;
   }
 
   int id = it->first;
+  if (it->second->desktop_session.is_bound()) {
+    it->second->desktop_session->CloseDesktopSession();
+  }
   connections_.erase(it);
 
   VLOG(1) << "Network: unregistered desktop session " << id;
-  desktop_session_manager_->CloseDesktopSession(id);
 }
 
 void IpcDesktopEnvironmentFactory::Core::SetScreenResolution(
@@ -325,8 +375,8 @@ void IpcDesktopEnvironmentFactory::Core::SetScreenResolution(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = FindConnection(desktop_session_proxy);
-  if (it != connections_.end()) {
-    desktop_session_manager_->SetScreenResolution(it->first, resolution);
+  if (it != connections_.end() && it->second->desktop_session.is_bound()) {
+    it->second->desktop_session->SetScreenResolution(resolution);
   }
 }
 
@@ -347,6 +397,28 @@ void IpcDesktopEnvironmentFactory::Core::SetRequiredUsername(
 }
 
 void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionAgentAttached(
+    mojo::ScopedMessagePipeHandle desktop_pipe) {
+  OnDesktopSessionAgentAttached(GetEventsReceivers().current_context(),
+                                std::move(desktop_pipe));
+}
+
+void IpcDesktopEnvironmentFactory::Core::OnTerminalDisconnected(
+    ErrorCode error_code,
+    const std::string& error_details,
+    const SourceLocation& error_location) {
+  OnTerminalDisconnected(GetEventsReceivers().current_context(), error_code,
+                         error_details, error_location);
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+void IpcDesktopEnvironmentFactory::Core::OnSessionServicesClientConnected(
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  OnSessionServicesClientConnected(GetEventsReceivers().current_context(),
+                                   std::move(receiver));
+}
+#endif
+
+void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionAgentAttached(
     int terminal_id,
     mojo::ScopedMessagePipeHandle desktop_pipe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -357,10 +429,10 @@ void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionAgentAttached(
 
   auto it = connections_.find(terminal_id);
   if (it != connections_.end()) {
-    DesktopSessionProxy* proxy = it->second.desktop_session_proxy;
+    DesktopSessionProxy* proxy = it->second->desktop_session_proxy;
     if (!proxy) {
       VLOG(1) << "Network: buffering desktop pipe for session " << terminal_id;
-      it->second.pending_desktop_pipe = std::move(desktop_pipe);
+      it->second->pending_desktop_pipe = std::move(desktop_pipe);
       return;
     }
     proxy->DetachFromDesktop();
@@ -378,7 +450,7 @@ void IpcDesktopEnvironmentFactory::Core::OnTerminalDisconnected(
   auto it = connections_.find(terminal_id);
   if (it != connections_.end()) {
     DesktopSessionProxy* desktop_session_proxy =
-        it->second.desktop_session_proxy;
+        it->second->desktop_session_proxy;
     connections_.erase(it);
 
     if (desktop_session_proxy) {
@@ -399,7 +471,7 @@ void IpcDesktopEnvironmentFactory::Core::OnSessionServicesClientConnected(
 
   auto it = connections_.find(terminal_id);
   if (it != connections_.end()) {
-    DesktopSessionProxy* proxy = it->second.desktop_session_proxy;
+    DesktopSessionProxy* proxy = it->second->desktop_session_proxy;
     if (proxy) {
       proxy->OnSessionServicesClientConnected(std::move(receiver));
     } else {
@@ -413,21 +485,45 @@ void IpcDesktopEnvironmentFactory::Core::OnSessionServicesClientConnected(
 }
 #endif
 
+void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionRemoteDisconnected(
+    int terminal_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = connections_.find(terminal_id);
+  if (it == connections_.end()) {
+    return;
+  }
+
+  LOG(WARNING) << "DesktopSession control remote disconnected for terminal "
+               << terminal_id;
+
+  if (persist_desktop_sessions_) {
+    it->second->desktop_session.reset();
+  } else {
+    DesktopSessionProxy* proxy = it->second->desktop_session_proxy;
+    connections_.erase(it);
+    if (proxy) {
+      proxy->DisconnectSession(ErrorCode::CHANNEL_CONNECTION_ERROR,
+                               "DesktopSession control remote disconnected.",
+                               FROM_HERE);
+    }
+  }
+}
+
 IpcDesktopEnvironmentFactory::Core::ConnectionsList::iterator
 IpcDesktopEnvironmentFactory::Core::FindConnection(
     const DesktopSessionProxy* proxy) {
   return std::ranges::find_if(connections_, [proxy](const auto& pair) {
-    return pair.second.desktop_session_proxy == proxy;
+    return pair.second->desktop_session_proxy == proxy;
   });
 }
 
 IpcDesktopEnvironmentFactory::IpcDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    mojo::AssociatedRemote<mojom::DesktopSessionManager> remote)
+    GetDesktopSessionCallback get_desktop_session_callback)
     : network_task_runner_(network_task_runner),
       io_task_runner_(io_task_runner),
-      core_(new Core(std::move(remote)),
+      core_(new Core(std::move(get_desktop_session_callback)),
             base::OnTaskRunnerDeleter(network_task_runner)) {}
 
 IpcDesktopEnvironmentFactory::~IpcDesktopEnvironmentFactory() = default;
@@ -458,87 +554,44 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
     DesktopSessionProxy* desktop_session_proxy,
     const ScreenResolution& resolution,
     bool is_curtained) {
-  DCHECK(network_task_runner_->BelongsToCurrentThread());
   core_->ConnectTerminal(desktop_session_proxy, resolution, is_curtained);
 }
 
 void IpcDesktopEnvironmentFactory::DisconnectTerminal(
     DesktopSessionProxy* desktop_session_proxy) {
-  DCHECK(network_task_runner_->BelongsToCurrentThread());
   core_->DisconnectTerminal(desktop_session_proxy);
 }
 
 void IpcDesktopEnvironmentFactory::SetScreenResolution(
     DesktopSessionProxy* desktop_session_proxy,
     const ScreenResolution& resolution) {
-  DCHECK(network_task_runner_->BelongsToCurrentThread());
   core_->SetScreenResolution(desktop_session_proxy, resolution);
-}
-
-bool IpcDesktopEnvironmentFactory::BindConnectionEventsReceiver(
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  if (desktop_session_connection_events_.is_bound()) {
-    return false;
-  }
-
-  mojo::PendingAssociatedReceiver<mojom::DesktopSessionConnectionEvents>
-      pending_receiver(std::move(handle));
-  desktop_session_connection_events_.Bind(std::move(pending_receiver));
-
-  return true;
 }
 
 void IpcDesktopEnvironmentFactory::SetRequiredUsername(
     std::string_view username) {
-  DCHECK(network_task_runner_->BelongsToCurrentThread());
   core_->SetRequiredUsername(username);
 }
 
-void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
+void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttachedForTesting(
     int terminal_id,
     mojo::ScopedMessagePipeHandle desktop_pipe) {
-  if (!network_task_runner_->BelongsToCurrentThread()) {
-    network_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &IpcDesktopEnvironmentFactory::Core::OnDesktopSessionAgentAttached,
-            base::Unretained(core_.get()), terminal_id,
-            std::move(desktop_pipe)));
-    return;
-  }
   core_->OnDesktopSessionAgentAttached(terminal_id, std::move(desktop_pipe));
 }
 
-void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(
+void IpcDesktopEnvironmentFactory::OnTerminalDisconnectedForTesting(
     int terminal_id,
     ErrorCode error_code,
     const std::string& error_details,
     const SourceLocation& error_location) {
-  if (!network_task_runner_->BelongsToCurrentThread()) {
-    network_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &IpcDesktopEnvironmentFactory::Core::OnTerminalDisconnected,
-            base::Unretained(core_.get()), terminal_id, error_code,
-            error_details, error_location));
-    return;
-  }
   core_->OnTerminalDisconnected(terminal_id, error_code, error_details,
                                 error_location);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-void IpcDesktopEnvironmentFactory::OnSessionServicesClientConnected(
+void IpcDesktopEnvironmentFactory::OnSessionServicesClientConnectedForTesting(
     int terminal_id,
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
-  if (!network_task_runner_->BelongsToCurrentThread()) {
-    network_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&IpcDesktopEnvironmentFactory::Core::
-                                      OnSessionServicesClientConnected,
-                                  base::Unretained(core_.get()), terminal_id,
-                                  std::move(receiver)));
-    return;
-  }
   core_->OnSessionServicesClientConnected(terminal_id, std::move(receiver));
 }
 #endif

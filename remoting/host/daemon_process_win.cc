@@ -382,16 +382,15 @@ void DaemonProcessWin::BindSessionServices(
 
   uint32_t peer_session_id =
       host_services_receivers().current_context()->session_id;
-  auto& sessions = desktop_sessions();
-  auto it =
-      std::ranges::find_if(sessions, [peer_session_id](DesktopSession* s) {
-        return static_cast<DesktopSessionWin*>(s)->windows_session_id() ==
-               peer_session_id;
-      });
+  const auto& sessions = desktop_sessions();
+  auto it = std::ranges::find_if(sessions, [peer_session_id](const auto& pair) {
+    return static_cast<DesktopSessionWin*>(pair.second.get())
+               ->windows_session_id() == peer_session_id;
+  });
 
-  if (it != sessions.end()) {
-    desktop_session_connection_events()->OnSessionServicesClientConnected(
-        (*it)->id(), std::move(receiver));
+  if (it != sessions.end() && it->second->events_remote()) {
+    it->second->events_remote()->OnSessionServicesClientConnected(
+        std::move(receiver));
   } else {
     LOG(WARNING) << "No desktop session found for Windows session ID "
                  << peer_session_id;

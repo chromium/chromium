@@ -12,11 +12,15 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/errors.h"
@@ -97,12 +101,15 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
 class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
                                      public DesktopSessionConnector {
  public:
-  // Passes a reference to the IPC channel connected to the daemon process and
-  // relevant task runners. |remote| must be released on |network_task_runner|.
+  using GetDesktopSessionCallback = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+      mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+      mojom::DesktopSessionOptionsPtr options)>;
+
   IpcDesktopEnvironmentFactory(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      mojo::AssociatedRemote<mojom::DesktopSessionManager> remote);
+      GetDesktopSessionCallback get_desktop_session_callback);
 
   IpcDesktopEnvironmentFactory(const IpcDesktopEnvironmentFactory&) = delete;
   IpcDesktopEnvironmentFactory& operator=(const IpcDesktopEnvironmentFactory&) =
@@ -124,22 +131,8 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   void DisconnectTerminal(DesktopSessionProxy* desktop_session_proxy) override;
   void SetScreenResolution(DesktopSessionProxy* desktop_session_proxy,
                            const ScreenResolution& resolution) override;
-  bool BindConnectionEventsReceiver(
-      mojo::ScopedInterfaceEndpointHandle handle) override;
+
   void SetRequiredUsername(std::string_view username) override;
-  void OnDesktopSessionAgentAttached(
-      int terminal_id,
-      mojo::ScopedMessagePipeHandle desktop_pipe) override;
-  void OnTerminalDisconnected(int terminal_id,
-                              ErrorCode error_code,
-                              const std::string& error_details,
-                              const SourceLocation& error_location) override;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  void OnSessionServicesClientConnected(
-      int terminal_id,
-      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
-      override;
-#endif
 
  private:
   friend class IpcDesktopEnvironmentTest;
@@ -172,6 +165,9 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
     // multiple client users.
     std::string client_id;
 
+    // Remote for this specific desktop session.
+    mojo::Remote<mojom::DesktopSession> desktop_session;
+
     // A pipe that was received before the `desktop_session_proxy` was set.
     mojo::ScopedMessagePipeHandle pending_desktop_pipe;
   };
@@ -180,6 +176,20 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   size_t active_desktop_sessions_count_for_testing() const;
   const DesktopConnection* GetConnectionForTesting(int terminal_id) const;
 
+  // Test-only helper methods forwarding to Core.
+  void OnDesktopSessionAgentAttachedForTesting(
+      int terminal_id,
+      mojo::ScopedMessagePipeHandle desktop_pipe);
+  void OnTerminalDisconnectedForTesting(int terminal_id,
+                                        ErrorCode error_code,
+                                        const std::string& error_details,
+                                        const SourceLocation& error_location);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  void OnSessionServicesClientConnectedForTesting(
+      int terminal_id,
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);
+#endif
+
   // Task runner on which DesktopEnvironmentFactory methods should be called.
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
 
@@ -187,9 +197,6 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   std::unique_ptr<Core, base::OnTaskRunnerDeleter> core_;
-
-  mojo::AssociatedReceiver<mojom::DesktopSessionConnectionEvents>
-      desktop_session_connection_events_{this};
 
   // Factory for weak pointers to DesktopSessionConnector interface.
   base::WeakPtrFactory<DesktopSessionConnector> connector_factory_{this};

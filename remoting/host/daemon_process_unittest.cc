@@ -151,7 +151,7 @@ class DaemonProcessTest : public testing::Test {
 
   void StartDaemonProcess();
 
-  const DaemonProcess::DesktopSessionList& desktop_sessions() const {
+  const DaemonProcess::DesktopSessionMap& desktop_sessions() const {
     return daemon_process_->desktop_sessions();
   }
 
@@ -229,9 +229,10 @@ TEST_F(DaemonProcessTest, OpenClose) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
   EXPECT_EQ(desktop_sessions().size(), 1u);
-  EXPECT_EQ(id, desktop_sessions().front()->id());
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
 
   daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
@@ -245,9 +246,10 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
   EXPECT_EQ(desktop_sessions().size(), 1u);
-  EXPECT_EQ(id, desktop_sessions().front()->id());
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
 
   daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
@@ -263,9 +265,10 @@ TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
   EXPECT_EQ(desktop_sessions().size(), 1u);
-  EXPECT_EQ(id, desktop_sessions().front()->id());
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
 
   daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
@@ -306,11 +309,13 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
   EXPECT_EQ(desktop_sessions().size(), 1u);
-  EXPECT_EQ(id, desktop_sessions().front()->id());
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
 
-  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
   EXPECT_TRUE(desktop_sessions().empty());
   EXPECT_EQ(terminal_id_, 0);
 }
@@ -329,9 +334,10 @@ TEST_F(DaemonProcessTest, LaunchPeerConnectionProcess) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
   EXPECT_EQ(desktop_sessions().size(), 1u);
-  EXPECT_EQ(id, desktop_sessions().front()->id());
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
 
   daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());

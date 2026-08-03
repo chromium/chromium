@@ -349,7 +349,10 @@ void RdpSession::OnRdpClosed() {
 
 void RdpSession::SetScreenResolution(const ScreenResolution& resolution) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
-  DCHECK(!resolution.IsEmpty());
+  if (resolution.IsEmpty()) {
+    LOG(ERROR) << "Invalid resolution specified: " << resolution;
+    return;
+  }
 
   webrtc::DesktopSize bounded_size = GetBoundedRdpDesktopSize(
       resolution.dimensions().width(), resolution.dimensions().height());

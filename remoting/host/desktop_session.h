@@ -7,6 +7,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 
 namespace remoting {
@@ -16,15 +18,15 @@ class ScreenResolution;
 
 // Represents the desktop session for a connected terminal. Each desktop session
 // has a unique identifier used by cross-platform code to refer to it.
-class DesktopSession {
+class DesktopSession : public mojom::DesktopSession {
  public:
   DesktopSession(const DesktopSession&) = delete;
   DesktopSession& operator=(const DesktopSession&) = delete;
 
-  virtual ~DesktopSession();
+  ~DesktopSession() override;
 
   // Changes the screen resolution of the desktop session.
-  virtual void SetScreenResolution(const ScreenResolution& resolution) = 0;
+  void SetScreenResolution(const ScreenResolution& resolution) override = 0;
 
   // Requests the desktop process to reconnect the network channel, i.e.
   // creating a new DesktopSessionAgent instance and passing a new desktop pipe
@@ -33,6 +35,21 @@ class DesktopSession {
       const mojom::DesktopSessionOptions& options) = 0;
 
   int id() const { return id_; }
+
+  const std::string& client_id() const { return client_id_; }
+  void set_client_id(std::string client_id) {
+    client_id_ = std::move(client_id);
+  }
+
+  void SetReceiver(mojo::PendingReceiver<mojom::DesktopSession> receiver);
+  void SetEventsRemote(mojo::PendingRemote<mojom::DesktopSessionEvents> remote);
+
+  mojom::DesktopSessionEvents* events_remote() {
+    return events_remote_.is_bound() ? events_remote_.get() : nullptr;
+  }
+
+  // mojom::DesktopSession implementation.
+  void CloseDesktopSession() override;
 
  protected:
   // Creates a terminal and assigns a unique identifier to it. |daemon_process|
@@ -47,6 +64,11 @@ class DesktopSession {
 
   // A unique identifier of the terminal.
   const int id_;
+
+  std::string client_id_;
+
+  mojo::Receiver<mojom::DesktopSession> receiver_{this};
+  mojo::Remote<mojom::DesktopSessionEvents> events_remote_;
 };
 
 }  // namespace remoting
