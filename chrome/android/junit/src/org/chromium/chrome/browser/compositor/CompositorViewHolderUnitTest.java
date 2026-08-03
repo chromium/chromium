@@ -102,6 +102,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -1423,6 +1424,37 @@ public class CompositorViewHolderUnitTest {
         runCurrentTasks();
 
         // Verify.
+        verify(mWebContents, atLeastOnce())
+                .setSize(viewportWidth - (startContainerWidth + endContainerWidth), viewportHeight);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void testOnSideUiSpecsChanged_updateWebContentsSize_verticalTabs() {
+        when(mResources.getInteger(R.integer.min_screen_width_bucket))
+                .thenReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+        reset(mWebContents);
+
+        int viewportHeight = 941;
+        int viewportWidth = 1080;
+        when(mCompositorViewHolder.getWidth()).thenReturn(viewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(viewportHeight);
+
+        int startContainerWidth = 100;
+        int endContainerWidth = 200;
+        SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+
+        // Make SideUiStateProvider available.
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
+
+        // Verify that web contents width is updated when vertical tabs is enabled on tablet.
         verify(mWebContents, atLeastOnce())
                 .setSize(viewportWidth - (startContainerWidth + endContainerWidth), viewportHeight);
     }
