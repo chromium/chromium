@@ -134,7 +134,7 @@ impl Drop for UntypedHandle {
 /// NOTE: The C equivalent of this type is not thread-safe, because it exposes
 /// direct mutable access to its internal buffer without any locks. In Rust,
 /// the borrow checker enforces that accesses are safe, so this type can be
-/// safely shared between threads..
+/// safely shared between threads.
 #[repr(transparent)]
 #[derive(Debug)] // Do NOT derive Copy or Clone!
 pub struct MessageHandle {
@@ -147,11 +147,23 @@ impl MessageHandle {
     /// # Safety
     /// The value must represent a live, unowned handle.
     /// Passing a value of 0 will panic, but will not cause undefined behavior.
-    pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
+    pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoMessageHandle) -> Self {
         if is_pseudohandle(raw_value) {
             panic!("Cannot wrap a handle value between 0 and -12!")
         }
         Self { handle_value: raw_value.try_into().unwrap() }
+    }
+
+    /// Consume this MessageHandle and return the underlying raw
+    /// MojoMessageHandle.
+    ///
+    /// This function gives up ownership of the underlying handle, so the
+    /// caller is responsible for ensuring it does not get copied, and gets
+    /// properly closed.
+    pub fn into_raw_value(self) -> raw_ffi::MojoMessageHandle {
+        let val = self.handle_value.into();
+        std::mem::forget(self);
+        val
     }
 }
 

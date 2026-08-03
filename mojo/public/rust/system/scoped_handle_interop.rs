@@ -24,9 +24,11 @@
 //! function).
 //!
 //! For an example of doing this, see //mojo/public/rust/bindings/test/cxx.rs.
+//!
+//! TODO(crbug.com/538560311): Replace all this with crubit once it's enabled.
 
 use crate::message_pipe::MessageEndpoint;
-use crate::mojo_types::UntypedHandle;
+use crate::mojo_types::{MessageHandle, UntypedHandle};
 
 #[cxx::bridge(namespace = "mojo::rust")]
 mod ffi {
@@ -44,6 +46,12 @@ mod ffi {
         fn Release(wrapper: UniquePtr<ScopedMessagePipeHandleWrapper>) -> usize;
         #[Self = ScopedMessagePipeHandleWrapper]
         fn Create(handle: usize) -> UniquePtr<ScopedMessagePipeHandleWrapper>;
+
+        pub type ScopedMessageHandleWrapper;
+        #[Self = ScopedMessageHandleWrapper]
+        fn Release(wrapper: UniquePtr<ScopedMessageHandleWrapper>) -> usize;
+        #[Self = ScopedMessageHandleWrapper]
+        fn Create(handle: usize) -> UniquePtr<ScopedMessageHandleWrapper>;
     }
 }
 
@@ -55,7 +63,7 @@ pub use ffi::*;
 // orphaning rule: this crate doesn't define `UniquePtr` or `UntypedHandle`.
 
 impl ScopedHandleWrapper {
-    /// Returns None if the given handle is 0.
+    /// Returns None if the given handle is null.
     pub fn into_untyped_handle(handle: cxx::UniquePtr<Self>) -> Option<UntypedHandle> {
         let raw = Self::Release(handle);
         if raw == 0 {
@@ -73,7 +81,7 @@ impl ScopedHandleWrapper {
 }
 
 impl ScopedMessagePipeHandleWrapper {
-    /// Returns None if the given handle is 0.
+    /// Returns None if the given handle is null.
     pub fn into_message_endpoint(handle: cxx::UniquePtr<Self>) -> Option<MessageEndpoint> {
         let raw = Self::Release(handle);
         if raw == 0 {
@@ -88,5 +96,23 @@ impl ScopedMessagePipeHandleWrapper {
 
     pub fn from_message_endpoint(endpoint: MessageEndpoint) -> cxx::UniquePtr<Self> {
         Self::Create(UntypedHandle::from(endpoint).into_raw_value())
+    }
+}
+
+impl ScopedMessageHandleWrapper {
+    /// Returns None if the given handle is null.
+    pub fn into_message_handle(handle: cxx::UniquePtr<Self>) -> Option<MessageHandle> {
+        let raw = Self::Release(handle);
+        if raw == 0 {
+            return None;
+        }
+        // SAFETY: The ScopedHandle type owns its underlying handle value, which
+        // is either live or 0, and we know it's not 0. `Release` gives up that
+        // ownership.
+        Some(unsafe { MessageHandle::wrap_raw_value(raw) })
+    }
+
+    pub fn from_message_handle(handle: MessageHandle) -> cxx::UniquePtr<Self> {
+        Self::Create(handle.into_raw_value())
     }
 }

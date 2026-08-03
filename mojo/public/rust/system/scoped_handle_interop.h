@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_RUST_SYSTEM_SCOPED_HANDLE_INTEROP_H_
 
 #include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/system/message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 // This file defines wrapper types that expose the various Scoped*Handle types
@@ -62,6 +63,25 @@ class ScopedMessagePipeHandleWrapper {
 
  private:
   mojo::ScopedMessagePipeHandle handle_;
+};
+
+class ScopedMessageHandleWrapper {
+ public:
+  explicit ScopedMessageHandleWrapper(mojo::ScopedMessageHandle handle);
+  ~ScopedMessageHandleWrapper();
+
+  ScopedMessageHandleWrapper(const ScopedMessageHandleWrapper&) = delete;
+  ScopedMessageHandleWrapper& operator=(const ScopedMessageHandleWrapper&) =
+      delete;
+
+  static uintptr_t Release(std::unique_ptr<ScopedMessageHandleWrapper> wrapper);
+
+  static std::unique_ptr<ScopedMessageHandleWrapper> Create(uintptr_t handle);
+
+  mojo::ScopedMessageHandle take_handle() { return std::move(handle_); }
+
+ private:
+  mojo::ScopedMessageHandle handle_;
 };
 
 }  // namespace mojo::rust
