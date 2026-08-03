@@ -1824,6 +1824,7 @@ source_set("unit_tests") {
     "suggestions/payments/iban_suggestion_generator_unittest.cc",
     "suggestions/payments/merchant_promo_code_suggestion_generator_unittest.cc",
     "suggestions/suggestion_unittest.cc",
+    "suggestions/suggestion_util_unittest.cc",
     "suggestions/valuables/valuable_suggestion_generator_unittest.cc",
     "ui/addresses/autofill_address_util_unittest.cc",
     "ui/autofill_external_delegate_unittest.cc",

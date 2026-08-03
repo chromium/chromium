@@ -40,9 +40,10 @@ bool SuppressSuggestionsForAutocompleteUnrecognizedField(
     const AutofillField& field,
     AutocompleteUnrecognizedBehavior behavior);
 
-// Updates and returns `current_suggestions` such that all suggestions apart
-// from `selected_suggestion` are deactivated. `selected_suggestion` is marked
-// as "loading".
+// Updates and returns `current_suggestions` such that a root-level suggestion
+// is marked as "loading" if either it is `selected_suggestion` or any of its
+// descendants are. Otherwise, root-level suggestions are deactivated. All child
+// suggestions (at any level) are deactivated.
 std::vector<Suggestion> PrepareLoadingStateSuggestions(
     std::vector<Suggestion> current_suggestions,
     const Suggestion& selected_suggestion);
