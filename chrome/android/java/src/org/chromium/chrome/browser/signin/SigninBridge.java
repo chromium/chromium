@@ -24,6 +24,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
@@ -82,6 +83,7 @@ final class SigninBridge {
                 WindowAndroid windowAndroid,
                 IdentityManager identityManager,
                 SigninManager signinManager,
+                @Nullable AccountPreviewDataService accountPreviewDataService,
                 BottomSheetController bottomSheetController,
                 AccountPickerDelegate accountPickerDelegate,
                 AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -94,6 +96,7 @@ final class SigninBridge {
                     windowAndroid,
                     identityManager,
                     signinManager,
+                    accountPreviewDataService,
                     bottomSheetController,
                     accountPickerDelegate,
                     accountPickerBottomSheetStrings,
@@ -390,10 +393,13 @@ final class SigninBridge {
             return;
         }
 
+        AccountPreviewDataService accountPreviewDataService =
+                IdentityServicesProvider.get().getAccountPreviewDataService(profile);
         factory.create(
                 windowAndroid,
                 signinManager.getIdentityManager(),
                 signinManager,
+                accountPreviewDataService,
                 bottomSheetController,
                 new WebSigninAccountPickerDelegate(tab, new WebSigninBridge.Factory(), continueUrl),
                 strings,

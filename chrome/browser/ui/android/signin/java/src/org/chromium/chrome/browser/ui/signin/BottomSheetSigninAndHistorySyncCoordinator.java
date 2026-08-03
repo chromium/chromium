@@ -26,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -656,8 +657,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     }
 
     private void showSigninBottomSheet() {
-        SigninManager signinManager =
-                IdentityServicesProvider.get().getSigninManager(assertNonNull(mProfile));
+        Profile profile = assertNonNull(mProfile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(signinManager);
         @AccountPickerLaunchMode int accountPickerMode = AccountPickerLaunchMode.DEFAULT;
         switch (mConfig.withAccountSigninMode) {
@@ -669,6 +670,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                 break;
         }
 
+        AccountPreviewDataService accountPreviewDataService =
+                IdentityServicesProvider.get().getAccountPreviewDataService(profile);
+
         mSigninBottomSheetCoordinator =
                 new SigninBottomSheetCoordinator(this, mDelegate.getSigninFlowVariant());
         // show() is separate to ensure this instance is assigned before any synchronous callbacks
@@ -679,6 +683,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                 mBottomSheetController.get(),
                 mDeviceLockActivityLauncher,
                 signinManager,
+                accountPreviewDataService,
                 mConfig.bottomSheetStrings,
                 accountPickerMode,
                 mConfig.withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN,

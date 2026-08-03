@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelperJni;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
@@ -144,6 +145,7 @@ public class NewTabPageCoordinatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SigninManager mSigninManager;
+    @Mock private AccountPreviewDataService mAccountPreviewDataService;
     @Mock private SyncService mSyncService;
     @Mock private BackPressManager mBackPressManager;
     @Mock private SearchBoxCoordinator mMockSearchBox;
@@ -174,6 +176,7 @@ public class NewTabPageCoordinatorUnitTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
+        IdentityServicesProvider.setAccountPreviewDataServiceForTesting(mAccountPreviewDataService);
 
         // Setup for the composeplate buttons.
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);

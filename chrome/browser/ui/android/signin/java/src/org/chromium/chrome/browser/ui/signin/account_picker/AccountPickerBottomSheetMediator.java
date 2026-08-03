@@ -19,6 +19,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
@@ -71,6 +72,10 @@ public class AccountPickerBottomSheetMediator
     private final AccountManagerFacade mAccountManagerFacade;
     private final boolean mIsSeamlessSignin;
 
+    // TODO(crbug.com/532967032): Remove annotation once implementation is complete.
+    @SuppressWarnings("UnusedVariable")
+    private final @Nullable AccountPreviewDataService mAccountPreviewDataService;
+
     private @Nullable Runnable mRequestDisplayBottomSheet;
     private @Nullable CoreAccountInfo mSelectedAccount;
     private @Nullable CoreAccountInfo mDefaultAccount;
@@ -99,6 +104,7 @@ public class AccountPickerBottomSheetMediator
             WindowAndroid windowAndroid,
             IdentityManager identityManager,
             SigninManager signinManager,
+            @Nullable AccountPreviewDataService accountPreviewDataService,
             AccountPickerDelegate accountPickerDelegate,
             Runnable dismissBottomSheet,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -127,6 +133,7 @@ public class AccountPickerBottomSheetMediator
                 windowAndroid,
                 identityManager,
                 signinManager,
+                accountPreviewDataService,
                 accountPickerDelegate,
                 /* requestDisplayBottomSheet= */ null,
                 dismissBottomSheet,
@@ -143,6 +150,7 @@ public class AccountPickerBottomSheetMediator
             WindowAndroid windowAndroid,
             IdentityManager identityManager,
             SigninManager signinManager,
+            @Nullable AccountPreviewDataService accountPreviewDataService,
             AccountPickerDelegate accountPickerDelegate,
             Runnable requestDisplayBottomSheet,
             Runnable dismissBottomSheet,
@@ -154,6 +162,7 @@ public class AccountPickerBottomSheetMediator
                 windowAndroid,
                 identityManager,
                 signinManager,
+                accountPreviewDataService,
                 accountPickerDelegate,
                 requestDisplayBottomSheet,
                 dismissBottomSheet,
@@ -170,6 +179,7 @@ public class AccountPickerBottomSheetMediator
             WindowAndroid windowAndroid,
             IdentityManager identityManager,
             SigninManager signinManager,
+            @Nullable AccountPreviewDataService accountPreviewDataService,
             AccountPickerDelegate accountPickerDelegate,
             @Nullable Runnable requestDisplayBottomSheet,
             Runnable dismissBottomSheet,
@@ -184,6 +194,7 @@ public class AccountPickerBottomSheetMediator
         mActivity = assertNonNull(windowAndroid.getActivity().get());
         mIdentityManager = identityManager;
         mSigninManager = signinManager;
+        mAccountPreviewDataService = accountPreviewDataService;
         mAccountPickerDelegate = accountPickerDelegate;
         mRequestDisplayBottomSheet = requestDisplayBottomSheet;
         mDismissBottomSheet = dismissBottomSheet;

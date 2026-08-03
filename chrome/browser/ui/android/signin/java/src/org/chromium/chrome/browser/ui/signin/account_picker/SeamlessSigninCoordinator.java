@@ -11,6 +11,7 @@ import androidx.annotation.MainThread;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -75,6 +76,7 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
             Activity activity,
             IdentityManager identityManager,
             SigninManager signinManager,
+            @Nullable AccountPreviewDataService accountPreviewDataService,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -92,6 +94,7 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
                         windowAndroid,
                         identityManager,
                         signinManager,
+                        accountPreviewDataService,
                         accountPickerDelegate,
                         this::requestDisplayBottomSheet,
                         this::dismiss,

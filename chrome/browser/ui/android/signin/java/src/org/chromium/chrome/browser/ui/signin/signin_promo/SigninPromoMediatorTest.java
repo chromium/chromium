@@ -37,6 +37,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -77,6 +78,7 @@ public class SigninPromoMediatorTest {
     private @Mock SigninPromoMediator.Delegate mMediatorDelegate;
     private @Mock Profile mProfile;
     private @Mock SigninManager mSigninManager;
+    private @Mock AccountPreviewDataService mAccountPreviewDataService;
     private @Mock SigninAndHistorySyncActivityLauncher mLauncher;
     private @Mock HistorySyncHelper mHistorySyncHelper;
     private ProfileDataCache mProfileDataCache;
@@ -399,6 +401,7 @@ public class SigninPromoMediatorTest {
                 new SigninPromoMediator(
                         mIdentityManager,
                         mSigninManager,
+                        mAccountPreviewDataService,
                         mSyncService,
                         mProfileDataCache,
                         delegate,

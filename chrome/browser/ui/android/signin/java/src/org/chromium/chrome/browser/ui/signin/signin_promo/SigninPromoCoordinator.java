@@ -18,6 +18,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -85,10 +86,13 @@ public class SigninPromoCoordinator
                         mContext, assertNonNull(identityManager));
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        AccountPreviewDataService accountPreviewDataService =
+                IdentityServicesProvider.get().getAccountPreviewDataService(profile);
         mMediator =
                 new SigninPromoMediator(
                         identityManager,
                         assertNonNull(signinManager),
+                        accountPreviewDataService,
                         syncService,
                         profileDataCache,
                         delegate,

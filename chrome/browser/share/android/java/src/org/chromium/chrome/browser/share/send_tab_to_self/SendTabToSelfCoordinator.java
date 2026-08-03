@@ -321,10 +321,14 @@ public class SendTabToSelfCoordinator
                                 IdentityServicesProvider.get().getIdentityManager(mProfile);
                         var signinManager =
                                 IdentityServicesProvider.get().getSigninManager(mProfile);
+                        var accountPreviewDataService =
+                                IdentityServicesProvider.get()
+                                        .getAccountPreviewDataService(mProfile);
                         new AccountPickerBottomSheetCoordinator(
                                 assertNonNull(mWindowAndroid),
                                 assertNonNull(identityManager),
                                 assertNonNull(signinManager),
+                                accountPreviewDataService,
                                 mBottomSheetController,
                                 new SendTabToSelfAccountPickerDelegate(this::onSignInComplete),
                                 bottomSheetStrings,

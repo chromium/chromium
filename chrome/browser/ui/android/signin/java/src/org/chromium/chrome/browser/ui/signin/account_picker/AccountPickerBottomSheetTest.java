@@ -79,6 +79,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -146,6 +147,8 @@ public class AccountPickerBottomSheetTest {
     // TODO(crbug.com/433919394): Use real implementation of SigninManager instead.
     @Mock(strictness = Mock.Strictness.LENIENT)
     private SigninManager mSigninManagerMock;
+
+    @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
 
     @Captor private ArgumentCaptor<Callback<Boolean>> mUpdateCredentialsSuccessCallbackCaptor;
 
@@ -300,6 +303,7 @@ public class AccountPickerBottomSheetTest {
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
+                                    mAccountPreviewDataServiceMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -327,6 +331,7 @@ public class AccountPickerBottomSheetTest {
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
+                                    mAccountPreviewDataServiceMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -561,6 +566,7 @@ public class AccountPickerBottomSheetTest {
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
+                                    mAccountPreviewDataServiceMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -1134,6 +1140,7 @@ public class AccountPickerBottomSheetTest {
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
+                                    mAccountPreviewDataServiceMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -1568,6 +1575,7 @@ public class AccountPickerBottomSheetTest {
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
+                                    mAccountPreviewDataServiceMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(

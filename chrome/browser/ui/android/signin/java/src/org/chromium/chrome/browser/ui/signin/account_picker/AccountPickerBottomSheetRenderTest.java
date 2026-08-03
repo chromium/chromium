@@ -45,6 +45,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -128,6 +129,8 @@ public class AccountPickerBottomSheetRenderTest {
     // TODO(crbug.com/433919394): Use FakeSigninManager instead.
     @Mock(strictness = Mock.Strictness.LENIENT)
     private SigninManager mSigninManagerMock;
+
+    @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
 
     private final AtomicReference<Boolean> mIsNextSigninSuccessful = new AtomicReference<>();
     private WebPageStation mPage;
@@ -439,6 +442,7 @@ public class AccountPickerBottomSheetRenderTest {
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     mAccountManagerTestRule.getIdentityManager(),
                                     mSigninManagerMock,
+                                    mAccountPreviewDataServiceMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegate,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(

@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.ProfileDataUtils;
@@ -65,6 +66,11 @@ final class SigninPromoMediator
 
     private final IdentityManager mIdentityManager;
     private final SigninManager mSigninManager;
+
+    // TODO(crbug.com/532967032): Remove annotation once implementation is complete.
+    @SuppressWarnings("UnusedVariable")
+    private final @Nullable AccountPreviewDataService mAccountPreviewDataService;
+
     private final @Nullable SyncService mSyncService;
     private final ProfileDataCache mProfileDataCache;
     private final SigninPromoDelegate mPromoDelegate;
@@ -78,12 +84,14 @@ final class SigninPromoMediator
     SigninPromoMediator(
             IdentityManager identityManager,
             SigninManager signinManager,
+            @Nullable AccountPreviewDataService accountPreviewDataService,
             @Nullable SyncService syncService,
             ProfileDataCache profileDataCache,
             SigninPromoDelegate promoDelegate,
             Delegate mediatorDelegate) {
         mIdentityManager = identityManager;
         mSigninManager = signinManager;
+        mAccountPreviewDataService = accountPreviewDataService;
         mSyncService = syncService;
         mProfileDataCache = profileDataCache;
         mPromoDelegate = promoDelegate;

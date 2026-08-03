@@ -13,6 +13,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
@@ -109,6 +110,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             BottomSheetController bottomSheetController,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             SigninManager signinManager,
+            @Nullable AccountPreviewDataService accountPreviewDataService,
             AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccountPickerLaunchMode int accountPickerLaunchMode,
             boolean isSeamlessSigninFlow,
@@ -123,6 +125,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                             activity,
                             signinManager.getIdentityManager(),
                             signinManager,
+                            accountPreviewDataService,
                             bottomSheetController,
                             this,
                             bottomSheetStrings,
@@ -137,6 +140,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                             windowAndroid,
                             signinManager.getIdentityManager(),
                             signinManager,
+                            accountPreviewDataService,
                             bottomSheetController,
                             this,
                             bottomSheetStrings,

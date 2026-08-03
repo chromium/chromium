@@ -51,6 +51,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Event;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -96,6 +97,7 @@ public class SeamlessSigninTest {
     @Mock private AccountPickerDelegate mAccountPickerDelegateMock;
 
     @Mock private SigninManager mSigninManagerMock;
+    @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
 
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
     private final AtomicReference<Boolean> mIsNextSigninSuccessful = new AtomicReference<>(true);
@@ -758,6 +760,7 @@ public class SeamlessSigninTest {
                                     mActivityTestRule.getActivity(),
                                     mIdentityManager,
                                     mSigninManagerMock,
+                                    mAccountPreviewDataServiceMock,
                                     mBottomSheetController,
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(

@@ -12,6 +12,7 @@ import androidx.annotation.MainThread;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -63,6 +64,7 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
             WindowAndroid windowAndroid,
             IdentityManager identityManager,
             SigninManager signinManager,
+            @Nullable AccountPreviewDataService accountPreviewDataService,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -82,6 +84,7 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
                         windowAndroid,
                         identityManager,
                         signinManager,
+                        accountPreviewDataService,
                         accountPickerDelegate,
                         this::dismiss,
                         accountPickerBottomSheetStrings,
