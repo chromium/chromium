@@ -236,6 +236,9 @@ class TabSlotController {
   // implementation.
   virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
 
+  // Returns the currently focused tab group ID, if any.
+  virtual std::optional<tab_groups::TabGroupId> GetFocusedGroup() const = 0;
+
   // Returns the actual painted color of the given `group`, which depends on the
   // current theme.
   virtual SkColor GetPaintedGroupColor(
