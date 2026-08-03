@@ -29,8 +29,6 @@ class BLINK_EXPORT FontMetadata final : public ScriptWrappable {
  public:
   explicit FontMetadata(const FontEnumerationEntry& entry);
 
-  static FontMetadata* Create(const FontEnumerationEntry& entry);
-
   // The tables below represent the properties made available via the API.
   //
   // Names:
@@ -51,20 +49,18 @@ class BLINK_EXPORT FontMetadata final : public ScriptWrappable {
   //  | fullName       |       4 | Yes       |
   //  +----------------+---------+-----------+
 
-  String postscriptName() const { return postscriptName_; }
-  String fullName() const { return fullName_; }
+  String postscriptName() const { return postscript_name_; }
+  String fullName() const { return full_name_; }
   String family() const { return family_; }
   String style() const { return style_; }
 
   ScriptPromise<Blob> blob(ScriptState*);
 
-  void Trace(Visitor*) const override;
-
  private:
   static void BlobImpl(ScriptPromiseResolver<Blob>* resolver,
-                       const String& postscriptName);
-  String postscriptName_;
-  String fullName_;
+                       const String& postscript_name);
+  String postscript_name_;
+  String full_name_;
   String family_;
   String style_;
 };
