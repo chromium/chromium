@@ -103,6 +103,8 @@ export class OmniboxEverywhereOmniboxElement extends
       composeButtonEnabled: {type: Boolean, reflect: true},
       profileAvatarUrl_: {type: String},
       isFuseboxEnabled: {type: Boolean, reflect: true},
+      hasUserInput_: {type: Boolean},
+      ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
       contextMenuGlifAnimationState: {
         type: String,
         reflect: true,
@@ -144,6 +146,9 @@ export class OmniboxEverywhereOmniboxElement extends
       loadTimeData.getString('profileAvatarUrl');
   protected accessor isFuseboxEnabled: boolean =
       loadTimeData.getBoolean('isFuseboxEnabled');
+  protected accessor hasUserInput_: boolean = false;
+  protected accessor ntpRealboxDynamicAiModeButtonEnabled_: boolean =
+      loadTimeData.getBoolean('ntpRealboxDynamicAiModeButton');
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.STARTED;
   protected accessor inputState_: InputState|null = null;
@@ -277,6 +282,7 @@ export class OmniboxEverywhereOmniboxElement extends
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
+    this.hasUserInput_ = !!e.detail.value.trim();
     this.onSearchboxInputTextUpdated(e);
   }
 

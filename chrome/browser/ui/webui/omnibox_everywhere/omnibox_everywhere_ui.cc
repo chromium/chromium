@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/composebox_everywhere_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -172,6 +173,10 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
 
   source->AddBoolean("searchboxShowComposeEntrypoint", IsAimEligible(profile_));
   source->AddBoolean("isFuseboxEnabled", IsFuseboxEligible(profile_));
+  source->AddBoolean("ntpRealboxDynamicAiModeButton",
+                     IsFuseboxEligible(profile_) &&
+                         base::FeatureList::IsEnabled(
+                             ntp_realbox::kNtpRealboxDynamicAiModeButton));
   source->AddBoolean("composeboxShowTypedSuggest",
                      omnibox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());
@@ -205,12 +210,11 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxAnimationDisabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kWebUIOmniboxAimPopupDisableAnimation));
-  source->AddBoolean(
-      "energyEffectEnabled",
-      base::FeatureList::IsEnabled(omnibox::kEnergyEffectInOmnibox));
-  source->AddBoolean(
-      "energyEffectAnimationEnabled",
-      base::FeatureList::IsEnabled(omnibox::kEnergyEffectInOmnibox));
+  // Disable the energy effect in Omnibox Everywhere so the AIM compose button
+  // renders the outer conic rainbow glow animation instead of the subtle
+  // energy plate effect.
+  source->AddBoolean("energyEffectEnabled", false);
+  source->AddBoolean("energyEffectAnimationEnabled", false);
   source->AddBoolean("contextButtonShapeIsOblong",
                      omnibox::kContextButtonShapeIsOblong.Get());
 

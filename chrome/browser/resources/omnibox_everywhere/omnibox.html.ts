@@ -34,6 +34,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         ${
       this.composeButtonEnabled ? html`
           <cr-searchbox-compose-button id="composeButton" slot="compose-button"
+              ?dynamic="${this.ntpRealboxDynamicAiModeButtonEnabled_}"
+              ?has-user-input="${this.hasUserInput_}"
               @compose-click="${this.onComposeClick_}">
           </cr-searchbox-compose-button>
         ` :
@@ -61,7 +63,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
                   exportparts="context-menu-entrypoint-icon"
                   class="upload-button"
                   disable-auto-reposition
-                  glif-animation-state="${this.contextMenuGlifAnimationState}"
+                  .glifAnimationState="${this.contextMenuGlifAnimationState}"
                   .inputState="${this.inputState_}"
                   .searchboxLayoutMode="${this.searchboxLayoutMode}"
                   .tabSuggestions="${this.tabSuggestions_}"
