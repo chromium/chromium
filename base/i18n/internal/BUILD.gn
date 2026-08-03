@@ -52,7 +52,7 @@ action("canonical_language_tags_gen") {
   args = rebase_path(outputs, root_build_dir)
   visibility = [
     ":*",
-    "//base/i18n:*",
+    "//base/i18n/*",
   ]
 }
 
@@ -61,7 +61,7 @@ source_set("canonical_language_tags") {
   sources = [ "$root_gen_dir/base/i18n/internal/canonical_language_tags.inc" ]
   visibility = [
     ":*",
-    "//base/i18n:*",
+    "//base/i18n/*",
   ]
 }
 
