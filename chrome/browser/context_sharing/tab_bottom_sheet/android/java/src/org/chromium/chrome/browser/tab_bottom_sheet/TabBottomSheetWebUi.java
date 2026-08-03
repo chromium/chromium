@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityFinishingOrDestroyed;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -19,6 +20,7 @@ import android.view.ViewTreeObserver;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
@@ -39,6 +41,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.url.GURL;
@@ -129,6 +132,18 @@ public class TabBottomSheetWebUi {
         setupViewAndroidDelegate(contentView);
         setupContextMenuPopulator();
         attachToThinWebView(contentView);
+
+        // ThinWebView creates an orphaned WindowAndroid. We explicitly map the host
+        // activity's KeyboardShortcutsDelegate to this orphaned window so that
+        // keyboard shortcuts (Ctrl+T, etc.) aren't swallowed by Bottom Sheet WebUIs.
+        if (mWebContents.getTopLevelNativeWindow() != null) {
+            Activity activity = ContextUtils.activityFromContext(mContext);
+            if (activity instanceof KeyboardShortcutsDelegate) {
+                mWebContents
+                        .getTopLevelNativeWindow()
+                        .setKeyboardShortcutsDelegate((KeyboardShortcutsDelegate) activity);
+            }
+        }
 
         if (requestFocus) {
             // Only request focus once the web contents have been attached to the activity's
