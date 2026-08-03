@@ -84,6 +84,10 @@ class BrowserCommandController : public CommandUpdater,
   // prevent changing the state of enabled shortcuts while in this mode (so the
   // other *Changed() functions will be a NO-OP in this state).
   void LockedFullscreenStateChanged();
+
+  // Enables or disables all tab switching commands (IDC_SELECT_NEXT_TAB,
+  // IDC_SELECT_PREVIOUS_TAB, IDC_CYCLE_*, IDC_SELECT_TAB_0..7, etc.).
+  void SetTabSwitchCommandsEnabled(bool enabled);
 #endif
   void PrintingStateChanged();
   void GlicActiveInstanceChanged(glic::GlicInstance* instance);
@@ -211,6 +215,9 @@ class BrowserCommandController : public CommandUpdater,
   // Update commands whose state depends on whether the window is in locked
   // fullscreen mode or not.
   void UpdateCommandsForLockedFullscreenMode();
+
+  // Updates command states for tab switching commands.
+  void UpdateTabSwitchingCommandState();
 #endif
 
   // Updates the printing command state.
@@ -277,6 +284,7 @@ class BrowserCommandController : public CommandUpdater,
 #if BUILDFLAG(IS_CHROMEOS)
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;
+  bool is_tab_switching_enabled_ = true;
 #endif
 
   // If the Customize Chrome side panel is shown, determines which section to
