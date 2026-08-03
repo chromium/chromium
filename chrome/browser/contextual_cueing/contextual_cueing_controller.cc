@@ -16,6 +16,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
@@ -1017,6 +1018,8 @@ void ContextualCueingController::ShowCue(
       kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
   page_action_controller->OverrideImage(kActionAnchoredContextualCue,
                                         target.GetOmniboxChipIcon());
+  page_action_controller->OverrideAccessibleName(
+      kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type,
@@ -1275,6 +1278,8 @@ void ContextualCueingController::HideCue() {
   if (!page_action_controller) {
     return;
   }
+  page_action_controller->ClearOverrideAccessibleName(
+      kActionAnchoredContextualCue);
   page_action_controller->HideAnchoredMessage(kActionAnchoredContextualCue);
   page_action_controller->Hide(kActionAnchoredContextualCue);
 #endif
