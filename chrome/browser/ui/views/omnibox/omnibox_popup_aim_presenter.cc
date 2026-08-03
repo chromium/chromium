@@ -150,9 +150,11 @@ void OmniboxPopupAimPresenter::OnFileSelectionClosed() {
   // We set `is_restoring_focus_after_file_selection_` to true and start
   // observing the FocusManager to intercept the upcoming focus restoration.
   is_restoring_focus_after_file_selection_ = true;
-  auto* location_bar_view = static_cast<LocationBarView*>(location_bar());
-  if (location_bar_view && location_bar_view->GetWidget()) {
-    if (auto* fm = location_bar_view->GetWidget()->GetFocusManager()) {
+  if (!location_bar()) {
+    return;
+  }
+  if (views::Widget* location_bar_widget = delegate().GetLocationBarWidget()) {
+    if (auto* fm = location_bar_widget->GetFocusManager()) {
       focus_manager_observation_.Observe(fm);
     }
   }
@@ -166,12 +168,12 @@ void OmniboxPopupAimPresenter::OnDidChangeFocus(views::View* focused_before,
     return;
   }
 
-  auto* location_bar_view = static_cast<LocationBarView*>(location_bar());
   // When the file picker closes and the window re-activates, `FocusManager`
-  // attempts to restore focus back to the native omnibox text field. We
+  // attempts to restore focus to the location bar. We
   // intercept this and redirect focus back to the WebUI popup.
-  if (location_bar_view && focused_now == location_bar_view->omnibox_view()) {
-    auto* fm = location_bar_view->GetWidget()->GetFocusManager();
+  if (location_bar() &&
+      focused_now == delegate().GetLocationBarFocusRestoreView()) {
+    auto* fm = delegate().GetLocationBarWidget()->GetFocusManager();
     if (fm && fm->focus_change_reason() ==
                   views::FocusManager::FocusChangeReason::kFocusRestore) {
       // Defer `FinishFocusRestoration` asynchronously to prevent re-entrant

@@ -12,6 +12,10 @@ void LocationBar::Observer::OnLocationBarFocusChanged() {}
 LocationBar::LocationBar(CommandUpdater* command_updater)
     : command_updater_(command_updater) {}
 
+OmniboxPopupPresenterDelegate* LocationBar::GetPresenterDelegate() {
+  return nullptr;
+}
+
 void LocationBar::AddLocationBarObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

@@ -164,7 +164,8 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
                               base::Unretained(this)));
 
   RegisterOmniboxActions(
-      base::BindRepeating(&WebUILocationBar::GetPresenterDelegate), browser_);
+      base::BindRepeating(&WebUILocationBar::LookupPresenterDelegate),
+      browser_);
 
   is_initialized_ = true;
 }
@@ -309,6 +310,10 @@ void WebUILocationBar::Revert() {
 
 OmniboxView* WebUILocationBar::GetOmniboxView() {
   return omnibox_view_.get();
+}
+
+OmniboxPopupPresenterDelegate* WebUILocationBar::GetPresenterDelegate() {
+  return this;
 }
 
 OmniboxPopupView* WebUILocationBar::GetOmniboxPopupView() {
@@ -688,9 +693,9 @@ void WebUILocationBar::ShowPageInfoBubble() {
 }
 
 // static
-OmniboxPopupPresenterDelegate* WebUILocationBar::GetPresenterDelegate(
+OmniboxPopupPresenterDelegate* WebUILocationBar::LookupPresenterDelegate(
     LocationBar* location_bar) {
-  return static_cast<WebUILocationBar*>(location_bar);
+  return location_bar ? location_bar->GetPresenterDelegate() : nullptr;
 }
 
 void WebUILocationBar::SetSuppressionThresholdForTesting(
@@ -809,6 +814,10 @@ OmniboxPopupFileSelector* WebUILocationBar::GetOmniboxPopupFileSelector()
 OmniboxPopupAimPresenter* WebUILocationBar::GetOmniboxPopupAimPresenter()
     const {
   return omnibox_popup_aim_presenter_.get();
+}
+
+const views::View* WebUILocationBar::GetLocationBarFocusRestoreView() const {
+  return toolbar_delegate_ ? toolbar_delegate_->GetInternalWebView() : nullptr;
 }
 
 bool WebUILocationBar::ShouldChipOverrideLocationIcon() {

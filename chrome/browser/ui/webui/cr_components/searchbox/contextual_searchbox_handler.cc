@@ -98,12 +98,13 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #include "components/contextual_search/footprints/public/fpop_service.h"
@@ -1234,10 +1235,11 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
   // Block deactivation while the Drive picker dialog is active.
   if (auto* location_bar =
           browser_window_interface->GetFeatures().location_bar()) {
-    auto* location_bar_view = static_cast<LocationBarView*>(location_bar);
-    if (auto* presenter = location_bar_view->GetOmniboxPopupAimPresenter()) {
-      drive_picker_deactivation_blocker_ =
-          presenter->CreateDeactivationBlocker();
+    if (auto* presenter_delegate = location_bar->GetPresenterDelegate()) {
+      if (auto* presenter = presenter_delegate->GetOmniboxPopupAimPresenter()) {
+        drive_picker_deactivation_blocker_ =
+            presenter->CreateDeactivationBlocker();
+      }
     }
   }
 

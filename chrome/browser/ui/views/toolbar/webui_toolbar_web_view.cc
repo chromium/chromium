@@ -815,6 +815,10 @@ views::View* WebUIToolbarWebView::GetView() {
   return this;
 }
 
+views::View* WebUIToolbarWebView::GetInternalWebView() {
+  return web_view_.get();
+}
+
 content::WebContents* WebUIToolbarWebView::GetWebContents() {
   return web_view_->web_contents();
 }

@@ -37,6 +37,7 @@ class MockWebUIToolbarControlDelegate
               (),
               (override));
   MOCK_METHOD(views::View*, GetView, (), (override));
+  MOCK_METHOD(views::View*, GetInternalWebView, (), (override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (override));
   MOCK_METHOD(void, AnnounceAlert, (const std::u16string&), (override));
   MOCK_METHOD(void, OnPreferredSizeChanged, (), (override));

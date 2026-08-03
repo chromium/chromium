@@ -26,6 +26,7 @@ class LocationBarModel;
 class LocationBarTesting;
 class OmniboxController;
 class OmniboxView;
+class OmniboxPopupPresenterDelegate;
 class OmniboxPopupView;
 class Profile;
 
@@ -109,6 +110,8 @@ class LocationBar {
   virtual OmniboxView* GetOmniboxView() = 0;
 
   virtual OmniboxPopupView* GetOmniboxPopupView() = 0;
+
+  virtual OmniboxPopupPresenterDelegate* GetPresenterDelegate();
 
   // Returns the OmniboxController owned by this LocationBar.
   virtual OmniboxController* GetOmniboxController() = 0;

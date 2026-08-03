@@ -483,7 +483,7 @@ void LocationBarView::Init() {
   hover_animation_.SetSlideDuration(base::Milliseconds(200));
 
   RegisterOmniboxActions(
-      base::BindRepeating(&LocationBarView::GetPresenterDelegate), browser_);
+      base::BindRepeating(&LocationBarView::LookupPresenterDelegate), browser_);
 
   is_initialized_ = true;
 }
@@ -589,6 +589,10 @@ OmniboxView* LocationBarView::GetOmniboxView() {
 
 OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
   return omnibox_popup_view_.get();
+}
+
+OmniboxPopupPresenterDelegate* LocationBarView::GetPresenterDelegate() {
+  return this;
 }
 
 OmniboxController* LocationBarView::GetOmniboxController() {
@@ -1178,6 +1182,11 @@ OmniboxPopupFileSelector* LocationBarView::GetOmniboxPopupFileSelector() const {
 OmniboxPopupAimPresenter* LocationBarView::GetOmniboxPopupAimPresenter() const {
   return omnibox_popup_aim_presenter_.get();
 }
+
+const views::View* LocationBarView::GetLocationBarFocusRestoreView() const {
+  return omnibox_view_;
+}
+
 // If omnibox is open, notify Omnibox presenter that a permission prompt is
 // starting right before constructing the prompt view widget. This is the
 // notification point that is before and closest to rendering the view, which
@@ -2050,9 +2059,9 @@ content::WebContents* LocationBarView::GetWrappedWebContents() {
 }
 
 // static
-OmniboxPopupPresenterDelegate* LocationBarView::GetPresenterDelegate(
+OmniboxPopupPresenterDelegate* LocationBarView::LookupPresenterDelegate(
     LocationBar* location_bar) {
-  return static_cast<LocationBarView*>(location_bar);
+  return location_bar ? location_bar->GetPresenterDelegate() : nullptr;
 }
 
 void LocationBarView::OnLocationIconGestureEvent(ui::GestureEvent* event) {

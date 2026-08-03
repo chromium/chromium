@@ -23,8 +23,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
@@ -78,14 +78,15 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
   if (web_contents) {
     if (auto* browser_window = webui::GetBrowserWindowInterface(web_contents)) {
       if (auto* location_bar = browser_window->GetFeatures().location_bar()) {
-        auto* location_bar_view = static_cast<LocationBarView*>(location_bar);
         if (was_ai_mode_open) {
-          if (auto* presenter =
-                  location_bar_view->GetOmniboxPopupAimPresenter()) {
-            deactivation_blocker_ = presenter->CreateDeactivationBlocker();
+          if (auto* presenter_delegate = location_bar->GetPresenterDelegate()) {
+            if (auto* presenter =
+                    presenter_delegate->GetOmniboxPopupAimPresenter()) {
+              deactivation_blocker_ = presenter->CreateDeactivationBlocker();
+            }
           }
         } else {
-          if (auto* popup_view = location_bar_view->GetOmniboxPopupView()) {
+          if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
             if (auto* presenter = popup_view->presenter()) {
               deactivation_blocker_ = presenter->CreateDeactivationBlocker();
             }
@@ -386,15 +387,23 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
 
 void OmniboxPopupFileSelector::NotifyFileSelectionClosed() {
   if (was_ai_mode_open_ && web_contents_) {
-    if (auto* browser_window =
-            webui::GetBrowserWindowInterface(web_contents_)) {
-      if (auto* location_bar = browser_window->GetFeatures().location_bar()) {
-        auto* location_bar_view = static_cast<LocationBarView*>(location_bar);
-        if (auto* presenter =
-                location_bar_view->GetOmniboxPopupAimPresenter()) {
-          presenter->OnFileSelectionClosed();
-        }
-      }
+    auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
+    if (!browser_window) {
+      return;
+    }
+
+    auto* location_bar = browser_window->GetFeatures().location_bar();
+    if (!location_bar) {
+      return;
+    }
+
+    auto* presenter_delegate = location_bar->GetPresenterDelegate();
+    if (!presenter_delegate) {
+      return;
+    }
+
+    if (auto* presenter = presenter_delegate->GetOmniboxPopupAimPresenter()) {
+      presenter->OnFileSelectionClosed();
     }
   }
 }
