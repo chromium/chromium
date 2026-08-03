@@ -293,6 +293,7 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     InstallIsolatedWebAppCallback callback,
+    std::optional<IwaUpdateInfo> optional_update_info,
     const base::Location& call_location) {
   CHECK(optional_profile_keep_alive == nullptr ||
         optional_profile_keep_alive->profile() == &*profile_);
@@ -300,7 +301,8 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, install_source, expected_version, *profile_,
           std::move(optional_keep_alive),
-          std::move(optional_profile_keep_alive), std::move(callback)),
+          std::move(optional_profile_keep_alive), std::move(callback),
+          std::move(optional_update_info)),
       call_location);
 }
 

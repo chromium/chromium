@@ -112,12 +112,6 @@ class IwaInternalsHandler {
           callback,
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string> result);
 
-  void OnInstalledIsolatedWebAppInDevModeFromWebBundle(
-      ::mojom::UpdateInfoPtr update_info,
-      base::OnceCallback<void(::mojom::InstallIsolatedWebAppResultPtr)>
-          callback,
-      base::expected<InstallIsolatedWebAppCommandSuccess, std::string> result);
-
   // Discovers and applies an update for a dev mode Isolated Web App identified
   // by its app id. If `location` is set, then the update will be read from the
   // provided location, otherwise the existing location will be used.

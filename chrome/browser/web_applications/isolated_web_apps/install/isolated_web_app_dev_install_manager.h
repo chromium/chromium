@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/model/iwa_update_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
 
@@ -69,7 +70,8 @@ class IsolatedWebAppDevInstallManager {
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
       std::optional<web_package::SignedWebBundleId> explicit_bundle_id =
-          std::nullopt);
+          std::nullopt,
+      std::optional<IwaUpdateInfo> optional_update_info = std::nullopt);
 
   // if `expected_bundle_id` is non null, then the installation
   // will fail if the actual bundle id is different.
@@ -79,7 +81,8 @@ class IsolatedWebAppDevInstallManager {
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
       std::optional<web_package::SignedWebBundleId> expected_bundle_id =
-          std::nullopt);
+          std::nullopt,
+      std::optional<IwaUpdateInfo> optional_update_info = std::nullopt);
 
   // if `expected_bundle_id` is non null, then the installation
   // will fail if the actual bundle id is different.
@@ -89,7 +92,8 @@ class IsolatedWebAppDevInstallManager {
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
       std::optional<web_package::SignedWebBundleId> expected_bundle_id =
-          std::nullopt);
+          std::nullopt,
+      std::optional<IwaUpdateInfo> optional_update_info = std::nullopt);
 
   void OnReportInstallationResultForTesting(
       base::RepeatingCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
@@ -108,7 +112,8 @@ class IsolatedWebAppDevInstallManager {
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
       std::optional<web_package::SignedWebBundleId> expected_bundle_id =
-          std::nullopt);
+          std::nullopt,
+      std::optional<IwaUpdateInfo> optional_update_info = std::nullopt);
 
   static bool HasIwaInstallSwitch(const base::CommandLine& command_line);
 
@@ -150,7 +155,8 @@ class IsolatedWebAppDevInstallManager {
       MaybeIwaInstallSource install_source,
       std::optional<web_package::SignedWebBundleId> expected_bundle_id,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-          callback);
+          callback,
+      std::optional<IwaUpdateInfo> optional_update_info = std::nullopt);
 
   void InstallIsolatedWebAppFromInstallSource(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
@@ -158,7 +164,8 @@ class IsolatedWebAppDevInstallManager {
       std::optional<web_package::SignedWebBundleId> expected_bundle_id,
       MaybeIwaInstallSource install_source,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-          callback);
+          callback,
+      std::optional<IwaUpdateInfo> optional_update_info = std::nullopt);
 
   void OnGetIsolatedWebAppInstallSourceFromCommandLine(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
@@ -172,6 +179,7 @@ class IsolatedWebAppDevInstallManager {
       const IsolatedWebAppInstallSource& install_source,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
+      std::optional<IwaUpdateInfo> optional_update_info,
       base::expected<IsolatedWebAppUrlInfo, std::string> url_info);
 
   void OnInstallIsolatedWebApp(
@@ -189,6 +197,7 @@ class IsolatedWebAppDevInstallManager {
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
       std::optional<web_package::SignedWebBundleId> expected_bundle_id,
+      std::optional<IwaUpdateInfo> optional_update_info,
       ScopedTempWebBundleFile bundle);
 
   void OnWebBundleDownloaded(
@@ -197,6 +206,7 @@ class IsolatedWebAppDevInstallManager {
           callback,
       std::optional<web_package::SignedWebBundleId> expected_bundle_id,
       ScopedTempWebBundleFile bundle,
+      std::optional<IwaUpdateInfo> optional_update_info,
       int32_t result);
 
   Profile* profile() { return &profile_.get(); }

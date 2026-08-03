@@ -777,6 +777,8 @@ source_set("iwa_types") {
     "model/integrity_block_data.h",
     "model/isolation_data.cc",
     "model/isolation_data.h",
+    "model/iwa_update_info.cc",
+    "model/iwa_update_info.h",
   ]
   public_deps = [
     "//base",

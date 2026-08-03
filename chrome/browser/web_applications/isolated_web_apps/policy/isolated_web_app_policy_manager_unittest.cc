@@ -46,6 +46,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
+#include "chrome/browser/web_applications/model/iwa_update_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -733,6 +734,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       InstallIsolatedWebAppCallback callback,
+      std::optional<IwaUpdateInfo> optional_update_info,
       const base::Location& call_location) override {
     EXPECT_TRUE(stashed_callback_.is_null());
     EXPECT_EQ(install_source.install_surface(),
@@ -1077,6 +1079,7 @@ class RetryTestWebAppCommandScheduler : public WebAppCommandScheduler {
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       InstallIsolatedWebAppCallback callback,
+      std::optional<IwaUpdateInfo> optional_update_info,
       const base::Location& call_location) override {
     number_of_install_tasks_created_++;
     const webapps::AppId& app_id = url_info.app_id();

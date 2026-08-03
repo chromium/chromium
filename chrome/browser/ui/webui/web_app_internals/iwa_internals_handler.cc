@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
+#include "chrome/browser/web_applications/model/iwa_update_info.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -333,15 +334,40 @@ void IwaInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
               "Update channel is required for this operation.");
     return;
   }
+  auto update_channel =
+      web_app::UpdateChannel::Create(params->update_info->update_channel);
+  if (!update_channel.has_value()) {
+    SendError(std::move(callback), "Update channel is invalid.");
+    return;
+  }
+
+  web_app::IwaUpdateInfo dev_mode_update_info(
+      params->update_info->update_manifest_url, *update_channel);
 
   provider_->isolated_web_app_dev_install_manager()
       .DownloadAndInstallIsolatedWebAppFromDevModeBundle(
           params->web_bundle_url,
           IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
-          base::BindOnce(&IwaInternalsHandler::
-                             OnInstalledIsolatedWebAppInDevModeFromWebBundle,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         std::move(params->update_info), std::move(callback)));
+          base::BindOnce([](base::expected<InstallIsolatedWebAppCommandSuccess,
+                                           std::string> result) {
+            auto mapped =
+                std::move(result)
+                    .transform([](const auto& success) {
+                      auto success_mojom =
+                          ::mojom::InstallIsolatedWebAppSuccess::New();
+                      success_mojom->web_bundle_id =
+                          success.url_info.web_bundle_id().id();
+                      return ::mojom::InstallIsolatedWebAppResult::NewSuccess(
+                          std::move(success_mojom));
+                    })
+                    .transform_error([](const std::string& error) {
+                      return ::mojom::InstallIsolatedWebAppResult::NewError(
+                          error);
+                    });
+            return mapped.has_value() ? std::move(mapped.value())
+                                      : std::move(mapped.error());
+          }).Then(std::move(callback)),
+          /*expected_bundle_id=*/std::nullopt, std::move(dev_mode_update_info));
 }
 
 void IwaInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
@@ -656,65 +682,6 @@ gfx::NativeWindow IwaInternalsHandler::GetHostingNativeWindow() {
   CHECK(native_window);
 
   return native_window;
-}
-
-void IwaInternalsHandler::OnInstalledIsolatedWebAppInDevModeFromWebBundle(
-    ::mojom::UpdateInfoPtr update_info,
-    base::OnceCallback<void(::mojom::InstallIsolatedWebAppResultPtr)> callback,
-    base::expected<InstallIsolatedWebAppCommandSuccess, std::string> result) {
-  ASSIGN_OR_RETURN(auto install_info, std::move(result),
-                   [&](const std::string& error) {
-                     std::move(callback).Run(
-                         ::mojom::InstallIsolatedWebAppResult::NewError(error));
-                   });
-
-  provider_->scheduler()
-      .ScheduleCallbackWithResult(
-          "WebAppInternalsHandler::SetUpdateInfo",
-          web_app::AppLockDescription(install_info.url_info.app_id()),
-          base::BindOnce(
-              [](const IsolatedWebAppUrlInfo& url_info,
-                 ::mojom::UpdateInfoPtr update_info, AppLock& lock,
-                 base::DictValue& debug_value) {
-                web_app::ScopedRegistryUpdate update =
-                    lock.sync_bridge().BeginUpdate();
-
-                web_app::WebApp* web_app = update->UpdateApp(url_info.app_id());
-                if (!web_app || !web_app->isolation_data()) {
-                  return ::mojom::InstallIsolatedWebAppResult::NewError(
-                      "Something went wrong while setting the update info.");
-                }
-
-                auto update_channel =
-                    UpdateChannel::Create(update_info->update_channel);
-                if (!update_channel.has_value()) {
-                  return ::mojom::InstallIsolatedWebAppResult::NewError(
-                      "Something went wrong while setting the update "
-                      "channel.");
-                }
-
-                GURL update_manifest_url = update_info->update_manifest_url;
-                if (!update_manifest_url.is_valid()) {
-                  return ::mojom::InstallIsolatedWebAppResult::NewError(
-                      "Something went wrong while setting the update "
-                      "manifest url.");
-                }
-                web_app->SetIsolationData(
-                    web_app::IsolationData::Builder(*web_app->isolation_data())
-                        .SetUpdateManifestUrl(update_info->update_manifest_url)
-                        .SetUpdateChannel(std::move(*update_channel))
-                        .Build());
-
-                auto success = ::mojom::InstallIsolatedWebAppSuccess::New();
-                success->web_bundle_id = url_info.web_bundle_id().id();
-
-                return ::mojom::InstallIsolatedWebAppResult::NewSuccess(
-                    std::move(success));
-              },
-              install_info.url_info, std::move(update_info)),
-          std::move(callback), /*arg_for_shutdown=*/
-          ::mojom::InstallIsolatedWebAppResult::NewError(
-              "The web app system has shut down."));
 }
 
 }  // namespace web_app

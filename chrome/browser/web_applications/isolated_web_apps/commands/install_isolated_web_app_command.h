@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
+#include "chrome/browser/web_applications/model/iwa_update_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
@@ -102,7 +103,8 @@ class InstallIsolatedWebAppCommand
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
-                              InstallIsolatedWebAppCommandError>)> callback);
+                              InstallIsolatedWebAppCommandError>)> callback,
+      std::optional<IwaUpdateInfo> optional_update_info = std::nullopt);
 
   InstallIsolatedWebAppCommand(const InstallIsolatedWebAppCommand&) = delete;
   InstallIsolatedWebAppCommand& operator=(const InstallIsolatedWebAppCommand&) =
@@ -185,6 +187,7 @@ class InstallIsolatedWebAppCommand
   const webapps::WebappInstallSource install_surface_;
 
   std::optional<IntegrityBlockData> integrity_block_data_;
+  std::optional<IwaUpdateInfo> optional_update_info_;
 
   std::optional<IwaSourceWithModeAndFileOp> install_source_;
   std::optional<IwaSourceWithMode> destination_source_;
