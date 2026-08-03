@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_script_identifier.h"
 #include "third_party/blink/renderer/core/ad_tracker/monkey_patchable_api.h"
 #include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
@@ -223,6 +224,9 @@ class CORE_EXPORT ScriptAncestryTracker
   // Tracks active monkey-patched API calls in the current task scope to ensure
   // the ignore-monkey-patch heuristic only applies once per task.
   HashSet<MonkeyPatchableApi> monkey_patch_calls_in_scope_;
+
+  friend class AdTrackerTest;
+  friend class ScriptAncestryTrackerTest;
 };
 
 }  // namespace blink

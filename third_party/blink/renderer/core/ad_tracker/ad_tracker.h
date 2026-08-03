@@ -9,18 +9,17 @@
 
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "components/subresource_filter/core/common/scoped_rule.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_script_identifier.h"
-#include "third_party/blink/renderer/core/ad_tracker/lazy_stack_trace.h"
 #include "third_party/blink/renderer/core/ad_tracker/monkey_patchable_api.h"
-#include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
+#include "third_party/blink/renderer/core/ad_tracker/script_ancestry_tracker.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -30,25 +29,13 @@ namespace blink {
 class Document;
 class ExecutionContext;
 class LocalFrame;
+class ScriptInitiationMonitor;
 enum class ResourceType : uint8_t;
-
-namespace probe {
-class AsyncTaskContext;
-}  // namespace probe
 
 // Tracker for tagging resources as ads based on the call stack scripts.
 // The tracker is maintained per local root.
-class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker>,
-                              public ScriptInitiationMonitor::Observer {
+class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
  public:
-  using MonkeyPatchableApi = blink::MonkeyPatchableApi;
-
-  // Stack scans of `kBottomOnly` will only scan the bottom frame of the sync
-  // stack and also include async frames. `kTopOnly` will scan the top
-  // frame, and fall back on the async stack if there is no top frame (e.g.,
-  // executing a continuation in blink).
-  enum class StackType { kBottomOnly, kTopOnly };
-
   struct AdScriptAncestry {
     // A chain of `AdScriptIdentifier`s representing the ancestry of an ad
     // script. The chain is ordered from the script itself (lower level) up to
@@ -70,25 +57,10 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker>,
       Document* document,
       StackType stack_type = StackType::kTopOnly);
 
-  // ScriptInitiationMonitor::Observer overrides:
-  void WillExecuteScript(ExecutionContext& execution_context,
-                         v8::Local<v8::Context> v8_context,
-                         V8ScriptId script_id,
-                         const String& script_url,
-                         LazyStackTrace& stack_trace) override;
-  void DidExecuteScript(V8ScriptId script_id) override;
-  void DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,
-                                V8ScriptId script_id,
-                                LazyStackTrace& stack_trace) override;
-  void WillCallFunction(ExecutionContext& execution_context,
-                        V8ScriptId script_id,
-                        bool is_nested,
-                        LazyStackTrace& stack_trace) override;
-  void DidCallFunction(V8ScriptId script_id, bool is_nested) override;
-  void DidCreateAsyncTask(probe::AsyncTaskContext* task_context,
-                          LazyStackTrace& stack_trace) override;
-  void DidStartAsyncTask(probe::AsyncTaskContext* task_context) override;
-  void DidFinishAsyncTask(probe::AsyncTaskContext* task_context) override;
+  AdTracker(LocalFrame*, ScriptInitiationMonitor*);
+  AdTracker(const AdTracker&) = delete;
+  AdTracker& operator=(const AdTracker&) = delete;
+  ~AdTracker() override;
 
   // Returns whether the given subresource request is on behalf of advertising.
   virtual std::optional<AdProvenance> CalculateIfAdSubresource(
@@ -99,19 +71,12 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker>,
       std::optional<AdProvenance> known_ad_provenance,
       bool scan_javascript_stack);
 
+  bool IsKnownAdScript(ExecutionContext*, const String& url);
+
   // Retrieves the ancestry chain of a given ad script (inclusive) and the
   // triggering filterlist rule. See `AdScriptAncestry` for more details on the
   // populated fields.
   AdScriptAncestry GetAncestry(V8ScriptId script_id);
-
-
-  // Registers a script as an ad script with the given provenance. This is used
-  // for scripts that are not loaded via a resource request but are instead
-  // created dynamically (e.g., from a DOM attribute).
-  void RegisterAdScript(
-      v8::Local<v8::Context> v8_context,
-      V8ScriptId script_id,
-      const std::optional<AdScriptIdentifier>& parent_ad_script);
 
   // Returns true if any script in the pseudo call stack has previously been
   // identified as an ad resource, if the current ExecutionContext is a known ad
@@ -146,107 +111,26 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker>,
       MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone,
       AdScriptAncestry* out_ad_script_ancestry = nullptr);
 
+  // ScriptAncestryTracker overrides:
+  void Shutdown() override;
+  bool IsMarkedScript(V8ScriptId) const override;
+  void OnScriptRegistered(ExecutionContext& execution_context,
+                          V8ScriptId script_id,
+                          const String& url,
+                          std::optional<V8ScriptId> marked_script_id) override;
   void Trace(Visitor*) const override;
-
-  void Shutdown();
-  AdTracker(LocalFrame*, ScriptInitiationMonitor*);
-  AdTracker(const AdTracker&) = delete;
-  AdTracker& operator=(const AdTracker&) = delete;
-  virtual ~AdTracker();
 
  private:
   friend class FrameFetchContextSubresourceFilterTest;
   friend class AdTrackerSimTest;
   friend class AdTrackerTest;
+  FRIEND_TEST_ALL_PREFIXES(AdTrackerTest,
+                           AdScriptAncestry_ScriptIdFromDifferentTracker);
 
-  struct AdScriptData {
-    AdScriptIdentifier id;
-    AdProvenance provenance;
-  };
-
-  ExecutionContext* GetCurrentExecutionContext(v8::Isolate*);
-
-  // Similar to the public IsAdScriptInStack method but instead of returning an
-  // ancestry chain, it returns only one script (the most immediate one).
-  bool IsAdScriptInStackHelper(
-      StackType stack_type,
-      MonkeyPatchableApi ignore_monkey_patch,
-      LazyStackTrace& lazy_stack_trace,
-      std::optional<AdScriptIdentifier>* out_ad_script);
-
-  // Helper for the `ignore_monkey_patch` heuristic. Returns true if the API is
-  // called from a non-ad script through an ad script's monkey patch, and this
-  // is the first time this API has been called this way within the current
-  // synchronous task. If it returns true, the call should be ignored for ad
-  // tracking purposes. This method is not const because it modifies
-  // `ad_monkey_patch_calls_in_scope_`.
-  //
-  // Precondition: The script at the top of the stack is a known ad script.
-  bool IsFirstCallOfApiFromNonAdScript(v8::Isolate* isolate,
-                                       MonkeyPatchableApi api);
-
-  // Helper for `IsFirstCallOfApiFromNonAdScript` that performs the stack
-  // analysis. It returns true if the call stack indicates that a non-ad script
-  // called the monkey patched `api`.
-  bool WasApiCalledByNonAdScript(v8::Isolate* isolate,
-                                 MonkeyPatchableApi api) const;
-
-
-  bool IsKnownAdScript(ExecutionContext*, const String& url);
-
-  // Adds the given `url` and its associated `ad_provenance` to the set of known
-  // ad scripts associated with the provided `execution_context`.
-  void AppendToKnownAdScripts(ExecutionContext& execution_context,
-                              const String& url,
-                              AdProvenance ad_provenance);
-
-  // Handles the discovery of a script ID for a known ad script. It creates and
-  // links a new AdScriptIdentifier (with `script_id` and `v8_context`) to the
-  // provenance of `script_name`. The new link is kept in `script_provenances_`.
-  //
-  // Prerequisites: `script_name` is a known ad script in `execution_context`.
-  void OnScriptIdAvailableForKnownAdScript(
-      ExecutionContext* execution_context,
-      const v8::Local<v8::Context>& v8_context,
-      const String& script_name,
-      V8ScriptId script_id);
-
-  Member<LocalFrame> local_root_;
-
-  // Indicates the bottom-most synchronous ad script on the stack or
-  // `std::nullopt` if there isn't one.
-  std::optional<V8ScriptId> bottom_most_ad_script_;
-
-  // The current async script stack. The optional is set for ad-related async
-  // events and nullopt otherwise. We prefer to calculate ad relatedness from
-  // the synchronous stack, but if there is no synchronous stack to speak of
-  // (e.g., the native code is run asynchronously) then fall back on the last
-  // async stack frame's status.
-  Vector<std::optional<AdScriptIdentifier>> async_script_stack_;
-
-  // Maps the URL of a detected ad script to its AdProvenance.
-  //
-  // Script Identification:
-  // - Scripts with a resource URL are identified by that URL.
-  // - Inline scripts (without a URL) are assigned a unique synthetic URL
-  //   generated by `GenerateFakeUrlFromScriptId()`.
   using KnownAdScriptsAndProvenance = HashMap<String, AdProvenance>;
-
-  // Tracks ad scripts detected outside of ad-frame contexts.
   HeapHashMap<WeakMember<ExecutionContext>, KnownAdScriptsAndProvenance>
       context_known_ad_scripts_;
-
-  // A map of all known ad script ids to their metadata.
-  HashMap<V8ScriptId, AdScriptData> ad_script_data_;
-
-  // Tracks APIs that have been identified as being called through an ad
-  // script's monkey patch within the current synchronous task. This set is
-  // cleared when the task completes. Used by the `ignore_monkey_patch`
-  // heuristic.
-  HashSet<MonkeyPatchableApi> ad_monkey_patch_calls_in_scope_;
-
-  // The number of sync tasks currently running in the stack.
-  int running_sync_tasks_ = 0;
+  HashMap<V8ScriptId, AdProvenance> ad_scripts_;
 };
 
 }  // namespace blink

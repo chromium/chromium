@@ -15,6 +15,7 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -4463,28 +4464,22 @@ TEST(AdTrackerTest, AdScriptAncestry_ScriptIdFromDifferentTracker) {
 
   // Register `script_id_a` in `ad_tracker_a`, which is the only tracker to
   // learn about this script id.
-  ad_tracker_a->RegisterAdScript(
-      page_holder_a->GetFrame().DomWindow()->GetIsolate()->GetCurrentContext(),
+  ad_tracker_a->RegisterScript(
+      ToScriptStateForMainWorld(&page_holder_a->GetFrame())->GetContext(),
       script_id_a, std::nullopt);
 
-  // Get the `script_a` identifier.
-  AdScriptIdentifier id_a(v8_inspector::V8DebuggerId(), script_id_a,
-                          "script_a");
-
-  // In `ad_tracker_b`, register `script_id_b` with `id_a` as parent.
-  // `ad_tracker_b` doesn't actually know about `id_a` though.
+  // In `ad_tracker_b`, register `script_id_b` with `script_id_a` as parent.
+  // `ad_tracker_b` doesn't actually know about `script_id_a` though.
   V8ScriptId script_id_b(2001);
-  ad_tracker_b->RegisterAdScript(
-      page_holder_b->GetFrame().DomWindow()->GetIsolate()->GetCurrentContext(),
-      script_id_b, id_a);
+  ad_tracker_b->RegisterScript(
+      ToScriptStateForMainWorld(&page_holder_b->GetFrame())->GetContext(),
+      script_id_b, script_id_a);
 
   // Register `script_id_c` with `script_id_b` as parent in `ad_tracker_b`.
   V8ScriptId script_id_c(3001);
-  AdScriptIdentifier id_b(v8_inspector::V8DebuggerId(), script_id_b,
-                          "script_b");
-  ad_tracker_b->RegisterAdScript(
-      page_holder_b->GetFrame().DomWindow()->GetIsolate()->GetCurrentContext(),
-      script_id_c, id_b);
+  ad_tracker_b->RegisterScript(
+      ToScriptStateForMainWorld(&page_holder_b->GetFrame())->GetContext(),
+      script_id_c, script_id_b);
 
   // `ad_tracker_b` knows `script_id_c` and `script_id_b`, but not
   // `script_id_a`. `GetAncestry(script_id_c)` should return a chain of length 2
