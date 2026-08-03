@@ -16,7 +16,7 @@ class RenderFrameHost;
 // Returns true if the network request is allowed by the frame's connection
 // allowlist.
 CONTENT_EXPORT bool FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
-    const RenderFrameHost* render_frame_host,
+    RenderFrameHost* render_frame_host,
     const GURL& url,
     bool is_redirect);
 

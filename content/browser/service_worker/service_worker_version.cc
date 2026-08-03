@@ -69,6 +69,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -1926,9 +1927,18 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
   // fallback case, the allowlist check might run twice. This redundancy does
   // not impact performance. It is necessary to have the check here for
   // covering the main path.
+  network::mojom::NetworkContext* network_context = nullptr;
+  if (context_ && context_->wrapper() &&
+      context_->wrapper()->storage_partition()) {
+    network_context =
+        context_->wrapper()->storage_partition()->GetNetworkContext();
+  }
+
   if (policy_container_host() &&
       !ConnectionAllowlistAllowsUrlAndReportIfNeeded(
-          policy_container_host()->policies(), url)) {
+          policy_container_host()->policies(), url, network_context,
+          key().ToPartialNetIsolationInfo().network_anonymization_key(),
+          reporting_source())) {
     // The request URL is not allowed by the Service Worker's Connection
     // Allowlist. See: https://github.com/WICG/connection-allowlists.
     std::move(callback).Run(

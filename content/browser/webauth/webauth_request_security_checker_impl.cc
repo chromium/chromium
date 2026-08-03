@@ -33,6 +33,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -223,9 +224,20 @@ WebAuthRequestSecurityCheckerImpl::ValidateDomainAndRelyingPartyID(
   std::optional<GURL> remote_validation_url =
       webauthn::GetRemoteValidationUrl(relying_party_id);
 
+  network::mojom::NetworkContext* network_context =
+      render_frame_host_->GetProcess()
+          ->GetStoragePartition()
+          ->GetNetworkContext();
+  net::NetworkAnonymizationKey network_anonymization_key =
+      render_frame_host_->GetIsolationInfoForSubresources()
+          .network_anonymization_key();
+  std::optional<base::UnguessableToken> reporting_source =
+      render_frame_host_->GetReportingSource();
+
   if (remote_validation_url.has_value() &&
       !ConnectionAllowlistAllowsUrlAndReportIfNeeded(
-          policy_container_host->policies(), *remote_validation_url)) {
+          policy_container_host->policies(), *remote_validation_url,
+          network_context, network_anonymization_key, reporting_source)) {
     std::move(callback).Run(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
     return nullptr;

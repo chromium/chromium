@@ -47,6 +47,7 @@
 #include "content/public/common/page_visibility_state.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -511,9 +512,26 @@ void OpenWindow(
     NavigationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  net::NetworkAnonymizationKey network_anonymization_key;
+  std::optional<base::UnguessableToken> reporting_source;
+  network::mojom::NetworkContext* network_context = nullptr;
+  if (context) {
+    if (ServiceWorkerVersion* version = context->GetLiveVersion(worker_id)) {
+      network_anonymization_key = version->key()
+                                      .ToPartialNetIsolationInfo()
+                                      .network_anonymization_key();
+      reporting_source = version->reporting_source();
+    }
+    if (context->wrapper() && context->wrapper()->storage_partition()) {
+      network_context =
+          context->wrapper()->storage_partition()->GetNetworkContext();
+    }
+  }
+
   if (service_worker_policy_container_host &&
       !ConnectionAllowlistAllowsUrlAndReportIfNeeded(
-          service_worker_policy_container_host->policies(), url)) {
+          service_worker_policy_container_host->policies(), url,
+          network_context, network_anonymization_key, reporting_source)) {
     DidNavigate(context, script_url, key, std::move(callback),
                 GlobalRenderFrameHostId());
     return;
@@ -615,9 +633,24 @@ void NavigateClient(
       rfhi->BuildClientSecurityState()->ip_address_space !=
           worker_client_security_state->ip_address_space);
 
+  net::NetworkAnonymizationKey network_anonymization_key =
+      key.ToPartialNetIsolationInfo().network_anonymization_key();
+  std::optional<base::UnguessableToken> reporting_source;
+  if (service_worker_policy_container_host) {
+    reporting_source = service_worker_policy_container_host->policies()
+                           .connection_allowlists.reporting_source;
+  }
+  network::mojom::NetworkContext* network_context = nullptr;
+  if (context && context->wrapper() &&
+      context->wrapper()->storage_partition()) {
+    network_context =
+        context->wrapper()->storage_partition()->GetNetworkContext();
+  }
+
   if (service_worker_policy_container_host &&
       !ConnectionAllowlistAllowsUrlAndReportIfNeeded(
-          service_worker_policy_container_host->policies(), url)) {
+          service_worker_policy_container_host->policies(), url,
+          network_context, network_anonymization_key, reporting_source)) {
     DidNavigate(context, script_url, key, std::move(callback),
                 GlobalRenderFrameHostId());
     return;

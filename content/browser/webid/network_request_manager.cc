@@ -179,7 +179,7 @@ void NetworkRequestManager::DownloadUrl(
     DownloadCallback callback,
     size_t max_download_size,
     bool allow_http_error_results) {
-  const RenderFrameHost* render_frame_host =
+  RenderFrameHost* render_frame_host =
       initiator_document_.AsRenderFrameHostIfValid();
 
   if (!render_frame_host) {

@@ -198,6 +198,7 @@
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/link_header.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -7752,8 +7753,21 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
     return true;
   }
 
-  if (!EnforcesConnectionAllowlist(*policies)) {
+  if (!HasActiveConnectionAllowlists(*policies)) {
     return true;
+  }
+
+  network::mojom::NetworkContext* network_context = nullptr;
+  net::NetworkAnonymizationKey network_anonymization_key;
+  std::optional<base::UnguessableToken> reporting_source;
+
+  RenderFrameHostImpl* initiator_rfh = GetInitiatorDocumentRenderFrameHost();
+  if (initiator_rfh) {
+    network_context =
+        initiator_rfh->GetProcess()->GetStoragePartition()->GetNetworkContext();
+    network_anonymization_key = initiator_rfh->GetIsolationInfoForSubresources()
+                                    .network_anonymization_key();
+    reporting_source = initiator_rfh->GetReportingSource();
   }
 
   // Perform functional checks (redirects, same-document, local URLs) only after
@@ -7761,7 +7775,9 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   // redirect_behavior defaults to kBlock if not explicitly set in the
   // Connection-Allowlist header.
   if (is_redirect) {
-    return IsRedirectAllowedByConnectionAllowlist(*policies);
+    return IsRedirectAllowedByConnectionAllowlist(
+        *policies, GetOriginalRequestURL(), network_context,
+        network_anonymization_key, reporting_source);
   }
 
   // For same-document navigation, the connection allowlist is not checked. For
@@ -7782,8 +7798,6 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   // It's possible that the initiator frame has been deleted by the time this is
   // reached. If so, we can't complete the fenced frame check below, and will
   // fail closed.
-  RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
-      initiator_process_id_, *initiator_frame_token_);
   // The feature currently does not impact fenced frames.
   // TODO(crbug.com/447954811): Revisit this if the feature needs to be
   // enabled and fenced frames need to be supported.
@@ -7791,8 +7805,9 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
     return true;
   }
 
-  return ConnectionAllowlistAllowsUrlAndReportIfNeeded(*policies,
-                                                       common_params_->url);
+  return ConnectionAllowlistAllowsUrlAndReportIfNeeded(
+      *policies, common_params_->url, network_context,
+      network_anonymization_key, reporting_source);
 }
 
 bool NavigationRequest::IsAllowedByCSPDirective(

@@ -292,8 +292,7 @@ bool IsAllowedByConnectionAllowlist(const PrefetchRequest& request,
     return true;
   }
 
-  const RenderFrameHostImpl* rfh =
-      renderer_initiator_info->GetRenderFrameHost();
+  RenderFrameHostImpl* rfh = renderer_initiator_info->GetRenderFrameHost();
   // RenderFrameHost that triggers the prefetch has gone, or it does not have a
   // policy container host.
   if (!rfh || !rfh->HasPolicyContainerHost()) {
@@ -302,13 +301,22 @@ bool IsAllowedByConnectionAllowlist(const PrefetchRequest& request,
 
   const PolicyContainerPolicies& policies =
       rfh->policy_container_host()->policies();
-  if (!EnforcesConnectionAllowlist(policies)) {
+  if (!HasActiveConnectionAllowlists(policies)) {
     return true;
   }
 
+  network::mojom::NetworkContext* network_context =
+      rfh->GetProcess()->GetStoragePartition()->GetNetworkContext();
+  net::NetworkAnonymizationKey network_anonymization_key =
+      rfh->GetIsolationInfoForSubresources().network_anonymization_key();
+  std::optional<base::UnguessableToken> reporting_source =
+      rfh->GetReportingSource();
+
   // Perform functional checks only after confirming the feature is active for
   // this initiator.
-  if (is_redirect && !IsRedirectAllowedByConnectionAllowlist(policies)) {
+  if (is_redirect && !IsRedirectAllowedByConnectionAllowlist(
+                         policies, url, network_context,
+                         network_anonymization_key, reporting_source)) {
     return false;
   }
 
@@ -319,7 +327,9 @@ bool IsAllowedByConnectionAllowlist(const PrefetchRequest& request,
     return true;
   }
 
-  return ConnectionAllowlistAllowsUrlAndReportIfNeeded(policies, url);
+  return ConnectionAllowlistAllowsUrlAndReportIfNeeded(
+      policies, url, network_context, network_anonymization_key,
+      reporting_source);
 }
 
 }  // namespace
