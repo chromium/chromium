@@ -452,8 +452,8 @@ ChromiumPacketSocketFactory::CreateUdpSocket(
     uint16_t min_port,
     uint16_t max_port) {
   if (session_options_provider_ &&
-      session_options_provider_->session_options().GetBoolValue(
-          "Disable-UDP")) {
+      session_options_provider_->session_options().disable_udp.value_or(
+          false)) {
     HOST_LOG
         << "Disable-UDP experiment is enabled. UDP socket won't be created.";
     return nullptr;

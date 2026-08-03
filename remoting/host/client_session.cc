@@ -140,8 +140,8 @@ void ClientSession::OnConnectionAuthenticated(
 
   is_authenticated_ = true;
 
-  const SessionOptions session_options(
-      host_experiment_session_plugin_.configuration());
+  const SessionOptions session_options =
+      SessionOptions::Parse(host_experiment_session_plugin_.configuration());
   DesktopEnvironmentOptions desktop_environment_options =
       desktop_environment_options_;
   desktop_environment_options.ApplySessionOptions(session_options);

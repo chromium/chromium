@@ -7,7 +7,7 @@
 
 namespace remoting {
 
-class SessionOptions;
+struct SessionOptions;
 
 namespace protocol {
 

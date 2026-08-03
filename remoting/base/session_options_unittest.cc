@@ -4,74 +4,103 @@
 
 #include "remoting/base/session_options.h"
 
+#include <sstream>
+
+#include "base/values.h"
+#include "build/build_config.h"
+#include "remoting/base/session_options_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
-TEST(SessionOptionsTest, ShouldBeAbleToAppendOptions) {
-  SessionOptions options;
-  options.Import("A:, B C :1, DE:2, EF");
-  ASSERT_TRUE(options.Get("A"));
-  ASSERT_EQ(*options.Get("B C "), "1");
-  ASSERT_EQ(*options.Get("DE"), "2");
-  ASSERT_FALSE(options.Get("EF"));
-  ASSERT_FALSE(options.Get(" EF"));
-  ASSERT_FALSE(options.Get("--FF"));
+TEST(SessionOptionsTest, ParseAllSupportedFields) {
+  base::DictValue dict;
+  dict.Set(kSessionOptionDetectUpdatedRegion, "true");
+  dict.Set(kSessionOptionCaptureVideoOnDedicatedThread, "0");
+  dict.Set(kSessionOptionDisableUdp, "");
+  dict.Set(kSessionOptionAv1ActiveMap, "FALSE");
+  dict.Set(kSessionOptionVp9EncoderSpeed, "4");
+  dict.Set(kSessionOptionAv1EncoderSpeed, "-200");
+#if BUILDFLAG(IS_MAC)
+  dict.Set(kSessionOptionEnableSckCapturer, "1");
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
+  dict.Set(kSessionOptionAllowDxgiCapturer, "TRUE");
+#endif  // BUILDFLAG(IS_WIN)
 
-  options.Append("A", "100");
-  options.Append("--FF", "3");
-  ASSERT_EQ(*options.Get("A"), "100");
-  ASSERT_EQ(*options.Get("--FF"), "3");
+  SessionOptions options = SessionOptions::Parse(dict);
+  EXPECT_EQ(options.detect_updated_region, true);
+  EXPECT_EQ(options.capture_video_on_dedicated_thread, false);
+  EXPECT_EQ(options.disable_udp, true);
+  EXPECT_EQ(options.av1_active_map, false);
+  EXPECT_EQ(options.vp9_encoder_speed, 4);
+  EXPECT_EQ(options.av1_encoder_speed, -200);
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(options.enable_sck_capturer, true);
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(options.allow_dxgi_capturer, true);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-TEST(SessionOptionsTest, ShouldRemoveEmptyKeys) {
-  SessionOptions options;
-  options.Import("A:1,:,B:");
-  ASSERT_TRUE(options.Get("A"));
-  ASSERT_TRUE(options.Get("B"));
-  ASSERT_FALSE(options.Get(""));
+TEST(SessionOptionsTest, ParseIgnoresUnsupportedField) {
+  base::DictValue dict;
+  dict.Set(kSessionOptionDetectUpdatedRegion, "true");
+  dict.Set("Unsupported-Key", "foo");
+
+  SessionOptions options = SessionOptions::Parse(dict);
+  EXPECT_EQ(options.detect_updated_region, true);
 }
 
-TEST(SessionOptionsTest, ShouldRemoveNonASCIIKeyOrValue) {
-  SessionOptions options;
-  options.Import("\xE9\x9B\xAA:value,key:\xE9\xA3\x9E,key2:value2");
-  ASSERT_FALSE(options.Get("\xE9\x9B\xAA"));
-  ASSERT_FALSE(options.Get("key"));
-  ASSERT_EQ(*options.Get("key2"), "value2");
+TEST(SessionOptionsTest, ParseIgnoresInvalidBool) {
+  base::DictValue dict;
+  dict.Set(kSessionOptionDetectUpdatedRegion, "not_a_bool");
+
+  EXPECT_EQ(SessionOptions::Parse(dict), SessionOptions());
 }
 
-TEST(SessionOptionsTest, ImportAndExport) {
-  SessionOptions options;
-  options.Import("A:,B:,C:D,E:V");
-  std::string result = options.Export();
+TEST(SessionOptionsTest, ParseIgnoresInvalidInt) {
+  base::DictValue dict;
+  dict.Set(kSessionOptionVp9EncoderSpeed, "not_an_int");
 
-  SessionOptions other;
-  other.Append("C", "X");
-  other.Import(result);
-  ASSERT_EQ(options.Export(), other.Export());
+  EXPECT_EQ(SessionOptions::Parse(dict), SessionOptions());
 }
 
-TEST(SessionOptionsTest, ConvertToBool) {
-  SessionOptions options;
-  options.Import("A:,B:x,C:true,D:TRUE,E:1,F:2,G:FALSE,H:0,I");
-  ASSERT_TRUE(*options.GetBool("A"));
-  ASSERT_FALSE(options.GetBool("B"));
-  ASSERT_TRUE(*options.GetBool("C"));
-  ASSERT_TRUE(*options.GetBool("D"));
-  ASSERT_TRUE(*options.GetBool("E"));
-  ASSERT_FALSE(options.GetBool("F"));
-  ASSERT_FALSE(*options.GetBool("G"));
-  ASSERT_FALSE(*options.GetBool("H"));
-  ASSERT_FALSE(options.GetBool("I"));
+TEST(SessionOptionsTest, IgnoreNonApplicableOsKeys) {
+  base::DictValue dict;
+  dict.Set(kSessionOptionDetectUpdatedRegion, "true");
+#if !BUILDFLAG(IS_MAC)
+  dict.Set("Enable-Sck-Capturer", "true");
+#endif  // !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_WIN)
+  dict.Set("Allow-Dxgi-Capturer", "true");
+#endif  // !BUILDFLAG(IS_WIN)
+
+  SessionOptions options = SessionOptions::Parse(dict);
+  EXPECT_EQ(options.detect_updated_region, true);
 }
 
-TEST(SessionOptionsTest, ConvertToint) {
+TEST(SessionOptionsTest, Equality) {
+  SessionOptions options1;
+  options1.detect_updated_region = true;
+  options1.vp9_encoder_speed = 3;
+
+  SessionOptions options2 = options1;
+  EXPECT_EQ(options1, options2);
+
+  options2.vp9_encoder_speed = 4;
+  EXPECT_NE(options1, options2);
+}
+
+TEST(SessionOptionsTest, StreamOutput) {
   SessionOptions options;
-  options.Import("A:100,B:-200,C:x,D:");
-  ASSERT_EQ(*options.GetInt("A"), 100);
-  ASSERT_EQ(*options.GetInt("B"), -200);
-  ASSERT_FALSE(options.GetInt("C"));
-  ASSERT_FALSE(options.GetInt("D"));
+  options.detect_updated_region = true;
+
+  std::ostringstream ss;
+  ss << options;
+  EXPECT_NE(ss.str().find("Detect-Updated-Region: 1"), std::string::npos);
+  EXPECT_NE(ss.str().find("Vp9-Encoder-Speed: <unspecified>"),
+            std::string::npos);
 }
 
 }  // namespace remoting

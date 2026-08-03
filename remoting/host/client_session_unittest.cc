@@ -22,6 +22,7 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
+#include "remoting/base/session_options_constants.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/fake_desktop_environment.h"
@@ -249,7 +250,7 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions1) {
   auto session = std::make_unique<protocol::FakeSession>();
   Attachment attachment;
   attachment.host_config.emplace();
-  attachment.host_config->settings["Detect-Updated-Region"] = "true";
+  attachment.host_config->settings[kSessionOptionDetectUpdatedRegion] = "true";
   session->SetAttachment(0, attachment);
 
   CreateClientSession(std::move(session));
@@ -259,14 +260,14 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions1) {
       .WillOnce(testing::SaveArg<5>(&options));
 
   ConnectClientSession();
-  EXPECT_EQ(options.Get("Detect-Updated-Region"), "true");
+  EXPECT_EQ(options.detect_updated_region, true);
 }
 
 TEST_F(ClientSessionTest, ForwardHostSessionOptions2) {
   auto session = std::make_unique<protocol::FakeSession>();
   Attachment attachment;
   attachment.host_config.emplace();
-  attachment.host_config->settings["Detect-Updated-Region"] = "false";
+  attachment.host_config->settings[kSessionOptionDetectUpdatedRegion] = "false";
   session->SetAttachment(0, attachment);
 
   CreateClientSession(std::move(session));
@@ -276,7 +277,53 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions2) {
       .WillOnce(testing::SaveArg<5>(&options));
 
   ConnectClientSession();
-  EXPECT_EQ(options.Get("Detect-Updated-Region"), "false");
+  EXPECT_EQ(options.detect_updated_region, false);
+}
+
+TEST_F(ClientSessionTest, ForwardHostSessionOptionsAllFields) {
+  auto session = std::make_unique<protocol::FakeSession>();
+  Attachment attachment;
+  attachment.host_config.emplace();
+  attachment.host_config->settings[kSessionOptionDetectUpdatedRegion] = "true";
+  attachment.host_config
+      ->settings[kSessionOptionCaptureVideoOnDedicatedThread] = "false";
+  attachment.host_config->settings[kSessionOptionDisableUdp] = "true";
+  attachment.host_config->settings[kSessionOptionVp9EncoderSpeed] = "3";
+  attachment.host_config->settings[kSessionOptionAv1ActiveMap] = "1";
+  attachment.host_config->settings[kSessionOptionAv1EncoderSpeed] = "4";
+  session->SetAttachment(0, attachment);
+
+  CreateClientSession(std::move(session));
+
+  SessionOptions options;
+  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _, _))
+      .WillOnce(testing::SaveArg<5>(&options));
+
+  ConnectClientSession();
+  EXPECT_EQ(options.detect_updated_region, true);
+  EXPECT_EQ(options.capture_video_on_dedicated_thread, false);
+  EXPECT_EQ(options.disable_udp, true);
+  EXPECT_EQ(options.vp9_encoder_speed, 3);
+  EXPECT_EQ(options.av1_active_map, true);
+  EXPECT_EQ(options.av1_encoder_speed, 4);
+}
+
+TEST_F(ClientSessionTest, ForwardHostSessionOptionsIgnoresUnsupportedKey) {
+  auto session = std::make_unique<protocol::FakeSession>();
+  Attachment attachment;
+  attachment.host_config.emplace();
+  attachment.host_config->settings[kSessionOptionDetectUpdatedRegion] = "true";
+  attachment.host_config->settings["Unsupported-Key"] = "foo";
+  session->SetAttachment(0, attachment);
+
+  CreateClientSession(std::move(session));
+
+  SessionOptions options;
+  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _, _))
+      .WillOnce(testing::SaveArg<5>(&options));
+
+  ConnectClientSession();
+  EXPECT_EQ(options.detect_updated_region, true);
 }
 
 TEST_F(

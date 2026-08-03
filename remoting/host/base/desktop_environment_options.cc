@@ -141,30 +141,26 @@ void DesktopEnvironmentOptions::set_audio_playback_mode(
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
   // This field is for test purpose. Usually it should not be set to false.
-  std::optional<bool> detect_updated_region =
-      options.GetBool("Detect-Updated-Region");
-  if (detect_updated_region.has_value()) {
-    desktop_capture_options_.set_detect_updated_region(*detect_updated_region);
+  if (options.detect_updated_region.has_value()) {
+    desktop_capture_options_.set_detect_updated_region(
+        *options.detect_updated_region);
   }
-  std::optional<bool> capture_video_on_dedicated_thread =
-      options.GetBool("Capture-Video-On-Dedicated-Thread");
-  if (capture_video_on_dedicated_thread.has_value()) {
-    set_capture_video_on_dedicated_thread(*capture_video_on_dedicated_thread);
+  if (options.capture_video_on_dedicated_thread.has_value()) {
+    set_capture_video_on_dedicated_thread(
+        *options.capture_video_on_dedicated_thread);
   }
 
 #if BUILDFLAG(IS_MAC)
-  std::optional<bool> enable_sck_capturer =
-      options.GetBool("Enable-Sck-Capturer");
-  if (enable_sck_capturer.has_value()) {
-    desktop_capture_options_.set_allow_sck_capturer(*enable_sck_capturer);
+  if (options.enable_sck_capturer.has_value()) {
+    desktop_capture_options_.set_allow_sck_capturer(
+        *options.enable_sck_capturer);
   }
 #endif  // IS_MAC
 
 #if BUILDFLAG(IS_WIN)
-  std::optional<bool> allow_dxgi_capturer =
-      options.GetBool("Allow-Dxgi-Capturer");
-  if (allow_dxgi_capturer.has_value()) {
-    desktop_capture_options_.set_allow_directx_capturer(*allow_dxgi_capturer);
+  if (options.allow_dxgi_capturer.has_value()) {
+    desktop_capture_options_.set_allow_directx_capturer(
+        *options.allow_dxgi_capturer);
   }
 #endif  // IS_WIN
 

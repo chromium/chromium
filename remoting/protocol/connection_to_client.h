@@ -21,7 +21,7 @@
 namespace remoting {
 class DesktopCapturer;
 class FifoBufferWriter;
-class SessionOptions;
+struct SessionOptions;
 }  // namespace remoting
 
 namespace remoting::protocol {

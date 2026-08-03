@@ -6,10 +6,9 @@
 #define REMOTING_BASE_SESSION_OPTIONS_H_
 
 #include <optional>
-#include <string>
-#include <string_view>
+#include <ostream>
 
-#include "base/containers/flat_map.h"
+#include "build/build_config.h"
 
 namespace base {
 class DictValue;
@@ -17,54 +16,64 @@ class DictValue;
 
 namespace remoting {
 
-// Session based host options sending from client. This class parses and stores
-// session configuration from client side to control the behavior of other host
+// Session based host options sending from client. This struct stores session
+// configuration from client side to control the behavior of other host
 // components.
-class SessionOptions final {
- public:
+struct SessionOptions {
   SessionOptions();
-  SessionOptions(const SessionOptions& other);
-  SessionOptions(SessionOptions&& other);
-  explicit SessionOptions(std::string_view parameter);
-  explicit SessionOptions(const base::DictValue& dict);
-
   ~SessionOptions();
 
+  SessionOptions(const SessionOptions& other);
   SessionOptions& operator=(const SessionOptions& other);
+  SessionOptions(SessionOptions&& other);
   SessionOptions& operator=(SessionOptions&& other);
 
-  // Appends one key-value pair into current instance.
-  void Append(std::string_view key, std::string_view value);
+  bool operator==(const SessionOptions& other) const;
 
-  // Retrieves the value of |key|. Returns a true Optional if |key| has been
-  // found, value of the Optional will be set to corresponding value.
-  std::optional<std::string> Get(std::string_view key) const;
+  // Parses key-value pairs from `dict` into a `SessionOptions` instance.
+  // Unsupported keys or values that cannot be converted to the expected type
+  // are ignored with a warning log.
+  static SessionOptions Parse(const base::DictValue& dict);
 
-  // Retrieves the value of |key|. Returns a true Optional if |key| has been
-  // found and the corresponding value can be converted to a boolean value.
-  // "true", "1" or empty will be converted to true, "false" or "0" will be
-  // converted to false.
-  std::optional<bool> GetBool(std::string_view key) const;
+  // Whether to detect updated regions when capturing the screen.
+  // Corresponding option key: Detect-Updated-Region
+  std::optional<bool> detect_updated_region;
 
-  // Equivalent to GetBool(key).value_or(false).
-  bool GetBoolValue(std::string_view key) const;
+  // Whether video capture should run on a dedicated thread.
+  // Corresponding option key: Capture-Video-On-Dedicated-Thread
+  std::optional<bool> capture_video_on_dedicated_thread;
 
-  // Retrieves the value of |key|. Returns a true Optional if |key| has been
-  // found and the corresponding value can be converted to an integer.
-  std::optional<int> GetInt(std::string_view key) const;
+#if BUILDFLAG(IS_MAC)
+  // Whether to enable ScreenCaptureKit capturer on macOS.
+  // Corresponding option key: Enable-Sck-Capturer
+  std::optional<bool> enable_sck_capturer;
+#endif  // BUILDFLAG(IS_MAC)
 
-  // Returns a string to represent current instance. Consumers can rebuild an
-  // exactly same instance with Import() function.
-  std::string Export() const;
+#if BUILDFLAG(IS_WIN)
+  // Whether to allow DXGI capturer on Windows.
+  // Corresponding option key: Allow-Dxgi-Capturer
+  std::optional<bool> allow_dxgi_capturer;
+#endif  // BUILDFLAG(IS_WIN)
 
-  // Overwrite current instance with |parameter|, which is a string returned by
-  // Export() function. So a parent process can send SessionOptions to a
-  // child process.
-  void Import(std::string_view parameter);
+  // Whether to disable UDP connections.
+  // Corresponding option key: Disable-UDP
+  std::optional<bool> disable_udp;
 
- private:
-  base::flat_map<std::string, std::string> options_;
+  // Encoder speed for VP9 video codec.
+  // Corresponding option key: Vp9-Encoder-Speed
+  std::optional<int> vp9_encoder_speed;
+
+  // Whether active map is enabled for AV1 video codec.
+  // Corresponding option key: Av1-Active-Map
+  std::optional<bool> av1_active_map;
+
+  // Encoder speed for AV1 video codec.
+  // Corresponding option key: Av1-Encoder-Speed
+  std::optional<int> av1_encoder_speed;
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const SessionOptions& session_options);
 
 }  // namespace remoting
 

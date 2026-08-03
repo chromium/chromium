@@ -24,7 +24,7 @@ struct TransportRoute;
 
 class DesktopEnvironmentOptions;
 class HostExtension;
-class SessionOptions;
+struct SessionOptions;
 struct SessionPolicies;
 
 // A PeerSession keeps a reference to a connection to a client, and
