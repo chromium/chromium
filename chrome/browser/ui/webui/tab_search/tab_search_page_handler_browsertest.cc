@@ -871,7 +871,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabsNotChanged) {
 }
 
 // Verify tab update event is called correctly with data
-IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, TabUpdated) {
+// TODO(https://crbug.com/537538766): Fails on Linux MSan Tests.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_TabUpdated DISABLED_TabUpdated
+#else
+#define MAYBE_TabUpdated TabUpdated
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabUpdated) {
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
 
   ClearSetupExpectations();
