@@ -8,6 +8,7 @@
 #import "base/files/file_path.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/timer/timer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/download/ui/download_manager_consumer.h"
 #import "ios/chrome/browser/drive/model/upload_task_observer.h"
@@ -143,6 +144,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   raw_ptr<UploadTask> upload_task_ = nullptr;
   __weak id<DownloadManagerConsumer> consumer_ = nil;
   bool is_google_drive_app_installed_ = false;
+
+  base::OneShotTimer progress_update_timer_;
+  DownloadManagerState last_state_ = DownloadManagerState::kNotStarted;
 
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };
