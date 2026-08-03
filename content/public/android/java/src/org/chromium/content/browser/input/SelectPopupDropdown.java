@@ -43,6 +43,7 @@ public class SelectPopupDropdown implements SelectPopup.Ui {
         mSelectionChangedCallback = selectionChangedCallback;
         mDropdownPopupWindow = new DropdownPopupWindow(context, anchorView);
         mDropdownPopupWindow.setFocusable(true);
+        mDropdownPopupWindow.setListSelectorTransparent();
         mDropdownPopupWindow.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override

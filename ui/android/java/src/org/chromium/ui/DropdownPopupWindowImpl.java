@@ -22,12 +22,14 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.listmenu.ListMenuUtils;
+import org.chromium.ui.theme.FillInContextThemeWrapper;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
- * The dropdown popup window for use on Lollipop+. Internally uses an AnchoredPopupWindow
- * anchored to a view to display a list of options.
+ * The dropdown popup window for use on Lollipop+. Internally uses an AnchoredPopupWindow anchored
+ * to a view to display a list of options.
  */
 @NullMarked
 class DropdownPopupWindowImpl
@@ -51,10 +53,10 @@ class DropdownPopupWindowImpl
      * @param context Application context.
      * @param anchorView Popup view to be anchored.
      */
-    public DropdownPopupWindowImpl(
-            Context context,
-            View anchorView) {
-        mContext = context;
+    public DropdownPopupWindowImpl(Context context, View anchorView) {
+        mContext =
+                new FillInContextThemeWrapper(
+                        context, R.style.ThemeOverlay_UI_AdaptiveDensityDefaults);
         mAnchorView = anchorView;
 
         mAnchorView.setId(R.id.dropdown_popup_window);
@@ -88,22 +90,22 @@ class DropdownPopupWindowImpl
                     }
                 };
 
-        mListView = new ListView(context);
+        mListView = new ListView(mContext);
 
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         rectProvider.setIncludePadding(true);
         TypedValue typedValue = new TypedValue();
-        int bgResId =
-                context.getTheme().resolveAttribute(R.attr.popupBgShadow, typedValue, true)
-                        ? typedValue.resourceId
-                        : R.drawable.menu_bg_baseline;
-        mBackground = assumeNonNull(AppCompatResources.getDrawable(context, bgResId));
+        mContext.getTheme().resolveAttribute(R.attr.popupBgShadow, typedValue, true);
+        mBackground =
+                assumeNonNull(AppCompatResources.getDrawable(mContext, typedValue.resourceId));
+        ListMenuUtils.clipContentViewOutline(mListView, R.attr.popupBgCornerRadius);
         mAnchoredPopupWindow =
-                new AnchoredPopupWindow(context, mAnchorView, mBackground, mListView, rectProvider);
+                new AnchoredPopupWindow(
+                        mContext, mAnchorView, mBackground, mListView, rectProvider);
         mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
         mAnchoredPopupWindow.setLayoutObserver(this);
         mAnchoredPopupWindow.setElevation(
-                context.getResources().getDimensionPixelSize(R.dimen.dropdown_elevation));
+                mContext.getResources().getDimensionPixelSize(R.dimen.dropdown_elevation));
         Rect paddingRect = new Rect();
         mBackground.getPadding(paddingRect);
         rectProvider.setInsetPx(0, /* top= */ paddingRect.bottom, 0, /* bottom= */ paddingRect.top);
@@ -258,6 +260,12 @@ class DropdownPopupWindowImpl
     @Override
     public void setFocusable(boolean focusable) {
         mAnchoredPopupWindow.setFocusable(focusable);
+    }
+
+    /** Sets the list selector to transparent to prevent double ripple effects. */
+    @Override
+    public void setListSelectorTransparent() {
+        mListView.setSelector(android.R.color.transparent);
     }
 
     /**

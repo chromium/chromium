@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -25,7 +27,9 @@ import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.theme.FillInContextThemeWrapper;
 import org.chromium.ui.util.AttrUtils;
+import org.chromium.ui.widget.HoverHighlightViewListener;
 
 import java.util.List;
 
@@ -36,6 +40,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
     private final boolean mAreAllItemsEnabled;
     private final int mItemHeight;
     private final double mFontSize;
+    private final HoverHighlightViewListener mHoverListener = new HoverHighlightViewListener();
 
     /**
      * Creates an {@code ArrayAdapter} with specified parameters.
@@ -47,8 +52,11 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
      */
     public DropdownAdapter(
             Context context, List<? extends DropdownItem> items, int itemHeight, double fontSize) {
-        super(context, R.layout.dropdown_item);
-        mContext = context;
+        super(
+                new FillInContextThemeWrapper(
+                        context, R.style.ThemeOverlay_UI_AdaptiveDensityDefaults),
+                R.layout.dropdown_item);
+        mContext = getContext();
         addAll(items);
         mAreAllItemsEnabled = checkAreAllItemsEnabled();
         mItemHeight = itemHeight;
@@ -77,9 +85,23 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             LayoutInflater inflater =
                     (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             layout = inflater.inflate(R.layout.dropdown_item, null);
-            layout.setBackground(new DropdownDividerDrawable(/* backgroundColor= */ null));
+            layout.setOnHoverListener(mHoverListener);
+
+            // DropdownDividerDrawable to draw the divider, listChoiceBackgroundIndicator to draw
+            // ripple, hover, and focus effects.
+            DropdownDividerDrawable divider =
+                    new DropdownDividerDrawable(/* backgroundColor= */ null);
+            TypedValue typedValue = new TypedValue();
+            mContext.getTheme()
+                    .resolveAttribute(R.attr.listChoiceBackgroundIndicator, typedValue, true);
+            Drawable listChoiceBackgroundIndicator =
+                    AppCompatResources.getDrawable(mContext, typedValue.resourceId);
+            LayerDrawable background =
+                    new LayerDrawable(new Drawable[] {divider, listChoiceBackgroundIndicator});
+            layout.setBackground(background);
         }
-        DropdownDividerDrawable divider = (DropdownDividerDrawable) layout.getBackground();
+        LayerDrawable layers = (LayerDrawable) layout.getBackground();
+        DropdownDividerDrawable divider = (DropdownDividerDrawable) layers.getDrawable(0);
         int height =
                 Math.max(
                         mItemHeight,
