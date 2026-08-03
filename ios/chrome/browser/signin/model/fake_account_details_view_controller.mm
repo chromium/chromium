@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation FakeAccountDetailsViewController {
   __weak id<SystemIdentity> _identity;
@@ -53,16 +54,12 @@
       [NSString stringWithFormat:@"Details: %@", [_identity debugDescription]];
   [view addSubview:detailView];
 
+  AddSameConstraintsToSides(doneButton, view.safeAreaLayoutGuide,
+                            LayoutSides::kTop | LayoutSides::kLeading);
+  AddSameConstraintsToSides(detailView, view.safeAreaLayoutGuide,
+                            LayoutSides::kLeading | LayoutSides::kTrailing);
   [NSLayoutConstraint activateConstraints:@[
-    [doneButton.topAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
-    [doneButton.leadingAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor],
     [doneButton.bottomAnchor constraintEqualToAnchor:detailView.topAnchor],
-    [detailView.leadingAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor],
-    [detailView.trailingAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.trailingAnchor],
     [detailView.heightAnchor constraintEqualToAnchor:view.heightAnchor
                                           multiplier:.5],
   ]];

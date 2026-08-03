@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -192,23 +193,17 @@ UIImage* GetEnterpriseIcon() {
                        constant:(_useLargeMargins
                                      ? kTableViewLargeVerticalSpacing
                                      : kTopLargePadding)];
+    AddSameConstraintsToSidesWithInsets(
+        nameLabel, self, LayoutSides::kLeading | LayoutSides::kTrailing,
+        NSDirectionalEdgeInsets{0, kTableViewHorizontalSpacing, 0,
+                                kTableViewHorizontalSpacing});
+    AddSameConstraintsToSides(emailLabel, nameLabel,
+                              LayoutSides::kLeading | LayoutSides::kTrailing);
     [NSLayoutConstraint activateConstraints:@[
       [_avatarView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
       _topPaddingConstraint,
-
-      [nameLabel.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor
-                         constant:kTableViewHorizontalSpacing],
-      [nameLabel.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor
-                         constant:-kTableViewHorizontalSpacing],
-
       [emailLabel.topAnchor constraintEqualToAnchor:nameLabel.bottomAnchor
                                            constant:kLabelVerticalSpacing],
-      [emailLabel.leadingAnchor
-          constraintEqualToAnchor:nameLabel.leadingAnchor],
-      [emailLabel.trailingAnchor
-          constraintEqualToAnchor:nameLabel.trailingAnchor],
     ]];
 
     if (subscriptionChipView) {

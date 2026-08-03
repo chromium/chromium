@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
@@ -145,12 +146,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:tableView];
-  [NSLayoutConstraint activateConstraints:@[
-    [self.view.topAnchor constraintEqualToAnchor:tableView.topAnchor],
-    [self.view.bottomAnchor constraintEqualToAnchor:tableView.bottomAnchor],
-    [self.view.trailingAnchor constraintEqualToAnchor:tableView.trailingAnchor],
-    [self.view.leadingAnchor constraintEqualToAnchor:tableView.leadingAnchor],
-  ]];
+  AddSameConstraints(self.view, tableView);
   tableView.delegate = self;
   tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   tableView.backgroundColor =

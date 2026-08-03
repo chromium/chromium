@@ -334,6 +334,7 @@ source_set("fake_system_identity_manager") {
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
     "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ui/base",
     "//ui/base:test_support",
@@ -352,6 +353,7 @@ source_set("fake_account_details_view_controller") {
     ":system_identity",
     "//base",
     "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
 }

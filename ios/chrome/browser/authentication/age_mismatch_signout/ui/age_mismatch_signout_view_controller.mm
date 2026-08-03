@@ -91,14 +91,9 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
 
   NSMutableArray<NSLayoutConstraint*>* constraints =
       [[NSMutableArray alloc] init];
-  [constraints addObjectsFromArray:@[
-    [self.subtitleTextView.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor],
-    [self.subtitleTextView.leadingAnchor
-        constraintEqualToAnchor:self.specificContentView.leadingAnchor],
-    [self.subtitleTextView.trailingAnchor
-        constraintEqualToAnchor:self.specificContentView.trailingAnchor],
-  ]];
+  AddSameConstraintsToSides(
+      self.subtitleTextView, self.specificContentView,
+      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
 
   // Add the identity view only for the follow up prompt.
   switch (_mode) {

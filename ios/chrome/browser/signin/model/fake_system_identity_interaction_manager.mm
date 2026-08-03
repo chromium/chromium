@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 #import "ui/base/device_form_factor.h"
 
@@ -76,12 +77,8 @@ BOOL gUsingUnknownCapabilities;
   stackView.translatesAutoresizingMaskIntoConstraints = false;
   [self.view addSubview:stackView];
   // Set up constraints.
-  NSMutableArray* constraints = [[NSMutableArray alloc] init];
-  [constraints addObject:[stackView.topAnchor
-                             constraintEqualToAnchor:self.view.topAnchor]];
-  [constraints addObject:[stackView.leadingAnchor
-                             constraintEqualToAnchor:self.view.leadingAnchor]];
-  [NSLayoutConstraint activateConstraints:constraints];
+  AddSameConstraintsToSides(stackView, self.view,
+                            LayoutSides::kTop | LayoutSides::kLeading);
 }
 
 #pragma mark - Private methods
