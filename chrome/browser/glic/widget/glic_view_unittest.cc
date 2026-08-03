@@ -11,7 +11,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/views/widget/widget.h"
 
@@ -98,6 +101,52 @@ TEST_F(GlicViewTest, UpdatesBackgroundColorOnThemeChange) {
 
   // Verify that a background has been set on the view.
   EXPECT_NE(glic_view->GetBackground(), nullptr);
+}
+
+class TestWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  TestWebContentsDelegate() = default;
+  ~TestWebContentsDelegate() override = default;
+};
+
+TEST_F(GlicViewTest, SetWebContents_ClearsOldDelegate) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  auto web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(profile()));
+  auto* wc_ptr = web_contents.get();
+
+  EXPECT_EQ(wc_ptr->GetDelegate(), nullptr);
+
+  glic_view->SetWebContents(wc_ptr);
+  EXPECT_EQ(wc_ptr->GetDelegate(), glic_view.get());
+
+  glic_view->SetWebContents(nullptr);
+  EXPECT_EQ(wc_ptr->GetDelegate(), nullptr);
+}
+
+TEST_F(GlicViewTest, SetWebContents_DoesNotClearIfOverwritten) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  auto web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(profile()));
+  auto* wc_ptr = web_contents.get();
+
+  glic_view->SetWebContents(wc_ptr);
+  EXPECT_EQ(wc_ptr->GetDelegate(), glic_view.get());
+
+  TestWebContentsDelegate other_delegate;
+  wc_ptr->SetDelegate(&other_delegate);
+  EXPECT_EQ(wc_ptr->GetDelegate(), &other_delegate);
+
+  glic_view->SetWebContents(nullptr);
+  EXPECT_EQ(wc_ptr->GetDelegate(), &other_delegate);
 }
 
 }  // namespace glic
