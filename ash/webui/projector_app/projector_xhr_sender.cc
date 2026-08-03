@@ -24,6 +24,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -284,6 +285,9 @@ void ProjectorXhrSender::SendRequest(
   // Projector will not navigate to any additional URLs outside of Drive so
   // we disable redirects of any kind.
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
+  resource_request->credentials_mode =
+      allow_cookie ? network::mojom::CredentialsMode::kInclude
+                   : network::mojom::CredentialsMode::kOmit;
   // The OAuth token will be empty if the request is using end user credentials
   // for authorization.
   if (!token.empty()) {
