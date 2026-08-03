@@ -2277,6 +2277,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2739240477418971307">Newid eich gosodiadau hygyrchedd</translation>
 <translation id="2739331588276254426">Wedi'i gysylltu â'r rhyngrwyd trwy <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">Cadw'r grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu ddileu ef os nad oes ei angen arnoch fwyach.</translation>
+<translation id="2739917034504760471">Cael diffiniad neu ddysgu rhagor am bwnc</translation>
 <translation id="274029851662193272">Wedi'i ddirwasgu</translation>
 <translation id="2740531572673183784">Iawn</translation>
 <translation id="2740876196999178364">Mae'r codau pas hyn yn cael eu cadw ar y ddyfais hon yn unig. Nid ydynt yn cael eu cadw i'ch Cyfrif Google.</translation>
@@ -3250,6 +3251,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3482719661246593752">Gall <ph name="ORIGIN" /> weld y ffeiliau canlynol</translation>
 <translation id="3484595034894304035">Personoleiddio papur wal, arbedwr sgrîn, thema dywyll, a rhagor</translation>
 <translation id="3484869148456018791">Cael tystysgrif newydd</translation>
+<translation id="3486380520195228369">Cudd nes bod y dudalen yn adnewyddu</translation>
 <translation id="3487007233252413104">swyddogaeth anhysbys</translation>
 <translation id="3487649228420469005">Sganio wedi gorffen</translation>
 <translation id="3488199663160411179">enw</translation>
@@ -3371,6 +3373,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3577036603268648505">Byddwch yn Fwy Diogel Ar-lein</translation>
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
 <translation id="3577487026101678864">Mae cysoni ffeiliau wedi'i droi ymlaen</translation>
+<translation id="3578230582111850125">dewiswch destun i ofyn i Gemini</translation>
 <translation id="3581605050355435601">Ffurfweddu cyfeiriad IP yn awtomatig</translation>
 <translation id="3581861561942370740">Chwilio hanes lawrlwytho</translation>
 <translation id="3582057310199111521">Wedi'i rhoi ar wefan dwyllodrus a'i ddarganfod mewn tor data</translation>
@@ -7357,6 +7360,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6660301751798595791">Dewis llais</translation>
 <translation id="6660819301598582123">Gwnaeth y llwynog brown cyflym neidio dros y ci diog.</translation>
 <translation id="666099631117081440">Gweinyddion argraffwyr</translation>
+<translation id="6662339038589469159">Dewiswch destun i ofyn i Gemini</translation>
 <translation id="6662394424395160792">Defnyddiwch Reolwr Cyfrinair Google i fewngofnodi'n gyflymach i wefannau o unrhyw un o'ch dyfeisiau</translation>
 <translation id="6662931079349804328">Mae'r polisi menter wedi newid. Mae'r botwm Arbrofion wedi'i dynnu o'r bar offer.</translation>
 <translation id="6664774537677393800">Aeth rhywbeth o'i le wrth agor eich proffil. Allgofnodwch a mewngofnodwch eto.</translation>
@@ -8021,6 +8025,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7174199383876220879">Newydd! Rheolwch eich cerddoriaeth, eich fideos a rhagor.</translation>
 <translation id="7175037578838465313">Ffurfweddu <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Wedi'i lwytho o:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tab wedi'i binio}zero{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tabiau sydd wedi'u pinio}two{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tabiau sydd wedi'u pinio}few{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tab wedi'i binio}many{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tabiau sydd wedi'u pinio}other{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tab wedi'i binio}}</translation>
 <translation id="7177659256878428843">Trosi grŵp tabiau yn ffolder nodau tudalen</translation>
 <translation id="7180569503618416775">Gall Wallet gynnig cadw gwybodaeth o dudalennau rydych yn edrych arnynt, megis tocynnau rydych yn eu prynu</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
@@ -9753,6 +9758,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="850399339579925930">Geiriaduron</translation>
 <translation id="850561044295157831">Dysgu rhagor am Helpu fi i ysgrifennu</translation>
 <translation id="8505669004895429027">Arbedion Bach</translation>
+<translation id="850632091665381275">Aelodaeth Google</translation>
 <translation id="8507052544157927817">Arddull tanlinellu</translation>
 <translation id="8507227974644337342">Cydraniad y sgrîn</translation>
 <translation id="8507443886219296894">Cuddio ar gyfer y wefan hon</translation>

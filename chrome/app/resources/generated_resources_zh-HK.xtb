@@ -2276,6 +2276,7 @@
 <translation id="2739240477418971307">變更您的協助工具設定</translation>
 <translation id="2739331588276254426">已經由 <ph name="HOST_DEVICE_NAME" /> 連接網絡</translation>
 <translation id="2739887572830526131">如果保留群組，你之後可新增分頁；如果不再使用，則可刪除群組。</translation>
+<translation id="2739917034504760471">取得定義或進一步瞭解主題</translation>
 <translation id="274029851662193272">內凹</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2740876196999178364">這些密鑰只會儲存在此裝置上，並不會儲存至您的 Google 帳戶。</translation>
@@ -3247,6 +3248,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可查看以下檔案</translation>
 <translation id="3484595034894304035">根據個人喜好設定桌布、螢幕保護程式、深色主題等項目</translation>
 <translation id="3484869148456018791">取得新憑證</translation>
+<translation id="3486380520195228369">在頁面重新整理前會保持隱藏</translation>
 <translation id="3487007233252413104">匿名函數</translation>
 <translation id="3487649228420469005">掃瞄已完成</translation>
 <translation id="3488199663160411179">姓名</translation>
@@ -3368,6 +3370,7 @@
 <translation id="3577036603268648505">加強網上安全</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577487026101678864">開啟檔案同步功能</translation>
+<translation id="3578230582111850125">選取要問 Gemini 的文字</translation>
 <translation id="3581605050355435601">自動設定 IP 位址</translation>
 <translation id="3581861561942370740">搜尋下載記錄</translation>
 <translation id="3582057310199111521">曾在欺詐網站上輸入，並於資料外洩事件中發現</translation>
@@ -7341,6 +7344,7 @@
 <translation id="6660301751798595791">語音選擇</translation>
 <translation id="6660819301598582123">狐狗大鬥法。</translation>
 <translation id="666099631117081440">列印伺服器</translation>
+<translation id="6662339038589469159">選取要問 Gemini 的文字</translation>
 <translation id="6662394424395160792">「Google 密碼管理工具」讓你在任何裝置上更快登入網站</translation>
 <translation id="6662931079349804328">企業政策改咗，已經喺工具列度移除咗實驗掣。</translation>
 <translation id="6664774537677393800">開啟您的設定檔時發生錯誤，請先登出，然後再次登入。</translation>
@@ -8006,6 +8010,7 @@
 <translation id="7174199383876220879">新功能！控制音樂、影片及其他內容。</translation>
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7175353351958621980">載入來源：</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{再按 <ph name="SHORTCUT_TEXT" /> 即可關閉固定分頁}other{再按 <ph name="SHORTCUT_TEXT" /> 即可關閉固定分頁}}</translation>
 <translation id="7177659256878428843">將分頁群組轉換為書籤資料夾</translation>
 <translation id="7180569503618416775">「錢包」可讓你選擇儲存所瀏覽頁面的資料，例如你購買的票券</translation>
 <translation id="7180611975245234373">重新整理</translation>
@@ -9735,6 +9740,7 @@
 <translation id="850399339579925930">字典</translation>
 <translation id="850561044295157831">進一步了解「幫我寫」功能</translation>
 <translation id="8505669004895429027">節省少量記憶體</translation>
+<translation id="850632091665381275">Google 會籍</translation>
 <translation id="8507052544157927817">底線樣式</translation>
 <translation id="8507227974644337342">螢幕解像度</translation>
 <translation id="8507443886219296894">為此網站隱藏</translation>

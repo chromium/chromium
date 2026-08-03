@@ -2263,6 +2263,7 @@
 <translation id="2739240477418971307">ユーザー補助設定の変更</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" />経由でインターネットに接続されています</translation>
 <translation id="2739887572830526131">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は削除します。</translation>
+<translation id="2739917034504760471">トピックの定義や詳細情報を取得します</translation>
 <translation id="274029851662193272">沈み彫り</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">これらのパスキーは、このデバイスのみに保存されます。Google アカウントには保存されません。</translation>
@@ -3234,6 +3235,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> は次のファイルを表示できます</translation>
 <translation id="3484595034894304035">壁紙、スクリーン セーバー、ダークモードなどをパーソナライズ</translation>
 <translation id="3484869148456018791">新しい証明書を取得</translation>
+<translation id="3486380520195228369">ページが更新されるまで非表示になります</translation>
 <translation id="3487007233252413104">無名関数</translation>
 <translation id="3487649228420469005">スキャンが完了しました</translation>
 <translation id="3488199663160411179">名前</translation>
@@ -3355,6 +3357,7 @@
 <translation id="3577036603268648505">インターネットを安全に利用</translation>
 <translation id="3577473026931028326">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="3577487026101678864">ファイルの同期はオンになっています</translation>
+<translation id="3578230582111850125">テキストを選択して Gemini に質問する</translation>
 <translation id="3581605050355435601">IP アドレスを自動的に設定する</translation>
 <translation id="3581861561942370740">ダウンロード履歴を検索</translation>
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
@@ -7329,6 +7332,7 @@
 <translation id="6660301751798595791">音声の選択</translation>
 <translation id="6660819301598582123">あいうえおアイウエオABCabc123漢字</translation>
 <translation id="666099631117081440">プリント サーバー</translation>
+<translation id="6662339038589469159">テキストを選択して Gemini に質問する</translation>
 <translation id="6662394424395160792">Google パスワード マネージャーを使用すると、どのデバイスからでもサイトにすばやくログインできます</translation>
 <translation id="6662931079349804328">エンタープライズ ポリシーが変更され、ツールバーからテストボタンが削除されました。</translation>
 <translation id="6664774537677393800">プロフィールを開こうとして問題が発生しました。ログアウトしてから再度ログインしてください。</translation>
@@ -7994,6 +7998,7 @@
 <translation id="7174199383876220879">New! 音楽や動画などを操作できます。</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> の設定</translation>
 <translation id="7175353351958621980">ロード元:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{固定タブを閉じるには、もう一度 <ph name="SHORTCUT_TEXT" /> キーを押してください}other{固定タブを閉じるには、もう一度 <ph name="SHORTCUT_TEXT" /> キーを押してください}}</translation>
 <translation id="7177659256878428843">タブグループをブックマーク フォルダに変換</translation>
 <translation id="7180569503618416775">購入するチケットなど、表示中のページの情報をウォレットに保存するか確認します</translation>
 <translation id="7180611975245234373">更新</translation>
@@ -9725,6 +9730,7 @@
 <translation id="850399339579925930">辞書</translation>
 <translation id="850561044295157831">文書作成サポートの詳細</translation>
 <translation id="8505669004895429027">少量の節約</translation>
+<translation id="850632091665381275">Google メンバーシップ</translation>
 <translation id="8507052544157927817">下線のスタイル</translation>
 <translation id="8507227974644337342">画面の解像度</translation>
 <translation id="8507443886219296894">このサイトでは非表示にする</translation>

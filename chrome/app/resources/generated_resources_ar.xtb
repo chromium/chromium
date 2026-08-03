@@ -2267,6 +2267,7 @@
 <translation id="2739240477418971307">تغيير إعدادات تسهيل الاستخدام</translation>
 <translation id="2739331588276254426">متصل بالإنترنت من خلال "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="2739887572830526131">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو حذفها إذا لم تعُد بحاجة إليها.</translation>
+<translation id="2739917034504760471">يتيح لك الحصول على تعريف أو معرفة المزيد حول موضوع معيّن</translation>
 <translation id="274029851662193272">منخفضة</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2740876196999178364">‏يتم حفظ مفاتيح المرور هذه على هذا الجهاز فقط. ولا يتم حفظها في حسابك على Google.</translation>
@@ -3240,6 +3241,7 @@
 <translation id="3482719661246593752">بإمكان <ph name="ORIGIN" /> عرض الملفات التالية:</translation>
 <translation id="3484595034894304035">يمكنك تخصيص الخلفية وشاشة الاستراحة والمظهر الداكن وغير ذلك.</translation>
 <translation id="3484869148456018791">الحصول على شهادة جديدة</translation>
+<translation id="3486380520195228369">تم إخفاء التطبيق المصغر للتحديد إلى أن تتم إعادة تحميل الصفحة</translation>
 <translation id="3487007233252413104">وظيفة مجهولة</translation>
 <translation id="3487649228420469005">اكتمل الفحص.</translation>
 <translation id="3488199663160411179">الاسم</translation>
@@ -3361,6 +3363,7 @@
 <translation id="3577036603268648505">تصفُّح الإنترنت بأمان</translation>
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3577487026101678864">ميزة مزامنة الملفات مفعَّلة</translation>
+<translation id="3578230582111850125">‏تحديد نص لسؤال Gemini عنه</translation>
 <translation id="3581605050355435601">‏ضبط عنوان IP تلقائيًا</translation>
 <translation id="3581861561942370740">البحث في سجلّ التنزيل</translation>
 <translation id="3582057310199111521">تم إدخال كلمة المرور على موقع إلكتروني مريب وتبيّن أنها مستخدَمة في عملية اختراق البيانات.</translation>
@@ -7345,6 +7348,7 @@
 <translation id="6660301751798595791">اختيار الصوت</translation>
 <translation id="6660819301598582123">أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ</translation>
 <translation id="666099631117081440">خوادم الطباعة</translation>
+<translation id="6662339038589469159">‏تحديد نص لسؤال Gemini عنه</translation>
 <translation id="6662394424395160792">‏يمكنك استخدام "مدير كلمات المرور في Google" لتسجيل الدخول بشكل أسرع إلى المواقع الإلكترونية على أيٍّ من أجهزتك</translation>
 <translation id="6662931079349804328">تم تغيير سياسة المؤسسة، وبموجب هذا التغيير، تمت إزالة زر "التجارب" من شريط الأدوات.</translation>
 <translation id="6664774537677393800">حدث خطأ ما أثناء فتح ملفك الشخصي. يُرجى الخروج ثم إعادة تسجيل الدخول.</translation>
@@ -8011,6 +8015,7 @@
 <translation id="7174199383876220879">إليك إعداد جديد. يمكنك التحكم في الموسيقى والفيديوهات وغير ذلك.</translation>
 <translation id="7175037578838465313">إعداد <ph name="NAME" /></translation>
 <translation id="7175353351958621980">تم التحميل من:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{يمكنك الضغط على <ph name="SHORTCUT_TEXT" /> مرة أخرى لإغلاق علامة التبويب المثبَّتة}zero{يمكنك الضغط على <ph name="SHORTCUT_TEXT" /> مرة أخرى لإغلاق علامات التبويب المثبَّتة}two{يمكنك الضغط على <ph name="SHORTCUT_TEXT" /> مرة أخرى لإغلاق علامتَي التبويب المثبَّتتَين}few{يمكنك الضغط على <ph name="SHORTCUT_TEXT" /> مرة أخرى لإغلاق علامات التبويب المثبَّتة}many{يمكنك الضغط على <ph name="SHORTCUT_TEXT" /> مرة أخرى لإغلاق علامات التبويب المثبَّتة}other{يمكنك الضغط على <ph name="SHORTCUT_TEXT" /> مرة أخرى لإغلاق علامات التبويب المثبَّتة}}</translation>
 <translation id="7177659256878428843">تحويل مجموعة علامات التبويب إلى مجلد إشارات مرجعية</translation>
 <translation id="7180569503618416775">‏يمكن أن تقترح "محفظة Google" حفظ المعلومات من الصفحات التي يتم زيارتها، مثل التذاكر التي تشتريها</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
@@ -9743,6 +9748,7 @@
 <translation id="850399339579925930">القواميس</translation>
 <translation id="850561044295157831">مزيد من المعلومات حول ميزة "ساعدني في الكتابة"</translation>
 <translation id="8505669004895429027">تم إخلاء جزء صغير من مساحة التخزين</translation>
+<translation id="850632091665381275">‏اشتراك Google</translation>
 <translation id="8507052544157927817">نمط التسطير</translation>
 <translation id="8507227974644337342">درجة دقة الشاشة</translation>
 <translation id="8507443886219296894">الإخفاء على هذا الموقع الإلكتروني</translation>

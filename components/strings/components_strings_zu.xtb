@@ -2038,6 +2038,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="4153446078232988116">I-<ph name="SITE" /> ayisekeli uxhumano oluvikelekile ne-HTTPS</translation>
 <translation id="4153858337812834972">Amathebhu akamuva kakhulu</translation>
 <translation id="4154277373259957087">I-Chrome manje izoqinisekisa ukuthi nguwe ngaphambi kokugcwalisa izindlela zokukhokha. Ungabuyekeza lokhu noma kunini ku-<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="4157273919218514718">Inikwe amandla Yimisebenzi Yobuhlakani Bomuntu Siqu ngeGemini. <ph name="BEGIN_LINK" />Lawula amasethingi<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">Okuphephuli</translation>
 <translation id="4165422751765527461">Ivula i-athikili yeSikhungo Sosizo kwithebhu entsha</translation>
 <translation id="4165986682804962316">Izilungiselelo zesayithi</translation>
@@ -4068,6 +4069,7 @@ Imininingwane engeziwe:
 <translation id="7310392214323165548">Idivayisi izoqala kabusha maduze nje</translation>
 <translation id="7311244614769792472">Akunamiphumela etholakele</translation>
 <translation id="7313107491291103073">Inhlangano yakho imake leli sayithi njengoba lingaphula umthetho wenqubomgomo.</translation>
+<translation id="7315372670898739748">Ukulinka kuhlulekile, zama futhi ngemva kwesikhathi</translation>
 <translation id="7316521168101843192">Kulondolozwa ifayela ku-Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Usizo lokuxhumana</translation>
@@ -4261,6 +4263,7 @@ Imininingwane engeziwe:
 <translation id="7575800019233204241">"Uxhumo lwakho aluyona imfihlo" noma "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" noma "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" noma "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" noma "SSL certificate error"</translation>
 <translation id="7575887283389198269">Amaselula</translation>
 <translation id="7579113844074980463">Ithebhulethi ye-<ph name="MANUFACTURER" /></translation>
+<translation id="7579227976546039122">ukwakha konjiniyela</translation>
 <translation id="7579442726219254162">Inguquko engaziwa ye-"<ph name="VARIABLE" />" kokuthi phatha ukulungiselela kwe-"<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">U-shift wohlangothi 2 wesithombe esingu-Y</translation>
 <translation id="7582602800368606489">Dala umcimbi omusha ngokushesha ku-Google Calender</translation>
@@ -5343,6 +5346,7 @@ Imininingwane engeziwe:
 <translation id="987264212798334818">Okujwayelekile</translation>
 <translation id="988159990683914416">Ukwakhiwa konjiniyela</translation>
 <translation id="989988560359834682">Hlela ikheli</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
 <translation id="991936891556421157">Izicathulo</translation>
 <translation id="992110854164447044">Ikhadi le-virtual lifihla ikhadi lakho langempela ukusiza ukukuvikela ekukhwabaniseni okungase kube khona. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
