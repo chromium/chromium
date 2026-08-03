@@ -10,8 +10,8 @@ import {PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {getCss} from './pinned_toolbar_actions.css.js';
 import {getHtml} from './pinned_toolbar_actions.html.js';
+import {getCss} from './toolbar_action_container.css.js';
 import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
 
 export type {KeyedActionState} from './toolbar_action_container_mixin.js';

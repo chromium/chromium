@@ -9,8 +9,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {getCss} from './extensions.css.js';
 import {getHtml} from './extensions.html.js';
+import {getCss} from './toolbar_action_container.css.js';
 import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
 
 export type {KeyedActionState as KeyedExtensionState} from './toolbar_action_container_mixin.js';

@@ -17,6 +17,7 @@
 }
 
 pinned-toolbar-action,
+webui-toolbar-extension,
 toolbar-divider {
   transition: width 300ms var(--fast-out-slow-in-3-cubic-bezier),
               margin-inline-end 300ms var(--fast-out-slow-in-3-cubic-bezier),
@@ -27,6 +28,7 @@ toolbar-divider {
 }
 
 pinned-toolbar-action.animate-in,
+webui-toolbar-extension.animate-in,
 toolbar-divider.animate-in {
   animation: slide-in 300ms var(--fast-out-slow-in-3-cubic-bezier);
 }
@@ -48,9 +50,9 @@ toolbar-divider:last-child {
   opacity: 0 !important;
 }
 
-pinned-toolbar-action.drag-placeholder {
+pinned-toolbar-action.drag-placeholder,
+webui-toolbar-extension.drag-placeholder {
   opacity: 0 !important;
-  pointer-events: none !important;
 }
 
 @keyframes slide-in {

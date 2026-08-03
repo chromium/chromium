@@ -535,7 +535,7 @@ int WebUIPinnedToolbarActions::GetWidth() const {
       // Matches toolbar_button.css
       width += GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
     }
-    // Matches gap from pinned_toolbar_actions.css
+    // Matches gap from toolbar_action_container.css
     width += gap;
   }
   width -= !!width * gap;  // Remove last gap if there was a last gap.
