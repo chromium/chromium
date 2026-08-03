@@ -123,6 +123,14 @@ GURL ConsentKitUrlBuilder::Build() {
   }
   url = net::AppendQueryParameter(url, "allowNonWebView", "true");
 
+  if (is_dark_mode_) {
+    url = net::AppendQueryParameter(url, "theme", "2");
+    url = net::AppendQueryParameter(url, "color_scheme", "dark");
+  } else {
+    url = net::AppendQueryParameter(url, "theme", "1");
+    url = net::AppendQueryParameter(url, "color_scheme", "light");
+  }
+
   return url;
 }
 
