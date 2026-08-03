@@ -95,7 +95,8 @@ class MockSearchboxPage : public searchbox::mojom::Page {
                searchbox::mojom::SelectedFileInfoPtr));
   MOCK_METHOD(void,
               UpdateAutoSuggestedTabContext,
-              (searchbox::mojom::TabInfoPtr));
+              (searchbox::mojom::TabInfoPtr,
+               const std::optional<std::string>&));
   MOCK_METHOD(void, UpdateLensSearchEligibility, (bool eligible), (override));
   MOCK_METHOD(void, UpdateAimPopupEligibility, (bool eligible), (override));
 #if !BUILDFLAG(IS_ANDROID)

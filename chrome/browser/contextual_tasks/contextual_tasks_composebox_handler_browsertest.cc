@@ -3005,8 +3005,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   };
 
   // 1. Initially, the suggestion should be allowed.
-  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
-      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
         EXPECT_TRUE(!received_info.is_null())
             << "Expected a non-null pointer for received_info.";
       });
@@ -3025,8 +3027,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_FALSE(mock_ui_->IsActiveTabContextSuggestionShowing());
 
   // 3. Simulate a title change - tab context should still be filtered out.
-  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
-      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
         EXPECT_TRUE(received_info.is_null())
             << "Expected a null pointer for received_info.";
       });
@@ -3059,8 +3063,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3. Expect the suggestion IS ALLOWED despite the feature flag being
   // disabled, because dynamic enabling sees the session bool!
-  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
-      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
         EXPECT_TRUE(!received_info.is_null())
             << "Expected a non-null pointer because session was contextual.";
       });
@@ -3093,8 +3099,10 @@ IN_PROC_BROWSER_TEST_F(
   session_handle_->set_is_contextual_lens_session(false);
 
   // 3. Expect the suggestion IS NOT ALLOWED because it wasn't a text query.
-  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
-      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
         EXPECT_TRUE(received_info.is_null())
             << "Expected a null pointer because it was a visual query.";
       });
@@ -3117,8 +3125,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   };
 
   // 1. Initially, the suggestion should be allowed.
-  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
-      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
         EXPECT_TRUE(!received_info.is_null())
             << "Expected a non-null pointer for received_info.";
       });
@@ -3136,8 +3146,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   handler_->DeleteContext(base::UnguessableToken::Create(),
                           /*from_automatic_chip=*/true);
   // 3. Now the suggestion should be filtered out.
-  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
-      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
         EXPECT_TRUE(received_info.is_null())
             << "Expected a null pointer for received_info.";
       });
@@ -3168,8 +3180,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   }
 
   // 5. The suggestion should be allowed again.
-  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
-      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
         EXPECT_TRUE(!received_info.is_null())
             << "Expected a non-null pointer for received_info.";
         EXPECT_EQ(received_info->url, url);

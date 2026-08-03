@@ -991,7 +991,7 @@ suite('ContextualTasksComposeboxTest', () => {
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
     };
-    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tabInfo);
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tabInfo, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
@@ -1009,7 +1009,8 @@ suite('ContextualTasksComposeboxTest', () => {
       ...tabInfo,
       title: 'Updated Title',
     };
-    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(updatedTabInfo);
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+        updatedTabInfo, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await innerComposebox.updateComplete;
@@ -1032,7 +1033,7 @@ suite('ContextualTasksComposeboxTest', () => {
       lastActive: {internalValue: BigInt(500)},
     };
     searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-        noUpdateTabInfo);
+        noUpdateTabInfo, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await innerComposebox.updateComplete;
@@ -1145,6 +1146,72 @@ suite('ContextualTasksComposeboxTest', () => {
           shouldShowErrorScrim_: () => boolean,
         }).shouldShowErrorScrim_(),
         'Error scrim should hide after clicking the details link');
+  });
+
+  suite('AutoSuggestedTabContextUploadMode', () => {
+    const tabInfo = {
+      tabId: 1,
+      title: 'Tab 1',
+      url: 'https://example.com/1',
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: BigInt(1)},
+    };
+
+    setup(() => {
+      composebox.isSidePanel = true;
+    });
+
+    test('DelayedUploadByDefault', async () => {
+      loadTimeData.overrideValues({
+        webUIOmniboxAskGAboutThisPageEnabled: false,
+      });
+
+      searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+          tabInfo, 'OmniboxPageAction');
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      // Verify addTabContext was called with delay_upload = true
+      assertEquals(1, mockSearchboxPageHandler.getCallCount('addTabContext'));
+      const args = mockSearchboxPageHandler.getArgs('addTabContext')[0];
+      assertEquals(1, args[0]);  // tabId
+      assertTrue(args[1]);       // delayUpload
+    });
+
+    test('ImmediateUploadWhenConditionsMet', async () => {
+      loadTimeData.overrideValues({
+        webUIOmniboxAskGAboutThisPageEnabled: true,
+      });
+
+      searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+          tabInfo, 'OmniboxPageAction');
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      // Verify addTabContext was called with delay_upload = false
+      assertEquals(1, mockSearchboxPageHandler.getCallCount('addTabContext'));
+      const args = mockSearchboxPageHandler.getArgs('addTabContext')[0];
+      assertEquals(1, args[0]);  // tabId
+      assertFalse(args[1]);      // delayUpload
+    });
+
+    test('DelayedUploadWhenNotPageAction', async () => {
+      loadTimeData.overrideValues({
+        webUIOmniboxAskGAboutThisPageEnabled: true,
+      });
+
+      searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+          tabInfo, 'AppMenu');
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      // Verify addTabContext was called with delay_upload = true
+      assertEquals(1, mockSearchboxPageHandler.getCallCount('addTabContext'));
+      const args = mockSearchboxPageHandler.getArgs('addTabContext')[0];
+      assertEquals(1, args[0]);  // tabId
+      assertTrue(args[1]);       // delayUpload
+    });
   });
 
   // Required to test how the voice chips are integrated into contextual

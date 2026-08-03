@@ -801,14 +801,9 @@ void ChromeAutocompleteProviderClient::OpenCoBrowsePanel() {
                          : nullptr;
 
   if (ui_service) {
-    // TODO (crbug.com/532272763): Can likely unequivocally set the invocation
-    // source to kOmniboxPageActiom since this pathway is only ever called by
-    // kOmniboxPageAction.
-    if (omnibox::kAskGCoBrowseWithVisualSelection.Get()) {
-      if (auto* lens_controller = LensSearchController::From(tab)) {
-        lens_controller->SetInvocationSource(
-            lens::LensOverlayInvocationSource::kOmniboxPageAction);
-      }
+    if (auto* lens_controller = LensSearchController::From(tab)) {
+      lens_controller->SetInvocationSource(
+          lens::LensOverlayInvocationSource::kOmniboxPageAction);
     }
 
     GURL creation_url = ui_service->GetDefaultAiPageUrl();

@@ -49,6 +49,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
@@ -1145,8 +1146,18 @@ void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
     filtered_suggestion->last_active = suggested_tab->last_active;
   }
 
+  std::optional<std::string> invocation_source;
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = GetLensSearchController()) {
+    if (controller->invocation_source().has_value()) {
+      invocation_source = lens::InvocationSourceToString(
+          controller->invocation_source().value());
+    }
+  }
+#endif
+
   SearchboxHandler::page_->UpdateAutoSuggestedTabContext(
-      std::move(filtered_suggestion));
+      std::move(filtered_suggestion), invocation_source);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

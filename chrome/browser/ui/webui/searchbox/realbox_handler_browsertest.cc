@@ -88,7 +88,8 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       const base::UnguessableToken& token,
       searchbox::mojom::SelectedFileInfoPtr file_info) override {}
   void UpdateAutoSuggestedTabContext(
-      searchbox::mojom::TabInfoPtr tab_info) override {}
+      searchbox::mojom::TabInfoPtr tab_info,
+      const std::optional<std::string>& invocation_source) override {}
   void OnPermissionPromptChanged(bool is_showing,
                                  const gfx::Size& prompt_size) override {}
   MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));

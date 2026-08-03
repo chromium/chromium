@@ -1282,7 +1282,8 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
     };
 
     // Add autochip.
-    testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tab);
+    testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+        tab, null);
     await microtasksFinished();
 
     // Should have cleared matches.
@@ -1290,7 +1291,8 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
         1, testProxy.searchboxHandler.getCallCount('stopAutocomplete'));
 
     // Remove autochip.
-    testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(null);
+    testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+        null, null);
     await microtasksFinished();
 
     // Autocomplete should be queried again when an auto chip is removed.
@@ -1343,7 +1345,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
         testProxy.searchboxHandler.setPromiseResolveFor(
             ADD_TAB_CONTEXT_FN, {token: autochipToken});
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab);
+            tab, null);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
         await microtasksFinished();
@@ -1415,7 +1417,8 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
     };
 
     // Add valid autochip.
-    testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tab);
+    testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+        tab, null);
     await microtasksFinished();
 
     // Should clear matches when a new autochip is added.
@@ -1437,7 +1440,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
 
         // Remove autochip when none exists.
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            null);
+            null, null);
         await microtasksFinished();
 
         // Autocomplete should not be queried again when there was no
@@ -1488,13 +1491,13 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
 
         // First update.
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab1);
+            tab1, null);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         // Second update with same URL but different title.
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab1Updated);
+            tab1Updated, null);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
