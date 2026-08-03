@@ -2063,6 +2063,12 @@ inline constexpr char kAccessibilityFlashScreenFeatureDescription[] =
     "Allows the user to use a feature which flashes the screen for each "
     "notification.";
 
+inline constexpr char kAccessibilityGoogleTtsAutomaticReconnectName[] =
+    "Google TTS Automatic Reconnect";
+inline constexpr char kAccessibilityGoogleTtsAutomaticReconnectDescription[] =
+    "Automatically attempt to reconnect the Google TTS engine if it "
+    "disconnects.";
+
 inline constexpr char kAccessibilityInvertedMouseCursorName[] =
     "Accessibility inverted mouse cursor";
 inline constexpr char kAccessibilityInvertedMouseCursorDescription[] =

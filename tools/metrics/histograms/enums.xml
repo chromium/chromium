@@ -11516,6 +11516,8 @@ from previous Chrome versions.
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
   <int value="-960031496"
       label="AutofillAndroidDesktopKeyboardAccessoryRevamp:enabled"/>
+  <int value="-959530080"
+      label="AccessibilityGoogleTtsAutomaticReconnect:disabled"/>
   <int value="-959244784" label="ContextualSearchSuppressShortView:enabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
@@ -14190,6 +14192,8 @@ from previous Chrome versions.
       label="NTPArticleSuggestionsExpandableHeader:enabled"/>
   <int value="-110726049" label="KeyboardLockAPI:disabled"/>
   <int value="-110465424" label="PictureInPicture:enabled"/>
+  <int value="-110186322"
+      label="AccessibilityGoogleTtsAutomaticReconnect:enabled"/>
   <int value="-109901772" label="HttpsUpgrades:disabled"/>
   <int value="-109569254" label="QueryTilesInOmnibox:enabled"/>
   <int value="-108896948"

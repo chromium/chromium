@@ -294,7 +294,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": ["dictationContextChecking", "googleTtsHighQualityVoices", "captionsOnBrailleDisplay"],
+        "enum": ["dictationContextChecking", "googleTtsHighQualityVoices", "captionsOnBrailleDisplay", "googleTtsAutomaticReconnect"],
         "description": "Subset of accessibility features."
       },
       {

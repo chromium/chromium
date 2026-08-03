@@ -323,6 +323,13 @@ bool IsAccessibilityChromeVoxJapaneseBrailleEnabled() {
       ::features::kAccessibilityChromeVoxJapaneseBraille);
 }
 
+BASE_FEATURE(kAccessibilityGoogleTtsAutomaticReconnect,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityGoogleTtsAutomaticReconnectEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityGoogleTtsAutomaticReconnect);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)

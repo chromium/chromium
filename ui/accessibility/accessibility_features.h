@@ -252,6 +252,10 @@ AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForGoogleTts();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityChromeVoxJapaneseBraille);
 AX_BASE_EXPORT bool IsAccessibilityChromeVoxJapaneseBrailleEnabled();
 
+// Controls whether Google TTS automatically attempts to reconnect.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityGoogleTtsAutomaticReconnect);
+AX_BASE_EXPORT bool IsAccessibilityGoogleTtsAutomaticReconnectEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
