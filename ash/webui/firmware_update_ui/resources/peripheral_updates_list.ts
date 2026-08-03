@@ -57,7 +57,7 @@ export class PeripheralUpdateListElement extends PeripheralUpdateListElementBase
   declare protected firmwareUpdates: FirmwareUpdate[];
   declare protected hasCheckedInitialInflightProgress: boolean;
   private updateProvider = getUpdateProvider();
-  protected updateListObserverReceiver: UpdateObserverReceiver;
+  protected updateListObserverReceiver: UpdateObserverReceiver|null = null;
 
   constructor() {
     super();

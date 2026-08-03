@@ -11,6 +11,7 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '/strings.m.js';
 
 import {isRTL} from '//resources/js/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -125,9 +126,9 @@ export class GraduationTakeoutUi extends PolymerElement {
   authStatus: AuthStatus = AuthStatus.IN_PROGRESS;
   isWebviewLoading: boolean = false;
   declare takeoutFlowCompleted: boolean;
-  private webview: chrome.webviewTag.WebView;
-  private webviewReloadHelper: WebviewReloadHelper;
-  private startTransferUrl: string;
+  private webview: chrome.webviewTag.WebView|null = null;
+  private webviewReloadHelper: WebviewReloadHelper = new WebviewReloadHelper();
+  private startTransferUrl: string = '';
 
   override ready() {
     super.ready();
@@ -170,6 +171,7 @@ export class GraduationTakeoutUi extends PolymerElement {
   }
 
   private configureWebviewListeners(): void {
+    assert(this.webview);
     this.webview.addEventListener('contentload', () => {
       this.webviewReloadHelper.reset();
       this.setIsWebviewLoading(false);
@@ -215,6 +217,7 @@ export class GraduationTakeoutUi extends PolymerElement {
       return;
     }
     this.setIsWebviewLoading(true);
+    assert(this.webview);
     this.webviewReloadHelper.scheduleReload(this.webview);
   }
 
@@ -238,6 +241,7 @@ export class GraduationTakeoutUi extends PolymerElement {
 
   // Expects the loading screen to be shown by the caller.
   private loadStartTransferPage(): void {
+    assert(this.webview);
     // If the user has navigated away from the Transfer page in the webview
     // before, navigate the webview back to the Transfer page.
     if (this.webview.src !== this.startTransferUrl) {
@@ -256,6 +260,7 @@ export class GraduationTakeoutUi extends PolymerElement {
     this.triggerWelcomeScreen();
 
     if (this.authStatus === AuthStatus.SUCCESS) {
+      assert(this.webview);
       this.webview.stop();
       this.webviewReloadHelper.reset();
       this.setIsWebviewLoading(true);

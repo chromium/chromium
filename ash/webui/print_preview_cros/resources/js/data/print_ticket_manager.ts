@@ -47,10 +47,10 @@ export class PrintTicketManager extends EventTarget {
 
   // Non-static properties:
   private printPreviewPageHandler: PrintPreviewPageHandlerCompositeInterface|
-      null;
+      null = null;
   private printRequestInProgress = false;
   private printTicket: PrintTicket|null = null;
-  private sessionContext: SessionContext;
+  private sessionContext: SessionContext|null = null;
   // Managers need to be set after construction to avoid circular dependencies.
   private destinationManager: DestinationManager;
   private eventTracker = new EventTracker();

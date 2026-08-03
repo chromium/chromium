@@ -35,7 +35,8 @@ suite('SummaryPanelController', () => {
     previewTicketManager = PreviewTicketManager.getInstance();
     printTicketManager = PrintTicketManager.getInstance();
 
-    controller = new SummaryPanelController(eventTracker);
+    controller = new SummaryPanelController();
+    controller.registerEventListeners(eventTracker);
     assertTrue(!!controller);
   });
 

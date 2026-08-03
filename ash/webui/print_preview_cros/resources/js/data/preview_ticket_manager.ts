@@ -42,9 +42,9 @@ export class PreviewTicketManager extends EventTarget implements
 
   // Non-static properties:
   private printPreviewPageHandler: PrintPreviewPageHandlerCompositeInterface|
-      null;
+      null = null;
   private previewLoaded = false;
-  private sessionContext: SessionContext;
+  private sessionContext: SessionContext|null = null;
   private eventTracker = new EventTracker();
   // Represents the request id for the latest preview request. All responses
   // for ids below this will be ignored.

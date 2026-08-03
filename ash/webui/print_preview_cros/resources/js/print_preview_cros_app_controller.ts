@@ -22,12 +22,12 @@ export const DIALOG_ARG_PROPERTY_KEY = 'dialogArguments';
 
 export class PrintPreviewCrosAppController extends EventTarget {
   private printPreviewPageHandler = getPrintPreviewPageHandler();
-  private sessionContext: SessionContext;
+  private sessionContext: SessionContext|null = null;
   private capabilitiesManager = CapabilitiesManager.getInstance();
   private destinationManager = DestinationManager.getInstance();
   private previewTicketManager = PreviewTicketManager.getInstance();
   private printTicketManager = PrintTicketManager.getInstance();
-  private dialogArgs: string;
+  private dialogArgs: string = '';
 
   constructor() {
     super();

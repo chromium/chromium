@@ -13,8 +13,8 @@ import {PRINT_BUTTON_DISABLED_CHANGED_EVENT, SHEETS_USED_CHANGED_EVENT, SummaryP
 
 /**
  * @fileoverview
- * 'summary-panel' manages the print and cancel functionality as well as
- * displays the current count of sheets used;
+ * 'summary-panel' is a container for final print job settings summary and
+ * print/cancel triggers.
  */
 
 export class SummaryPanelElement extends PolymerElement {
@@ -28,20 +28,28 @@ export class SummaryPanelElement extends PolymerElement {
 
   static get properties() {
     return {
-      sheetsUsedText: String,
-      printButtonDisabled: Boolean,
+      sheetsUsedText: {
+        type: String,
+        value: '',
+      },
+
+      printButtonDisabled: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
-  private controller: SummaryPanelController;
   private eventTracker = new EventTracker();
+  private controller = new SummaryPanelController();
   declare private sheetsUsedText: string;
   declare private printButtonDisabled: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
 
-    this.controller = new SummaryPanelController(this.eventTracker);
+    this.controller.registerEventListeners(this.eventTracker);
+
     this.eventTracker.add(
         this.controller, PRINT_BUTTON_DISABLED_CHANGED_EVENT,
         () => this.onPrintButtonDisabledChanged());

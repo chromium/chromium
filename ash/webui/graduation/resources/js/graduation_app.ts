@@ -30,6 +30,7 @@ export enum Screens {
   TAKEOUT_UI = 'graduation-takeout-ui',
   ERROR = 'graduation-error',
   OFFLINE = 'graduation-offline',
+  UNSET = 'graduation-unset',
 }
 
 export enum ScreenSwitchEvents {
@@ -70,7 +71,7 @@ export class GraduationApp extends PolymerElement {
   }
 
   private authResult: AuthResult|null = null;
-  private currentScreen: Screens;
+  private currentScreen = Screens.UNSET;
 
   override ready() {
     super.ready();

@@ -28,18 +28,21 @@ export class DestinationSelectElement extends PolymerElement {
 
   static get properties() {
     return {
-      showLoadingUi: Boolean,
+      showLoadingUi: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
-  private controller: DestinationSelectController;
   private eventTracker = new EventTracker();
+  private controller = new DestinationSelectController();
   declare private showLoadingUi: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
 
-    this.controller = new DestinationSelectController(this.eventTracker);
+    this.controller.registerEventListeners(this.eventTracker);
 
     this.eventTracker.add(
         this.controller, DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED,

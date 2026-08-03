@@ -67,7 +67,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   declare protected touchscreenIdUnderTesting: number;
 
   // Drawing provider.
-  private drawingProvider: CanvasDrawingProvider;
+  private drawingProvider: CanvasDrawingProvider|null = null;
 
   // A map that stores all the touches.
   // The key is the identifier of the touch. Value is the x and y coordinates
@@ -89,6 +89,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * For testing only.
    */
   getDrawingProvider(): CanvasDrawingProvider {
+    assert(this.drawingProvider);
     return this.drawingProvider;
   }
 
@@ -260,6 +261,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    */
   onDrawStart(touchId: number, touchPt: Point, pressure: number): void {
     this.touches.set(touchId, touchPt);
+    assert(this.drawingProvider);
     this.drawingProvider.drawTrailMark(touchPt.x, touchPt.y);
     this.drawingProvider.drawTrail(
         touchPt.x - 1, touchPt.y, touchPt.x, touchPt.y, pressure);
@@ -276,6 +278,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     // Previous point of this touch.
     const previousPt = this.touches.get(touchId);
     if (previousPt) {
+      assert(this.drawingProvider);
       this.drawingProvider.drawTrail(
           previousPt.x, previousPt.y, touchPt.x, touchPt.y, pressure);
     }
@@ -291,6 +294,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * @param touchPt The coordinates of a touch point.
    */
   onDrawEnd(touchId: number, touchPt: Point): void {
+    assert(this.drawingProvider);
     this.drawingProvider.drawTrailMark(touchPt.x, touchPt.y);
     // This touch has ended. Remove it from the touches object.
     this.touches.delete(touchId);

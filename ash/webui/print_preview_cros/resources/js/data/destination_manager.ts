@@ -57,7 +57,6 @@ export class DestinationManager extends EventTarget implements
     DestinationManager.instance = null;
   }
 
-  // Non-static properties:
   private destinationProvider: DestinationProviderCompositeInterface;
   private destinations: Destination[] = [];
   // Cache used for constant lookup of destinations by key.
@@ -65,10 +64,10 @@ export class DestinationManager extends EventTarget implements
   private activeDestinationId: string = '';
   private initialDestinationsLoaded = false;
   private state = DestinationManagerState.NOT_LOADED;
-  private sessionContext: SessionContext;
+  private sessionContext: SessionContext|null = null;
   private eventTracker = new EventTracker();
   // Managers need to be set after construction to avoid circular dependencies.
-  private printTicketManager: PrintTicketManager;
+  private printTicketManager: PrintTicketManager|null = null;
 
   // `initializeSession` is only intended to be called once from the
   // `PrintPreviewCrosAppController`.

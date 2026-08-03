@@ -41,9 +41,9 @@ export class CapabilitiesManager extends EventTarget {
     CapabilitiesManager.instance = null;
   }
 
-  // Non-static properties:
-  private destinationProvider: DestinationProviderCompositeInterface|null;
-  private sessionContext: SessionContext;
+  private destinationProvider: DestinationProviderCompositeInterface|null =
+      null;
+  private sessionContext: SessionContext|null = null;
   private eventTracker = new EventTracker();
   private destinationManager: DestinationManager =
       DestinationManager.getInstance();

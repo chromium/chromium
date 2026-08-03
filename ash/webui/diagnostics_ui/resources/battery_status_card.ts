@@ -123,8 +123,9 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
   private readonly systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
   private batteryChargeStatusObserverReceiver:
-      BatteryChargeStatusObserverReceiver|null;
-  private batteryHealthObserverReceiver: BatteryHealthObserverReceiver|null;
+      BatteryChargeStatusObserverReceiver|null = null;
+  private batteryHealthObserverReceiver: BatteryHealthObserverReceiver|null =
+      null;
 
   constructor() {
     super();

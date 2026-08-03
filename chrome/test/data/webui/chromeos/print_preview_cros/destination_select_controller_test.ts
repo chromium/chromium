@@ -27,7 +27,8 @@ suite('DestinationSelectController', () => {
     mockController = new MockController();
     eventTracker = new EventTracker();
 
-    controller = new DestinationSelectController(eventTracker);
+    controller = new DestinationSelectController();
+    controller.registerEventListeners(eventTracker);
     assertTrue(!!controller);
   });
 

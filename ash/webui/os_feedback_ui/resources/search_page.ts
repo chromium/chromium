@@ -124,10 +124,10 @@ export class SearchPageElement extends SearchPageElementBase {
    * The event handler called when the iframe is loaded. It is set in the
    * html.
    */
-  private resolveIframeLoaded: Function;
+  private resolveIframeLoaded: Function|null = null;
   /**  A promise that resolves when the iframe loading is completed. */
-  private iframeLoaded: Promise<void>;
-  private iframe: HTMLIFrameElement|null;
+  private iframeLoaded: Promise<void>|null = null;
+  private iframe: HTMLIFrameElement|null = null;
   /**  The content list received when query is empty. */
   private popularHelpContentList: HelpContent[];
   /**

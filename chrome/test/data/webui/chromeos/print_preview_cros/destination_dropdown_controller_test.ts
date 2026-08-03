@@ -45,7 +45,8 @@ suite('DestinationDropdownController', () => {
     destinationManager = DestinationManager.getInstance();
     printTicketManager = PrintTicketManager.getInstance();
 
-    controller = new DestinationDropdownController(eventTracker);
+    controller = new DestinationDropdownController();
+    controller.registerEventListeners(eventTracker);
   });
 
   teardown(() => {

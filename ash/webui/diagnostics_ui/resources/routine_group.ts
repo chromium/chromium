@@ -37,7 +37,7 @@ export class RoutineGroup {
     /**
      * Store routine properties array for calls to |clone|.
      */
-    this.routineProperties = this.routineProperties || routines;
+    this.routineProperties = routines;
     this.nonBlockingRoutines = new Set(getNonBlockingRoutines(routines));
     this.routines = routines.map(getRoutine);
     this.groupName = groupName;

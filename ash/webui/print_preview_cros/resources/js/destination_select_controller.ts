@@ -26,8 +26,7 @@ export class DestinationSelectController extends EventTarget {
    * @param eventTracker Passed in by owning element to ensure event handlers
    * lifetime is aligned with element.
    */
-  constructor(eventTracker: EventTracker) {
-    super();
+  registerEventListeners(eventTracker: EventTracker): void {
     eventTracker.add(
         this.destinationManager, DESTINATION_MANAGER_STATE_CHANGED,
         (): void => this.onDestinationManagerStateChanged());

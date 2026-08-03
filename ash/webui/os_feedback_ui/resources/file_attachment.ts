@@ -52,21 +52,16 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
   private selectedFile: File|null = null;
 
   /**  The name of the file selected. */
-  protected selectedFileName: string;
+  protected selectedFileName: string = '';
 
   /**  Url of the selected image. */
-  protected selectedImageUrl: string;
+  protected selectedImageUrl: string = '';
 
   /**  True when there is a file selected. */
   declare protected hasSelectedAFile: boolean;
 
-  private feedbackServiceProvider: FeedbackServiceProviderInterface;
-
-  constructor() {
-    super();
-
-    this.feedbackServiceProvider = getFeedbackServiceProvider();
-  }
+  private feedbackServiceProvider: FeedbackServiceProviderInterface =
+      getFeedbackServiceProvider();
 
   override ready() {
     super.ready();

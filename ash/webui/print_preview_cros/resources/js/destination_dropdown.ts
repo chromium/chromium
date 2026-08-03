@@ -33,33 +33,36 @@ export class DestinationDropdownElement extends PolymerElement {
 
   static get properties() {
     return {
-      destinations: Array,
+      destinations: {
+        type: Array,
+        value: () => [],
+      },
+
       disabled: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
-      open: Boolean,
+
+      open: {
+        type: Boolean,
+        value: false,
+      },
       selectedDestination: Object,
     };
   }
 
-  constructor() {
-    super();
-    this.destinations = [];
-    this.open = false;
-  }
-
   declare disabled: boolean;
-  private controller: DestinationDropdownController;
   private eventTracker = new EventTracker();
+  private controller = new DestinationDropdownController();
   declare private destinations: Destination[];
   declare private open: boolean;
   declare private selectedDestination: Destination|null;
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.controller = new DestinationDropdownController(this.eventTracker);
 
+    this.controller.registerEventListeners(this.eventTracker);
 
     this.eventTracker.add(
         this.controller, DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED,

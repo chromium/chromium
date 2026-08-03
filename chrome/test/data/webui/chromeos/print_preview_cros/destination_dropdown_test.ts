@@ -347,4 +347,34 @@ suite('DestinationDropdown', () => {
     assertTrue(element.disabled);
     assertFalse(isVisible(getDropdownContent()), 'Dropdown closed');
   });
+
+  // Verify re-attaching element to DOM re-registers listeners for global
+  // manager events.
+  test(
+      're-attaching element to DOM re-registers listeners for global ' +
+          'manager events',
+      async () => {
+        await waitForInitialDestinationSet();
+        await waitForPrintTicketManagerInitialized();
+
+        assertEquals(
+            PDF_DESTINATION.displayName, getSelectedDestinationRowLabel());
+
+        // Simulate detaching and re-attaching element to DOM.
+        element.remove();
+        document.body.append(element);
+
+        // Simulate active destination changing in destination manager.
+        const newDestination = createTestDestination('dest_1', 'Printer 1');
+        const getActiveDestinationFn = mockController.createFunctionMock(
+            destinationManager, 'getActiveDestination');
+        getActiveDestinationFn.returnValue = newDestination;
+
+        destinationManager.dispatchEvent(
+            createCustomEvent(DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED));
+
+        assertEquals(
+            newDestination.displayName, getSelectedDestinationRowLabel(),
+            'Selected destination should update after re-attachment');
+      });
 });
