@@ -101,8 +101,11 @@ SidePanelShowOptions& SidePanelShowOptions::operator=(
     const SidePanelShowOptions&) = default;
 SidePanelShowOptions::~SidePanelShowOptions() = default;
 
+TabShowOptions::TabShowOptions() = default;
 TabShowOptions::TabShowOptions(tabs::TabInterface& bound_tab)
-    : tab(&bound_tab) {}
+    : tab_handle(bound_tab.GetHandle()) {}
+TabShowOptions::TabShowOptions(tabs::TabHandle bound_tab_handle)
+    : tab_handle(bound_tab_handle) {}
 TabShowOptions::TabShowOptions(const TabShowOptions&) = default;
 TabShowOptions::TabShowOptions(TabShowOptions&&) = default;
 TabShowOptions& TabShowOptions::operator=(const TabShowOptions&) = default;

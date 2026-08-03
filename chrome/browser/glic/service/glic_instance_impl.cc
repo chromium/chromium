@@ -1212,7 +1212,7 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForTab(
     ShowOptions& options) {
   auto& tab_opts = std::get<TabShowOptions>(options.embedder_options);
-  tabs::TabInterface* tab = tab_opts.tab.get();
+  tabs::TabInterface* tab = tab_opts.tab_handle.Get();
   if (!tab) {
     return nullptr;
   }
@@ -1225,12 +1225,13 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForTab(
       if (auto* helper = GlicInstanceHelper::From(tab)) {
         helper->SetBoundInstance(nullptr);
       }
-      tabs::TabInterface* old_tab = std::exchange(tab_opts.tab, nullptr);
+      tabs::TabInterface* old_tab = tab;
+      tab_opts.tab_handle = tabs::TabHandle::Null();
       tabs::TabInterface* new_tab = glic::SwapPlaceholderToGlic(
           old_tab, std::move(real_contents), tab_group_id_);
       if (new_tab) {
         tab = new_tab;
-        tab_opts.tab = new_tab;
+        tab_opts.tab_handle = new_tab->GetHandle();
         is_contents_in_tab_ = true;
       }
     }
@@ -1238,8 +1239,8 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForTab(
 
   auto [it, inserted] = embedders_.try_emplace(EmbedderKey(TabEmbedderKey{}));
   EmbedderEntry& entry = it->second;
-  entry.tab = tab;
-  if (inserted) {
+  if (entry.tab != tab) {
+    entry.tab = tab;
     entry.tab_activation_subscription = tab->RegisterDidActivate(
         base::BindRepeating(&GlicInstanceImpl::OnGlicTabActivated,
                             weak_ptr_factory_.GetWeakPtr()));

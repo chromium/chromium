@@ -77,13 +77,15 @@ struct FloatingShowOptions {
 };
 
 struct TabShowOptions {
+  TabShowOptions();
   explicit TabShowOptions(tabs::TabInterface& bound_tab);
+  explicit TabShowOptions(tabs::TabHandle bound_tab_handle);
   TabShowOptions(const TabShowOptions&);
   TabShowOptions(TabShowOptions&&);
   TabShowOptions& operator=(const TabShowOptions&);
   ~TabShowOptions();
 
-  raw_ptr<tabs::TabInterface> tab;
+  tabs::TabHandle tab_handle = tabs::TabHandle::Null();
 };
 
 using EmbedderOptions =
