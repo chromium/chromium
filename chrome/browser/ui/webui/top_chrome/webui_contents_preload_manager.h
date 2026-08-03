@@ -100,6 +100,7 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Disable navigations for tests that don't have //content properly
   // initialized.
   void DisableNavigationForTesting();
+  void ReenableNavigationForTesting();
 
  private:
   WebUIContentsPreloadManager();

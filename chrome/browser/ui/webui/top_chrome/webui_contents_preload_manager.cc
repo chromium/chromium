@@ -537,6 +537,10 @@ void WebUIContentsPreloadManager::DisableNavigationForTesting() {
   is_navigation_disabled_for_test_ = true;
 }
 
+void WebUIContentsPreloadManager::ReenableNavigationForTesting() {
+  is_navigation_disabled_for_test_ = false;
+}
+
 std::unique_ptr<content::WebContents>
 WebUIContentsPreloadManager::CreateNewContents(
     content::BrowserContext* browser_context,
