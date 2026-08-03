@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
@@ -888,6 +889,31 @@ TEST_F(AtMemoryQueryServiceTest,
   // The merge constraint for Passport is `kPassportNumber`. Since both results
   // have the same Passport Number (12345), they are considered duplicates
   // despite the contradicting `kPassportName`.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 1u);
+}
+
+// Tests that deduplication works when the local data is obfuscated with dots
+// and the remote one is a raw suffix.
+TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_ObfuscatedValues) {
+  // Local, obfuscated result.
+  std::u16string raw_value = u"DL123456789012";
+  std::u16string obfuscated_value = GetObfuscatedValue(raw_value, 4);
+
+  MemorySearchResult result1(MemoryDataType::kDriversLicenseNumber,
+                             u"Driver's license number", obfuscated_value);
+  result1.is_local = true;
+  result1.metadata_list.emplace_back(MemoryDataType::kDriversLicenseName,
+                                     u"Name", u"John Doe");
+
+  // Remote result with last 4 digits.
+  MemorySearchResult result2(MemoryDataType::kDriversLicenseNumber,
+                             u"Driver's license number", u"9012");
+  result2.is_local = false;
+  result2.metadata_list.emplace_back(MemoryDataType::kDriversLicenseName,
+                                     u"Name", u"John Doe");
+
   const MemorySearchResults& result =
       RunDeduplicationQueryWithLocalResults({result1, result2});
   EXPECT_EQ(result.entries.size(), 1u);

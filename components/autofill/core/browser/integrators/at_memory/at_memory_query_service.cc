@@ -26,8 +26,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
@@ -110,6 +112,22 @@ size_t CountFilterWordMatchesInEntry(
   return count;
 }
 
+// Trims any obfuscating dots and formatting characters from `value`.
+std::u16string_view TrimObfuscatingDots(std::u16string_view value) {
+  return base::TrimString(value, kMidlineEllipsisDot, base::TRIM_LEADING);
+}
+
+// Returns whether two values are equivalent for deduplication, ignoring
+// case, diacritics, and obfuscation.
+bool AreValuesEquivalent(std::u16string_view a,
+                         std::u16string_view b,
+                         bool is_obfuscated) {
+  std::u16string_view clean_a = is_obfuscated ? TrimObfuscatingDots(a) : a;
+  std::u16string_view clean_b = is_obfuscated ? TrimObfuscatingDots(b) : b;
+  return normalization::NormalizeForComparison(clean_a) ==
+         normalization::NormalizeForComparison(clean_b);
+}
+
 // Returns a string_view to the value of the given `type` in the `result`, or
 // `std::nullopt` if it doesn't exist. This checks both the primary result type
 // and the `metadata_list`. If the attribute was the primary attribute when
@@ -154,7 +172,7 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
       (a.type_name != b.type_name || a.type_name.empty())) {
     return false;
   }
-  if (base::i18n::FoldCase(a.value) != base::i18n::FoldCase(b.value)) {
+  if (!AreValuesEquivalent(a.value, b.value, IsSpiiMemoryDataType(a.type))) {
     return false;
   }
 
@@ -184,7 +202,8 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
             std::optional<std::u16string_view> val_b =
                 GetValueForMemoryDataType(b, mem_type);
             return val_a && val_b &&
-                   base::i18n::FoldCase(*val_a) == base::i18n::FoldCase(*val_b);
+                   AreValuesEquivalent(*val_a, *val_b,
+                                       IsSpiiMemoryDataType(mem_type));
           })) {
         return true;
       }
@@ -197,8 +216,8 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
         result.metadata_list, [&meta](const EntryMetadata& result_meta) {
           return result_meta.type == meta.type &&
                  result_meta.type_name == meta.type_name &&
-                 base::i18n::FoldCase(result_meta.value) !=
-                     base::i18n::FoldCase(meta.value);
+                 !AreValuesEquivalent(result_meta.value, meta.value,
+                                      IsSpiiMemoryDataType(result_meta.type));
         });
   };
 
