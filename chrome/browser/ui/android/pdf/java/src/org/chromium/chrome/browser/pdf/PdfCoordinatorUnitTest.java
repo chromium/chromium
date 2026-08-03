@@ -850,6 +850,24 @@ public class PdfCoordinatorUnitTest {
         assertEquals(expectedUri, mPdfCoordinator.getUri());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testReloadWhenViewDetached() {
+        createPdfCoordinator();
+        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.removeView(mPdfCoordinator.getView());
+        assertNull(mPdfCoordinator.getView().getParent());
+
+        mPdfCoordinator.reload();
+        assertFalse(mPdfCoordinator.getIsPdfLoadedForTesting());
+
+        contentView.addView(mPdfCoordinator.getView());
+        ShadowLooper.idleMainLooper();
+        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+    }
+
     public static class TestModalDialogActivity extends org.chromium.ui.base.TestActivity
             implements org.chromium.ui.modaldialog.ModalDialogManagerHolder {
         private org.chromium.ui.modaldialog.ModalDialogManager mModalDialogManager;
