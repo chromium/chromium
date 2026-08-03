@@ -74,7 +74,7 @@
         <h2 class="flex">$i18n{addresses}</h2>
         <cr-button id="addAddress" class="header-aligned-button"
             on-click="onAddAddressClick_" aria-label="$i18n{addAddressTitle}"
-            hidden$="[[!prefs.autofill.profile_enabled.value]]">
+            disabled="[[!prefs.autofill.profile_enabled.value]]">
           $i18n{add}
         </cr-button>
       </div>

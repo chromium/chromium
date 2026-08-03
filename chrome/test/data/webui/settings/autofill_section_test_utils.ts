@@ -50,6 +50,10 @@ export async function createAutofillSection(
   const section = document.createElement('settings-autofill-section');
   section.prefs = {
     autofill: {
+      profile_enabled: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
       email_verification_state: {
         type: chrome.settingsPrivate.PrefType.DICTIONARY,
         value: {},

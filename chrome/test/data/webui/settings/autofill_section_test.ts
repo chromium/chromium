@@ -702,7 +702,8 @@ suite('AutofillSectionAddressTests', function() {
         await createAutofillSection([], {profile_enabled: {value: false}});
 
     assertFalse(section.$.autofillProfileToggle.disabled);
-    assertTrue(section.$.addAddress.hidden);
+    assertFalse(section.$.addAddress.hidden);
+    assertTrue(section.$.addAddress.disabled);
   });
 
   test('verifyAddressFields', async function() {

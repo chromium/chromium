@@ -133,7 +133,8 @@ suite('PaymentsSection', function() {
     const addCreditCardButton =
         section.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
-    assertTrue(addCreditCardButton.hidden);
+    assertFalse(addCreditCardButton.hidden);
+    assertTrue(addCreditCardButton.disabled);
 
     // This metric should only be recorded when autofilling of credit cards is
     // enabled.
@@ -199,7 +200,7 @@ suite('PaymentsSection', function() {
   });
 
   test(
-      'verifyNoAddPaymentMethodsButtonIfPaymentPrefDisabled', async function() {
+      'verifyAddPaymentMethodsButtonDisabledIfPaymentPrefDisabled', async function() {
         const section = await createPaymentsSection(
             /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             {credit_card_enabled: {value: false}});
@@ -208,7 +209,8 @@ suite('PaymentsSection', function() {
             section.shadowRoot!.querySelector<CrButtonElement>(
                 '#addPaymentMethods');
         assertTrue(!!addPaymentMethodsButton);
-        assertTrue(addPaymentMethodsButton.hidden);
+        assertFalse(addPaymentMethodsButton.hidden);
+        assertTrue(addPaymentMethodsButton.disabled);
       });
 
   /**
