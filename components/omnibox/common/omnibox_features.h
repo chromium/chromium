@@ -58,6 +58,7 @@ BASE_DECLARE_FEATURE(kDocumentProvider);
 BASE_DECLARE_FEATURE(kDocumentProviderPrimaryAccountRequirement);
 BASE_DECLARE_FEATURE(kDocumentProviderEnterpriseEligibility);
 BASE_DECLARE_FEATURE(kDocumentProviderEnterpriseEligibilityWhenUnknown);
+BASE_DECLARE_FEATURE(kDrivePickerV2Scope);
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 BASE_DECLARE_FEATURE(kShowPopupOnMouseReleased);

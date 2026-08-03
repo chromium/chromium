@@ -443,6 +443,8 @@ BASE_FEATURE(kOmniboxDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kVoiceSearchCoherenceComposeboxes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDrivePickerV2Scope, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables voice search coherence (as described above) only for cobrowsing.
 // Overrides the default (default was all surfaces enabled).
 const base::FeatureParam<bool> kVoiceSearchCoherenceComposeboxCobrowsingOnly{

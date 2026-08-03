@@ -12,6 +12,7 @@ inline extern const char kEnterprisePlusAddressName[] =
     "enterprise_plus_address";
 inline extern const char kGlicUserStatusName[] = "glic_user_status";
 inline extern const char kIndigoName[] = "indigo";
+inline extern const char kDrivePickerHostName[] = "drive_picker_host";
 inline extern const char kGlicInvokeApiName[] = "glic_invoke_api";
 inline extern const char kSkillsServiceName[] = "skills_service";
 inline extern const char kContextualTasksName[] = "contextual_tasks";

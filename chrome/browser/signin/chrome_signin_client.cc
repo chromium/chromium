@@ -44,6 +44,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/metrics/metrics_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
@@ -246,6 +247,17 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
     }
     return signin::OAuthConsumer(
         signin::oauth_consumer_name::kContextualTasksName, std::move(scopes));
+  }
+
+  signin::OAuthConsumer GetOAuthConsumerForDrivePickerHost() const override {
+    if (base::FeatureList::IsEnabled(omnibox::kDrivePickerV2Scope)) {
+      return signin::OAuthConsumer(
+          signin::oauth_consumer_name::kDrivePickerHostName,
+          {"https://www.googleapis.com/auth/drive.file"});
+    }
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kDrivePickerHostName,
+        {"https://www.googleapis.com/auth/drive.readonly"});
   }
 
   signin::OAuthConsumer GetOAuthConsumerForIndigo() const override {

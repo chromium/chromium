@@ -331,7 +331,6 @@ constexpr char kActorLoginPermissionServiceName[] =
     "actor_login_permission_service";
 constexpr char kGapisServiceName[] = "gapis_service";
 constexpr char kOneTimeTokenServiceName[] = "one_time_token_service";
-constexpr char kDrivePickerHostName[] = "drive_picker_host";
 constexpr char kMultistepFilterName[] = "multistep_filter";
 constexpr char kContextMemoryServiceName[] = "context_memory_service";
 constexpr char kSyncPreviewName[] = "chromesync_preview";
@@ -780,9 +779,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*name=*/kSecureGatewayServiceName,
           /*scopes=*/{GaiaConstants::kSecureGatewayOAuth2Scope});
     case OAuthConsumerId::kDrivePickerHost:
-      return OAuthConsumer(
-          /*name=*/kDrivePickerHostName,
-          /*scopes=*/{kDriveReadOnlyOAuth2Scope});
+      return GetOAuthConsumerForDrivePickerHost();
     case OAuthConsumerId::kContextMemoryService:
       return OAuthConsumer(
           /*name=*/kContextMemoryServiceName,
