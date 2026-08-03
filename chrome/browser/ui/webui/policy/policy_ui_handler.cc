@@ -13,6 +13,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/feature.h"
@@ -113,8 +114,13 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/enterprise/reporting/browser_launch/scoped_initial_command_line.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 // LINT.IfChange
 
@@ -124,6 +130,30 @@ namespace {
 constexpr char kExtensionsKey[] = "extensions";
 
 }  // namespace
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+bool HasUserSpecifiedCommandLineSwitches(
+    const base::CommandLine* command_line) {
+  if (!command_line) {
+    return false;
+  }
+
+  // List of command-line switches that are not considered user-specified,
+  // even when present on the command line.
+  static const char* const kIgnoredSwitches[] = {
+      // Gets added automatically via profile shortcuts.
+      switches::kProfileDirectory,
+  };
+
+  for (const auto& switch_pair : command_line->GetSwitches()) {
+    if (!std::ranges::contains(kIgnoredSwitches, switch_pair.first)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 PolicyUIHandler::PolicyUIHandler(Profile* profile) : profile_(*profile) {}
 
@@ -256,6 +286,10 @@ void PolicyUIHandler::RegisterMessages() {
                           base::Unretained(this)));
 
 #if !BUILDFLAG(IS_ANDROID)
+  web_ui()->RegisterMessageCallback(
+      "checkCommandLineSwitches",
+      base::BindRepeating(&PolicyUIHandler::HandleCheckCommandLineSwitches,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "shouldShowPromotion",
       base::BindRepeating(&PolicyUIHandler::HandleShouldShowPromotion,
@@ -597,6 +631,28 @@ void PolicyUIHandler::RecordBannerRedirected() {
   base::UmaHistogramEnumeration(
       "Enterprise.PolicyPromotionBannerAction",
       policy::PolicyPromotionBannerAction::kBannerRedirected);
+}
+
+void PolicyUIHandler::CheckCommandLineSwitches(
+    CheckCommandLineSwitchesCallback callback) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::move(callback).Run(
+      HasUserSpecifiedCommandLineSwitches(&GetInitialBrowserCommandLine()));
+#else
+  std::move(callback).Run(false);
+#endif
+}
+
+void PolicyUIHandler::HandleCheckCommandLineSwitches(
+    const base::ListValue& args) {
+  AllowJavascript();
+#if !BUILDFLAG(IS_CHROMEOS)
+  ResolveJavascriptCallback(args[0],
+                            base::Value(HasUserSpecifiedCommandLineSwitches(
+                                &GetInitialBrowserCommandLine())));
+#else
+  ResolveJavascriptCallback(args[0], base::Value(false));
+#endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

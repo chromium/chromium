@@ -890,6 +890,9 @@ Additional details:
   <message name="IDS_POLICY_BANNER_PROMOTION_BTN" desc="Button for Chrome Enterprise Core (CEC) promotion banner">
     Try Chrome Enterprise Core
   </message>
+  <message name="IDS_POLICY_COMMAND_LINE_FLAGS_WARNING" desc="Warning shown on chrome://policy when custom command line flags are explicitly specified by the user upon launching Chrome.">
+    This instance of Chrome is running with command line flags manually set. Note that command line flags may change at any time and are not supported.
+  </message>
   <message name="IDS_DEVTOOLS_BLOCKED_BY_POLICY" desc="Message shown when DevTools is blocked by policy.">
     Your organization has blocked the use of DevTools on this page
   </message>

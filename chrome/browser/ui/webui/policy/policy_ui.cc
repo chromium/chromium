@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
@@ -26,6 +27,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
+#include "components/policy/core/browser/webui/policy_webui_constants.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_loader_common.h"
@@ -46,6 +48,10 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/enterprise/reporting/browser_launch/scoped_initial_command_line.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 // LINT.IfChange
 
@@ -159,6 +165,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
       {"viewLogs", IDS_VIEW_POLICY_LOGS},
 #if !BUILDFLAG(IS_ANDROID)
+      {"commandLineFlagsWarning", IDS_POLICY_COMMAND_LINE_FLAGS_WARNING},
       {"promotionBannerTitle", IDS_POLICY_BANNER_PROMOTION_TITLE},
       {"promotionBannerDesc", IDS_POLICY_BANNER_PROMOTION_DESC},
       {"promotionBannerBtn", IDS_POLICY_BANNER_PROMOTION_BTN},
@@ -260,6 +267,15 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(policy::features::kPolicyPageMojoMigration));
 
   source->AddBoolean("hideUploadReportButton", profile->IsOffTheRecord());
+#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
+  source->AddBoolean(
+      policy::kHasCustomCommandLineFlags,
+      HasUserSpecifiedCommandLineSwitches(&GetInitialBrowserCommandLine()));
+#else
+  source->AddBoolean(policy::kHasCustomCommandLineFlags, false);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

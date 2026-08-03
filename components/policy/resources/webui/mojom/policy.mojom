@@ -101,6 +101,10 @@ interface PolicyPageHandler {
   [EnableIfNot=is_ios|is_android]
   RecordBannerRedirected();
 
+  // Checks whether custom command-line flags were explicitly specified by the user upon launching Chrome.
+  [EnableIfNot=is_ios|is_android]
+  CheckCommandLineSwitches() => (bool has_custom_flags);
+
   // Retrieves all current policies in raw JSON format. These are then either
   // copied to uers's clipboard or downloaded. The action is denoted by `reason`
   // for metrics.

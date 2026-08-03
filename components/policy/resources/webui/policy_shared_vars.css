@@ -8,6 +8,10 @@
 html {
   --google-blue-300: rgb(138, 180, 248); /* #8ab4f8 */
   --google-blue-700: rgb(25, 103, 210); /* #1967d2 */
+  --google-yellow-300: rgb(253, 214, 51);
+    /* #fdd633 */
+    --google-yellow-700: rgb(240, 147, 0);
+    /* #f09300 */
   --google-grey-50: rgb(248, 249, 250);  /* #f8f9fa */
   --google-grey-100: rgb(241, 243, 244);  /* #f1f3f4 */
   --google-grey-200: rgb(232, 234, 237);  /* #e8eaed */
@@ -46,6 +50,7 @@ html {
   --promotion-pill-text-color: #FFF;
   --promotion-banner-title-color: #202124;
   --promotion-banner-description-color: #202124;
+  --warning-icon-color: var(--google-yellow-700);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -80,5 +85,6 @@ html {
     --promotion-pill-text-color: #062E6F;
     --promotion-banner-title-color: #FFF;
     --promotion-banner-description-color: #FFF;
+    --warning-icon-color: var(--google-yellow-300);
   }
 }

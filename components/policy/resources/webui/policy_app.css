@@ -99,4 +99,28 @@ a {
   }
 }
 
+.warning-banner {
+  align-items: center;
+  background-color: var(--cr-card-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: var(--cr-card-border-radius);
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+}
+
+.warning-icon {
+  color: var(--warning-icon-color);
+  flex-shrink: 0;
+  height: 16px;
+  width: 16px;
+}
+
+.warning-text {
+  font-size: 13px;
+  line-height: 18px;
+}
+
 

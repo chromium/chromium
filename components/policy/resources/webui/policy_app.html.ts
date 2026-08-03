@@ -62,6 +62,12 @@ export function getHtml(this: PolicyAppElement) {
   <main id="policy-ui-container">
     <div id="policy-ui">
 <if expr="not is_ios and not is_android">
+      ${this.shouldShowCommandLineFlagsWarning_ ? html`
+        <div id="command-line-flags-warning" class="warning-banner" role="alert">
+          <cr-icon icon="cr:warning" class="warning-icon"></cr-icon>
+          <div class="warning-text">$i18n{commandLineFlagsWarning}</div>
+        </div>
+      ` : ''}
       ${this.shouldShowPromo_ ? html`
         <promotion-banner-section-container
             @dismiss="${this.onPromoDismiss_}"

@@ -36,6 +36,16 @@ namespace enterprise_management {
 class GetUserEligiblePromotionsResponse;
 }  // namespace enterprise_management
 
+namespace base {
+class CommandLine;
+}  // namespace base
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+// Returns true if the given command line contains explicit user-specified
+// switches, ignoring internal and OS shell integration flags.
+bool HasUserSpecifiedCommandLineSwitches(const base::CommandLine* command_line);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public content::WebUIMessageHandler,
                         public policy::mojom::PolicyPageHandler,
@@ -84,6 +94,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void GetPolicyLogs(GetPolicyLogsCallback callback) override;
 
 #if !BUILDFLAG(IS_ANDROID)
+  void CheckCommandLineSwitches(
+      CheckCommandLineSwitchesCallback callback) override;
   void CheckPromotionEligibility(
       CheckPromotionEligibilityCallback callback) override;
   void SetBannerDismissed() override;
@@ -102,6 +114,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void HandleSetUserAffiliated(const base::ListValue& args);
   void HandleGetAppliedTestPolicies(const base::ListValue& args);
 #if !BUILDFLAG(IS_ANDROID)
+  void HandleCheckCommandLineSwitches(const base::ListValue& args);
   void HandleShouldShowPromotion(const base::ListValue& args);
   void HandleSetBannerDismissed(const base::ListValue& args);
   void HandleRecordBannerRedirected(const base::ListValue& args);
