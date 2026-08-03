@@ -87,15 +87,21 @@ PermissionStatusToEmbeddedPermissionControlResult(PermissionStatus status) {
 // Helper wraps `RequestPageEmbeddedPermissionCallback` to
 // `RequestPermissionsCallback`.
 void EmbeddedPermissionRequestCallbackWrapper(
-    PermissionStatus initial_status,
+    const std::vector<PermissionStatus>& initial_statuses,
     base::OnceCallback<void(EmbeddedPermissionControlResult)> callback,
     const std::vector<PermissionResult>& results) {
   DCHECK(!results.empty());
-  DCHECK(std::ranges::all_of(results, [&](auto const& result) {
-    return results[0].status == result.status;
-  }));
+  DCHECK_EQ(initial_statuses.size(), results.size());
 
-  if (initial_status == results[0].status) {
+  bool all_unchanged = true;
+  for (size_t i = 0; i < results.size(); ++i) {
+    if (initial_statuses[i] != results[i].status) {
+      all_unchanged = false;
+      break;
+    }
+  }
+
+  if (all_unchanged) {
     // If the permission status did not change, the user dismissed the prompt
     // (e.g. clicking 'Continue not allowing' on PREVIOUSLY_DENIED, or
     // 'Continue allowing' on PREVIOUSLY_GRANTED).
@@ -103,8 +109,19 @@ void EmbeddedPermissionRequestCallbackWrapper(
     return;
   }
 
+  PermissionStatus combined_status = PermissionStatus::GRANTED;
+  if (std::ranges::any_of(results, [](const auto& result) {
+        return result.status == PermissionStatus::DENIED;
+      })) {
+    combined_status = PermissionStatus::DENIED;
+  } else if (std::ranges::any_of(results, [](const auto& result) {
+               return result.status == PermissionStatus::ASK;
+             })) {
+    combined_status = PermissionStatus::ASK;
+  }
+
   std::move(callback).Run(
-      PermissionStatusToEmbeddedPermissionControlResult(results[0].status));
+      PermissionStatusToEmbeddedPermissionControlResult(combined_status));
 }
 
 // Helper which returns true if there are any duplicate or invalid permissions.
@@ -323,15 +340,19 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
       return;
     }
 
-    PermissionStatus initial_status =
-        GetPermissionResultForCurrentContext(permissions[0]).status;
+    std::vector<PermissionStatus> initial_statuses;
+    initial_statuses.reserve(permissions.size());
+    for (const auto& permission : permissions) {
+      initial_statuses.push_back(
+          GetPermissionResultForCurrentContext(permission).status);
+    }
 
     RequestPermissionsInternal(
         browser_context,
         PermissionRequestDescription(std::move(permissions),
                                      std::move(descriptor)),
         base::BindOnce(&EmbeddedPermissionRequestCallbackWrapper,
-                       initial_status, std::move(callback)));
+                       initial_statuses, std::move(callback)));
   }
 }
 

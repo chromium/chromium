@@ -4,16 +4,21 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/guest_view/web_view/web_view_apitest.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/permissions/permission_request_manager.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 
 namespace extensions {
 namespace {
@@ -245,6 +250,153 @@ IN_PROC_BROWSER_TEST_F(WebViewMediaAccessPEPCAPITest, TestAllowPEPC) {
   LaunchApp(app_location);
 
   RunTest("testAllowPEPC");
+
+  StopTestServer();
+}
+
+struct PEPCParam {
+  bool legacy_enabled;
+  bool app_has_video_capture;
+
+  friend std::ostream& operator<<(std::ostream& os, const PEPCParam& param) {
+    return os << "Legacy_" << (param.legacy_enabled ? "On" : "Off")
+              << "_AppHasVideo_"
+              << (param.app_has_video_capture ? "Yes" : "No");
+  }
+};
+
+class WebViewMediaAccessPEPCParameterizedTest
+    : public WebViewMediaAccessAPITest,
+      public testing::WithParamInterface<PEPCParam> {
+ public:
+  WebViewMediaAccessPEPCParameterizedTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        blink::features::kUserMediaElement,
+        blink::features::kBypassPepcSecurityForTesting};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam().legacy_enabled) {
+      enabled_features.push_back(blink::features::kUserMediaElementLegacy);
+    } else {
+      disabled_features.push_back(blink::features::kUserMediaElementLegacy);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebViewMediaAccessPEPCParameterizedTest, TestPEPC) {
+  PEPCParam param = GetParam();
+  std::string app_location = param.app_has_video_capture
+                                 ? "web_view/media_access/allow_pepc_both"
+                                 : "web_view/media_access/allow_pepc";
+  StartTestServer(app_location);
+  LaunchApp(app_location);
+
+  auto mock = std::make_unique<MockWebContentsDelegate>();
+  embedder_web_contents_->SetDelegate(mock.get());
+
+  ExtensionTestMessageListener test_run_listener("TEST_PASSED");
+
+  EXPECT_TRUE(content::ExecJs(embedder_web_contents_.get(),
+                              "runTest('testAllowPEPC');"));
+
+  ASSERT_TRUE(test_run_listener.WaitUntilSatisfied());
+
+  // Verify backend permission statuses are ASK (not persisted).
+  content::RenderFrameHost* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_rfh);
+
+  auto* permission_controller =
+      embedder_web_contents_->GetBrowserContext()->GetPermissionController();
+
+  auto mic_descriptor = blink::mojom::PermissionDescriptor::New();
+  mic_descriptor->name = blink::mojom::PermissionName::AUDIO_CAPTURE;
+  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                mic_descriptor, guest_rfh),
+            blink::mojom::PermissionStatus::ASK);
+
+  auto camera_descriptor = blink::mojom::PermissionDescriptor::New();
+  camera_descriptor->name = blink::mojom::PermissionName::VIDEO_CAPTURE;
+  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                camera_descriptor, guest_rfh),
+            blink::mojom::PermissionStatus::ASK);
+
+  StopTestServer();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebViewMediaAccessPEPCParameterizedTest,
+    testing::Values(
+        PEPCParam{/*legacy_enabled=*/true, /*app_has_video_capture=*/false},
+        PEPCParam{/*legacy_enabled=*/true, /*app_has_video_capture=*/true},
+        PEPCParam{/*legacy_enabled=*/false, /*app_has_video_capture=*/true}),
+    testing::PrintToStringParamName());
+
+class WebViewMediaAccessPEPCNoLegacyAPITest : public WebViewMediaAccessAPITest {
+ public:
+  WebViewMediaAccessPEPCNoLegacyAPITest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kUserMediaElement,
+         blink::features::kBypassPepcSecurityForTesting},
+        {blink::features::kUserMediaElementLegacy});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies what happens when one permission is allowed by the app manifest
+// (Mic) and the other is denied (Camera). The combined PEPC request should
+// fail, and the backend status for both should remain ASK (not persisted).
+IN_PROC_BROWSER_TEST_F(WebViewMediaAccessPEPCNoLegacyAPITest,
+                       TestPEPC_PartialGrant_MicAllowedCameraDenied) {
+  // App only has mic permission.
+  std::string app_location = "web_view/media_access/allow_pepc";
+  StartTestServer(app_location);
+  LaunchApp(app_location);
+
+  auto mock = std::make_unique<MockWebContentsDelegate>();
+  embedder_web_contents_->SetDelegate(mock.get());
+
+  // Listen for any message to verify the specific failure reason.
+  ExtensionTestMessageListener test_run_listener;
+
+  EXPECT_TRUE(content::ExecJs(embedder_web_contents_.get(),
+                              "runTest('testAllowPEPC');"));
+
+  ASSERT_TRUE(test_run_listener.WaitUntilSatisfied());
+
+  // We expect it to fail because Camera is not in manifest.
+  EXPECT_TRUE(base::StartsWith(test_run_listener.message(),
+                               "TEST_FAILED: Guest denied access",
+                               base::CompareCase::SENSITIVE))
+      << "Actual message: " << test_run_listener.message();
+
+  // Verify backend permission statuses are ASK (not persisted).
+  content::RenderFrameHost* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_rfh);
+
+  auto* permission_controller =
+      embedder_web_contents_->GetBrowserContext()->GetPermissionController();
+
+  auto mic_descriptor = blink::mojom::PermissionDescriptor::New();
+  mic_descriptor->name = blink::mojom::PermissionName::AUDIO_CAPTURE;
+  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                mic_descriptor, guest_rfh),
+            blink::mojom::PermissionStatus::ASK);
+
+  auto camera_descriptor = blink::mojom::PermissionDescriptor::New();
+  camera_descriptor->name = blink::mojom::PermissionName::VIDEO_CAPTURE;
+  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                camera_descriptor, guest_rfh),
+            blink::mojom::PermissionStatus::ASK);
 
   StopTestServer();
 }
