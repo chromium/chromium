@@ -250,16 +250,47 @@ public class TabListViewBinderUtils {
                 state != null
                         && (state.tabIndicator == TabIndicatorStatus.DYNAMIC
                                 || state.tabIndicator == TabIndicatorStatus.STATIC);
+        updateIndicatorAccessibilityDescription(model, view);
+        return shouldBeVisible;
+    }
 
-        if (shouldBeVisible) {
+    /**
+     * Resolves IS_GLIC_ACTIVE and updates the accessibility content description.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the View to receive the accessibility content description.
+     * @return true if the Glic indicator should be visible, false otherwise.
+     */
+    public static boolean setupGlicIndicator(PropertyModel model, View view) {
+        boolean shouldBeVisible =
+                model.containsKey(TabProperties.IS_GLIC_ACTIVE)
+                        && model.get(TabProperties.IS_GLIC_ACTIVE);
+        updateIndicatorAccessibilityDescription(model, view);
+        return shouldBeVisible;
+    }
+
+    private static void updateIndicatorAccessibilityDescription(PropertyModel model, View view) {
+        boolean isGlicActive =
+                model.containsKey(TabProperties.IS_GLIC_ACTIVE)
+                        && model.get(TabProperties.IS_GLIC_ACTIVE);
+        @Nullable UiTabState actorState = model.get(TabProperties.ACTOR_UI_STATE);
+        boolean isActorActive =
+                actorState != null
+                        && (actorState.tabIndicator == TabIndicatorStatus.DYNAMIC
+                                || actorState.tabIndicator == TabIndicatorStatus.STATIC);
+
+        if (isGlicActive || isActorActive) {
             String title = model.get(TabProperties.TITLE);
             String accessibilityDesc =
                     view.getResources().getString(R.string.tab_ax_label_actor_accessing, title);
             view.setContentDescription(accessibilityDesc);
         } else {
-            updateContentDescription(model, view);
+            if (model.containsKey(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                    && model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER) != null) {
+                updateContentDescription(model, view);
+            } else if (model.containsKey(TabProperties.TITLE)) {
+                view.setContentDescription(model.get(TabProperties.TITLE));
+            }
         }
-
-        return shouldBeVisible;
     }
 }

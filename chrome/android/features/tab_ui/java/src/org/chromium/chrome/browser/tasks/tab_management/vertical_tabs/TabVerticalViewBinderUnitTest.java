@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,8 +71,21 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link TabVerticalViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabVerticalViewBinderUnitTest {
+    private static final String TEST_TITLE = "Google Website";
+    private static final String TEST_DESCRIPTION = "Normal Tab Description";
+    private static final String TEST_ACCESSIBILITY_DESCRIPTION = "Accessibility Tab Description";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabActionListener mCloseListener;
+    @Mock private TabActionListener mClickListener;
+    @Mock private TabActionListener mLongClickListener;
+    @Mock private TabActionListener mContextClickListener;
+    @Mock private View.AccessibilityDelegate mAccessibilityDelegate;
+    @Mock private Drawable mFaviconDrawable;
+    @Mock private TabFavicon mTabFavicon;
+    @Mock private TabFaviconFetcher mFaviconFetcher;
+    @Mock private TabFaviconFetcher mFaviconFetcher1;
+    @Mock private TabFaviconFetcher mFaviconFetcher2;
 
     private ViewGroup mItemView;
     private TextView mTitleView;
@@ -85,8 +97,6 @@ public class TabVerticalViewBinderUnitTest {
     private ImageView mActuationSpinnerView;
     private PropertyModel mModel;
     private Activity mActivity;
-    private TabFaviconFetcher mMockFaviconFetcher;
-    private Drawable mMockFaviconDrawable;
 
     @Before
     public void setUp() {
@@ -111,19 +121,16 @@ public class TabVerticalViewBinderUnitTest {
         mActuationSparkView = mItemView.findViewById(R.id.actuation_spark);
         mActuationSpinnerView = mItemView.findViewById(R.id.actuation_spinner);
 
-        mMockFaviconDrawable = mock(Drawable.class);
-        when(mMockFaviconDrawable.mutate()).thenReturn(mMockFaviconDrawable);
-        TabFavicon mockFavicon = mock(TabFavicon.class);
-        when(mockFavicon.getDefaultDrawable()).thenReturn(mMockFaviconDrawable);
-        when(mockFavicon.getSelectedDrawable()).thenReturn(mMockFaviconDrawable);
-        mMockFaviconFetcher = mock(TabFaviconFetcher.class);
+        when(mFaviconDrawable.mutate()).thenReturn(mFaviconDrawable);
+        when(mTabFavicon.getDefaultDrawable()).thenReturn(mFaviconDrawable);
+        when(mTabFavicon.getSelectedDrawable()).thenReturn(mFaviconDrawable);
         doAnswer(
                         invocation -> {
                             Callback<TabFavicon> callback = invocation.getArgument(0);
-                            callback.onResult(mockFavicon);
+                            callback.onResult(mTabFavicon);
                             return null;
                         })
-                .when(mMockFaviconFetcher)
+                .when(mFaviconFetcher)
                 .fetch(any());
 
         mModel =
@@ -148,7 +155,6 @@ public class TabVerticalViewBinderUnitTest {
                 TabProperties.ACTOR_UI_STATE,
                 new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false));
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
-        assertEquals(View.VISIBLE, mIndicatorView.getVisibility());
         assertEquals(View.VISIBLE, mActuationSparkView.getVisibility());
         assertEquals(View.VISIBLE, mActuationSpinnerView.getVisibility());
         ObjectAnimator animator =
@@ -160,7 +166,6 @@ public class TabVerticalViewBinderUnitTest {
                 TabProperties.ACTOR_UI_STATE,
                 new UiTabState(0, null, null, TabIndicatorStatus.STATIC, false));
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
-        assertEquals(View.VISIBLE, mIndicatorView.getVisibility());
         assertEquals(View.GONE, mActuationSparkView.getVisibility());
         assertEquals(View.GONE, mActuationSpinnerView.getVisibility());
         assertFalse(animator.isRunning());
@@ -169,20 +174,72 @@ public class TabVerticalViewBinderUnitTest {
                 TabProperties.ACTOR_UI_STATE,
                 new UiTabState(0, null, null, TabIndicatorStatus.NONE, false));
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
-        assertEquals(View.GONE, mIndicatorView.getVisibility());
         assertEquals(View.GONE, mActuationSparkView.getVisibility());
         assertEquals(View.GONE, mActuationSpinnerView.getVisibility());
     }
 
     @Test
     @SmallTest
+    public void testBindGlicIndicator() {
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+        TextResolver resolver = context -> TEST_DESCRIPTION;
+        mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, resolver);
+
+        mModel.set(TabProperties.IS_GLIC_ACTIVE, true);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_GLIC_ACTIVE);
+        assertIndicatorStateAndDescription(
+                mIndicatorView,
+                mItemView,
+                View.VISIBLE,
+                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE));
+
+        mModel.set(TabProperties.IS_GLIC_ACTIVE, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_GLIC_ACTIVE);
+        assertIndicatorStateAndDescription(mIndicatorView, mItemView, View.GONE, TEST_DESCRIPTION);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindGlicIndicator_WithActorUiState() {
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+        TextResolver resolver = context -> TEST_DESCRIPTION;
+        mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, resolver);
+
+        // Turn on both Glic and Actor UI State.
+        mModel.set(TabProperties.IS_GLIC_ACTIVE, true);
+        UiTabState actorState = new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false);
+        mModel.set(TabProperties.ACTOR_UI_STATE, actorState);
+
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_GLIC_ACTIVE);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
+
+        assertIndicatorStateAndDescription(
+                mIndicatorView,
+                mItemView,
+                View.VISIBLE,
+                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE));
+
+        // Deactivate Glic while Actor remains active.
+        mModel.set(TabProperties.IS_GLIC_ACTIVE, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_GLIC_ACTIVE);
+
+        // Accessibility description should NOT be reset because Actor is still active.
+        assertIndicatorStateAndDescription(
+                mIndicatorView,
+                mItemView,
+                View.GONE,
+                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE));
+    }
+
+    @Test
+    @SmallTest
     public void testBindContentDescription() {
-        TextResolver resolver = context -> "Accessibility Tab Description";
+        TextResolver resolver = context -> TEST_ACCESSIBILITY_DESCRIPTION;
         mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, resolver);
         TabVerticalViewBinder.bindTab(
                 mModel, mItemView, TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
 
-        assertEquals("Accessibility Tab Description", mItemView.getContentDescription().toString());
+        assertEquals(TEST_ACCESSIBILITY_DESCRIPTION, mItemView.getContentDescription().toString());
     }
 
     @Test
@@ -210,11 +267,11 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindFavicon() {
-        mModel.set(TabProperties.FAVICON_FETCHER, mMockFaviconFetcher);
+        mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.FAVICON_FETCHER);
 
         assertEquals(View.VISIBLE, mFaviconView.getVisibility());
-        assertEquals(mMockFaviconDrawable, mFaviconView.getDrawable());
+        assertEquals(mFaviconDrawable, mFaviconView.getDrawable());
     }
 
     @Test
@@ -244,13 +301,12 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindClickListeners() {
-        TabActionListener mockClickListener = mock(TabActionListener.class);
         mModel.set(TabProperties.TAB_ID, 123);
-        mModel.set(TabProperties.TAB_CLICK_LISTENER, mockClickListener);
+        mModel.set(TabProperties.TAB_CLICK_LISTENER, mClickListener);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_CLICK_LISTENER);
 
         mItemView.performClick();
-        verify(mockClickListener).run(any(View.class), eq(123), any());
+        verify(mClickListener).run(any(View.class), eq(123), any());
     }
 
     @Test
@@ -282,11 +338,10 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindAccessibilityDelegate() {
-        View.AccessibilityDelegate mockDelegate = mock(View.AccessibilityDelegate.class);
-        mModel.set(TabProperties.ACCESSIBILITY_DELEGATE, mockDelegate);
+        mModel.set(TabProperties.ACCESSIBILITY_DELEGATE, mAccessibilityDelegate);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACCESSIBILITY_DELEGATE);
 
-        assertEquals(mockDelegate, mItemView.getAccessibilityDelegate());
+        assertEquals(mAccessibilityDelegate, mItemView.getAccessibilityDelegate());
     }
 
     @Test
@@ -607,59 +662,47 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindPinnedTab_FaviconAndClick() {
-        ViewGroup pinnedView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        ViewGroup pinnedView = inflatePinnedTabView();
         ImageView faviconView = pinnedView.findViewById(R.id.tab_favicon);
 
         // 1. Test Favicon fetching
-        mModel.set(TabProperties.FAVICON_FETCHER, mMockFaviconFetcher);
+        mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.FAVICON_FETCHER);
-        assertEquals(mMockFaviconDrawable, faviconView.getDrawable());
+        assertEquals(mFaviconDrawable, faviconView.getDrawable());
 
         // 2. Test Click Listener
-        TabActionListener mockClickListener = mock(TabActionListener.class);
         mModel.set(TabProperties.TAB_ID, 123);
-        mModel.set(TabProperties.TAB_CLICK_LISTENER, mockClickListener);
+        mModel.set(TabProperties.TAB_CLICK_LISTENER, mClickListener);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TAB_CLICK_LISTENER);
         pinnedView.performClick();
-        verify(mockClickListener).run(any(View.class), eq(123), any());
+        verify(mClickListener).run(any(View.class), eq(123), any());
     }
 
     @Test
     @SmallTest
     public void testBindPinnedTab_LongAndContextClick() {
-        ViewGroup pinnedView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        ViewGroup pinnedView = inflatePinnedTabView();
 
         // 1. Test Long Click Listener
-        TabActionListener mockLongClickListener = mock(TabActionListener.class);
         mModel.set(TabProperties.TAB_ID, 123);
-        mModel.set(TabProperties.TAB_LONG_CLICK_LISTENER, mockLongClickListener);
+        mModel.set(TabProperties.TAB_LONG_CLICK_LISTENER, mLongClickListener);
         TabVerticalViewBinder.bindPinnedTab(
                 mModel, pinnedView, TabProperties.TAB_LONG_CLICK_LISTENER);
         pinnedView.performLongClick();
-        verify(mockLongClickListener).run(any(View.class), eq(123), any());
+        verify(mLongClickListener).run(any(View.class), eq(123), any());
 
         // 2. Test Context Click Listener
-        TabActionListener mockContextClickListener = mock(TabActionListener.class);
-        mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, mockContextClickListener);
+        mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, mContextClickListener);
         TabVerticalViewBinder.bindPinnedTab(
                 mModel, pinnedView, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
         pinnedView.performContextClick(0f, 0f);
-        verify(mockContextClickListener).run(any(View.class), eq(123), any());
+        verify(mContextClickListener).run(any(View.class), eq(123), any());
     }
 
     @Test
     @SmallTest
     public void testBindPinnedTab_SelectionColors() {
-        ViewGroup pinnedView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        ViewGroup pinnedView = inflatePinnedTabView();
 
         // 1. When Pinned Tab is Selected
         mModel.set(TabProperties.IS_SELECTED, true);
@@ -677,25 +720,40 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindPinnedTab_ContentDescription() {
-        ViewGroup pinnedView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        ViewGroup pinnedView = inflatePinnedTabView();
 
-        mModel.set(TabProperties.TITLE, "Google Website");
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TITLE);
 
-        assertEquals("Google Website", pinnedView.getContentDescription().toString());
+        assertEquals(TEST_TITLE, pinnedView.getContentDescription().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_GlicIndicator() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+        View glicIndicator = pinnedView.findViewById(R.id.ai_indicator);
+        assertNotNull(glicIndicator);
+
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+        mModel.set(TabProperties.IS_GLIC_ACTIVE, true);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_GLIC_ACTIVE);
+        assertIndicatorStateAndDescription(
+                glicIndicator,
+                pinnedView,
+                View.VISIBLE,
+                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE));
+
+        mModel.set(TabProperties.IS_GLIC_ACTIVE, false);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_GLIC_ACTIVE);
+        assertIndicatorStateAndDescription(glicIndicator, pinnedView, View.GONE, TEST_TITLE);
     }
 
     @Test
     @SmallTest
     @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
     public void testBindTabGroupHeader_TitleAndColors() {
-        ViewGroup headerView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        ViewGroup headerView = inflateGroupHeaderView();
         TextView titleView = headerView.findViewById(R.id.group_title);
         ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);
 
@@ -729,11 +787,19 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testBindTabGroupHeader_NoGlicIndicator() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        mModel.set(TabProperties.IS_GLIC_ACTIVE, true);
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_GLIC_ACTIVE);
+
+        View glicIndicator = headerView.findViewById(R.id.ai_indicator);
+        assertNull(glicIndicator);
+    }
+
+    @Test
+    @SmallTest
     public void testBindTabGroupHeader_ContentDescription() {
-        ViewGroup headerView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        ViewGroup headerView = inflateGroupHeaderView();
 
         TextResolver resolver = context -> "Accessibility Group Description";
 
@@ -748,10 +814,7 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindTabGroupHeader_CollapsedState() {
-        ViewGroup headerView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        ViewGroup headerView = inflateGroupHeaderView();
         ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);
 
         // Test Detached / Recycled State (should snap instantly)
@@ -782,10 +845,7 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testTabGroupHeaderAccessibilityDelegate() {
-        ViewGroup headerView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        ViewGroup headerView = inflateGroupHeaderView();
 
         // Initially collapsed = true.
         mModel.set(TabProperties.IS_COLLAPSED, true);
@@ -861,8 +921,7 @@ public class TabVerticalViewBinderUnitTest {
         View spinner = mItemView.findViewById(R.id.tab_loading_spinner);
         assertNotNull(spinner);
 
-        TabFaviconFetcher mockFetcher1 = mock(TabFaviconFetcher.class);
-        mModel.set(TabProperties.FAVICON_FETCHER, mockFetcher1);
+        mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher1);
 
         // 1. Loading
         mModel.set(TabProperties.IS_LOADING, true);
@@ -871,8 +930,7 @@ public class TabVerticalViewBinderUnitTest {
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
         // 2. Favicon fetcher updated while loading (should not break INVISIBLE state)
-        TabFaviconFetcher mockFetcher2 = mock(TabFaviconFetcher.class);
-        mModel.set(TabProperties.FAVICON_FETCHER, mockFetcher2);
+        mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher2);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.FAVICON_FETCHER);
         assertEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
@@ -908,10 +966,7 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testPinnedTabHoverBackground() {
-        ViewGroup pinnedView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        ViewGroup pinnedView = inflatePinnedTabView();
 
         // Pinned tabs should not have an action button
         assertNull(pinnedView.findViewById(R.id.action_button));
@@ -1052,10 +1107,7 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindPinnedTab_RailCollapsed() {
-        ViewGroup pinnedView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        ViewGroup pinnedView = inflatePinnedTabView();
         pinnedView.setLayoutParams(
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -1082,10 +1134,7 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindPinnedTab_RailExpanded() {
-        ViewGroup pinnedView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        ViewGroup pinnedView = inflatePinnedTabView();
         pinnedView.setLayoutParams(
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -1114,10 +1163,7 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindTabGroupHeader_RailCollapsed() {
-        ViewGroup headerView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        ViewGroup headerView = inflateGroupHeaderView();
         headerView.setLayoutParams(
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -1148,10 +1194,7 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindTabGroupHeader_RailExpanded() {
-        ViewGroup headerView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        ViewGroup headerView = inflateGroupHeaderView();
         headerView.setLayoutParams(
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -1178,7 +1221,7 @@ public class TabVerticalViewBinderUnitTest {
     @SmallTest
     public void testIconPriorities_RailCollapsed() {
         // Setup favicon fetcher
-        mModel.set(TabProperties.FAVICON_FETCHER, mMockFaviconFetcher);
+        mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher);
 
         // Setup all other icons to be active
         mModel.set(TabProperties.IS_LOADING, true);
@@ -1263,5 +1306,30 @@ public class TabVerticalViewBinderUnitTest {
         assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertEquals(View.VISIBLE, mFaviconView.getVisibility());
+    }
+
+    private ViewGroup inflatePinnedTabView() {
+        return (ViewGroup)
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.vertical_tab_pinned_item, null, false);
+    }
+
+    private ViewGroup inflateGroupHeaderView() {
+        return (ViewGroup)
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.vertical_tab_group_header, null, false);
+    }
+
+    private void assertIndicatorStateAndDescription(
+            View indicatorView,
+            View parentView,
+            int expectedVisibility,
+            String expectedContentDescription) {
+        assertEquals(expectedVisibility, indicatorView.getVisibility());
+        assertEquals(
+                expectedContentDescription,
+                parentView.getContentDescription() != null
+                        ? parentView.getContentDescription().toString()
+                        : null);
     }
 }

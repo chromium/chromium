@@ -19,7 +19,7 @@ found in the LICENSE file.
     <!-- AI Indicator -->
     <View
         android:id="@+id/ai_indicator"
-        android:layout_width="2dp"
+        android:layout_width="@dimen/vertical_tab_item_ai_indicator_width"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,6 +27,7 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/vertical_tab_item_ai_indicator_margin_vertical"
         android:layout_marginBottom="@dimen/vertical_tab_item_ai_indicator_margin_vertical"
         android:background="@drawable/vertical_tab_ai_indicator_background"
+        android:importantForAccessibility="no"
         android:visibility="gone" />
 
     <!-- Tab Favicon & Loading Indicator Container -->
