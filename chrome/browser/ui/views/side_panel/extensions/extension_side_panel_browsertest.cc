@@ -2638,8 +2638,13 @@ class ExtensionOnClosedEventSidePanelBrowserTest
 };
 
 // Tests that onClosed fires when the hosting tab is closed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OnClosedEvent_TabClosed DISABLED_OnClosedEvent_TabClosed
+#else
+#define MAYBE_OnClosedEvent_TabClosed OnClosedEvent_TabClosed
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
-                       DISABLED_OnClosedEvent_TabClosed) {
+                       MAYBE_OnClosedEvent_TabClosed) {
   // Open a new tab first to prevent the browser from shutting down.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
