@@ -64,6 +64,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
                         .with(
                                 PdfToolbarProperties.PAGE_NUMBER_EDIT_LISTENER,
                                 this::onPageNumberSubmitted)
+                        .with(PdfToolbarProperties.CURRENT_PAGE_NUMBER, 1)
                         .with(PdfToolbarProperties.ZOOM_LEVEL, 1.0f)
                         .with(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, true)
                         .with(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, false)
@@ -101,7 +102,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
                     showFitToHeight
                             ? PdfUtils.PdfToolbarAction.FIT_TO_PAGE_VERTICAL
                             : PdfUtils.PdfToolbarAction.FIT_TO_PAGE_HORIZONTAL);
-            mDelegate.toggleFitToPage(showFitToHeight, currentPageNumber - 1);
+            mDelegate.toggleFitToPage(showFitToHeight, Math.max(0, currentPageNumber - 1));
             mModel.set(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, !showFitToHeight);
         } else if (actionId == R.id.download_button) {
             mDelegate.download();
@@ -129,7 +130,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
             PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.SINGLE_PAGE_VIEW);
         }
         mModel.set(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, newState);
-        mDelegate.toggleTwoPagesPerRow(newState, currentZoomFactor, currentPageNumber - 1);
+        mDelegate.toggleTwoPagesPerRow(
+                newState, currentZoomFactor, Math.max(0, currentPageNumber - 1));
     }
 
     private void showMenu(View anchorView) {
@@ -166,7 +168,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
                                                         : PdfUtils.PdfToolbarAction
                                                                 .FIT_TO_PAGE_HORIZONTAL);
                                         mDelegate.toggleFitToPage(
-                                                showFitToHeight, currentPageNumber - 1);
+                                                showFitToHeight,
+                                                Math.max(0, currentPageNumber - 1));
                                         mModel.set(
                                                 PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON,
                                                 !showFitToHeight);

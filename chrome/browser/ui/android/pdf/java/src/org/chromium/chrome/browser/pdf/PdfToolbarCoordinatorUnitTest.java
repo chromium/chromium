@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -248,7 +249,7 @@ public class PdfToolbarCoordinatorUnitTest {
         moreMenuButton.performClick();
 
         View contentView = mSpyPopupWindow.getContentView();
-        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+        ListView listView = contentView.findViewById(R.id.menu_list);
         View fitItemView = null;
         for (int i = 0; i < listView.getAdapter().getCount(); i++) {
             View itemView = listView.getAdapter().getView(i, null, listView);
@@ -320,7 +321,7 @@ public class PdfToolbarCoordinatorUnitTest {
         // Get content view
         View contentView = mSpyPopupWindow.getContentView();
         org.junit.Assert.assertNotNull("Popup content view should not be null", contentView);
-        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+        ListView listView = contentView.findViewById(R.id.menu_list);
         org.junit.Assert.assertNotNull("List view should be found", listView);
 
         // Verify first item is "Two-page view" and has NO checkmark
@@ -362,6 +363,28 @@ public class PdfToolbarCoordinatorUnitTest {
         itemView.performClick();
         verify(mDelegate).toggleTwoPagesPerRow(false, 1.0f, 98);
         verify(mSpyPopupWindow).dismiss();
+    }
+
+    @Test
+    public void testTwoPagesPerRowToggle_beforeViewportChanged() {
+        PdfToolbarCoordinator coordinator = new PdfToolbarCoordinator(mPdfPageView, mDelegate);
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        moreMenuButton.performClick();
+
+        View contentView = mSpyPopupWindow.getContentView();
+        ListView listView = contentView.findViewById(R.id.menu_list);
+        View itemView = listView.getAdapter().getView(0, null, listView);
+
+        itemView.performClick();
+        verify(mDelegate).toggleTwoPagesPerRow(true, 1.0f, 0);
+    }
+
+    @Test
+    public void testFitToPageToggle_beforeViewportChanged() {
+        PdfToolbarCoordinator coordinator = new PdfToolbarCoordinator(mPdfPageView, mDelegate);
+        View fitToPageButton = mPdfPageView.findViewById(R.id.fit_to_page_button);
+        fitToPageButton.performClick();
+        verify(mDelegate).toggleFitToPage(true, 0);
     }
 
     @Test
@@ -607,7 +630,7 @@ public class PdfToolbarCoordinatorUnitTest {
         moreMenuButton.performClick();
 
         View contentView = mSpyPopupWindow.getContentView();
-        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+        ListView listView = contentView.findViewById(R.id.menu_list);
         View itemView = listView.getAdapter().getView(0, null, listView); // Two-page view item
 
         // Click "Two-page view" -> toggles to true, should record TWO_PAGE_VIEW
@@ -645,7 +668,7 @@ public class PdfToolbarCoordinatorUnitTest {
         moreMenuButton.performClick();
 
         View contentView = mSpyPopupWindow.getContentView();
-        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+        ListView listView = contentView.findViewById(R.id.menu_list);
         View propertiesItemView = null;
         for (int i = 0; i < listView.getAdapter().getCount(); i++) {
             View itemView = listView.getAdapter().getView(i, null, listView);

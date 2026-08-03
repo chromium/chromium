@@ -798,8 +798,18 @@ public class PdfCoordinator
             }
         }
 
+        @VisibleForTesting
+        static int getSafePageIndex(int pageIndex, int pageCount) {
+            return pageCount > 0
+                    ? Math.min(Math.max(0, pageIndex), pageCount - 1)
+                    : Math.max(0, pageIndex);
+        }
+
         void scrollToPage(int pageIndex) {
             if (mPdfView != null) {
+                PdfDocument pdfDocument = mPdfView.getPdfDocument();
+                int pageCount = pdfDocument != null ? pdfDocument.getPageCount() : 0;
+                int safePageIndex = getSafePageIndex(pageIndex, pageCount);
                 // 1. Get the current height of the view in pixels.
                 float viewHeightPx = mPdfView.getHeight();
 
@@ -814,7 +824,7 @@ public class PdfCoordinator
 
                 // 4. Use the single-argument scrollToPosition.
                 // The internal logic will center this offset, resulting in a top-aligned page.
-                mPdfView.scrollToPosition(new PdfPoint(pageIndex, 0f, yOffsetPoints));
+                mPdfView.scrollToPosition(new PdfPoint(safePageIndex, 0f, yOffsetPoints));
             }
         }
 
@@ -885,8 +895,11 @@ public class PdfCoordinator
             PdfDocument pdfDocument = pdfView.getPdfDocument();
             assert pdfDocument != null;
 
+            int pageCount = pdfDocument.getPageCount();
+            int safePageIndex = getSafePageIndex(pageIndex, pageCount);
+
             pdfDocument.getPageInfo(
-                    pageIndex,
+                    safePageIndex,
                     new Continuation<PageInfo>() {
                         @Override
                         public CoroutineContext getContext() {
