@@ -25,6 +25,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -299,7 +300,7 @@ class InsecureRequestStorageAccessForBaseBrowserTest
 
   void SetUp() override {
     features_.InitAndEnableFeature(
-        blink::features::kStorageAccessAPIRelatedWebsiteSets);
+        content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
     InProcessBrowserTest::SetUp();
   }
 
@@ -456,7 +457,8 @@ class RequestStorageAccessForEnabledBrowserTest
  public:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
-    return {{blink::features::kStorageAccessAPIRelatedWebsiteSets, {}}};
+    return {
+        {content_settings::features::kStorageAccessAPIRelatedWebsiteSets, {}}};
   }
 };
 
@@ -641,7 +643,8 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
  public:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
-    return {{blink::features::kStorageAccessAPIRelatedWebsiteSets, {}}};
+    return {
+        {content_settings::features::kStorageAccessAPIRelatedWebsiteSets, {}}};
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {

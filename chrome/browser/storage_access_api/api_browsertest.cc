@@ -2530,7 +2530,7 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled =
         StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
     enabled.push_back(
-        {blink::features::kStorageAccessAPIRelatedWebsiteSets, {}});
+        {content_settings::features::kStorageAccessAPIRelatedWebsiteSets, {}});
     return enabled;
   }
 
@@ -2823,7 +2823,7 @@ class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled =
         StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
     enabled.push_back(
-        {blink::features::kStorageAccessAPIRelatedWebsiteSets, {}});
+        {content_settings::features::kStorageAccessAPIRelatedWebsiteSets, {}});
     return enabled;
   }
 

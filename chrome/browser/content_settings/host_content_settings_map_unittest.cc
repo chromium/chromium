@@ -3215,3 +3215,57 @@ TEST_F(HostContentSettingsMapTest, RecordDefaultSensorsSetting) {
     map->ShutdownOnUIThread();
   }
 }
+
+TEST_F(HostContentSettingsMapTest, DeleteStorageAccessRwsGrantsOnStartup) {
+  TestingProfile profile;
+
+  // 1. Enable the feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
+
+  // Create map and inject grant.
+  scoped_refptr<HostContentSettingsMap> map_with_feature_enabled =
+      base::MakeRefCounted<HostContentSettingsMap>(
+          profile.GetPrefs(), /*is_off_the_record=*/false,
+          /*store_last_modified=*/false, /*restore_session=*/false,
+          /*should_record_metrics=*/false);
+
+  GURL requesting_url("https://requester.com");
+  GURL embedding_url("https://embedder.com");
+
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_decided_by_related_website_sets(true);
+
+  map_with_feature_enabled->SetContentSettingDefaultScope(
+      requesting_url, embedding_url, ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_ALLOW, constraints);
+
+  // Verify it is there.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, map_with_feature_enabled->GetContentSetting(
+                                       requesting_url, embedding_url,
+                                       ContentSettingsType::STORAGE_ACCESS));
+
+  // Shutdown map_with_feature_enabled to make sure it is not used anymore.
+  map_with_feature_enabled->ShutdownOnUIThread();
+  map_with_feature_enabled.reset();
+
+  // 2. Disable the feature.
+  feature_list.Reset();
+  feature_list.InitAndDisableFeature(
+      content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
+
+  // Create a new map with the same prefs.
+  scoped_refptr<HostContentSettingsMap> map_after_feature_disabled =
+      base::MakeRefCounted<HostContentSettingsMap>(
+          profile.GetPrefs(), /*is_off_the_record=*/false,
+          /*store_last_modified=*/false, /*restore_session=*/false,
+          /*should_record_metrics=*/false);
+
+  // Verify the grant is gone (deleted on startup).
+  EXPECT_EQ(CONTENT_SETTING_ASK, map_after_feature_disabled->GetContentSetting(
+                                     requesting_url, embedding_url,
+                                     ContentSettingsType::STORAGE_ACCESS));
+
+  map_after_feature_disabled->ShutdownOnUIThread();
+}

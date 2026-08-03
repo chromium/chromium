@@ -29,6 +29,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/permissions/constants.h"
@@ -987,7 +988,7 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
   void SetUp() override {
     StorageAccessGrantPermissionContextTest::SetUp();
     additional_features_.InitAndEnableFeature(
-        blink::features::kStorageAccessAPIRelatedWebsiteSets);
+        content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
 
     // Enable Related Website Sets (formerly First Party Sets).
     profile()->GetPrefs()->SetBoolean(
@@ -1075,7 +1076,7 @@ class
     StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
         kImplicitGrantLimit);
     additional_features_.InitAndDisableFeature(
-        blink::features::kStorageAccessAPIRelatedWebsiteSets);
+        content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
 
     // Enable Related Website Sets (formerly First Party Sets).
     profile()->GetPrefs()->SetBoolean(

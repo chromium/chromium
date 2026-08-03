@@ -13,6 +13,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
@@ -70,7 +71,7 @@ class TopLevelStorageAccessPermissionContextTest
 
   void SetUp() override {
     features_.InitAndEnableFeature(
-        blink::features::kStorageAccessAPIRelatedWebsiteSets);
+        content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
     ChromeRenderViewHostTestHarness::SetUp();
 
     // Ensure we are navigated to some page so that the proper views get setup.
@@ -441,7 +442,7 @@ class TopLevelStorageAccessPermissionContextFeatureDisabledTest
 
   void SetUp() override {
     features_.InitAndDisableFeature(
-        blink::features::kStorageAccessAPIRelatedWebsiteSets);
+        content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GetTopLevelURL());
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());

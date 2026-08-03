@@ -52,5 +52,8 @@ BASE_FEATURE(kLeftHandSideActivityIndicators, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLeftHandSideSensorActivityIndicators,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kStorageAccessAPIRelatedWebsiteSets,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace content_settings

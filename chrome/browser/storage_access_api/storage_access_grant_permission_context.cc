@@ -34,6 +34,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/metrics/dwa/dwa_builders.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/permissions/constants.h"
@@ -61,7 +62,6 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
@@ -436,7 +436,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   }
 
   if (!base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIRelatedWebsiteSets)) {
+          content_settings::features::kStorageAccessAPIRelatedWebsiteSets)) {
     CheckForAutoGrantOrAutoDenial(std::move(request_data), std::move(callback),
                                   net::FirstPartySetMetadata());
     return;

@@ -5209,7 +5209,7 @@
     {
       name: "RequestStorageAccessFor",
       status: "stable",
-      base_feature: "StorageAccessAPIRelatedWebsiteSets",
+      base_feature: "none",
     },
     {
       name: "ResourceTimingInitiator",

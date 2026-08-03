@@ -19,6 +19,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt_decision.h"
@@ -34,7 +35,6 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
@@ -73,7 +73,7 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIRelatedWebsiteSets)) {
+          content_settings::features::kStorageAccessAPIRelatedWebsiteSets)) {
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(content::PermissionResult(
