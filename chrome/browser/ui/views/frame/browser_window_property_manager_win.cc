@@ -94,7 +94,7 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
   std::wstring command_line_string;
   std::wstring pinned_name;
   if ((browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-       browser->is_type_popup()) &&
+       browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP) &&
       shortcut_manager &&
       profile->GetPrefs()->HasPrefPath(prefs::kProfileIconVersion)) {
     // Set relaunch details to use profile.

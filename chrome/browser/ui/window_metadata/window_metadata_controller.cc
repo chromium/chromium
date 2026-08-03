@@ -112,7 +112,7 @@ std::u16string WindowMetadataController::GetWindowTitleForTab(
 
   if (title.empty() &&
       (browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-       browser_->is_type_popup())) {
+       browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP)) {
     title = CoreTabHelper::GetDefaultTitle();
   }
 
@@ -172,7 +172,7 @@ std::u16string WindowMetadataController::GetWindowTitleForMaxWidth(
   // If there is no title, leave it empty for apps.
   if (title.empty() &&
       (browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-       browser_->is_type_popup())) {
+       browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP)) {
     title = CoreTabHelper::GetDefaultTitle();
   }
 
@@ -224,7 +224,7 @@ std::u16string WindowMetadataController::GetWindowTitleFromWebContents(
   // If there is no title, leave it empty for apps.
   if (title.empty() &&
       (browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-       browser_->is_type_popup())) {
+       browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP)) {
     title = CoreTabHelper::GetDefaultTitle();
   }
 
@@ -251,7 +251,7 @@ std::u16string WindowMetadataController::GetWindowTitleFromWebContents(
   // Include the app name in window titles for tabbed browser windows when
   // requested with |include_app_name|.
   return ((browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-           browser_->is_type_popup()) &&
+           browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP) &&
           include_app_name)
              ? l10n_util::GetStringFUTF16(IDS_BROWSER_WINDOW_TITLE_FORMAT,
                                           title)

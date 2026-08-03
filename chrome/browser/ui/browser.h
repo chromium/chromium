@@ -370,8 +370,6 @@ class Browser : public TabStripModelObserver,
       const TabStripSelectionChange& selection) override;
   void TabStripEmpty() override;
 
-  bool is_type_popup() const { return type_ == TYPE_POPUP; }
-
   // Gets the browser for opening chrome:// pages. This will return the opener
   // browser if the current browser is in picture-in-picture mode, otherwise
   // returns the current browser.

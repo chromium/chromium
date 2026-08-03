@@ -3640,7 +3640,7 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
 
   // Add the name of the browser, unless this is an app window.
   if (browser()->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-      browser()->is_type_popup()) {
+      browser()->GetType() == BrowserWindowInterface::Type::TYPE_POPUP) {
     int message_id;
     switch (channel) {
       case version_info::Channel::CANARY:
