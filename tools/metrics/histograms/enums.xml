@@ -14954,6 +14954,7 @@ from previous Chrome versions.
   <int value="130939792" label="FilesJsModules:disabled"/>
   <int value="131042807" label="IsolatedWebAppManagedAllowlist:enabled"/>
   <int value="131188289" label="GlicActorUiMagicCursor:enabled"/>
+  <int value="131533451" label="EdgeToEdgeAutomotive:disabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>
   <int value="132560299"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:disabled"/>
@@ -18772,6 +18773,7 @@ from previous Chrome versions.
   <int value="1333354155" label="FluentScrollbar:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
   <int value="1334258341" label="EverywhereOmnibox:disabled"/>
+  <int value="1334370134" label="EdgeToEdgeAutomotive:enabled"/>
   <int value="1334953166" label="AllowNonFamilyLinkUrlFilterMode:enabled"/>
   <int value="1335052342" label="AccessibilityDeprecateTypeAnnounce:disabled"/>
   <int value="1335072054"
