@@ -13,6 +13,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
@@ -20,5 +21,19 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/spellcheck/SpellCheckerSessionBridge.java",
     "java/src/org/chromium/components/spellcheck/SpellingMarker.java",
+  ]
+}
+
+robolectric_library("components_spellcheck_junit_tests") {
+  sources = [ "javatests/src/org/chromium/components/spellcheck/SpellCheckerSessionBridgeTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

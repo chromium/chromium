@@ -1507,6 +1507,7 @@ if (is_android) {
       "//components/saved_tab_groups:junit",
       "//components/sensitive_content:junit",
       "//components/signin/public/android:junit",
+      "//components/spellcheck/browser/android:components_spellcheck_junit_tests",
       "//components/stylus_handwriting/android:stylus_handwriting_junit_tests",
       "//components/subresource_filter/android:junit",
       "//components/ukm/android:ukm_junit_tests",
