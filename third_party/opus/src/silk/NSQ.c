@@ -348,7 +348,7 @@ void silk_noise_shape_quantizer(
         /* Update states */
         psLPC_Q14++;
         *psLPC_Q14 = xq_Q14;
-        NSQ->sDiff_shp_Q14 = silk_SUB_LSHIFT32( xq_Q14, x_sc_Q10[ i ], 4 );
+        NSQ->sDiff_shp_Q14 = silk_SUB32_ovflw( xq_Q14, silk_LSHIFT32( x_sc_Q10[ i ], 4 ) );
         sLF_AR_shp_Q14 = silk_SUB32_ovflw( NSQ->sDiff_shp_Q14, silk_LSHIFT32( n_AR_Q12, 2 ) );
         NSQ->sLF_AR_shp_Q14 = sLF_AR_shp_Q14;
 
