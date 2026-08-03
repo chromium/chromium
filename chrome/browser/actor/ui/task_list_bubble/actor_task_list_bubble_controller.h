@@ -20,25 +20,25 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget_observer.h"
+
+class ActorTaskListBubble;
 
 // Controller that handles the visibility and display of the
 // ActorTaskListBubble.
-class ActorTaskListBubbleController : public views::WidgetObserver {
+class ActorTaskListBubbleController {
  public:
   explicit ActorTaskListBubbleController(
       BrowserWindowInterface* browser_window);
-  ~ActorTaskListBubbleController() override;
+  ~ActorTaskListBubbleController();
 
   DECLARE_USER_DATA(ActorTaskListBubbleController);
   static ActorTaskListBubbleController* From(BrowserWindowInterface* window);
 
   void ShowBubble(views::View* anchor_view, bool is_start_notification = false);
+  void CloseBubble();
   void OnStateUpdate(bool is_start_notification);
-
-  void OnWidgetDestroyed(views::Widget* widget) override;
-
-  raw_ptr<views::Widget> GetBubbleWidget() { return bubble_widget_; }
+  void OnBubbleDestroyed();
+  bool IsBubbleShowing() const;
 
   // Registers a `callback` to be run when the ActorTaskListBubble is shown.
   base::CallbackListSubscription RegisterBubbleShownCallback(
@@ -53,15 +53,13 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
   void OnTaskRowClicked(actor::TaskId task_id);
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
-  raw_ptr<views::Widget> bubble_widget_ = nullptr;
+  // TODO(crbug.com/518584352): Remove; views should own this.
+  std::unique_ptr<ActorTaskListBubble> bubble_;
   base::RepeatingClosureList on_bubble_shown_callback_list;
   base::RepeatingClosureList on_bubble_destroyed_callback_list;
 
   std::vector<base::CallbackListSubscription>
       bubble_state_change_callback_subscription_;
-
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
 
   ui::ScopedUnownedUserData<ActorTaskListBubbleController>
       scoped_unowned_user_data_;

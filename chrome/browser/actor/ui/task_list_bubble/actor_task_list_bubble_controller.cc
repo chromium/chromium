@@ -43,6 +43,10 @@ ActorTaskListBubbleController::ActorTaskListBubbleController(
       manager->RegisterTaskListBubbleStateChange(
           base::BindRepeating(&ActorTaskListBubbleController::OnStateUpdate,
                               base::Unretained(this))));
+  bubble_ = std::make_unique<ActorTaskListBubble>(
+      browser_->GetProfile(), *this, manager->actor_task_list_bubble_rows(),
+      base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
+                          base::Unretained(this)));
 }
 
 ActorTaskListBubbleController::~ActorTaskListBubbleController() = default;
@@ -64,6 +68,14 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view,
   } else {
     ShowBubbleImpl(anchor_view, is_start_notification);
   }
+}
+
+void ActorTaskListBubbleController::CloseBubble() {
+  bubble_->Close();
+}
+
+bool ActorTaskListBubbleController::IsBubbleShowing() const {
+  return bubble_->IsShowing();
 }
 
 void ActorTaskListBubbleController::ShowBubbleImpl(views::View* anchor_view,
@@ -91,29 +103,15 @@ void ActorTaskListBubbleController::ShowBubbleImpl(views::View* anchor_view,
     return;
   }
   // Close any existing bubble widget to avoid stacking multiple bubble windows.
-  if (bubble_widget_) {
-    bubble_widget_->Close();
-    bubble_widget_ = nullptr;
-    widget_observation_.Reset();
+  if (bubble_) {
+    bubble_->Close();
   }
-  bubble_widget_ = ActorTaskListBubble::ShowBubble(
-      browser_->GetProfile(), anchor_view, task_id_to_state,
-      base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
-                          weak_ptr_factory_.GetWeakPtr()));
+  bubble_->Show(anchor_view);
 
   // All rows may be skipped, in which case the bubble will not be shown.
-  if (!bubble_widget_) {
-    return;
+  if (bubble_->IsShowing()) {
+    on_bubble_shown_callback_list.Notify();
   }
-
-  if (widget_observation_.IsObserving()) {
-    widget_observation_.Reset();
-  }
-  widget_observation_.Observe(bubble_widget_);
-
-  actor::ui::RecordTaskListBubbleRows(task_id_to_state.size());
-
-  on_bubble_shown_callback_list.Notify();
 }
 
 void ActorTaskListBubbleController::OnStateUpdate(bool is_start_notification) {
@@ -141,10 +139,7 @@ void ActorTaskListBubbleController::OnStateUpdate(bool is_start_notification) {
   }
 }
 
-void ActorTaskListBubbleController::OnWidgetDestroyed(views::Widget* widget) {
-  bubble_widget_ = nullptr;
-  widget_observation_.Reset();
-
+void ActorTaskListBubbleController::OnBubbleDestroyed() {
   on_bubble_destroyed_callback_list.Notify();
 }
 
@@ -188,9 +183,7 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
   auto* icon_manager =
       glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
   icon_manager->ProcessRowInTaskListBubble(task_id);
-  if (bubble_widget_) {
-    bubble_widget_->Close();
-  }
+  bubble_->Close();
   actor::ui::LogTaskListBubbleRowClicked();
 }
 

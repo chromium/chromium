@@ -240,7 +240,7 @@ TEST_F(ActorTaskListBubbleControllerTest,
       anchor_widget_->GetContentsView(), /*is_start_notification=*/false);
 
   // Bubble widget should not be created.
-  EXPECT_FALSE(actor_task_list_bubble_controller_->GetBubbleWidget());
+  EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
 }
 
 TEST_F(ActorTaskListBubbleControllerTest,
@@ -267,7 +267,7 @@ TEST_F(ActorTaskListBubbleControllerTest,
       anchor_widget_->GetContentsView(), /*is_start_notification=*/true);
 
   // Bubble widget should not be created.
-  EXPECT_FALSE(actor_task_list_bubble_controller_->GetBubbleWidget());
+  EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
 }
 
 TEST_F(ActorTaskListBubbleControllerTest,
@@ -293,9 +293,7 @@ TEST_F(ActorTaskListBubbleControllerTest,
       anchor_widget_->GetContentsView(), /*is_start_notification=*/true);
 
   // Bubble widget should be created and visible.
-  EXPECT_TRUE(actor_task_list_bubble_controller_->GetBubbleWidget());
-  EXPECT_TRUE(
-      actor_task_list_bubble_controller_->GetBubbleWidget()->IsVisible());
+  EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
 }
 
 TEST_F(ActorTaskListBubbleControllerTest, ShowBubble_DelayedWhenIconHidden) {
@@ -316,15 +314,13 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubble_DelayedWhenIconHidden) {
       anchor_view, /*is_start_notification=*/true);
 
   // Bubble widget should NOT be created immediately.
-  EXPECT_FALSE(actor_task_list_bubble_controller_->GetBubbleWidget());
+  EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
 
   // Fast forward by 250ms.
   task_environment()->FastForwardBy(base::Milliseconds(250));
 
   // Bubble widget should now be created and visible.
-  EXPECT_TRUE(actor_task_list_bubble_controller_->GetBubbleWidget());
-  EXPECT_TRUE(
-      actor_task_list_bubble_controller_->GetBubbleWidget()->IsVisible());
+  EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
 }
 
 TEST_F(ActorTaskListBubbleControllerTest,
@@ -346,7 +342,5 @@ TEST_F(ActorTaskListBubbleControllerTest,
       anchor_view, /*is_start_notification=*/true);
 
   // Bubble widget should be created immediately.
-  EXPECT_TRUE(actor_task_list_bubble_controller_->GetBubbleWidget());
-  EXPECT_TRUE(
-      actor_task_list_bubble_controller_->GetBubbleWidget()->IsVisible());
+  EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
 }

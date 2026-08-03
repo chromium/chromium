@@ -14,6 +14,8 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
@@ -53,6 +56,16 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
           return std::make_unique<actor::ActorKeyedServiceFake>(
               Profile::FromBrowserContext(context));
         }));
+    builder.AddTestingFactory(
+        glic::GlicActorTaskIconManagerFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          auto* actor_service =
+              actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+          return std::make_unique<glic::GlicActorTaskIconManager>(
+              profile, actor_service);
+        }));
     profile_ = builder.Build();
 
     actor_service_ = static_cast<actor::ActorKeyedServiceFake*>(
@@ -62,9 +75,22 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
+
+    browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
+    ON_CALL(*browser_window_interface_, GetUnownedUserDataHost)
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
+    ON_CALL(*browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile_.get()));
+    ON_CALL(*browser_window_interface_, IsActive())
+        .WillByDefault(testing::Return(true));
+    controller_ = std::make_unique<ActorTaskListBubbleController>(
+        browser_window_interface_.get());
   }
 
   void TearDown() override {
+    bubble_.reset();
+    controller_.reset();
+    browser_window_interface_.reset();
     anchor_widget_.reset();
     actor_service_ = nullptr;
     profile_.reset();
@@ -94,10 +120,12 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
 
   views::Widget* CreateBubbleView(
       absl::flat_hash_map<actor::TaskId, bool> task_list) {
-    return ActorTaskListBubble::ShowBubble(
-        profile_.get(), anchor_widget_->GetContentsView(), std::move(task_list),
+    bubble_ = std::make_unique<ActorTaskListBubble>(
+        profile_.get(), *controller_, task_list,
         base::BindRepeating(&ActorTaskListBubbleTest::OnTaskClicked,
                             base::Unretained(this)));
+    bubble_->Show(anchor_widget_->GetContentsView());
+    return bubble_->widget();
   }
 
   views::View* GetContentViewInActorTaskListBubble(
@@ -119,6 +147,10 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   MockTabInterface mock_tab_;
   views::UniqueWidgetPtr anchor_widget_;
+  std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
+  ui::UnownedUserDataHost user_data_host_;
+  std::unique_ptr<ActorTaskListBubbleController> controller_;
+  std::unique_ptr<ActorTaskListBubble> bubble_;
   base::test::ScopedFeatureList feature_list_;
 };
 

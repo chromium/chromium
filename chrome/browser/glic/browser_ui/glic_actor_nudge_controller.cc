@@ -208,11 +208,7 @@ void GlicActorNudgeController::CloseBubble() {
 #if !BUILDFLAG(IS_ANDROID)
   ActorTaskListBubbleController* bubble_controller =
       ActorTaskListBubbleController::From(browser_);
-  if (bubble_controller->GetBubbleWidget()) {
-    bubble_controller->GetBubbleWidget()->Close();
-  }
-#else
-  NOTIMPLEMENTED_LOG_ONCE();
+  bubble_controller->CloseBubble();
 #endif
 }
 
