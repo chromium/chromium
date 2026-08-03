@@ -330,7 +330,7 @@ class CupMldsa44Test : public testing::Test {
     hasher.Update(req_hash);
     hasher.Update(resp_hash);
     hasher.Update(base::as_byte_span(cup2key_params));
-    std::array<uint8_t, crypto::hash::kSha256Size> inner_hash;
+    std::array<uint8_t, crypto::hash::kSha256Size> inner_hash = {};
     hasher.Finish(inner_hash);
 
     auto signature_bytes = crypto::sign::Sign(

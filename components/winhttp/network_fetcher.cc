@@ -315,7 +315,7 @@ ScopedHInternet NetworkFetcher::OpenRequest() {
     flags |= WINHTTP_FLAG_SECURE;
   }
   return ScopedHInternet(::WinHttpOpenRequest(
-      connect_handle_.get(), verb_.data(),
+      connect_handle_.get(), verb_.c_str(),
       base::SysUTF8ToWide(path_for_request_).c_str(), nullptr,
       WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, flags));
 }
@@ -607,7 +607,7 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
 
   std::string msg;
   if (!status_string.empty()) {
-    absl::StrAppendFormat(&msg, "status=%s", status_string.data());
+    absl::StrAppendFormat(&msg, "status=%s", status_string);
   } else {
     absl::StrAppendFormat(&msg, "status=%#lx", status);
   }

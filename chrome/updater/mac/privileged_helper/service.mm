@@ -170,13 +170,12 @@ int InstallUpdater(const base::FilePath& browser_path) {
     return kFailedToReadBrowserPlist;
   }
 
-  std::string user_temp_dir(PATH_MAX, std::string::value_type());
-  size_t len = confstr(_CS_DARWIN_USER_TEMP_DIR, user_temp_dir.data(),
-                       user_temp_dir.size());
-  if (len > user_temp_dir.size() || len == 0) {
+  char user_temp_dir[PATH_MAX] = {};
+  const size_t len = confstr(_CS_DARWIN_USER_TEMP_DIR, user_temp_dir,
+                             std::size(user_temp_dir));
+  if (len > std::size(user_temp_dir) || len == 0) {
     return kFailedToCreateTempDir;
   }
-  user_temp_dir.resize(len);
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDirUnderPath(base::FilePath(user_temp_dir))) {

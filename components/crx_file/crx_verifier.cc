@@ -76,7 +76,7 @@ std::optional<size_t> ReadAndHashBuffer(base::span<uint8_t> buffer,
 // returns the read uint32.
 uint32_t ReadAndHashLittleEndianUInt32(base::File* file,
                                        crypto::hash::Hasher& hash) {
-  std::array<uint8_t, 4> buffer;
+  std::array<uint8_t, 4> buffer = {};
   if (ReadAndHashBuffer(buffer, file, hash).value_or(4) != buffer.size()) {
     return UINT32_MAX;
   }
@@ -87,7 +87,7 @@ uint32_t ReadAndHashLittleEndianUInt32(base::File* file,
 bool ReadHashAndVerifyArchive(base::File* file,
                               crypto::hash::Hasher& hash,
                               const VerifierCollection& verifiers) {
-  std::array<uint8_t, 1 << 12> buffer;
+  std::array<uint8_t, 1 << 12> buffer = {};
   std::optional<size_t> len;
   while ((len = ReadAndHashBuffer(buffer, file, hash)).value_or(0) > 0) {
     auto to_verify = base::span<const uint8_t>(buffer).first(*len);
@@ -174,7 +174,7 @@ VerifierResult VerifyCrx3(
   // Create a set of all required key hashes.
   std::set<KeyHash> required_key_set;
   for (const auto& key_hash : required_key_hashes) {
-    KeyHash hash_copy;
+    KeyHash hash_copy = {};
     base::span<uint8_t>(hash_copy).copy_from(key_hash);
     required_key_set.insert(hash_copy);
   }
@@ -275,7 +275,7 @@ VerifierResult Verify(
 
   // Magic number.
   bool diff = false;
-  std::array<uint8_t, std::size(kCrxFileHeaderMagic)> buffer;
+  std::array<uint8_t, std::size(kCrxFileHeaderMagic)> buffer = {};
   if (!file.ReadAtCurrentPosAndCheck(buffer)) {
     return VerifierResult::ERROR_HEADER_INVALID;
   }
@@ -305,7 +305,7 @@ VerifierResult Verify(
   }
 
   // Finalize file hash.
-  std::array<uint8_t, crypto::hash::kSha256Size> final_hash;
+  std::array<uint8_t, crypto::hash::kSha256Size> final_hash = {};
   file_hash.Finish(final_hash);
   if (!required_file_hash.empty()) {
     if (required_file_hash.size() != crypto::hash::kSha256Size) {

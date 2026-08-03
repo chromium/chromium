@@ -54,7 +54,7 @@ std::optional<std::string> HashFile(const base::FilePath& path) {
     SHA256_Update(&ctx, buffer.data(), *bytes_read);
   }
 
-  std::array<uint8_t, SHA256_DIGEST_LENGTH> hash;
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> hash = {};
   SHA256_Final(hash.data(), &ctx);
   return base::HexEncode(hash);
 }

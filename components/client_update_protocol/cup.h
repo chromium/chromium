@@ -80,7 +80,7 @@ class Cup {
 
   // The SHA-256 hash of the XML request.  This is modified on each call to
   // PrepareRequestParameters(), and checked by ValidateResponse().
-  std::array<uint8_t, crypto::hash::kSha256Size> request_hash_;
+  std::array<uint8_t, crypto::hash::kSha256Size> request_hash_ = {};
 
   // The query string containing key version and nonce in UTF-8 form.  This is
   // modified on each call to PrepareRequestParameters(), and checked by

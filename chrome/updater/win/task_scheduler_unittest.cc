@@ -476,19 +476,14 @@ TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
 
   EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, info));
 
-  const std::wstring expected_user_id = [&is_system]() -> std::wstring {
-    if (is_system) {
-      return L"SYSTEM";
-    }
-
-    base::win::ScopedBstr user_name_bstr;
-    ULONG user_name_size = 256;
-    EXPECT_TRUE(::GetUserNameExW(
-        NameSamCompatible,
-        user_name_bstr.AllocateBytes(user_name_size * sizeof(OLECHAR)),
-        &user_name_size));
-    return user_name_bstr.Get();
-  }();
+  std::wstring expected_user_id = L"SYSTEM";
+  if (!is_system) {
+    wchar_t user_name[256] = {};
+    ULONG user_name_size = std::size(user_name);
+    ASSERT_TRUE(
+        ::GetUserNameExW(NameSamCompatible, user_name, &user_name_size));
+    expected_user_id = std::wstring(user_name, user_name_size);
+  }
 
   EXPECT_TRUE(base::EndsWith(info.user_id, expected_user_id,
                              base::CompareCase::INSENSITIVE_ASCII) ||

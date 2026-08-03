@@ -1760,10 +1760,9 @@ bool VersionProcessFilter::Includes(const base::ProcessEntry& entry) const {
     return false;
   }
 
-  DWORD path_len = MAX_PATH;
-  std::wstring path(path_len, '\0');
-  if (!::QueryFullProcessImageName(process.Handle(), 0, path.data(),
-                                   &path_len)) {
+  wchar_t path[MAX_PATH] = {};
+  DWORD path_len = std::size(path);
+  if (!::QueryFullProcessImageName(process.Handle(), 0, path, &path_len)) {
     return false;
   }
 

@@ -291,10 +291,10 @@ TEST_F(ProgressWndTest, OnWaitingToDownload) {
               ProgressWnd::States::STATE_WAITING_TO_DOWNLOAD);
     EXPECT_FALSE(
         ::IsWindowEnabled(::GetDlgItem(progress_wnd->hwnd(), IDC_CLOSE)));
-    std::wstring state_text(kMaxStringLen, 0);
+    wchar_t state_text[kMaxStringLen] = {};
     ::GetDlgItemTextW(progress_wnd->hwnd(), IDC_INSTALLER_STATE_TEXT,
-                      state_text.data(), kMaxStringLen);
-    EXPECT_STREQ(state_text.c_str(), L"");
+                      state_text, std::size(state_text));
+    EXPECT_STREQ(state_text, L"");
     progress_wnd->DestroyWindow();
   }
 }
@@ -324,10 +324,10 @@ TEST_F(ProgressWndTest, OnDownloading) {
     EXPECT_EQ(progress_wnd->cur_state_, ProgressWnd::States::STATE_DOWNLOADING);
     EXPECT_FALSE(
         ::IsWindowEnabled(::GetDlgItem(progress_wnd->hwnd(), IDC_CLOSE)));
-    std::wstring state_text(kMaxStringLen, 0);
+    wchar_t state_text[kMaxStringLen] = {};
     ::GetDlgItemTextW(progress_wnd->hwnd(), IDC_INSTALLER_STATE_TEXT,
-                      state_text.data(), kMaxStringLen);
-    EXPECT_STREQ(state_text.c_str(),
+                      state_text, std::size(state_text));
+    EXPECT_STREQ(state_text,
                  GetLocalizedString(test_case.expected_string_id).c_str());
   }
 
@@ -367,10 +367,10 @@ TEST_F(ProgressWndTest, OnComplete) {
     observer_completion_info.completion_text = u"text";
     observer_completion_info.apps_info.push_back(app_completion_info);
     progress_wnd->OnComplete(observer_completion_info);
-    std::wstring completion_text(kMaxStringLen, 0);
-    ::GetDlgItemTextW(progress_wnd->hwnd(), IDC_COMPLETE_TEXT,
-                      completion_text.data(), kMaxStringLen);
-    EXPECT_STREQ(completion_text.c_str(), L"text");
+    wchar_t completion_text[kMaxStringLen] = {};
+    ::GetDlgItemTextW(progress_wnd->hwnd(), IDC_COMPLETE_TEXT, completion_text,
+                      std::size(completion_text));
+    EXPECT_STREQ(completion_text, L"text");
     EXPECT_TRUE(
         ::IsWindowEnabled(::GetDlgItem(progress_wnd->hwnd(), IDC_CLOSE)));
     progress_wnd->DestroyWindow();

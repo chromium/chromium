@@ -32,7 +32,7 @@ constexpr size_t kFileBufferSize = 1 << 12;
 CreatorResult ReadAndSignArchive(base::File* file,
                                  crypto::sign::Signer& signer,
                                  std::vector<uint8_t>* signature) {
-  std::array<uint8_t, kFileBufferSize> buffer;
+  std::array<uint8_t, kFileBufferSize> buffer = {};
   std::optional<size_t> read;
   while ((read = file->ReadAtCurrentPos(buffer)).value_or(0) > 0) {
     signer.Update(base::span(buffer).first(*read));
@@ -45,7 +45,7 @@ CreatorResult ReadAndSignArchive(base::File* file,
 }
 
 bool WriteArchive(base::File* out, base::File* in) {
-  std::array<uint8_t, kFileBufferSize> buffer;
+  std::array<uint8_t, kFileBufferSize> buffer = {};
   std::optional<size_t> read;
   in->Seek(base::File::Whence::FROM_BEGIN, 0);
   while ((read = in->ReadAtCurrentPos(buffer)).value_or(0) > 0) {

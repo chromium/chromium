@@ -195,7 +195,7 @@ std::string Cup::PrepareRequestParameters(std::string_view request_body) {
   // Generate a random nonce to use for freshness, build the cup2key query
   // string, and compute the SHA-256 hash of the request body. Set these
   // two pieces of data aside to use during ValidateResponse().
-  std::array<uint8_t, 32> nonce;
+  std::array<uint8_t, 32> nonce = {};
   crypto::RandBytes(nonce);
 
   // The nonce is an opaque string to the server, so the exact encoding does not
@@ -245,7 +245,7 @@ bool Cup::ValidateResponse(std::string_view response_body,
   hasher.Update(request_hash_);
   hasher.Update(crypto::hash::Sha256(base::as_byte_span(response_body)));
   hasher.Update(base::as_byte_span(request_query_cup2key_));
-  std::array<uint8_t, crypto::hash::kSha256Size> inner_hash;
+  std::array<uint8_t, crypto::hash::kSha256Size> inner_hash = {};
   hasher.Finish(inner_hash);
 
   // If the verification fails, that implies one of two outcomes:
