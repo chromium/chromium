@@ -989,18 +989,15 @@ TEST_P(AILanguageModelTestWithLanguageParams, PromptWithEnabledLanguages) {
   options->expected_inputs->push_back(std::move(expected_input));
 
   TestCreateLanguageModelClient language_model_client;
+  mojo::test::BadMessageObserver observer;
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options),
       /*monitor=*/mojo::NullRemote());
-
-  auto result = language_model_client.result().Take();
   if (GetParam().expect_error) {
-    EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error().error,
-              blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
-  } else {
-    EXPECT_OK(result);
+    EXPECT_EQ(observer.WaitForBadMessage(), "Unsupported language options");
+    return;
   }
+  EXPECT_OK(language_model_client.result().Take());
 }
 
 INSTANTIATE_TEST_SUITE_P(

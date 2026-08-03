@@ -198,9 +198,7 @@ void EchoAIManagerImpl::CreateLanguageModel(
   }
   if (options && (!AreExpectedLanguagesSupported(options->expected_inputs) ||
                   !AreExpectedLanguagesSupported(options->expected_outputs))) {
-    client_remote->OnError(
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage,
-        /*quota_error_info=*/nullptr);
+    receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
   base::flat_set<blink::mojom::AILanguageModelPromptType> enabled_input_types;
@@ -324,9 +322,7 @@ void EchoAIManagerImpl::CreateProofreader(
   if (options &&
       !SupportedLanguages(options->expected_input_languages, {},
                           options->correction_explanation_language)) {
-    client_remote->OnError(
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage,
-        /*quota_error_info=*/nullptr);
+    receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
 
@@ -410,9 +406,7 @@ void EchoAIManagerImpl::CreateWritingAssistanceClient(
   if (options && !SupportedLanguages(options->expected_input_languages,
                                      options->expected_context_languages,
                                      options->output_language)) {
-    client_remote->OnError(
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage,
-        /*quota_error_info=*/nullptr);
+    receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
 

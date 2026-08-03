@@ -837,11 +837,7 @@ void AIManager::CreateLanguageModel(
           options, "LanguageModel",
           AILanguageModel::GetEnabledLanguageBaseCodes(),
           AILanguageModel::GetDefaultSupportedLanguageBaseCodes())) {
-    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-        client_remote(std::move(client));
-    on_device_ai::SendClientRemoteError(
-        client_remote,
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
 
@@ -1089,11 +1085,7 @@ void AIManager::CreateSummarizer(
   if (!CheckAndFixLanguages(
           options, "Summarizer", AISummarizer::GetEnabledLanguageBaseCodes(),
           AISummarizer::GetDefaultSupportedLanguageBaseCodes())) {
-    mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
-        std::move(client));
-    on_device_ai::SendClientRemoteError(
-        client_remote,
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
 
@@ -1236,11 +1228,7 @@ void AIManager::CreateProofreader(
   if (!CheckAndFixLanguages(
           options, "Proofreader", AIProofreader::GetEnabledLanguageBaseCodes(),
           AIProofreader::GetDefaultSupportedLanguageBaseCodes())) {
-    mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient> client_remote(
-        std::move(client));
-    on_device_ai::SendClientRemoteError(
-        client_remote,
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
 
@@ -1386,11 +1374,7 @@ void AIManager::CreateWriter(
   if (!CheckAndFixLanguages(options, "Writer",
                             AIWriter::GetEnabledLanguageBaseCodes(),
                             AIWriter::GetDefaultSupportedLanguageBaseCodes())) {
-    mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
-        std::move(client));
-    on_device_ai::SendClientRemoteError(
-        client_remote,
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
 
@@ -1497,11 +1481,7 @@ void AIManager::CreateRewriter(
   if (!CheckAndFixLanguages(
           options, "Rewriter", AIRewriter::GetEnabledLanguageBaseCodes(),
           AIRewriter::GetDefaultSupportedLanguageBaseCodes())) {
-    mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
-        std::move(client));
-    on_device_ai::SendClientRemoteError(
-        client_remote,
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
 
