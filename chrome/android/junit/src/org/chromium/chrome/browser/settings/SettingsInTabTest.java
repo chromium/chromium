@@ -7,10 +7,15 @@ package org.chromium.chrome.browser.settings;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -45,6 +50,16 @@ public class SettingsInTabTest {
     @Config(qualifiers = "sw320dp")
     public void testIsEnabled_FeatureEnabledOnDesktopNarrowWindow_ReturnsTrue() {
         DeviceInfo.setIsDesktopForTesting(true);
+        assertTrue(SettingsInTab.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testIsEnabled_WithResumedActivity_ReturnsTrue() {
+        Activity activity =
+                Robolectric.buildActivity(Activity.class).create().start().resume().get();
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
         assertTrue(SettingsInTab.isEnabled());
     }
 }
