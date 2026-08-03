@@ -275,6 +275,11 @@ IconLabelBubbleView::IconLabelBubbleAnimationLayoutStrategy::
 IconLabelBubbleView::IconLabelBubbleAnimationLayoutStrategy::
     ~IconLabelBubbleAnimationLayoutStrategy() = default;
 
+bool IconLabelBubbleView::IconLabelBubbleAnimationLayoutStrategy::
+    ShouldCollapse() const {
+  return false;
+}
+
 views::ImageView* IconLabelBubbleView::
     IconLabelBubbleAnimationLayoutStrategy::GetTrailingImageView() {
   return nullptr;
@@ -483,6 +488,11 @@ gfx::Size IconLabelBubbleView::GetMinimumSize() const {
   return GetSizeForLabelWidth(0);
 }
 
+void IconLabelBubbleView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  LabelButton::OnBoundsChanged(previous_bounds);
+  UpdateAnimationProgress();
+}
+
 bool IconLabelBubbleView::OnMousePressed(const ui::MouseEvent& event) {
   suppress_button_release_ = IsBubbleShowing();
   return LabelButton::OnMousePressed(event);
@@ -685,6 +695,9 @@ void IconLabelBubbleView::SetUpForInOutAnimation(base::TimeDelta duration) {
 
 void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
   CHECK(animation_layout_strategy_);
+  if (animation_layout_strategy_->ShouldCollapse()) {
+    return;
+  }
   const bool has_custom_duration =
       animation_layout_strategy_->GetAnimationDuration(/*show=*/true).has_value();
 

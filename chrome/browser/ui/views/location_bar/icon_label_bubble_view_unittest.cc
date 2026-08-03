@@ -64,6 +64,7 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   using IconLabelBubbleView::RemoveLayerFromRegions;
   using IconLabelBubbleView::ResetSlideAnimation;
   using IconLabelBubbleView::UpdateAnimationProgress;
+  using IconLabelBubbleView::UpdateBackground;
 
   enum State {
     GROWING,
@@ -982,4 +983,81 @@ TEST_F(IconLabelBubbleViewTest, LayerRecreationOnInkDropRegionsChange) {
   // Verify layer is preserved and opacity is synced back.
   EXPECT_NE(image_container->layer(), nullptr);
   EXPECT_FLOAT_EQ(image_container->layer()->opacity(), 0.0f);
+}
+
+TEST_F(IconLabelBubbleViewTest, SlideAndCrossfadeCollapsedLayout) {
+  constexpr int kExpandedWidth = 200;
+  constexpr int kLargerThanMinimumWidth = 35;
+  constexpr int kSmallerThanMinimumWidth = 28;
+  constexpr int kHeight = 24;
+  constexpr int kTestImageSize = 16;
+
+  view()->SetBounds(0, 0, kExpandedWidth, kHeight);
+  view()->SetCrossfadeImage(ui::ImageModel::FromImage(
+      gfx::test::CreateImage(kTestImageSize, kTestImageSize)));
+
+  // Set to fully expanded.
+  view()->ResetSlideAnimation(true);
+  view()->UpdateAnimationProgress();
+
+  views::View* image_container = view()->image_container_view();
+  ASSERT_NE(image_container, nullptr);
+  ASSERT_NE(image_container->layer(), nullptr);
+  EXPECT_FLOAT_EQ(image_container->layer()->opacity(), 0.0f);
+
+  // Set background visibility to kWithLabel to verify background painting.
+  view()->SetBackgroundVisibility(
+      IconLabelBubbleView::BackgroundVisibility::kWithLabel);
+  view()->UpdateBackground();
+
+  // Resize view bounds directly to constrained collapsed width.
+  view()->SetBounds(0, 0, kSmallerThanMinimumWidth, kHeight);
+
+  // Opacity should automatically update to 1.0f on bounds change.
+  EXPECT_FLOAT_EQ(image_container->layer()->opacity(), 1.0f);
+
+  // Verify that the background is still painted in the constrained collapsed
+  // state.
+  EXPECT_NE(nullptr, view()->GetBackground());
+
+  // Verify that the layout stops expanding at its preferred minimum width
+  // (31px) when there is ample room (e.g. 35px available).
+  // dimensions.leading_expanded (6) + icon_size (15) +
+  // dimensions.trailing_expanded (10) = 31.
+  views::ProposedLayout layout = view()->CalculateProposedLayout(
+      views::SizeBounds(kLargerThanMinimumWidth, kHeight));
+  EXPECT_EQ(layout.host_size.width(), 31);
+
+  // Verify that the layout caps down and centers the icon when squeezed below
+  // its preferred minimum width (e.g. 28px available).
+  int icon_size = view()->image_container_view()->GetPreferredSize().width();
+  views::ProposedLayout layout_constrained = view()->CalculateProposedLayout(
+      views::SizeBounds(kSmallerThanMinimumWidth, kHeight));
+  EXPECT_EQ(layout_constrained.host_size.width(), kSmallerThanMinimumWidth);
+  const views::ChildLayout* image_layout =
+      layout_constrained.GetLayoutFor(view()->image_container_view());
+  ASSERT_NE(image_layout, nullptr);
+  // Assert that the leading icon is centered symmetrically inside the
+  // constrained 28px space.
+  EXPECT_EQ(image_layout->bounds.x(),
+            (kSmallerThanMinimumWidth - icon_size) / 2);
+}
+
+TEST_F(IconLabelBubbleViewTest,
+       SlideAndCrossfadeShouldCollapsePreventsAnimation) {
+  view()->SetBounds(0, 0, 200, 24);
+  view()->SetCrossfadeImage(
+      ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16)));
+
+  // Set bounds under constraint so the strategy evaluates ShouldCollapse to
+  // true.
+  view()->SetBounds(0, 0, 35, 24);
+
+  // Trigger AnimateIn().
+  view()->AnimateIn(std::nullopt);
+
+  // Since it should collapse, the animation should not start and
+  // ShouldShowLabel should stay false.
+  EXPECT_FALSE(view()->is_animating_label());
+  EXPECT_FALSE(view()->ShouldShowLabel());
 }

@@ -71,7 +71,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
     explicit IconLabelBubbleAnimationLayoutStrategy(IconLabelBubbleView& host);
     virtual ~IconLabelBubbleAnimationLayoutStrategy();
 
-    IconLabelBubbleView* host() { return host_; }
+    IconLabelBubbleView* host() const { return host_; }
 
     virtual views::ProposedLayout CalculateProposedLayout(
         const views::SizeBounds& size_bounds,
@@ -87,6 +87,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
     virtual void SetupAnimation(gfx::SlideAnimation* animation, bool show) const = 0;
     virtual void ResetAnimation(IconLabelBubbleView* host, bool show_label) = 0;
     virtual void OnAnimationEnded(IconLabelBubbleView* host) = 0;
+    virtual bool ShouldCollapse() const;
     virtual views::ImageView* GetTrailingImageView();
 
    private:
@@ -149,6 +150,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
   gfx::Size GetMinimumSize() const override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;

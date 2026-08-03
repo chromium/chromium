@@ -47,6 +47,7 @@ class SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy
   void SetupAnimation(gfx::SlideAnimation* animation, bool show) const override;
   void ResetAnimation(IconLabelBubbleView* host, bool show_label) override;
   void OnAnimationEnded(IconLabelBubbleView* host) override;
+  bool ShouldCollapse() const override;
   views::ImageView* GetTrailingImageView() override;
 
  private:
@@ -59,6 +60,7 @@ class SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy
   };
 
   LayoutDimensions GetLayoutDimensions() const;
+  int GetPreferredWidth() const;
 
   raw_ptr<views::ImageView> trailing_image_view_ = nullptr;
 };
