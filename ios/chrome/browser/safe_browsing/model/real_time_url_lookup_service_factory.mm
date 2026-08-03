@@ -12,6 +12,7 @@
 #import "components/safe_browsing/core/browser/sync/sync_utils.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "components/safe_browsing/core/common/utils.h"
+#import "components/safe_browsing/ios/browser/web_ui/web_ui_ios_info_singleton.h"
 #import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -84,7 +85,7 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
                           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(), base::BindRepeating(&GetVariationsService),
       min_allowed_timestamp_for_referrer_chains_getter, referrer_chain_provider,
-      /*webui_delegate=*/nullptr,
+      /*webui_delegate=*/safe_browsing::WebUIIOSInfoSingleton::GetInstance(),
       /*intelligent_scan_delegate=*/nullptr,
       // iOS doesn't support referrer chains yet.
       /*network_context_getter=*/base::NullCallback());

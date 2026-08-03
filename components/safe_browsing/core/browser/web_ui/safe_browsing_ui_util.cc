@@ -61,7 +61,7 @@ void TailoredVerdictOverrideData::Clear() {
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
         // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
+#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL) || BUILDFLAG(IS_IOS)
 
 std::string UserReadableTimeFromMillisSinceEpoch(int64_t time_in_milliseconds) {
   base::Time time =

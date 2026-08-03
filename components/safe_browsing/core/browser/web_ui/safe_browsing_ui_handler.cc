@@ -15,7 +15,7 @@
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/user_prefs/user_prefs.h"
 
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
+#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL) || BUILDFLAG(IS_IOS)
 #include "components/safe_browsing/core/browser/db/sb_local_database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #endif
@@ -137,7 +137,7 @@ void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
     const base::ListValue& args) {
   base::ListValue database_manager_info;
 
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
+#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL) || BUILDFLAG(IS_IOS)
   const SBLocalDatabaseManager* local_database_manager_instance =
       SBLocalDatabaseManager::current_local_database_manager();
   if (local_database_manager_instance) {

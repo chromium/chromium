@@ -12,6 +12,7 @@
 #import "components/policy/core/common/cloud/affiliation.h"
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#import "components/safe_browsing/ios/browser/web_ui/web_ui_ios_info_singleton.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
@@ -108,9 +109,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile),
       // Referrer chain provider is not currently supported in iOS.
       /*referrer_chain_provider=*/nullptr, profile->GetPrefs(),
-      // TODO(crbug.com/40704516): Pass non-null delegate to display relevant
-      // events once chrome://safe-browsing is supported on iOS.
-      /*webui_delegate=*/nullptr,
+      /*webui_delegate=*/safe_browsing::WebUIIOSInfoSingleton::GetInstance(),
       IdentityManagerFactory::GetForProfile(profile), management_service,
       profile->IsOffTheRecord(),
       /*is_guest_session=*/false,

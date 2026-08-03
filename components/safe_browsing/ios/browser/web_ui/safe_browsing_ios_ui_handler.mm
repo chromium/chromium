@@ -12,7 +12,7 @@
 #import "components/safe_browsing/ios/browser/web_ui/web_ui_ios_info_singleton.h"
 #import "components/user_prefs/user_prefs.h"
 
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
+#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL) || BUILDFLAG(IS_IOS)
 #import "components/safe_browsing/core/browser/db/sb_local_database_manager.h"
 #endif
 

@@ -83,13 +83,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // which type of hash-prefix real-time lookup the profile is eligible for, if
   // any. These two must be computed in advance, since this class only exists
   // on the IO thread.
-  // |webui_delegate_| is allowed to be null. If non-null, it must outlive this
-  // object. |v5_get_hash_protocol_manager| is the protocol manager used for
+  // |v5_get_hash_protocol_manager| is the protocol manager used for
   // Safe Browsing v5 lookups.
-  // TODO(crbug.com/40704516): Add an iOS-specific WebUIDelegate implementation
-  // and pass it here to log URT requests/responses on open
-  // chrome://safe-browsing pages once chrome://safe-browsing works on iOS, or
-  // else to log those requests/responses to stderr.
   SafeBrowsingUrlCheckerImpl(
       const net::HttpRequestHeaders& headers,
       int load_flags,
