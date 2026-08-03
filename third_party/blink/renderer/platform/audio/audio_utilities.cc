@@ -208,4 +208,10 @@ const std::string GetDeviceEnumerationForTracing(
   return s.str().empty() ? "EMPTY" : s.str();
 }
 
+size_t RoundUpToMultiple(size_t value, size_t modulus) {
+  CHECK_GT(modulus, 0u);
+  CHECK_LE(value, SIZE_MAX - modulus);
+  return ((value + modulus - 1) / modulus) * modulus;
+}
+
 }  // namespace blink::audio_utilities

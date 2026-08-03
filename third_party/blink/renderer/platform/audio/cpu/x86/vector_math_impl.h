@@ -37,13 +37,9 @@ bool IsAligned(const float* p) {
 }
 
 void PrepareFilterForConv(const float* filter_p,
-                          int filter_stride,
                           size_t filter_size,
                           AudioFloatArray* prepared_filter) {
-  // Only contiguous convolution is implemented. Correlation (positive
-  // |filter_stride|) and support for non-contiguous vectors are not
-  // implemented.
-  DCHECK_EQ(-1, filter_stride);
+  // Only contiguous convolution is implemented.
   DCHECK(prepared_filter);
 
   // Reverse the filter and repeat each value across a vector

@@ -75,6 +75,10 @@ PLATFORM_EXPORT bool IsValidRenderQuantumSize(uint32_t render_quantum_size,
 PLATFORM_EXPORT uint32_t MinRenderQuantumSize();
 PLATFORM_EXPORT uint32_t MaxRenderQuantumSize(float sample_rate);
 
+// Returns `value` rounded up to the smallest multiple of `modulus`, safe
+// against integer overflow. `modulus` must be strictly greater than 0.
+PLATFORM_EXPORT size_t RoundUpToMultiple(size_t value, size_t modulus);
+
 PLATFORM_EXPORT const std::string GetSinkIdForTracing(
     blink::WebAudioSinkDescriptor sink_descriptor);
 

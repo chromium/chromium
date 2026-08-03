@@ -98,49 +98,45 @@ ALWAYS_INLINE static FrameCounts SplitFramesToProcess(
 
 ALWAYS_INLINE static void PrepareFilterForConv(
     const float* filter_p,
-    int filter_stride,
     size_t filter_size,
     AudioFloatArray* prepared_filter) {
   if (CPUSupportsAVX()) {
-    avx::PrepareFilterForConv(filter_p, filter_stride, filter_size,
-                              prepared_filter);
+    avx::PrepareFilterForConv(filter_p, filter_size, prepared_filter);
   } else {
-    sse::PrepareFilterForConv(filter_p, filter_stride, filter_size,
-                              prepared_filter);
+    sse::PrepareFilterForConv(filter_p, filter_size, prepared_filter);
   }
 }
 
-ALWAYS_INLINE static void Conv(const float* source_p,
-                               int source_stride,
+ALWAYS_INLINE static void Conv(base::span<const float> source,
                                const float* filter_p,
-                               int filter_stride,
-                               float* dest_p,
-                               int dest_stride,
+                               base::span<float> dest,
                                size_t frames_to_process,
                                size_t filter_size,
                                const AudioFloatArray* prepared_filter) {
   const float* prepared_filter_p =
       prepared_filter ? prepared_filter->Data() : nullptr;
-  if (source_stride == 1 && dest_stride == 1 && prepared_filter_p) {
+  size_t offset = 0;
+  if (prepared_filter_p) {
     if (CPUSupportsAVX() && (filter_size & ~avx::kFramesToProcessMask) == 0u) {
-      // |frames_to_process| is always a multiply of render quantum and
-      // therefore the frames can always be processed using AVX.
-      CHECK_EQ(frames_to_process & ~avx::kFramesToProcessMask, 0u);
-      avx::Conv(source_p, prepared_filter_p, dest_p, frames_to_process,
-                filter_size);
-      return;
-    }
-    if ((filter_size & ~sse::kFramesToProcessMask) == 0u) {
-      // |frames_to_process| is always a multiply of render quantum and
-      // therefore the frames can always be processed using SSE.
-      CHECK_EQ(frames_to_process & ~sse::kFramesToProcessMask, 0u);
-      sse::Conv(source_p, prepared_filter_p, dest_p, frames_to_process,
-                filter_size);
-      return;
+      const size_t avx_frames = frames_to_process & avx::kFramesToProcessMask;
+      if (avx_frames > 0u) {
+        avx::Conv(source.data(), prepared_filter_p, dest.data(), avx_frames,
+                  filter_size);
+        offset = avx_frames;
+      }
+    } else if ((filter_size & ~sse::kFramesToProcessMask) == 0u) {
+      const size_t sse_frames = frames_to_process & sse::kFramesToProcessMask;
+      if (sse_frames > 0u) {
+        sse::Conv(source.data(), prepared_filter_p, dest.data(), sse_frames,
+                  filter_size);
+        offset = sse_frames;
+      }
     }
   }
-  scalar::Conv(source_p, source_stride, filter_p, filter_stride, dest_p,
-               dest_stride, frames_to_process, filter_size, nullptr);
+  if (offset < frames_to_process) {
+    scalar::Conv(source.subspan(offset), filter_p, dest.subspan(offset),
+                 frames_to_process - offset, filter_size, nullptr);
+  }
 }
 
 ALWAYS_INLINE static void Vadd(base::span<const float> source1,

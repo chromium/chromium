@@ -32,7 +32,6 @@ void Conv(const float* source_p,
           size_t filter_size);
 
 void PrepareFilterForConv(const float* filter_p,
-                          int filter_stride,
                           size_t filter_size,
                           AudioFloatArray* prepared_filter);
 

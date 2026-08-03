@@ -17,21 +17,17 @@ namespace blink {
 namespace vector_math {
 namespace scalar {
 
-ALWAYS_INLINE static void Conv(const float* source_p,
-                               int source_stride,
+ALWAYS_INLINE static void Conv(base::span<const float> source,
                                const float* filter_p,
-                               int filter_stride,
-                               float* dest_p,
-                               int dest_stride,
+                               base::span<float> dest,
                                size_t frames_to_process,
                                size_t filter_size,
                                const AudioFloatArray* /*prepared_filter*/) {
+  const float* source_p = source.data();
+  float* dest_p = dest.data();
   // Only contiguous convolution is implemented. Correlation (positive
   // |filter_stride|) and support for non-contiguous vectors are not
   // implemented.
-  DCHECK_EQ(1, source_stride);
-  DCHECK_EQ(-1, filter_stride);
-  DCHECK_EQ(1, dest_stride);
 
   size_t i = 0;
 

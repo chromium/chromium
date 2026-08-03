@@ -58,13 +58,9 @@ namespace impl = scalar;
 void PrepareFilterForConv(base::span<const float> filter,
                           AudioFloatArray& prepared_filter) {
   // Only contiguous convolution is implemented by all implementations.
-  // Correlation (positive |filter_stride|) and support for non-contiguous
-  // vectors are not implemented by all implementations.
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_MAC)
-  const int filter_stride = -1;
   const float* filter_p = &filter.back();
-  x86::PrepareFilterForConv(filter_p, filter_stride, filter.size(),
-                            &prepared_filter);
+  x86::PrepareFilterForConv(filter_p, filter.size(), &prepared_filter);
 #endif
 }
 
@@ -74,14 +70,9 @@ void Conv(base::span<const float> source,
           size_t frames_to_process,
           const AudioFloatArray& prepared_filter) {
   // Only contiguous convolution is implemented by all implementations.
-  // Correlation (positive |filter_stride|) and support for non-contiguous
-  // vectors are not implemented by all implementations.
-  const int source_stride = 1;
-  const int filter_stride = -1;
-  const int dest_stride = 1;
   const float* filter_p = &filter.back();
-  impl::Conv(source.data(), source_stride, filter_p, filter_stride, dest.data(),
-             dest_stride, frames_to_process, filter.size(), &prepared_filter);
+  impl::Conv(source, filter_p, dest, frames_to_process, filter.size(),
+             &prepared_filter);
 }
 
 void Vadd(base::span<const float> source1,
