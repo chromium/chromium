@@ -91,13 +91,15 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             // ripple, hover, and focus effects.
             DropdownDividerDrawable divider =
                     new DropdownDividerDrawable(/* backgroundColor= */ null);
+            LayerDrawable background = new LayerDrawable(new Drawable[] {divider});
             TypedValue typedValue = new TypedValue();
-            mContext.getTheme()
-                    .resolveAttribute(R.attr.listChoiceBackgroundIndicator, typedValue, true);
-            Drawable listChoiceBackgroundIndicator =
-                    AppCompatResources.getDrawable(mContext, typedValue.resourceId);
-            LayerDrawable background =
-                    new LayerDrawable(new Drawable[] {divider, listChoiceBackgroundIndicator});
+            if (mContext.getTheme()
+                            .resolveAttribute(
+                                    R.attr.listChoiceBackgroundIndicator, typedValue, true)
+                    && typedValue.resourceId != 0) {
+                background.addLayer(
+                        AppCompatResources.getDrawable(mContext, typedValue.resourceId));
+            }
             layout.setBackground(background);
         }
         LayerDrawable layers = (LayerDrawable) layout.getBackground();
