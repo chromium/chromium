@@ -285,10 +285,7 @@ bool IsValidTurnURL(const KURL& url) {
 
 // Determines if the current context disallows WebRTC. Corresponds to the
 // algorithm in https://www.w3.org/TR/CSP3/#should-block-rtc-connection.
-// To avoid redundant Reporting API triggers and UMA pings, we only set
-// send_report when constructing an actual RTCPeerConnection.
-bool AreIceCandidatesAdministrativelyProhibited(ExecutionContext* context,
-                                                bool send_report = false) {
+bool AreIceCandidatesAdministrativelyProhibited(ExecutionContext* context) {
   const network::ConnectionAllowlists& connection_allowlists =
       context->GetPolicyContainer()->GetPolicies().connection_allowlists;
 
@@ -728,8 +725,7 @@ RTCPeerConnection::RTCPeerConnection(
       encoded_insertable_streams_(encoded_insertable_streams) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
 
-  if (AreIceCandidatesAdministrativelyProhibited(context,
-                                                 /*send_report=*/true)) {
+  if (AreIceCandidatesAdministrativelyProhibited(context)) {
     are_ice_candidates_administratively_prohibited_ = true;
   }
   MaybeReportConnectionAllowlistViolation(context);
