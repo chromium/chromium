@@ -50,13 +50,11 @@ _REGIONS = [
     "SK", "SL", "SM", "SN", "SO", "SR", "SS", "ST", "SV", "SX", "SY", "SZ",
     "TA", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TO",
     "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "UM", "US", "UY", "UZ", "VA",
-    "VC", "VE", "VG", "VI", "VN", "VU", "WF", "WS", "XK", "YE", "YT", "ZA",
-    "ZM", "ZW"
+    "VC", "VE", "VG", "VI", "VN", "VU", "WF", "WS", "XA", "XB", "XC", "XK",
+    "YE", "YT", "ZA", "ZM", "ZW"
 ]
 
 _VARIANTS = ["oxendict"]
-
-_PSEUDO_REGIONS = ["XA", "XB", "XC"]
 
 
 def main():
@@ -69,13 +67,9 @@ def main():
     parser.add_argument('type',
                         choices=['language', 'script', 'region', 'variant'],
                         help='The type of subtag to extract.')
-    parser.add_argument('enable_pseudolocales',
-                        choices=['true', 'false'],
-                        help='Whether to include pseudolocales.')
     args = parser.parse_args()
 
     subtag_type = args.type
-    enable_pseudo = args.enable_pseudolocales == "true"
 
     subtags = []
     if subtag_type == 'language':
@@ -84,8 +78,6 @@ def main():
         subtags = _SCRIPTS
     elif subtag_type == 'region':
         subtags = _REGIONS
-        if enable_pseudo:
-            subtags = _REGIONS + _PSEUDO_REGIONS
     elif subtag_type == 'variant':
         subtags = _VARIANTS
 

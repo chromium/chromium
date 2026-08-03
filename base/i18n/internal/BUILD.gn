@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/locales.gni")
 import("//build/rust/rust_static_library.gni")
 
 source_set("internal") {
@@ -50,7 +49,7 @@ rust_static_library("i18n_icu_bridge_ffi") {
 action("canonical_language_tags_gen") {
   script = "//tools/i18n/generate_canonical_locales_list.py"
   outputs = [ "$root_gen_dir/base/i18n/internal/canonical_language_tags.inc" ]
-  args = rebase_path(outputs, root_build_dir) + [ "${enable_pseudolocales}" ]
+  args = rebase_path(outputs, root_build_dir)
   visibility = [
     ":*",
     "//base/i18n:*",
@@ -69,29 +68,25 @@ source_set("canonical_language_tags") {
 action("bcp47_languages_gen") {
   script = "//tools/i18n/generate_known_bcp47_subtags.py"
   outputs = [ "$root_gen_dir/base/i18n/internal/bcp47_languages.inc" ]
-  args = rebase_path(outputs, root_build_dir) + [ "language" ] +
-         [ "${enable_pseudolocales}" ]
+  args = rebase_path(outputs, root_build_dir) + [ "language" ]
 }
 
 action("bcp47_scripts_gen") {
   script = "//tools/i18n/generate_known_bcp47_subtags.py"
   outputs = [ "$root_gen_dir/base/i18n/internal/bcp47_scripts.inc" ]
-  args = rebase_path(outputs, root_build_dir) + [ "script" ] +
-         [ "${enable_pseudolocales}" ]
+  args = rebase_path(outputs, root_build_dir) + [ "script" ]
 }
 
 action("bcp47_regions_gen") {
   script = "//tools/i18n/generate_known_bcp47_subtags.py"
   outputs = [ "$root_gen_dir/base/i18n/internal/bcp47_regions.inc" ]
-  args = rebase_path(outputs, root_build_dir) + [ "region" ] +
-         [ "${enable_pseudolocales}" ]
+  args = rebase_path(outputs, root_build_dir) + [ "region" ]
 }
 
 action("bcp47_variants_gen") {
   script = "//tools/i18n/generate_known_bcp47_subtags.py"
   outputs = [ "$root_gen_dir/base/i18n/internal/bcp47_variants.inc" ]
-  args = rebase_path(outputs, root_build_dir) + [ "variant" ] +
-         [ "${enable_pseudolocales}" ]
+  args = rebase_path(outputs, root_build_dir) + [ "variant" ]
 }
 
 source_set("unittests") {
