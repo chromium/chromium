@@ -33,7 +33,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -133,8 +132,7 @@ class ToastControllerInteractiveTest
       override {
     return {{toast_features::kLinkCopiedToast, {}},
             {toast_features::kImageCopiedToast, {}},
-            {toast_features::kReadingListToast, {}},
-            {plus_addresses::features::kPlusAddressesEnabled, {}}};
+            {toast_features::kReadingListToast, {}}};
   }
 
   GURL GetURL(std::string_view hostname = "example.com",
@@ -429,7 +427,8 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 // closes the toast.
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                        MenuButtonClickOpensMenu) {
-  ToastParams params(ToastId::kPlusAddressOverride);
+  ToastParams params(ToastId::kEmailVerified);
+  params.body_string_replacement_params = {u"dummy"};
   int counter = 0;
   params.menu_model = std::make_unique<TestMenuModel>(
       base::BindLambdaForTesting([&counter]() { ++counter; }));
@@ -447,7 +446,8 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 // closes via Escape key.
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                        ToastDoesNotCloseWhileMenuIsOpen_Escape) {
-  ToastParams params(ToastId::kPlusAddressOverride);
+  ToastParams params(ToastId::kEmailVerified);
+  params.body_string_replacement_params = {u"dummy"};
   params.menu_model = std::make_unique<TestMenuModel>(base::DoNothing());
   RunTestSequence(ShowToast(std::move(params)),
                   WaitForShow(toasts::ToastView::kToastViewId),
@@ -480,7 +480,8 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                     "are reported";
   }
 #endif
-  ToastParams params(ToastId::kPlusAddressOverride);
+  ToastParams params(ToastId::kEmailVerified);
+  params.body_string_replacement_params = {u"dummy"};
   params.menu_model = std::make_unique<TestMenuModel>(base::DoNothing());
   RunTestSequence(ShowToast(std::move(params)),
                   WaitForShow(toasts::ToastView::kToastViewId),

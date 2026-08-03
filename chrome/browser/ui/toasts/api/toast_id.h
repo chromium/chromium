@@ -28,7 +28,7 @@ enum class ToastId {
   kNonMilestoneUpdate = 5,
   // kAddedToComparisonTable = 6,
   kClearBrowsingData = 7,
-  kPlusAddressOverride = 8,
+  // kPlusAddressOverride = 8,
   kSyncEsbOn = 9,
   kSyncEsbOnWithoutActionButton = 10,
   kSyncEsbOff = 11,

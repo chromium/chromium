@@ -47,8 +47,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/data_sharing/public/features.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
@@ -59,10 +57,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "components/plus_addresses/core/browser/resources/vector_icons.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/copy_warning_delegate_tracker.h"
@@ -155,22 +149,6 @@ void ToastService::RegisterToasts(
                                   IDS_NON_MILESTONE_UPDATE_TOAST_BODY)
           .AddGlobalScoped()
           .Build());
-
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled)) {
-    toast_registry_->RegisterToast(
-        ToastId::kPlusAddressOverride,
-        ToastSpecification::Builder(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            plus_addresses::kPlusAddressLogoSmallIcon,
-#else
-            features::IsRoundedIconsEnabled() ? vector_icons::kMailFilledIcon
-                                              : vector_icons::kEmailOldIcon,
-#endif
-            IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MESSAGE)
-            .AddMenu()
-            .Build());
-  }
 
   // ESB as a synced setting.
   if (base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {

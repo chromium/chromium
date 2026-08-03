@@ -43,7 +43,6 @@
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_preallocator.h"
 #include "components/plus_addresses/core/browser/plus_address_test_environment.h"

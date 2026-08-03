@@ -24,7 +24,6 @@
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
-#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -56,11 +55,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
-#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/core/browser/plus_address_service.h"
-#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
-#include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
@@ -108,41 +102,6 @@ MATCHER(NoPasswordManagerItemsAdded, "") {
     ++count;
   }
   return count == 0;
-}
-
-// Checks if the context menu model contains any entries with plus address
-// manual fallback labels or command ids. `arg` must be of type
-// `ui::SimpleMenuModel`.
-MATCHER(ContainsAnyPlusAddressFallbackEntries, "") {
-  for (size_t i = 0; i < arg->GetItemCount(); i++) {
-    if (arg->GetCommandIdAt(i) ==
-            IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS ||
-        arg->GetLabelAt(i) ==
-            l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Checks if the context menu model contains the plus address manual fallback
-// entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
-MATCHER(PlusAddressFallbackAdded, "") {
-  // There can be more than 2 entries, if other manual fallbacks are present
-  // too.
-  EXPECT_GE(arg->GetItemCount(), 2u);
-  EXPECT_EQ(arg->GetTypeAt(arg->GetItemCount() - 1),
-            ui::MenuModel::ItemType::TYPE_SEPARATOR);
-
-  for (size_t i = 0; i < arg->GetItemCount(); i++) {
-    if (arg->GetLabelAt(i) ==
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 // Checks if the context menu model contains the passwords manual fallback

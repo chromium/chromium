@@ -22,7 +22,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
-#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -48,9 +47,6 @@
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/personal_context/core/personal_context_types.h"
-#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/core/browser/plus_address_service.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/variations/service/variations_service.h"
@@ -62,10 +58,6 @@
 #include "ui/color/color_id.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "components/plus_addresses/core/browser/resources/vector_icons.h"
-#endif
 
 namespace autofill {
 
@@ -85,17 +77,6 @@ constexpr char kFeedbackPlaceholder[] =
 
 // Constant determining the icon size in the context menu.
 constexpr int kContextMenuIconSize = 16;
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const gfx::VectorIcon& GetPlusAddressLogoIcon() {
-  return plus_addresses::kPlusAddressLogoSmallIcon;
-}
-#else
-const gfx::VectorIcon& GetPlusAddressLogoIcon() {
-  return ::features::IsRoundedIconsEnabled() ? vector_icons::kMailFilledIcon
-                                             : vector_icons::kEmailOldIcon;
-}
-#endif
 
 bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
   if (params.is_content_editable_for_autofill) {
@@ -154,7 +135,6 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
 bool IsAutofillCustomCommandId(
     AutofillContextMenuManager::CommandId command_id) {
   static constexpr auto kAutofillCommands = base::MakeFixedFlatSet<int>({
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
@@ -375,20 +355,10 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
     return;
   }
 
-  ContentAutofillDriver* autofill_driver =
-      ContentAutofillDriver::GetForRenderFrameHost(rfh);
   ContentPasswordManagerDriver* password_manager_driver =
       ContentPasswordManagerDriver::GetForRenderFrameHost(rfh);
 
-  bool add_plus_address_fallback = false;
   bool add_passwords_fallback = false;
-
-  // Do not show autofill context menu options for input fields that cannot be
-  // filled by the driver. See crbug.com/40061116.
-  if (autofill_driver && autofill_driver->CanShowAutofillUi()) {
-    add_plus_address_fallback =
-        ShouldAddPlusAddressManualFallbackItem(*autofill_driver);
-  }
 
   // Do not show password manager context menu options for input fields that
   // cannot be filled by the driver. See crbug.com/40061116.
@@ -411,44 +381,11 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
           CHECK_DEREF(password_manager_driver));
     }
   }
-  if (add_plus_address_fallback) {
-    menu_model_->AddItemWithStringIdAndIcon(
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
-        IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU,
-        ui::ImageModel::FromVectorIcon(GetPlusAddressLogoIcon(), ui::kColorIcon,
-                                       kContextMenuIconSize));
-    MaybeMarkLastItemAsNewFeature(
-        plus_addresses::features::kPlusAddressFallbackFromContextMenu);
-    // TODO(crbug.com/327566698): Log metrics for plus address fallbacks, too.
-  }
   const bool add_at_memory_fallback = MaybeAddAtMemoryItem();
 
-  if (add_passwords_fallback || add_plus_address_fallback ||
-      add_at_memory_fallback) {
+  if (add_passwords_fallback || add_at_memory_fallback) {
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
-}
-
-bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
-    ContentAutofillDriver& autofill_driver) {
-  if (params_.form_control_type &&
-      params_.form_control_type.value() ==
-          blink::mojom::FormControlType::kInputPassword) {
-    return false;
-  }
-
-  auto* web_contents = content::WebContents::FromRenderFrameHost(
-      autofill_driver.render_frame_host());
-  const plus_addresses::PlusAddressService* plus_address_service =
-      PlusAddressServiceFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
-  AutofillClient& client = autofill_driver.GetAutofillManager().client();
-  return plus_address_service &&
-         plus_address_service->ShouldShowManualFallback(
-             client.GetLastCommittedPrimaryMainFrameOrigin(),
-             client.IsOffTheRecord()) &&
-         base::FeatureList::IsEnabled(
-             plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
 
 bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(

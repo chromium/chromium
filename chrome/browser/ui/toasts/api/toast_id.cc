@@ -23,8 +23,6 @@ std::string_view GetToastName(ToastId toast_id) {
       return "NonMilestoneUpdate";
     case ToastId::kClearBrowsingData:
       return "ClearBrowsingData";
-    case ToastId::kPlusAddressOverride:
-      return "PlusAddressOverride";
     case ToastId::kSyncEsbOn:
       return "SyncEsbOn";
     case ToastId::kSyncEsbOnWithoutActionButton:

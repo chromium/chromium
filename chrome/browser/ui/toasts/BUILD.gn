@@ -72,8 +72,6 @@ source_set("impl") {
     "//chrome/browser/ui/webui_browser:headers",
     "//components/autofill/core/browser",
     "//components/data_sharing/public:features",
-    "//components/plus_addresses/core/browser/resources/strings",
-    "//components/plus_addresses/core/common:features",
     "//components/record_replay/core/common",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -83,10 +81,6 @@ source_set("impl") {
     "//ui/menus",
     "//ui/strings:ui_strings_grit",
   ]
-  if (is_chrome_branded) {
-    deps +=
-        [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
-  }
 }
 
 source_set("interactive_ui_tests") {
@@ -105,7 +99,6 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/test:test_support",
-    "//components/plus_addresses/core/common:features",
     "//components/safe_browsing/core/common:features",
     "//components/vector_icons",
     "//content/public/browser",
@@ -143,7 +136,6 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/data_sharing/public:features",
     "//components/multistep_filter/core:features",
-    "//components/plus_addresses/core/common:features",
     "//components/safe_browsing/core/common:features",
     "//components/vector_icons",
     "//content/public/browser",

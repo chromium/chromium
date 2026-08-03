@@ -17,7 +17,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/multistep_filter/core/features.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 
@@ -30,7 +29,7 @@ using ToastIdEnumSet = base::EnumSet<ToastId>;
 constexpr auto kDeprecatedToastIds =
     std::to_array<std::underlying_type_t<ToastId>>(
         {/*kLensOverlay=*/4, /*kAddedToComparisonTable=*/6,
-         /*kMultistepFilterSuggestion=*/31,
+         /*kPlusAddressOverride=*/8, /*kMultistepFilterSuggestion=*/31,
          /*kMultistepFilterSuggestionRecent=*/32});
 
 ToastIdEnumSet GetActiveToastIds() {
@@ -49,7 +48,6 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{autofill::features::kAutofillAiWalletPrivatePasses, {}},
-         {plus_addresses::features::kPlusAddressesEnabled, {}},
          {safe_browsing::kEsbAsASyncedSetting, {}},
          {data_sharing::features::kDataSharingFeature, {}},
          {toast_features::kTranslateToast, {}},
