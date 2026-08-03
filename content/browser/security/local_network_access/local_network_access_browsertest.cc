@@ -64,22 +64,12 @@ constexpr char kPublicHost[] = "c.test";
 // Path to a default response served by all servers in this test.
 constexpr char kDefaultPath[] = "/defaultresponse";
 
-// Path to a response with the `treat-as-public-address` CSP directive.
-constexpr char kTreatAsPublicAddressPath[] =
-    "/set-header?Content-Security-Policy: treat-as-public-address";
-
 // Path to a response with a wide-open CORS header. This can be fetched
 // cross-origin without triggering CORS violations.
 constexpr char kCorsPath[] = "/set-header?Access-Control-Allow-Origin: *";
 
 // Path to a cacheable response.
 constexpr char kCacheablePath[] = "/cachetime";
-
-// Path to a cacheable variant of `kCorsPath`.
-constexpr char kCacheableCorsPath[] =
-    "/set-header"
-    "?Cache-Control: max-age%3D60"
-    "&Access-Control-Allow-Origin: *";
 
 // Returns a snippet of Javascript that fetch()es the given URL.
 //
@@ -367,7 +357,6 @@ class FakeAddressSpaceServer {
 //    - secure context bit
 //    - local network access request policy
 //  - testing the inheritance semantics of these properties
-//  - testing the correct handling of the CSP: treat-as-public-address directive
 //  - testing that subresource requests are subject to LNA checks
 //  - and a few other odds and ends
 //
@@ -756,34 +745,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
-            security_state->ip_address_space);
-}
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       ClientSecurityStateForTreatAsPublicAddress) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-  EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            security_state->ip_address_space);
-}
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       ClientSecurityStateForTreatAsPublicAddressReportOnly) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(),
-      SecureLoopbackURL("/set-header?Content-Security-Policy-Report-Only: "
-                        "treat-as-public-address")));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-  EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
             security_state->ip_address_space);
 }
@@ -2632,50 +2593,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                    FetchSubresourceScript(OtherSecureLoopbackURL(kCorsPath))));
 }
 
-// This test verifies that when the content browser client overrides it,
-// requests:
-//  - from an insecure page with the "treat-as-public-address" CSP directive
-//  - to a loopback IP address
-// are not blocked.
-IN_PROC_BROWSER_TEST_F(
-    LocalNetworkAccessBrowserTest,
-    FromInsecureTreatAsPublicToLoopbackWithPolicySetToAllowIsNotBlocked) {
-  GURL url = InsecureLoopbackURL(kTreatAsPublicAddressPath);
-
-  PolicyTestContentBrowserClient client;
-  client.SetAllowInsecureLocalNetworkAccessRequestsFrom(
-      url::Origin::Create(url));
-
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_EQ(security_state->local_network_access_request_policy,
-            network::mojom::LocalNetworkAccessRequestPolicy::kAllow);
-
-  // Check that the page can load a loopback resource.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLoopbackURL(kCorsPath))));
-}
-
-// This test verifies that requests:
-//  - from an insecure page with the "treat-as-public-address" CSP directive
-//  - to a loopback IP address
-// are blocked.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       FromInsecureTreatAsPublicToLoopbackIsBlocked) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  // Check that the page cannot load a loopback resource.
-  EXPECT_EQ(false,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLoopbackURL(kCorsPath))));
-}
-
 // This test verifies that requests:
 //  - from an insecure page served by a public IP address
 //  - to loopback IP addresses
@@ -2719,7 +2636,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 }
 
 // This test verifies that requests:
-//  - from a secure page with the "treat-as-public-address" CSP directive
+//  - from a secure page
 //  - embedded in an insecure page served from a loopback IP address
 //  - to loopback IP addresses
 //  are blocked.
@@ -2786,35 +2703,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 }
 
 // This test verifies that requests:
-//  - from a non-secure context in the `public` IP address space
-//  - to a subresource cached from a `loopback` IP address
-// are blocked.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       FromInsecurePublicToCachedLoopbackIsBlocked) {
-  GURL target = InsecureLoopbackURL(kCacheablePath);
-
-  // Cache the resource first, by fetching it from a document in the same IP
-  // address space. The server receives a GET request.
-  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
-  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
-  EXPECT_THAT(
-      InsecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
-      ElementsAre(METHOD_GET));
-
-  // Now navigate to a document in the `public` address space belonging to the
-  // same site as the previous document (this will use the same cache key).
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  // Check that the page cannot load the resource, even from cache. The server
-  // does not receive any new request.
-  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
-  EXPECT_THAT(
-      InsecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
-      ElementsAre(METHOD_GET));
-}
-
-// This test verifies that requests:
 //  - from a secure context in the `loopback` IP address space
 //  - to a subresource cached from a `loopback` IP address
 // are not blocked.
@@ -2835,28 +2723,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_THAT(
       SecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
       ElementsAre(METHOD_GET));
-}
-
-// This test verifies that requests:
-//  - from a secure page served in the `public` IP address space
-//  - to a subresource cached from a `loopback` IP address
-//  are blocked.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       FromSecurePublicToCachedLoopbackIsBlocked) {
-  GURL target = OtherSecureLoopbackURL(kCacheableCorsPath);
-
-  // Cache the resource first.
-  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
-  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
-  EXPECT_THAT(
-      SecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
-      ElementsAre(METHOD_GET));
-
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  // Check that the page cannot load the subresource from cache.
-  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
 }
 
 // This test verifies that an insecure page in the `loopback` address space
@@ -2898,93 +2764,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, Redirect) {
       SecureLoopbackURL("/server-redirect?" + SecureLocalURL(kCorsPath).spec());
 
   EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
-}
-
-// =========================
-// WORKER SCRIPT FETCH TESTS
-// =========================
-
-namespace {
-
-// Path to a worker script that posts a message to its creator once loaded.
-constexpr char kWorkerScriptPath[] = "/workers/post_ready.js";
-
-// Instantiates a dedicated worker script from `path`.
-// If it loads successfully, the worker should post a message to its creator to
-// signal success.
-std::string FetchWorkerScript(std::string_view path) {
-  constexpr char kTemplate[] = R"(
-    new Promise((resolve) => {
-      const worker = new Worker($1);
-      worker.addEventListener("message", () => resolve(true));
-      worker.addEventListener("error", () => resolve(false));
-    })
-  )";
-
-  return JsReplace(kTemplate, path);
-}
-
-// Path to a worker script that posts a message to each client that connects.
-constexpr char kSharedWorkerScriptPath[] = "/workers/shared_post_ready.js";
-
-// Instantiates a shared worker script from `path`.
-// If it loads successfully, the worker should post a message to each client
-// that connects to it to signal success.
-std::string FetchSharedWorkerScript(std::string_view path) {
-  constexpr char kTemplate[] = R"(
-    new Promise((resolve) => {
-      const worker = new SharedWorker($1);
-      worker.port.addEventListener("message", () => resolve(true));
-      worker.addEventListener("error", () => resolve(false));
-      worker.port.start();
-    })
-  )";
-
-  return JsReplace(kTemplate, path);
-}
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       FetchWorkerFromInsecureTreatAsPublicToLoopback) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  EXPECT_EQ(false,
-            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
-}
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       FetchWorkerFromSecureTreatAsPublicToLoopback) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  // The request is exempt from Local Network Access checks because it is
-  // same-origin and the origin is potentially trustworthy. Dedicated worker
-  // scripts are required to be same-origin.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
-}
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       FetchSharedWorkerFromInsecureTreatAsPublicToLoopback) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  EXPECT_EQ(false, EvalJs(root_frame_host(),
-                          FetchSharedWorkerScript(kSharedWorkerScriptPath)));
-}
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       FetchSharedWorkerFromSecureTreatAsPublicToLoopback) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  // The request is exempt from Local Network Access checks because it is
-  // same-origin and the origin is potentially trustworthy. Shared worker
-  // scripts are required to be same-origin.
-  EXPECT_EQ(true, EvalJs(root_frame_host(),
-                         FetchSharedWorkerScript(kSharedWorkerScriptPath)));
 }
 
 // ======================
@@ -3036,23 +2815,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
       IsEmpty());
 }
 
-// Same as above, testing the "treat-as-public-address" CSP directive.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       IframeFromInsecureTreatAsPublicToLoopbackIsBlocked) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
-
-  GURL url = InsecureLoopbackURL("/empty.html");
-
-  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
-
-  AddChildFromURLWithoutWaiting(root_frame_host(), url);
-  ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
-
-  // Check that the child iframe failed to fetch.
-  EXPECT_FALSE(child_navigation_manager.was_successful());
-}
-
 // This test verifies that when an iframe navigation fails due to LNA, the
 // iframe navigates to an error page, even if it had previously committed a
 // document.
@@ -3101,38 +2863,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   GURL url = SecureLoopbackURL("/empty.html");
-
-  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
-
-  AddChildFromURLWithoutWaiting(root_frame_host(), url);
-  ASSERT_TRUE(child_navigation_manager.WaitForNavigationFinished());
-
-  // Check that the child iframe failed to fetch.
-  EXPECT_FALSE(child_navigation_manager.was_successful());
-
-  RenderFrameHostImpl* child_frame = GetFirstChild(*root_frame_host());
-  EXPECT_EQ(GURL(kUnreachableWebDataURL),
-            EvalJs(child_frame, "document.location.href"));
-
-  // The frame committed an error page but retains the original URL so that
-  // reloading the page does the right thing. The committed origin on the other
-  // hand is opaque, which it would not be if the navigation had succeeded.
-  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
-  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
-
-  // Blocked before we ever sent a request.
-  EXPECT_THAT(
-      SecureLoopbackServer().request_observer().RequestMethodsForUrl(url),
-      IsEmpty());
-}
-
-// Same as above, testing the "treat-as-public-address" CSP directive.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       IframeFromSecureTreatAsPublicToLoopbackIsNotBlocked) {
-  GURL initiator_url = SecureLoopbackURL(kTreatAsPublicAddressPath);
-  EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
-
-  GURL url = OtherSecureLoopbackURL("/empty.html");
 
   TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
 
@@ -3278,62 +3008,6 @@ IN_PROC_BROWSER_TEST_F(
   // The origin is opaque though, a symptom of the failed navigation.
   EXPECT_EQ(expected_url, child_frame->GetLastCommittedURL());
   EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
-}
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       SiblingNavigationFromInsecurePublicToLoopbackIsBlocked) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
-
-  // Named targeting only works if the initiator is one of:
-  //
-  //  - the target's parent -> uninteresting
-  //  - the target's opener -> implies the target is a main frame
-  //  - same-origin with the target -> the only option left
-  //
-  // Thus we use CSP: treat-as-public-address to place the initiator in a
-  // different IP address space as its same-origin target.
-  GURL initiator_url = InsecureLoopbackURL(kTreatAsPublicAddressPath);
-  GURL target_url = InsecureLoopbackURL(kDefaultPath);
-
-  constexpr std::string_view kScriptTemplate = R"(
-    function addChild(name, src) {
-      return new Promise((resolve) => {
-        const iframe = document.createElement("iframe");
-        iframe.name = name;
-        iframe.src = src;
-        iframe.onload = () => resolve(iframe);
-        document.body.appendChild(iframe);
-      });
-    }
-
-    Promise.all([
-      addChild("initiator", $1),
-      addChild("target", "/empty.html"),
-    ]).then(() => true);
-  )";
-
-  EXPECT_EQ(true, EvalJs(root_frame_host(),
-                         JsReplace(kScriptTemplate, initiator_url)));
-
-  ASSERT_EQ(2ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* initiator =
-      root_frame_host()->child_at(0)->current_frame_host();
-
-  EXPECT_EQ(initiator->GetLastCommittedURL(), initiator_url);
-
-  TestNavigationManager navigation_manager(shell()->web_contents(), target_url);
-
-  EXPECT_TRUE(
-      ExecJs(initiator, JsReplace("window.open($1, 'target')", target_url)));
-  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
-
-  // Check that the child iframe was blocked.
-  EXPECT_FALSE(navigation_manager.was_successful());
-
-  // Request was blocked before it was even sent.
-  EXPECT_THAT(SecureLoopbackServer().request_observer().RequestMethodsForUrl(
-                  target_url),
-              IsEmpty());
 }
 
 }  // namespace content
