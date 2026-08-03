@@ -132,6 +132,12 @@ class PageContextWrapperConfigBuilder {
   PageContextWrapperConfigBuilder& SetUseRichExtraction(
       bool use_rich_extraction);
 
+  // Shorthand to configure rich extraction (APC V2) defaults for iOS features.
+  // Sets use_rich_extraction, graft_cross_origin_frame_content, and
+  // extract_paid_content.
+  PageContextWrapperConfigBuilder& SetDefaultRichExtraction(
+      bool use_rich_extraction);
+
   // Sets whether to extract actionable information alongside rich extraction.
   // This needs and will implicitly activate rich extraction.
   PageContextWrapperConfigBuilder& SetUseRichExtractionWithActionable(

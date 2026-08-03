@@ -143,6 +143,15 @@ PageContextWrapperConfigBuilder::SetUseRichExtraction(
 }
 
 PageContextWrapperConfigBuilder&
+PageContextWrapperConfigBuilder::SetDefaultRichExtraction(
+    bool use_rich_extraction) {
+  use_rich_extraction_ = use_rich_extraction;
+  graft_cross_origin_frame_content_ = use_rich_extraction;
+  extract_paid_content_ = use_rich_extraction;
+  return *this;
+}
+
+PageContextWrapperConfigBuilder&
 PageContextWrapperConfigBuilder::SetUseRichExtractionWithActionable(
     bool use_rich_extraction_with_actionable) {
   use_rich_extraction_with_actionable_ = use_rich_extraction_with_actionable;

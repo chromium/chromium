@@ -1083,12 +1083,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 
   bool use_apc_v2 = IsComposeboxAimRichAPCExtractionEnabled();
-  PageContextWrapperConfig config =
-      PageContextWrapperConfigBuilder()
-          .SetGraftCrossOriginFrameContent(use_apc_v2)
-          .SetUseRichExtraction(use_apc_v2)
-          .SetExtractPaidContent(use_apc_v2)
-          .Build();
+  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
+                                        .SetDefaultRichExtraction(use_apc_v2)
+                                        .Build();
 
   PageContextWrapper* pageContextWrapper = [[PageContextWrapper alloc]
         initWithWebState:webState

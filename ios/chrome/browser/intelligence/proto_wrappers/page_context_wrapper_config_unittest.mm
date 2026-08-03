@@ -112,3 +112,14 @@ TEST_F(PageContextWrapperConfigTest, GetApcConfigVariant) {
               kPageContextAPCConfigVariantRichActionable);
   }
 }
+
+// Tests that SetDefaultRichExtraction configures all rich extraction defaults.
+TEST_F(PageContextWrapperConfigTest, SetDefaultRichExtraction) {
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetDefaultRichExtraction(true).Build();
+
+  EXPECT_TRUE(config.use_rich_extraction());
+  EXPECT_TRUE(config.graft_cross_origin_frame_content());
+  EXPECT_TRUE(config.extract_paid_content());
+  EXPECT_FALSE(config.use_rich_extraction_with_actionable());
+}

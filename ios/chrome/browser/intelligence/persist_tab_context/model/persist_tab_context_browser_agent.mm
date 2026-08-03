@@ -588,9 +588,7 @@ void PersistTabContextBrowserAgent::ExtractAndStoreContext(
   bool is_rich_extraction = IsPersistTabContextRichExtractionEnabled();
   PageContextWrapperConfig config =
       PageContextWrapperConfigBuilder()
-          .SetGraftCrossOriginFrameContent(is_rich_extraction)
-          .SetUseRichExtraction(is_rich_extraction)
-          .SetExtractPaidContent(is_rich_extraction)
+          .SetDefaultRichExtraction(is_rich_extraction)
           .Build();
 
   page_context_wrapper_ = [[PageContextWrapper alloc]
