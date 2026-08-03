@@ -3204,7 +3204,6 @@ static_library("ui") {
 
     if (enable_dice_support) {
       sources += [
-        "signin/cross_device_signin_qr_bubble.h",
         "views/profiles/cross_device_signin_qr_bubble_views.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",

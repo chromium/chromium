@@ -37,6 +37,7 @@ source_set("signin") {
   if (enable_dice_support) {
     sources += [
       "chrome_signout_confirmation_prompt.h",
+      "cross_device_signin_qr_bubble.h",
       "dice_migration_service.h",
       "dice_migration_service_factory.h",
       "dice_web_signin_interceptor_delegate.h",
