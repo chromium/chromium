@@ -40,6 +40,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -5488,6 +5489,16 @@ TEST_F(DisplayManagerTest, FontConfig) {
     base::test::ScopedFeatureList feature_list_;
     feature_list_.InitAndEnableFeature(
         display::features::kOledScaleFactorEnabled);
+    display_manager()->RefreshFontParams();
+    EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabled());
+  }
+
+  // Qualcomm Snapdragon devices should force disable it
+  command_line->RemoveSwitch("form-factor");
+  command_line->AppendSwitchASCII("form-factor", "CLAMSHELL");
+  {
+    base::test::ScopedChromeOSVersionInfo version_info(
+        "CHROMEOS_RELEASE_BOARD=trogdor\n", base::Time());
     display_manager()->RefreshFontParams();
     EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabled());
   }
