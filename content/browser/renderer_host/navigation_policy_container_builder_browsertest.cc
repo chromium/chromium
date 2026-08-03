@@ -17,6 +17,8 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,10 +61,10 @@ class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
-    // Clear default from InProcessBrowserTest as test expects 127.0.0.1 in
-    // the local address space
-    command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                    "");
+    public_test_server_.AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(public_test_server_.Start());
+    network::AddPublicIpAddressSpaceOverrideToCommandLine(public_test_server_,
+                                                          *command_line);
   }
   explicit NavigationPolicyContainerBuilderBrowserTest() {
     CHECK(embedded_test_server()->Start());
@@ -84,8 +86,8 @@ class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
 
   // Returns the URL of a page in the public address space.
   GURL PublicUrl() const {
-    return embedded_test_server()->GetURL(
-        "/set-header?Content-Security-Policy: treat-as-public-address");
+    return public_test_server_.GetURL(
+        "/set-header?Content-Security-Policy: script-src 'self'");
   }
 
   // Returns the FrameNavigationEntry for the root node in the last committed
@@ -100,6 +102,11 @@ class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
 
     return entry->root_node()->frame_entry.get();
   }
+
+  net::EmbeddedTestServer& public_test_server() { return public_test_server_; }
+
+ private:
+  net::EmbeddedTestServer public_test_server_;
 };
 
 // Verifies that HistoryPolicies() returns nullptr in the absence of a history
@@ -377,30 +384,33 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
 
   // Use replaceState() to change to a same-origin URL with a different policy
-  // (which happens to be no policy for LoopbackUrl()).
+  // (which happens to be no policy for /echo).
+  GURL public_url_without_policies = public_test_server().GetURL("/echo");
   TestNavigationObserver navigation_observer(shell()->web_contents());
   EXPECT_TRUE(
       ExecJs(root_frame_host(),
              base::StringPrintf("window.history.replaceState('', null, '%s');",
-                                LoopbackUrl().spec().data())));
+                                public_url_without_policies.spec().data())));
   navigation_observer.WaitForNavigationFinished();
-  EXPECT_EQ(LoopbackUrl(), tab->GetLastCommittedURL());
+  EXPECT_EQ(public_url_without_policies, tab->GetLastCommittedURL());
 
   // Because we changed the url via replaceState rather than actually
-  // navigating to LoopbackUrl(), it shouldn't have modified any policies.
+  // navigating to public_url_without_policies, it shouldn't have modified any
+  // policies.
   EXPECT_FALSE(
       GetPolicies(root_frame_host()).content_security_policies.empty());
   FrameNavigationEntry* entry = GetLastCommittedFrameNavigationEntry();
   EXPECT_FALSE(
       entry->policy_container_policies()->content_security_policies.empty());
 
-  // Navigate away, then back to LoopbackUrl().
+  // Navigate away, then back to public_url_without_policies.
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), AboutBlankUrl()));
   EXPECT_TRUE(HistoryGoBack(shell()->web_contents()));
 
-  // This time we actually loaded LoopbackUrl(). We should use its
-  // (non-existent) content security policies and updated the policies on the
-  // FrameNavigationEntry, rather than restoring the previous set from the FNE.
+  // This time we actually loaded public_url_without_policies. We should use
+  // its (non-existent) content security policies and updated the policies on
+  // the FrameNavigationEntry, rather than restoring the previous set from the
+  // FNE.
   EXPECT_EQ(entry, GetLastCommittedFrameNavigationEntry());
   EXPECT_TRUE(
       entry->policy_container_policies()->content_security_policies.empty());
