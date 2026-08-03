@@ -12,6 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/infobars/core/infobar.h"
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -21,6 +22,7 @@
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/send_tab_to_self/model/ios_send_tab_to_self_infobar_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_load_navigation_user_data.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_tab_card_label_data.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -176,6 +178,39 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddSimple) {
   EXPECT_EQ(1UL, infobar_manager->infobars().size());
 }
 
+// Tests that when multiple remote entries are added simultaneously, an InfoBar
+// is shown for the most recently shared entry rather than simply the last entry
+// in the batch.
+TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddMultiplePicksMostRecent) {
+  web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+
+  const base::Time now = base::Time::Now();
+  std::vector<FakeSendTabToSelfModel::RemoteEntryParams> entry_params(3);
+  entry_params[0].url = GURL("http://www.test.com/older");
+  entry_params[0].shared_time = now - base::Seconds(10);
+  entry_params[1].url = GURL("http://www.test.com/newest");
+  entry_params[1].shared_time = now;
+  entry_params[2].url = GURL("http://www.test.com/older-still");
+  entry_params[2].shared_time = now - base::Seconds(5);
+
+  std::vector<const SendTabToSelfEntry*> entries =
+      model_->AddEntriesRemotely(std::move(entry_params));
+  ASSERT_EQ(3UL, entries.size());
+
+  // Only one infobar should be added, corresponding to the entry with the
+  // latest shared timestamp (index 1), even though it is not at the end of the
+  // vector.
+  ASSERT_EQ(1UL, infobar_manager->infobars().size());
+  infobars::InfoBar* infobar = infobar_manager->infobars()[0];
+  auto* delegate =
+      static_cast<send_tab_to_self::IOSSendTabToSelfInfoBarDelegate*>(
+          infobar->delegate());
+  EXPECT_EQ(entries[1]->GetGUID(), delegate->GetGUID());
+}
+
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddNoTab) {
   // Remote entries added when there are no web states.
   model_->AddEntryRemotely(GURL("http://www.test.com/test-1"), "title",
@@ -213,6 +248,48 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisible) {
 
   // An infobar for the entry should have been added.
   EXPECT_EQ(1UL, infobar_manager->infobars().size());
+}
+
+// Tests that when multiple remote entries are added while the active WebState
+// is not visible, showing the WebState creates an InfoBar for the most
+// recently shared entry.
+TEST_F(SendTabToSelfBrowserAgentTest,
+       TestRemoteAddMultipleNotVisiblePicksMostRecent) {
+  web::WebState* web_state =
+      AppendNewWebState(GURL("http://www.blank.com"),
+                        /*activate=*/true, /*is_visible=*/false);
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+
+  const base::Time now = base::Time::Now();
+  std::vector<FakeSendTabToSelfModel::RemoteEntryParams> entry_params(3);
+  entry_params[0].url = GURL("http://www.test.com/older");
+  entry_params[0].shared_time = now - base::Seconds(10);
+  entry_params[1].url = GURL("http://www.test.com/newest");
+  entry_params[1].shared_time = now;
+  entry_params[2].url = GURL("http://www.test.com/older-still");
+  entry_params[2].shared_time = now - base::Seconds(5);
+
+  std::vector<const SendTabToSelfEntry*> entries =
+      model_->AddEntriesRemotely(std::move(entry_params));
+  ASSERT_EQ(3UL, entries.size());
+
+  // No visible web state, so expect no infobar.
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+
+  // Show the web state.
+  web_state->WasShown();
+
+  // Only one infobar should be added, corresponding to the entry with the
+  // latest shared timestamp (index 1), even though it is not at the end of the
+  // vector.
+  ASSERT_EQ(1UL, infobar_manager->infobars().size());
+  infobars::InfoBar* infobar = infobar_manager->infobars()[0];
+  auto* delegate =
+      static_cast<send_tab_to_self::IOSSendTabToSelfInfoBarDelegate*>(
+          infobar->delegate());
+  EXPECT_EQ(entries[1]->GetGUID(), delegate->GetGUID());
 }
 
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotActive) {

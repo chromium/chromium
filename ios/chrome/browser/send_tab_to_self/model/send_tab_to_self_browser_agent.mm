@@ -16,6 +16,7 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
+#import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -65,6 +66,18 @@ void RemoveInfoBarsForGUIDs(web::WebState* web_state,
   for (infobars::InfoBar* infobar : infobars_to_remove) {
     infobar_manager->RemoveInfoBar(infobar);
   }
+}
+
+// Returns the most recently shared SendTabToSelfEntry from a span of entries.
+const send_tab_to_self::SendTabToSelfEntry* GetMostRecentlySharedEntry(
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const> entries) {
+  CHECK(!entries.empty());
+  auto max_it = std::ranges::max_element(
+      entries, [](const send_tab_to_self::SendTabToSelfEntry* first_entry,
+                  const send_tab_to_self::SendTabToSelfEntry* second_entry) {
+        return first_entry->GetSharedTime() < second_entry->GetSharedTime();
+      });
+  return *max_it;
 }
 
 }  // namespace
@@ -149,7 +162,8 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
       // Only display the infobar banner if the active WebState is currently
       // visible (i.e., user is not in the Tab Grid screen or a Settings page).
       if (web_state->IsVisible()) {
-        DisplayInfoBar(web_state, new_entries.back(), new_entries.size());
+        DisplayInfoBar(web_state, GetMostRecentlySharedEntry(new_entries),
+                       new_entries.size());
       }
     } else {
       for (size_t ii = 0; ii < new_entries.size(); ++ii) {
@@ -172,19 +186,17 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
       web_state_observation_.Observe(pending_web_state_.get());
     }
 
-
-    // Pick the most recent entry since only one Infobar can be shown at a time.
-    // TODO(crbug.com/40619532): Create a function that returns the most
-    // recently shared entry.
-    pending_entry_ = new_entries.back();
+    // Pick the most recently shared entry since only one infobar can be shown
+    // at a time.
+    pending_entry_ = GetMostRecentlySharedEntry(new_entries);
 
     return;
   }
 
-  // Since we can only show one infobar at the time, pick the most recent entry.
-  // TODO(crbug.com/40619532): Create a function that returns the most recently
+  // Since only one infobar can be shown at a time, pick the most recently
   // shared entry.
-  DisplayInfoBar(web_state, new_entries.back(), new_entries.size());
+  DisplayInfoBar(web_state, GetMostRecentlySharedEntry(new_entries),
+                 new_entries.size());
 }
 
 void SendTabToSelfBrowserAgent::DismissEntries(
@@ -363,7 +375,10 @@ void SendTabToSelfBrowserAgent::CheckAndOpenPendingEntriesIfBrowserVisible() {
             kTabsOpenedInBackgroundUponActivation);
   }
   if (web_state->IsVisible()) {
-    DisplayInfoBar(web_state, pending_entries.back(), pending_entries.size());
+    // Show an infobar for the most recently shared entry among the pending
+    // entries.
+    DisplayInfoBar(web_state, GetMostRecentlySharedEntry(pending_entries),
+                   pending_entries.size());
   }
 }
 

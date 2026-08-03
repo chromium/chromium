@@ -150,6 +150,7 @@ source_set("unit_tests") {
     ":user_data",
     "//base",
     "//base/test:test_support",
+    "//components/infobars/core",
     "//components/send_tab_to_self",
     "//components/send_tab_to_self:test_support",
     "//components/sync",
