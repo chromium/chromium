@@ -115,6 +115,10 @@ bool IsSyncWalletPrivatePassesEnabled() {
   return base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
 }
 
+bool IsSyncWalletShoppingEnabled() {
+  return base::FeatureList::IsEnabled(features::kAutofillAiWalletShopping);
+}
+
 // Returns if the entity `change` should be uploaded to AUTOFILL_VALUABLE.
 bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
   switch (change.data_model().record_type()) {
@@ -169,7 +173,7 @@ bool IsPassTypeEnabled(EntityTypeName entity_name) {
       return IsSyncWalletPrivatePassesEnabled();
     case EntityTypeName::kOrder:
     case EntityTypeName::kShipment:
-      return false;
+      return IsSyncWalletShoppingEnabled();
   }
 }
 
@@ -206,8 +210,7 @@ ValuableSyncBridge::ValuableSyncBridge(
   }
 
   if (IsSyncWalletFlightReservationsEnabled() ||
-      IsSyncWalletVehicleRegistrationsEnabled() ||
-      IsSyncWalletPrivatePassesEnabled()) {
+      IsSyncWalletVehicleRegistrationsEnabled()) {
     scoped_observation_.Observe(web_data_backend_.get());
   }
 
@@ -286,7 +289,7 @@ ValuableDatabaseOperationResult ValuableSyncBridge::HandleDeleteRequest(
 
   if (!IsSyncWalletFlightReservationsEnabled() &&
       !IsSyncWalletVehicleRegistrationsEnabled() &&
-      !IsSyncWalletPrivatePassesEnabled()) {
+      !IsSyncWalletPrivatePassesEnabled() && !IsSyncWalletShoppingEnabled()) {
     return ValuableDatabaseOperationResult::kNoChange;
   }
   EntityInstance::EntityId entity_id(storage_key);
@@ -497,9 +500,7 @@ bool ValuableSyncBridge::IsEntityDataValid(
       return IsSyncWalletPrivatePassesEnabled();
     case sync_pb::AutofillValuableSpecifics::kOrder:
     case sync_pb::AutofillValuableSpecifics::kShipment:
-      // TODO(crbug.com/541119872): Add feature flag controlling orders and
-      // shipments.
-      return false;
+      return IsSyncWalletShoppingEnabled();
     case sync_pb::AutofillValuableSpecifics::kEventTicket:
     case sync_pb::AutofillValuableSpecifics::kTransitPass:
     case sync_pb::AutofillValuableSpecifics::kOffer:
@@ -729,8 +730,7 @@ void ValuableSyncBridge::EntityInstanceChanged(
     const EntityInstanceChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsSyncWalletFlightReservationsEnabled() &&
-      !IsSyncWalletVehicleRegistrationsEnabled() &&
-      !IsSyncWalletPrivatePassesEnabled()) {
+      !IsSyncWalletVehicleRegistrationsEnabled()) {
     return;
   }
 
