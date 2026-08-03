@@ -918,29 +918,6 @@ TEST_F(AccountPreviewDataServiceTest, LogsFetchTriggerCause) {
       "Signin.AccountPreview.SuccessfulFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::kPeriodicRefresh, 1);
 }
-
-TEST_F(AccountPreviewDataServiceTest, LogsTriggerCauseWithAllCachesAvailable) {
-  base::HistogramTester histograms;
-
-  // Make account available and cache it.
-  MockSuccessfulFetch(&test_url_loader_factory_);
-  base::RunLoop run_loop;
-  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-  AccountInfo account_info =
-      identity_test_env_.MakeAccountAvailable("user@gmail.com");
-  run_loop.Run();
-
-  ASSERT_TRUE(service_->GetAccountPreviewData(account_info.gaia).has_value());
-
-  // Trigger a new update for the same account. Since it's already cached,
-  // gaia_ids_to_fetch will be empty (all caches available).
-  identity_test_env_.SetRefreshTokenForAccount(account_info.account_id);
-
-  histograms.ExpectUniqueSample(
-      "Signin.AccountPreview.TriggerCauseWithAllCachesAvailable",
-      AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenUpdated,
-      1);
-}
 #endif
 
 TEST_F(AccountPreviewDataServiceTest, LogsPercentAccountsToFetch) {

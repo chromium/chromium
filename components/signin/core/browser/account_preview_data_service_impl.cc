@@ -259,8 +259,12 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
     account_id_to_gaia_id_[account.account_id] = account.gaia;
   }
 
+  // Do not perform any fetch in case the previous list used to compute the
+  // preferred data is exactly equiavlent to the current list of accounts. This
+  // will directly be false for all periodic refreshes since the previous list
+  // and results are cleared during periodic refreshes.
   if (switches::kAccountPreviewDataPersistAccounts.Get() &&
-      cached_data_.empty() && !HaveAccountsMutatedSinceLastFetch(accounts)) {
+      !HaveAccountsMutatedSinceLastFetch(accounts)) {
     base::UmaHistogramEnumeration(
         "Signin.AccountPreview.TriggerCauseAccountsUnchangedSinceLastFetch",
         cause);
@@ -278,18 +282,11 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
       gaia_ids_to_fetch.push_back(account.gaia);
     }
   }
-
-  if (gaia_ids_to_fetch.empty()) {
-    base::UmaHistogramEnumeration(
-        "Signin.AccountPreview.TriggerCauseWithAllCachesAvailable", cause);
-
-    // If there are no new accounts to fetch, we can just skip this request.
-    // - if there are on-going fetches, they will be cleared (via
-    // `OnRefreshTokenRemovedForAccount()`) or finalized when the result is
-    // fetched.
-    // - otherwise, there no need to force recomputing the preferred account.
-    return;
-  }
+  // Given the above optimization (using `HaveAccountsMutatedSinceLastFetch()`)
+  // that would prevent fetching data if the account list matches exactly the
+  // previously used list to compute the preferred account, then there must be
+  // at least one account to fetch.
+  CHECK(!gaia_ids_to_fetch.empty());
 
   RecordSuccessfulFetchingMetrics(pref_service_, accounts.size(),
                                   gaia_ids_to_fetch.size(), cause);
