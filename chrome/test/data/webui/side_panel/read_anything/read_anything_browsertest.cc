@@ -361,14 +361,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarSettingsMenu) {
                    "mocha.run()");
 }
 
-class ImmersiveReadAnythingWithReadabilityMochaTest
+class ReadAnythingWithReadabilityMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:
-  ImmersiveReadAnythingWithReadabilityMochaTest() {
+  ReadAnythingWithReadabilityMochaTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kImmersiveReadAnything,
-         features::kReadAnythingWithReadability},
-        {});
+        {features::kReadAnythingWithReadability}, {});
   }
 
  private:
@@ -381,21 +379,21 @@ class ImmersiveReadAnythingWithReadabilityMochaTest
 #else
 #define MAYBE_ReadabilityImageClassifier ReadabilityImageClassifier
 #endif
-IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingWithReadabilityMochaTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingWithReadabilityMochaTest,
                        MAYBE_ReadabilityImageClassifier) {
   RunSidePanelTest(
       "side_panel/read_anything/readability_image_classifier_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingWithReadabilityMochaTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingWithReadabilityMochaTest,
                        ReadabilityContentProcessing) {
   RunSidePanelTest(
       "side_panel/read_anything/readability_content_processing_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingWithReadabilityMochaTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingWithReadabilityMochaTest,
                        ReadabilityAnchorsIntegration) {
   RunSidePanelTest(
       "side_panel/read_anything/readability_anchors_integration_test.js",
