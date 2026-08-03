@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "cloud_content_scanning_helper.h",
+    "cloud_content_scanning_helper.mm",
     "download_protection_metrics.h",
     "download_protection_metrics.mm",
     "files_request_handler_ios.h",
@@ -16,8 +18,6 @@ source_set("model") {
     "ios_content_analysis_request.mm",
     "pasteboard_content_handler_ios.h",
     "pasteboard_content_handler_ios.mm",
-    "scan_decision_helper.h",
-    "scan_decision_helper.mm",
   ]
   deps = [
     "//components/enterprise/connectors/core",
@@ -54,11 +54,11 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "cloud_content_scanning_helper_unittest.mm",
     "files_request_handler_ios_unittest.mm",
     "ios_cloud_binary_upload_service_unittest.mm",
     "ios_content_analysis_request_unittest.mm",
     "pasteboard_content_handler_ios_unittest.mm",
-    "scan_decision_helper_unittest.mm",
   ]
   deps = [
     ":model",

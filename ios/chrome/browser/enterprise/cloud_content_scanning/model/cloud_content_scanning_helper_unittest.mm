@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
 
+#import "base/files/file_path.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/test_future.h"
@@ -24,13 +25,17 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace enterprise_connectors {
 
-// Unit tests for ScanDecisionHandler testing that base on the file scanning
-// result, 1. the correct warning dialog or snackbar will be shown; and 2.
-// whether the file download will be blocked.
-class ScanDecisionHelperTest : public PlatformTest {
+// Unit tests for CloudContentScanningHelper testing:
+// 1. Starting the cloud content scanning process and preparing scanning
+// resources correctly.
+// 2. Handling the scan decision and displaying correct warning
+// dialogs/snackbars based on results.
+// 3. Ensuring file downloads are allowed or blocked as expected.
+class CloudContentScanningHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     TestProfileIOS::Builder profile_builder;
@@ -86,7 +91,7 @@ class ScanDecisionHelperTest : public PlatformTest {
 };
 
 // Tests that file download can proceed if scan result is success.
-TEST_F(ScanDecisionHelperTest, ScanResultSuccess) {
+TEST_F(CloudContentScanningHelperTest, ScanResultSuccess) {
   base::test::TestFuture<bool> future;
 
   RequestHandlerResult result =
@@ -99,7 +104,7 @@ TEST_F(ScanDecisionHelperTest, ScanResultSuccess) {
 
 // Tests that file download can proceed if scan result is warning and user
 // choose to ignore.
-TEST_F(ScanDecisionHelperTest, ScanResultWarnProcceed) {
+TEST_F(CloudContentScanningHelperTest, ScanResultWarnProcceed) {
   base::test::TestFuture<bool> future;
 
   RequestHandlerResult result =
@@ -113,7 +118,7 @@ TEST_F(ScanDecisionHelperTest, ScanResultWarnProcceed) {
 
 // Tests that file download is blocked if scan result is warning and user
 // choose to cancel.
-TEST_F(ScanDecisionHelperTest, ScanResultWarnCancel) {
+TEST_F(CloudContentScanningHelperTest, ScanResultWarnCancel) {
   base::test::TestFuture<bool> future;
 
   RequestHandlerResult result =
@@ -126,7 +131,7 @@ TEST_F(ScanDecisionHelperTest, ScanResultWarnCancel) {
 }
 
 // Tests that file download is blocked if scan result is file too large.
-TEST_F(ScanDecisionHelperTest, ScanResultLargeFiles) {
+TEST_F(CloudContentScanningHelperTest, ScanResultLargeFiles) {
   base::test::TestFuture<bool> future;
 
   OCMExpect([mock_snackbar_handler_
@@ -141,7 +146,7 @@ TEST_F(ScanDecisionHelperTest, ScanResultLargeFiles) {
 }
 
 // Tests that file download is blocked if scan result is failure.
-TEST_F(ScanDecisionHelperTest, ScanResultFailure) {
+TEST_F(CloudContentScanningHelperTest, ScanResultFailure) {
   base::test::TestFuture<bool> future;
 
   OCMExpect([mock_snackbar_handler_
@@ -156,7 +161,7 @@ TEST_F(ScanDecisionHelperTest, ScanResultFailure) {
 }
 
 // Tests that file download is blocked if scan result is file closed.
-TEST_F(ScanDecisionHelperTest, ScanResultClosed) {
+TEST_F(CloudContentScanningHelperTest, ScanResultClosed) {
   base::test::TestFuture<bool> future;
 
   OCMExpect([mock_snackbar_handler_
@@ -171,7 +176,7 @@ TEST_F(ScanDecisionHelperTest, ScanResultClosed) {
 }
 
 // Tests that file download is blocked if web_state is null.
-TEST_F(ScanDecisionHelperTest, NullWebState) {
+TEST_F(CloudContentScanningHelperTest, NullWebState) {
   base::test::TestFuture<bool> future;
 
   RequestHandlerResult result =
@@ -183,7 +188,7 @@ TEST_F(ScanDecisionHelperTest, NullWebState) {
 }
 
 // Tests that the scan decision UI is deferred when the WebState is not active.
-TEST_F(ScanDecisionHelperTest, DeferredNotification) {
+TEST_F(CloudContentScanningHelperTest, DeferredNotification) {
   base::test::TestFuture<bool> future;
 
   // Insert a second WebState and activate it.
@@ -212,7 +217,7 @@ TEST_F(ScanDecisionHelperTest, DeferredNotification) {
 
 // Tests that the snackbar notification is deferred when the WebState is not
 // active.
-TEST_F(ScanDecisionHelperTest, DeferredSnackbarNotification) {
+TEST_F(CloudContentScanningHelperTest, DeferredSnackbarNotification) {
   base::test::TestFuture<bool> future;
   web_state_->WasHidden();
   ASSERT_FALSE(web_state_->IsVisible());
@@ -233,7 +238,7 @@ TEST_F(ScanDecisionHelperTest, DeferredSnackbarNotification) {
 
 // Tests that closing the tab while a decision is pending correctly blocks the
 // download and cleans up.
-TEST_F(ScanDecisionHelperTest, CloseTabWithPendingDecision) {
+TEST_F(CloudContentScanningHelperTest, CloseTabWithPendingDecision) {
   base::test::TestFuture<bool> future;
   web_state_->WasHidden();
 
@@ -249,6 +254,19 @@ TEST_F(ScanDecisionHelperTest, CloseTabWithPendingDecision) {
   browser_->GetWebStateList()->CloseWebStateAt(
       0, WebStateList::ClosingReason::kUserAction);
   EXPECT_FALSE(future.Get());
+}
+
+// Tests that StartCloudContentScanning constructs
+// `FileDownloadScanningResources` correctly.
+TEST_F(CloudContentScanningHelperTest, StartCloudContentScanning) {
+  base::test::TestFuture<bool> future;
+  base::FilePath file_path(FILE_PATH_LITERAL("/path/to/fake/file.txt"));
+  FileDownloadScanningResources resources = StartCloudContentScanning(
+      web_state_, GURL("https://example.com/download"), file_path,
+      TriggerType::kSavePrompt, future.GetCallback());
+
+  EXPECT_NE(resources.content_analysis_info, nullptr);
+  EXPECT_NE(resources.files_request_handler, nullptr);
 }
 
 }  // namespace enterprise_connectors

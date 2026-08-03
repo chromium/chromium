@@ -2,15 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
 
+#import "base/check.h"
+#import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
+#import "components/enterprise/connectors/core/analysis_settings.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/policy/core/common/policy_types.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
 #import "ios/chrome/browser/enterprise/common/util.h"
+#import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -28,6 +38,7 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace enterprise_connectors {
 
@@ -278,4 +289,54 @@ void HandleScanDecision(base::WeakPtr<web::WebState> web_state,
     }
   }
 }
+
+FileDownloadScanningResources::FileDownloadScanningResources() = default;
+FileDownloadScanningResources::~FileDownloadScanningResources() = default;
+FileDownloadScanningResources::FileDownloadScanningResources(
+    FileDownloadScanningResources&&) = default;
+FileDownloadScanningResources& FileDownloadScanningResources::operator=(
+    FileDownloadScanningResources&&) = default;
+
+FileDownloadScanningResources StartCloudContentScanning(
+    web::WebState* web_state,
+    const GURL& url,
+    const base::FilePath& file_path,
+    TriggerType trigger_type,
+    base::OnceCallback<void(bool)> download_proceed) {
+  CHECK(web_state);
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+
+  std::optional<AnalysisSettings> settings = std::nullopt;
+
+  ConnectorsService* connectors_service =
+      ConnectorsServiceFactory::GetForProfile(profile);
+  if (connectors_service) {
+    settings = connectors_service->GetAnalysisSettings(
+        url, AnalysisConnector::FILE_DOWNLOADED);
+  }
+
+  auto content_analysis_info = std::make_unique<ContentAnalysisInfo>(
+      url, std::move(settings).value_or(AnalysisSettings()),
+      ContentAnalysisRequest::NORMAL_DOWNLOAD, *web_state);
+
+  auto files_request_handler_delegate =
+      std::make_unique<FilesRequestHandlerIOS>(
+          profile, file_path,
+          base::BindOnce(&HandleScanDecision, web_state->GetWeakPtr(),
+                         trigger_type, std::move(download_proceed)));
+
+  // Send the download file for enterprise DLP download content scanning.
+  auto files_request_handler = std::make_unique<FilesRequestHandlerBase>(
+      content_analysis_info.get(),
+      IOSCloudBinaryUploadServiceFactory::GetForProfile(profile), url, "",
+      DeepScanAccessPoint::DOWNLOAD, std::move(files_request_handler_delegate));
+  files_request_handler->UploadData();
+
+  FileDownloadScanningResources resources;
+  resources.content_analysis_info = std::move(content_analysis_info);
+  resources.files_request_handler = std::move(files_request_handler);
+  return resources;
+}
+
 }  // namespace enterprise_connectors
