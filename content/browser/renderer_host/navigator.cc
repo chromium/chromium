@@ -48,6 +48,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/restore_type.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -1149,15 +1150,19 @@ void Navigator::RequestOpenURL(
   params.source_render_process_id =
       render_frame_host->GetProcess()->GetDeprecatedID();
 
-  if (render_frame_host->web_ui()) {
+  if (WebUI* web_ui = render_frame_host->web_ui()) {
     // Note that we hide the referrer for Web UI pages. We don't really want
     // web sites to see a referrer of "chrome://blah" (and some chrome: URLs
     // might have search terms or other stuff we don't want to send to the
     // site), so we send no referrer.
     params.referrer = Referrer();
 
-    // Navigations in Web UI pages count as browser-initiated navigations.
-    params.is_renderer_initiated = false;
+    // Navigations in trusted Web UI pages count as browser-initiated
+    // navigations.
+    if (web_ui->GetController()->GetTrustPolicy() ==
+        WebUIController::TrustPolicy::kTrusted) {
+      params.is_renderer_initiated = false;
+    }
   }
 
   params.blob_url_loader_factory = std::move(blob_url_loader_factory);
@@ -1212,15 +1217,19 @@ void Navigator::NavigateFromFrameProxy(
   // navigation.  See https://crbug.com/495161.
   bool is_renderer_initiated = true;
   Referrer referrer_to_use(referrer);
-  if (render_frame_host->web_ui()) {
+  if (WebUI* web_ui = render_frame_host->web_ui()) {
     // Note that we hide the referrer for Web UI pages. We don't really want
     // web sites to see a referrer of "chrome://blah" (and some chrome: URLs
     // might have search terms or other stuff we don't want to send to the
     // site), so we send no referrer.
     referrer_to_use = Referrer();
 
-    // Navigations in Web UI pages count as browser-initiated navigations.
-    is_renderer_initiated = false;
+    // Navigations in trusted Web UI pages count as browser-initiated
+    // navigations.
+    if (web_ui->GetController()->GetTrustPolicy() ==
+        WebUIController::TrustPolicy::kTrusted) {
+      is_renderer_initiated = false;
+    }
   }
 
   if (is_renderer_initiated &&

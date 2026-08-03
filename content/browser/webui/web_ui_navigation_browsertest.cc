@@ -25,6 +25,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -1223,6 +1224,46 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
     EXPECT_TRUE(root->current_frame_host()->web_ui());
     EXPECT_EQ(success_url, observer.last_committed_url());
   }
+}
+
+// Verify that renderer-initiated navigations from chrome-untrusted:// frames
+// have is_renderer_initiated() == true.
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       UntrustedWebUIsAreRendererInitiated) {
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
+
+  GURL untrusted_url1(GetChromeUntrustedUIURL("test-host/title1.html"));
+  GURL untrusted_url2(GetChromeUntrustedUIURL("test-host/title2.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), untrusted_url1));
+
+  NavigationHandleObserver untrusted_observer(shell()->web_contents(),
+                                              untrusted_url2);
+  TestNavigationObserver untrusted_nav_observer(shell()->web_contents(), 1);
+  EXPECT_TRUE(
+      ExecJs(shell(), JsReplace("location.href = $1;", untrusted_url2)));
+  untrusted_nav_observer.Wait();
+  EXPECT_TRUE(untrusted_observer.has_committed());
+  EXPECT_TRUE(untrusted_observer.is_renderer_initiated());
+}
+
+// Verify that renderer-initiated navigations from trusted chrome:// frames
+// count as browser-initiated (is_renderer_initiated() == false).
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       TrustedWebUIsAreBrowserInitiated) {
+  GURL trusted_url1(GetWebUIURL("web-ui/title1.html"));
+  GURL trusted_url2(GetWebUIURL("web-ui/title2.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), trusted_url1));
+
+  NavigationHandleObserver trusted_observer(shell()->web_contents(),
+                                            trusted_url2);
+  TestNavigationObserver trusted_nav_observer(shell()->web_contents(), 1);
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("location.href = $1;", trusted_url2)));
+  trusted_nav_observer.Wait();
+  EXPECT_TRUE(trusted_observer.has_committed());
+  EXPECT_FALSE(trusted_observer.is_renderer_initiated());
 }
 
 class AdditionalSchemesWebUINavigationBrowserTest : public ContentBrowserTest {
