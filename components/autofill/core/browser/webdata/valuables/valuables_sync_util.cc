@@ -75,6 +75,7 @@ void TrimPassport(sync_pb::Passport& passport) {
 void TrimDriverLicense(sync_pb::DriverLicense& driver_license) {
   driver_license.clear_owner_name();
   driver_license.clear_masked_number();
+  driver_license.clear_country_code();
   driver_license.clear_region();
   driver_license.clear_issue_date();
   driver_license.clear_expiration_date();
