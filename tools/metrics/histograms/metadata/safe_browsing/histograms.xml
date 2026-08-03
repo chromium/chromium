@@ -139,6 +139,20 @@ chromium-metrics-reviews@google.com.
   <variant name=".UrlUws" summary=""/>
 </variants>
 
+<variants name="SafeBrowsing_V5Store_Metrics">
+  <variant name=".ChromeExtMalware_v5" summary=""/>
+  <variant name=".UrlBilling_v5" summary=""/>
+  <variant name=".UrlCsdAllowlist_v5" summary=""/>
+  <variant name=".UrlCsdDownloadAllowlist_v5" summary=""/>
+  <variant name=".UrlHighConfidenceAllowlist_v5" summary=""/>
+  <variant name=".UrlMalBin_v5" summary=""/>
+  <variant name=".UrlMalware_v5" summary=""/>
+  <variant name=".UrlSoceng_v5" summary=""/>
+  <variant name=".UrlSubresourceFilter_v5" summary=""/>
+  <variant name=".UrlSuspiciousSite_v5" summary=""/>
+  <variant name=".UrlUws_v5" summary=""/>
+</variants>
+
 <variants name="SafeBrowsingCheckUrlStep">
   <variant name="DatabaseNotReadyQueueDelay"
       summary="time spent waiting in queue because database was not ready"/>
@@ -3244,7 +3258,9 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records whether a Safe Browsing store has valid data, when it is queried.
     This is logged once for every 256 times a store is checked.
   </summary>
-  <token key="Store" variants="SafeBrowsing_SBStore_Metrics"/>
+  <token key="Store" variants="SafeBrowsing_SBStore_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.SBStoreRead.Success" enum="BooleanSuccess"
@@ -4245,17 +4261,6 @@ risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V5Database.Size" units="KB"
-    expires_after="2027-06-30">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The total size of the SafeBrowsing database or files on disk in kilobytes,
-    after reading it from disk on startup and after a database update has
-    occurred for V5.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V5Database.SizeLinear" units="MB"
     expires_after="2027-06-30">
   <owner>thefrog@chromium.org</owner>
@@ -4293,7 +4298,7 @@ risk. -->
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V5Database.Size{Store}_v5" units="KB"
+<histogram name="SafeBrowsing.V5Database.Size{Store}" units="KB"
     expires_after="2027-06-30">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -4302,7 +4307,9 @@ risk. -->
     reading it from disk on startup and after a database update has occurred for
     V5.
   </summary>
-  <token key="Store" variants="SafeBrowsing_SBStore_Metrics"/>
+  <token key="Store" variants="SafeBrowsing_V5Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.V5Database.UpdateLatency" units="ms"
@@ -4372,7 +4379,7 @@ risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result{Store}_v5"
+<histogram name="SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result{Store}"
     enum="SafeBrowsingV5ApplyUpdateResult" expires_after="never">
 <!-- expires-never: This reports the reason for the failure to use the Safe
 Browsing database present on user's disk upon launch for V5. Having this information
@@ -4385,7 +4392,9 @@ parsed correctly. -->
     Track the result of applying a V5StoreFileFormat read from disk after
     parsing it successfully as a protobuf for V5.
   </summary>
-  <token key="Store" variants="SafeBrowsing_SBStore_Metrics"/>
+  <token key="Store" variants="SafeBrowsing_V5Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -4411,15 +4420,17 @@ parsed correctly. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V5Store.IsStoreValid{Store}_v5"
-    enum="BooleanValid" expires_after="2027-05-05">
+<histogram name="SafeBrowsing.V5Store.IsStoreValid{Store}" enum="BooleanValid"
+    expires_after="2027-05-05">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether a v5 store has valid data, when it is queried. This is
     logged once for every 256 times a store is checked.
   </summary>
-  <token key="Store" variants="SafeBrowsing_SBStore_Metrics"/>
+  <token key="Store" variants="SafeBrowsing_V5Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.V5Store.V4ToV5Migration.TimeTaken{Store}"
@@ -4430,7 +4441,7 @@ parsed correctly. -->
     Records how long it took to perform the V4 to V5 migration for a store on
     disk. Recorded when migration is attempted.
   </summary>
-  <token key="Store" variants="SafeBrowsing_SBStore_Metrics"/>
+  <token key="Store" variants="SafeBrowsing_V5Store_Metrics"/>
 </histogram>
 
 <histogram name="SafeBrowsing.V5Store.V4ToV5Migration.V4ReadFailureReason"
@@ -4958,18 +4969,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="SafeBrowsingV5OrSB" variants="SafeBrowsingV5OrSB"/>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.{V5ProcessUpdateType}.ApplyUpdate.Result{SafeBrowsing_SBStore_Metrics}"
+<histogram name="SafeBrowsing.{V5ProcessUpdateType}.ApplyUpdate.Result{Store}"
     enum="SafeBrowsingV5ApplyUpdateResult" expires_after="2027-06-16">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The result of applying a {V5ProcessUpdateType} received from the PVer5
-    SafeBrowsing service. {SafeBrowsing_SBStore_Metrics}
+    SafeBrowsing service.
   </summary>
   <token key="V5ProcessUpdateType" variants="V5ProcessUpdateType"/>
-  <token key="SafeBrowsing_SBStore_Metrics"
-      variants="SafeBrowsing_SBStore_Metrics"/>
+  <token key="Store" variants="SafeBrowsing_V5Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.{V5ProcessUpdateType}.ApplyUpdateDuration"
@@ -4984,40 +4995,41 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="SafeBrowsing.{V5ProcessUpdateType}.Decode{AdditionsOrRemovals}.Result{SafeBrowsing_SBStore_Metrics}"
+    name="SafeBrowsing.{V5ProcessUpdateType}.Decode{AdditionsOrRemovals}.Result{Store}"
     enum="SafeBrowsingV5DecodeResult" expires_after="2027-06-16">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The result of decoding Rice-encoded {AdditionsOrRemovals} from
     {V5ProcessUpdateType}s received from the server.
-    {SafeBrowsing_SBStore_Metrics}
   </summary>
   <token key="V5ProcessUpdateType" variants="V5ProcessUpdateType"/>
   <token key="AdditionsOrRemovals">
     <variant name="Additions" summary="additions"/>
     <variant name="Removals" summary="removals"/>
   </token>
-  <token key="SafeBrowsing_SBStore_Metrics"
-      variants="SafeBrowsing_SBStore_Metrics"/>
+  <token key="Store" variants="SafeBrowsing_V5Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
-    name="SafeBrowsing.{V5ProcessUpdateType}.{AdditionsOrRemovals}HashesCount{SafeBrowsing_SBStore_Metrics}"
+    name="SafeBrowsing.{V5ProcessUpdateType}.{AdditionsOrRemovals}HashesCount{Store}"
     units="hashes" expires_after="2027-06-16">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of {AdditionsOrRemovals} hashes successfully decoded from a
-    {V5ProcessUpdateType}. {SafeBrowsing_SBStore_Metrics}
+    {V5ProcessUpdateType}.
   </summary>
   <token key="V5ProcessUpdateType" variants="V5ProcessUpdateType"/>
   <token key="AdditionsOrRemovals">
     <variant name="Additions" summary="additions"/>
     <variant name="Removals" summary="removals"/>
   </token>
-  <token key="SafeBrowsing_SBStore_Metrics"
-      variants="SafeBrowsing_SBStore_Metrics"/>
+  <token key="Store" variants="SafeBrowsing_V5Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.DlpResult"
