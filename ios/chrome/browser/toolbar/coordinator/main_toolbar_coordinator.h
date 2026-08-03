@@ -65,6 +65,9 @@
 /// orchestrator.
 - (void)updateToolbar;
 
+/// Updates the omnibox position when the associated browser becomes active.
+- (void)updateToolbarPositionForActiveBrowser;
+
 /// YES when a prerendered webstate is being inserted into a webStateList.
 - (BOOL)isLoadingPrerenderer;
 

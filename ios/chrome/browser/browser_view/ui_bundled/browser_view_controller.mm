@@ -120,6 +120,8 @@
 
 namespace {
 
+BASE_FEATURE(kIOSBottomToolbarFixKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+
 enum HeaderBehaviour {
   // The header moves completely out of the screen.
   Hideable = 0,
@@ -1132,6 +1134,17 @@ bool IsFullscreenNextIAEnabled() {
   if (self.viewForCurrentWebState) {
     [self displayTabView];
   }
+}
+
+- (void)viewIsAppearing:(BOOL)animated {
+  [super viewIsAppearing:animated];
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
+  if (base::FeatureList::IsEnabled(kIOSBottomToolbarFixKillSwitch)) {
+    return;
+  }
+  [self.toolbarCoordinator updateToolbarPositionForActiveBrowser];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

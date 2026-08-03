@@ -477,6 +477,13 @@ inline LayoutStateToolbarPassKey PassKey() {
   }
 }
 
+- (void)updateToolbarPositionForActiveBrowser {
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
+  [self.legacyToolbarMediator setInitialOmniboxPosition];
+}
+
 - (BOOL)isLoadingPrerenderer {
   if (!_started) {
     return NO;
