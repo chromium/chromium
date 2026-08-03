@@ -25,6 +25,11 @@
 
 namespace optimization_guide {
 
+// Files expected to be in the on device model adaptation bundle.
+inline constexpr base::FilePath::CharType
+    kOnDeviceModelAdaptationWeightsFile[] =
+        FILE_PATH_LITERAL("adaptation_weights.bin");
+
 class OnDeviceModelFeatureAdapter;
 class OnDeviceModelMetadata;
 class OptimizationGuideModelProvider;

@@ -31,13 +31,6 @@ extern const base::FilePath::CharType kProgramCacheFile[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[];
 
-
-// Files expected to be in the on device model adaptation bundle.
-// TODO: crbug.com/514743962 - Move this to the only file that uses it:
-// components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.cc
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType kOnDeviceModelAdaptationWeightsFile[];
-
 // Minimum VRAM required for audio input support (6GB).
 // TODO: crbug.com/514743962 - Move this to the only file that uses it:
 // components/optimization_guide/core/model_execution/performance_class.cc
