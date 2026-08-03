@@ -1536,6 +1536,8 @@ void BrowserView::OnVerticalTabStripModeChanged(
         browser_->tab_strip_model());
     selection_state.SetActiveTab(active_tab);
     selection_state.SetAnchorTab(active_tab);
+    selection_state.set_focused_group(
+        browser_->tab_strip_model()->GetFocusedGroup());
     browser_->tab_strip_model()->SetSelectionFromModel(
         std::move(selection_state));
   }
@@ -1546,6 +1548,10 @@ void BrowserView::OnVerticalTabStripModeChanged(
   } else {
     vertical_tab_strip_region_view_->ResetTabStrip();
     horizontal_tab_strip_region_view_->InitializeTabStrip();
+  }
+
+  if (auto focused_group = browser_->tab_strip_model()->GetFocusedGroup()) {
+    tab_strip_view()->OnTabGroupFocusChanged(focused_group, std::nullopt);
   }
 
   GetFrameView()->OnTabStripStateChanged();

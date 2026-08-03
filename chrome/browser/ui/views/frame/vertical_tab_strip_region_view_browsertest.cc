@@ -17,10 +17,12 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
@@ -1578,4 +1580,109 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       active_view, scroll_view->contents(), active_view->GetLocalBounds());
   int current_offset = scroll_view->GetVisibleRect().y();
   EXPECT_LE(current_offset, active_bounds.y());
+}
+
+class VerticalTabStripFocusModeLegacyTest
+    : public VerticalTabStripRegionViewTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({features::kTabGroupsFocusing, {}});
+    return enabled;
+  }
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {tabs::kTabStripUnification};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeLegacyTest,
+                       ToggleOrientationPreservesFocusMode) {
+  // Start in horizontal mode.
+  ExitVerticalTabsMode();
+  EXPECT_FALSE(state_controller()->ShouldDisplayVerticalTabs());
+
+  // Create 3 tabs: Tab 0 (ungrouped), Tab 1 and Tab 2 in a group.
+  AppendTab();
+  AppendTab();
+  ASSERT_EQ(3, tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      tab_strip_model()->AddToNewGroup({1, 2});
+
+  // Activate a tab within the group.
+  tab_strip_model()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  // Focus the tab group.
+  tab_strip_model()->SetFocusedGroup(group_id);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
+
+  // Switch to vertical tabs mode.
+  EnterVerticalTabsMode();
+  EXPECT_TRUE(state_controller()->ShouldDisplayVerticalTabs());
+
+  // Focus state must be preserved and no crash.
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
+
+  // Switch back to horizontal tabs mode.
+  ExitVerticalTabsMode();
+  EXPECT_FALSE(state_controller()->ShouldDisplayVerticalTabs());
+
+  // Focus state must be preserved and no crash.
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
+}
+
+class VerticalTabStripFocusModeUnifiedTest
+    : public VerticalTabStripRegionViewTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({features::kTabGroupsFocusing, {}});
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
+                       ToggleOrientationPreservesFocusMode) {
+  // Start in horizontal mode.
+  ExitVerticalTabsMode();
+  EXPECT_FALSE(state_controller()->ShouldDisplayVerticalTabs());
+
+  // Create 3 tabs: Tab 0 (ungrouped), Tab 1 and Tab 2 in a group.
+  AppendTab();
+  AppendTab();
+  ASSERT_EQ(3, tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      tab_strip_model()->AddToNewGroup({1, 2});
+
+  // Activate a tab within the group.
+  tab_strip_model()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  // Focus the tab group.
+  tab_strip_model()->SetFocusedGroup(group_id);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
+
+  // Switch to vertical tabs mode.
+  EnterVerticalTabsMode();
+  EXPECT_TRUE(state_controller()->ShouldDisplayVerticalTabs());
+
+  // Focus state must be preserved and no crash.
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
+
+  // Switch back to horizontal tabs mode.
+  ExitVerticalTabsMode();
+  EXPECT_FALSE(state_controller()->ShouldDisplayVerticalTabs());
+
+  // Focus state must be preserved and no crash.
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 }
