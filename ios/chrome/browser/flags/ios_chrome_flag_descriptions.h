@@ -1132,6 +1132,11 @@ inline constexpr char kIOSSaveToPhotosSignedOutName[] =
 inline constexpr char kIOSSaveToPhotosSignedOutDescription[] =
     "Enables the Save to Photos feature to signed out users.";
 
+inline constexpr char kIOSSettingsDefaultBrowserPromoV2Name[] =
+    "Settings Default Browser Promo V2";
+inline constexpr char kIOSSettingsDefaultBrowserPromoV2Description[] =
+    "When enabled, shows the Default Browser Promo V2 in Settings.";
+
 inline constexpr char kIOSSoftLockName[] = "Soft Lock on iOS";
 inline constexpr char kIOSSoftLockDescription[] =
     "Enables experimental Soft Lock on iOS.";
