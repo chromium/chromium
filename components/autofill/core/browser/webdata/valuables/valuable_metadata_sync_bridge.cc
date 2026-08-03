@@ -476,6 +476,8 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
           case sync_pb::AutofillValuableMetadataSpecifics::REDRESS_NUMBER:
           case sync_pb::AutofillValuableMetadataSpecifics::
               KNOWN_TRAVELER_NUMBER:
+          case sync_pb::AutofillValuableMetadataSpecifics::ORDER:
+          case sync_pb::AutofillValuableMetadataSpecifics::SHIPMENT:
           // Treat `PASS_TYPE_UNSPECIFIED` as `EntityMetadata` for backward
           // compatibility with entries created before the `pass_type` field was
           // introduced.

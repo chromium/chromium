@@ -760,7 +760,10 @@ TEST(EntitySyncUtilTest, EntityTypeToPassType) {
             sync_pb::AutofillValuableMetadataSpecifics::REDRESS_NUMBER);
   EXPECT_EQ(EntityTypeToPassType(EntityType(kKnownTravelerNumber)),
             sync_pb::AutofillValuableMetadataSpecifics::KNOWN_TRAVELER_NUMBER);
-  EXPECT_FALSE(EntityTypeToPassType(EntityType(kOrder)).has_value());
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kOrder)),
+            sync_pb::AutofillValuableMetadataSpecifics::ORDER);
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kShipment)),
+            sync_pb::AutofillValuableMetadataSpecifics::SHIPMENT);
 }
 
 // Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes

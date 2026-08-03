@@ -28,6 +28,8 @@ message AutofillValuableMetadataSpecifics {
     NATIONAL_ID_CARD = 6;
     REDRESS_NUMBER = 7;
     KNOWN_TRAVELER_NUMBER = 8;
+    ORDER = 9;
+    SHIPMENT = 10;
   }
 
   // The id of the Valuabe this metadata belongs to. Used as the client tag.

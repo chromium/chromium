@@ -293,25 +293,6 @@ TEST_F(ValuableMetadataSyncBridgeTest,
               UnorderedElementsAre(vehicle1.metadata(), vehicle2.metadata()));
 }
 
-// Test that MergeFullSyncData() ignores the local data without a `PassType`.
-TEST_F(ValuableMetadataSyncBridgeTest,
-       MergeFullSyncData_IgnoresLocalDataWithoutPassType) {
-  // Orders are not supported by the bridge.
-  entity_table().AddOrUpdateEntityInstance(
-      MaskEntityInstance(test::GetOrderEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet})));
-
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
-                             syncer::AUTOFILL_VALUABLE_METADATA));
-
-  EXPECT_FALSE(bridge()
-                   .MergeFullSyncData(bridge().CreateMetadataChangeList(),
-                                      syncer::EntityChangeList())
-                   .has_value());
-}
-
 // Test that MergeFullSyncData() correctly merges remote data for loyalty card
 // valuable metadata when there is no local data and the
 // `kSyncLoyaltyCardMetadata` feature is enabled.
@@ -714,18 +695,6 @@ TEST_F(ValuableMetadataSyncBridgeTest,
                                    national_id.metadata().guid.value()));
 }
 
-// Tests that GetAllData() ignores metadata entries without a `PassType`.
-TEST_F(ValuableMetadataSyncBridgeTest,
-       GetAllData_IgnoresMetadataWithoutPassType) {
-  // Orders are not supported by the bridge.
-  entity_table().AddOrUpdateEntityInstance(test::GetOrderEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet}));
-
-  std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
-  ASSERT_TRUE(batch);
-  EXPECT_FALSE(batch->HasNext());
-}
-
 // Tests that GetDataForCommit() returns the specified `EntityMetadata` entries.
 TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit_EntityMetadata) {
   const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
@@ -880,29 +849,6 @@ TEST_F(ValuableMetadataSyncBridgeTest,
   bridge().ServerEntityInstanceMetadataChanged(
       EntityInstanceMetadataChange(EntityInstanceMetadataChange::UPDATE,
                                    vehicle.guid(), vehicle.metadata()));
-}
-
-// Tests that `ServerEntityInstanceMetadataChanged()` ignores metadata entries
-// without a `PassType`.
-TEST_F(
-    ValuableMetadataSyncBridgeTest,
-    ServerEntityInstanceMetadataChanged_AddUpdate_IgnoresMetadataWithoutPassType) {
-  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
-  // Order are not supported by the bridge.
-  const EntityInstance order_number =
-      MaskEntityInstance(test::GetOrderEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet}));
-  entity_table().AddOrUpdateEntityInstance(order_number);
-
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  bridge().ServerEntityInstanceMetadataChanged(EntityInstanceMetadataChange(
-      EntityInstanceMetadataChange::ADD, order_number.guid(),
-      order_number.metadata()));
-
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  bridge().ServerEntityInstanceMetadataChanged(EntityInstanceMetadataChange(
-      EntityInstanceMetadataChange::UPDATE, order_number.guid(),
-      order_number.metadata()));
 }
 
 // Tests that `ServerEntityInstanceMetadataChanged()` includes unknown fields

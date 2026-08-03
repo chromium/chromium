@@ -828,9 +828,9 @@ EntityTypeToPassType(EntityType entity_type) {
     case EntityTypeName::kRedressNumber:
       return sync_pb::AutofillValuableMetadataSpecifics::REDRESS_NUMBER;
     case EntityTypeName::kOrder:
+      return sync_pb::AutofillValuableMetadataSpecifics::ORDER;
     case EntityTypeName::kShipment:
-      // Those entity types are not synced.
-      return std::nullopt;
+      return sync_pb::AutofillValuableMetadataSpecifics::SHIPMENT;
   }
   NOTREACHED();
 }

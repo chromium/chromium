@@ -1124,7 +1124,7 @@ const char* ProtoEnumToString(sync_pb::SkillSource skill_source) {
 const char* ProtoEnumToString(
     sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::AutofillValuableMetadataSpecifics, PassType,
-                     PASS_TYPE_UNSPECIFIED, KNOWN_TRAVELER_NUMBER);
+                     PASS_TYPE_UNSPECIFIED, SHIPMENT);
   switch (pass_type) {
     ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics,
               PASS_TYPE_UNSPECIFIED);
@@ -1137,6 +1137,8 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, REDRESS_NUMBER);
     ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics,
               KNOWN_TRAVELER_NUMBER);
+    ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, ORDER);
+    ENUM_CASE(sync_pb::AutofillValuableMetadataSpecifics, SHIPMENT);
   }
 }
 
