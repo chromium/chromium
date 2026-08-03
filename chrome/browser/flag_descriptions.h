@@ -2531,6 +2531,13 @@ inline constexpr char kCWSInfoFastCheckDescription[] =
     "When enabled, Chrome checks and fetches metadata for installed extensions "
     "more frequently.";
 
+inline constexpr char kCWSReviewPromptingNativeUIName[] =
+    "CWS Review Prompting Native UI";
+inline constexpr char kCWSReviewPromptingNativeUIDescription[] =
+    "Enables native UI affordances (e.g., in the Extensions menu and "
+    "management page) for leaving reviews on installed Chrome Web Store "
+    "extensions.";
+
 inline constexpr char kExtensionDisableUnsupportedDeveloperName[] =
     "Extension Disable Unsupported Developer";
 inline constexpr char kExtensionDisableUnsupportedDeveloperDescription[] =

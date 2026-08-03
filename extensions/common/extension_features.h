@@ -125,6 +125,10 @@ BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 // URLs in worker scripts and subresources.
 BASE_DECLARE_FEATURE(kComponentExtensionAllowWorkerChromeResources);
 
+// Gates native UI affordances for leaving reviews on installed Chrome Web Store
+// extensions.
+BASE_DECLARE_FEATURE(kCWSReviewPromptingNativeUI);
+
 // If enabled, <webview>s will be allowed to request permission from an
 // embedding Chrome App to request access to Human Interface Devices.
 BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
