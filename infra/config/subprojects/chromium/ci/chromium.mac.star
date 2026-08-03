@@ -730,7 +730,7 @@ ci.thin_tester(
                 ci_only = True,
                 swarming = targets.swarming(
                     # crbug.com/1361887, crbug.com/509389281
-                    shards = 35,
+                    shards = 40,
                 ),
             ),
             "content_browsertests": targets.mixin(
@@ -740,7 +740,7 @@ ci.thin_tester(
             ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 6,
+                    shards = 8,
                 ),
             ),
             "sync_integration_tests": targets.mixin(
