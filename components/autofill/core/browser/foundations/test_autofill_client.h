@@ -80,6 +80,8 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/personal_context/first_run/personal_context_first_run_service.h"
+#include "components/personal_context/first_run/test_personal_context_first_run_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
@@ -562,19 +564,11 @@ class TestAutofillClientTemplate : public T {
     return test_addresses_;
   }
 
-  bool ShouldShowPersonalContextAmbientAutofillNotice() const override {
-    return should_show_personal_context_ambient_autofill_notice_;
+  personal_context::TestPersonalContextFirstRunService*
+  GetPersonalContextFirstRunService() override {
+    return &personal_context_first_run_service_;
   }
-  void set_should_show_personal_context_ambient_autofill_notice(
-      bool should_show) {
-    should_show_personal_context_ambient_autofill_notice_ = should_show;
-  }
-  void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() override {
-    is_personal_context_ambient_autofill_notice_acknowledged_ = true;
-  }
-  bool is_personal_context_ambient_autofill_notice_acknowledged() const {
-    return is_personal_context_ambient_autofill_notice_acknowledged_;
-  }
+
 #if BUILDFLAG(IS_ANDROID)
   bool ShowAmbientAutoFillNotice(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override {
@@ -594,19 +588,6 @@ class TestAutofillClientTemplate : public T {
     return hide_ambient_autofill_notice_called_;
   }
 #endif
-
-  bool ShouldShowPersonalContextAtMemoryNotice() const override {
-    return should_show_personal_context_at_memory_notice_;
-  }
-  void set_should_show_personal_context_at_memory_notice(bool should_show) {
-    should_show_personal_context_at_memory_notice_ = should_show;
-  }
-  void MarkPersonalContextAtMemoryNoticeAsAcknowledged() override {
-    is_personal_context_at_memory_notice_acknowledged_ = true;
-  }
-  bool is_personal_context_at_memory_notice_acknowledged() const {
-    return is_personal_context_at_memory_notice_acknowledged_;
-  }
 
   personal_context::PersonalContextEligibilityService*
   GetPersonalContextEligibilityService() const override {
@@ -967,13 +948,12 @@ class TestAutofillClientTemplate : public T {
 
   bool is_tab_in_actor_mode_ = false;
 
-  bool should_show_personal_context_ambient_autofill_notice_ = false;
-  bool is_personal_context_ambient_autofill_notice_acknowledged_ = false;
   bool show_ambient_autofill_notice_called_ = false;
   bool show_ambient_autofill_notice_result_ = false;
   bool hide_ambient_autofill_notice_called_ = false;
-  bool should_show_personal_context_at_memory_notice_ = false;
-  bool is_personal_context_at_memory_notice_acknowledged_ = false;
+
+  personal_context::TestPersonalContextFirstRunService
+      personal_context_first_run_service_;
 
   bool is_glic_enabled_ = false;
 

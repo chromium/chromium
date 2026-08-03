@@ -102,6 +102,7 @@ enum class Channel;
 namespace personal_context {
 enum class PersonalContextEligibilityState;
 class PersonalContextEligibilityService;
+class PersonalContextFirstRunService;
 }
 
 namespace subscription_eligibility {
@@ -437,18 +438,10 @@ class AutofillClient {
   // Autocomplete and merchant promo codes.
   virtual SingleFieldFillRouter& GetSingleFieldFillRouter() = 0;
 
-  // Returns true if Autofill suggestions should include the Personal Context
-  // notice.
-  virtual bool ShouldShowPersonalContextAmbientAutofillNotice() const;
-
-  // Marks the Personal Context notice as acknowledged.
-  virtual void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
-
-  // Returns true if AtMemory UI should include the Personal Context notice.
-  virtual bool ShouldShowPersonalContextAtMemoryNotice() const;
-
-  // Marks the AtMemory Personal Context notice as acknowledged.
-  virtual void MarkPersonalContextAtMemoryNoticeAsAcknowledged();
+  // Returns the PersonalContextFirstRunService instance associated with the
+  // client.
+  virtual personal_context::PersonalContextFirstRunService*
+  GetPersonalContextFirstRunService();
 
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;

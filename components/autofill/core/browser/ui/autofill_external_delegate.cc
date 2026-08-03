@@ -87,6 +87,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/personal_context/first_run/personal_context_first_run_service.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/gfx/geometry/rect.h"
@@ -616,6 +617,24 @@ void AutofillExternalDelegate::OnSuggestionsShown(
           mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
       if (autofill_metrics::ShouldLogAutofillSuggestionShown(trigger_source_)) {
         AutofillMetrics::OnAutocompleteSuggestionsShown();
+      }
+    }
+
+    if (shown_suggestion_types.contains(
+            SuggestionType::kPersonalContextNotice)) {
+      if (personal_context::PersonalContextFirstRunService* service =
+              manager_->client().GetPersonalContextFirstRunService()) {
+        std::optional<AutofillClient::SuggestionUiSessionId> session_id =
+            manager_->client().GetSessionIdForCurrentAutofillSuggestions();
+        if (session_id) {
+          if (IsAtMemoryTriggerSource(trigger_source_)) {
+            service->RecordAtMemoryNoticeImpression(
+                session_id->GetUnsafeValue());
+          } else {
+            service->RecordAmbientAutofillNoticeImpression(
+                session_id->GetUnsafeValue());
+          }
+        }
       }
     }
   }
@@ -1175,13 +1194,15 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     // context in ambient autofill and AtMemory. The user can acknowledge it to
     // dismiss it.
     case SuggestionType::kPersonalContextNotice: {
-      if (IsAtMemoryTriggerSource(trigger_source_)) {
-        manager_->client().MarkPersonalContextAtMemoryNoticeAsAcknowledged();
-      } else {
-        // This assumes only autofill and AtMemory embed this notice. If this
-        // changes in the future, this needs to be updated.
-        manager_->client()
-            .MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
+      if (personal_context::PersonalContextFirstRunService* service =
+              manager_->client().GetPersonalContextFirstRunService()) {
+        if (IsAtMemoryTriggerSource(trigger_source_)) {
+          service->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
+        } else {
+          // This assumes only autofill and AtMemory embed this notice. If this
+          // changes in the future, this needs to be updated.
+          service->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
+        }
       }
       return true;
     }

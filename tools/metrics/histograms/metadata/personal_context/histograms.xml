@@ -131,6 +131,32 @@ chromium-metrics-reviews@google.com.
   <token key="ContextMemoryFeature" variants="ContextMemoryFeature"/>
 </histogram>
 
+<histogram
+    name="PersonalContext.NoticeImpressionsBeforeAck.{ContextMemoryFeature}"
+    units="counts" expires_after="2027-03-09">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records the number of times the Personal Context notice was shown to the
+    user on screen before it was explicitly acknowledged. Recorded when the user
+    acknowledges the notice.
+  </summary>
+  <token key="ContextMemoryFeature" variants="ContextMemoryFeature"/>
+</histogram>
+
+<histogram
+    name="PersonalContext.NoticeImpressionsBeforeImplicitAck.AmbientAutofill"
+    units="counts" expires_after="2027-03-09">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records the number of times the Personal Context Ambient Autofill notice was
+    shown to the user on screen before it was implicitly acknowledged (by
+    acknowledging a more comprehensive notice like AtMemory). Recorded when the
+    user acknowledges the more comprehensive notice.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

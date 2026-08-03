@@ -832,20 +832,9 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
   [commands_handler_ showSaveEntityDialog:std::move(params)];
 }
 
-bool ChromeAutofillClientIOS::ShouldShowPersonalContextAmbientAutofillNotice()
-    const {
-  personal_context::PersonalContextFirstRunService* service =
-      IOSPersonalContextFirstRunServiceFactory::GetForProfile(profile_);
-  return service && service->ShouldShowPersonalContextAmbientAutofillNotice();
-}
-
-void ChromeAutofillClientIOS::
-    MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() {
-  personal_context::PersonalContextFirstRunService* service =
-      IOSPersonalContextFirstRunServiceFactory::GetForProfile(profile_);
-  if (service) {
-    service->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
-  }
+personal_context::PersonalContextFirstRunService*
+ChromeAutofillClientIOS::GetPersonalContextFirstRunService() {
+  return IOSPersonalContextFirstRunServiceFactory::GetForProfile(profile_);
 }
 
 }  // namespace autofill

@@ -28,6 +28,7 @@ source_set("bottom_sheet") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
+    "//components/personal_context/first_run",
     "//components/prefs",
     "//components/webauthn/ios:features",
     "//ios/chrome/browser/autofill/model",

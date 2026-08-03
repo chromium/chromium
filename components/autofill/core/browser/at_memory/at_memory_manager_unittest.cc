@@ -381,7 +381,9 @@ TEST_F(AtMemoryManagerTest,
 
   SeeFormAndShowPopup();
 
-  autofill_client().set_should_show_personal_context_at_memory_notice(false);
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_at_memory_notice(false);
 
   std::vector<Suggestion> suggestions;
   EXPECT_CALL(update_callback_,
@@ -408,7 +410,9 @@ TEST_F(AtMemoryManagerTest,
 TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesDisclosureWhenEnabled) {
   SeeFormAndShowPopup();
 
-  autofill_client().set_should_show_personal_context_at_memory_notice(false);
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_at_memory_notice(false);
 
   EXPECT_CALL(
       update_callback_,
@@ -426,7 +430,9 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesDisclosureWhenEnabled) {
 TEST_F(AtMemoryManagerTest, OnFilterChanged_NoDisclosureWhenNoticePending) {
   SeeFormAndShowPopup();
 
-  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_at_memory_notice(true);
 
   EXPECT_CALL(update_callback_,
               Run(Not(Contains(Field("type", &Suggestion::type,
@@ -1672,7 +1678,9 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
 // Tests that the personal context notice is appended when the user needs to see
 // the notice.
 TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
-  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_at_memory_notice(true);
 
   SeeFormAndShowPopup();
 
@@ -1694,7 +1702,9 @@ TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
 // is appended at the end (after the search affordance suggestion).
 TEST_F(AtMemoryManagerTest,
        PersonalContext_NoticePositioning_SearchAffordance) {
-  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_at_memory_notice(true);
   SeeFormAndShowPopup();
 
   // Set up expectation for `update_callback_` when the filter text changes.
@@ -1715,7 +1725,9 @@ TEST_F(AtMemoryManagerTest,
 // Tests that after search results are returned, the personal context notice
 // is prepended at the top (before the search result suggestions).
 TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
-  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_at_memory_notice(true);
   SeeFormAndShowPopup();
 
   // Mock search results returned by the query service.
@@ -1747,7 +1759,9 @@ TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
 // receives the `kAtMemoryFetching` meta-suggestion followed by a separator and
 // the notice card if active.
 TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeActive) {
-  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_at_memory_notice(true);
   auto [form_id, field_id] = SeeForm();
   manager().OnPopupShown(
       form_id, field_id,
@@ -1773,7 +1787,9 @@ TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeActive) {
 // Tests that during the fetching state when the notice has been accepted,
 // the UI receives only `kAtMemoryFetching` meta-suggestion.
 TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeAccepted) {
-  autofill_client().set_should_show_personal_context_at_memory_notice(false);
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_at_memory_notice(false);
 
   auto [form_id, field_id] = SeeForm();
   manager().OnPopupShown(

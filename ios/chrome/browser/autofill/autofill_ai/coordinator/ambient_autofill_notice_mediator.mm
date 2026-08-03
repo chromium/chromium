@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_mediator.h"
 
 #import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/web/public/web_state.h"
@@ -61,7 +62,10 @@
   if (!client) {
     return;
   }
-  client->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
+  if (personal_context::PersonalContextFirstRunService* service =
+          client->GetPersonalContextFirstRunService()) {
+    service->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
+  }
 }
 
 @end

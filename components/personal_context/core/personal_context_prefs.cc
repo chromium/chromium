@@ -12,8 +12,14 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       kPersonalContextAmbientAutofillNoticeShouldBeShown, true);
 
+  registry->RegisterIntegerPref(
+      kPersonalContextAmbientAutofillNoticeImpressionCount, 0);
+
   registry->RegisterBooleanPref(kPersonalContextAtMemoryNoticeShouldBeShown,
                                 true);
+
+  registry->RegisterIntegerPref(kPersonalContextAtMemoryNoticeImpressionCount,
+                                0);
 
   registry->RegisterBooleanPref(kPersonalContextInAutofillSettingsToggleStatus,
                                 true);

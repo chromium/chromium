@@ -61,6 +61,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/personal_context/core/personal_context_features.h"
+#include "components/personal_context/first_run/personal_context_first_run_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -1086,11 +1087,14 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   }
 
   if (IsPersonalContextNoticeSuggestionSupported() &&
-      HasPersonalContextSuggestion(suggestions, all_entities) &&
-      client.ShouldShowPersonalContextAmbientAutofillNotice()) {
-    Suggestion& suggestion =
-        suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
-    suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+      HasPersonalContextSuggestion(suggestions, all_entities)) {
+    personal_context::PersonalContextFirstRunService* service =
+        client.GetPersonalContextFirstRunService();
+    if (service && service->ShouldShowPersonalContextAmbientAutofillNotice()) {
+      Suggestion& suggestion =
+          suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
+      suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    }
   }
 
   if (should_show_fetching_suggestions) {

@@ -41,6 +41,10 @@
 @protocol AutofillCommands;
 @class UIViewController;
 
+namespace personal_context {
+class PersonalContextFirstRunService;
+}
+
 namespace web {
 class WebState;
 }
@@ -179,8 +183,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   void ShowAutofillAiFetchEntityFailureNotification() override;
   void ShowAutofillAiPreFetchFailureNotification() override;
   void ShowAutofillAiPrivateInferenceNotice() override;
-  bool ShouldShowPersonalContextAmbientAutofillNotice() const override;
-  void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() override;
+  personal_context::PersonalContextFirstRunService*
+  GetPersonalContextFirstRunService() override;
 
   // Searches infobars managed by the infobar_manager_ for infobar of the type
   // AutofillSaveCardInfoBarDelegateIOS and returns it if found else returns a

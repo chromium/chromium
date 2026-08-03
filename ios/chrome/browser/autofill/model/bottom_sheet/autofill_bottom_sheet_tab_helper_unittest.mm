@@ -61,10 +61,12 @@ class FakePersonalContextFirstRunService
   bool ShouldShowPersonalContextAmbientAutofillNotice() const override {
     return should_show_;
   }
+  void RecordAmbientAutofillNoticeImpression(uint32_t session_id) override {}
   void MarkPersonalContextInAtMemoryNoticeAsAcknowledged() override {}
   bool ShouldShowPersonalContextAtMemoryNotice() const override {
     return false;
   }
+  void RecordAtMemoryNoticeImpression(uint32_t session_id) override {}
 
   void set_should_show(bool should_show) { should_show_ = should_show; }
   bool acknowledged() const { return acknowledged_; }

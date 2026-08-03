@@ -15,6 +15,18 @@ static_library("first_run") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_personal_context_first_run_service.cc",
+    "test_personal_context_first_run_service.h",
+  ]
+  deps = [
+    ":first_run",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "personal_context_first_run_service_impl_unittest.cc" ]

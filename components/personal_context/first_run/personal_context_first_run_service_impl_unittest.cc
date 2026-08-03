@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -211,6 +212,120 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
   EXPECT_CALL(*eligibility_service(), GetEligibilityState())
       .WillOnce(Return(PersonalContextEligibilityState::kDisabledNotEligible));
   EXPECT_FALSE(service()->ShouldShowPersonalContextAtMemoryNotice());
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       RecordsAmbientAutofillNoticeImpression) {
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAmbientAutofillNoticeImpressionCount),
+            0);
+
+  // First impression in session 0 should increment.
+  service()->RecordAmbientAutofillNoticeImpression(0);
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAmbientAutofillNoticeImpressionCount),
+            1);
+
+  // Second impression in same session 0 should NOT increment.
+  service()->RecordAmbientAutofillNoticeImpression(0);
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAmbientAutofillNoticeImpressionCount),
+            1);
+
+  // Impression in new session 1 should increment.
+  service()->RecordAmbientAutofillNoticeImpression(1);
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAmbientAutofillNoticeImpressionCount),
+            2);
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       RecordsAtMemoryNoticeImpression) {
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAtMemoryNoticeImpressionCount),
+            0);
+
+  // First impression in session 0 should increment
+  service()->RecordAtMemoryNoticeImpression(0);
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAtMemoryNoticeImpressionCount),
+            1);
+
+  // Second impression in same session 0 should NOT increment.
+  service()->RecordAtMemoryNoticeImpression(0);
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAtMemoryNoticeImpressionCount),
+            1);
+
+  // Impression in new session 1 should increment.
+  service()->RecordAtMemoryNoticeImpression(1);
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAtMemoryNoticeImpressionCount),
+            2);
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       AmbientAutofillNoticeAcknowledgementLogsAndClears) {
+  pref_service()->SetInteger(
+      prefs::kPersonalContextAmbientAutofillNoticeImpressionCount, 3);
+
+  base::HistogramTester histogram_tester;
+  service()->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
+
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.NoticeImpressionsBeforeAck.AmbientAutofill", 3, 1);
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAmbientAutofillNoticeImpressionCount),
+            0);
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       AtMemoryNoticeAcknowledgementLogsAndClears) {
+  pref_service()->SetInteger(
+      prefs::kPersonalContextAtMemoryNoticeImpressionCount, 4);
+  pref_service()->SetInteger(
+      prefs::kPersonalContextAmbientAutofillNoticeImpressionCount, 2);
+
+  base::HistogramTester histogram_tester;
+  service()->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
+
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.NoticeImpressionsBeforeAck.AtMemory", 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.NoticeImpressionsBeforeImplicitAck.AmbientAutofill", 2,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.NoticeImpressionsBeforeAck.AmbientAutofill", 0);
+
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAtMemoryNoticeImpressionCount),
+            0);
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAmbientAutofillNoticeImpressionCount),
+            0);
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       AtMemoryNoticeAcknowledgementLogsImplicitAmbientAutofillIfZero) {
+  pref_service()->SetInteger(
+      prefs::kPersonalContextAtMemoryNoticeImpressionCount, 4);
+  pref_service()->SetInteger(
+      prefs::kPersonalContextAmbientAutofillNoticeImpressionCount, 0);
+
+  base::HistogramTester histogram_tester;
+  service()->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
+
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.NoticeImpressionsBeforeAck.AtMemory", 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.NoticeImpressionsBeforeImplicitAck.AmbientAutofill", 0,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.NoticeImpressionsBeforeAck.AmbientAutofill", 0);
+
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kPersonalContextAtMemoryNoticeImpressionCount),
+            0);
 }
 
 }  // namespace

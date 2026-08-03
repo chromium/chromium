@@ -18,6 +18,7 @@ source_set("coordinator") {
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
+    "//components/personal_context/first_run",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/autofill_ai/ui",

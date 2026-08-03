@@ -5,4 +5,5 @@ include_rules = [
   "+components/favicon/android",
   "+components/device_reauth/device_authenticator.h",
   "+components/device_reauth/mock_device_authenticator.h",
+  "+components/personal_context/first_run",
 ]

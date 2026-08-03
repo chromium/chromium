@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERSONAL_CONTEXT_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_IMPL_H_
 #define COMPONENTS_PERSONAL_CONTEXT_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,8 +35,10 @@ class PersonalContextFirstRunServiceImpl
   // PersonalContextFirstRunService:
   void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() override;
   bool ShouldShowPersonalContextAmbientAutofillNotice() const override;
+  void RecordAmbientAutofillNoticeImpression(uint32_t session_id) override;
   void MarkPersonalContextInAtMemoryNoticeAsAcknowledged() override;
   bool ShouldShowPersonalContextAtMemoryNotice() const override;
+  void RecordAtMemoryNoticeImpression(uint32_t session_id) override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -49,6 +53,8 @@ class PersonalContextFirstRunServiceImpl
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
+  std::optional<uint32_t> last_logged_ambient_autofill_session_id_;
+  std::optional<uint32_t> last_logged_at_memory_session_id_;
 };
 
 }  // namespace personal_context

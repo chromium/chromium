@@ -494,38 +494,10 @@ WalletPassAccessManager* ChromeAutofillClient::GetWalletPassAccessManager() {
   return WalletPassAccessManagerFactory::GetForProfile(profile);
 }
 
-bool ChromeAutofillClient::ShouldShowPersonalContextAmbientAutofillNotice()
-    const {
+personal_context::PersonalContextFirstRunService*
+ChromeAutofillClient::GetPersonalContextFirstRunService() {
   Profile* profile = GetProfile();
-  personal_context::PersonalContextFirstRunService* service =
-      PersonalContextFirstRunServiceFactory::GetForProfile(profile);
-  return service && service->ShouldShowPersonalContextAmbientAutofillNotice();
-}
-
-void ChromeAutofillClient::
-    MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() {
-  Profile* profile = GetProfile();
-  personal_context::PersonalContextFirstRunService* service =
-      PersonalContextFirstRunServiceFactory::GetForProfile(profile);
-  if (service) {
-    service->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
-  }
-}
-
-bool ChromeAutofillClient::ShouldShowPersonalContextAtMemoryNotice() const {
-  Profile* profile = GetProfile();
-  personal_context::PersonalContextFirstRunService* service =
-      PersonalContextFirstRunServiceFactory::GetForProfile(profile);
-  return service && service->ShouldShowPersonalContextAtMemoryNotice();
-}
-
-void ChromeAutofillClient::MarkPersonalContextAtMemoryNoticeAsAcknowledged() {
-  Profile* profile = GetProfile();
-  personal_context::PersonalContextFirstRunService* service =
-      PersonalContextFirstRunServiceFactory::GetForProfile(profile);
-  if (service) {
-    service->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
-  }
+  return PersonalContextFirstRunServiceFactory::GetForProfile(profile);
 }
 
 SingleFieldFillRouter& ChromeAutofillClient::GetSingleFieldFillRouter() {

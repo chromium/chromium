@@ -74,6 +74,7 @@ source_set("impl") {
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/personal_context/first_run",
     "//content/public/browser",
     "//ui/android",
   ]

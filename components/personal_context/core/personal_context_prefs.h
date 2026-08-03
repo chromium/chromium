@@ -12,8 +12,14 @@ namespace personal_context::prefs {
 inline constexpr char kPersonalContextAmbientAutofillNoticeShouldBeShown[] =
     "autofill.personal_context.ambient_autofill_notice_should_be_shown";
 
+inline constexpr char kPersonalContextAmbientAutofillNoticeImpressionCount[] =
+    "autofill.personal_context.ambient_autofill_notice_impression_count";
+
 inline constexpr char kPersonalContextAtMemoryNoticeShouldBeShown[] =
     "autofill.personal_context.at_memory_notice_should_be_shown";
+
+inline constexpr char kPersonalContextAtMemoryNoticeImpressionCount[] =
+    "autofill.personal_context.at_memory_notice_impression_count";
 
 // Represents the user-visible toggle in Autofill settings. Note that this only
 // represents the settings toggle, which is only one of multiple conditions for

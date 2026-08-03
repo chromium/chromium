@@ -112,12 +112,11 @@ TEST_F(AmbientAutofillNoticeMediatorTest, MarkNoticeShownUpdatesClient) {
                     params:params
            autofillHandler:mock_autofill_commands_];
 
-  EXPECT_FALSE(
-      autofill_client_
-          ->is_personal_context_ambient_autofill_notice_acknowledged());
+  EXPECT_FALSE(autofill_client_->GetPersonalContextFirstRunService()
+                   ->is_ambient_autofill_notice_acknowledged());
 
   [mediator markNoticeShown];
 
-  EXPECT_TRUE(autofill_client_
-                  ->is_personal_context_ambient_autofill_notice_acknowledged());
+  EXPECT_TRUE(autofill_client_->GetPersonalContextFirstRunService()
+                  ->is_ambient_autofill_notice_acknowledged());
 }

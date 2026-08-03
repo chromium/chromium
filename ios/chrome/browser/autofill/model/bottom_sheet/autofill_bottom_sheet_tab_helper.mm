@@ -30,6 +30,7 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer.h"
@@ -763,7 +764,9 @@ void AutofillBottomSheetTabHelper::UpdateListenersForAmbientAutofillForm(
   if (!form_structure) {
     return;
   }
-  if (!manager.client().ShouldShowPersonalContextAmbientAutofillNotice()) {
+  personal_context::PersonalContextFirstRunService* service =
+      manager.client().GetPersonalContextFirstRunService();
+  if (!service || !service->ShouldShowPersonalContextAmbientAutofillNotice()) {
     return;
   }
 
