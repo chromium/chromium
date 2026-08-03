@@ -401,16 +401,24 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
         callback) {
   base::TimeTicks now = tick_clock_->NowTicks();
 
-  std::optional<base::WeakPtr<content::WebContents>> active_tab_at_query_time;
-  if (content::WebContents* web_contents = GetActiveTabWebContents()) {
-    active_tab_at_query_time = web_contents->GetWeakPtr();
-  }
-
   AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s in mode %d", query,
                                       options.tab_selection_mode));
 
   if (query.empty()) {
     AUTO_CONTEXT_LOG("Query is empty");
+    RecordContextDeterminationStatus(ContextDeterminationStatus::kQueryEmpty);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::vector<base::WeakPtr<content::WebContents>>()));
+    return;
+  }
+
+  if (auto query_word_count = GetWordCount(query);
+      query_word_count < kMinQueryWords.Get()) {
+    AUTO_CONTEXT_LOG("Query has too few words.");
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kQueryTooFewWords);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -439,6 +447,11 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
         base::BindOnce(&ContextualTasksContextService::OnRequestTimedOut,
                        weak_ptr_factory_.GetWeakPtr(), request_id),
         *options.tab_selection_timeout);
+  }
+
+  std::optional<base::WeakPtr<content::WebContents>> active_tab_at_query_time;
+  if (content::WebContents* web_contents = GetActiveTabWebContents()) {
+    active_tab_at_query_time = web_contents->GetWeakPtr();
   }
 
   // TODO: crbug.com/452036470 - De-couple embeddings and recency signal

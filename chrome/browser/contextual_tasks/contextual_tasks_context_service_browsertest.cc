@@ -390,8 +390,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmptyQuery) {
                                     0);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.ContextCalculationLatency", 0);
-  histogram_tester.ExpectTotalCount(
-      "ContextualTasks.Context.ContextDeterminationStatus", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kQueryEmpty, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.CandidateTabHasEmbeddings", 0);
 }
@@ -404,7 +405,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NoEmbedder) {
   base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
       future;
   service()->GetRelevantTabsForQuery(
-      /*options=*/{}, "some text", /*explicit_urls=*/{}, future.GetCallback());
+      /*options=*/{}, "some text with multiple words", /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
@@ -430,7 +432,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmbedderFailed) {
   base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
       future;
   service()->GetRelevantTabsForQuery(
-      /*options=*/{}, "some text", /*explicit_urls=*/{}, future.GetCallback());
+      /*options=*/{}, "some text with multiple words", /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
@@ -440,6 +443,31 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmbedderFailed) {
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.ContextDeterminationStatus",
       ContextDeterminationStatus::kQueryEmbeddingFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.CandidateTabHasEmbeddings", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       ShortQueryDoesNotTriggerEmbedder) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  service()->GetRelevantTabsForQuery(
+      /*options=*/{}, "two words", /*explicit_urls=*/{}, future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kQueryTooFewWords, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.CandidateTabHasEmbeddings", 0);
 }
@@ -507,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServicePreviousTabSignalTest,
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
 
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{},
                                      future.GetCallback());
 
@@ -542,7 +570,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
       future;
   service()->GetRelevantTabsForQuery(
-      /*options=*/{}, "some text", /*explicit_urls=*/{}, future.GetCallback());
+      /*options=*/{}, "some text with multiple words", /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectUniqueSample(
@@ -586,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{valid_url()},
                                      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
@@ -643,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{},
                                      future.GetCallback());
 
@@ -701,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
 
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{},
                                      future.GetCallback());
 
@@ -764,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   turn1.query = "history query";
   conversation_thread.previous_turns.push_back(turn1);
 
-  conversation_thread.query = "some text";
+  conversation_thread.query = "some text with multiple words";
   conversation_thread.shared_tab_titles.push_back("shared tab 1");
   conversation_thread.shared_tab_titles.push_back("shared tab 2");
 
@@ -820,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTaskFormattingTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{valid_url()},
                                      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
@@ -828,7 +857,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTaskFormattingTest,
   // Verify the formatted query was sent to the embedder.
   const auto& last_passages = embedder().last_passages();
   ASSERT_EQ(1u, last_passages.size());
-  EXPECT_EQ("task: search result | query: some text", last_passages[0]);
+  EXPECT_EQ("task: search result | query: some text with multiple words",
+            last_passages[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, FiltersForWindow) {
@@ -855,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, FiltersForWindow) {
     TabSelectionOptions options;
     options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
     options.browser_window_interface = new_browser->GetWeakPtr();
-    service()->GetRelevantTabsForQuery(options, "some text",
+    service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                        /*explicit_urls=*/{valid_url()},
                                        future.GetCallback());
     EXPECT_TRUE(future.Get().empty());
@@ -893,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, FiltersForWindow) {
     TabSelectionOptions options;
     options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
     options.browser_window_interface = first_window->GetWeakPtr();
-    service()->GetRelevantTabsForQuery(options, "some text",
+    service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                        /*explicit_urls=*/{valid_url()},
                                        future.GetCallback());
     EXPECT_EQ(1u, future.Get().size());
@@ -950,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
   options.tab_selection_timeout = base::Seconds(1);
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{valid_url()},
                                      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
@@ -988,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, TimedOut) {
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
   options.tab_selection_timeout = base::Milliseconds(100);
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{valid_url()},
                                      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
@@ -1105,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{},
                                      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
@@ -1139,7 +1169,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{},
                                      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
@@ -1190,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
-  service()->GetRelevantTabsForQuery(options, "some text",
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
                                      /*explicit_urls=*/{valid_url()},
                                      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
@@ -1352,7 +1382,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
-  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
+                                     /*explicit_urls=*/{},
                                      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
@@ -1404,7 +1435,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
-  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
+                                     /*explicit_urls=*/{},
                                      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
@@ -1446,7 +1478,8 @@ IN_PROC_BROWSER_TEST_F(
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
-  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
+                                     /*explicit_urls=*/{},
                                      future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 
@@ -1523,7 +1556,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
-  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
+                                     /*explicit_urls=*/{},
                                      future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 
@@ -1541,7 +1575,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SkipsNonHttp) {
   base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
       future;
   service()->GetRelevantTabsForQuery(
-      /*options=*/{}, "some text", /*explicit_urls=*/{}, future.GetCallback());
+      /*options=*/{}, "some text with multiple words", /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectUniqueSample(
@@ -1711,8 +1746,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
-  service()->GetRelevantTabsForQuery(
-      options, "test query", /*explicit_urls=*/{}, future.GetCallback());
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
 
   ASSERT_TRUE(logging_future.Wait());
 
@@ -1773,7 +1809,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTitlesOnlyTest, Success) {
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
-  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
+                                     /*explicit_urls=*/{},
                                      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
   EXPECT_TRUE(logs_uploader()->uploaded_logs().empty());
@@ -1986,7 +2023,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceDeduplicateTest,
       future;
   TabSelectionOptions options;
   options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
-  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+  service()->GetRelevantTabsForQuery(options, "some text with multiple words",
+                                     /*explicit_urls=*/{},
                                      future.GetCallback());
 
   // Expect 2 tabs: one for valid_url() (deduped) and one for url2.

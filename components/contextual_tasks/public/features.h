@@ -248,6 +248,10 @@ extern const base::FeatureParam<std::string> kQueryEmbeddingTask;
 extern const base::FeatureParam<double>
     kContextualTasksContextLoggingSampleRate;
 
+// The minimum number of words required in a query for contextual tasks context
+// tab relevancy selection.
+extern const base::FeatureParam<int> kMinQueryWords;
+
 // Controls whether we set the upload type in CreateSearchUrl.
 extern const base::FeatureParam<bool> kSendContextualInputUploadTypeInSearchUrl;
 
