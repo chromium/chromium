@@ -26042,27 +26042,6 @@
             ]
         }
     ],
-    "VerticalTabsLaunch": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IPH_VerticalTabstripTutorialFeature",
-                        "OmniboxResizingPrioritization",
-                        "ToolbarAppMenuLabelResizing",
-                        "ToolbarGlicButtonResizing",
-                        "ToolbarProfileChipResizing",
-                        "VerticalTabsLaunch",
-                        "VerticalTabsNewBadge"
-                    ]
-                }
-            ]
-        }
-    ],
     "VideoConferenceRollout": [
         {
             "platforms": [
