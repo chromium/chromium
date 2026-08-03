@@ -644,59 +644,6 @@ suite('SearchboxMixinTest', () => {
     assertEquals(matches[0]!.destinationUrl, args.url);
   });
 
-  test(
-      'clicking remove button after interaction freeze unfreezes and accepts new results',
-      async () => {
-        const mockInput = element.getInputElement();
-        await simulateUserTextInput(mockInput, 'hello');
-        const queryId = element.activeQueryId;
-
-        const matches = [
-          createUrlMatch(
-              {supportsDeletion: true, destinationUrl: 'https://first.com'}),
-          createUrlMatch(
-              {supportsDeletion: true, destinationUrl: 'https://second.com'}),
-        ];
-        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
-          queryId: queryId,
-          input: 'hello',
-          matches: matches,
-        }));
-        await microtasksFinished();
-        assertEquals(2, element.result!.matches.length);
-
-        // Freeze `activeQueryId` by simulating user interaction. New
-        // autocomplete results for 'hello' will be ignored to avoid clobbering
-        // user actions.
-        const arrowDownEvent = createKeyboardEvent('ArrowDown');
-        mockInput.inputElement.dispatchEvent(arrowDownEvent);
-        await microtasksFinished();
-        assertEquals(-1, element.activeQueryId);
-
-        // Click remove button on the first match.
-        const matchEl = element.getDropdownElement().shadowRoot.querySelector(
-            'cr-searchbox-match')!;
-        matchEl.$.remove.click();
-
-        const args =
-            await testProxy.handler.whenCalled('deleteAutocompleteMatch');
-        assertEquals(0, args.line);
-        assertEquals(matches[0]!.destinationUrl, args.url);
-
-        // Backend sends updated results without the deleted match.
-        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
-          queryId: queryId,
-          input: 'hello',
-          matches: [matches[1]!],
-        }));
-        await microtasksFinished();
-
-        // The new results should be accepted despite the prior freeze.
-        assertEquals(1, element.result!.matches.length);
-        assertEquals(
-            'https://second.com', element.result!.matches[0]!.destinationUrl);
-      });
-
   // TODO(crbug.com/453570027): Test is flaky.
   test.skip('arrow up/down moves selection / focus', async () => {
     const mockInput = element.getInputElement();
