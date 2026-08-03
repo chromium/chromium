@@ -229,3 +229,43 @@ fn test_typestate_transitions() {
     let bytes2 = bytes_only_msg.read_bytes().unwrap();
     expect_eq!(bytes2, b"hello");
 }
+
+#[gtest(RustSystemAPITestSuite, SharedBufferTest)]
+fn test_shared_buffer() {
+    let num_bytes: u64 = 1024;
+
+    // Create a shared buffer of 1024 bytes.
+    let handle = system::buffer::SharedBuffer::create(num_bytes).unwrap();
+
+    // Verify that the system reports the correct size for this buffer handle.
+    let size = handle.size();
+    expect_eq!(size, num_bytes);
+
+    // Map the memory into the current process's address space.
+    let mut mapped = handle.map(0, num_bytes as usize).unwrap();
+
+    // Write to the mapped memory safely using the mutable slice.
+    // SAFETY: We are the only ones with a mapping to this memory right now.
+    unsafe {
+        let mapped_slice = mapped.as_mut_slice();
+        mapped_slice[0] = 42;
+        mapped_slice[1023] = 43;
+    }
+
+    // Duplicate the buffer handle. The shared buffer remains alive as long as at
+    // least one handle to it exists.
+    let duplicate = handle.clone_handle().unwrap();
+
+    // Map the newly duplicated handle and verify the memory contents are exactly
+    // what we wrote using the original handle.
+    let mapped_dup = duplicate.map(0, num_bytes as usize).unwrap();
+
+    // SAFETY: We mapped it successfully and we are just reading from it.
+    unsafe {
+        let mapped_dup_slice = mapped_dup.as_slice();
+        expect_eq!(mapped_dup_slice[0], 42);
+        expect_eq!(mapped_dup_slice[1023], 43);
+    }
+
+    // MappedBuffer and SharedBuffer will safely unmap and close via Drop.
+}

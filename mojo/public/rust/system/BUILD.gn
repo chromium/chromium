@@ -8,6 +8,7 @@ import("//build/rust/rust_static_library.gni")
 rust_static_library("system") {
   crate_root = "lib.rs"
   sources = [
+    "buffer.rs",
     "data_pipe.rs",
     "lib.rs",
     "message.rs",
