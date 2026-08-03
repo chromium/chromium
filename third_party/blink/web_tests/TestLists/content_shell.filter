@@ -254,8 +254,6 @@ external/wpt/css/css-shadow/css-scoping-shadow-with-rules.html
 external/wpt/css/css-shadow/css-scoping-shadow-with-rules-no-style-leak.html
 external/wpt/css/css-shadow/part/interaction-with-nested-pseudo-class.html
 external/wpt/css/css-shadow/shadow-host-with-before-after.html
-# Known to be very flaky: https://crbug.com/375344326
-external/wpt/css/css-sizing/*
 external/wpt/css/css-tables/tentative/baseline-table.html
 external/wpt/css/css-tables/tentative/baseline-td.html
 external/wpt/css/css-tables/tentative/colgroup-col.html
