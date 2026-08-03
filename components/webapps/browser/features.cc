@@ -21,7 +21,7 @@ BASE_FEATURE(kAndroidAutoMintedTWA, base::FEATURE_DISABLED_BY_DEFAULT);
 // cases in the past, the "Install or Create Shortcut" flow would
 // directly trigger the install dialog, but it no longer does so.
 BASE_FEATURE(kAlwaysShowInstallDisambiguationDialog,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Do not remove this feature flag, since it serves as a kill-switch for the ML
