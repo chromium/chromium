@@ -168,6 +168,7 @@ class MockAutocompleteProviderClient
   MOCK_CONST_METHOD0(IsPagePaywalled, std::optional<bool>());
   MOCK_METHOD(bool, ShouldSendContextualUrlSuggestParam, (), (const));
   MOCK_METHOD(bool, ShouldSendPageTitleSuggestParam, (), (const));
+  MOCK_METHOD(bool, IsWebUiNtpEnabledForDesktopAndroid, (), (const, override));
   MOCK_CONST_METHOD1(GetLensSuggestInputsWhenReady,
                      base::CallbackListSubscription(
                          LensOverlaySuggestInputsCallback callback));

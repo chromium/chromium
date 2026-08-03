@@ -97,6 +97,10 @@ AutocompleteProviderClient::GetWeakPtr() {
   return nullptr;
 }
 
+bool AutocompleteProviderClient::IsWebUiNtpEnabledForDesktopAndroid() const {
+  return false;
+}
+
 bool AutocompleteProviderClient::ShouldOpenCoBrowsePanel() const {
   return false;
 }

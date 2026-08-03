@@ -1120,8 +1120,11 @@ void AutocompleteResult::ConvertOpenTabMatches(
 #if BUILDFLAG(IS_ANDROID)
       match.android_tab_id = tab_info->second.android_tab_id;
 #endif
-      if (!match.from_keyword ||
-          match.type != AutocompleteMatchType::OPEN_TAB) {
+      if ((!match.from_keyword ||
+           match.type != AutocompleteMatchType::OPEN_TAB) &&
+          !(client->IsWebUiNtpEnabledForDesktopAndroid() && input &&
+            input->current_page_classification() ==
+                OmniboxEventProto::NTP_REALBOX)) {
         if constexpr (is_android_any) {
 #if BUILDFLAG(IS_ANDROID)
           // On Android, we attach the action to allow switching to tab.

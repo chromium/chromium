@@ -282,6 +282,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // client when the client may no longer be around.
   virtual base::WeakPtr<AutocompleteProviderClient> GetWeakPtr();
 
+  // Returns whether the Web UI NTP is enabled for Desktop Android. In all other
+  // cases and platforms, it returns false.
+  virtual bool IsWebUiNtpEnabledForDesktopAndroid() const;
+
   // OmniboxAction::Client overrides:
   bool ShouldOpenCoBrowsePanel() const override;
   void OpenCoBrowsePanel() override;
