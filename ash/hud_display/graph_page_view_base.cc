@@ -85,7 +85,7 @@ void SetRestoreIconToButton(views::ImageButton* button) {
   button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
-                                         ? views::kChromeRestoreFilledIcon
+                                         ? views::kChromeRestoreIcon
                                          : views::kWindowControlRestoreOldIcon,
                                      kHUDDefaultColor, kMinMaxButtonIconSize));
 }

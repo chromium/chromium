@@ -296,7 +296,7 @@ TEST_F(FrameViewAshTest, ToggleTabletModeOnMinimizedWindow) {
   // because the address may not be the same for different build targets in the
   // component build.
   EXPECT_STREQ(::features::IsRoundedIconsEnabled()
-                   ? views::kChromeRestoreFilledIcon.name
+                   ? views::kChromeRestoreIcon.name
                    : views::kWindowControlRestoreOldIcon.name,
                test.size_button()->icon_definition_for_test()->name);
   widget->Minimize();
@@ -310,7 +310,7 @@ TEST_F(FrameViewAshTest, ToggleTabletModeOnMinimizedWindow) {
   ::wm::Unminimize(widget->GetNativeWindow());
   EXPECT_TRUE(widget->IsMaximized());
   EXPECT_STREQ(::features::IsRoundedIconsEnabled()
-                   ? views::kChromeRestoreFilledIcon.name
+                   ? views::kChromeRestoreIcon.name
                    : views::kWindowControlRestoreOldIcon.name,
                test.size_button()->icon_definition_for_test()->name);
 }
@@ -850,14 +850,14 @@ TEST_F(FrameViewAshTest, WideFrameButton) {
       header_view->caption_button_container());
 
   EXPECT_STREQ(::features::IsRoundedIconsEnabled()
-                   ? views::kChromeRestoreFilledIcon.name
+                   ? views::kChromeRestoreIcon.name
                    : views::kWindowControlRestoreOldIcon.name,
                test_api.size_button()->icon_definition_for_test()->name);
 
   widget->SetFullscreen(true);
   views::test::RunScheduledLayout(header_view);
   EXPECT_STREQ(::features::IsRoundedIconsEnabled()
-                   ? views::kChromeRestoreFilledIcon.name
+                   ? views::kChromeRestoreIcon.name
                    : views::kWindowControlRestoreOldIcon.name,
                test_api.size_button()->icon_definition_for_test()->name);
   {
@@ -865,7 +865,7 @@ TEST_F(FrameViewAshTest, WideFrameButton) {
     WindowState::Get(widget->GetNativeWindow())->OnWMEvent(&event);
     views::test::RunScheduledLayout(header_view);
     EXPECT_STREQ(::features::IsRoundedIconsEnabled()
-                     ? views::kChromeRestoreFilledIcon.name
+                     ? views::kChromeRestoreIcon.name
                      : views::kWindowControlRestoreOldIcon.name,
                  test_api.size_button()->icon_definition_for_test()->name);
   }
@@ -874,7 +874,7 @@ TEST_F(FrameViewAshTest, WideFrameButton) {
     WindowState::Get(widget->GetNativeWindow())->OnWMEvent(&event);
     views::test::RunScheduledLayout(header_view);
     EXPECT_STREQ(::features::IsRoundedIconsEnabled()
-                     ? views::kChromeRestoreFilledIcon.name
+                     ? views::kChromeRestoreIcon.name
                      : views::kWindowControlRestoreOldIcon.name,
                  test_api.size_button()->icon_definition_for_test()->name);
   }

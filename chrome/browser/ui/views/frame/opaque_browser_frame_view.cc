@@ -179,7 +179,7 @@ void OpaqueBrowserFrameView::InitViews() {
     restore_button_ = CreateFrameCaptionButton(
         views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE, HTMAXBUTTON,
         features::IsRoundedIconsEnabled()
-            ? views::kChromeRestoreFilledIcon
+            ? views::kChromeRestoreIcon
             : views::kWindowControlRestoreOldIcon);
     close_button_ = CreateFrameCaptionButton(
         views::CAPTION_BUTTON_ICON_CLOSE, HTMAXBUTTON,
