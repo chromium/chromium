@@ -7,17 +7,25 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/bricks/BricksCoordinator.kt",
+    "java/src/org/chromium/chrome/browser/bricks/BricksJavaCoordinator.java",
     "java/src/org/chromium/chrome/browser/bricks/progress/ProgressBar.kt",
     "java/src/org/chromium/chrome/browser/bricks/progress/ProgressCoordinator.kt",
     "java/src/org/chromium/chrome/browser/bricks/progress/ProgressMediator.kt",
     "java/src/org/chromium/chrome/browser/bricks/progress/ProgressProvider.kt",
     "java/src/org/chromium/chrome/browser/bricks/progress/ProgressUiState.kt",
     "java/src/org/chromium/chrome/browser/bricks/progress/VibesProgressProvider.kt",
+    "java/src/org/chromium/chrome/browser/bricks/switches/ComposeMaterialSwitchWithText.kt",
+    "java/src/org/chromium/chrome/browser/bricks/switches/ComposeMaterialSwitchWithTitleAndSummary.kt",
+    "java/src/org/chromium/chrome/browser/bricks/switches/ComposeSwitchComponent.kt",
+    "java/src/org/chromium/chrome/browser/bricks/theme/ChromeDesignTokens.kt",
   ]
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//chrome/browser/ui/android/bricks:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
     "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
@@ -37,4 +45,17 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
   ]
   enable_compose = true
+  resources_package = "org.chromium.chrome.browser.bricks.internal"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/bricks_java_view.xml",
+    "java/res/values/strings.xml",
+  ]
+
+  deps = [
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
 }

@@ -142,6 +142,8 @@ public class UrlConstants {
 
     public static final String BRICKS_HOST = "bricks";
     public static final String BRICKS_URL = "chrome://bricks/";
+    public static final String BRICKS_JAVA_HOST = "bricks-java";
+    public static final String BRICKS_JAVA_URL = "chrome://bricks-java/";
 
     /* Host and url used for PDF native pages. */
     public static final String PDF_HOST = "pdf";

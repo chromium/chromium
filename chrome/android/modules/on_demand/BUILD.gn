@@ -17,6 +17,7 @@ android_library("impl_java") {
     "//chrome/browser/ui/android/bricks/internal:java",
     "//chrome/browser/ui/android/pdf:java",
     "//chrome/browser/ui/android/pdf/internal:java",
+    "//components/embedder_support/android:util_java",
   ]
 }
 

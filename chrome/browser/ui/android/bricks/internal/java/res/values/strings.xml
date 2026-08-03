@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+    <string name="bricks_java_page_header" translatable="false">Hello from the Bricks Java native page</string>
+    <string name="bricks_java_page_section_java" translatable="false">1. Native Java Views Section (MaterialSwitch)</string>
+    <string name="bricks_java_page_section_compose" translatable="false">2. Compose Variants Section (ComposeView)</string>
+    <string name="bricks_java_switch_enabled_on" translatable="false">Enabled, On</string>
+    <string name="bricks_java_switch_enabled_off" translatable="false">Enabled, Off</string>
+    <string name="bricks_java_switch_disabled_on" translatable="false">Disabled, On</string>
+    <string name="bricks_java_switch_disabled_off" translatable="false">Disabled, Off</string>
+    <string name="bricks_java_switch_summary" translatable="false">Summary description text rendered in native Java View layout</string>
+    <string name="bricks_compose_switch_summary" translatable="false">Summary description text rendered in Compose View</string>
+</resources>

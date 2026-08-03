@@ -9,11 +9,11 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
-import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -305,7 +305,8 @@ public interface NativePage {
                 return NativePageType.NONE;
             }
             return NativePageType.MANAGEMENT;
-        } else if (UrlConstants.BRICKS_HOST.equals(host)
+        } else if ((UrlConstants.BRICKS_HOST.equals(host)
+                        || UrlConstants.BRICKS_JAVA_HOST.equals(host))
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_BRICKS_NATIVE_PAGE)) {
             return NativePageType.BRICKS;
         } else if (UrlConstants.SETTINGS_HOST.equals(host)

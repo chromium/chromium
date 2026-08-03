@@ -429,7 +429,8 @@ public class NativePageFactory {
                             tab,
                             mBrowserControlsManager,
                             mTabModelSelector,
-                            mEdgeToEdgeControllerSupplier));
+                            mEdgeToEdgeControllerSupplier),
+                    url);
         }
 
         protected NativePage buildSettingsPage(Tab tab, String url) {

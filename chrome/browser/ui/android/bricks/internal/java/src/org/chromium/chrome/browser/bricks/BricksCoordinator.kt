@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.bricks
 import android.content.Context
 import android.view.View
 import androidx.compose.foundation.layout.Column
-import org.chromium.ui.util.ColorUtils
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -30,6 +29,7 @@ import com.google.android.material.color.DynamicColors
 import org.chromium.chrome.browser.bricks.progress.ProgressCoordinator
 import org.chromium.chrome.browser.bricks.progress.VibesProgressProvider
 import org.chromium.components.browser_ui.styles.ChromeColors
+import org.chromium.ui.util.ColorUtils
 
 /** Coordinator for Bricks feature, manages [ComposeView]. */
 class BricksCoordinator(context: Context) : BricksCoordinatorInterface {

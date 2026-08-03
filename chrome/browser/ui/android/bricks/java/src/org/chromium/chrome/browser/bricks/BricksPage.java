@@ -15,16 +15,26 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 public class BricksPage extends BasicNativePage {
     private static final String TITLE = "Bricks";
     private final BricksCoordinatorInterface mCoordinator;
+    private final String mHostName;
 
     /**
      * Create a new instance of the Bricks page.
      *
      * @param host A NativePageHost to load URLs.
+     * @param url The spec URL for the page.
      */
-    public BricksPage(NativePageHost host) {
+    public BricksPage(NativePageHost host, String url) {
         super(host);
-        mCoordinator = OnDemandModule.getImpl().createBricksCoordinator(host.getContext());
+        mHostName =
+                url.contains(UrlConstants.BRICKS_JAVA_HOST)
+                        ? UrlConstants.BRICKS_JAVA_HOST
+                        : UrlConstants.BRICKS_HOST;
+        mCoordinator = OnDemandModule.getImpl().createBricksCoordinator(host.getContext(), url);
         initWithView(mCoordinator.getView());
+    }
+
+    public BricksPage(NativePageHost host) {
+        this(host, UrlConstants.BRICKS_URL);
     }
 
     @Override
@@ -34,7 +44,7 @@ public class BricksPage extends BasicNativePage {
 
     @Override
     public String getHost() {
-        return UrlConstants.BRICKS_HOST;
+        return mHostName;
     }
 
     @Override
