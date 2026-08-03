@@ -80,6 +80,7 @@ source_set("impl") {
   deps = [
     ":renderer_context_menu",
     "//base",
+    "//base:i18n",
     "//chrome/browser/app_mode",
     "//chrome/browser/ui",
     "//chrome/common",
