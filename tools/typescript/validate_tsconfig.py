@@ -272,6 +272,7 @@ def validateDefinitionDeps(definitions_files, target_path, gen_dir,
       'third_party/material_web_components/',
       'third_party/node/node_modules/',
       'third_party/polymer/v3_0/',
+      'third_party/typescript/',
       'tools/typescript/tests/',
   ]
   exceptions = [getPathFromCwd(e) for e in exceptions_list]

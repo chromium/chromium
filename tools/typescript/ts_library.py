@@ -307,12 +307,20 @@ def main(argv):
 
   # Invoke the TS compiler again, with the --listFilesOnly flag, to detect any
   # files that are used by the build, but not properly declared as dependencies.
-  out = node.RunNode([
-      node_modules.PathToTypescript(),
-      '--project',
-      os.path.join(args.gen_dir, tsconfig_file),
-      '--listFilesOnly',
-  ])
+  out = None
+  if args.use_typescript_go:
+    out = typescript.RunTypeScript([
+        '--project',
+        os.path.join(args.gen_dir, tsconfig_file), '--listFilesOnly'
+    ])
+  else:
+    out = node.RunNode([
+        node_modules.PathToTypescript(),
+        '--project',
+        os.path.join(args.gen_dir, tsconfig_file),
+        '--listFilesOnly',
+    ])
+
   files_list = out.split('\n')
   definitions_files = list(filter(lambda f: f.endswith('.d.ts'), files_list))
   definitions = args.definitions if args.definitions is not None else []
