@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/data_manager/addresses/account_name_email_strike_manager.h"
@@ -67,6 +66,7 @@ class AutofillProfile;
 class CreditCard;
 class CreditCardAccessManager;
 class AutofillAiAccessManager;
+class AtMemoryManager;
 
 class FormData;
 class FormFieldData;
