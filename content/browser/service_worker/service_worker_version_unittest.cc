@@ -52,6 +52,7 @@
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom.h"
@@ -1515,6 +1516,46 @@ TEST_P(ServiceWorkerVersionTest, BadOrigin) {
       blink::mojom::ScriptType::kClassic);
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kErrorDisallowed,
             StartServiceWorker(version.get()));
+}
+
+// Test that GetClient() returns null when requested for a client with the same
+// origin but a different storage key.
+TEST_P(ServiceWorkerVersionTest, GetClientWithDifferentStorageKey) {
+  auto* service_worker =
+      helper_->AddNewPendingServiceWorker<FakeServiceWorker>(helper_.get());
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  service_worker->RunUntilInitializeGlobalScope();
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+
+  ScopedServiceWorkerClient service_worker_client =
+      helper_->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWorker(
+              helper_->mock_render_process_id(),
+              ServiceWorkerClientInfo(blink::SharedWorkerToken()));
+
+  GURL client_url = scope_.Resolve("shared_worker.js");
+  auto client_origin = url::Origin::Create(client_url);
+  auto different_top_level_origin =
+      url::Origin::Create(GURL("https://www.different.com/"));
+  auto different_storage_key = blink::StorageKey::Create(
+      client_origin, net::SchemefulSite(different_top_level_origin),
+      blink::mojom::AncestorChainBit::kCrossSite,
+      /*third_party_partitioning_allowed=*/true);
+
+  service_worker_client->UpdateUrls(client_url, different_top_level_origin,
+                                    different_storage_key);
+
+  CommittedServiceWorkerClient committed_client(
+      std::move(service_worker_client));
+  committed_client->SetExecutionReady();
+
+  base::test::TestFuture<blink::mojom::ServiceWorkerClientInfoPtr> future;
+  service_worker->host()->GetClient(committed_client->client_uuid(),
+                                    future.GetCallback());
+
+  EXPECT_TRUE(future.Get().is_null());
 }
 
 TEST_P(ServiceWorkerVersionTest,
