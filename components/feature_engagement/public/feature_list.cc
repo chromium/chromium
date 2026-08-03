@@ -219,6 +219,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPromoPasswordManagerWidgetFeature,
     &kIPHiOSPromoPostRestoreDefaultBrowserFeature,
     &kIPHiOSPromoPostRestoreFeature,
+    &kIPHiOSPromoSettingsCardDefaultBrowserFeature,
+    &kIPHiOSPromoSettingsCellDefaultBrowserFeature,
     &kIPHiOSPromoSigninFullscreenFeature,
     &kIPHiOSPromoStaySafeFeature,
     &kIPHiOSPromoWhatsNewFeature,

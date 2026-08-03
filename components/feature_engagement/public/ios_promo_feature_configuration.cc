@@ -631,6 +631,54 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
     return config;
+  } else if (kIPHiOSPromoSettingsCardDefaultBrowserFeature.name ==
+             feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config.storage_type = StorageType::DEVICE;
+    config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    // Promo cannot be shown again once dismissed.
+    config.used = EventConfig(
+        feature_engagement::events::kDefaultBrowserSettingsCardPromoUsed,
+        Comparator(LESS_THAN, 1), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
+
+    // Show this promo once every 7 days.
+    config.trigger = EventConfig("default_browser_settings_card_promo_trigger",
+                                 Comparator(LESS_THAN, 1), 7,
+                                 feature_engagement::kMaxStoragePeriod);
+
+    // Promo card should only be shown 4 times max.
+    config.event_configs.insert(EventConfig(
+        "default_browser_settings_card_promo_trigger", Comparator(LESS_THAN, 4),
+        feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+
+    return config;
+  } else if (kIPHiOSPromoSettingsCellDefaultBrowserFeature.name ==
+             feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config.storage_type = StorageType::DEVICE;
+    config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config.used = EventConfig(
+        feature_engagement::events::kDefaultBrowserSettingsCellPromoUsed,
+        Comparator(LESS_THAN, 1), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
+
+    // No impression limit.
+    config.trigger =
+        EventConfig("default_browser_settings_cell_promo_trigger",
+                    Comparator(ANY, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    return config;
   } else {
     return std::nullopt;
   }

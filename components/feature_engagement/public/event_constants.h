@@ -442,6 +442,12 @@ extern const char kIOSPinMVTSiteUsed[];
 // when the user opens Chrome from the icon.
 extern const char kIOSChromeOpenedFromIcon[];
 
+// Event fired when the Settings default browser card promo is clicked.
+extern const char kDefaultBrowserSettingsCardPromoUsed[];
+
+// Event fired when the Settings default browser cell promo is dismissed.
+extern const char kDefaultBrowserSettingsCellPromoUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.
