@@ -646,9 +646,6 @@ BASE_FEATURE(kDirectOpusAudioDecoding, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRevokeMediaSourceObjectURLOnAttach,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Toggles SymphoniaAudioDecoder support for FLAC decoding. If disabled, the
-// media pipeline will fall back to a reasonable default, typically the FFmpeg
-// audio decoder.
 #if BUILDFLAG(ENABLE_SYMPHONIA)
 // Android / Fuchsia are expected to launch in M150.
 BASE_FEATURE(kSymphoniaAudioDecoding,
@@ -660,19 +657,17 @@ BASE_FEATURE(kSymphoniaAudioDecoding,
 #endif
 );
 
-// Toggles SymphoniaAudioDecoder support for MP3 decoding. If disabled, the
-// media pipeline will fall back to a reasonable default, typically the FFmpeg
-// audio decoder.
-BASE_FEATURE(kSymphoniaMp3Decoding, base::FEATURE_ENABLED_BY_DEFAULT);
+// Android / Fuchsia are expected to launch in M150.
+BASE_FEATURE(kSymphoniaMp3Decoding,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
-// Toggles SymphoniaAudioDecoder support for PCM decoding. If disabled, the
-// media pipeline will fall back to a reasonable default, typically the FFmpeg
-// audio decoder.
 BASE_FEATURE(kSymphoniaPcmDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Toggles SymphoniaAudioDecoder support for Vorbis decoding. If disabled, the
-// media pipeline will fall back to a reasonable default, typically the FFmpeg
-// audio decoder.
 BASE_FEATURE(kSymphoniaVorbisDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
