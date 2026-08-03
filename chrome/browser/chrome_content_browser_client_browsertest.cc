@@ -27,9 +27,9 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
@@ -446,8 +446,7 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                    "getPropertyValue('color').toString()"));
 }
 
-// TODO(crbug.com/537849089): Simplify this test suite to GlicBrowserTest.
-using PrefersColorSchemeTestBase = glic::NonInteractiveGlicTest;
+using PrefersColorSchemeTestBase = glic::GlicBrowserTest;
 
 // Tests for the preferred color scheme for a given WebContents. The first param
 // controls whether the web NativeTheme is light or dark the second controls
@@ -456,6 +455,8 @@ class PrefersColorSchemeTest
     : public testing::WithParamInterface<std::tuple<bool, bool>>,
       public PrefersColorSchemeTestBase {
  public:
+  using PlatformBrowserTest::CreateIncognitoBrowser;
+
   void SetUpOnMainThread() override {
     PrefersColorSchemeTestBase::SetUpOnMainThread();
 
@@ -465,9 +466,9 @@ class PrefersColorSchemeTest
 
     guest_view_manager_ =
         guest_view_manager_factory_.GetOrCreateTestGuestViewManager(
-            browser()->GetProfile(), extensions::ExtensionsAPIClient::Get()
-                                         ->CreateGuestViewManagerDelegate());
-    ApplyColorProvider(*browser()->tab_strip_model()->GetActiveWebContents());
+            GetBrowser()->GetProfile(), extensions::ExtensionsAPIClient::Get()
+                                            ->CreateGuestViewManagerDelegate());
+    ApplyColorProvider(*GetTabListInterface()->GetActiveTab()->GetContents());
   }
 
   void TearDownOnMainThread() override {
@@ -480,9 +481,9 @@ class PrefersColorSchemeTest
     // Most web content should follow the browser theme, with the exception of
     // non-WebUI incognito pages, which follow the device theme directly.
     const auto* const web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        GetTabListInterface()->GetActiveTab()->GetContents();
     const bool use_os_theme =
-        browser()->GetProfile()->IsIncognitoProfile() &&
+        GetBrowser()->GetProfile()->IsIncognitoProfile() &&
         !web_contents->GetLastCommittedURL().SchemeIs(content::kChromeUIScheme);
     const bool dark_mode = use_os_theme ? DarkOs() : DarkColorProvider();
     return dark_mode ? "dark" : "light";
@@ -540,35 +541,37 @@ class PrefersColorSchemeTest
 };
 
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorScheme) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
       chrome_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
           base::FilePath(FILE_PATH_LITERAL("prefers-color-scheme.html")))));
-  std::u16string tab_title;
-  ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
-  EXPECT_EQ(base::ASCIIToUTF16(ExpectedColorScheme()), tab_title);
+  EXPECT_EQ(base::ASCIIToUTF16(ExpectedColorScheme()),
+            GetTabListInterface()->GetActiveTab()->GetContents()->GetTitle());
 }
 
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIDownloadsURL)));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      GURL(chrome::kChromeUIDownloadsURL)));
 
   EXPECT_EQ(
       true,
-      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      EvalJs(GetTabListInterface()->GetActiveTab()->GetContents(),
              base::StringPrintf(
                  "window.matchMedia('(prefers-color-scheme: %s)').matches",
                  ExpectedColorScheme())));
 }
 
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorSchemeGlic) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  content::RenderFrameHost* webui_frame =
-      GetWebFrame(TargetWebContents::kGlicWebUi).value();
-  ApplyColorProvider(*content::WebContents::FromRenderFrameHost(webui_frame));
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  content::WebContents* webui_contents = instance->host().webui_contents();
+  ASSERT_TRUE(webui_contents);
+  ApplyColorProvider(*webui_contents);
 
-  auto* frame = GetWebFrame(TargetWebContents::kGlicClient).value();
+  content::RenderFrameHost* frame = instance->host().GetGuestMainFrame();
+  ASSERT_TRUE(frame);
 
   EXPECT_EQ(
       true,
@@ -584,12 +587,14 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorSchemeGlic) {
 // browser theme.
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, ChromeSearchTheme) {
   // Open an incognito browser and navigate to search scheme.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
+  Browser* incognito_browser =
+      CreateIncognitoBrowser(GetBrowser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser, GURL("chrome-search://most-visited/title.html")));
 
-  auto* incognito_ntp_web_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  auto* tab_list = TabListInterface::From(incognito_browser);
+  ASSERT_TRUE(tab_list);
+  auto* incognito_ntp_web_contents = tab_list->GetActiveTab()->GetContents();
   auto& security_principal = incognito_ntp_web_contents->GetPrimaryMainFrame()
                                  ->GetSiteInstance()
                                  ->GetSecurityPrincipal();
@@ -609,11 +614,12 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
   pdf_extension_url.append(url::kStandardSchemeSeparator);
   pdf_extension_url.append(extension_misc::kPdfExtensionId);
   GURL pdf_index = GURL(pdf_extension_url).Resolve("/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_index));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(), pdf_index));
 
   EXPECT_EQ(
       true,
-      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      EvalJs(GetTabListInterface()->GetActiveTab()->GetContents(),
              base::StringPrintf(
                  "window.matchMedia('(prefers-color-scheme: %s)').matches",
                  ExpectedColorScheme())));
