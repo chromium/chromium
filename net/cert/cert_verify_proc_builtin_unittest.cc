@@ -1289,12 +1289,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
 
 // TODO(crbug.com/452986180): Re-enable after fixing use-of-uninitialized-value
 // error.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_MtcMaxCertLifetime DISABLED_MtcMaxCertLifetime
-#else
-#define MAYBE_MtcMaxCertLifetime MtcMaxCertLifetime
-#endif
-TEST_F(CertVerifyProcBuiltinTest, MAYBE_MtcMaxCertLifetime) {
+TEST_F(CertVerifyProcBuiltinTest, DISABLED_MtcMaxCertLifetime) {
   struct TestCase {
     std::optional<base::TimeDelta> max_cert_lifetime;
     base::TimeDelta cert_lifetime;
@@ -1518,12 +1513,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcCrsAnchorUsageHistogram) {
 
 // TODO(crbug.com/452986180): Re-enable after fixing use-of-uninitialized-value
 // error.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_MtcRevocation DISABLED_MtcRevocation
-#else
-#define MAYBE_MtcRevocation MtcRevocation
-#endif
-TEST_F(CertVerifyProcBuiltinTest, MAYBE_MtcRevocation) {
+TEST_F(CertVerifyProcBuiltinTest, DISABLED_MtcRevocation) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint64_t kLogNumber = 1;
 
