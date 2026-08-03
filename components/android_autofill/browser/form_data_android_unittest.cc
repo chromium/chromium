@@ -198,25 +198,6 @@ TEST_F(FormDataAndroidTest, SimilarFormAs_Fields) {
   EXPECT_FALSE(af.SimilarFormAs(f));
 }
 
-// Tests that `GetSimilarFieldIndex` only checks field similarity.
-TEST_F(FormDataAndroidTest, GetSimilarFieldIndex) {
-  FormData f = CreateTestForm();
-  f.set_fields({CreateTestField(u"name1"), CreateTestField(u"name2")});
-  FormDataAndroid af(f, kSampleSessionId);
-
-  size_t index = 100;
-  // Value is not part of a field similarity check, so this field is similar to
-  // af.form().fields[1].
-  test_api(f).field(1).set_value(u"some value");
-  EXPECT_TRUE(af.GetSimilarFieldIndex(f.fields()[1], &index));
-  EXPECT_EQ(index, 1u);
-
-  // Name is a part of the field similarity check, so there is no field similar
-  // to this one.
-  test_api(f).field(1).set_name(u"name3");
-  EXPECT_FALSE(af.GetSimilarFieldIndex(f.fields()[1], &index));
-}
-
 // Tests that calling `OnFormFieldDidChange` propagates the changes to the
 // affected field.
 TEST_F(FormDataAndroidTest, OnFormFieldDidChange) {

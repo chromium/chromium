@@ -327,10 +327,6 @@ public final class ProductionSupportedFlagList {
                         + "MergeMode::kMergeChildrenAndReformatIfNeeded will be also added to all"
                         + "the nodes where required."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ANDROID_FORM_DATA_COMPARE_FIELD_GLOBAL_ID,
-                "If enabled, form fields are retrieved by comparing FormFieldIds"
-                        + "instead of the set of attributes."),
-        Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
