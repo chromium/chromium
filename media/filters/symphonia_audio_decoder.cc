@@ -136,28 +136,7 @@ SymphoniaDecoderConfig ToSymphoniaConfig(const AudioDecoderConfig& config) {
   return out;
 }
 
-// Helper to create a SymphoniaPacket from a DecoderBuffer.
-SymphoniaPacket ToSymphoniaPacket(
-    const DecoderBuffer& buffer,
-    std::optional<base::TimeDelta> first_frame_timestamp) {
-  SymphoniaPacket packet;
-  if (buffer.end_of_stream()) {
-    // Represent EOS as an empty data vector.
-    packet.data = rust::Slice<const uint8_t>();
 
-    // EOS buffers do not have a valid timestamp or duration.
-    packet.timestamp_us = 0;
-    packet.duration_us = 0;
-  } else {
-    packet.data = rust::Slice<const uint8_t>(
-        buffer.empty() ? nullptr : base::to_address(buffer.begin()),
-        buffer.size());
-    packet.timestamp_us =
-        (buffer.timestamp() - first_frame_timestamp.value()).InMicroseconds();
-    packet.duration_us = buffer.duration().InMicroseconds();
-  }
-  return packet;
-}
 
 SampleFormat ToSampleFormat(SymphoniaSampleFormat value) {
   switch (value) {
@@ -250,6 +229,30 @@ std::unique_ptr<BoxedMemory<T>> WrapBoxedMemory(rust::Box<T> box) {
 }
 
 }  // namespace
+
+SymphoniaPacket ToSymphoniaPacket(
+    const DecoderBuffer& buffer,
+    std::optional<base::TimeDelta> first_frame_timestamp) {
+  SymphoniaPacket packet;
+  if (buffer.end_of_stream()) {
+    // Represent EOS as an empty data vector.
+    packet.data = rust::Slice<const uint8_t>();
+
+    // EOS buffers do not have a valid timestamp or duration.
+    packet.timestamp_us = 0;
+    packet.duration_us = 0;
+  } else {
+    packet.data = rust::Slice<const uint8_t>(
+        buffer.empty() ? nullptr : base::to_address(buffer.begin()),
+        buffer.size());
+    const base::TimeDelta first_timestamp =
+        first_frame_timestamp.value_or(buffer.timestamp());
+    packet.timestamp_us =
+        (buffer.timestamp() - first_timestamp).InMicroseconds();
+    packet.duration_us = buffer.duration().InMicroseconds();
+  }
+  return packet;
+}
 
 SymphoniaAudioDecoder::SymphoniaAudioDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -566,6 +569,7 @@ void SymphoniaAudioDecoder::ResetTimestampState(
       config.samples_per_second(), config.codec_delay(),
       /*delayed_discard=*/false);
   discard_helper_->Reset(config.codec_delay());
+  first_frame_timestamp_.reset();
 }
 
 }  // namespace media

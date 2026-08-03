@@ -1109,6 +1109,15 @@ TEST_P(AudioDecoderTest, DecodeEOSFirst) {
   EXPECT_TRUE(last_decode_status().is_ok());
 }
 
+TEST_P(AudioDecoderTest, DecodeEOSFirstThenResetAndDecode) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  SendEndOfStream();
+  EXPECT_TRUE(last_decode_status().is_ok());
+  ResetDecoder();
+  ASSERT_NO_FATAL_FAILURE(Decode());
+  EXPECT_TRUE(last_decode_status().is_ok());
+}
+
 TEST_P(AudioDecoderTest, Reset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   ResetDecoder();
@@ -1238,6 +1247,15 @@ INSTANTIATE_TEST_SUITE_P(MediaFoundation,
                          Combine(Values(AudioDecoderType::kMediaFoundation),
                                  ValuesIn(kXheAacTestParams)));
 #endif
+#endif
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+TEST(SymphoniaAudioDecoderStandaloneTest, ToSymphoniaPacketNullTimestamp) {
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(10);
+  buffer->set_timestamp(base::Microseconds(100));
+  SymphoniaPacket packet = ToSymphoniaPacket(*buffer, std::nullopt);
+  EXPECT_EQ(packet.timestamp_us, 0uL);
+}
 #endif
 
 }  // namespace media
