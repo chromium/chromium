@@ -562,14 +562,15 @@ export class OmniboxPopupSearchboxElement extends
     this.selectRange(state.selection);
     this.getDropdownElement().unselect();
     // If zero-prefix suggestions are requested by the new state, initiate
-    // an on-focus autocomplete query. Otherwise, halt any in-flight
-    // autocomplete requests while preserving the current dropdown results.
+    // an on-focus autocomplete query. Otherwise, clear any existing matches
+    // so the suggestion dropdown is closed on state resets and tab switches.
     if (state.queryZps) {
       this.queryAutocomplete(
           state.text, /*preventInlineAutocomplete=*/ false,
           /*isOnFocus=*/ true);
     } else {
-      this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
+      this.clearAutocompleteMatches();
+      this.lastQueriedInput = state.text;
     }
   }
 

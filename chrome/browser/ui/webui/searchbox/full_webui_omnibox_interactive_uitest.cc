@@ -522,3 +522,33 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
                                            /*sample=*/5 /* kBlur */, 1);
       }));
 }
+
+// Verifies that switching away from a tab with an active draft and returning to
+// it restores the draft text in the searchbox without reopening the suggestion
+// dropdown.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       TabSwitchDoesNotReopenDropdown) {
+  RunTestSequence(
+      // 1. Open Tab 1 at chrome://version/ and focus Omnibox.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      // 2. Type "a" into the WebUI input to open suggestions.
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      // 3. Open Tab 2 and switch to it (index 2 because the browser starts off
+      // with a tab before we added one in the first step).
+      AddInstrumentedTab(kTab2, GURL("chrome://about/")),
+      SelectTab(kTabStripElementId, 2),
+      // 4. Switch back to Tab 1 (index 1).
+      SelectTab(kTabStripElementId, 1),
+      // 5. Verify the restored draft text "a" is present in the searchbox
+      // input.
+      WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                           "(el) => el && el.value === 'a'"),
+      // 6. Verify that the suggestion dropdown remains closed on tab
+      // restoration.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"));
+}
