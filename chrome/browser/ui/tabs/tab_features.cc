@@ -39,6 +39,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
+#include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -501,6 +502,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   focus_tab_after_navigation_helper_ =
       std::make_unique<FocusTabAfterNavigationHelper>(tab.GetContents());
 
+  zero_suggest_prefetch_tab_helper_ =
+      std::make_unique<ZeroSuggestPrefetchTabHelper>(tab.GetContents());
+
   from_gws_navigation_and_keep_alive_request_observer_ =
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(
           tab.GetContents());
@@ -694,6 +698,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   focus_tab_after_navigation_helper_ =
       std::make_unique<FocusTabAfterNavigationHelper>(new_contents);
+
+  zero_suggest_prefetch_tab_helper_ =
+      std::make_unique<ZeroSuggestPrefetchTabHelper>(new_contents);
 
   sync_sessions_router_.reset();
   sync_sessions_router_ =

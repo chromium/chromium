@@ -65,6 +65,7 @@ class SidePanelRegistry;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
 class TranslatePageActionController;
+class ZeroSuggestPrefetchTabHelper;
 
 namespace skills {
 class SkillsUiTabControllerInterface;
@@ -671,6 +672,10 @@ class TabFeatures {
       filter_navigation_observer_;
 
   std::unique_ptr<TabAttachmentTracker> tab_attachment_tracker_;
+
+  // Prefetches zero-prefix suggestions on opening or switching to an NTP.
+  std::unique_ptr<ZeroSuggestPrefetchTabHelper>
+      zero_suggest_prefetch_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
