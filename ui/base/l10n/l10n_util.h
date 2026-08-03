@@ -243,11 +243,6 @@ COMPONENT_EXPORT(UI_BASE)
 void SortStrings16(const std::string& locale,
                    std::vector<std::u16string>* strings);
 
-// Returns a vector of available locale codes from ICU. E.g., a vector
-// containing en-US, es, fr, fi, pt-PT, pt-BR, etc.
-COMPONENT_EXPORT(UI_BASE)
-const std::vector<std::string>& GetAvailableICULocales();
-
 // Returns whether a locale shouled be shown to the user as a supported UI
 // locale. This is similar to CheckAndResolveLocale, except that it excludes
 // some languages from being shown.

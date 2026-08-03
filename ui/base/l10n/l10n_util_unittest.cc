@@ -18,6 +18,7 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/icubridge/supported_locales.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
@@ -665,23 +666,6 @@ TEST_F(L10nUtilTest, GetParentLocales) {
               ElementsAre("sr_Cyrl_RS", "sr_Cyrl", "sr"));
 }
 
-TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
-  base::test::ScopedRestoreICUDefaultLocale restore_locale;
-
-  // Verify that base::TimeDurationFormat() works for all available locales:
-  // http://crbug.com/707515
-  base::TimeDelta kDelta = base::Minutes(15 * 60 + 42);
-  for (const std::string& locale : l10n_util::GetAvailableICULocales()) {
-    base::i18n::SetICUDefaultLocale(locale);
-    std::u16string str;
-    const bool result =
-        base::TimeDurationFormat(kDelta, base::DURATION_WIDTH_NUMERIC, &str);
-    EXPECT_TRUE(result) << "Failed to format duration for " << locale;
-    if (result)
-      EXPECT_FALSE(str.empty()) << "Got empty string for " << locale;
-  }
-}
-
 TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
   // Convert the vector to a set for easy lookup.
   const base::flat_set<std::string> locales =
@@ -713,7 +697,7 @@ TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
   // our list of Accept-Language locales.
   EXPECT_FALSE(locales.contains("en-DE"));
   // Esperanto. Unlikely to be localised and historically included in
-  // GetAvailableICULocales.
+  // GetSupportedIcuLocales.
   EXPECT_FALSE(locales.contains("eo"));
 }
 

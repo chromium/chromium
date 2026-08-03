@@ -77,43 +77,6 @@ std::string NormalizeLocaleWithLanguageTag(std::string_view locale) {
       .ToLegacyICUFormat();
 }
 
-// Returns true if `locale_name` has an alias in the ICU data file.
-bool IsDuplicateName(std::string_view locale_name) {
-  static constexpr auto kDuplicateNames =
-      base::MakeFixedFlatSet<std::string_view>({
-          "ar_001",
-          "en",
-          "en_001",
-          "en_150",
-          "pt",  // pt-BR and pt-PT are used.
-          "zh",
-          "zh_hans_cn",
-          "zh_hant_hk",
-          "zh_hant_mo",
-          "zh_hans_sg",
-          "zh_hant_tw",
-      });
-
-  // Skip all the es_Foo other than es_419 for now.
-  if (base::StartsWith(locale_name, "es_",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return !locale_name.ends_with("419");
-  }
-  return kDuplicateNames.contains(base::ToLowerASCII(locale_name));
-}
-
-// 30+ minimally populated locales were added with only a few entries
-// (exemplar character set, script, writing direction and its own
-// lanaguage name). These locales have to be distinguished from the
-// fully populated locales to which Chrome is localized.
-bool IsLocalePartiallyPopulated(const std::string& locale_name) {
-  // For partially populated locales, even the translation for "English"
-  // is not available. A more robust/elegant way to check is to add a special
-  // field (say, 'isPartial' to our version of ICU locale files) and
-  // check its value, but this hack seems to work well.
-  return !l10n_util::IsLocaleNameTranslated("en", locale_name);
-}
-
 bool IsResourceBundleLocale(const LanguageTag& locale) {
   return ui::ResourceBundle::LocaleDataPakExists(
       locale, ui::ResourceBundle::Gender::kDefault);
@@ -132,43 +95,6 @@ void AdjustParagraphDirectionality(std::u16string* paragraph) {
   }
 #endif
 }
-
-struct AvailableLocalesTraits
-    : base::internal::DestructorAtExitLazyInstanceTraits<
-          std::vector<std::string>> {
-  static std::vector<std::string>* New(void* instance) {
-    std::vector<std::string>* locales =
-        base::internal::DestructorAtExitLazyInstanceTraits<
-            std::vector<std::string>>::New(instance);
-    int num_locales = uloc_countAvailable();
-    for (int i = 0; i < num_locales; ++i) {
-      std::string locale_name = uloc_getAvailable(i);
-      // Filter out the names that have aliases.
-      if (IsDuplicateName(locale_name))
-        continue;
-      // Filter out locales for which only partially populated data is present
-      // and to which Chrome is not localized.
-      if (IsLocalePartiallyPopulated(locale_name))
-        continue;
-      // Normalize underscores to hyphens because that's what our locale files
-      // use.
-      std::replace(locale_name.begin(), locale_name.end(), '_', '-');
-
-      // Map the Chinese locale names over to zh-CN and zh-TW.
-      if (base::EqualsCaseInsensitiveASCII(locale_name, "zh-hans")) {
-        locale_name = "zh-CN";
-      } else if (base::EqualsCaseInsensitiveASCII(locale_name, "zh-hant")) {
-        locale_name = "zh-TW";
-      }
-      locales->push_back(locale_name);
-    }
-
-    return locales;
-  }
-};
-
-base::LazyInstance<std::vector<std::string>, AvailableLocalesTraits>
-    g_available_locales = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -643,10 +569,6 @@ std::u16string GetSingleOrMultipleStringUTF16(int message_id,
 void SortStrings16(const std::string& locale,
                    std::vector<std::u16string>* strings) {
   SortVectorWithStringKey(locale, strings, false);
-}
-
-const std::vector<std::string>& GetAvailableICULocales() {
-  return g_available_locales.Get();
 }
 
 bool IsUserFacingUILocale(std::string_view locale) {
