@@ -1353,5 +1353,130 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsUseCounter) {
   SetBrowserClientForTesting(old_client);
 }
 
+TEST_F(DeclarativePerformanceObserverTest,
+       SanitizesReportUrlsInNavigationEntry) {
+  const GURL kPageURL("https://user:password@example.com/index.html#section1");
+  const GURL kExpectedSanitizedURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kNavigation);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  NavigationHandleTiming timing;
+  ON_CALL(navigation_handle, GetNavigationHandleTiming())
+      .WillByDefault(testing::ReturnRef(timing));
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  CreateObserver(&navigation_handle);
+  auto* observer =
+      DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
+  ASSERT_TRUE(observer);
+
+  observer->OnEnterBFCache();
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report1 = network_context_.reports()[0];
+  EXPECT_EQ(report1.type, "performance-observer");
+
+  const base::ListValue* entries1 = report1.body.FindList("entries");
+  ASSERT_TRUE(entries1);
+  ASSERT_GE(entries1->size(), 1u);
+
+  const base::DictValue* nav_entry1 = (*entries1)[0].GetIfDict();
+  ASSERT_TRUE(nav_entry1);
+  EXPECT_EQ(*(nav_entry1->FindString("entryType")), "navigation");
+  EXPECT_EQ(*(nav_entry1->FindString("name")), kExpectedSanitizedURL.spec());
+
+  network_context_.ClearReports();
+
+  const GURL kBFCacheURL(
+      "https://user:password@example.com/index.html#section2");
+  MockNavigationHandle restore_handle(kBFCacheURL, main_rfh());
+  restore_handle.set_has_committed(true);
+  restore_handle.set_is_in_primary_main_frame(true);
+  restore_handle.set_is_error_page(false);
+  restore_handle.set_is_served_from_bfcache(true);
+
+  observer->OnDidFinishNavigation(&restore_handle);
+
+  DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report2 = network_context_.reports()[0];
+  const base::ListValue* entries2 = report2.body.FindList("entries");
+  ASSERT_TRUE(entries2);
+  ASSERT_GE(entries2->size(), 1u);
+
+  const base::DictValue* nav_entry2 = (*entries2)[0].GetIfDict();
+  ASSERT_TRUE(nav_entry2);
+  EXPECT_EQ(*(nav_entry2->FindString("entryType")), "navigation");
+  EXPECT_EQ(*(nav_entry2->FindString("type")), "back_forward");
+  EXPECT_EQ(*(nav_entry2->FindString("name")), kExpectedSanitizedURL.spec());
+}
+
+TEST_F(DeclarativePerformanceObserverTest, SanitizesReportUrlsInLcpEntry) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kLargestContentfulPaint);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  NavigationHandleTiming timing;
+  ON_CALL(navigation_handle, GetNavigationHandleTiming())
+      .WillByDefault(testing::ReturnRef(timing));
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  CreateObserver(&navigation_handle);
+
+  mojo::Remote<blink::mojom::DeclarativePerformanceObserverHost>
+      observer_remote;
+  DeclarativePerformanceObserver::Bind(
+      main_rfh(), observer_remote.BindNewPipeAndPassReceiver());
+
+  std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+  entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewLcp(
+      blink::mojom::DeclarativeLargestContentfulPaint::New(
+          base::Milliseconds(150), 450, base::Milliseconds(150),
+          base::Milliseconds(120), "hero-img",
+          "https://user:password@example.com/hero.png#section2", "IMG")));
+  observer_remote->DidObservePerformanceEntries(std::move(entries));
+  observer_remote.FlushForTesting();
+
+  DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+
+  const base::ListValue* entries_list = report.body.FindList("entries");
+  ASSERT_TRUE(entries_list);
+  ASSERT_GE(entries_list->size(), 1u);
+
+  const base::Value& entry_val0 = (*entries_list)[0];
+  const base::DictValue* lcp_entry = entry_val0.GetIfDict();
+  ASSERT_TRUE(lcp_entry);
+
+  const std::string* url = lcp_entry->FindString("url");
+  ASSERT_TRUE(url);
+  EXPECT_EQ(*url, "https://example.com/hero.png");
+}
+
 }  // namespace
 }  // namespace content
