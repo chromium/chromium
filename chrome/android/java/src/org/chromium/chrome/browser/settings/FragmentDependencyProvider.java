@@ -29,11 +29,9 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckBridge;
 import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
@@ -57,7 +55,6 @@ import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -176,18 +173,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                         ImageDescriptionsController.getInstance().onlyOnWifiEnabled(mProfile));
             }
             imageFragment.setDelegate(ImageDescriptionsController.getInstance().getDelegate());
-        }
-        if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
-            PrivacySandboxSettingsBaseFragment sandboxFragment =
-                    (PrivacySandboxSettingsBaseFragment) fragment;
-            sandboxFragment.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
-            sandboxFragment.setCookieSettingsIntentHelper(
-                    (Context context) -> {
-                        SiteSettingsHelper.showCategorySettings(
-                                context,
-                                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                                /* addToBackStack= */ true);
-                    });
         }
         if (fragment instanceof LanguageSettings) {
             ((LanguageSettings) fragment)

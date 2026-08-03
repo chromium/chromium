@@ -539,21 +539,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.PrivacySandbox.PrivacySandboxReferrer"
-    enum="PrivacySandboxReferrer" expires_after="2023-02-12">
-  <owner>andzaytsev@google.com</owner>
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>chrome-friendly-settings@google.com</owner>
-  <summary>
-    Referrer of a navigation to the Privacy Sandbox UI Settings view. Recorded
-    when the user enters the view.
-
-    Warning: This histogram was expired after M95 and restored M99. Data may be
-    missing M96-98.
-  </summary>
-</histogram>
-
 <histogram name="Settings.PrivacySandbox.RestrictedNoticeCheckIsMismatched"
     enum="Boolean" expires_after="2026-09-13">
   <owner>boujane@google.com</owner>
