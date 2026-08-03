@@ -5385,7 +5385,7 @@
   {
     "name": "gemini-multi-tab-context",
     "owners": [ "joepeplowski@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 153
+    "expiry_milestone": 160
   },
   {
     "name": "gemini-navigation-promo",
