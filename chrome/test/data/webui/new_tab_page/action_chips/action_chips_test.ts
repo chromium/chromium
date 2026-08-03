@@ -176,10 +176,6 @@ suite('NewTabPageActionChipsTest', () => {
             typeIcon: IconType.kFavicon,
             primaryText: {text: 'Example Tab', a11yText: null},
             secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
-            fuseboxAction: {
-              preselectedTool: ToolMode.kUnspecified,
-              preferredInventory: null,
-            },
           },
           suggestion: 'Suggestion for recent tab',
           tab: fakeTab,
@@ -206,6 +202,7 @@ suite('NewTabPageActionChipsTest', () => {
     assertTrue(!!event.detail.files);
     assertEquals(1, event.detail.files.length);
     assertDeepEquals(expectedTab, event.detail.files[0]);
+    assertEquals(undefined, event.detail.fuseboxAction);
   });
 
   test('recent tab chip renders favicon', async () => {
