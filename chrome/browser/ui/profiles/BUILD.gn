@@ -43,27 +43,11 @@ source_set("profiles") {
       "//components/sync/service",
       "//url",
     ]
+  }
 
-    if (enable_dice_support) {
-      sources += [
-        "batch_upload_ui_delegate.h",
-        # TODO(crbug.com/430804948):
-        # signin_intercept_first_run_experience_dialog.h isn't listed here at
-        # the moment, and added to "impl" target instead, because it causes the
-        # following circular dependency:
-        # ERROR Dependency cycle:
-        #  //chrome/browser/extensions:extensions ->
-        #  //chrome/browser/ui/views/side_panel:side_panel ->
-        #  //chrome/browser/ui/views/toolbar:toolbar ->
-        #  //chrome/browser/ui/profiles:profiles ->
-        #  //chrome/browser/ui/signin:signin ->
-        #  //chrome/browser/ui/webui/signin:signin ->
-        #  //chrome/browser/ui/webui:webui ->
-        #  //chrome/browser/extensions:extensions
-      ]
-
-      public_deps += [ "//chrome/browser/profiles/batch_upload" ]
-    }
+  if (enable_dice_support || is_chromeos) {
+    sources += [ "batch_upload_ui_delegate.h" ]
+    public_deps += [ "//chrome/browser/profiles/batch_upload" ]
   }
 }
 
@@ -119,7 +103,6 @@ source_set("impl") {
 
     if (enable_dice_support) {
       sources += [
-        "batch_upload_ui_delegate.cc",
         "signin_intercept_first_run_experience_dialog.cc",
         "signin_intercept_first_run_experience_dialog.h",
       ]
@@ -136,6 +119,10 @@ source_set("impl") {
         "//chrome/browser/ui/webui/signin:profile",
       ]
     }
+  }
+
+  if (enable_dice_support || is_chromeos) {
+    sources += [ "batch_upload_ui_delegate.cc" ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

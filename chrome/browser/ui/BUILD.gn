@@ -3270,8 +3270,6 @@ static_library("ui") {
 
   if (enable_dice_support || is_chromeos) {
     sources += [
-      "profiles/batch_upload_ui_delegate.cc",
-      "profiles/batch_upload_ui_delegate.h",
       "views/profiles/batch_upload_dialog_view.cc",
       "views/profiles/batch_upload_dialog_view.h",
     ]
