@@ -301,15 +301,6 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // report type is USER_REPORT.
   virtual void MaybeFillScreenshotData(ClientPhishingRequest* verdict) {}
 
-  // Extracts suspicious tokens from a copied clipboard payload into a
-  // structured object.
-  //
-  // See https://crbug.com/454952204 for the security review around clipboard
-  // data extraction. UTF16 to UTF8 conversion is already done in the renderer,
-  // and the payload parsing does not involve complex grammar.
-  virtual ClipboardExtractedData ExtractClipboardData(
-      const std::u16string& payload) = 0;
-
   // Add miscellaneous metadata to ClientPhishingRequest prior to sending the
   // ping.
   // TODO: Remove the parameter is_invalid_ip once the feature flag,
@@ -327,6 +318,14 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // Logs the ClientSideDetectionEvent event.
   void LogClientSideDetectionEvent(ClientSideDetectionEvent event,
                                    ClientSideDetectionType request_type);
+
+  // Extracts suspicious tokens from a copied clipboard payload into a
+  // structured object.
+  //
+  // See https://crbug.com/454952204 for the security review around clipboard
+  // data extraction. UTF16 to UTF8 conversion is already done in the renderer,
+  // and the payload parsing does not involve complex grammar.
+  ClipboardExtractedData ExtractClipboardData(const std::u16string& payload);
 
   // Called when text is copied to the clipboard. Checks if the copied text
   // meets the criteria for CSD analysis and potentially starts

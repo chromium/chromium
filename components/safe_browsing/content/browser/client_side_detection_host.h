@@ -51,7 +51,6 @@ namespace safe_browsing {
 class BaseUIManager;
 class ClientPhishingRequest;
 class ClientSideDetectionService;
-class ClipboardExtractedData;
 class SafeBrowsingDatabaseManager;
 class SafeBrowsingTokenFetcher;
 class VerdictCacheManager;
@@ -373,8 +372,6 @@ class ClientSideDetectionHost
       std::optional<IntelligentScanVerdict> intelligent_scan_verdict) override;
   void AddReferrerChain(ClientPhishingRequest* verdict) override;
   void MaybeFillScreenshotData(ClientPhishingRequest* request) override;
-  ClipboardExtractedData ExtractClipboardData(
-      const std::u16string& payload) override;
   void AddMiscellaneousMetadataToClientPhishingRequest(
       ClientPhishingRequest* verdict,
       bool is_invalid_ip) override;

@@ -6,6 +6,7 @@ include_rules = [
   "+components/password_manager/core/common/password_manager_pref_names.h",
   "+components/sessions/core/session_id.h",
   "+components/version_info",
+  "+components/url_formatter",
   "+net/cookies",
   "+net/dns/public",
   "+net/extras",

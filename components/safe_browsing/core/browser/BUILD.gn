@@ -71,11 +71,13 @@ source_set("browser") {
     "//components/security_interstitials/core:unsafe_resource",
     "//components/sessions:session_id",
     "//components/unified_consent",
+    "//components/url_formatter",
     "//components/version_info",
     "//net",
     "//net:extras",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//url",
   ]
 }
 

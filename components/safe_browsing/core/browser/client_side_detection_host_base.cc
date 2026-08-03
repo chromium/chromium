@@ -7,14 +7,18 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
@@ -29,11 +33,37 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/url_formatter/url_fixer.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace safe_browsing {
 
 namespace {
+
+// Normalizes a potential command to account for capitalization, pathing, and
+// file extensions.
+std::string NormalizeToken(std::u16string_view token) {
+  base::FilePath path(base::FilePath::FromUTF16Unsafe(token));
+  std::string filename = path.BaseName().RemoveExtension().AsUTF8Unsafe();
+  return base::ToLowerASCII(filename);
+}
+
+bool IsPossibleURL(std::string token) {
+  GURL url = url_formatter::FixupURL(token, "");
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  bool has_real_domain =
+      !net::registry_controlled_domains::GetDomainAndRegistry(
+           url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)
+           .empty();
+  bool is_ip = url.HostIsIPAddress();
+
+  return has_real_domain || is_ip;
+}
 
 // Threshold value used to skip the intelligent scan.
 const int kInnerTextMinThresholdBytes = 5;
@@ -576,6 +606,133 @@ void ClientSideDetectionHostBase::OnTextCopiedToClipboard(
   }
 
   MaybeStartPreClassification(ClientSideDetectionType::CLIPBOARD_COPY_API);
+}
+
+ClipboardExtractedData ClientSideDetectionHostBase::ExtractClipboardData(
+    const std::u16string& payload) {
+  ClipboardExtractedData clipboard_data;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
+  bool has_loader = false;
+  bool has_endpoint = false;
+  bool has_runner = false;
+
+  std::u16string processed_payload = payload;
+  // Check for subcommand syntax before tokenizing, as they count as runners.
+  if (processed_payload.find(u"$(") != std::u16string::npos ||
+      processed_payload.find(u")") != std::u16string::npos ||
+      processed_payload.find(u"`") != std::u16string::npos) {
+    has_runner = true;
+  }
+
+  // Replace shell and scripting delimiters with space to simplify tokenization.
+  std::vector<std::u16string> delimiters = {
+      u"&&", u"||", u"$(", u"|", u";", u")", u"`", u"(", u"{", u"}", u"::"};
+  for (const auto& delimiter : delimiters) {
+    base::ReplaceSubstringsAfterOffset(&processed_payload, 0, delimiter, u" ");
+  }
+
+  std::vector<std::u16string> tokens =
+      base::SplitString(processed_payload, u" \t\n\r", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.SplitStringDuration",
+      base::TimeTicks::Now() - start_time);
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount",
+      tokens.size());
+
+  if (tokens.empty()) {
+    return clipboard_data;
+  }
+
+  // Fetch the suspicious tokens that could be used to construct a malicious
+  // command. The explanation and rationale behind these lists can be found
+  // internally at go/sus-commands.
+  const base::flat_set<std::string> loaders =
+      base::SplitString(kCsdClipboardCopyApiLoaders.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const base::flat_set<std::string> runners =
+      base::SplitString(kCsdClipboardCopyApiRunners.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const base::flat_set<std::string> remote_runners =
+      base::SplitString(kCsdClipboardCopyApiRemoteRunners.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const base::flat_set<std::string> decoders =
+      base::SplitString(kCsdClipboardCopyApiDecoders.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (size_t i = 0; i < tokens.size(); ++i) {
+    const std::string& normalized_token = NormalizeToken(tokens[i]);
+    bool is_suspicious = false;
+
+    if (decoders.contains(normalized_token)) {
+      has_loader = true;
+      has_endpoint = true;
+      is_suspicious = true;
+    }
+    if (remote_runners.contains(normalized_token)) {
+      has_loader = true;
+      has_runner = true;
+      is_suspicious = true;
+    }
+    if (loaders.contains(normalized_token)) {
+      has_loader = true;
+      is_suspicious = true;
+    }
+    if (runners.contains(normalized_token)) {
+      has_runner = true;
+      is_suspicious = true;
+    }
+
+    if (is_suspicious) {
+      clipboard_data.add_suspicious_tokens(normalized_token);
+      if (i == 0) {
+        clipboard_data.set_is_first_token_suspicious(true);
+      }
+      if (i == tokens.size() - 1) {
+        clipboard_data.set_is_last_token_suspicious(true);
+      }
+    }
+
+    if (IsPossibleURL(base::UTF16ToUTF8(tokens[i]))) {
+      has_endpoint = true;
+      clipboard_data.add_urls(normalized_token);
+    }
+  }
+
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
+      "SuspiciousTokenCount",
+      clipboard_data.suspicious_tokens_size());
+
+  clipboard_data.set_payload_length(payload.length());
+  clipboard_data.set_total_parsed_tokens(tokens.size());
+
+  // If the payload has a token to download a script, an endpoint to download
+  // from, and a token to execute commands, it's overall suspicious.
+  bool is_overall_suspicious = has_loader && has_endpoint && has_runner;
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.IsOverallSuspicious",
+      is_overall_suspicious);
+  if (is_overall_suspicious) {
+    clipboard_data.set_is_overall_suspicious(true);
+    base::UmaHistogramCounts100(
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.UrlCount",
+        clipboard_data.urls_size());
+    if (kCSDClipboardCopyApiIncludeFullPayload.Get()) {
+      clipboard_data.set_content(base::UTF16ToUTF8(payload));
+    }
+  } else {
+    // Otherwise, clear out any URL reporting.
+    clipboard_data.clear_urls();
+  }
+
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.ProcessingDuration",
+      base::TimeTicks::Now() - start_time);
+  return clipboard_data;
 }
 
 void ClientSideDetectionHostBase::OnFieldTypesDetermined(
