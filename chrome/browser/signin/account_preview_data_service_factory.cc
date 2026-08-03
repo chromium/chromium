@@ -12,7 +12,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/account_preview_data_service_impl.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -47,13 +46,11 @@ AccountPreviewDataServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  PrefService* prefs = profile->GetPrefs();
-  if (!base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData) ||
-      !prefs->GetBoolean(prefs::kSigninAllowed)) {
+  if (!base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData)) {
     return nullptr;
   }
 
+  Profile* profile = Profile::FromBrowserContext(context);
   std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper;
 #if BUILDFLAG(IS_CHROMEOS)
   network_delay_helper = std::make_unique<WaitForNetworkCallbackHelperAsh>();
@@ -65,7 +62,7 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
       ProfileMetricsServiceFactory::GetForProfile(profile);
 
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
-      IdentityManagerFactory::GetForProfile(profile), prefs,
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       std::move(network_delay_helper), chrome::GetChannel(),

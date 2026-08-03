@@ -35,18 +35,6 @@ TEST_P(AccountPreviewDataServiceFactoryTest, GetForProfile) {
   }
 }
 
-TEST_P(AccountPreviewDataServiceFactoryTest, GetForProfile_SigninDisallowed) {
-  auto prefs = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-  RegisterUserProfilePrefs(prefs->registry());
-  prefs->SetUserPref(prefs::kSigninAllowed, base::Value(false));
-  prefs->SetUserPref(prefs::kSigninAllowedOnNextStartup, base::Value(false));
-
-  TestingProfile::Builder builder;
-  builder.SetPrefService(std::move(prefs));
-  std::unique_ptr<TestingProfile> profile = builder.Build();
-  EXPECT_FALSE(AccountPreviewDataServiceFactory::GetForProfile(profile.get()));
-}
-
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AccountPreviewDataServiceFactoryTest);
 
 }  // namespace

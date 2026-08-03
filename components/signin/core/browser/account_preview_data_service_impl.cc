@@ -91,9 +91,14 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
                         *identity_manager,
                         *profile_metrics_service) {
   CHECK(network_delay_helper_);
-  identity_manager_observation_.Observe(identity_manager_);
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kSigninAllowed,
+      base::BindRepeating(
+          &AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged,
+          base::Unretained(this)));
 
-  CreateAndStartRepeatingTimer();
+  OnSigninAllowedPrefChanged();
 }
 
 AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
@@ -469,6 +474,26 @@ void AccountPreviewDataServiceImpl::ResetTimer() {
   pref_service_->SetTime(prefs::kAccountPreviewDataLastUpdatePref,
                          base::Time::Now());
   CreateAndStartRepeatingTimer();
+}
+
+void AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged() {
+  if (pref_service_->GetBoolean(prefs::kSigninAllowed)) {
+    if (!identity_manager_observation_.IsObserving()) {
+      identity_manager_observation_.Observe(identity_manager_);
+      CreateAndStartRepeatingTimer();
+    }
+    return;
+  }
+
+  // Clears the saved pref since the user is no longer able to sign in.
+  WritePreferredAccountToPrefs(std::nullopt);
+  identity_manager_observation_.Reset();
+  repeating_timer_.reset();
+  deferred_fetch_on_loaded_tokens_callback_.Reset();
+  all_accounts_fetched_barrier_.Reset();
+  cached_data_.clear();
+  active_fetchers_.clear();
+  account_id_to_gaia_id_.clear();
 }
 
 void AccountPreviewDataServiceImpl::CreateAndStartRepeatingTimer() {

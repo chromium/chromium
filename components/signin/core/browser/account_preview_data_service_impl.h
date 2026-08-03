@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/account_preview_metrics_recorder.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
@@ -100,6 +101,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       const std::vector<CoreAccountInfo>& accounts) const;
   void RecordAccountsUsedForLastFetch();
   void OnAllFetchesCompleted(bool should_reset_periodic_timer);
+  void OnSigninAllowedPrefChanged();
   void CreateAndStartRepeatingTimer();
   void ResetTimer();
   std::optional<AccountPreviewPreference> ComputePreferredAccount() const;
@@ -134,6 +136,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   // is removed.
   absl::flat_hash_map<CoreAccountId, GaiaId> account_id_to_gaia_id_;
 
+  PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
 

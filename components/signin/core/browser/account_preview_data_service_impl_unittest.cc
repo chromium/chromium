@@ -14,6 +14,7 @@
 #include "base/version_info/channel.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/core/browser/account_metrics_id_allocator.h"
@@ -84,6 +85,8 @@ class AccountPreviewDataServiceTest : public testing::Test {
   void SetUp() override {
     AccountPreviewDataService::RegisterProfilePrefs(prefs_.registry());
     SigninPrefs::RegisterProfilePrefs(prefs_.registry());
+    prefs_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
+    prefs_.SetBoolean(prefs::kSigninAllowed, true);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
     network_delay_helper_ = helper.get();
@@ -114,6 +117,16 @@ TEST_F(AccountPreviewDataServiceTest, EmptyInitially) {
   GaiaId id("some-gaia-id");
   std::optional<AccountPreviewData> data = service_->GetAccountPreviewData(id);
   EXPECT_FALSE(data.has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest, SigninDisallowed) {
+  prefs_.SetBoolean(prefs::kSigninAllowed, false);
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("primary@gmail.com");
+
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.gaia));
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+  EXPECT_FALSE(service_->GetPreferredAccountForPromo().has_value());
 }
 
 TEST_F(AccountPreviewDataServiceTest, FetchesForPrimaryAccount) {

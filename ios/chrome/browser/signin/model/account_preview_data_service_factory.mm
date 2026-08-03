@@ -11,7 +11,6 @@
 #import "components/signin/core/browser/account_preview_data_service.h"
 #import "components/signin/core/browser/account_preview_data_service_impl.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
-#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -47,13 +46,7 @@ AccountPreviewDataServiceFactory::~AccountPreviewDataServiceFactory() = default;
 std::unique_ptr<KeyedService>
 AccountPreviewDataServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  PrefService* prefs = profile->GetPrefs();
-  if (!base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData) ||
-      // Since this is a managed preference, it is fine for it be checked only
-      // once per session.
-      // TODO(crbug.com/540713764): Consider moving this condition to the
-      // service itself, as well as checking the local preference value instead.
-      !prefs->GetBoolean(prefs::kSigninAllowed)) {
+  if (!base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData)) {
     return nullptr;
   }
 
@@ -61,7 +54,7 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceFor(
       IOSProfileMetricsServiceFactory::GetForProfile(profile);
 
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
-      IdentityManagerFactory::GetForProfile(profile), prefs,
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetSharedURLLoaderFactory(),
       std::make_unique<WaitForNetworkCallbackHelperIOS>(), ::GetChannel(),
       profile_metrics_service);
