@@ -84,9 +84,6 @@ void ShowContextMenu(NSMenu* menu,
     sendingEventScoper.emplace();
   }
 
-  // Ensure the UI can update while the menu is fading out.
-  base::ScopedPumpMessagesInPrivateModes pump_private;
-
   if (context) {
     ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(menu, context);
   }

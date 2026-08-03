@@ -481,9 +481,6 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
     // be done manually.
     base::mac::ScopedSendingEvent sending_event_scoper;
 
-    // Ensure the UI can update while the menu is fading out.
-    base::ScopedPumpMessagesInPrivateModes pump_in_fade;
-
     // Now run a NESTED EVENT LOOP until the pop-up is finished.
     [runner runMenuInView:cocoa_view
                withBounds:[cocoa_view flipRectToNSRect:menu->bounds]
