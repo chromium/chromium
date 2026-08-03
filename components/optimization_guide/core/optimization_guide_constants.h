@@ -13,12 +13,6 @@
 
 namespace optimization_guide {
 
-// The name of the model execution debug logs header.
-// TODO: crbug.com/514743962 - Move this to the only file that uses it:
-// components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kOptimizationGuideModelExecutionDebugLogsHeaderKey[];
-
 // Files expected to be in the on device model bundle.
 // TODO: crbug.com/514743962 - Move these to
 // components/optimization_guide/core/model_execution/on_device_model_component.h

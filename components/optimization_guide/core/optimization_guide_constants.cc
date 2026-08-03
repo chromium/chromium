@@ -6,9 +6,6 @@
 
 namespace optimization_guide {
 
-const char kOptimizationGuideModelExecutionDebugLogsHeaderKey[] =
-    "X-Model-Execution-Debug-Logs";
-
 const base::FilePath::CharType kWeightsFile[] =
     FILE_PATH_LITERAL("weights.bin");
 

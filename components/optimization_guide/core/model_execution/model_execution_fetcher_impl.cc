@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -31,6 +30,10 @@
 namespace optimization_guide {
 
 namespace {
+
+// The name of the model execution debug logs header.
+constexpr char kOptimizationGuideModelExecutionDebugLogsHeaderKey[] =
+    "X-Model-Execution-Debug-Logs";
 
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
