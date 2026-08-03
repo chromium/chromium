@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -639,6 +640,35 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
       ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
+                       CloseLastGroupedTabCreatesNewTab) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        model->AddToNewGroup({0});
+        ASSERT_TRUE(model->GetTabAtIndex(0)->GetGroup().has_value());
+
+        auto* base_region = views::AsViewClass<BaseTabStripRegionView>(
+            browser()->GetBrowserView().tab_strip_view());
+        ASSERT_NE(base_region, nullptr);
+        auto* controller = base_region->GetTabStripCollectionController();
+        ASSERT_NE(controller, nullptr);
+
+        controller->CloseTab(model->GetTabAtIndex(0),
+                             CloseTabSource::kFromMouse);
+
+        tab_groups::DeletionDialogController* deletion_dialog_controller =
+            browser()->GetFeatures().tab_group_deletion_dialog_controller();
+        if (deletion_dialog_controller &&
+            deletion_dialog_controller->IsShowingDialog()) {
+          deletion_dialog_controller->SimulateOkButtonForTesting();
+        }
+
+        EXPECT_EQ(model->count(), 1);
+        EXPECT_FALSE(model->GetActiveTab()->GetGroup().has_value());
+      }));
 }
 
 }  // namespace

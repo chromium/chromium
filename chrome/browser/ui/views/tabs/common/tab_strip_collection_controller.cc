@@ -13,10 +13,12 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
@@ -24,6 +26,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -35,7 +39,9 @@
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -47,6 +53,28 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+namespace {
+
+void TabGroupsDialogTimingToSource(
+    base::OnceCallback<void(CloseTabSource)> callback,
+    CloseTabSource source,
+    tab_groups::DeletionDialogController::DeletionDialogTiming timing) {
+  switch (timing) {
+    case tab_groups::DeletionDialogController::DeletionDialogTiming::
+        Synchronous: {
+      std::move(callback).Run(source);
+      return;
+    }
+    case tab_groups::DeletionDialogController::DeletionDialogTiming::
+        Asynchronous: {
+      std::move(callback).Run(CloseTabSource::kFromNonUIEvent);
+      return;
+    }
+  }
+}
+
+}  // namespace
 
 TabStripCollectionController::TabStripCollectionController(
     TabStripModel* model,
@@ -241,16 +269,107 @@ void TabStripCollectionController::SelectTab(
   model_->ActivateTabAt(tab_index.value(), gesture_detail);
 }
 
+// TODO(crbug.com/542186263): Move all the tab close logic into
+// TabStripModelDelegate.
 void TabStripCollectionController::CloseTab(
-    const tabs::TabInterface* tab_interface) {
-  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
-  if (!tab_index.has_value()) {
+    const tabs::TabInterface* tab_interface,
+    CloseTabSource source) {
+  std::optional<int> maybe_tab_index = model_->GetIndexOfTab(tab_interface);
+  if (!maybe_tab_index.has_value()) {
+    return;
+  }
+  int tab_index = maybe_tab_index.value();
+
+  if (!web_app::IsTabClosable(model_, tab_index)) {
     return;
   }
 
-  model_->CloseWebContentsAt(tab_index.value(),
-                             TabCloseTypes::CLOSE_USER_GESTURE |
-                                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Tabs cannot be closed when the app is in locked fullscreen, which is
+  // available only on ChromeOS.
+  if (browser_view_->IsLockedFullscreen()) {
+    return;
+  }
+#endif
+
+  // Only consider pausing the close operation if this is the last remaining
+  // tab (since otherwise closing it won't close the browser window).
+  if (model_->count() <= 1) {
+    // Closing this tab will close the current window. See if the browser wants
+    // to prompt the user before the browser is allowed to close.
+    const UnloadController::WarnBeforeClosingResult result =
+        UnloadController::From(browser_view_->browser())
+            ->MaybeWarnBeforeClosing(base::BindOnce(
+                [](TabStripCollectionController* controller,
+                   const tabs::TabInterface* tab,
+                   UnloadController::WarnBeforeClosingResult result) {
+                  if (result ==
+                      UnloadController::WarnBeforeClosingResult::kOkToClose) {
+                    controller->CloseTab(tab, CloseTabSource::kFromNonUIEvent);
+                  }
+                },
+                base::Unretained(this), tab_interface));
+
+    if (result != UnloadController::WarnBeforeClosingResult::kOkToClose) {
+      return;
+    }
+  }
+
+  // Check to make sure the tab is not the last in it's group.
+  std::vector<tab_groups::TabGroupId> groups_to_delete =
+      model_->GetGroupsDestroyedFromRemovingIndices({tab_index});
+
+  auto do_close = base::BindOnce(
+      [](TabStripModel* model, BrowserWindowInterface* browser,
+         const tabs::TabInterface* tab, CloseTabSource source) {
+        std::optional<int> index = model->GetIndexOfTab(tab);
+        if (!index.has_value()) {
+          return;
+        }
+        int tab_index = index.value();
+
+        if (tab->GetGroup().has_value()) {
+          base::RecordAction(base::UserMetricsAction("CloseGroupedTab"));
+
+          if (model->count() == 1) {
+            // Prevent the browser from closing when the last grouped tab is
+            // closed from the browser by adding a new tab.
+            chrome::NewTab(browser->GetBrowserForMigrationOnly(),
+                           NewTabTypes::kNoUserAction);
+            // In some situations the new tab is assigned a group. So if it is
+            // in a group, we remove it from the group so that after closing the
+            // tab at `tab_index`, the browser shows a tab without a group.
+            model->RemoveFromGroup({1});
+          }
+        }
+
+        model->CloseWebContentsAt(
+            tab_index, TabCloseTypes::CLOSE_USER_GESTURE |
+                           TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+
+        // Try to show reading list IPH if needed.
+        if (model->count() >= 7) {
+          BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
+              feature_engagement::kIPHReadingListEntryPointFeature);
+        }
+      },
+      base::Unretained(model_), base::Unretained(browser_view_->browser()),
+      tab_interface);
+
+  if (groups_to_delete.empty()) {
+    std::move(do_close).Run(source);
+    return;
+  }
+
+  auto timing_mapped_callback = base::BindOnce(&TabGroupsDialogTimingToSource,
+                                               std::move(do_close), source);
+
+  // If the user is destroying the last tab in a saved or shared group via the
+  // tabstrip, a dialog is shown that will decide whether to destroy the tab or
+  // not. It will first ungroup the tab, then close the tab.
+  tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
+      browser_view_->browser(), tab_groups::GroupDeletionReason::ClosedLastTab,
+      groups_to_delete, std::move(timing_mapped_callback));
 }
 
 void TabStripCollectionController::ToggleSelected(

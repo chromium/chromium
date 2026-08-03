@@ -13,6 +13,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -26,8 +31,10 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -60,9 +67,27 @@ constexpr bool kShouldPreventClose = false;
 
 }  // namespace
 
-using UnloadControllerPreventCloseTest = PreventCloseTestBase;
+class UnloadControllerPreventCloseTest
+    : public VerticalTabsBrowserTestMixin<PreventCloseTestBase>,
+      public testing::WithParamInterface<TabStripOrientation> {
+ public:
+  UnloadControllerPreventCloseTest() = default;
+  ~UnloadControllerPreventCloseTest() override = default;
 
-IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
+  TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<PreventCloseTestBase>::SetUpOnMainThread();
+    if (is_horizontal()) {
+      ExitVerticalTabsMode();
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
                        PreventCloseEnforcedByPolicy) {
   const absl::Cleanup policy_cleanup = [this] {
     SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
@@ -92,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
 #define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
   PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     UnloadControllerPreventCloseTest,
     MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
   const absl::Cleanup policy_cleanup = [this] {
@@ -112,6 +137,20 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(BrowserWindowInterface::ClosingStatus::kPermitted,
             unload_controller->GetBrowserClosingStatus());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UnloadControllerPreventCloseTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
 
 #if BUILDFLAG(IS_CHROMEOS)
 

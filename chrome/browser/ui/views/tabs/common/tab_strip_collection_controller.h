@@ -64,7 +64,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   void MoveTabLast(const tabs::TabInterface* tab_interface);
   void SelectTab(const tabs::TabInterface* tab_interface,
                  const TabStripUserGestureDetails& event);
-  void CloseTab(const tabs::TabInterface* tab_interface);
+  void CloseTab(const tabs::TabInterface* tab_interface, CloseTabSource source);
   void ToggleSelected(const tabs::TabInterface* tab_interface);
   void AddSelectionFromAnchorTo(const tabs::TabInterface* tab_interface);
   void ExtendSelectionTo(const tabs::TabInterface* tab_interface);

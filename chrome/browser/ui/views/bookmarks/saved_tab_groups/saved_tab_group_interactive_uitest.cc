@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
@@ -207,6 +208,35 @@ class SavedTabGroupInteractiveTestBase
       ASSERT_TRUE(group);
       EXPECT_FALSE(group->local_group_id());
     });
+  }
+
+  auto NameTabCloseButtonAt(const std::string_view name, int index) {
+    return Steps(
+        FinishTabstripAnimations(),
+        NameDescendantView(
+            kBrowserViewElementId, name,
+            base::BindRepeating(
+                [](int target_index, Browser* browser,
+                   const views::View* view) -> bool {
+                  if (const auto* tab_close_button =
+                          views::AsViewClass<TabCloseButton>(view)) {
+                    if (const auto* tab_view = views::AsViewClass<TabView>(
+                            tab_close_button->parent())) {
+                      const auto* tab_interface =
+                          std::get<const tabs::TabInterface*>(
+                              tab_view->collection_node()->GetNodeData());
+                      return browser->tab_strip_model()->GetIndexOfTab(
+                                 tab_interface) == target_index;
+                    }
+                    if (const auto* tab = views::AsViewClass<Tab>(
+                            tab_close_button->parent())) {
+                      return browser->tab_strip_model()->GetIndexOfTab(
+                                 tab->tab_handle().Get()) == target_index;
+                    }
+                  }
+                  return false;
+                },
+                index, browser())));
   }
 };
 
@@ -1052,10 +1082,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
   browser()->tab_strip_model()->AddToNewGroup({0});
   RunTestSequence(
       FinishTabstripAnimations(), SelectTab(kTabStripElementId, 0),
-      NameViewRelative(kTabStripElementId, kTabCloseButton,
-                       [](TabStrip* tab_strip) {
-                         return tab_strip->tab_at(0)->close_button().get();
-                       }),
+      NameTabCloseButtonAt(kTabCloseButton, 0),
       // Close the last tab in the browser which.
       PressButton(kTabCloseButton), PressButton(kDeletionDialogOkButtonId),
       // Ensure the saved group was deleted.

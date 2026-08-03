@@ -218,13 +218,15 @@ TabView::TabView(TabCollectionNode* collection_node)
           &TabView::OnTabDataChanged, base::Unretained(this)));
 
   CHECK(collection_node_->GetController());
-  auto* state_controller =
-      collection_node_->GetController()->GetStateController();
-  CHECK(state_controller);
-  OnCollapseStateChanged(state_controller->GetCollapseState());
-  collapsed_state_changed_subscription_ =
-      state_controller->RegisterOnCollapseChanged(base::BindRepeating(
-          &TabView::OnCollapseStateChanged, base::Unretained(this)));
+  if (collection_node_->orientation() == TabStripOrientation::kVertical) {
+    auto* state_controller =
+        collection_node_->GetController()->GetStateController();
+    CHECK(state_controller);
+    OnCollapseStateChanged(state_controller->GetCollapseState());
+    collapsed_state_changed_subscription_ =
+        state_controller->RegisterOnCollapseChanged(base::BindRepeating(
+            &TabView::OnCollapseStateChanged, base::Unretained(this)));
+  }
   close_button_observation_.Observe(close_button_);
 }
 
@@ -402,7 +404,7 @@ void TabView::OnMouseReleased(const ui::MouseEvent& event) {
   base::WeakPtr<TabView> self = weak_ptr_factory_.GetWeakPtr();
   if (event.IsOnlyMiddleMouseButton()) {
     if (HitTestPoint(event.location())) {
-      controller->CloseTab(GetTabInterface());
+      controller->CloseTab(GetTabInterface(), CloseTabSource::kFromMouse);
     }
   } else if (event.IsOnlyLeftMouseButton() &&
              !(event.IsShiftDown() || shift_pressed_on_mouse_down_) &&
@@ -1220,7 +1222,11 @@ void TabView::CloseButtonPressed(const ui::Event& event) {
     close_button_->SetVisible(false);
   }
 
-  collection_node_->GetController()->CloseTab(GetTabInterface());
+  const bool from_mouse = event.type() == ui::EventType::kMouseReleased &&
+                          !(event.flags() & ui::EF_FROM_TOUCH);
+  collection_node_->GetController()->CloseTab(
+      GetTabInterface(),
+      from_mouse ? CloseTabSource::kFromMouse : CloseTabSource::kFromTouch);
 }
 
 void TabView::RecordMousePressedInTab() {
