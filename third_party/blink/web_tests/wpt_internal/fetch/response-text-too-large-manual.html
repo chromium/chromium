@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Response.text() rejects when the decoded body is too large</title>
+<link rel="help" href="https://fetch.spec.whatwg.org/#dom-body-text">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<p>This manual test allocates more than 1 GiB and may make the browser
+unresponsive while it runs.</p>
+
+<script>
+promise_test(async t => {
+  const chunkSize = 1 << 20;
+  const oneGiB = 1 << 30;
+  const chunkCount = oneGiB / chunkSize + 1;
+  const chunk = new Uint8Array(chunkSize);
+  let chunksRemaining = chunkCount;
+  const stream = new ReadableStream({
+    pull(controller) {
+      if (chunksRemaining-- > 0) {
+        controller.enqueue(chunk);
+      } else {
+        controller.close();
+      }
+    },
+  });
+
+  await promise_rejects_js(t, TypeError, new Response(stream).text());
+}, "Response.text() rejects a decoded body larger than 1 GiB");
+</script>

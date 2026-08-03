@@ -482,7 +482,12 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         if (!buffer.empty()) {
-          builder_.Append(decoder_->Decode(base::as_bytes(buffer)));
+          if (!Append(decoder_->Decode(base::as_bytes(buffer)))) {
+            std::ignore = consumer_->EndRead(buffer.size());
+            consumer_->Cancel();
+            client_->DidFetchDataLoadFailed();
+            return;
+          }
         }
         result = consumer_->EndRead(buffer.size());
       }
@@ -492,7 +497,11 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
         case BytesConsumer::Result::kShouldWait:
           NOTREACHED();
         case BytesConsumer::Result::kDone:
-          builder_.Append(decoder_->Flush());
+          if (!Append(decoder_->Flush())) {
+            consumer_->Cancel();
+            client_->DidFetchDataLoadFailed();
+            return;
+          }
           client_->DidFetchDataLoadedString(builder_.ToString());
           return;
         case BytesConsumer::Result::kError:
@@ -514,6 +523,16 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
   }
 
  private:
+  // Returns false if appending would overflow. Otherwise appends and returns
+  // true.
+  [[nodiscard]] bool Append(const String& string) {
+    if (builder_.DoesAppendCauseOverflow(string.length())) {
+      return false;
+    }
+    builder_.Append(string);
+    return true;
+  }
+
   Member<BytesConsumer> consumer_;
   Member<FetchDataLoader::Client> client_;
 
