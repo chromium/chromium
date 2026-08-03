@@ -114,6 +114,9 @@ class AtMemoryManager {
   void MaybeAppendPersonalContextNotice(
       std::vector<Suggestion>& suggestions) const;
 
+  // Creates a source attribution suggestion ("Suggested by Gemini").
+  static Suggestion CreateSourceAttributionSuggestion();
+
  private:
   friend class AtMemoryManagerTestApi;
 
