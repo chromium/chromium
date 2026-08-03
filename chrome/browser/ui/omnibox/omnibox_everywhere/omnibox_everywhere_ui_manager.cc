@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #if defined(USE_AURA)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
@@ -20,8 +21,10 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/display.h"
@@ -34,6 +37,10 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/view_type_utils.h"
+#endif
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -182,6 +189,14 @@ void OmniboxEverywhereUIManager::EnsureContentsWrapperInitialized(
 
   if (web_contents()) {
     OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents());
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    // Set ViewType::kComponent so `ChromeSpeechRecognitionManagerDelegate`
+    // allows speech recognition in `CheckRenderFrameType()`.
+    extensions::SetViewType(web_contents(),
+                            extensions::mojom::ViewType::kComponent);
+#endif
+    // Create PermissionRequestManager explicitly for this WebContents.
+    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
   }
 
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
@@ -370,6 +385,14 @@ void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
                                kAutoResizeMinHeight));
     widget_->SetBounds(bounds);
   }
+}
+
+void OmniboxEverywhereUIManager::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), /*extension=*/nullptr);
 }
 
 void OmniboxEverywhereUIManager::OnFileChooserOpened() {

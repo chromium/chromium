@@ -35,6 +35,7 @@ source_set("omnibox_everywhere") {
     ":prefs",
     "//chrome/browser:file_select_helper",
     "//chrome/browser/background/omnibox_everywhere",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/profiles",
