@@ -28,7 +28,9 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/system_monitor.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
@@ -138,40 +140,61 @@ gfx::ColorSpace ColorSpaceFromADataSpace(int32_t dataspace) {
   }
 }
 
-std::optional<gpu::VulkanYCbCrInfo> GetVulkanYCbCrInfo(
-    base::android::ScopedHardwareBufferHandle ahb_handle) {
-  auto vulkan_implementation = gpu::CreateVulkanImplementation(false, false);
-  if (!vulkan_implementation ||
-      !vulkan_implementation->InitializeVulkanInstance(
-          /*using_surface=*/true)) {
-    return std::nullopt;
-  }
+struct InProcessVulkanContext {
+  std::unique_ptr<gpu::VulkanImplementation> implementation;
+  std::unique_ptr<gpu::VulkanDeviceQueue> device_queue;
+};
 
-  auto vulkan_device_queue = gpu::CreateVulkanDeviceQueue(
-      vulkan_implementation.get(),
-      gpu::VulkanDeviceQueue::DeviceQueueOption::GRAPHICS_QUEUE_FLAG);
-  if (!vulkan_device_queue) {
+InProcessVulkanContext* GetInProcessVulkanContext() {
+  static base::NoDestructor<base::Lock> lock;
+  base::AutoLock auto_lock(*lock);
+  static base::NoDestructor<InProcessVulkanContext> context;
+
+  if (!context->implementation) {
+    auto impl = gpu::CreateVulkanImplementation(false, false,
+                                                /*force_native=*/true);
+    if (impl && impl->InitializeVulkanInstance(/*using_surface=*/true)) {
+      auto queue = gpu::CreateVulkanDeviceQueue(
+          impl.get(),
+          gpu::VulkanDeviceQueue::DeviceQueueOption::GRAPHICS_QUEUE_FLAG);
+      if (queue) {
+        context->implementation = std::move(impl);
+        context->device_queue = std::move(queue);
+      }
+    }
+  }
+  return (context->implementation && context->device_queue) ? context.get()
+                                                            : nullptr;
+}
+
+std::optional<gpu::VulkanYCbCrInfo> GetVulkanYCbCrInfo(
+    base::android::ScopedHardwareBufferHandle ahb_handle,
+    gpu::SkiaBackendType skia_backend) {
+  auto* context = GetInProcessVulkanContext();
+  if (!context) {
     return std::nullopt;
   }
 
   std::optional<gpu::VulkanYCbCrInfo> result = std::nullopt;
   gpu::VulkanYCbCrInfo info;
-  if (vulkan_implementation->GetSamplerYcbcrConversionInfo(
-          vulkan_device_queue->GetVulkanDevice(), std::move(ahb_handle),
+  if (context->implementation->GetSamplerYcbcrConversionInfo(
+          context->device_queue->GetVulkanDevice(), std::move(ahb_handle),
           &info)) {
-    // Mimic Dawn's AHB format feature sanitization so our descriptor strictly
-    // matches the fulfillment texture descriptor generated in the GPU process.
-    uint32_t sanitized_features = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
-    if (info.format_features &
-        VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT) {
-      sanitized_features |=
-          VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT;
+    if (skia_backend == gpu::SkiaBackendType::kGraphiteDawnVulkan) {
+      // Mimic Dawn's AHB format feature sanitization so our descriptor strictly
+      // matches the fulfillment texture descriptor generated in the GPU
+      // process.
+      uint32_t sanitized_features = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+      if (info.format_features &
+          VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT) {
+        sanitized_features |=
+            VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT;
+      }
+      info.format_features = sanitized_features;
     }
-    info.format_features = sanitized_features;
     result = info;
   }
 
-  vulkan_device_queue->Destroy();
   return result;
 }
 
@@ -185,10 +208,15 @@ VideoCaptureDeviceAndroid::VideoCaptureDeviceAndroid(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       device_descriptor_(device_descriptor),
-      gpu_workarounds_(gpu_workarounds) {}
+      gpu_workarounds_(gpu_workarounds),
+      skia_backend_(gpu::SkiaBackendType::kUnknown) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  weak_this_ = weak_ptr_factory_.GetWeakPtr();
+}
 
 VideoCaptureDeviceAndroid::~VideoCaptureDeviceAndroid() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  media::VideoCaptureGpuChannelHost::GetInstance().RemoveObserver(this);
   StopAndDeAllocate();
 }
 
@@ -200,6 +228,7 @@ void VideoCaptureDeviceAndroid::Init() {
 void VideoCaptureDeviceAndroid::AllocateAndStart(
     const VideoCaptureParams& params,
     std::unique_ptr<Client> client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   {
     base::AutoLock lock(lock_);
@@ -207,10 +236,25 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
       return;
     client_ = std::move(client);
     got_first_frame_ = false;
+    weak_this_ = weak_ptr_factory_.GetWeakPtr();
+    hardware_buffer_available_cb_ = base::BindPostTask(
+        main_task_runner_,
+        base::BindRepeating(
+            &VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread,
+            weak_this_));
   }
 
   bool enable_hardware_buffer_capture =
       media::IsAndroidZeroCopyVideoCaptureEnabled(gpu_workarounds_);
+  if (enable_hardware_buffer_capture) {
+    // Warm up the in-process Vulkan context asynchronously on a background
+    // thread to avoid synchronous driver loading and initialization blocking
+    // the Browser UI thread when the first frame arrives.
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce([]() { GetInProcessVulkanContext(); }));
+    media::VideoCaptureGpuChannelHost::GetInstance().AddObserver(this);
+  }
   bool enable_background_media_capturing = base::FeatureList::IsEnabled(
       media::kAndroidEnableBackgroundMediaCapturing);
 
@@ -221,6 +265,9 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
       params.requested_format.frame_rate, params.enable_face_detection,
       enable_hardware_buffer_capture, enable_background_media_capturing);
   if (!ret) {
+    if (enable_hardware_buffer_capture) {
+      media::VideoCaptureGpuChannelHost::GetInstance().RemoveObserver(this);
+    }
     SetErrorState(media::VideoCaptureError::kAndroidFailedToAllocate, FROM_HERE,
                   "failed to allocate");
     return;
@@ -249,6 +296,9 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
 
   ret = Java_VideoCapture_startCaptureMaybeAsync(env, j_capture_);
   if (!ret) {
+    if (enable_hardware_buffer_capture) {
+      media::VideoCaptureGpuChannelHost::GetInstance().RemoveObserver(this);
+    }
     SetErrorState(media::VideoCaptureError::kAndroidFailedToStartCapture,
                   FROM_HERE, "failed to start capture");
     return;
@@ -261,6 +311,7 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
 }
 
 void VideoCaptureDeviceAndroid::StopAndDeAllocate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   {
     base::AutoLock lock(lock_);
@@ -282,12 +333,16 @@ void VideoCaptureDeviceAndroid::StopAndDeAllocate() {
     base::AutoLock lock(lock_);
     state_ = kIdle;
     client_.reset();
+    hardware_buffer_available_cb_.Reset();
   }
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  media::VideoCaptureGpuChannelHost::GetInstance().RemoveObserver(this);
 
   Java_VideoCapture_deallocate(env, j_capture_);
 }
 
 void VideoCaptureDeviceAndroid::TakePhoto(TakePhotoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                        "VideoCaptureDeviceAndroid::TakePhoto",
@@ -311,6 +366,7 @@ void VideoCaptureDeviceAndroid::TakePhoto(TakePhotoCallback callback) {
 }
 
 void VideoCaptureDeviceAndroid::GetPhotoState(GetPhotoStateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   {
     base::AutoLock lock(lock_);
@@ -329,6 +385,7 @@ void VideoCaptureDeviceAndroid::GetPhotoState(GetPhotoStateCallback callback) {
 void VideoCaptureDeviceAndroid::SetPhotoOptions(
     mojom::PhotoSettingsPtr settings,
     SetPhotoOptionsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   {
     base::AutoLock lock(lock_);
@@ -413,7 +470,11 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
     int32_t data_space,
     int32_t rotation,
     int64_t timestamp) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  if (!IsClientConfigured()) {
+    return;
+  }
   TRACE_EVENT0(
       TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
       "VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread");
@@ -475,13 +536,14 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
   first_failed_shared_image_time_ = base::TimeTicks();
 
   if (!need_ycbcr_info_.has_value()) {
-    auto skia_backend = gpu_channel_host->gpu_info().skia_backend_type;
+    skia_backend_ = gpu_channel_host->gpu_info().skia_backend_type;
     need_ycbcr_info_ =
-        (skia_backend == gpu::SkiaBackendType::kGraphiteDawnVulkan);
+        (skia_backend_ == gpu::SkiaBackendType::kGraphiteDawnVulkan ||
+         skia_backend_ == gpu::SkiaBackendType::kGaneshVulkan);
   }
 
   if (*need_ycbcr_info_ && !ycbcr_info_) {
-    ycbcr_info_ = GetVulkanYCbCrInfo(ahb_handle.Clone());
+    ycbcr_info_ = GetVulkanYCbCrInfo(ahb_handle.Clone(), skia_backend_);
     if (!ycbcr_info_) {
       LOG(ERROR) << "Failed to get Vulkan YCbCr info for zero-copy capture.";
       SetErrorState(media::VideoCaptureError::kAndroidFailedToStartCapture,
@@ -553,17 +615,38 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailable(
     return;
   }
 
-  if (!main_task_runner_->BelongsToCurrentThread()) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread,
-            weak_ptr_factory_.GetWeakPtr(), std::move(ahb_handle), data_space,
-            rotation, timestamp));
+  if (main_task_runner_->BelongsToCurrentThread()) {
+    OnHardwareBufferAvailableOnMainThread(std::move(ahb_handle), data_space,
+                                          rotation, timestamp);
     return;
   }
-  OnHardwareBufferAvailableOnMainThread(std::move(ahb_handle), data_space,
-                                        rotation, timestamp);
+
+  HardwareBufferAvailableCallback cb;
+  {
+    base::AutoLock lock(lock_);
+    cb = hardware_buffer_available_cb_;
+  }
+  if (cb) {
+    cb.Run(std::move(ahb_handle), data_space, rotation, timestamp);
+  }
+}
+
+void VideoCaptureDeviceAndroid::OnContextLost() {
+  if (!main_task_runner_->BelongsToCurrentThread()) {
+    base::WeakPtr<VideoCaptureDeviceAndroid> weak_this;
+    {
+      base::AutoLock lock(lock_);
+      weak_this = weak_this_;
+    }
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&VideoCaptureDeviceAndroid::OnContextLost,
+                                  std::move(weak_this)));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  ycbcr_info_ = std::nullopt;
+  need_ycbcr_info_ = std::nullopt;
 }
 
 void VideoCaptureDeviceAndroid::OnError(
@@ -833,11 +916,16 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
 
 void VideoCaptureDeviceAndroid::OnInteractiveStateChanged(JNIEnv* env,
                                                           bool is_interactive) {
+  base::WeakPtr<VideoCaptureDeviceAndroid> weak_this;
+  {
+    base::AutoLock lock(lock_);
+    weak_this = weak_this_;
+  }
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &VideoCaptureDeviceAndroid::OnInteractiveStateChangedOnMainThread,
-          weak_ptr_factory_.GetWeakPtr(), is_interactive));
+          std::move(weak_this), is_interactive));
 }
 
 void VideoCaptureDeviceAndroid::OnInteractiveStateChangedOnMainThread(

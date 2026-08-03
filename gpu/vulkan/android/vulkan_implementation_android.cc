@@ -20,7 +20,9 @@
 
 namespace gpu {
 
-VulkanImplementationAndroid::VulkanImplementationAndroid() = default;
+VulkanImplementationAndroid::VulkanImplementationAndroid(bool force_native)
+    : VulkanImplementation(false, false, force_native),
+      vulkan_instance_(force_native) {}
 
 VulkanImplementationAndroid::~VulkanImplementationAndroid() = default;
 

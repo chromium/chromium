@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/native_library.h"
 #include "gpu/vulkan/vulkan_info.h"
 #include "third_party/skia/include/gpu/vk/VulkanPreferredFeatures.h"
 #include "ui/gfx/extension_set.h"
@@ -21,7 +20,7 @@ namespace gpu {
 
 class COMPONENT_EXPORT(VULKAN) VulkanInstance {
  public:
-  VulkanInstance();
+  explicit VulkanInstance(bool force_native = false);
 
   VulkanInstance(const VulkanInstance&) = delete;
   VulkanInstance& operator=(const VulkanInstance&) = delete;
@@ -50,7 +49,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
 
   VkInstance vk_instance() { return vk_instance_; }
 
-  bool is_from_angle() const { return is_from_angle_; }
+  bool is_from_angle() const;
 
  private:
   bool CreateInstance(const std::vector<const char*>& required_extensions,
@@ -62,8 +61,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
   bool CollectDeviceInfo(VkPhysicalDevice physical_device = VK_NULL_HANDLE);
   void Destroy();
 
-  const bool is_from_angle_;
-
   VulkanInfo vulkan_info_;
   // Additional features desired by Skia. This is owned by the instance and
   // initialized by it. Later, it is used at device creation too, with
@@ -71,11 +68,10 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
   // members in its pNext chain.
   skgpu::VulkanPreferredFeatures skia_features_;
 
-  base::NativeLibrary loader_library_ = nullptr;
-
   VkInstance owned_vk_instance_ = VK_NULL_HANDLE;
   VkInstance vk_instance_ = VK_NULL_HANDLE;
   bool debug_report_enabled_ = false;
+  const bool force_native_;
 #if DCHECK_IS_ON()
   VkDebugReportCallbackEXT error_callback_ = VK_NULL_HANDLE;
   VkDebugReportCallbackEXT warning_callback_ = VK_NULL_HANDLE;

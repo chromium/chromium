@@ -18,7 +18,7 @@ namespace gpu {
 class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
     : public VulkanImplementation {
  public:
-  VulkanImplementationAndroid();
+  explicit VulkanImplementationAndroid(bool force_native = false);
 
   VulkanImplementationAndroid(const VulkanImplementationAndroid&) = delete;
   VulkanImplementationAndroid& operator=(const VulkanImplementationAndroid&) =

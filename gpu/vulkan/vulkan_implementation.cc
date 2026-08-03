@@ -13,9 +13,11 @@
 namespace gpu {
 
 VulkanImplementation::VulkanImplementation(bool use_swiftshader,
-                                           bool allow_protected_memory)
+                                           bool allow_protected_memory,
+                                           bool force_native)
     : use_swiftshader_(use_swiftshader),
-      allow_protected_memory_(allow_protected_memory) {}
+      allow_protected_memory_(allow_protected_memory),
+      force_native_(force_native) {}
 
 VulkanImplementation::~VulkanImplementation() {}
 

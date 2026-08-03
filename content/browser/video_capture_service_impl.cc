@@ -18,13 +18,15 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "services/video_capture/video_capture_service_impl.h"
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/media_switches.h"
+#include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "media/media_buildflags.h"
 #endif
 
@@ -79,26 +81,19 @@ void BindInProcessInstance(
       std::move(receiver), GetUIThreadTaskRunner({}),
       /*create_system_monitor=*/false);
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
-  static bool has_configured_gpu_channel = false;
-  if (has_configured_gpu_channel) {
-    return;
-  }
-  has_configured_gpu_channel = true;
-  if (!gpu_channel_host) {
-    return;
-  }
-
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
   service->SetGpuChannelHost(
-      gpu_channel_host,
-      base::BindRepeating([](gpu::GpuChannelEstablishedCallback callback) {
-        auto* factory = BrowserGpuChannelHostFactory::instance();
-        if (factory) {
-          factory->EstablishGpuChannel(std::move(callback));
-        } else {
-          std::move(callback).Run(nullptr);
-        }
-      }));
+      std::move(gpu_channel_host),
+      base::BindPostTask(
+          GetUIThreadTaskRunner({}),
+          base::BindRepeating([](gpu::GpuChannelEstablishedCallback callback) {
+            auto* factory = BrowserGpuChannelHostFactory::instance();
+            if (factory) {
+              factory->EstablishGpuChannel(std::move(callback));
+            } else {
+              std::move(callback).Run(nullptr);
+            }
+          })));
 #endif
 }
 

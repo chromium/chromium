@@ -1561,9 +1561,6 @@ enum class VideoCaptureServiceConfiguration {
 
 VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
-    return VideoCaptureServiceConfiguration::kEnabledForOutOfProcess;
-  }
   return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
 #elif BUILDFLAG(IS_IOS)
   return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;

@@ -42,7 +42,8 @@ struct VulkanYCbCrInfo;
 class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
  public:
   explicit VulkanImplementation(bool use_swiftshader = false,
-                                bool allow_protected_memory = false);
+                                bool allow_protected_memory = false,
+                                bool force_native = false);
 
   VulkanImplementation(const VulkanImplementation&) = delete;
   VulkanImplementation& operator=(const VulkanImplementation&) = delete;
@@ -145,10 +146,12 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
 
   bool use_swiftshader() const { return use_swiftshader_; }
   bool allow_protected_memory() const { return allow_protected_memory_; }
+  bool force_native() const { return force_native_; }
 
  private:
   const bool use_swiftshader_;
   const bool allow_protected_memory_;
+  const bool force_native_;
 };
 
 COMPONENT_EXPORT(VULKAN)
