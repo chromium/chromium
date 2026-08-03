@@ -109,12 +109,15 @@ WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
   constexpr uint32_t kQualcommVendorID = 0x5143;
   constexpr uint32_t kIntelVendorID = 0x8086;
   constexpr uint32_t kImgTecVendorID = 0x1010;
+  constexpr uint32_t kSamsungVendorID = 0x144D;
 
   switch (info.vendorID) {
     case kARMVendorID:
     case kQualcommVendorID:
     case kIntelVendorID:
-      // ARM, Qualcomm, and Intel GPUs are supported on Android 12+ on Vulkan
+    case kSamsungVendorID:
+      // ARM, Qualcomm, Samsung, and Intel GPUs are supported on Android 12+ on
+      // Vulkan
       if (info.backendType == wgpu::BackendType::Vulkan &&
           (base::android::android_info::sdk_int() <
            base::android::android_info::SDK_VERSION_S)) {
