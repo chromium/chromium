@@ -26291,6 +26291,21 @@
             ]
         }
     ],
+    "WebAppShortEdgesCutoutMode": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAppShortEdgesCutoutMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebAuthenticationNewRefreshFlow": [
         {
             "platforms": [

@@ -1278,7 +1278,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sWebApkMinShellApkVersion =
             newCachedFlag(WEB_APK_MIN_SHELL_APK_VERSION, true);
     public static final CachedFlag sWebAppShortEdgesCutoutMode =
-            newCachedFlag(WEB_APP_SHORT_EDGES_CUTOUT_MODE, false);
+            newCachedFlag(
+                    WEB_APP_SHORT_EDGES_CUTOUT_MODE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sWebUiAndroidTheming =
             newCachedFlag(WEB_UI_ANDROID_THEMING, false);
     // keep-sorted end
