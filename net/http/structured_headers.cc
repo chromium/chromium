@@ -126,6 +126,16 @@ namespace net::structured_headers {
 
 namespace {
 
+constexpr char kTimeMetricItem[] = "Net.StructuredHeaders.ParseItem.Time";
+constexpr char kTimeMetricList[] = "Net.StructuredHeaders.ParseList.Time";
+constexpr char kTimeMetricDictionary[] =
+    "Net.StructuredHeaders.ParseDictionary.Time";
+
+constexpr char kSuccessMetricItem[] = "Net.StructuredHeaders.ParseItem.Success";
+constexpr char kSuccessMetricList[] = "Net.StructuredHeaders.ParseList.Success";
+constexpr char kSuccessMetricDictionary[] =
+    "Net.StructuredHeaders.ParseDictionary.Success";
+
 template <typename Parse>
 auto ParseAndRecordMetrics(std::string_view time_metric,
                            std::string_view success_metric,
@@ -145,11 +155,9 @@ BASE_FEATURE(kStructuredHeadersInRust, base::FEATURE_DISABLED_BY_DEFAULT);
 std::optional<ParameterizedItem> ParseItem(std::string_view str) {
   if (base::FeatureList::IsEnabled(kStructuredHeadersInRust)) {
     ParameterizedMember member;
-    bool ok = ParseAndRecordMetrics(
-        "Net.StructuredHeaders.ParseItem.RustTime",
-        "Net.StructuredHeaders.ParseItem.RustSuccess", [&]() {
-          return sfv::decode_item(base::StringViewToRustSlice(str), member);
-        });
+    bool ok = ParseAndRecordMetrics(kTimeMetricItem, kSuccessMetricItem, [&]() {
+      return sfv::decode_item(base::StringViewToRustSlice(str), member);
+    });
     if (!ok) {
       return std::nullopt;
     }
@@ -157,38 +165,33 @@ std::optional<ParameterizedItem> ParseItem(std::string_view str) {
                              std::move(member.params));
   }
 
-  return ParseAndRecordMetrics(
-      "Net.StructuredHeaders.ParseItem.CppTime",
-      "Net.StructuredHeaders.ParseItem.CppSuccess",
-      [&]() { return quiche::structured_headers::ParseItem(str); });
+  return ParseAndRecordMetrics(kTimeMetricItem, kSuccessMetricItem, [&]() {
+    return quiche::structured_headers::ParseItem(str);
+  });
 }
 
 std::optional<List> ParseList(std::string_view str) {
   if (base::FeatureList::IsEnabled(kStructuredHeadersInRust)) {
     List list;
-    bool ok = ParseAndRecordMetrics(
-        "Net.StructuredHeaders.ParseList.RustTime",
-        "Net.StructuredHeaders.ParseList.RustSuccess", [&] {
-          return sfv::decode_list(base::StringViewToRustSlice(str), list);
-        });
+    bool ok = ParseAndRecordMetrics(kTimeMetricList, kSuccessMetricList, [&] {
+      return sfv::decode_list(base::StringViewToRustSlice(str), list);
+    });
     if (!ok) {
       return std::nullopt;
     }
     return list;
   }
 
-  return ParseAndRecordMetrics(
-      "Net.StructuredHeaders.ParseList.CppTime",
-      "Net.StructuredHeaders.ParseList.CppSuccess",
-      [&]() { return quiche::structured_headers::ParseList(str); });
+  return ParseAndRecordMetrics(kTimeMetricList, kSuccessMetricList, [&]() {
+    return quiche::structured_headers::ParseList(str);
+  });
 }
 
 std::optional<Dictionary> ParseDictionary(std::string_view str) {
   if (base::FeatureList::IsEnabled(kStructuredHeadersInRust)) {
     Dictionary dictionary;
     bool ok = ParseAndRecordMetrics(
-        "Net.StructuredHeaders.ParseDictionary.RustTime",
-        "Net.StructuredHeaders.ParseDictionary.RustSuccess", [&] {
+        kTimeMetricDictionary, kSuccessMetricDictionary, [&] {
           return sfv::decode_dictionary(base::StringViewToRustSlice(str),
                                         dictionary);
         });
@@ -199,8 +202,7 @@ std::optional<Dictionary> ParseDictionary(std::string_view str) {
   }
 
   return ParseAndRecordMetrics(
-      "Net.StructuredHeaders.ParseDictionary.CppTime",
-      "Net.StructuredHeaders.ParseDictionary.CppSuccess",
+      kTimeMetricDictionary, kSuccessMetricDictionary,
       [&]() { return quiche::structured_headers::ParseDictionary(str); });
 }
 

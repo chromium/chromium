@@ -219,11 +219,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
 
-<variants name="StructuredHeaderBackend">
-  <variant name="Cpp" summary="the legacy C++ parser"/>
-  <variant name="Rust" summary="the new Rust parser"/>
-</variants>
-
 <variants name="StructuredHeaderType">
   <variant name="Dictionary" summary="a Dictionary"/>
   <variant name="Item" summary="an Item"/>
@@ -9685,30 +9680,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.StructuredHeaders.Parse{Type}.{Backend}Success"
+<histogram name="Net.StructuredHeaders.Parse{Type}.Success"
     enum="BooleanSuccess" expires_after="2027-05-28">
   <owner>apaseltiner@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
-    The result (success or failure) of parsing a structured-header {Type} using
-    {Backend}. See crbug.com/377941140 for more details.
+    The result (success or failure) of parsing a structured-header {Type}. See
+    crbug.com/377941140 for more details.
   </summary>
   <token key="Type" variants="StructuredHeaderType"/>
-  <token key="Backend" variants="StructuredHeaderBackend"/>
 </histogram>
 
-<histogram name="Net.StructuredHeaders.Parse{Type}.{Backend}Time"
-    units="microseconds" expires_after="2027-05-28">
+<histogram name="Net.StructuredHeaders.Parse{Type}.Time" units="microseconds"
+    expires_after="2027-05-28">
   <owner>apaseltiner@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
-    The time taken to parse a structured-header {Type} using {Backend} via the
+    The time taken to parse a structured-header {Type} via the
     net::structured_headers::Parse{Type} function. Recorded for all clients, not
     just ones with high-resolution time, and recorded regardless of whether
     parsing succeeds or fails. See crbug.com/377941140 for more details.
   </summary>
   <token key="Type" variants="StructuredHeaderType"/>
-  <token key="Backend" variants="StructuredHeaderBackend"/>
 </histogram>
 
 <histogram name="Net.TaskRunner.RequestPriority" enum="RequestPriority"
