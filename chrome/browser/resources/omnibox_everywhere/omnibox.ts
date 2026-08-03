@@ -224,7 +224,7 @@ export class OmniboxEverywhereOmniboxElement extends
       return this.placeholderText;
     }
     if (this.ntpRealboxNextEnabled) {
-      return 'Ask Google';
+      return this.i18n('searchBoxHintAskOrType');
     }
     return this.i18n('searchBoxHint');
   }

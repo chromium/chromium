@@ -91,6 +91,8 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddString("profileAvatarUrl", profile_avatar_url);
   source->AddLocalizedString("profileButtonLabel",
                              IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE);
+  source->AddLocalizedString("searchBoxHintAskOrType",
+                             IDS_NTP_SEARCH_BOX_PLACEHOLDER_ASK_OR_TYPE);
 
   // Sanitized image and favicon source initialization
   content::URLDataSource::Add(profile_,
