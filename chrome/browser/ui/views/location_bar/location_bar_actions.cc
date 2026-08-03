@@ -64,8 +64,6 @@ OmniboxPopupUI* GetAIMPopup(OmniboxPopupPresenterDelegate* delegate) {
 
 void AddFileOrImageToOmnibox(
     BrowserWindowInterface* browser,
-    base::RepeatingCallback<OmniboxPopupPresenterDelegate*(LocationBar*)>
-        get_presenter_delegate,
     bool is_image,
     actions::ActionItem* item,
     actions::ActionInvocationContext context) {
@@ -74,7 +72,7 @@ void AddFileOrImageToOmnibox(
     return;
   }
   OmniboxPopupPresenterDelegate* presenter_delegate =
-      get_presenter_delegate.Run(location_bar);
+      location_bar->GetPresenterDelegate();
   if (!presenter_delegate) {
     return;
   }
@@ -101,8 +99,6 @@ void AddFileOrImageToOmnibox(
 
 void SetOmniboxToolModeAndOpenAi(
     BrowserWindowInterface* browser,
-    base::RepeatingCallback<OmniboxPopupPresenterDelegate*(LocationBar*)>
-        get_presenter_delegate,
     omnibox::ToolMode tool_mode,
     actions::ActionItem* item,
     actions::ActionInvocationContext context) {
@@ -117,7 +113,7 @@ void SetOmniboxToolModeAndOpenAi(
     return;
   }
   OmniboxPopupUI* const omnibox_popup_ui =
-      GetAIMPopup(get_presenter_delegate.Run(location_bar));
+      GetAIMPopup(location_bar->GetPresenterDelegate());
   ContextualSearchboxHandler* const composebox_handler =
       omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
   if (composebox_handler) {
@@ -129,8 +125,6 @@ void SetOmniboxToolModeAndOpenAi(
 
 void SetOmniboxModelModeAndOpenAi(
     BrowserWindowInterface* browser,
-    base::RepeatingCallback<OmniboxPopupPresenterDelegate*(LocationBar*)>
-        get_presenter_delegate,
     omnibox::ModelMode model_mode,
     actions::ActionItem* item,
     actions::ActionInvocationContext context) {
@@ -145,7 +139,7 @@ void SetOmniboxModelModeAndOpenAi(
     return;
   }
   OmniboxPopupUI* const omnibox_popup_ui =
-      GetAIMPopup(get_presenter_delegate.Run(location_bar));
+      GetAIMPopup(location_bar->GetPresenterDelegate());
   ContextualSearchboxHandler* const composebox_handler =
       omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
   if (composebox_handler) {
@@ -182,8 +176,6 @@ void ExecutePasteAndGo(BrowserWindowInterface* browser,
 }  // namespace
 
 void RegisterOmniboxActions(
-    base::RepeatingCallback<OmniboxPopupPresenterDelegate*(LocationBar*)>
-        get_presenter_delegate,
     BrowserWindowInterface* browser) {
   if (!browser) {
     return;
@@ -197,7 +189,7 @@ void RegisterOmniboxActions(
   browser_actions->RegisterAction(
       actions::ActionItem::Builder(
           base::BindRepeating(&AddFileOrImageToOmnibox,
-                              base::Unretained(browser), get_presenter_delegate,
+                              base::Unretained(browser),
                               /*is_image=*/true))
           .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_IMAGE))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_IMAGE))
@@ -211,7 +203,7 @@ void RegisterOmniboxActions(
   browser_actions->RegisterAction(
       actions::ActionItem::Builder(
           base::BindRepeating(&AddFileOrImageToOmnibox,
-                              base::Unretained(browser), get_presenter_delegate,
+                              base::Unretained(browser),
                               /*is_image=*/false))
           .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_FILE))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_FILE))
@@ -225,7 +217,7 @@ void RegisterOmniboxActions(
   browser_actions->RegisterAction(
       actions::ActionItem::Builder(
           base::BindRepeating(&SetOmniboxToolModeAndOpenAi,
-                              base::Unretained(browser), get_presenter_delegate,
+                              base::Unretained(browser),
                               omnibox::ToolMode::TOOL_MODE_IMAGE_GEN))
           .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CREATE_IMAGES))
           .SetTooltipText(
@@ -238,7 +230,7 @@ void RegisterOmniboxActions(
   browser_actions->RegisterAction(
       actions::ActionItem::Builder(
           base::BindRepeating(&SetOmniboxToolModeAndOpenAi,
-                              base::Unretained(browser), get_presenter_delegate,
+                              base::Unretained(browser),
                               omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH))
           .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_DEEP_SEARCH))
           .SetTooltipText(
@@ -253,7 +245,7 @@ void RegisterOmniboxActions(
   browser_actions->RegisterAction(
       actions::ActionItem::Builder(
           base::BindRepeating(&SetOmniboxToolModeAndOpenAi,
-                              base::Unretained(browser), get_presenter_delegate,
+                              base::Unretained(browser),
                               omnibox::ToolMode::TOOL_MODE_CANVAS))
           .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CANVAS))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CANVAS))
@@ -268,7 +260,6 @@ void RegisterOmniboxActions(
       actions::ActionItem::Builder(
           base::BindRepeating(
               &SetOmniboxModelModeAndOpenAi, base::Unretained(browser),
-              get_presenter_delegate,
               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE))
           .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_AUTO_MODEL))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_AUTO_MODEL))
@@ -282,7 +273,7 @@ void RegisterOmniboxActions(
   browser_actions->RegisterAction(
       actions::ActionItem::Builder(
           base::BindRepeating(&SetOmniboxModelModeAndOpenAi,
-                              base::Unretained(browser), get_presenter_delegate,
+                              base::Unretained(browser),
                               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO))
           .SetText(l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_THINKING_3_PRO))
           .SetTooltipText(
@@ -296,7 +287,7 @@ void RegisterOmniboxActions(
   browser_actions->RegisterAction(
       actions::ActionItem::Builder(
           base::BindRepeating(&SetOmniboxModelModeAndOpenAi,
-                              base::Unretained(browser), get_presenter_delegate,
+                              base::Unretained(browser),
                               omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kBoltIcon : kBoltOldIcon,

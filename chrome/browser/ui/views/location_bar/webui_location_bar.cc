@@ -163,9 +163,7 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
           base::BindRepeating(&WebUILocationBar::OnPopupStateChanged,
                               base::Unretained(this)));
 
-  RegisterOmniboxActions(
-      base::BindRepeating(&WebUILocationBar::LookupPresenterDelegate),
-      browser_);
+  RegisterOmniboxActions(browser_);
 
   is_initialized_ = true;
 }
@@ -690,12 +688,6 @@ void WebUILocationBar::ShowPageInfoBubble() {
   bubble->SetHighlightedElement(kLocationIconElementId);
   bubble->GetWidget()->Show();
   page_info_reopen_suppressor_.Observe(bubble->GetWidget());
-}
-
-// static
-OmniboxPopupPresenterDelegate* WebUILocationBar::LookupPresenterDelegate(
-    LocationBar* location_bar) {
-  return location_bar ? location_bar->GetPresenterDelegate() : nullptr;
 }
 
 void WebUILocationBar::SetSuppressionThresholdForTesting(

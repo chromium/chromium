@@ -201,9 +201,6 @@ class WebUILocationBar : public LocationBar,
 
   void ShowPageInfoBubble();
 
-  static OmniboxPopupPresenterDelegate* LookupPresenterDelegate(
-      LocationBar* location_bar);
-
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
   raw_ptr<WebUIToolbarControlDelegate> toolbar_delegate_ = nullptr;

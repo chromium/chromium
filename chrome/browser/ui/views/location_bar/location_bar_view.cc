@@ -482,8 +482,7 @@ void LocationBarView::Init() {
 
   hover_animation_.SetSlideDuration(base::Milliseconds(200));
 
-  RegisterOmniboxActions(
-      base::BindRepeating(&LocationBarView::LookupPresenterDelegate), browser_);
+  RegisterOmniboxActions(browser_);
 
   is_initialized_ = true;
 }
@@ -2056,12 +2055,6 @@ content::WebContents* LocationBarView::GetWrappedWebContents() {
   }
   return omnibox_popup_aim_presenter_->GetWebUIContent()
       ->GetWrappedWebContents();
-}
-
-// static
-OmniboxPopupPresenterDelegate* LocationBarView::LookupPresenterDelegate(
-    LocationBar* location_bar) {
-  return location_bar ? location_bar->GetPresenterDelegate() : nullptr;
 }
 
 void LocationBarView::OnLocationIconGestureEvent(ui::GestureEvent* event) {

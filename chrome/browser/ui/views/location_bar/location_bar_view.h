@@ -500,9 +500,6 @@ class LocationBarView
 
   content::WebContents* GetWrappedWebContents();
 
-  static OmniboxPopupPresenterDelegate* LookupPresenterDelegate(
-      LocationBar* location_bar);
-
 #if BUILDFLAG(IS_MAC)
   // Called when app shims change.
   void OnAppShimChanged(const webapps::AppId& app_id);
