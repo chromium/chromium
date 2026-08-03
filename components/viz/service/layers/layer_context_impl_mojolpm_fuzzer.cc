@@ -234,10 +234,22 @@ constexpr size_t kMaxTilesPerTiling = 100;
 constexpr size_t kMaxUIResourceRequests = 100;
 constexpr size_t kMaxSurfaceRanges = 100;
 constexpr size_t kMaxLatencyInfo = 100;
+constexpr size_t kMaxViewTransitionRequests = 100;
+constexpr size_t kMaxTrackedElementRects = 100;
+constexpr size_t kMaxCopyOutputRequests = 100;
 constexpr size_t kMaxAnimationTimelines = 100;
 constexpr size_t kMaxAnimationsPerTimeline = 100;
 constexpr size_t kMaxKeyframeModelsPerAnimation = 10;
 constexpr size_t kMaxKeyframesPerAnimationCurve = 10;
+
+void ClampTiling(viz::mojom::Tiling* tiling) {
+  if (!tiling) {
+    return;
+  }
+  if (tiling->tiles.size() > kMaxTilesPerTiling) {
+    tiling->tiles.resize(kMaxTilesPerTiling);
+  }
+}
 
 void ClampLayerTreeUpdate(viz::mojom::LayerTreeUpdate* update) {
   if (!update) {
@@ -277,9 +289,7 @@ void ClampLayerTreeUpdate(viz::mojom::LayerTreeUpdate* update) {
     update->tilings.resize(kMaxTilings);
   }
   for (auto& tiling : update->tilings) {
-    if (tiling->tiles.size() > kMaxTilesPerTiling) {
-      tiling->tiles.resize(kMaxTilesPerTiling);
-    }
+    ClampTiling(tiling.get());
   }
 
   if (update->ui_resource_requests.size() > kMaxUIResourceRequests) {
@@ -293,10 +303,28 @@ void ClampLayerTreeUpdate(viz::mojom::LayerTreeUpdate* update) {
     update->latency_info.resize(kMaxLatencyInfo);
   }
 
-  // Note: view_transition_requests might not exist if they weren't added in
-  // mojom yet, let's skip unless we are sure. We saw
-  // DeserializeViewTransitionRequests, so it should exist. Actually, I don't
-  // know the exact names. Let's just limit what we are sure about.
+  if (update->view_transition_requests &&
+      update->view_transition_requests->size() > kMaxViewTransitionRequests) {
+    update->view_transition_requests->resize(kMaxViewTransitionRequests);
+  }
+
+  if (update->tracked_element_rects.size() > kMaxTrackedElementRects) {
+    auto iter = update->tracked_element_rects.begin();
+    std::advance(iter, kMaxTrackedElementRects);
+    update->tracked_element_rects.erase(iter,
+                                        update->tracked_element_rects.end());
+  }
+  for (auto& [feature, rects] : update->tracked_element_rects) {
+    if (rects.size() > kMaxTrackedElementRects) {
+      rects.resize(kMaxTrackedElementRects);
+    }
+  }
+
+  for (auto& node : update->effect_nodes) {
+    if (node->copy_output_requests.size() > kMaxCopyOutputRequests) {
+      node->copy_output_requests.resize(kMaxCopyOutputRequests);
+    }
+  }
 
   if (update->removed_animation_timelines &&
       update->removed_animation_timelines->size() > kMaxAnimationTimelines) {
@@ -383,6 +411,7 @@ class LayerContextTestcase
         viz::mojom::TilingPtr tiling;
         if (mojolpm::FromProto(action.update_display_tiling(), tiling) &&
             tiling) {
+          ClampTiling(tiling.get());
           (void)impl_test_->layer_context_impl()->DoUpdateDisplayTiling(
               std::move(tiling));
         }
