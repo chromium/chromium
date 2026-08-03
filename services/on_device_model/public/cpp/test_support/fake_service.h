@@ -12,9 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -49,7 +49,7 @@ struct FakeOnDeviceServiceSettings final {
       mojom::PerformanceClass::kVeryHigh;
 
   // Initialize VRAM high enough to support audio input capability.
-  uint64_t vram_mb = optimization_guide::kOnDeviceModelAudioVramMinMb;
+  uint64_t vram_mb = kAudioVramMinMb;
 
   // If non-empty, used as the output from Execute().
   std::vector<std::string> model_execute_result;

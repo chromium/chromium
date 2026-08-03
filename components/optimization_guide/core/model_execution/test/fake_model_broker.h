@@ -17,10 +17,10 @@
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
 namespace optimization_guide {
@@ -57,7 +57,7 @@ class FakeModelBroker {
     OnDeviceModelPerformanceClass performance_class =
         OnDeviceModelPerformanceClass::kHigh;
     // Initialize VRAM high enough to support audio input capability.
-    uint64_t vram_mb = kOnDeviceModelAudioVramMinMb;
+    uint64_t vram_mb = on_device_model::kAudioVramMinMb;
     // If true, installs a base model to the component_state_.
     bool preinstall_base_model = true;
     // If true, initializes the classifier controller.

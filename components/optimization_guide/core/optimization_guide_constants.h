@@ -31,11 +31,6 @@ extern const base::FilePath::CharType kProgramCacheFile[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[];
 
-// Minimum VRAM required for audio input support (6GB).
-// TODO: crbug.com/514743962 - Move this to the only file that uses it:
-// components/optimization_guide/core/model_execution/performance_class.cc
-inline constexpr int kOnDeviceModelAudioVramMinMb = 6144;
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_CONSTANTS_H_

@@ -43,7 +43,6 @@
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_download_progress_observer.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -1601,7 +1600,7 @@ TEST_F(AILanguageModelTest, CanCreate_DeviceCapabilities) {
 
 TEST_F(AILanguageModelTest, CanCreate_DeviceAudioCapabilities) {
   fake_broker_->service_settings().vram_mb =
-      optimization_guide::kOnDeviceModelAudioVramMinMb - 1;
+      on_device_model::kAudioVramMinMb - 1;
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   {

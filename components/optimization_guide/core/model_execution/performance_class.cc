@@ -22,7 +22,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -31,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/synthetic_trials.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #include "services/on_device_model/ml/performance_class.h"  // nogncheck
 #endif
@@ -78,7 +78,7 @@ BASE_FEATURE(kOnDeviceModelGpuAudioInput, base::FEATURE_ENABLED_BY_DEFAULT);
 // Minimum VRAM required for audio input support (6GB).
 const base::FeatureParam<int> kOnDeviceModelAudioInputVramMin{
     &kOnDeviceModelGpuAudioInput, "on_device_model_audio_input_vram_min",
-    kOnDeviceModelAudioVramMinMb};
+    on_device_model::kAudioVramMinMb};
 
 // Commandline switch to force a particular performance class.
 const char kOverridePerformanceClassSwitch[] =
