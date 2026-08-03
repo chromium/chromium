@@ -4,7 +4,7 @@
 
 import 'chrome://history/history.js';
 
-import type {HistoryEntry, HistoryItemElement, HistoryListElement} from 'chrome://history/history.js';
+import type {CriticalActionItem, HistoryEntry, HistoryItemElement, HistoryListElement} from 'chrome://history/history.js';
 import {BrowserProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -265,6 +265,66 @@ suite('<history-item> integration test', function() {
     assertEquals(
         loadTimeData.getString('geminiKeyBrowsingActionsTitle'),
         criticalActionsTitle.textContent.trim());
+
+    const actionsList = items[1]!.shadowRoot.querySelector<HTMLElement>(
+        '.critical-actions-list');
+    assertTrue(!!actionsList);
+    assertEquals('list', actionsList.getAttribute('role'));
+
+    const expectedCriticalActions: CriticalActionItem[] = [
+      {
+        id: 'phone',
+        label: 'Phone number filled',
+        tooltip: 'Contact info',
+        url: 'http://www.example.com',
+        ariaLabel: 'Phone number filled, Contact info',
+      },
+      {
+        id: 'email',
+        label: 'Email filled',
+        tooltip: 'Contact info',
+        url: 'http://www.example.com',
+        ariaLabel: 'Email filled, Contact info',
+      },
+      {
+        id: 'payment',
+        label: 'Payment method filled',
+        tooltip: 'Payment methods',
+        url: 'http://www.example.com',
+        ariaLabel: 'Payment method filled, Payment methods',
+      },
+    ];
+
+    const actionRows = items[1]!.shadowRoot.querySelectorAll<HTMLElement>(
+        '.critical-action-row');
+    assertEquals(expectedCriticalActions.length, actionRows.length);
+
+    actionRows.forEach((row, i) => {
+      const expectedAction = expectedCriticalActions[i]!;
+      assertEquals('listitem', row.getAttribute('role'));
+      assertEquals('critical-action', row.getAttribute('focus-type'));
+      assertEquals(expectedAction.ariaLabel, row.getAttribute('aria-label'));
+
+      const label = row.querySelector('.critical-action-label');
+      assertTrue(!!label);
+      assertEquals(expectedAction.label, label.textContent.trim());
+
+      const button = row.querySelector<HTMLElement>('.critical-action-button');
+      assertTrue(!!button);
+      assertEquals('cr:open-in-new', button.getAttribute('iron-icon'));
+      assertEquals(expectedAction.tooltip, button.getAttribute('title'));
+      assertEquals(expectedAction.tooltip, button.getAttribute('aria-label'));
+    });
+
+    let openedUrl = '';
+    const originalOpen = window.open;
+    window.open = (url) => {
+      openedUrl = url as string;
+      return null;
+    };
+    actionRows[0]!.click();
+    assertEquals(expectedCriticalActions[0]!.url, openedUrl);
+    window.open = originalOpen;
   });
 
   test('non-actor visit with critical actions enabled', async function() {

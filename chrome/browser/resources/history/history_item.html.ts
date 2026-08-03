@@ -70,7 +70,7 @@ export function getHtml(this: HistoryItemElement) {
                   </cr-tooltip-icon>
                 `: ''}
                 ${this.item?.starred ? html`
-                  <cr-icon-button id="bookmark-star" iron-icon="cr:star"
+                  <cr-icon-button id="bookmark-star" iron-icon="cr:star-filled"
                       @click="${this.onRemoveBookmarkClick_}"
                       title="$i18n{removeBookmark}"
                       aria-hidden="true">
@@ -94,6 +94,26 @@ export function getHtml(this: HistoryItemElement) {
                 <div id="expanded-container">
                   <div class="critical-actions-title">
                     $i18n{geminiKeyBrowsingActionsTitle}
+                  </div>
+                  <div class="critical-actions-list" role="list"
+                      aria-label="$i18n{geminiKeyBrowsingActionsTitle}">
+                    ${this.getCriticalActions_().map((action, index) => html`
+                      <div class="critical-action-row" role="listitem"
+                          data-index="${index}"
+                          focus-row-control focus-type="critical-action"
+                          tabindex="0"
+                          aria-label="${action.ariaLabel || action.label}"
+                          @click="${this.onCriticalActionClick_}"
+                          @keydown="${this.onCriticalActionKeydown_}">
+                        <span class="critical-action-label">${action.label}</span>
+                        <cr-icon-button class="critical-action-button"
+                            iron-icon="cr:open-in-new"
+                            title="${action.tooltip}"
+                            aria-label="${action.tooltip}"
+                            tabindex="-1">
+                        </cr-icon-button>
+                      </div>
+                    `)}
                   </div>
                 </div>
               </cr-collapse>

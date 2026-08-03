@@ -31,6 +31,7 @@ export {HistoryCrossDeviceSigninPromoBrowserProxy} from './history_cross_device_
 // </if>
 export {HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY, HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, HistoryEmbeddingsPromoElement} from './history_embeddings_promo.js';
 export {HistoryFilterChipsElement} from './history_filter_chips.js';
+export type {CriticalActionItem} from './history_item.js';
 export {HistoryItemElement} from './history_item.js';
 export type {ActionMenuModel} from './history_list.js';
 export {HistoryListElement} from './history_list.js';

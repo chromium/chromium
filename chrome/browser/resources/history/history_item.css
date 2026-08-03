@@ -21,6 +21,7 @@
   --actor-icon-size: 16px;
   --actor-icon-floating-offset: 6px;
   --website-title-margin-start: 8px;
+  --critical-action-row-padding-start: 20px;
 }
 
 :host([is-critical-actions-enabled_]) {
@@ -140,7 +141,7 @@
 
 #menuButton {
   --cr-icon-button-margin-end: 20px;
-  --cr-icon-button-margin-start: 12px;
+  --cr-icon-button-margin-start: 0;
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
 }
@@ -156,15 +157,13 @@
 }
 
 #title-and-domain #actor-icon {
-  --cr-icon-color: var(--color-sys-on-tonal-container,
-      var(--cr-fallback-color-on-tonal-container));
   --cr-icon-size: 12px;
+  --cr-tooltip-icon-fill-color: var(--color-sys-on-tonal-container,
+      var(--cr-fallback-color-on-tonal-container));
   align-items: center;
   background-color: var(--color-sys-surface1,
       var(--cr-fallback-color-surface1));
   border-radius: 50%;
-  color: var(--color-sys-on-tonal-container,
-      var(--cr-fallback-color-on-tonal-container));
   display: flex;
   flex: none;
   height: var(--actor-icon-size);
@@ -216,9 +215,74 @@
   padding-bottom: 4px;
 }
 
+.critical-actions-list {
+  display: flex;
+  flex-direction: column;
+  padding-inline-start: calc(
+    var(--title-domain-padding-start) +
+    var(--favicon-size) +
+    var(--website-title-margin-start) -
+    var(--critical-action-row-padding-start)
+  );
+}
+
+.critical-action-row {
+  align-items: center;
+  border-radius: 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  height: 32px;
+  justify-content: space-between;
+  outline: none;
+  padding-inline-start: var(--critical-action-row-padding-start);
+  padding-inline-end: 16px;
+  transition: background-color 150ms ease-in-out;
+  user-select: none;
+}
+
+.critical-action-row:hover {
+  background-color: var(
+      --color-sys-state-hover-on-subtle,
+      var(--cr-hover-background-color));
+}
+
+.critical-action-row:active {
+  background-color: var(
+      --color-sys-state-pressed,
+      var(--cr-active-background-color));
+}
+
+.critical-action-row:focus-visible {
+  outline: 2px solid var(--cr-focus-outline-color);
+}
+
+.critical-action-label {
+  color: var(--cr-primary-text-color);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.critical-action-button {
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  --cr-icon-button-hover-background-color: transparent;
+  --cr-icon-button-active-background-color: transparent;
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-size: 20px;
+}
+
+.critical-action-row:hover .critical-action-button {
+  --cr-icon-button-fill-color: var(--cr-primary-text-color);
+}
+
 #icons {
   align-items: center;
   display: flex;
+  padding-inline-end: 12px;
 }
 
 #debug-container {

@@ -30,6 +30,14 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './history_item.css.js';
 import {getHtml} from './history_item.html.js';
 
+export interface CriticalActionItem {
+  id: string;
+  label: string;
+  tooltip: string;
+  url: string;
+  ariaLabel?: string;
+}
+
 export interface HistoryItemElement {
   $: {
     checkbox: CrCheckboxElement,
@@ -277,6 +285,50 @@ export class HistoryItemElement extends HistoryItemElementBase {
   protected onExpandClick_(e: Event) {
     e.stopPropagation();
     this.isExpanded_ = !this.isExpanded_;
+  }
+
+  // TODO(b/531590118): Query critical actions dynamically from the database.
+  protected getCriticalActions_(): CriticalActionItem[] {
+    const url = this.item?.url || 'https://example.com';
+    return [
+      {
+        id: 'phone',
+        label: 'Phone number filled',
+        tooltip: 'Contact info',
+        url: url,
+        ariaLabel: 'Phone number filled, Contact info',
+      },
+      {
+        id: 'email',
+        label: 'Email filled',
+        tooltip: 'Contact info',
+        url: url,
+        ariaLabel: 'Email filled, Contact info',
+      },
+      {
+        id: 'payment',
+        label: 'Payment method filled',
+        tooltip: 'Payment methods',
+        url: url,
+        ariaLabel: 'Payment method filled, Payment methods',
+      },
+    ];
+  }
+
+  protected onCriticalActionClick_(e: Event) {
+    e.stopPropagation();
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const action = this.getCriticalActions_()[index];
+    if (action?.url) {
+      window.open(action.url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  protected onCriticalActionKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.onCriticalActionClick_(e);
+    }
   }
 
   /**
