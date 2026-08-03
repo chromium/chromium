@@ -1399,6 +1399,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
     "src/org/chromium/chrome/browser/sync/BookmarksTest.java",
     "src/org/chromium/chrome/browser/sync/ExplicitPassphrasePlatformClientTest.java",
     "src/org/chromium/chrome/browser/sync/OpenTabsTest.java",
+    "src/org/chromium/chrome/browser/sync/OtherDevicesShortcutControllerIntegrationTest.java",
     "src/org/chromium/chrome/browser/sync/SendTabToSelfReceiverTest.java",
     "src/org/chromium/chrome/browser/sync/SyncTest.java",
     "src/org/chromium/chrome/browser/sync/UkmTest.java",

@@ -57,10 +57,10 @@ public class OtherDevicesShortcutControllerTest {
     private static final String DEVICE_NAME_2 = "Device 2";
     private static final String DEVICE_GUID_1 = "guid1";
     private static final String DEVICE_GUID_2 = "guid2";
-    private static final String SHORTCUT_ID_1 = "stts-target-" + DEVICE_GUID_1;
-    private static final String SHORTCUT_ID_2 = "stts-target-" + DEVICE_GUID_2;
-    private static final String CATEGORY =
-            "org.chromium.chrome.browser.share.send_tab_to_self.category.DEVICE";
+    private static final String SHORTCUT_ID_1 =
+            OtherDevicesShortcutController.SHORTCUT_ID_PREFIX + DEVICE_GUID_1;
+    private static final String SHORTCUT_ID_2 =
+            OtherDevicesShortcutController.SHORTCUT_ID_PREFIX + DEVICE_GUID_2;
 
     private static final String URL = "https://example.com";
     private static final String TITLE = "Title";
@@ -226,7 +226,9 @@ public class OtherDevicesShortcutControllerTest {
         if (shortcut == null) return false;
 
         if (!shortcut.isLongLived()) return false;
-        if (!shortcut.getCategories().contains(CATEGORY)) return false;
+        if (!shortcut.getCategories().contains(OtherDevicesShortcutController.CATEGORY)) {
+            return false;
+        }
 
         Intent intent = shortcut.getIntent();
         if (intent == null) return false;

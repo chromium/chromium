@@ -15,7 +15,7 @@ import org.chromium.components.sync_device_info.FormFactor;
  * called by native code.
  */
 @NullMarked
-class TargetDeviceInfo {
+public class TargetDeviceInfo {
     public final String cacheGuid;
     public final @FormFactor int formFactor;
     public final String deviceName;

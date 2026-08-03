@@ -22,6 +22,7 @@ import android.os.PersistableBundle;
 import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -59,8 +60,10 @@ public class OtherDevicesShortcutController implements Destroyable {
     public static final String EXTRA_DEVICE_NAME =
             "org.chromium.chrome.browser.share.send_tab_to_self.extra.DEVICE_NAME";
 
-    private static final String SHORTCUT_ID_PREFIX = "stts-target-";
-    private static final String CATEGORY =
+    @VisibleForTesting public static final String SHORTCUT_ID_PREFIX = "stts-target-";
+
+    @VisibleForTesting
+    static final String CATEGORY =
             "org.chromium.chrome.browser.share.send_tab_to_self.category.DEVICE";
 
     // Limit to 2 devices to avoid overcrowding the share sheet and the launcher.
@@ -351,7 +354,7 @@ public class OtherDevicesShortcutController implements Destroyable {
                             for (ShortcutInfo shortcut : newShortcuts) {
                                 shortcutManager.pushDynamicShortcut(shortcut);
                             }
-                            Log.d(TAG, "Pushed " + newShortcuts.size() + " shortcuts");
+                            Log.d(TAG, "Pushed %d shortcuts", newShortcuts.size());
                         } catch (IllegalArgumentException e) {
                             Log.e(TAG, "Tried to update immutable shortcut", e);
                         } catch (IllegalStateException e) {
