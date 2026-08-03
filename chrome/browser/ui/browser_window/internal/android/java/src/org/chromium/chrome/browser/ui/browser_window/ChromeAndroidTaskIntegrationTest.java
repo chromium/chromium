@@ -1159,7 +1159,9 @@ public class ChromeAndroidTaskIntegrationTest {
                 () ->
                         newTask.getState() != ChromeAndroidTaskImpl.State.PENDING_CREATE
                                 && !newTask.isActive()
-                                && existingTask.isActive());
+                                && existingTask.isActive(),
+                /* maxTimeoutMs= */ 10_000L,
+                /* checkIntervalMs= */ 1000L);
 
         // Cleanup.
         ThreadUtils.runOnUiThreadBlocking(newTask::close);
