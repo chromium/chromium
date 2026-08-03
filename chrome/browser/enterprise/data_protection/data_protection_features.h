@@ -16,6 +16,8 @@ BASE_DECLARE_FEATURE(kEnableForceDownloadToOneDrive);
 
 BASE_DECLARE_FEATURE(kEnableTabSharingProtection);
 
+BASE_DECLARE_FEATURE(kEnterpriseTabTitleReporting);
+
 BASE_DECLARE_FEATURE(kEnableDlpFileSystemApi);
 
 }  // namespace enterprise_data_protection
