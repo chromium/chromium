@@ -84,7 +84,7 @@ export class SettingsAutofillAiEntriesListElement extends
          If a user is not eligible for Autofill with Ai and they also have no
          data saved, then they cannot access this page at all.
        */
-      ineligibleUser: {
+      ineligibleUser_: {
         type: Boolean,
         value() {
           return !loadTimeData.getBoolean('userEligibleForAutofillAi');
@@ -143,17 +143,17 @@ export class SettingsAutofillAiEntriesListElement extends
           * Even if preference is true the user may still be prevented from
             adding entries due to other eligibility checks.
           * We assume that the provided preference is controlled by the address
-            autofill policy and extension API. If allowEditingPref is provided
+            autofill policy and extension API. If allowNewEntitiesAdditionPref is provided
             its value will be overridden by the address autofill preference when
             it is enforced.
       */
-      allowEditingPref: {
+      allowNewEntitiesAdditionPref: {
         type: Object,
         value: null,
       },
 
-      allowEditing_: {
-        type: Object,
+      allowNewEntitiesAddition_: {
+        type: Boolean,
         value: false,
       },
 
@@ -223,17 +223,17 @@ export class SettingsAutofillAiEntriesListElement extends
           'prefs.autofill.autofill_ai.opt_in_status.value, ' +
           'prefs.autofill.profile_enabled.value, ' +
           `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value, ` +
-          'allowEditingPref.*)',
+          'allowNewEntitiesAdditionPref.*)',
     ];
   }
 
-  declare ineligibleUser: boolean;
+  declare private ineligibleUser_: boolean;
   declare allowedEntityTypes: Set<EntityTypeName>|null;
   declare listTitle: string;
   declare pageName: string;
   declare metricEntityTypes: Record<EntityTypeName, string>|null;
-  declare allowEditingPref: chrome.settingsPrivate.PrefObject<boolean>|null;
-  declare private allowEditing_: boolean;
+  declare allowNewEntitiesAdditionPref: chrome.settingsPrivate.PrefObject<boolean>|null;
+  declare private allowNewEntitiesAddition_: boolean;
   declare private completeEntityTypesList_: EntityType[];
   declare private activeEntityInstance_: EntityInstance|null;
   declare private showAddOrEditEntityInstanceDialog_: boolean;
@@ -275,7 +275,7 @@ export class SettingsAutofillAiEntriesListElement extends
 
     this.entityDataManager_.getWritableEntityTypes().then(
         (entityTypes: EntityType[]) => {
-          this.updateEntittyTypesList_(entityTypes);
+          this.updateEntityTypesList_(entityTypes);
         });
 
     this.addWebUiListener(
@@ -291,7 +291,7 @@ export class SettingsAutofillAiEntriesListElement extends
     this.entityInstancesChangedListener_ = null;
   }
 
-  private updateEntittyTypesList_(entityTypes: EntityType[]) {
+  private updateEntityTypesList_(entityTypes: EntityType[]) {
     // Filter only if the filter was set
     const filteredEntities = this.allowedEntityTypes ?
         entityTypes.filter(
@@ -480,14 +480,14 @@ export class SettingsAutofillAiEntriesListElement extends
     // controls server model calls and MQLS logging. Therefore not whether the
     // user can use Autofill AI.
     if (this.autofillAiAvailableByDefault_) {
-      this.allowEditing_ = this.isEditingAllowedByPref_ &&
+      this.allowNewEntitiesAddition_ = this.isNewEntitiesAdditionAllowedByPref_ &&
           this.canEnableOrDisableAutofillAi_ && meetsAddressPrefRequirement &&
           meetsAiPrefRequirement;
       return;
     }
     const optedIn = await this.entityDataManager_.getOptInStatus();
-    this.allowEditing_ = !this.ineligibleUser && optedIn &&
-        this.isEditingAllowedByPref_ && meetsAddressPrefRequirement &&
+    this.allowNewEntitiesAddition_ = !this.ineligibleUser_ && optedIn &&
+        this.isNewEntitiesAdditionAllowedByPref_ && meetsAddressPrefRequirement &&
         meetsAiPrefRequirement;
   }
 
@@ -499,12 +499,12 @@ export class SettingsAutofillAiEntriesListElement extends
   private onSyncStatusChanged_(_: SyncStatus) {
     this.entityDataManager_.getWritableEntityTypes().then(
         (entityTypes: EntityType[]) => {
-          this.updateEntittyTypesList_(entityTypes);
+          this.updateEntityTypesList_(entityTypes);
         });
   }
 
-  private get isEditingAllowedByPref_(): boolean {
-    return this.allowEditingPref?.value ?? true;
+  private get isNewEntitiesAdditionAllowedByPref_(): boolean {
+    return this.allowNewEntitiesAdditionPref?.value ?? true;
   }
 
   private typeNameToIconName_(name: EntityTypeName): string|undefined {

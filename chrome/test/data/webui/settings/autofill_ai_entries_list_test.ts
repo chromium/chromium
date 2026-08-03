@@ -253,9 +253,9 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
         assertFalse(addButton.disabled);
       });
 
-  test('AddButtonEnabledByDefaultWhenAllowEditingPrefUnset', async function() {
+  test('AddButtonEnabledByDefaultWhenAllowNewEntitiesAdditionPrefUnset', async function() {
     const entriesList = await createEntriesList();
-    entriesList.allowEditingPref = null; // Explicitly unset
+    entriesList.allowNewEntitiesAdditionPref = null; // Explicitly unset
     updateOptInStatus(true, entriesList);
     await flushTasks();
 
@@ -265,9 +265,9 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     assertFalse(addButton.disabled);
   });
 
-  test('DisableAddButtotBasedOnAllowEditingPrefValue', async function() {
+  test('DisableAddButtonBasedOnAllowNewEntitiesAdditionPrefValue', async function() {
     const entriesList = await createEntriesList();
-    entriesList.allowEditingPref = {
+    entriesList.allowNewEntitiesAdditionPref = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
@@ -280,15 +280,15 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
 
-    entriesList.set('allowEditingPref.value', false);
+    entriesList.set('allowNewEntitiesAdditionPref.value', false);
     await flushTasks();
 
     assertTrue(addButton.disabled);
   });
 
-  test('DisableAddButtotWhenAddressAutofillDisabled', async function() {
+  test('DisableAddButtonWhenAddressAutofillDisabled', async function() {
     const entriesList = await createEntriesList();
-    entriesList.allowEditingPref = {
+    entriesList.allowNewEntitiesAdditionPref = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
@@ -310,7 +310,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
 
   test('DisableAddButtonWhenAiPredictionsDisabled', async function() {
     const entriesList = await createEntriesList();
-    entriesList.allowEditingPref = {
+    entriesList.allowNewEntitiesAdditionPref = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
@@ -335,10 +335,10 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   });
 
   test(
-      'AddressAutofillForcedTrueValueShouldNotOverrideAllowEditingPrefValue',
+      'AddressAutofillForcedTrueValueShouldNotOverrideAllowNewEntitiesAdditionPrefValue',
       async function() {
         const entriesList = await createEntriesList();
-        entriesList.allowEditingPref = {
+        entriesList.allowNewEntitiesAdditionPref = {
           key: '',
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: false,  // Editing is disabled
