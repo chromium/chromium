@@ -684,7 +684,7 @@ BASE_DECLARE_FEATURE(kPreFirstRunDesktopRefresh);
 // enabled (see `kPreFirstRunDesktopRefresh`, `kFirstRunDesktopRevamp`,
 // `kFirstRunDesktopRefresh` and `kFirstRunDesktopChoiceScreenRefresh` flags).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-bool IsPreFirstRunDesktopRefreshEnabled(bool is_in_search_engine_choice_region);
+bool IsPreFirstRunDesktopRefreshEnabled();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
