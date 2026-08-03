@@ -27,6 +27,8 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
@@ -45,6 +47,7 @@
 #import "ios/web/web_state/policy_decision_state_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
+#import "ios/web/webui/mojo_facade.h"
 #import "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 #import "ios/web/webui/web_ui_ios_impl.h"
 #import "net/http/http_util.h"
@@ -411,6 +414,7 @@ void WebStateImpl::RealizedWebState::CreateWebUI(const GURL& url) {
 }
 
 void WebStateImpl::RealizedWebState::ClearWebUI() {
+  mojo_facade_.reset();
   web_ui_.reset();
 }
 
@@ -1100,6 +1104,11 @@ std::unique_ptr<WebUIIOS> WebStateImpl::RealizedWebState::CreateWebUIIOS(
   }
 
   web_ui->SetController(std::move(controller));
+
+  if (!mojo_facade_) {
+    mojo_facade_ = std::make_unique<web::MojoFacade>(owner_);
+  }
+
   return web_ui;
 }
 

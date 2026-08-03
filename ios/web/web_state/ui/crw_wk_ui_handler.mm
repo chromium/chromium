@@ -20,7 +20,6 @@
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "ios/web/webui/mojo_facade.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 #import "url/origin.h"
@@ -58,17 +57,11 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 }  // namespace
 
 @interface CRWWKUIHandler () <CRWMediaCapturePermissionPresenter> {
-  // Backs up property with the same name.
-  std::unique_ptr<web::MojoFacade> _mojoFacade;
-
   // Check that public API is called from the correct sequence.
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 @property(nonatomic, assign, readonly) web::WebStateImpl* webStateImpl;
-
-// Facade for Mojo API.
-@property(nonatomic, readonly) web::MojoFacade* mojoFacade;
 
 // Task runner that creates this object.
 @property(nonatomic, readonly) scoped_refptr<base::SequencedTaskRunner>
@@ -111,20 +104,12 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 
 - (void)close {
   [super close];
-  _mojoFacade.reset();
 }
 
 #pragma mark - Property
 
 - (web::WebStateImpl*)webStateImpl {
   return [self.delegate webStateImplForWebViewHandler:self];
-}
-
-- (web::MojoFacade*)mojoFacade {
-  if (!_mojoFacade) {
-    _mojoFacade = std::make_unique<web::MojoFacade>(self.webStateImpl);
-  }
-  return _mojoFacade.get();
 }
 
 #pragma mark - WKUIDelegate
@@ -275,14 +260,6 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                          initiatedByFrame:(WKFrameInfo*)frame
                         completionHandler:
                             (void (^)(NSString* result))completionHandler {
-  GURL origin_url(web::GURLOriginWithWKSecurityOrigin(frame.securityOrigin));
-  if (web::GetWebClient()->IsAppSpecificURL(origin_url)) {
-    std::string mojoResponse =
-        self.mojoFacade->HandleMojoMessage(base::SysNSStringToUTF8(prompt));
-    completionHandler(base::SysUTF8ToNSString(mojoResponse));
-    return;
-  }
-
   DCHECK(completionHandler);
 
   GURL requestURL = net::GURLWithNSURL(frame.request.URL);
