@@ -38,6 +38,10 @@ class BrowserActions {
   actions::ActionItem* RegisterAction(
       std::unique_ptr<actions::ActionItem> action_item);
 
+  void set_root_action_item_for_testing(actions::ActionItem* item) {
+    root_action_item_ = item;
+  }
+
  private:
   // Helper functions to initialize actions grouped roughly by their type.
   void InitializeSidePanelActions();
