@@ -4168,8 +4168,6 @@ static_library("ui") {
       "views/web_apps/protocol_handler_launch_dialog_view.cc",
       "views/web_apps/protocol_handler_launch_dialog_view.h",
       "views/web_apps/sub_apps/sub_apps_install_dialog.cc",
-      "views/web_apps/sub_apps/sub_apps_install_dialog_controller.cc",
-      "views/web_apps/sub_apps/sub_apps_install_dialog_controller.h",
       "views/web_apps/view_visible_in_active_widget_notifier.cc",
       "views/web_apps/view_visible_in_active_widget_notifier.h",
       "views/web_apps/web_app_blocked_migration_infobar_delegate.cc",
@@ -5046,6 +5044,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:hung_renderer_view",
       "//chrome/browser/ui/views:tab_dialogs_impl",
       "//chrome/browser/ui/views/frame:top_controls_slide_controller",
+      "//chrome/browser/ui/views/web_apps/sub_apps",
     ]
   }
 }

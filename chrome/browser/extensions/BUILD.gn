@@ -2851,7 +2851,10 @@ source_set("browser_tests") {
         "api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
       ]
 
-      deps += [ "//chrome/browser/ui/webui/app_home:browser_tests" ]
+      deps += [
+        "//chrome/browser/ui/views/web_apps/sub_apps",
+        "//chrome/browser/ui/webui/app_home:browser_tests",
+      ]
     }
 
     if (enterprise_cloud_content_analysis || is_android) {

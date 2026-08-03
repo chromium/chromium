@@ -3679,6 +3679,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
         "//chrome/browser/ui/views/web_apps",
         "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
+        "//chrome/browser/ui/views/web_apps/sub_apps",
         "//chrome/browser/web_applications/isolated_web_apps/window_management:browser_tests",
       ]
       if (use_aura) {
@@ -8039,6 +8040,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/page_action:page_action_test_support",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar:test_support",
+      "//chrome/browser/ui/views/web_apps/sub_apps",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test/base:browser_feature_test_waiters",
       "//chrome/test/base:chrome_test_utils",

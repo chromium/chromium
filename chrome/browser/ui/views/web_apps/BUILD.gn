@@ -66,6 +66,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/views/infobars",
+    "//chrome/browser/ui/views/web_apps/sub_apps",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/browser/web_applications:web_applications_test_support",
