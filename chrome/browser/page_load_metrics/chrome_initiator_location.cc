@@ -18,6 +18,8 @@ std::string StringifyChromeInitiatorLocation(
       return "OmniboxDirectUrlInput";
     case ChromeInitiatorLocation::kOmniboxDefaultSearchEngine:
       return "OmniboxDefaultSearchEngine";
+    case ChromeInitiatorLocation::kLinkClick:
+      return "LinkClick";
     case ChromeInitiatorLocation::kOther:
       return "Other";
   }

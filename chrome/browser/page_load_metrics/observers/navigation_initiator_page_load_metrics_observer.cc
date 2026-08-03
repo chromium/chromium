@@ -10,6 +10,7 @@
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 
@@ -19,11 +20,19 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
   auto* navigation_handle_user_data =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
           navigation_handle);
-  ChromeInitiatorLocation initiator_location = GetChromeInitiatorLocation(
-      navigation_handle_user_data
-          ? navigation_handle_user_data->navigation_type()
-          : page_load_metrics::NavigationHandleUserData::
-                kInitiatorLocationOther);
+  const ChromeInitiatorLocation initiator_location = [&]() {
+    if (navigation_handle_user_data) {
+      return GetChromeInitiatorLocation(
+          navigation_handle_user_data->navigation_type());
+    }
+    if (navigation_handle.IsRendererInitiated() &&
+        navigation_handle.HasUserGesture() &&
+        ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
+                                     ui::PAGE_TRANSITION_LINK)) {
+      return ChromeInitiatorLocation::kLinkClick;
+    }
+    return ChromeInitiatorLocation::kOther;
+  }();
 
   base::UmaHistogramEnumeration("Navigation.InitiatorType.All",
                                 initiator_location);

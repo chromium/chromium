@@ -333,6 +333,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="New Tab Page"/>
   <int value="3" label="Omnibox Direct URL Input"/>
   <int value="4" label="Omnibox Default Search Engine"/>
+  <int value="5" label="Link Click"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/page_load_metrics/chrome_initiator_location.h:ChromeInitiatorLocation) -->
