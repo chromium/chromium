@@ -14,15 +14,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ActionInvocationSource,
                              kActionInvocationSourceKey,
                              ActionInvocationSource::kUnknown)
 
-DEFINE_UI_CLASS_PROPERTY_KEY(const GURL*, kLinkUrlKey, nullptr)
-
-DEFINE_UI_CLASS_PROPERTY_KEY(const GURL*, kFrameUrlKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(const url::Origin*, kFrameOriginKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kReferrerPolicyKey, 0)
-
 }  // namespace chrome
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(WindowOpenDisposition)
-DEFINE_UI_CLASS_PROPERTY_TYPE(const GURL*)
-DEFINE_UI_CLASS_PROPERTY_TYPE(const url::Origin*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(chrome::ActionInvocationSource)
