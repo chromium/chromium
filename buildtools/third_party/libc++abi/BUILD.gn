@@ -59,9 +59,6 @@ target(libcxxabi_target_type, "libc++abi") {
 
   defines = [ "LIBCXXABI_SILENT_TERMINATE" ]
 
-  # TODO(crbug.com/469458284): Remove this once libc++abi is rolled again.
-  defines += [ "_LIBCPP_CONSTINIT=constinit" ]
-
   if (is_linux || is_android) {
     defines += [ "_LIBCXXABI_USE_FUTEX" ]
   }
