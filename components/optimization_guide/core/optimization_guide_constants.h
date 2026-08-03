@@ -13,15 +13,6 @@
 
 namespace optimization_guide {
 
-
-// The prefix for the folder where models are stored by the new install-wide
-// model store.
-// TODO: crbug.com/514743962 - This defines prediction model store paths and
-// should be moved to
-// components/optimization_guide/core/delivery/prediction_model_store.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[];
-
 // The name of the model execution debug logs header.
 // TODO: crbug.com/514743962 - Move this to the only file that uses it:
 // components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc

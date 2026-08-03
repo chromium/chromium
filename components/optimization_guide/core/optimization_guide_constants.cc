@@ -6,10 +6,6 @@
 
 namespace optimization_guide {
 
-
-const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
-    FILE_PATH_LITERAL("optimization_guide_model_store");
-
 const char kOptimizationGuideModelExecutionDebugLogsHeaderKey[] =
     "X-Model-Execution-Debug-Logs";
 

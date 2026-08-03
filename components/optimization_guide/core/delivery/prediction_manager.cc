@@ -39,7 +39,6 @@
 #include "components/optimization_guide/core/delivery/prediction_model_fetcher_impl.h"
 #include "components/optimization_guide/core/delivery/prediction_model_override.h"
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"

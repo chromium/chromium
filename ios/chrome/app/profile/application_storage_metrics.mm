@@ -16,7 +16,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/history/core/browser/history_constants.h"
-#import "components/optimization_guide/core/optimization_guide_constants.h"
+#import "components/optimization_guide/core/delivery/prediction_model_store.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/snapshots/model/constants.h"

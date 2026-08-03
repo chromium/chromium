@@ -26,6 +26,9 @@
 
 namespace optimization_guide {
 
+const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
+    FILE_PATH_LITERAL("optimization_guide_model_store");
+
 namespace {
 
 constexpr size_t kBytesPerMegabyte = 1024 * 1024;

@@ -19,6 +19,10 @@ class PrefService;
 
 namespace optimization_guide {
 
+// The prefix for the folder where models are stored by the new install-wide
+// model store.
+extern const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[];
+
 // The new model store that manages the optimization guide prediction models.
 // The model store is a key-value store where the optimization target,
 // ModelCacheKey can be together considered as the key and the value is the
