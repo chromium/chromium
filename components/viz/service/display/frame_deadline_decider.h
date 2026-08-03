@@ -37,7 +37,9 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
     kOsPreferredChromePreferredSooner = 4,
     kMaxValue = kOsPreferredChromePreferredSooner,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:FrameDeadlineDeciderSelectionReason)
+  // LINT.ThenChange(
+  // //base/tracing/protos/chrome_track_event.proto:SelectionReason,
+  // //tools/metrics/histograms/metadata/gpu/enums.xml:FrameDeadlineDeciderSelectionReason)
 
   struct QueryResult {
     size_t deadline_index;
