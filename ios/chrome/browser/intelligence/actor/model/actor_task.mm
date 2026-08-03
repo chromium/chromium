@@ -15,6 +15,8 @@
 #import "base/timer/timer.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/journal_details_builder.h"
+#import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_intervention_handler.h"
@@ -22,6 +24,10 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {
@@ -75,12 +81,15 @@ ActorTask::ActorTask(ActorTaskId task_id,
                      const std::string& title,
                      bool allow_incognito_web_states,
                      AggregatedJournal* journal,
-                     ActorToolFactory* tool_factory)
+                     ActorToolFactory* tool_factory,
+                     BrowserList* browser_list)
     : task_id_(task_id),
+      browser_list_(browser_list),
       title_(title),
       allow_incognito_web_states_(allow_incognito_web_states),
       journal_(journal),
       tool_factory_(tool_factory) {
+  CHECK(browser_list_);
   // TODO(crbug.com/504704411): Allow incognito WebStates.
   CHECK(!allow_incognito_web_states_);
   engine_ = std::make_unique<ActorEngine>(/*execution_updates_delegate=*/this,
@@ -207,6 +216,55 @@ void ActorTask::WebStateDestroyed(web::WebState* web_state) {
 
 ActorTaskId ActorTask::GetTaskId() const {
   return task_id_;
+}
+
+bool ActorTask::IsWindowIdValid(int32_t window_id) {
+  return GetBrowserForWindowId(window_id) != nullptr;
+}
+
+web::WebState* ActorTask::InsertWebState(
+    int32_t window_id,
+    const web::NavigationManager::WebLoadParams& load_params,
+    bool in_background) {
+  Browser* targeted_browser = GetBrowserForWindowId(window_id);
+  if (!targeted_browser) {
+    return nullptr;
+  }
+  TabInsertionBrowserAgent* insertion_agent =
+      TabInsertionBrowserAgent::FromBrowser(targeted_browser);
+  if (!insertion_agent) {
+    return nullptr;
+  }
+
+  TabInsertion::Params insertion_params;
+  insertion_params.in_background = in_background;
+
+  // Position the new tab immediately to the right of the prompting tab
+  // (which is the first controlled WebState).
+  if (!controlled_web_states_.empty()) {
+    web::WebState* prompting_web_state = nullptr;
+    for (const auto& weak_web_state : controlled_web_states_) {
+      if (weak_web_state) {
+        prompting_web_state = weak_web_state.get();
+        break;
+      }
+    }
+    if (prompting_web_state) {
+      int prompting_index =
+          targeted_browser->GetWebStateList()->GetIndexOfWebState(
+              prompting_web_state);
+      if (prompting_index != WebStateList::kInvalidIndex) {
+        insertion_params.index = prompting_index + 1;
+      }
+    }
+  }
+
+  web::WebState* web_state =
+      insertion_agent->InsertWebState(load_params, insertion_params);
+  if (web_state) {
+    AddControlledWebState(web_state);
+  }
+  return web_state;
 }
 
 AggregatedJournal& ActorTask::GetJournal() const {
@@ -349,6 +407,21 @@ void ActorTask::OnWillExecuteTool(ToolType tool_type,
               willExecuteTool:tool_type
                    taskUpdate:base::SysUTF8ToNSString(last_task_update_)
                    onWebState:web_state_id];
+}
+
+Browser* ActorTask::GetBrowserForWindowId(int32_t window_id) const {
+  BrowserList::BrowserType browser_type = BrowserList::BrowserType::kRegular;
+  if (allow_incognito_web_states_) {
+    browser_type = BrowserList::BrowserType::kRegularAndIncognito;
+  }
+  for (Browser* browser : browser_list_->BrowsersOfType(browser_type)) {
+    ActorBrowserAgent* agent = ActorBrowserAgent::FromBrowser(browser);
+    if (agent &&
+        agent->browser_id() == SessionID::FromSerializedValue(window_id)) {
+      return browser;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace actor

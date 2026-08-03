@@ -177,6 +177,13 @@ class ToolControllerTest : public PlatformTest, public ToolDelegate {
 
   // ToolDelegate overrides.
   ActorTaskId GetTaskId() const override { return ActorTaskId(1); }
+  bool IsWindowIdValid(int32_t window_id) override { return false; }
+  web::WebState* InsertWebState(
+      int32_t window_id,
+      const web::NavigationManager::WebLoadParams& load_params,
+      bool in_background) override {
+    return nullptr;
+  }
   AggregatedJournal& GetJournal() const override { return *journal_; }
   ActorToolFactory& GetToolFactory() const override { return *tool_factory_; }
   ActorTaskFormFillingHandler* GetActorTaskFormFillingHandler() override {

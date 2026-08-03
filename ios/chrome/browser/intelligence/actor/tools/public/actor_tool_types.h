@@ -44,6 +44,8 @@ enum class ToolType {
   kCloseTab,
   // Tool to fill form fields.
   kAttemptFormFilling,
+  // Tool to create a new tab.
+  kCreateTab,
 };
 
 // iOS-specific error codes for tool execution failures.

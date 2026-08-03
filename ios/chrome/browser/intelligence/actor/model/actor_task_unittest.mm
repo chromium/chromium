@@ -13,13 +13,19 @@
 #import "base/types/strong_alias.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -160,9 +166,10 @@ class ActorTaskTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
     tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
-    task_ = std::make_unique<ActorTask>(ActorTaskId(1), "Test Task",
-                                        /*allow_incognito_web_states=*/false,
-                                        journal_.get(), tool_factory_.get());
+    task_ = std::make_unique<ActorTask>(
+        ActorTaskId(1), "Test Task",
+        /*allow_incognito_web_states=*/false, journal_.get(),
+        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()));
   }
 
   void TearDown() override {
@@ -667,6 +674,89 @@ TEST_F(ActorTaskTest, ActorTabHelperActuatingState) {
   task_.reset();
   EXPECT_NE(ActorTabHelper::FromWebState(web_state.get()), nullptr);
   EXPECT_FALSE(helper->IsActuating());
+}
+
+TEST_F(ActorTaskTest, WindowIdAndInsertWebState) {
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+
+  // Create a regular browser and register it.
+  auto browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(browser.get());
+  ActorBrowserAgent::CreateForBrowser(browser.get());
+  TabInsertionBrowserAgent::CreateForBrowser(browser.get());
+  ActorBrowserAgent* agent = ActorBrowserAgent::FromBrowser(browser.get());
+  int32_t window_id = agent->browser_id().id();
+
+  // Test that we can validate the window ID.
+  ToolDelegate* tool_delegate = task_.get();
+  EXPECT_TRUE(tool_delegate->IsWindowIdValid(window_id));
+  EXPECT_FALSE(tool_delegate->IsWindowIdValid(999));
+
+  // Test that we can insert a WebState.
+  EXPECT_EQ(0, browser->GetWebStateList()->count());
+  web::NavigationManager::WebLoadParams load_params(GURL("chrome://newtab"));
+
+  web::WebState* web_state = tool_delegate->InsertWebState(
+      window_id, load_params, false /* in_background */);
+  ASSERT_NE(nullptr, web_state);
+  EXPECT_EQ(1, browser->GetWebStateList()->count());
+  EXPECT_EQ(web_state, browser->GetWebStateList()->GetWebStateAt(0));
+
+  // Test that inserting WebState with invalid window ID returns nullptr.
+  EXPECT_EQ(nullptr, tool_delegate->InsertWebState(999, load_params,
+                                                   false /* in_background */));
+
+  // Test that inserting WebState when TabInsertionBrowserAgent is missing
+  // returns nullptr.
+  auto browser_no_agent = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(browser_no_agent.get());
+  ActorBrowserAgent::CreateForBrowser(browser_no_agent.get());
+  int32_t window_id_no_agent =
+      ActorBrowserAgent::FromBrowser(browser_no_agent.get())->browser_id().id();
+  EXPECT_EQ(nullptr,
+            tool_delegate->InsertWebState(window_id_no_agent, load_params,
+                                          false /* in_background */));
+}
+
+// Tests that InsertWebState places the new tab immediately next to the
+// prompting tab (which is the first controlled WebState of the task).
+TEST_F(ActorTaskTest, InsertWebState_AdjacentPlacement) {
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(browser.get());
+  ActorBrowserAgent::CreateForBrowser(browser.get());
+  TabInsertionBrowserAgent::CreateForBrowser(browser.get());
+  int32_t window_id =
+      ActorBrowserAgent::FromBrowser(browser.get())->browser_id().id();
+
+  ToolDelegate* tool_delegate = task_.get();
+
+  // 1. Insert WebState A (controlled) at index 0.
+  auto web_state_a = std::make_unique<web::FakeWebState>();
+  web::WebState* a_ptr = web_state_a.get();
+  browser->GetWebStateList()->InsertWebState(std::move(web_state_a));
+  AddControlledWebState(a_ptr->GetWeakPtr());
+
+  // 2. Insert WebState B (uncontrolled) at index 1.
+  auto web_state_b = std::make_unique<web::FakeWebState>();
+  web::WebState* b_ptr = web_state_b.get();
+  browser->GetWebStateList()->InsertWebState(std::move(web_state_b));
+
+  EXPECT_EQ(2, browser->GetWebStateList()->count());
+  EXPECT_EQ(a_ptr, browser->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_EQ(b_ptr, browser->GetWebStateList()->GetWebStateAt(1));
+
+  // 3. Insert WebState C via InsertWebState.
+  web::NavigationManager::WebLoadParams load_params(GURL("chrome://newtab"));
+  web::WebState* web_state_c = tool_delegate->InsertWebState(
+      window_id, load_params, false /* in_background */);
+  ASSERT_NE(nullptr, web_state_c);
+
+  // The new tab C should be placed next to A (the prompting tab) at index 1.
+  EXPECT_EQ(3, browser->GetWebStateList()->count());
+  EXPECT_EQ(a_ptr, browser->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_EQ(web_state_c, browser->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_EQ(b_ptr, browser->GetWebStateList()->GetWebStateAt(2));
 }
 
 }  // namespace actor

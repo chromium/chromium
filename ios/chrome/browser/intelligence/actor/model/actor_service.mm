@@ -52,9 +52,10 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   CHECK(IsActorEnabled());
 
   const ActorTaskId task_id = next_task_id_.GenerateNextId();
-  auto task =
-      std::make_unique<ActorTask>(task_id, title, allow_incognito_web_states,
-                                  journal_.get(), tool_factory_.get());
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
+  auto task = std::make_unique<ActorTask>(
+      task_id, title, allow_incognito_web_states, journal_.get(),
+      tool_factory_.get(), browser_list);
 
   // TODO(crbug.com/512521102): Cleanup observers lifecycle.
   // Only the latest task is tracked.

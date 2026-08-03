@@ -43,6 +43,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/tab_insertion/model",
     "//ios/web/public",
     "//third_party/perfetto:libperfetto",
 
@@ -115,6 +116,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/snapshots/model:test_utils",
+    "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/test:test_support",
     "//ios/web/find_in_page",
     "//ios/web/public/test",

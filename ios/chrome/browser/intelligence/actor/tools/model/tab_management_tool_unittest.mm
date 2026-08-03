@@ -10,6 +10,7 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/fake_tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -288,6 +289,187 @@ TEST_F(TabManagementToolTest, CloseTab_SynchronousDestruction_Safe) {
   run_loop.Run();
   EXPECT_EQ(nullptr, tool.get());
   EXPECT_EQ(0, browser->GetWebStateList()->count());
+}
+
+TEST_F(TabManagementToolTest, CreateTab_Success) {
+  auto browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list_->AddBrowser(browser.get());
+
+  FakeToolDelegate delegate;
+  int32_t window_id = 123;
+  delegate.SetWebStateListForWindowId(window_id, browser->GetWebStateList());
+
+  optimization_guide::proto::CreateTabAction action;
+  action.set_window_id(window_id);
+  action.set_foreground(true);
+
+  // Create and validate the tool.
+  std::unique_ptr<TabManagementTool> tool =
+      TabManagementTool::CreateTabTool(action, &delegate);
+  ASSERT_TRUE(tool);
+  base::test::TestFuture<ToolExecutionResult> validate_future;
+  tool->Validate(validate_future.GetCallback());
+  ASSERT_TRUE(validate_future.Get().IsOk());
+
+  EXPECT_EQ(0, browser->GetWebStateList()->count());
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_TRUE(result.IsOk());
+  EXPECT_EQ(1, browser->GetWebStateList()->count());
+  EXPECT_EQ(0, browser->GetWebStateList()->active_index());
+  EXPECT_EQ(ToolType::kCreateTab, tool->GetToolType());
+}
+
+// Tests that creating a tab next to the prompting tab succeeds and inserts
+// the new tab at the correct index (prompting index + 1).
+TEST_F(TabManagementToolTest, CreateTab_NextToPromptingTab_Success) {
+  auto browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list_->AddBrowser(browser.get());
+
+  // Insert two tabs so there is a prompting tab.
+  browser->GetWebStateList()->InsertWebState(
+      std::make_unique<web::FakeWebState>());
+  browser->GetWebStateList()->InsertWebState(
+      std::make_unique<web::FakeWebState>());
+
+  FakeToolDelegate delegate;
+  int32_t window_id = 123;
+  delegate.SetWebStateListForWindowId(window_id, browser->GetWebStateList());
+  // Activate the web state at index 0 to act as the prompting tab.
+  browser->GetWebStateList()->ActivateWebStateAt(0);
+
+  optimization_guide::proto::CreateTabAction action;
+  action.set_window_id(window_id);
+  action.set_foreground(true);
+
+  std::unique_ptr<TabManagementTool> tool =
+      TabManagementTool::CreateTabTool(action, &delegate);
+  ASSERT_TRUE(tool);
+  base::test::TestFuture<ToolExecutionResult> validate_future;
+  tool->Validate(validate_future.GetCallback());
+  ASSERT_TRUE(validate_future.Get().IsOk());
+
+  EXPECT_EQ(2, browser->GetWebStateList()->count());
+  web::WebState* ws0 = browser->GetWebStateList()->GetWebStateAt(0);
+  web::WebState* ws1 = browser->GetWebStateList()->GetWebStateAt(1);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_TRUE(result.IsOk());
+  // The new tab should be inserted at index 1.
+  EXPECT_EQ(3, browser->GetWebStateList()->count());
+  EXPECT_EQ(1, browser->GetWebStateList()->active_index());
+  EXPECT_EQ(ws0, browser->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_NE(ws0, browser->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_NE(ws1, browser->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_EQ(ws1, browser->GetWebStateList()->GetWebStateAt(2));
+}
+
+TEST_F(TabManagementToolTest, CreateTab_Validate_WindowNotFound_Fails) {
+  FakeToolDelegate delegate;
+  int32_t window_id = 999;
+
+  optimization_guide::proto::CreateTabAction action;
+  action.set_window_id(window_id);
+  action.set_foreground(true);
+
+  std::unique_ptr<TabManagementTool> tool =
+      TabManagementTool::CreateTabTool(action, &delegate);
+  ASSERT_TRUE(tool);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Validate(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_EQ(mojom::ActionResultCode::kWindowWentAway, result.code());
+}
+
+TEST_F(TabManagementToolTest, CreateTab_Validate_BrowserDestroyed_Fails) {
+  auto browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list_->AddBrowser(browser.get());
+
+  FakeToolDelegate delegate;
+  int32_t window_id = 123;
+  delegate.SetWebStateListForWindowId(window_id, browser->GetWebStateList());
+
+  optimization_guide::proto::CreateTabAction action;
+  action.set_window_id(window_id);
+  action.set_foreground(true);
+
+  std::unique_ptr<TabManagementTool> tool =
+      TabManagementTool::CreateTabTool(action, &delegate);
+  ASSERT_TRUE(tool);
+
+  // Destroy the browser to invalidate the window ID in the delegate.
+  browser.reset();
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Validate(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_EQ(mojom::ActionResultCode::kWindowWentAway, result.code());
+}
+
+TEST_F(TabManagementToolTest, CreateTab_Execute_BrowserDestroyed_Fails) {
+  auto browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list_->AddBrowser(browser.get());
+
+  FakeToolDelegate delegate;
+  int32_t window_id = 123;
+  delegate.SetWebStateListForWindowId(window_id, browser->GetWebStateList());
+
+  optimization_guide::proto::CreateTabAction action;
+  action.set_window_id(window_id);
+  action.set_foreground(true);
+
+  // Create and validate the tool.
+  std::unique_ptr<TabManagementTool> tool =
+      TabManagementTool::CreateTabTool(action, &delegate);
+  ASSERT_TRUE(tool);
+  base::test::TestFuture<ToolExecutionResult> validate_future;
+  tool->Validate(validate_future.GetCallback());
+  EXPECT_TRUE(validate_future.Get().IsOk());
+
+  // Destroy the browser to invalidate the window ID in the delegate.
+  browser.reset();
+
+  base::test::TestFuture<ToolExecutionResult> execute_future;
+  tool->Execute(execute_future.GetCallback());
+
+  ToolExecutionResult result = execute_future.Get();
+  EXPECT_EQ(mojom::ActionResultCode::kWindowWentAway, result.code());
+}
+
+TEST_F(TabManagementToolTest, CreateTab_Execute_InsertWebStateFailed_Fails) {
+  auto browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list_->AddBrowser(browser.get());
+
+  FakeToolDelegate delegate;
+  int32_t window_id = 123;
+  delegate.SetWebStateListForWindowId(window_id, browser->GetWebStateList());
+  delegate.set_fail_insert_web_state(true);
+
+  optimization_guide::proto::CreateTabAction action;
+  action.set_window_id(window_id);
+  action.set_foreground(true);
+
+  // Create and validate the tool.
+  std::unique_ptr<TabManagementTool> tool =
+      TabManagementTool::CreateTabTool(action, &delegate);
+  ASSERT_TRUE(tool);
+  base::test::TestFuture<ToolExecutionResult> validate_future;
+  tool->Validate(validate_future.GetCallback());
+  ASSERT_TRUE(validate_future.Get().IsOk());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_EQ(mojom::ActionResultCode::kNewTabCreationFailed, result.code());
 }
 
 }  // namespace actor

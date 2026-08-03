@@ -6,6 +6,11 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_TOOL_DELEGATE_H_
 
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+
+namespace web {
+class WebState;
+}  // namespace web
 
 namespace actor {
 class ActorToolFactory;
@@ -41,6 +46,17 @@ class ToolDelegate {
   // Resumes the task's execution flow once the user interaction is completed.
   // This restores the task to `ActorTaskState::kActing`.
   virtual void UninterruptFromTool() = 0;
+
+  // Returns whether the window identified by `window_id` exists.
+  virtual bool IsWindowIdValid(int32_t window_id) = 0;
+
+  // Inserts a new WebState with `load_params` in the window identified by
+  // `window_id`. Position of the new tab is determined by the delegate. Returns
+  // the inserted WebState, or nullptr if the insertion failed.
+  virtual web::WebState* InsertWebState(
+      int32_t window_id,
+      const web::NavigationManager::WebLoadParams& load_params,
+      bool in_background) = 0;
 };
 
 }  // namespace actor

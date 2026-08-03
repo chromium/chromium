@@ -78,12 +78,14 @@ class MockActorTask : public ActorTask {
                 bool allow_incognito_web_states,
                 AggregatedJournal* journal,
                 ActorToolFactory* tool_factory,
+                BrowserList* browser_list,
                 bool* stop_called)
       : ActorTask(task_id,
                   title,
                   allow_incognito_web_states,
                   journal,
-                  tool_factory),
+                  tool_factory,
+                  browser_list),
         stop_called_(stop_called) {}
 
   void Stop(ActorTaskStoppedReason stop_reason) override {
@@ -691,11 +693,13 @@ TEST_F(ActorServiceTest, StopTask) {
 
   // Swap the task with our MockActorTask.
   bool stop_called = false;
-  SwapTask(service, task_id,
-           std::make_unique<MockActorTask>(
-               task_id, "Test Task",
-               /*allow_incognito_web_states=*/false, GetJournal(service),
-               GetToolFactory(service), &stop_called));
+  SwapTask(
+      service, task_id,
+      std::make_unique<MockActorTask>(
+          task_id, "Test Task",
+          /*allow_incognito_web_states=*/false, GetJournal(service),
+          GetToolFactory(service),
+          BrowserListFactory::GetForProfile(profile_.get()), &stop_called));
 
   // Stop the task.
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);

@@ -39,6 +39,8 @@ std::optional<std::string> ToolTypeToToolDisplayString(ToolType tool) {
       return "Attempting form filling";
     case ToolType::kCloseTab:
       return "Closing tab";
+    case ToolType::kCreateTab:
+      return "Creating tab";
     case ToolType::kUnknown:
       return std::nullopt;
   }

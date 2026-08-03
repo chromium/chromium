@@ -7,17 +7,26 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/types/expected.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
 class WebStateList;
 
+namespace optimization_guide {
+namespace proto {
+class CreateTabAction;
+}  // namespace proto
+}  // namespace optimization_guide
+
 namespace web {
 class WebState;
 }
 
 namespace actor {
+
+class ToolDelegate;
 
 // A tool to perform tab management operations.
 class TabManagementTool : public ActorTool {
@@ -26,6 +35,11 @@ class TabManagementTool : public ActorTool {
   static std::unique_ptr<TabManagementTool> CreateCloseTabTool(
       base::WeakPtr<web::WebState> web_state,
       base::WeakPtr<WebStateList> web_state_list);
+
+  // Creates a TabManagementTool for the CreateTab action.
+  static std::unique_ptr<TabManagementTool> CreateTabTool(
+      const optimization_guide::proto::CreateTabAction& action,
+      ToolDelegate* tool_delegate);
 
   ~TabManagementTool() override;
 
@@ -39,21 +53,32 @@ class TabManagementTool : public ActorTool {
  private:
   enum class ActionType {
     kClose,
+    kCreate,
   };
 
   TabManagementTool(base::WeakPtr<web::WebState> web_state,
                     ActionType action_type,
                     base::WeakPtr<WebStateList> web_state_list);
+  TabManagementTool(int32_t window_id,
+                    bool foreground,
+                    ToolDelegate* tool_delegate);
 
   void ValidateCloseTab(ToolExecutionCallback callback);
+  void ValidateCreateTab(ToolExecutionCallback callback);
+
   void ExecuteCloseTab();
+  void ExecuteCreateTab();
 
   const ActionType action_type_;
   const base::WeakPtr<web::WebState> web_state_;
   const base::WeakPtr<WebStateList> web_state_list_;
+  const raw_ptr<ToolDelegate> tool_delegate_ = nullptr;
+  const int32_t window_id_ = -1;
+  const bool foreground_;
 
   ToolExecutionCallback callback_;
 
+  base::WeakPtr<web::WebState> created_web_state_;
   base::WeakPtrFactory<TabManagementTool> weak_ptr_factory_{this};
 };
 

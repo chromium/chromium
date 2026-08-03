@@ -26,6 +26,9 @@
 @class ActorTaskInterventionHandler;
 @class CRBProtocolObservers;
 
+class Browser;
+class BrowserList;
+
 namespace web {
 class WebState;
 }
@@ -47,7 +50,8 @@ class ActorTask : public web::WebStateObserver,
             const std::string& title,
             bool allow_incognito_web_states,
             AggregatedJournal* journal,
-            ActorToolFactory* tool_factory);
+            ActorToolFactory* tool_factory,
+            BrowserList* browser_list);
   ~ActorTask() override;
 
   ActorTask(const ActorTask&) = delete;
@@ -108,6 +112,11 @@ class ActorTask : public web::WebStateObserver,
 
   // ToolDelegate:
   ActorTaskId GetTaskId() const override;
+  bool IsWindowIdValid(int32_t window_id) override;
+  web::WebState* InsertWebState(
+      int32_t window_id,
+      const web::NavigationManager::WebLoadParams& load_params,
+      bool in_background) override;
   AggregatedJournal& GetJournal() const override;
   ActorToolFactory& GetToolFactory() const override;
   void InterruptFromTool() override;
@@ -145,11 +154,20 @@ class ActorTask : public web::WebStateObserver,
   void OnWillExecuteTool(ToolType tool_type,
                          web::WebStateID web_state_id) override;
 
+  // Returns the Browser associated with the given `window_id`.
+  Browser* GetBrowserForWindowId(int32_t window_id) const;
+
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
 
   // The task's ID.
   const ActorTaskId task_id_;
+
+  // The BrowserList associated with this task. ActorTask is owned by
+  // ActorService, which depends on BrowserList (as declared in
+  // ActorServiceFactory). Consequently, ActorService and this task are
+  // destroyed before the BrowserList during profile shutdown.
+  raw_ptr<BrowserList> browser_list_ = nullptr;
 
   // The task's title.
   const std::string title_;
