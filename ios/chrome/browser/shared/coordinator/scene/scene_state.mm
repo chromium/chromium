@@ -37,9 +37,8 @@
 @end
 
 @implementation SceneState {
-  // Cache the connection informations.
+  // The identifier for the scene.
   std::string _sceneSessionID;
-  ProfileState* _profileState;
 
   // Container for this object's observers.
   SceneStateObserverList* _observers;
@@ -159,10 +158,6 @@
 
 - (BOOL)signinInProgress {
   return _numberOfSigninInProgress > 0;
-}
-
-- (ProfileState*)profileState {
-  return _profileState;
 }
 
 - (void)setProfileState:(ProfileState*)profileState {
