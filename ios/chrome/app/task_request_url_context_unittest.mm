@@ -83,9 +83,9 @@ TEST_F(TaskRequestForURLContextTest, TestStartupMobileSessionStartFromApps) {
   UIOpenURLContext* context = CreateMockURLContext(url);
 
   TaskRequestForURLContext* request =
-      [[TaskRequestForURLContext alloc] initWithURLContext:context
-                                                sceneState:scene_state_
-                                               isColdStart:YES];
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
   EXPECT_NE(request, nil);
 
   histogram_tester.ExpectTotalCount("Startup.MobileSessionStartFromApps", 1);
@@ -100,9 +100,9 @@ TEST_F(TaskRequestForURLContextTest, TestStartupShowDefaultPromoFromApps) {
   UIOpenURLContext* context = CreateMockURLContext(url);
 
   TaskRequestForURLContext* request =
-      [[TaskRequestForURLContext alloc] initWithURLContext:context
-                                                sceneState:scene_state_
-                                               isColdStart:YES];
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
   EXPECT_NE(request, nil);
 
   histogram_tester.ExpectTotalCount("Startup.ShowDefaultPromoFromApps", 1);
@@ -118,9 +118,9 @@ TEST_F(TaskRequestForURLContextTest, TestFirstRunLaunchSource) {
   UIOpenURLContext* context = CreateMockURLContext(url);
 
   TaskRequestForURLContext* request =
-      [[TaskRequestForURLContext alloc] initWithURLContext:context
-                                                sceneState:scene_state_
-                                               isColdStart:YES];
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
   EXPECT_NE(request, nil);
 
   // ProfileState may be nil early during app startup, so these metrics should
@@ -156,9 +156,9 @@ TEST_F(TaskRequestForURLContextTest, TestWidgetKitActionMetrics) {
     UIOpenURLContext* context = CreateMockURLContext(url);
 
     TaskRequestForURLContext* request =
-        [[TaskRequestForURLContext alloc] initWithURLContext:context
-                                                  sceneState:scene_state_
-                                                 isColdStart:YES];
+        [TaskRequestForURLContext taskRequestWithURLContext:context
+                                                 sceneState:scene_state_
+                                                isColdStart:YES];
     EXPECT_NE(request, nil);
 
     histogram_tester.ExpectUniqueSample(kUMAMobileSessionStartActionHistogram,

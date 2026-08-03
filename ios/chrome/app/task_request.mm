@@ -60,9 +60,9 @@
 + (instancetype)taskForURLContext:(UIOpenURLContext*)URLContext
                        sceneState:(SceneState*)sceneState
                       isColdStart:(BOOL)isColdStart {
-  return [[TaskRequestForURLContext alloc] initWithURLContext:URLContext
-                                                   sceneState:sceneState
-                                                  isColdStart:isColdStart];
+  return [TaskRequestForURLContext taskRequestWithURLContext:URLContext
+                                                  sceneState:sceneState
+                                                 isColdStart:isColdStart];
 }
 
 + (instancetype)taskForUserActivity:(NSUserActivity*)userActivity
