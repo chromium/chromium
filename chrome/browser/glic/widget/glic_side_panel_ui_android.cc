@@ -97,8 +97,7 @@ GlicSidePanelUi::~GlicSidePanelUi() {
 }
 
 void GlicSidePanelUi::OnClientReady() {
-  instance_metrics_->OnClientReady(
-      GlicInstanceMetrics::EmbedderType::kSidePanel);
+  instance_metrics_->OnClientReady(EmbedderType::kSidePanel);
 }
 
 Host::EmbedderDelegate* GlicSidePanelUi::GetHostEmbedderDelegate() {

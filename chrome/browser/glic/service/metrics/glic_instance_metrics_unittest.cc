@@ -77,7 +77,7 @@ TEST_F(GlicInstanceMetricsTest, OptinImpression) {
       user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 0);
 
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnClientReady(GlicInstanceMetrics::EmbedderType::kSidePanel);
+  metrics_.OnClientReady(EmbedderType::kSidePanel);
 
   EXPECT_EQ(
       user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 1);
@@ -90,7 +90,7 @@ TEST_F(GlicInstanceMetricsTest, OptinImpression_KillSwitchDisabled) {
 
   metrics_.OnOptinImpression();
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnClientReady(GlicInstanceMetrics::EmbedderType::kSidePanel);
+  metrics_.OnClientReady(EmbedderType::kSidePanel);
 
   EXPECT_EQ(
       user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 0);

@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
@@ -57,13 +58,6 @@ using SafeEmbedderKey =
 // Tracks and logs lifecycle events for a single GlicInstance.
 class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
  public:
-  enum class EmbedderType {
-    kUnknown,
-    kSidePanel,
-    kFloaty,
-    kTab,
-  };
-
   explicit GlicInstanceMetrics(
       const metrics::ProfileMetricsService* profile_metrics_service,
       Profile* profile = nullptr);

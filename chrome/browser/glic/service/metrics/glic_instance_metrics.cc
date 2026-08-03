@@ -948,11 +948,12 @@ void GlicInstanceMetrics::OnClientReady(EmbedderType type) {
   }
   base::TimeDelta presentation_time =
       base::TimeTicks::Now() - invocation_start_time_;
-  const char* suffix =
-      (type == EmbedderType::kSidePanel) ? "SidePanel" : "Floaty";
-  base::UmaHistogramCustomTimes(
-      base::StrCat({"Glic.Instance.PanelPresentationTime.", suffix}),
-      presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
+  if (type != EmbedderType::kUnknown) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Glic.Instance.PanelPresentationTime.",
+                      GetEmbedderTypeString(type)}),
+        presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
+  }
   invocation_start_time_ = base::TimeTicks();
 }
 

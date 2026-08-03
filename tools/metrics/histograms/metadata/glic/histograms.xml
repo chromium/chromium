@@ -147,6 +147,7 @@ chromium-metrics-reviews@google.com.
 <variants name="EmbedderType">
   <variant name="Floaty" summary="a floating embedder"/>
   <variant name="SidePanel" summary="a side panel embedder"/>
+  <variant name="Tab" summary="a tab embedder"/>
 </variants>
 
 <!-- LINT.IfChange(GlicInvocationSource) -->
@@ -2847,6 +2848,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the browser active state when a Glic response starts rendering.
   </summary>
+</histogram>
+
+<histogram
+    name="Glic.Session.WasTurnSubmitted.{EmbedderType}.{InvocationSource}"
+    enum="Boolean" expires_after="2027-07-31">
+  <owner>andreaxg@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Whether at least one turn was submitted during the Glic session that was
+    opened via {InvocationSource} in {EmbedderType}. Logged when the session
+    (panel or floaty window) is closed.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>
 
 <histogram name="Glic.Session.WebClientCrash.ExitReason"

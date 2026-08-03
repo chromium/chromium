@@ -16,7 +16,10 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/common/chrome_features.h"
 #include "components/metrics/profile_metrics_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace glic {
 
@@ -518,6 +521,52 @@ TEST_F(GlicMetricsSessionManagerTest, RecordsSessionDurations) {
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.Instance.Session.UninterruptedVisibleDuration",
       kStartTimeout + base::Minutes(10 + 5 + 15), 1);
+}
+
+TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_Floaty_True) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_->OnOpen(mojom::InvocationSource::kOsButton, show_options);
+  metrics_->OnShowInFloaty(show_options);
+  metrics_->OnVisibilityChanged(true);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  metrics_.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Session.WasTurnSubmitted.Floaty.OsButton", true, 1);
+}
+
+TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_Floaty_False) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_->OnOpen(mojom::InvocationSource::kOsButton, show_options);
+  metrics_->OnShowInFloaty(show_options);
+  metrics_->OnVisibilityChanged(true);
+  metrics_->OnActivationChanged(true);
+  task_environment_.FastForwardBy(kStartTimeout);
+
+  metrics_.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Session.WasTurnSubmitted.Floaty.OsButton", false, 1);
+}
+
+TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_SidePanel_True) {
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost unowned_user_data_host;
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(unowned_user_data_host));
+  EXPECT_CALL(mock_tab, GetTabHandle()).WillRepeatedly(testing::Return(1));
+
+  ShowOptions show_options{SidePanelShowOptions(mock_tab)};
+  metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_->OnShowInSidePanel(&mock_tab);
+  metrics_->OnVisibilityChanged(true);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  metrics_.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Session.WasTurnSubmitted.SidePanel.TopChromeButton", true, 1);
 }
 
 }  // namespace glic

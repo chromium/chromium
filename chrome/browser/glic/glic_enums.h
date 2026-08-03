@@ -97,6 +97,14 @@ enum class GlicProcessCounterAbuseVerdictResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicProcessCounterAbuseVerdictResult)
 
+enum class EmbedderType {
+  kUnknown,
+  kSidePanel,
+  kFloaty,
+  kTab,
+  kMaxValue = kTab,
+};
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENUMS_H_
