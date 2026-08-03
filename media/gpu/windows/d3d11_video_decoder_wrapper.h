@@ -22,7 +22,6 @@ class D3D11VideoDecoderWrapper : public D3DVideoDecoderWrapper {
       ComD3D11VideoDevice1 video_device,
       ComD3D11VideoContext1 video_context,
       const D3D11DecoderConfigurator* decoder_configurator,
-      bool use_submit_decoder_buffers1,
       VideoDecoderConfig config);
   ~D3D11VideoDecoderWrapper() override;
 

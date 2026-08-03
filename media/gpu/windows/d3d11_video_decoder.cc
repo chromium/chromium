@@ -319,13 +319,9 @@ D3D11VideoDecoder::CreateD3DVideoDecoderWrapper(
     MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using D3D11 backend";
     ComD3D11VideoContext1 video_context;
     CHECK_EQ(device_context_.As(&video_context), S_OK);
-    // API revisions are independent of feature level. Use the base submission
-    // API only for devices covered by the driver workaround.
-    const bool use_submit_decoder_buffers1 =
-        !gpu_workarounds_.limit_d3d11_video_decoder_to_11_0;
     video_decoder_wrapper = D3D11VideoDecoderWrapper::Create(
         media_log_.get(), video_device_, std::move(video_context),
-        decoder_configurator, use_submit_decoder_buffers1, config_);
+        decoder_configurator, config_);
   }
 
   if (!video_decoder_wrapper) {

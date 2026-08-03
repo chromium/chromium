@@ -218,7 +218,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void SubmitBitstreamBuffer(bool use_submit_decoder_buffers1) {
+  void SubmitBitstreamBuffer() {
     std::array<uint8_t, 1> decoder_buffer;
     EXPECT_CALL(*mock_d3d11_video_context_.Get(),
                 GetDecoderBuffer(_, D3D11_VIDEO_DECODER_BUFFER_BITSTREAM, _, _))
@@ -233,21 +233,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
                 ReleaseDecoderBuffer(_, D3D11_VIDEO_DECODER_BUFFER_BITSTREAM))
         .WillOnce(Return(S_OK));
 
-    if (use_submit_decoder_buffers1) {
-      EXPECT_CALL(*mock_d3d11_video_context_.Get(),
-                  SubmitDecoderBuffers(_, _, _))
-          .Times(0);
-      EXPECT_CALL(*mock_d3d11_video_context_.Get(),
-                  SubmitDecoderBuffers1(_, 1, _))
-          .WillOnce(Return(S_OK));
-    } else {
-      EXPECT_CALL(*mock_d3d11_video_context_.Get(),
-                  SubmitDecoderBuffers1(_, _, _))
-          .Times(0);
-      EXPECT_CALL(*mock_d3d11_video_context_.Get(),
-                  SubmitDecoderBuffers(_, 1, _))
-          .WillOnce(Return(S_OK));
-    }
+    EXPECT_CALL(*mock_d3d11_video_context_.Get(), SubmitDecoderBuffers(_, 1, _))
+        .WillOnce(Return(S_OK));
 
     const std::array<uint8_t, 1> bitstream = {0};
     EXPECT_TRUE(d3d11_decoder_raw_->SubmitBitstreamBufferForTesting(bitstream));
@@ -380,23 +367,13 @@ TEST_F(D3D11VideoDecoderTest, CanReadWithoutStalling) {
   EXPECT_TRUE(decoder_->CanReadWithoutStalling());
 }
 
-TEST_F(D3D11VideoDecoderTest, SubmitsDecoderBuffersWithWorkaround) {
-  gpu_workarounds_.limit_d3d11_video_decoder_to_11_0 = true;
+TEST_F(D3D11VideoDecoderTest, SubmitsDecoderBuffers) {
   CreateDecoder();
   InitializeDecoder(
       TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),
       true);
 
-  SubmitBitstreamBuffer(/*use_submit_decoder_buffers1=*/false);
-}
-
-TEST_F(D3D11VideoDecoderTest, SubmitsDecoderBuffers1WithoutWorkaround) {
-  CreateDecoder();
-  InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),
-      true);
-
-  SubmitBitstreamBuffer(/*use_submit_decoder_buffers1=*/true);
+  SubmitBitstreamBuffer();
 }
 
 }  // namespace media
