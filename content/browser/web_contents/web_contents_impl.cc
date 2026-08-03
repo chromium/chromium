@@ -8085,11 +8085,22 @@ void WebContentsImpl::NotifyChangedNavigationState(
 }
 
 bool WebContentsImpl::ShouldAllowRendererInitiatedCrossProcessNavigation(
+    RenderFrameHostImpl* render_frame_host,
     bool is_outermost_main_frame_navigation) {
   OPTIONAL_TRACE_EVENT1(
       "content",
       "WebContentsImpl::ShouldAllowRendererInitiatedCrossProcessNavigation",
       "is_outermost_main_frame_navigation", is_outermost_main_frame_navigation);
+  if (render_frame_host->frame_tree()->is_guest()) {
+    GuestPageHolderImpl* guest =
+        GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host);
+    if (guest && guest->delegate()) {
+      return guest->delegate()
+          ->GuestShouldAllowRendererInitiatedCrossProcessNavigation(
+              is_outermost_main_frame_navigation);
+    }
+    return true;
+  }
   if (!delegate_) {
     return true;
   }

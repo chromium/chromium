@@ -115,6 +115,12 @@ class GuestPageHolder : public base::SupportsUserData {
         const url::Origin& security_origin,
         blink::mojom::MediaStreamType type) = 0;
 
+    // Checks if the guest allows renderer-initiated cross-process navigations.
+    // See
+    // `WebContentsDelegate::ShouldAllowRendererInitiatedCrossProcessNavigation`
+    virtual bool GuestShouldAllowRendererInitiatedCrossProcessNavigation(
+        bool is_outermost_main_frame_navigation) = 0;
+
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific
     // WebContentsObserver methods (e.g.

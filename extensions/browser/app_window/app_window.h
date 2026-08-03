@@ -438,6 +438,8 @@ class AppWindow : public content::WebContentsDelegate,
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
+  bool ShouldAllowRendererInitiatedCrossProcessNavigation(
+      bool is_outermost_main_frame_navigation) override;
   content::WebContents* AddNewContents(
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,

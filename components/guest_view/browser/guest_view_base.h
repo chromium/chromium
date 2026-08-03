@@ -487,6 +487,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& security_origin,
       blink::mojom::MediaStreamType type) override;
+  bool GuestShouldAllowRendererInitiatedCrossProcessNavigation(
+      bool is_outermost_main_frame_navigation) override;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;

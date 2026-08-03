@@ -5293,6 +5293,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     if (!frame_tree_node_->navigator()
              .GetDelegate()
              ->ShouldAllowRendererInitiatedCrossProcessNavigation(
+                 GetRenderFrameHost(),
                  frame_tree_node_->IsOutermostMainFrame())) {
       net_error_ = net::ERR_ABORTED;
       error_navigation_trigger_ = ErrorNavigationTrigger::

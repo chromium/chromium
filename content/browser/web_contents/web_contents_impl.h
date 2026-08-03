@@ -1097,6 +1097,7 @@ class CONTENT_EXPORT WebContentsImpl
       NavigationHandle* navigation_handle) override;
   void NotifyChangedNavigationState(InvalidateTypes changed_flags) override;
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
+      RenderFrameHostImpl* render_frame_host,
       bool is_outermost_main_frame_navigation) override;
   const blink::UserAgentOverride& GetUserAgentOverride(
       FrameTree& frame_tree) override;

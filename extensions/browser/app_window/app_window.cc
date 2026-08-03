@@ -397,6 +397,11 @@ WebContents* AppWindow::OpenURLFromTab(
   return helper_->OpenURLFromTab(params, std::move(navigation_handle_callback));
 }
 
+bool AppWindow::ShouldAllowRendererInitiatedCrossProcessNavigation(
+    bool is_outermost_main_frame_navigation) {
+  return !is_outermost_main_frame_navigation;
+}
+
 content::WebContents* AppWindow::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,

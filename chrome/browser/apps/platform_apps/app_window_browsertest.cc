@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -16,6 +17,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -25,7 +27,9 @@
 #include "extensions/components/native_app_window/native_app_window_views.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/display/display_switches.h"
+#include "url/gurl.h"
 
 using extensions::AppWindowGeometryCache;
 using extensions::ResultCatcher;
@@ -338,4 +342,44 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, UafInSetNativeWindowFullscreen) {
   // Clear our test client before restoring the production client.
   extensions::AppWindowClient::Set(nullptr);
   extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
+}
+
+IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
+                       RendererInitiatedCrossProcessNavigationBlocked) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Launch a platform app and wait for it to be ready.
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("windows_api_set_icon", &listener);
+  ASSERT_TRUE(extension);
+  listener.Reply("");
+
+  extensions::AppWindow* app_window = GetFirstAppWindow();
+  ASSERT_TRUE(app_window);
+  content::WebContents* web_contents = app_window->web_contents();
+  ASSERT_TRUE(web_contents);
+
+  // Clear browser_handles_all_top_level_requests to simulate a compromised
+  // renderer (which would ignore this preference and try to navigate directly).
+  web_contents->GetMutableRendererPrefs()
+      ->browser_handles_all_top_level_requests = false;
+  web_contents->SyncRendererPrefs();
+
+  GURL target_url = embedded_test_server()->GetURL("/title1.html");
+
+  content::TestNavigationManager navigation_manager(web_contents, target_url);
+
+  // Trigger renderer-initiated navigation.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              base::StringPrintf("window.location.href = '%s';",
+                                                 target_url.spec().c_str())));
+
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  EXPECT_FALSE(navigation_manager.was_committed());
+  EXPECT_FALSE(navigation_manager.was_successful());
+
+  // Verify we didn't actually navigate.
+  EXPECT_NE(target_url, web_contents->GetLastCommittedURL());
 }
