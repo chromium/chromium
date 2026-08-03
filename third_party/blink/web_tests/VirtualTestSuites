@@ -2758,6 +2758,10 @@
       "external/wpt/element-timing",
       "external/wpt/css/filter-effects",
       "external/wpt/css/css-grid/animation",
+      "external/wpt/css/css-masking/clip-path/animations/clip-path-animation-mixed-interpolation.html",
+      "external/wpt/css/css-masking/clip-path/animations/clip-path-animation-polygon-mixed-change.html",
+      "external/wpt/css/css-masking/clip-path/animations/clip-path-animation-view-transition-mixed-change.html",
+      "external/wpt/css/css-masking/clip-path/animations/clip-path-transition.html",
       "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe.html",
       "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe-dom-content-loaded.html",
       "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe-navigation.html",
@@ -2786,6 +2790,10 @@
       "external/wpt/css/css-overflow/scroll-axis-lock.html"
     ],
     "exclusive_tests": [
+      "external/wpt/css/css-masking/clip-path/animations/clip-path-animation-mixed-interpolation.html",
+      "external/wpt/css/css-masking/clip-path/animations/clip-path-animation-polygon-mixed-change.html",
+      "external/wpt/css/css-masking/clip-path/animations/clip-path-animation-view-transition-mixed-change.html",
+      "external/wpt/css/css-masking/clip-path/animations/clip-path-transition.html",
       "fast/hidpi/static"
     ],
     "args": [
