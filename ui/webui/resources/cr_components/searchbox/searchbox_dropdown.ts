@@ -209,7 +209,7 @@ export class SearchboxDropdownElement extends CrLitElement {
   updateSelection(
       _oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
     this.selectIndex(selection.line);
-    this.fire('selection-changed', {value: selection});
+    this.selection = selection;
   }
 
   /**
