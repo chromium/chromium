@@ -43,6 +43,10 @@ void ExpiringSubscription::SetExpirationTime(base::Time new_expiration) {
   }
 }
 
+base::Time ExpiringSubscription::GetExpirationTime() const {
+  return manager_ ? manager_->GetExpirationTime(handle_) : base::Time();
+}
+
 ExpiringSubscription& ExpiringSubscription::operator=(
     ExpiringSubscription&& other) {
   if (manager_) {

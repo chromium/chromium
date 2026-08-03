@@ -45,6 +45,7 @@ class ExpiringSubscription {
   bool IsAlive() const;
   void Cancel();
   void SetExpirationTime(base::Time new_expiration);
+  base::Time GetExpirationTime() const;
 
  private:
   ExpiringSubscriptionHandle handle_;

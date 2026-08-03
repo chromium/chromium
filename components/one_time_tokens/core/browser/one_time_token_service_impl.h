@@ -58,7 +58,7 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
   void RetrieveSmsOtpIfNeeded();
   void OnResponseFromSmsOtpBackend(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
-  void RetrieveGmailOtpIfNeeded();
+  void RetrieveGmailOtpIfNeeded(base::Time expiration);
   void OnResponseFromGmailOtpBackend(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 

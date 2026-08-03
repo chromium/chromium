@@ -4,6 +4,8 @@
 
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -61,7 +63,7 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
     case OneTimeTokenSource::kGmail: {
       ExpiringSubscription subscription = gmail_subscription_manager_.Subscribe(
           expiration, std::move(callback), std::move(expiration_callback));
-      RetrieveGmailOtpIfNeeded();
+      RetrieveGmailOtpIfNeeded(expiration);
       return subscription;
     }
     default:
@@ -143,22 +145,24 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
       kSmsRefetchInterval);
 }
 
-void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded() {
+void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded(base::Time expiration) {
   if (!gmail_.backend || !gmail_subscription_manager_.GetNumberSubscribers()) {
     return;
   }
 
   if (gmail_subscription_.IsAlive()) {
-    gmail_subscription_.SetExpirationTime(base::Time::Now() +
-                                          kCacheDurationForOldTokens);
+    // We use std::max to ensure that a new subscriber with a shorter expiration
+    // doesn't accidentally terminate the backend session for existing
+    // subscribers who need it to stay alive longer.
+    gmail_subscription_.SetExpirationTime(
+        std::max(expiration, gmail_subscription_.GetExpirationTime()));
     return;
   }
 
   gmail_subscription_ = gmail_.backend->Subscribe(
-      base::Time::Now() + kCacheDurationForOldTokens,
-      base::BindRepeating(
-          &OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend,
-          weakptr_factory_.GetWeakPtr()));
+      expiration, base::BindRepeating(
+                      &OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend,
+                      weakptr_factory_.GetWeakPtr()));
 }
 
 void OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend(
