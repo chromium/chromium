@@ -550,7 +550,7 @@ class OidcAuthenticationSigninInterceptorTest
     // Create the first tab so that web_contents() exists.
     AddTabToCurrentBrowser(GURL("about:blank"));
 
-    interceptor_->MaybeInterceptOidcAuthentication(
+    bool intercepted = interceptor_->MaybeInterceptOidcAuthentication(
         web_contents(), oidc_tokens, issuer_id, subject_id, std::string(),
         run_loop.QuitClosure());
 
@@ -564,7 +564,8 @@ class OidcAuthenticationSigninInterceptorTest
       register_run_loop.Run();
     }
 
-    if (expect_registration_attempt != RegistrationResult::kTimeout) {
+    if (intercepted &&
+        expect_registration_attempt != RegistrationResult::kTimeout) {
       run_loop.Run();
     }
 

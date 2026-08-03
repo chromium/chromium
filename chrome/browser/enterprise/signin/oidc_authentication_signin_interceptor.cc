@@ -93,7 +93,7 @@ OidcAuthenticationSigninInterceptor::OidcAuthenticationSigninInterceptor(
 OidcAuthenticationSigninInterceptor::~OidcAuthenticationSigninInterceptor() =
     default;
 
-void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
+bool OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
     content::WebContents* intercepted_contents,
     const ProfileManagementOidcTokens& oidc_tokens,
     const std::string& issuer_id,
@@ -103,30 +103,30 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   RecordOidcInterceptionFunnelStep(
       OidcInterceptionFunnelStep::kEnrollmentStarted);
 
-  // The interceptor class should be able to be used if no other interception is
-  // in progress. This includes both when a previous interception succeeded and
-  // failed: in former case, user may want to re-use the class to register
-  // another profile with a different identity; in the latter case, user may
-  // want to retry the process or a different identity.
+  const bool async_mode = base::FeatureList::IsEnabled(
+      profile_management::features::kOidcNavigationThrottleAsyncMode);
+
   if (interception_in_progress_) {
     VLOG_POLICY(1, OIDC_ENROLLMENT) << "OIDC Interception already in progress";
-    return;
+    return !async_mode;
   }
 
-  interception_in_progress_ = true;
-  oidc_callback_ = std::move(oidc_callback);
+  if (!async_mode) {
+    interception_in_progress_ = true;
+    oidc_callback_ = std::move(oidc_callback);
+  }
 
   if (!IsValidOidcToken(oidc_tokens)) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "Invalid tokens in the OIDC response";
     Reset();
-    return;
+    return !async_mode;
   }
 
   if (!intercepted_contents) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Web contents no longer available, aborting interception";
     Reset();
-    return;
+    return !async_mode;
   }
 
   web_contents_ = intercepted_contents->GetWeakPtr();
@@ -161,7 +161,12 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
     VLOG_POLICY(1, OIDC_ENROLLMENT)
         << "Intercepted info is already in the right profile";
     Reset();
-    return;
+    return !async_mode;
+  }
+
+  if (async_mode) {
+    interception_in_progress_ = true;
+    oidc_callback_ = std::move(oidc_callback);
   }
 
   switch_to_entry_
@@ -197,7 +202,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
         base::BindOnce(
             &OidcAuthenticationSigninInterceptor::OnProfileSwitchChoice,
             base::Unretained(this)));
-    return;
+    return true;
   }
 
   // TODO(374765466): Simplify this logic by creating a function that can call
@@ -214,6 +219,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
       base::BindRepeating(
           &OidcAuthenticationSigninInterceptor::StartOidcRegistration,
           base::Unretained(this)));
+  return true;
 }
 
 void OidcAuthenticationSigninInterceptor::Shutdown() {

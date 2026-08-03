@@ -225,10 +225,11 @@ ThrottleCheckResult OidcAuthResponseCaptureNavigationThrottle::
     RecordOidcInterceptionFunnelStep(
         OidcInterceptionFunnelStep::kSuccessfulInfoParsed);
 
-    // Kick off interceptor with Oidc token containing encrypted user info, the
-    // interceptor will automatically choose the correct registration method.
-    interception_triggered_ = true;
-    interceptor->MaybeInterceptOidcAuthentication(
+    const bool async_mode = base::FeatureList::IsEnabled(
+        profile_management::features::kOidcNavigationThrottleAsyncMode);
+
+    bool interception_started = !async_mode;
+    interception_started |= interceptor->MaybeInterceptOidcAuthentication(
         navigation_handle()->GetWebContents(),
         ProfileManagementOidcTokens(
             registration_payload.encrypted_user_information()),
@@ -236,6 +237,12 @@ ThrottleCheckResult OidcAuthResponseCaptureNavigationThrottle::
         registration_payload.email(),
         base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    if (async_mode && !interception_started) {
+      return PROCEED;
+    }
+
+    interception_triggered_ = true;
     return DEFER;
   }
 

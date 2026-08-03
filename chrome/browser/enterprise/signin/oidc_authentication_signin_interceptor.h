@@ -76,8 +76,8 @@ class OidcAuthenticationSigninInterceptor
       const OidcAuthenticationSigninInterceptor&) = delete;
 
   // Intercept and kick off OIDC registration process if the tokens we received
-  // are valid.
-  virtual void MaybeInterceptOidcAuthentication(
+  // are valid. Returns true if interception started.
+  virtual bool MaybeInterceptOidcAuthentication(
       content::WebContents* intercepted_contents,
       const ProfileManagementOidcTokens& oidc_tokens,
       const std::string& issuer_id,
