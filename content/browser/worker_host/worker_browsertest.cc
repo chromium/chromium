@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -322,6 +323,46 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SingleSharedWorker) {
     return;
 
   RunTest(GetTestURL("single_worker.html", "shared=true"));
+}
+
+// A WebContents created with `disallow_shared_workers` must not be able to
+// connect to a shared worker (which would otherwise bridge its process to
+// ordinary content of the same origin, since shared worker matching ignores
+// SiteInstance). An ordinary WebContents at the same URL still can.
+IN_PROC_BROWSER_TEST_F(WorkerTest, PrivilegedWebContentsCannotUseSharedWorker) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+
+  const GURL page_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL worker_url =
+      ssl_server()->GetURL("a.test", "/workers/messageport_worker.js");
+  static constexpr char kConnectSharedWorker[] = R"(
+    new Promise(resolve => {
+      const worker = new SharedWorker("/workers/messageport_worker.js");
+      worker.onerror = (e) => resolve("Worker blocked.");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )";
+
+  // A privileged WebContents that disallows shared workers is blocked, and no
+  // shared worker host is created for it.
+  WebContents::CreateParams privileged_params(
+      shell()->web_contents()->GetBrowserContext());
+  WebContents::PrivilegedParams marker;
+  marker.feature_id = 42;
+  marker.disallow_shared_workers = true;
+  privileged_params.privileged_params = marker;
+  std::unique_ptr<WebContents> privileged(
+      WebContents::Create(privileged_params));
+  ASSERT_TRUE(NavigateToURL(privileged.get(), page_url));
+  EXPECT_EQ("Worker blocked.", EvalJs(privileged.get(), kConnectSharedWorker));
+  EXPECT_FALSE(GetSharedWorkerHost(worker_url));
+
+  // Control: an ordinary WebContents at the same URL connects normally.
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+  EXPECT_EQ("Worker connected.", EvalJs(shell(), kConnectSharedWorker));
+  EXPECT_TRUE(GetSharedWorkerHost(worker_url));
 }
 
 // Create a SharedWorker from a COEP:required-corp document.

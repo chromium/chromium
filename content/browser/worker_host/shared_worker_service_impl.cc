@@ -139,6 +139,20 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
 
+  // A WebContents created with PrivilegedParams may forbid shared workers.
+  // Shared worker matching ignores SiteInstance, so a shared instance would
+  // bridge the privileged/ordinary process boundary; disallow it when the
+  // requesting frame's WebContents opts out.
+  if (WebContentsImpl* web_contents =
+          WebContentsImpl::FromRenderFrameHostImpl(render_frame_host)) {
+    const std::optional<WebContents::PrivilegedParams>& privileged_params =
+        web_contents->privileged_params();
+    if (privileged_params && privileged_params->disallow_shared_workers) {
+      ScriptLoadFailed(std::move(client), /*error_message=*/"");
+      return;
+    }
+  }
+
   // We always use the render_frame_host storage key here as it doesn't matter
   // if the storage key has been overridden, kAll access is always denied in
   // third-party contexts.
