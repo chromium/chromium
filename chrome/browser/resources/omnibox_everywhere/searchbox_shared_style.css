@@ -1,0 +1,93 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#bottomControls {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-inline-end: 16px;
+  padding-inline-start: 10px;
+  width: 100%;
+}
+
+#actionButtons {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.searchbox-icon-button-container {
+  align-items: center;
+  border-radius: 50%;
+  display: flex;
+  flex-shrink: 0;
+  height: 36px;
+  justify-content: center;
+  position: relative;
+  width: 36px;
+  z-index: 100;
+}
+
+.searchbox-icon-button-container:hover {
+  background-color: var(--color-new-tab-page-realbox-next-icon-hover);
+}
+
+@media (forced-colors: active) {
+  .searchbox-icon-button-container {
+    background-color: ButtonText;
+  }
+  .searchbox-icon-button-container:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+:host-context(.focus-outline-visible)
+    .searchbox-icon-button-container:focus-within {
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+.searchbox-icon-button {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  height: 100%;
+  outline: none;
+  padding: 0;
+  pointer-events: auto;
+  position: static;
+  width: 26px;
+  z-index: 100;
+}
+
+#voiceSearchButton {
+  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+}
+
+#lensSearchButton {
+  background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+}
+
+#profileIcon {
+  border-radius: 50%;
+  height: 36px;
+  pointer-events: auto;
+  position: absolute;
+  right: 16px;
+  top: 10px;
+  width: 36px;
+  z-index: 100;
+}

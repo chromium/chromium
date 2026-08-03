@@ -6,8 +6,9 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
+ * #import=./searchbox_shared_style.css.js
  * #scheme=relative
- * #include=cr-icons-lit composebox-shared-style
+ * #include=cr-icons-lit composebox-shared-style searchbox-shared-style
  * #css_wrapper_metadata_end */
 
 :host {
@@ -127,14 +128,12 @@ cr-searchbox-input::part(searchbox-input) {
   padding-inline-end: 16px;
 }
 
-:host([ntp-realbox-next-enabled])
-    cr-searchbox-input::part(searchbox-input) {
+:host([ntp-realbox-next-enabled]) cr-searchbox-input::part(searchbox-input) {
   padding-inline-start: 24px;
   padding-inline-end: 64px;
 }
 
-:host([ntp-realbox-next-enabled][compose-button-enabled])
-    cr-searchbox-input::part(searchbox-input) {
+:host cr-searchbox-input::part(searchbox-input) {
   padding-inline-end: 110px;
 }
 
@@ -155,63 +154,15 @@ cr-searchbox-input::part(searchbox-input) {
 }
 
 .searchbox-icon-button {
-  background-color: transparent;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 21px 21px;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  height: 100%;
-  outline: none;
-  padding: 0;
-  pointer-events: auto;
-  position: static;
   right: 16px;
   width: var(--cr-searchbox-icon-width);
-  z-index: 100;
 }
 
 /* When voice/lens icons are monochrome, they are webkit mask images.
  * Webkit mask images hide borders so container rules are created to
  * show focus borders on these icons. */
-.searchbox-icon-button-container {
-  align-items: center;
-  border-radius: 50%;
-  display: flex;
-  flex-shrink: 0;
-  height: 36px;
-  justify-content: center;
-  position: relative;
-  width: 36px;
-  z-index: 100;
-}
-
 :host(:not([ntp-realbox-next-enabled])) .searchbox-icon-button-container {
   align-self: center;
-}
-
-@media (forced-colors: active) {
-  .searchbox-icon-button-container {
-    background-color: ButtonText;
-  }
-  .searchbox-icon-button-container:focus-within {
-    outline: 2px solid Highlight;
-    outline-offset: 2px;
-  }
-}
-
-:host-context(.focus-outline-visible)
-    .searchbox-icon-button-container:focus-within {
-  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
-}
-
-:host(:not([use-webkit-search-icons_])) #voiceSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
-}
-
-:host(:not([use-webkit-search-icons_])) #lensSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
 }
 
 :host([use-webkit-search-icons_]) #voiceSearchButton {
@@ -228,6 +179,7 @@ cr-searchbox-input::part(searchbox-input) {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 21px 21px;
   background-color: var(--color-searchbox-lens-voice-icon-background);
+  background-image: none;
 }
 
 :host([use-webkit-search-icons_][compose-button-enabled]) #voiceSearchButton,
@@ -243,8 +195,7 @@ cr-searchbox-input::part(searchbox-input) {
 
 :host([ntp-realbox-next-enabled])
     cr-searchbox-input::part(searchbox-input)::placeholder {
-  color: var(
-      --cr-composebox-input-placeholder-color,
+  color: var(--cr-composebox-input-placeholder-color,
       var(--color-composebox-type-ahead));
   font-weight: 400;
 }
@@ -393,8 +344,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
   padding-bottom: 10px;
 }
 
-:host([ntp-realbox-next-enabled])
-    .contextualEntrypointContainerCompact {
+:host([ntp-realbox-next-enabled]) .contextualEntrypointContainerCompact {
   box-shadow: none;
   width: auto;
 }
@@ -404,40 +354,14 @@ cr-searchbox-dropdown::part(dropdown-content) {
   margin-inline-end: 58px;
 }
 
-#profileIcon {
-  position: absolute;
-  right: 16px;
-  top: 10px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  z-index: 100;
-  pointer-events: auto;
-}
-
 #bottomControls {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding-inline-start: 10px;
-  padding-inline-end: 16px;
   padding-block: 8px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 #bottomControls #context {
   --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start:
-      0;
+    0;
   padding-inline-start: 0;
-}
-
-#actionButtons {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
 }
 
 #bottomControls .searchbox-icon-button-container {
