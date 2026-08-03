@@ -861,6 +861,10 @@ class NativeViewHostAuraTopInsetsTest
           views::features::kNativeViewHostManagesLayers);
     }
     NativeViewHostAuraTest::SetUp();
+    if (base::FeatureList::IsEnabled(
+            views::features::kNativeViewHostManagesLayers)) {
+      GTEST_SKIP() << "NativeViewHostManagesLayers is enabled";
+    }
   }
 
  protected:

@@ -6,6 +6,7 @@
 
 #include "ash/wm/window_pin_util.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -32,6 +33,7 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/views_features.h"
 
 class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
  public:
@@ -99,8 +101,11 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   // By default, the tabstrip and toolbar should be visible.
   EXPECT_TRUE(tabstrip->GetVisible());
   EXPECT_TRUE(toolbar->GetVisible());
-  EXPECT_EQ(
-      0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
+    EXPECT_EQ(
+        0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+  }
 
   ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
   EXPECT_TRUE(browser_view()->GetWidget()->IsFullscreen());
@@ -117,8 +122,11 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   // visual effect on animation, and since tabstrip will live in top_container,
   // checking just top_container bounds is sufficient.
   EXPECT_EQ(0, GetBoundsInWidget(browser_view()->top_container()).bottom());
-  EXPECT_EQ(
-      0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
+    EXPECT_EQ(
+        0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+  }
 
   // Since the tab strip and tool bar are both hidden in immersive fullscreen
   // mode, the web contents should extend to the edge of screen.
@@ -130,8 +138,11 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   EXPECT_TRUE(controller()->IsRevealed());
   EXPECT_TRUE(tabstrip->GetVisible());
   EXPECT_TRUE(toolbar->GetVisible());
-  EXPECT_NE(
-      0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
+    EXPECT_NE(
+        0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+  }
 
   // The TopContainerView should be flush with the top edge of the widget. If
   // it is not flush with the top edge the immersive reveal animation looks
@@ -173,8 +184,11 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   // Exiting both immersive and tab fullscreen should show the tab strip and
   // toolbar.
   ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(browser());
-  EXPECT_EQ(
-      0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
+    EXPECT_EQ(
+        0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
+  }
   EXPECT_FALSE(browser_view()->GetWidget()->IsFullscreen());
   EXPECT_FALSE(controller()->IsEnabled());
   EXPECT_FALSE(controller()->IsRevealed());

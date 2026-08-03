@@ -187,6 +187,12 @@ gfx::Rect NativeViewHostAura::GetNativeViewClipRect() const {
 }
 
 void NativeViewHostAura::SetHitTestTopInset(int top_inset) {
+  if (host_->layer_managed_by_views()) {
+    // Event targeting works correctly when the content layer is managed by
+    // view.
+    return;
+  }
+
   if (top_inset_ == top_inset) {
     return;
   }
