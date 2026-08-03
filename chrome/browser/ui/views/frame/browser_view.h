@@ -1022,6 +1022,9 @@ class BrowserView : public BrowserWindow,
   void UpdateWindowControlsOverlayEnabled();
   void RefreshWindowControlsOverlayAfterFullscreenTransition();
 
+  // Called each time the browser window is shown.
+  void OnWindowDidShow();
+
   // Updates the Window Controls Overlay availability in this window.
   void UpdateWindowControlsOverlayAvailable();
 
@@ -1321,6 +1324,10 @@ class BrowserView : public BrowserWindow,
   bool is_window_controls_overlay_available_ = false;
   bool unframed_mode_enabled_ = false;
   bool window_management_permission_granted_ = false;
+
+  // True if the browser window has been shown at least once.
+  bool window_has_shown_ = false;
+
 #if BUILDFLAG(IS_WIN)
   class PipExclusionObserverImpl;
   std::unique_ptr<PipExclusionObserverImpl> pip_exclusion_observer_;

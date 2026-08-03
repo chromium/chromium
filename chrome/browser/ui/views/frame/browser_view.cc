@@ -98,6 +98,9 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
+#include "chrome/browser/ui/global_error/global_error.h"
+#include "chrome/browser/ui/global_error/global_error_service.h"
+#include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -1600,7 +1603,7 @@ void BrowserView::Show() {
   }
   browser_widget_->Show();
 
-  browser()->OnWindowDidShow();
+  OnWindowDidShow();
 
   // The fullscreen transition clears out focus, but there are some cases (for
   // example, new window in Mac fullscreen with toolbar showing) where we need
@@ -2556,6 +2559,29 @@ void BrowserView::RefreshWindowControlsOverlayAfterFullscreenTransition() {
   // Schedule (don't force) a layout; a synchronous layout here can mutate
   // compositor state while a frame is still being painted.
   InvalidateLayout();
+}
+
+void BrowserView::OnWindowDidShow() {
+  if (window_has_shown_) {
+    return;
+  }
+  window_has_shown_ = true;
+
+  startup_metric_utils::GetBrowser().RecordBrowserWindowDisplay(
+      base::TimeTicks::Now());
+
+  // Nothing to do for non-tabbed windows.
+  if (browser_->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
+    return;
+  }
+
+  // Show any pending global error bubble.
+  GlobalErrorService* service =
+      GlobalErrorServiceFactory::GetForProfile(browser_->GetProfile());
+  GlobalError* error = service->GetFirstGlobalErrorWithBubbleView();
+  if (error) {
+    error->ShowBubbleView(browser_);
+  }
 }
 
 void BrowserView::UpdateWindowControlsOverlayAvailable() {

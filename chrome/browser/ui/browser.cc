@@ -366,7 +366,6 @@ Browser::Browser(const CreateParams& params)
               ? nullptr
               : TabGroupModelFactory::GetInstance())),
       session_id_(SessionID::NewUnique()),
-      window_has_shown_(false),
       keep_alive_(
           std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::BROWSER,
                                             KeepAliveRestartOption::DISABLED)) {
@@ -927,29 +926,6 @@ void Browser::TabStripEmpty() {
   // result in closing this Browser. This can happen in the case of closing
   // the last Browser with ongoing downloads.
   window_->Close();
-}
-
-void Browser::OnWindowDidShow() {
-  if (window_has_shown_) {
-    return;
-  }
-  window_has_shown_ = true;
-
-  startup_metric_utils::GetBrowser().RecordBrowserWindowDisplay(
-      base::TimeTicks::Now());
-
-  // Nothing to do for non-tabbed windows.
-  if (GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
-    return;
-  }
-
-  // Show any pending global error bubble.
-  GlobalErrorService* service =
-      GlobalErrorServiceFactory::GetForProfile(profile_);
-  GlobalError* error = service->GetFirstGlobalErrorWithBubbleView();
-  if (error) {
-    error->ShowBubbleView(this);
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -376,9 +376,6 @@ class Browser : public TabStripModelObserver,
 
   bool is_type_popup() const { return type_ == TYPE_POPUP; }
 
-  // Called each time the browser window is shown.
-  void OnWindowDidShow();
-
   // Gets the browser for opening chrome:// pages. This will return the opener
   // browser if the current browser is in picture-in-picture mode, otherwise
   // returns the current browser.
@@ -645,9 +642,6 @@ class Browser : public TabStripModelObserver,
   // In-progress download termination handling /////////////////////////////////
 
   /////////////////////////////////////////////////////////////////////////////
-
-  // True if the browser window has been shown at least once.
-  bool window_has_shown_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 

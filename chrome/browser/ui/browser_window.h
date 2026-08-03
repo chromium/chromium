@@ -122,7 +122,6 @@ class BrowserWindow : public ui::BaseWindow {
   // invoking this method.
   // virtual void Close() = 0;
 
-  // Browser::OnWindowDidShow should be called after showing the window.
   // virtual void Show() = 0;
 
   //////////////////////////////////////////////////////////////////////////////
