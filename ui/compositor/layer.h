@@ -55,6 +55,7 @@ namespace ui {
 class LayerTextured;
 class LayerSolidColor;
 class LayerNinePatch;
+class LayerSurface;
 
 enum class LayerRequestType {
   kPaint,
@@ -111,6 +112,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   const LayerSolidColor* AsSolidColor() const;
   LayerNinePatch* AsNinePatch();
   const LayerNinePatch* AsNinePatch() const;
+  LayerSurface* AsSurface();
+  const LayerSurface* AsSurface() const;
 
   Layer(const Layer&) = delete;
   Layer& operator=(const Layer&) = delete;
@@ -456,37 +459,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   const std::string& name() const { return name_; }
   void SetName(const std::string& name);
 
-  // Begins showing content from a surface with a particular ID.
-  // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on
-  // `frame_size_in_dip` anymore, so this method can be deleted, and
-  // surface_size uses `bounds_` instead.
-  void SetShowSurface(const viz::SurfaceId& surface_id,
-                      const gfx::Size& frame_size_in_dip,
-                      SkColor4f default_background_color,
-                      const cc::DeadlinePolicy& deadline_policy,
-                      bool stretch_content_to_fill_bounds);
-
-  // Updates the surface to a particular ID without changing size.
-  void SetShowSurface(const viz::SurfaceId& surface_id,
-                      SkColor4f default_background_color,
-                      const cc::DeadlinePolicy& deadline_policy,
-                      bool stretch_content_to_fill_bounds);
-
-  // In the event that the primary surface is not yet available in the
-  // display compositor, the fallback surface will be used.
-  void SetOldestAcceptableFallback(const viz::SurfaceId& surface_id);
-
-  // Begins mirroring content from a reflected surface, e.g. a software mirrored
-  // display. |surface_id| should be the root surface for a display.
-  void SetShowReflectedSurface(const viz::SurfaceId& surface_id,
-                               const gfx::Size& frame_size_in_pixels);
-
-  // Returns the primary SurfaceId set by SetShowSurface.
-  const viz::SurfaceId* GetSurfaceId() const;
-
-  // Returns the fallback SurfaceId set by SetOldestAcceptableFallback.
-  const viz::SurfaceId* GetOldestAcceptableFallback() const;
-
   // Returns true if the layer has external content, such as a surface layer or
   // an external texture.
   virtual bool HasExternalContent() const;
@@ -502,10 +474,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // transferable resources, but false for layers that do not draw or draw
   // pre-defined content like nine-patch.
   virtual bool ShouldSchedulePaint() const = 0;
-
-  const viz::SurfaceId& external_content_surface_id() const {
-    return surface_layer_->surface_id();
-  }
 
   // Reorder the children to have all children inside |new_leading_children| to
   // be at the front of the children vector, and the remaining children will
@@ -599,15 +567,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // while attached to the main layer before the main layer is deleted.
   const Layer* layer_mask_back_link() const { return layer_mask_back_link_; }
 
-  // If |surface_layer_| exists, return whether the contents should stretch to
-  // fill the bounds of |this|. Defaults to false.
-  bool StretchContentToFillBounds() const;
-
-  // If |surface_layer_| exists, update the size. The updated size is necessary
-  // for proper scaling if the embedder is resized and the |surface_layer_| is
-  // set to stretch to fill bounds.
-  void SetSurfaceSize(gfx::Size surface_size_in_dip);
-
   base::WeakPtr<Layer> AsWeakPtr();
 
   bool ContainsMirrorForTest(Layer* mirror) const;
@@ -644,6 +603,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   friend class LayerWithExternalTexture;
   friend class LayerSolidColor;
   friend class LayerNinePatch;
+  friend class LayerSurface;
   friend class ScopedLayerRequest<LayerRequestType::kPaint>;
   friend class ScopedLayerRequest<LayerRequestType::kTrilinearFiltering>;
   friend class ScopedLayerRequest<LayerRequestType::kCacheRenderSurface>;
@@ -750,8 +710,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
 
   void OnMirrorDestroyed(LayerMirror* mirror);
 
-  void CreateSurfaceLayerIfNecessary();
-
   // Changes the size of |this| to match that of |layer|.
   void MatchLayerSize(const Layer* layer);
 
@@ -856,10 +814,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
 
   scoped_refptr<LayerAnimator> animator_;
 
-  // Ownership of the layer is held through one of the strongly typed layer
-  // pointers, depending on which sort of layer this is.
-  // TODO(crbug.com/522627357): Move to subclasses.
-  scoped_refptr<cc::SurfaceLayer> surface_layer_;
   // TODO(crbug.com/522627357): Move it subclasses and expose via a virtual
   // getter.
   raw_ptr<cc::Layer> cc_layer_;
@@ -1116,6 +1070,73 @@ class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
   gfx::Rect nine_patch_layer_aperture_;
 
   scoped_refptr<cc::NinePatchLayer> nine_patch_layer_;
+};
+
+class COMPOSITOR_EXPORT LayerSurface : public Layer {
+ public:
+  static constexpr LayerType kType = LAYER_SURFACE;
+
+  LayerSurface();
+
+  LayerSurface(const LayerSurface&) = delete;
+  LayerSurface& operator=(const LayerSurface&) = delete;
+
+  ~LayerSurface() override;
+
+  // Layer:
+  bool HasExternalContent() const override;
+  std::unique_ptr<Layer> Clone() const override;
+  bool ShouldSchedulePaint() const override;
+  bool SwitchCCLayerForTest() override;
+
+  void SetBackgroundColor(SkColor4f color);
+  SkColor4f GetBackgroundColor() const;
+
+  // Begins showing content from a surface with a particular ID.
+  // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on
+  // `frame_size_in_dip` anymore, so this method can be deleted, and
+  // surface_size uses `bounds_` instead.
+  void SetShowSurface(const viz::SurfaceId& surface_id,
+                      const gfx::Size& frame_size_in_dip,
+                      const cc::DeadlinePolicy& deadline_policy,
+                      bool stretch_content_to_fill_bounds);
+
+  // Updates the surface to a particular ID without changing size.
+  void SetShowSurface(const viz::SurfaceId& surface_id,
+                      const cc::DeadlinePolicy& deadline_policy,
+                      bool stretch_content_to_fill_bounds);
+
+  // Begins mirroring content from a reflected surface, e.g. a software mirrored
+  // display. |surface_id| should be the root surface for a display.
+  void SetShowReflectedSurface(const viz::SurfaceId& surface_id,
+                               const gfx::Size& frame_size_in_pixels);
+
+  // In the event that the primary surface is not yet available in the
+  // display compositor, the fallback surface will be used.
+  void SetOldestAcceptableFallback(const viz::SurfaceId& surface_id);
+
+  // Returns the fallback SurfaceId set by SetOldestAcceptableFallback.
+  const viz::SurfaceId* GetOldestAcceptableFallback() const;
+
+  // If |surface_layer_| exists, return whether the contents should stretch to
+  // fill the bounds of |this|. Defaults to false.
+  bool StretchContentToFillBounds() const;
+
+  // If |surface_layer_| exists, update the size. The updated size is necessary
+  // for proper scaling if the embedder is resized and the |surface_layer_| is
+  // set to stretch to fill bounds.
+  void SetSurfaceSize(gfx::Size surface_size_in_dip);
+
+  // Returns the primary SurfaceId set by SetShowSurface.
+  const viz::SurfaceId* GetSurfaceId() const;
+
+ protected:
+  // Layer:
+  void RecomputeDrawsContentAndUVRect() override;
+  void Reset() override;
+
+ private:
+  scoped_refptr<cc::SurfaceLayer> surface_layer_;
 };
 
 }  // namespace ui

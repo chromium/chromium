@@ -19,8 +19,9 @@ DelegatedFrameHostClientAura::DelegatedFrameHostClientAura(
 
 DelegatedFrameHostClientAura::~DelegatedFrameHostClientAura() {}
 
-ui::Layer* DelegatedFrameHostClientAura::DelegatedFrameHostGetLayer() const {
-  return render_widget_host_view_->window()->layer();
+ui::LayerSurface* DelegatedFrameHostClientAura::GetDelegatedFrameHostLayer()
+    const {
+  return render_widget_host_view_->window()->layer()->AsSurface();
 }
 
 bool DelegatedFrameHostClientAura::DelegatedFrameHostIsVisible() const {

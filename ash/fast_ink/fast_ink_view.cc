@@ -27,7 +27,7 @@ views::UniqueWidgetPtr FastInkView::CreateWidgetWithContents(
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = container;
-  params.layer_type = ui::LAYER_SOLID_COLOR;
+  params.layer_type = ui::LAYER_SURFACE;
 
   aura::Window* root_window = container->GetRootWindow();
   gfx::Rect screen_bounds = root_window->GetBoundsInScreen();

@@ -31,6 +31,7 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -319,6 +320,10 @@ void Window::Init(ui::LayerType layer_type) {
   SetLayer(ui::Layer::Create(layer_type));
   layer()->SetVisible(false);
   layer()->set_delegate(this);
+  if (auto* surface = layer()->AsSurface()) {
+    surface->SetBackgroundColor(SkColors::kWhite);
+  }
+
   UpdateLayerName();
   Env::GetInstance()->NotifyWindowInitialized(this);
 }
@@ -1135,6 +1140,9 @@ void Window::GetDebugInfo(const aura::Window* active_window,
       break;
     case ui::LAYER_NINE_PATCH:
       *out << " layer(nine_patch ";
+      break;
+    case ui::LAYER_SURFACE:
+      *out << " layer(surface ";
       break;
   }
 
@@ -2026,9 +2034,10 @@ void Window::SetLayer(std::unique_ptr<ui::Layer> alayer) {
 
 void Window::OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {
   DCHECK_EQ(surface_info.id().frame_sink_id(), GetFrameSinkId());
-  layer()->SetShowSurface(surface_info.id(), bounds().size(), SkColors::kWhite,
-                          cc::DeadlinePolicy::UseDefaultDeadline(),
-                          false /* stretch_content_to_fill_bounds */);
+  layer()->AsSurface()->SetShowSurface(
+      surface_info.id(), bounds().size(),
+      cc::DeadlinePolicy::UseDefaultDeadline(),
+      /*stretch_content_to_fill_bounds=*/false);
 }
 
 void Window::OnFrameTokenChanged(uint32_t frame_token,

@@ -145,7 +145,7 @@ std::unique_ptr<ShellSurface> CreateX11TransientShellSurface(
 const viz::CompositorFrame& GetFrameFromSurface(ShellSurface* shell_surface,
                                                 viz::SurfaceManager* manager) {
   viz::SurfaceId surface_id =
-      *shell_surface->host_window()->layer()->GetSurfaceId();
+      *shell_surface->host_window()->layer()->AsSurface()->GetSurfaceId();
   const viz::CompositorFrame& frame =
       manager->GetSurfaceForId(surface_id)->GetActiveFrame();
   return frame;

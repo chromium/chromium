@@ -210,6 +210,8 @@ std::unique_ptr<Layer> Layer::Create(LayerType type) {
       return std::make_unique<LayerSolidColor>();
     case LAYER_NINE_PATCH:
       return std::make_unique<LayerNinePatch>();
+    case LAYER_SURFACE:
+      return std::make_unique<LayerSurface>();
   }
 }
 
@@ -235,6 +237,14 @@ LayerNinePatch* Layer::AsNinePatch() {
 
 const LayerNinePatch* Layer::AsNinePatch() const {
   return As<LayerNinePatch>();
+}
+
+LayerSurface* Layer::AsSurface() {
+  return As<LayerSurface>();
+}
+
+const LayerSurface* Layer::AsSurface() const {
+  return As<LayerSurface>();
 }
 
 Layer::Layer(LayerType type)
@@ -324,19 +334,6 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetLayerOffset(layer_offset_);
 
   // cc::Layer state.
-  if (surface_layer_) {
-    clone->SetShowSurface(surface_layer_->surface_id(), frame_size_in_dip_,
-                          surface_layer_->background_color(),
-                          surface_layer_->deadline_in_frames()
-                              ? cc::DeadlinePolicy::UseSpecifiedDeadline(
-                                    *surface_layer_->deadline_in_frames())
-                              : cc::DeadlinePolicy::UseDefaultDeadline(),
-                          surface_layer_->stretch_content_to_fill_bounds());
-    if (surface_layer_->oldest_acceptable_fallback())
-      clone->SetOldestAcceptableFallback(
-          *surface_layer_->oldest_acceptable_fallback());
-  }
-
   clone->SetTransform(GetTargetTransform());
   clone->SetBounds(bounds_);
   if (subpixel_position_offset_->has_explicit_subpixel_offset())
@@ -1022,7 +1019,6 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   cc_layer_ = new_layer.get();
 
   Reset();
-  surface_layer_ = nullptr;
 
   for (ui::Layer* child : children_) {
     DCHECK(child->cc_layer_);
@@ -1101,19 +1097,6 @@ void Layer::RemoveTrilinearFilteringRequest() {
     cc_layer_->SetTrilinearFiltering(false);
 }
 
-bool Layer::StretchContentToFillBounds() const {
-  DCHECK(surface_layer_);
-  return surface_layer_->stretch_content_to_fill_bounds();
-}
-
-void Layer::SetSurfaceSize(gfx::Size surface_size_in_dip) {
-  DCHECK(surface_layer_);
-  if (frame_size_in_dip_ == surface_size_in_dip)
-    return;
-  frame_size_in_dip_ = surface_size_in_dip;
-  RecomputeDrawsContentAndUVRect();
-}
-
 base::WeakPtr<Layer> Layer::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -1122,105 +1105,8 @@ bool Layer::ContainsMirrorForTest(Layer* mirror) const {
   return std::ranges::contains(mirrors_, mirror, &LayerMirror::dest);
 }
 
-void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
-                           const gfx::Size& frame_size_in_dip,
-                           SkColor4f default_background_color,
-                           const cc::DeadlinePolicy& deadline_policy,
-                           bool stretch_content_to_fill_bounds) {
-  DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
-
-  CreateSurfaceLayerIfNecessary();
-
-  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
-  surface_layer_->SetBackgroundColor(default_background_color);
-  surface_layer_->SetSafeOpaqueBackgroundColor(default_background_color);
-  surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
-
-  frame_size_in_dip_ = frame_size_in_dip;
-  RecomputeDrawsContentAndUVRect();
-
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->SetShowSurface(surface_id, frame_size_in_dip,
-                                   default_background_color, deadline_policy,
-                                   stretch_content_to_fill_bounds);
-  }
-}
-
-void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
-                           SkColor4f default_background_color,
-                           const cc::DeadlinePolicy& deadline_policy,
-                           bool stretch_content_to_fill_bounds) {
-  DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
-  DCHECK(surface_layer_.get());
-
-  // Assumes `frame_size_in_dip_` is already set.
-  // TODO(crbug.com/40285157): with surface sync, it should use on `bounds_`.
-  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
-  surface_layer_->SetBackgroundColor(default_background_color);
-  surface_layer_->SetSafeOpaqueBackgroundColor(default_background_color);
-  surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
-
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->SetShowSurface(surface_id, default_background_color,
-                                   deadline_policy,
-                                   stretch_content_to_fill_bounds);
-  }
-}
-
-void Layer::SetOldestAcceptableFallback(const viz::SurfaceId& surface_id) {
-  DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
-
-  CreateSurfaceLayerIfNecessary();
-
-  surface_layer_->SetOldestAcceptableFallback(surface_id);
-
-  for (const auto& mirror : mirrors_)
-    mirror->dest()->SetOldestAcceptableFallback(surface_id);
-}
-
-void Layer::SetShowReflectedSurface(const viz::SurfaceId& surface_id,
-                                    const gfx::Size& frame_size_in_pixels) {
-  DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
-
-  if (!surface_layer_) {
-    // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-    // destroyed.
-    if (!FinishAnimationsBeforeSwitchToLayer()) {
-      return;
-    }
-
-    scoped_refptr<cc::SurfaceLayer> new_layer = cc::SurfaceLayer::Create();
-    SwitchToLayer(new_layer);
-
-    surface_layer_ = new_layer;
-  }
-
-  surface_layer_->SetSurfaceId(surface_id,
-                               cc::DeadlinePolicy::UseInfiniteDeadline());
-  surface_layer_->SetBackgroundColor(SkColors::kBlack);
-  surface_layer_->SetSafeOpaqueBackgroundColor(SkColors::kBlack);
-  surface_layer_->SetStretchContentToFillBounds(true);
-  surface_layer_->SetIsReflection(true);
-
-  // The reflecting surface uses the native size of the reflected display.
-  frame_size_in_dip_ = frame_size_in_pixels;
-  RecomputeDrawsContentAndUVRect();
-}
-
-const viz::SurfaceId* Layer::GetSurfaceId() const {
-  if (surface_layer_)
-    return &surface_layer_->surface_id();
-  return nullptr;
-}
-
-const viz::SurfaceId* Layer::GetOldestAcceptableFallback() const {
-  if (surface_layer_ && surface_layer_->oldest_acceptable_fallback())
-    return &surface_layer_->oldest_acceptable_fallback().value();
-  return nullptr;
-}
-
 bool Layer::HasExternalContent() const {
-  return surface_layer_.get() != nullptr;
+  return false;
 }
 
 bool Layer::HasTransferableResource() const {
@@ -1733,11 +1619,6 @@ void Layer::InitializeCcLayer() {
 void Layer::RecomputeDrawsContentAndUVRect() {
   DCHECK(cc_layer_);
   gfx::Size size(bounds_.size());
-  if (surface_layer_.get()) {
-    // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on
-    // `frame_size_in_dip_` anymore.
-    size.SetToMin(frame_size_in_dip_);
-  }
   cc_layer_->SetBounds(size);
 }
 
@@ -1780,23 +1661,6 @@ void Layer::OnMirrorDestroyed(LayerMirror* mirror) {
 
   CHECK(it != mirrors_.end());
   mirrors_.erase(it);
-}
-
-void Layer::CreateSurfaceLayerIfNecessary() {
-  if (surface_layer_)
-    return;
-
-  // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-  // destroyed.
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return;
-  }
-
-  scoped_refptr<cc::SurfaceLayer> new_layer = cc::SurfaceLayer::Create();
-  new_layer->SetSurfaceHitTestable(true);
-  SwitchToLayer(new_layer);
-
-  surface_layer_ = new_layer;
 }
 
 void Layer::MatchLayerSize(const Layer* layer) {
@@ -1969,7 +1833,7 @@ std::unique_ptr<Layer> LayerWithExternalTexture::CreateMirror(
 }
 
 bool LayerWithExternalTexture::HasExternalContent() const {
-  return texture_layer_.get() || Layer::HasExternalContent();
+  return texture_layer_.get();
 }
 
 bool LayerWithExternalTexture::HasTransferableResource() const {
@@ -2372,6 +2236,171 @@ void LayerNinePatch::HandleDeviceScaleFactorChange() {
 
 void LayerNinePatch::Reset() {
   nine_patch_layer_ = nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// LayerSurface, public:
+
+LayerSurface::LayerSurface() : Layer(LAYER_SURFACE) {
+  surface_layer_ = cc::SurfaceLayer::Create();
+  cc_layer_ = surface_layer_.get();
+
+  InitializeCcLayer();
+  surface_layer_->SetSurfaceHitTestable(true);
+}
+
+LayerSurface::~LayerSurface() {
+  Destroy();
+}
+
+bool LayerSurface::HasExternalContent() const {
+  return true;
+}
+
+bool LayerSurface::ShouldSchedulePaint() const {
+  return false;
+}
+
+bool LayerSurface::SwitchCCLayerForTest() {
+  if (!FinishAnimationsBeforeSwitchToLayer()) {
+    return false;
+  }
+
+  scoped_refptr<cc::SurfaceLayer> new_layer = cc::SurfaceLayer::Create();
+  SwitchToLayer(new_layer);
+
+  surface_layer_ = std::move(new_layer);
+  surface_layer_->SetSurfaceHitTestable(true);
+  return true;
+}
+
+void LayerSurface::SetBackgroundColor(SkColor4f color) {
+  surface_layer_->SetBackgroundColor(color);
+  surface_layer_->SetSafeOpaqueBackgroundColor(color);
+
+  for (const auto& mirror : mirrors_) {
+    mirror->dest()->AsSurface()->SetBackgroundColor(color);
+  }
+}
+
+SkColor4f LayerSurface::GetBackgroundColor() const {
+  return surface_layer_->background_color();
+}
+
+std::unique_ptr<Layer> LayerSurface::Clone() const {
+  auto clone = Layer::Clone();
+  auto* cloned_surface = clone->AsSurface();
+
+  cloned_surface->SetBackgroundColor(surface_layer_->background_color());
+  cloned_surface->SetShowSurface(
+      surface_layer_->surface_id(), frame_size_in_dip_,
+      surface_layer_->deadline_in_frames()
+          ? cc::DeadlinePolicy::UseSpecifiedDeadline(
+                *surface_layer_->deadline_in_frames())
+          : cc::DeadlinePolicy::UseDefaultDeadline(),
+      surface_layer_->stretch_content_to_fill_bounds());
+  if (surface_layer_->oldest_acceptable_fallback()) {
+    cloned_surface->SetOldestAcceptableFallback(
+        *surface_layer_->oldest_acceptable_fallback());
+  }
+
+  return clone;
+}
+
+void LayerSurface::SetShowSurface(const viz::SurfaceId& surface_id,
+                                  const gfx::Size& frame_size_in_dip,
+                                  const cc::DeadlinePolicy& deadline_policy,
+                                  bool stretch_content_to_fill_bounds) {
+  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
+  surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
+
+  frame_size_in_dip_ = frame_size_in_dip;
+  RecomputeDrawsContentAndUVRect();
+
+  for (const auto& mirror : mirrors_) {
+    mirror->dest()->AsSurface()->SetShowSurface(surface_id, frame_size_in_dip,
+                                                deadline_policy,
+                                                stretch_content_to_fill_bounds);
+  }
+}
+
+void LayerSurface::SetShowSurface(const viz::SurfaceId& surface_id,
+                                  const cc::DeadlinePolicy& deadline_policy,
+                                  bool stretch_content_to_fill_bounds) {
+  // Assumes `frame_size_in_dip_` is already set.
+  // TODO(crbug.com/40285157): with surface sync, it should use on `bounds_`.
+  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
+  surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
+
+  for (const auto& mirror : mirrors_) {
+    mirror->dest()->AsSurface()->SetShowSurface(surface_id, deadline_policy,
+                                                stretch_content_to_fill_bounds);
+  }
+}
+
+void LayerSurface::SetShowReflectedSurface(
+    const viz::SurfaceId& surface_id,
+    const gfx::Size& frame_size_in_pixels) {
+  surface_layer_->SetSurfaceId(surface_id,
+                               cc::DeadlinePolicy::UseInfiniteDeadline());
+  surface_layer_->SetBackgroundColor(SkColors::kBlack);
+  surface_layer_->SetSafeOpaqueBackgroundColor(SkColors::kBlack);
+  surface_layer_->SetStretchContentToFillBounds(true);
+  surface_layer_->SetIsReflection(true);
+
+  // The reflecting surface uses the native size of the reflected display.
+  frame_size_in_dip_ = frame_size_in_pixels;
+  RecomputeDrawsContentAndUVRect();
+}
+
+void LayerSurface::SetOldestAcceptableFallback(
+    const viz::SurfaceId& surface_id) {
+  surface_layer_->SetOldestAcceptableFallback(surface_id);
+
+  for (const auto& mirror : mirrors_) {
+    mirror->dest()->AsSurface()->SetOldestAcceptableFallback(surface_id);
+  }
+}
+
+const viz::SurfaceId* LayerSurface::GetOldestAcceptableFallback() const {
+  if (surface_layer_->oldest_acceptable_fallback()) {
+    return &surface_layer_->oldest_acceptable_fallback().value();
+  }
+
+  return nullptr;
+}
+
+bool LayerSurface::StretchContentToFillBounds() const {
+  return surface_layer_->stretch_content_to_fill_bounds();
+}
+
+void LayerSurface::SetSurfaceSize(gfx::Size surface_size_in_dip) {
+  if (frame_size_in_dip_ == surface_size_in_dip) {
+    return;
+  }
+
+  frame_size_in_dip_ = surface_size_in_dip;
+  RecomputeDrawsContentAndUVRect();
+}
+
+const viz::SurfaceId* LayerSurface::GetSurfaceId() const {
+  if (surface_layer_->surface_id().is_valid()) {
+    return &surface_layer_->surface_id();
+  }
+
+  return nullptr;
+}
+
+void LayerSurface::RecomputeDrawsContentAndUVRect() {
+  gfx::Size size(bounds_.size());
+  // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on
+  // `frame_size_in_dip_` anymore.
+  size.SetToMin(frame_size_in_dip_);
+  cc_layer_->SetBounds(size);
+}
+
+void LayerSurface::Reset() {
+  surface_layer_ = nullptr;
 }
 
 }  // namespace ui
