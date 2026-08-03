@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 
+#import "base/containers/flat_set.h"
 #import "base/json/json_reader.h"
 #import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"
@@ -290,8 +291,8 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
   EXPECT_FALSE(settings->per_profile);
   EXPECT_EQ(settings->dm_token, kTestBrowserDmToken);
   EXPECT_EQ(settings->enabled_event_names,
-            std::set<std::string>(kAllReportingEnabledEvents.begin(),
-                                  kAllReportingEnabledEvents.end()));
+            base::flat_set<std::string>(kAllReportingEnabledEvents.begin(),
+                                        kAllReportingEnabledEvents.end()));
   EXPECT_TRUE(settings->enabled_opt_in_events.empty());
   auto provider_names = service.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
@@ -305,8 +306,8 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
   EXPECT_TRUE(settings->per_profile);
   EXPECT_EQ(settings->dm_token, kTestProfileDmToken);
   EXPECT_EQ(settings->enabled_event_names,
-            std::set<std::string>(kAllReportingEnabledEvents.begin(),
-                                  kAllReportingEnabledEvents.end()));
+            base::flat_set<std::string>(kAllReportingEnabledEvents.begin(),
+                                        kAllReportingEnabledEvents.end()));
   EXPECT_TRUE(settings->enabled_opt_in_events.empty());
   provider_names = service.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));

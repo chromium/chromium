@@ -70,7 +70,8 @@ TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithEvents) {
   ASSERT_TRUE(reporting_settings.has_value());
 
   ASSERT_FALSE(reporting_settings->enabled_event_names.empty());
-  std::set<std::string> expected_event_names{"event 1", "event 2", "event 3"};
+  base::flat_set<std::string> expected_event_names{"event 1", "event 2",
+                                                   "event 3"};
   ASSERT_EQ(expected_event_names,
             reporting_settings.value().enabled_event_names);
 }
@@ -80,7 +81,7 @@ TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithOptInEvents) {
       GetReportingSettings(kNormalSettingsWithOptInEvents);
   ASSERT_TRUE(reporting_settings.has_value());
 
-  std::map<std::string, std::vector<std::string>> actual_opt_in_events =
+  base::flat_map<std::string, std::vector<std::string>> actual_opt_in_events =
       reporting_settings.value().enabled_opt_in_events;
   ASSERT_EQ(2UL, actual_opt_in_events.size());
 

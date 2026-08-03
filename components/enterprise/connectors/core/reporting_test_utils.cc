@@ -32,7 +32,7 @@ namespace {
 using base::test::EqualsProto;
 
 base::ListValue CreateOptInEventsList(
-    const std::map<std::string, std::vector<std::string>>&
+    const base::flat_map<std::string, std::vector<std::string>>&
         enabled_opt_in_events) {
   base::ListValue enabled_opt_in_events_list;
   for (const auto& enabled_opt_in_event : enabled_opt_in_events) {
@@ -51,8 +51,8 @@ base::ListValue CreateOptInEventsList(
 }
 
 base::DictValue CreateSecurityEventReportingSettings(
-    const std::set<std::string>& enabled_event_names,
-    const std::map<std::string, std::vector<std::string>>&
+    const base::flat_set<std::string>& enabled_event_names,
+    const base::flat_map<std::string, std::vector<std::string>>&
         enabled_opt_in_events) {
   base::DictValue settings;
 
@@ -78,8 +78,8 @@ base::DictValue CreateSecurityEventReportingSettings(
 void SetOnSecurityEventReporting(
     PrefService* prefs,
     bool enabled,
-    const std::set<std::string>& enabled_event_names,
-    const std::map<std::string, std::vector<std::string>>&
+    const base::flat_set<std::string>& enabled_event_names,
+    const base::flat_map<std::string, std::vector<std::string>>&
         enabled_opt_in_events,
     bool machine_scope) {
   ScopedListPrefUpdate settings_list(prefs, kOnSecurityEventPref);
@@ -132,8 +132,8 @@ safe_browsing::ReferrerChainEntry MakeReferrerChainEntry() {
 
 std::unique_ptr<policy::EmbeddedPolicyTestServer>
 CreatePolicyTestServerForSecurityEvents(
-    const std::set<std::string>& enabled_event_names,
-    const std::map<std::string, std::vector<std::string>>&
+    const base::flat_set<std::string>& enabled_event_names,
+    const base::flat_map<std::string, std::vector<std::string>>&
         enabled_opt_in_events) {
 #if BUILDFLAG(IS_FUCHSIA)
   // Policy is not supported for Fuchsia yet.

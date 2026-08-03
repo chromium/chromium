@@ -4,6 +4,8 @@
 #include "chrome/browser/enterprise/connectors/reporting/crash_reporting_context.h"
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -124,9 +126,9 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
 
   test::SetOnSecurityEventReporting(
       profile->GetPrefs(), /*enabled=*/true,
-      /*enabled_event_names=*/std::set<std::string>(),
+      /*enabled_event_names=*/base::flat_set<std::string>(),
       /*enabled_opt_in_events=*/
-      std::map<std::string, std::vector<std::string>>());
+      base::flat_map<std::string, std::vector<std::string>>());
 
   test::MockRealtimeReportingClient* reporting_client =
       static_cast<test::MockRealtimeReportingClient*>(

@@ -194,7 +194,7 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   void SetEnterpriseReportingConfig(
       bool enabled,
       const std::vector<std::string>& enabled_opt_in_events) {
-    std::map<std::string, std::vector<std::string>> opt_in_events_map;
+    base::flat_map<std::string, std::vector<std::string>> opt_in_events_map;
     for (const auto& event : enabled_opt_in_events) {
       opt_in_events_map[event] = {"*"};
     }

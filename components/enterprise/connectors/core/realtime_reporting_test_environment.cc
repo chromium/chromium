@@ -29,8 +29,8 @@ RealtimeReportingTestEnvironment::~RealtimeReportingTestEnvironment() = default;
 // static
 std::unique_ptr<RealtimeReportingTestEnvironment>
 RealtimeReportingTestEnvironment::Create(
-    const std::set<std::string>& enabled_event_names,
-    const std::map<std::string, std::vector<std::string>>&
+    const base::flat_set<std::string>& enabled_event_names,
+    const base::flat_map<std::string, std::vector<std::string>>&
         enabled_opt_in_events) {
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server =
       CreatePolicyTestServerForSecurityEvents(enabled_event_names,

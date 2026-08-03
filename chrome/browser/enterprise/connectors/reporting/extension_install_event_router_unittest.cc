@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -77,9 +79,9 @@ class ExtensionInstallEventRouterTest
 
     test::SetOnSecurityEventReporting(
         profile_->GetPrefs(), /*enabled=*/true,
-        /*enabled_event_names=*/std::set<std::string>(),
+        /*enabled_event_names=*/base::flat_set<std::string>(),
         /*enabled_opt_in_events=*/
-        std::map<std::string, std::vector<std::string>>());
+        base::flat_map<std::string, std::vector<std::string>>());
     // Set a mock cloud policy client in the router.
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken("fake-token");

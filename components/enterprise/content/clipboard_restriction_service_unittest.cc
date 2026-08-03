@@ -50,8 +50,7 @@ class ClipboardRestrictionServiceTest : public testing::Test {
   }
 
   void CreateService() {
-    service_ = std::unique_ptr<ClipboardRestrictionService>(
-        new ClipboardRestrictionService(&pref_service_));
+    service_ = std::make_unique<ClipboardRestrictionService>(&pref_service_);
   }
 
  private:

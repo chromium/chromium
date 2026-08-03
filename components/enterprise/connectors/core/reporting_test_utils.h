@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_TEST_UTILS_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_TEST_UTILS_H_
 
-#include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -93,10 +93,11 @@ class EventReportValidatorBase {
 void SetOnSecurityEventReporting(
     PrefService* prefs,
     bool enabled,
-    const std::set<std::string>& enabled_event_names = std::set<std::string>(),
-    const std::map<std::string, std::vector<std::string>>&
+    const base::flat_set<std::string>& enabled_event_names =
+        base::flat_set<std::string>(),
+    const base::flat_map<std::string, std::vector<std::string>>&
         enabled_opt_in_events =
-            std::map<std::string, std::vector<std::string>>(),
+            base::flat_map<std::string, std::vector<std::string>>(),
     bool machine_scope = true);
 
 // Helper function to create a TriggeredRuleInfo for tests.
@@ -115,10 +116,11 @@ safe_browsing::ReferrerChainEntry MakeReferrerChainEntry();
 // `nullptr` if the server could not be created.
 std::unique_ptr<policy::EmbeddedPolicyTestServer>
 CreatePolicyTestServerForSecurityEvents(
-    const std::set<std::string>& enabled_event_names = std::set<std::string>(),
-    const std::map<std::string, std::vector<std::string>>&
+    const base::flat_set<std::string>& enabled_event_names =
+        base::flat_set<std::string>(),
+    const base::flat_map<std::string, std::vector<std::string>>&
         enabled_opt_in_events =
-            std::map<std::string, std::vector<std::string>>());
+            base::flat_map<std::string, std::vector<std::string>>());
 
 }  // namespace enterprise_connectors::test
 

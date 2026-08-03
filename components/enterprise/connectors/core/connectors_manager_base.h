@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_MANAGER_BASE_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_MANAGER_BASE_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "components/enterprise/connectors/core/analysis_service_settings_base.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
@@ -27,8 +27,8 @@ class AnalysisServiceSettingsBase;
 class ConnectorsManagerBase {
  public:
   using AnalysisConnectorsSettings =
-      std::map<AnalysisConnector,
-               std::vector<std::unique_ptr<AnalysisServiceSettingsBase>>>;
+      base::flat_map<AnalysisConnector,
+                     std::vector<std::unique_ptr<AnalysisServiceSettingsBase>>>;
 
   ConnectorsManagerBase(PrefService* pref_service,
                         const ServiceProviderConfig* config,

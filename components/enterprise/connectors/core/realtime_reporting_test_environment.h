@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REALTIME_REPORTING_TEST_ENVIRONMENT_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REALTIME_REPORTING_TEST_ENVIRONMENT_H_
 
-#include <map>
 #include <memory>
-#include <set>
 #include <string>
-#include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "components/enterprise/connectors/core/realtime_reporting_test_server.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 
@@ -33,11 +32,11 @@ class RealtimeReportingTestEnvironment {
   // Create a new environment with the given reporting settings. Returns
   // `nullptr` if any server could not be created.
   static std::unique_ptr<RealtimeReportingTestEnvironment> Create(
-      const std::set<std::string>& enabled_event_names =
-          std::set<std::string>(),
-      const std::map<std::string, std::vector<std::string>>&
+      const base::flat_set<std::string>& enabled_event_names =
+          base::flat_set<std::string>(),
+      const base::flat_map<std::string, std::vector<std::string>>&
           enabled_opt_in_events =
-              std::map<std::string, std::vector<std::string>>());
+              base::flat_map<std::string, std::vector<std::string>>());
 
   // Bind each server to a port and start listening for requests. Returns true
   // iff all servers successfully started.

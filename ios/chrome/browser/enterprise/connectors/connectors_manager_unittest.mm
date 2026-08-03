@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/connectors/connectors_manager.h"
 
+#import "base/containers/flat_set.h"
 #import "base/json/json_reader.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
@@ -116,8 +117,8 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
   auto settings = manager.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
   EXPECT_EQ(settings->enabled_event_names,
-            std::set<std::string>(kAllReportingEnabledEvents.begin(),
-                                  kAllReportingEnabledEvents.end()));
+            base::flat_set<std::string>(kAllReportingEnabledEvents.begin(),
+                                        kAllReportingEnabledEvents.end()));
   EXPECT_TRUE(settings->enabled_opt_in_events.empty());
   auto provider_names = manager.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
@@ -136,7 +137,7 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
   settings = manager.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
   EXPECT_EQ(settings->enabled_event_names,
-            std::set<std::string>({"passwordReuseEvent", "interstitialEvent"}));
+            base::flat_set<std::string>({"passwordReuseEvent", "interstitialEvent"}));
   EXPECT_TRUE(settings->enabled_opt_in_events.count("loginEvent"));
   EXPECT_EQ(settings->enabled_opt_in_events["loginEvent"],
             std::vector<std::string>({"foo.com", "bar.com"}));
