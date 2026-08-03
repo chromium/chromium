@@ -16,7 +16,7 @@
                 android:resource="@xml/file_paths_file_provider" />
         </provider>
         <provider android:name="org.chromium.base.InMemoryContentProvider"
-            android:authorities="${applicationId}.inmemory"
+            android:authorities="${applicationId}.inmemory;${applicationId}"
             android:exported="false"
             android:grantUriPermissions="true">
         </provider>

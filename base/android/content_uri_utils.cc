@@ -149,6 +149,11 @@ static void JNI_ContentUriUtils_AddFileInfoToVector(
                        Time::FromMillisecondsSinceUnixEpoch(last_modified));
 }
 
+bool IsContentUriFromThisApp(const FilePath& content_uri) {
+  JNIEnv* env = android::AttachCurrentThread();
+  return Java_ContentUriUtils_isUriFromThisApp(env, content_uri.value());
+}
+
 std::string GetContentUriMimeType(const FilePath& content_uri) {
   JNIEnv* env = android::AttachCurrentThread();
   return Java_ContentUriUtils_getMimeType(env, content_uri.value());

@@ -79,6 +79,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_info.h"
+#include "base/android/content_uri_utils.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/glic/host/guest_util.h"  // nogncheck
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -2269,13 +2270,7 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
   // The only check for content-URIs is that they are not from an internal
   // FileProvider.
   if (path_info.path.IsContentUri()) {
-    std::string decoded_path = base::UnescapeBinaryURLComponent(
-        path_info.path.value(), base::UnescapeRule::NORMAL);
-    std::move(callback).Run(base::StartsWith(
-        decoded_path,
-        base::StrCat(
-            {"content://", base::android::apk_info::package_name(), "."}),
-        base::CompareCase::INSENSITIVE_ASCII));
+    std::move(callback).Run(base::IsContentUriFromThisApp(path_info.path));
     return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
