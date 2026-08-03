@@ -9,6 +9,7 @@
 #include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/signaling_id_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/api/jsep.h"
 
@@ -21,6 +22,18 @@ const char kToLocalId[] = "to_user@gmail.com";
 const char kToRegistrationId[] = "to_registration_id";
 const char kMessageId[] = "test_message_id";
 const char kSid[] = "test_sid";
+
+constexpr char kTestSenderLocal[] = "user";
+constexpr char kTestSenderDomain[] = "test_domain.com";
+constexpr char kTestSenderEmail[] = "user@test_domain.com";
+constexpr char kTestSenderRegistration[] =
+    "00000000-1111-2222-3333-444444444444";
+
+constexpr char kTestReceiverLocal[] = "host";
+constexpr char kTestReceiverDomain[] = "robot_domain.com";
+constexpr char kTestReceiverEmail[] = "host@robot_domain.com";
+constexpr char kTestReceiverRegistration[] =
+    "00000000-1111-2222-3333-555555555555";
 
 JingleAuthentication CreateTestAuthentication() {
   JingleAuthentication auth;
@@ -381,6 +394,71 @@ TEST_F(JingleMessageProtoConverterTest,
   ASSERT_EQ(converted_transport->candidates.size(), 1u);
   EXPECT_EQ(converted_transport->candidates[0].name, "audio");
   EXPECT_EQ(*converted_transport->candidates[0].sdp_m_line_index, 0);
+}
+
+TEST_F(JingleMessageProtoConverterTest, ConvertIncomingSplitSender) {
+  ftl::IqStanza stanza;
+  stanza.set_id(kMessageId);
+
+  auto* sender = stanza.mutable_sender();
+  sender->set_local_part(kTestSenderLocal);
+  sender->set_domain_part(kTestSenderDomain);
+  sender->set_resource_part(std::string(kFtlResourcePrefix) +
+                            kTestSenderRegistration);
+
+  auto* receiver = stanza.mutable_receiver();
+  receiver->set_local_part(kTestReceiverLocal);
+  receiver->set_domain_part(kTestReceiverDomain);
+  receiver->set_resource_part(std::string(kFtlResourcePrefix) +
+                              kTestReceiverRegistration);
+
+  stanza.mutable_jingle()->set_session_id(kSid);
+  stanza.mutable_jingle()->mutable_session_initiate();
+
+  JingleMessage converted_message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted_message, &error))
+      << error;
+
+  std::string expected_from = SignalingAddress::CreateFtlSignalingAddress(
+                                  kTestSenderEmail, kTestSenderRegistration)
+                                  .id();
+  std::string expected_to = SignalingAddress::CreateFtlSignalingAddress(
+                                kTestReceiverEmail, kTestReceiverRegistration)
+                                .id();
+  EXPECT_EQ(converted_message.from.id(), expected_from);
+  EXPECT_EQ(converted_message.to.id(), expected_to);
+}
+
+TEST_F(JingleMessageProtoConverterTest, ConvertIncomingReplySplitSender) {
+  ftl::IqStanza stanza;
+  stanza.set_id(kMessageId);
+
+  auto* sender = stanza.mutable_sender();
+  sender->set_local_part(kTestSenderLocal);
+  sender->set_domain_part(kTestSenderDomain);
+  sender->set_resource_part(std::string(kFtlResourcePrefix) +
+                            kTestSenderRegistration);
+
+  auto* receiver = stanza.mutable_receiver();
+  receiver->set_local_part(kTestReceiverLocal);
+  receiver->set_domain_part(kTestReceiverDomain);
+  receiver->set_resource_part(std::string(kFtlResourcePrefix) +
+                              kTestReceiverRegistration);
+
+  stanza.mutable_reply();
+
+  JingleMessageReply converted_reply;
+  ASSERT_TRUE(JingleMessageReplyFromProto(stanza, &converted_reply));
+
+  std::string expected_from = SignalingAddress::CreateFtlSignalingAddress(
+                                  kTestSenderEmail, kTestSenderRegistration)
+                                  .id();
+  std::string expected_to = SignalingAddress::CreateFtlSignalingAddress(
+                                kTestReceiverEmail, kTestReceiverRegistration)
+                                .id();
+  EXPECT_EQ(converted_reply.from.id(), expected_from);
+  EXPECT_EQ(converted_reply.to.id(), expected_to);
 }
 
 }  // namespace remoting

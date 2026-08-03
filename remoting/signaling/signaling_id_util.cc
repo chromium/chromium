@@ -14,7 +14,6 @@ namespace remoting {
 
 namespace {
 
-constexpr char kFtlResourcePrefix[] = "chromoting_ftl_";
 constexpr char kGmailDomain[] = "gmail.com";
 constexpr char kGooglemailDomain[] = "googlemail.com";
 
@@ -90,7 +89,7 @@ bool IsValidFtlSignalingId(const std::string& signaling_id) {
                << resource;
     return false;
   }
-  std::string registration_id = resource.substr(sizeof(kFtlResourcePrefix) - 1);
+  std::string registration_id = resource.substr(kFtlResourcePrefix.length());
   if (!base::Uuid::ParseLowercase(registration_id).is_valid()) {
     LOG(ERROR) << "Signaling id contains an invalid registration id: "
                << registration_id;

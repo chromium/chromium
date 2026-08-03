@@ -12,6 +12,7 @@
 #include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/signaling_id_util.h"
 #include "third_party/webrtc/api/jsep.h"
 
 namespace remoting {
@@ -217,12 +218,21 @@ SignalingAddress JabberIdToSignalingAddress(const ftl::JabberId& jabber_id) {
     return SignalingAddress();
   }
 
-  if (!jabber_id.resource_part().empty()) {
-    return SignalingAddress::CreateFtlSignalingAddress(
-        jabber_id.local_part(), jabber_id.resource_part());
+  std::string username = jabber_id.local_part();
+  if (!jabber_id.domain_part().empty()) {
+    username += "@" + jabber_id.domain_part();
   }
 
-  return SignalingAddress(jabber_id.local_part());
+  if (!jabber_id.resource_part().empty()) {
+    std::string registration_id = jabber_id.resource_part();
+    if (registration_id.starts_with(kFtlResourcePrefix)) {
+      registration_id = registration_id.substr(kFtlResourcePrefix.length());
+    }
+    return SignalingAddress::CreateFtlSignalingAddress(username,
+                                                       registration_id);
+  }
+
+  return SignalingAddress(username);
 }
 
 ftl::SessionTerminate::Reason JingleTerminateReasonToProto(

@@ -22,13 +22,8 @@ namespace remoting {
 
 namespace {
 
-// FTL ID format:
-// user@domain.com/chromoting_ftl_(registration ID)
-// The FTL ID is only used local to the program.
-constexpr char kFtlResourcePrefix[] = "chromoting_ftl_";
-
 jingle_xmpp::QName GetIdQName(SignalingAddress::Direction direction) {
-  const char* attribute_name = attribute_name =
+  const char* attribute_name =
       (direction == SignalingAddress::FROM) ? "from" : "to";
   return jingle_xmpp::QName("", attribute_name);
 }
@@ -141,7 +136,7 @@ bool SignalingAddress::GetFtlInfo(std::string* email,
   std::string resource;
   bool has_resource = SplitSignalingIdResource(id_, email, &resource);
   DCHECK(has_resource);
-  size_t ftl_resource_prefix_length = strlen(kFtlResourcePrefix);
+  size_t ftl_resource_prefix_length = kFtlResourcePrefix.length();
   DCHECK_GE(resource.length(), ftl_resource_prefix_length);
   *registration_id = resource.substr(ftl_resource_prefix_length);
   return true;
