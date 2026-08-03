@@ -7333,22 +7333,22 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testDeviceName(self):
     driver = self.CreateDriver(
-        mobile_emulation = {'deviceName': 'Nexus 5'})
+        mobile_emulation = {'deviceName': 'Pixel 10'})
     driver.Load(self._http_server.GetUrl() + '/userAgentUseDeviceWidth')
-    self.assertEqual(360, driver.ExecuteScript('return window.screen.width'))
-    self.assertEqual(640, driver.ExecuteScript('return window.screen.height'))
+    self.assertEqual(412, driver.ExecuteScript('return window.screen.width'))
+    self.assertEqual(924, driver.ExecuteScript('return window.screen.height'))
     body_tag = driver.FindElement('tag name', 'body')
     self.assertRegex(
         body_tag.GetText(),
         '^' +
-        re.escape('Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) '
+        re.escape('Mozilla/5.0 (Linux; Android 16; Pixel 10) '
                   'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/') +
         r'\d+\.\d+\.\d+\.\d+' +
         re.escape(' Mobile Safari/537.36') + '$')
 
   def testSendKeysToElement(self):
     driver = self.CreateDriver(
-        mobile_emulation = {'deviceName': 'Nexus 5'})
+        mobile_emulation = {'deviceName': 'Pixel 10'})
     text = driver.ExecuteScript(
         'document.body.innerHTML = \'<input type="text">\';'
         'var input = document.getElementsByTagName("input")[0];'
@@ -7363,7 +7363,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testClickElement(self):
     driver = self.CreateDriver(
-        mobile_emulation = {'deviceName': 'Nexus 5'})
+        mobile_emulation = {'deviceName': 'Pixel 10'})
     driver.Load('about:blank')
     div = driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
@@ -7379,7 +7379,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
   def testTapElement(self):
     driver = self.CreateDriver(
         send_w3c_capability=False, send_w3c_request=False,
-        mobile_emulation = {'deviceName': 'Nexus 5'})
+        mobile_emulation = {'deviceName': 'Pixel 10'})
     driver.Load('about:blank')
     div = driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
@@ -7408,7 +7408,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
   def testNetworkConnectionEnabled(self):
     # mobileEmulation must be enabled for networkConnection to be enabled
     driver = self.CreateDriver(
-        mobile_emulation={'deviceName': 'Nexus 5'},
+        mobile_emulation={'deviceName': 'Pixel 10'},
         network_connection=True,
         send_w3c_capability=False, send_w3c_request=False)
     self.assertTrue(driver.capabilities['mobileEmulationEnabled'])
@@ -7416,7 +7416,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testEmulateNetworkConnection4g(self):
     driver = self.CreateDriver(
-        mobile_emulation={'deviceName': 'Nexus 5'},
+        mobile_emulation={'deviceName': 'Pixel 10'},
         network_connection=True)
     # Test 4G connection.
     connection_type = 0x8
@@ -7427,7 +7427,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testEmulateNetworkConnectionMultipleBits(self):
     driver = self.CreateDriver(
-        mobile_emulation={'deviceName': 'Nexus 5'},
+        mobile_emulation={'deviceName': 'Pixel 10'},
         network_connection=True)
     # Connection with 4G, 3G, and 2G bits on.
     # Tests that 4G takes precedence.
@@ -7439,7 +7439,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testWifiAndAirplaneModeEmulation(self):
     driver = self.CreateDriver(
-        mobile_emulation={'deviceName': 'Nexus 5'},
+        mobile_emulation={'deviceName': 'Pixel 10'},
         network_connection=True)
     # Connection with both Wifi and Airplane Mode on.
     # Tests that Wifi takes precedence over Airplane Mode.
@@ -7460,7 +7460,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
       '/helloworld', respondWithString)
 
     driver = self.CreateDriver(
-        mobile_emulation={'deviceName': 'Nexus 5'},
+        mobile_emulation={'deviceName': 'Pixel 10'},
         network_connection=True)
 
     # Set network to online
@@ -7494,7 +7494,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testNetworkConnectionTypeIsAppliedToAllTabs(self):
     driver = self.CreateDriver(
-        mobile_emulation={'deviceName': 'Nexus 5'},
+        mobile_emulation={'deviceName': 'Pixel 10'},
         network_connection=True)
     driver.Load(self._http_server.GetUrl() +'/chromedriver/page_test.html')
     window1_handle = driver.GetCurrentWindowHandle()
@@ -7670,9 +7670,9 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('12', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
 
-  def testClientHintsDeviceNameNexus5(self):
+  def testClientHintsDeviceNamePixel10(self):
     driver = self.CreateDriver(
-        mobile_emulation = {'deviceName': 'Nexus 5'})
+        mobile_emulation = {'deviceName': 'Pixel 10'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
     self.assertEqual('Android', driver.ExecuteScript(
         'return navigator.userAgentData.platform'))
@@ -7681,21 +7681,21 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     hints = self.getHighEntropyClientHints(driver)
     self.assertEqual('', hints['architecture'])
     self.assertEqual('', hints['bitness'])
-    self.assertEqual('Nexus 5', hints['model'])
-    self.assertEqual('6.0', hints['platformVersion'])
+    self.assertEqual('Pixel 10', hints['model'])
+    self.assertEqual('16', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
     major_version = driver.capabilities['browserVersion'].split('.')[0]
     expected_ua = ''.join(('Mozilla/5.0 ',
-                           '(Linux; Android 6.0; Nexus 5 Build/MRA58N) ',
+                           '(Linux; Android 16; Pixel 10) ',
                            'AppleWebKit/537.36 (KHTML, like Gecko) ',
                            f'Chrome/{major_version}.0.0.0 ',
                            'Mobile Safari/537.36'))
     actual_ua = driver.ExecuteScript('return navigator.userAgent')
     self.assertEqual(expected_ua, actual_ua)
 
-  def testClientHintsDeviceNameIPhoneX(self):
+  def testClientHintsDeviceNameIPhone16(self):
     driver = self.CreateDriver(
-        mobile_emulation = {'deviceName': 'iPhone X'})
+        mobile_emulation = {'deviceName': 'iPhone 16'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
     self.assertEqual('iOS', driver.ExecuteScript(
         'return navigator.userAgentData.platform'))
@@ -7705,19 +7705,19 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('', hints['architecture'])
     self.assertEqual('', hints['bitness'])
     self.assertEqual('iPhone', hints['model'])
-    self.assertEqual('13.2.3', hints['platformVersion'])
+    self.assertEqual('18.5', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
     expected_ua = ''.join(('Mozilla/5.0 ',
-                           '(iPhone; CPU iPhone OS 13_2_3 like Mac OS X) ',
+                           '(iPhone; CPU iPhone OS 18_5 like Mac OS X) ',
                            'AppleWebKit/605.1.15 (KHTML, like Gecko) ',
-                           'Version/13.0.3 ',
+                           'Version/18.5 ',
                            'Mobile/15E148 Safari/604.1'))
     actual_ua = driver.ExecuteScript('return navigator.userAgent')
     self.assertEqual(expected_ua, actual_ua)
 
   def testClientHintsDeviceNameIPad(self):
     driver = self.CreateDriver(
-        mobile_emulation = {'deviceName': 'iPad'})
+        mobile_emulation = {'deviceName': 'iPad Mini'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
     self.assertEqual('iOS', driver.ExecuteScript(
         'return navigator.userAgentData.platform'))
@@ -7727,11 +7727,11 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('', hints['architecture'])
     self.assertEqual('', hints['bitness'])
     self.assertEqual('iPad', hints['model'])
-    self.assertEqual('11.0', hints['platformVersion'])
+    self.assertEqual('18.5', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
-    expected_ua = ''.join(('Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) ',
-                           'AppleWebKit/604.1.34 (KHTML, like Gecko) ',
-                           'Version/11.0 Mobile/15A5341f Safari/604.1'
+    expected_ua = ''.join(('Mozilla/5.0 (iPad; CPU OS 18_5 like Mac OS X) ',
+                           'AppleWebKit/605.1.15 (KHTML, like Gecko) ',
+                           'Version/18.5 Mobile/15E148 Safari/604.1'
                            ))
     actual_ua = driver.ExecuteScript('return navigator.userAgent')
     self.assertEqual(expected_ua, actual_ua)
