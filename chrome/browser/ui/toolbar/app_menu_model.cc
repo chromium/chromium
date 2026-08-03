@@ -1392,14 +1392,29 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   }
 
   LogMenuMetrics(command_id);
-  actions::ActionInvocationContext context =
-      actions::ActionInvocationContext::Builder()
-          .SetProperty(
-              kSidePanelOpenTriggerKey,
-              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                  SidePanelOpenTrigger::kAppMenu))
-          .Build();
-  chrome::ExecuteCommandWithContext(browser_, command_id, std::move(context));
+
+  switch (command_id) {
+    case IDC_SHOW_BOOKMARK_SIDE_PANEL:
+    case IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL:
+    case IDC_SHOW_READING_MODE_SIDE_PANEL:
+    case IDC_READING_LIST_MENU_SHOW_UI:
+    case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL: {
+      actions::ActionInvocationContext context =
+          actions::ActionInvocationContext::Builder()
+              .SetProperty(
+                  kSidePanelOpenTriggerKey,
+                  static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                      SidePanelOpenTrigger::kAppMenu))
+              .Build();
+      chrome::ExecuteCommandWithContext(browser_, command_id,
+                                        std::move(context));
+      break;
+    }
+
+    default:
+      chrome::ExecuteCommand(browser_, command_id);
+      break;
+  }
 }
 
 void AppMenuModel::LogSafetyHubInteractionMetrics(

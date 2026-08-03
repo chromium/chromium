@@ -84,15 +84,7 @@ void AppearanceHandler::OpenCustomizeChrome(const base::ListValue& args) {
   if (!browser) {
     return;
   }
-  actions::ActionInvocationContext context =
-      actions::ActionInvocationContext::Builder()
-          .SetProperty(
-              kSidePanelOpenTriggerKey,
-              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                  SidePanelOpenTrigger::kAppMenu))
-          .Build();
-  chrome::ExecuteCommandWithContext(
-      browser, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL, std::move(context));
+  chrome::ExecuteCommand(browser, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
 }
 
 void AppearanceHandler::OpenCustomizeChromeToolbarSection(
@@ -100,15 +92,7 @@ void AppearanceHandler::OpenCustomizeChromeToolbarSection(
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   CHECK(browser);
-  actions::ActionInvocationContext context =
-      actions::ActionInvocationContext::Builder()
-          .SetProperty(
-              kSidePanelOpenTriggerKey,
-              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                  SidePanelOpenTrigger::kAppMenu))
-          .Build();
-  chrome::ExecuteCommandWithContext(browser, IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR,
-                                    std::move(context));
+  chrome::ExecuteCommand(browser, IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
 }
 
 void AppearanceHandler::ResetPinnedToolbarActions(const base::ListValue& args) {
