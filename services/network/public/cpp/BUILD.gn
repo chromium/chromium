@@ -59,8 +59,6 @@ component("cpp") {
   sources = [
     "avail_language_header_parser.cc",
     "avail_language_header_parser.h",
-    "browsing_topics_parser.cc",
-    "browsing_topics_parser.h",
     "connection_allowlist_metrics.h",
     "connection_allowlist_parser.cc",
     "connection_allowlist_parser.h",
@@ -779,7 +777,6 @@ source_set("tests") {
 
   sources = [
     "avail_language_header_parser_unittest.cc",
-    "browsing_topics_parser_unittest.cc",
     "client_hints_unittest.cc",
     "connection_allowlist_unittest.cc",
     "content_decoding_interceptor_unittest.cc",

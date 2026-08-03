@@ -17,7 +17,6 @@
 #include "net/reporting/reporting_header_parser.h"
 #include "net/url_request/clear_site_data.h"
 #include "services/network/public/cpp/avail_language_header_parser.h"
-#include "services/network/public/cpp/browsing_topics_parser.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/connection_allowlist_parser.h"
@@ -167,9 +166,6 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
 
   // The code here only parses the No-Vary-Search header if it is present.
   parsed_headers->no_vary_search_with_parse_error = ParseNoVarySearch(*headers);
-
-  parsed_headers->observe_browsing_topics =
-      ParseObserveBrowsingTopicsFromHeader(*headers);
 
   parsed_headers->allow_cross_origin_event_reporting =
       ParseAllowCrossOriginEventReportingFromHeader(*headers);
