@@ -23,6 +23,7 @@ build_webui("build") {
     "app.css",
     "omnibox.css",
   ]
+  ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/composebox:build_ts",

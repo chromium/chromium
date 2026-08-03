@@ -10,7 +10,7 @@ import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 
 import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
-import type {ComposeboxState, ContextualUpload, DriveUpload} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -27,6 +27,7 @@ import {DriveDisclaimerStatus} from '//resources/mojo/components/omnibox/browser
 import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './omnibox.css.js';
 import {getHtml} from './omnibox.html.js';
@@ -263,13 +264,32 @@ export class OmniboxEverywhereOmniboxElement extends
                            }));
 
     recordContextualElementClickedMetric(
-        this.composeboxSource, 'OmniboxEverywhere', ContextType.DRIVE);
+        this.composeboxSource, 'ClassicPopup', ContextType.DRIVE);
 
     if (driveUploads.length > 0 || response.error !== null) {
       this.openComposebox_(
           driveUploads, ToolMode.kUnspecified, ModelMode.kUnspecified,
           response.error ?? undefined);
     }
+  }
+
+  protected onAddTabContext_(e: CustomEvent<{
+    id: number,
+    title: string,
+    url: Url,
+    delayUpload: boolean,
+    origin: TabUploadOrigin,
+  }>) {
+    const tabUpload: TabUpload = {
+      tabId: e.detail.id,
+      title: e.detail.title,
+      url: e.detail.url,
+      delayUpload: e.detail.delayUpload,
+      origin: e.detail.origin,
+    };
+    recordContextualElementClickedMetric(
+        this.composeboxSource, 'ClassicPopup', ContextType.TAB);
+    this.openComposebox_([tabUpload]);
   }
 
   protected onFileChange_(e: CustomEvent<{files: FileList}>) {

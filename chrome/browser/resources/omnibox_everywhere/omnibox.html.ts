@@ -70,6 +70,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
       this.onContextMenuEntrypointClick_}"
                   @context-menu-opened="${this.onContextMenuOpened_}"
                   @context-menu-closed="${this.onContextMenuClosed_}"
+                  @add-tab-context="${this.onAddTabContext_}"
                   @request-tab-suggestions-load="${
       this.onRequestTabSuggestionsLoad}"
                   @tool-click="${this.onToolClick_}"
