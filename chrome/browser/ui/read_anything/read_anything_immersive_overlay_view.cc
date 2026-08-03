@@ -118,6 +118,18 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
       immersive_web_view_->AddWebContentsFocusedCallback(base::BindRepeating(
           &ReadAnythingImmersiveOverlayView::OnImmersiveWebViewFocused,
           base::Unretained(this)));
+
+  // Calling immersive_web_view_->ShowUI() is not necessary if it has
+  // not been shown yet - the WebUI will call ShowUI() when it is ready. If the
+  // UI has been shown once (e.g. from the Side Panel), the reused WebUI is
+  // already available but won't send a new "showUI" message.
+  // We manually call ShowUI() synchronously now that immersive_web_view_ is
+  // attached to the view hierarchy so that RequestFocus() executes within the
+  // active user gesture. This synchronous focus transition is required by
+  // macOS.
+  if (controller_ && controller_->has_shown_ui()) {
+    immersive_web_view_->ShowUI();
+  }
 }
 
 void ReadAnythingImmersiveOverlayView::OnShowUI() {
@@ -137,7 +149,9 @@ void ReadAnythingImmersiveOverlayView::OnShowUI() {
       IDS_IMMERSIVE_READING_MODE_OPENED_ANNOUNCEMENT));
 
   DUMP_WILL_BE_CHECK(immersive_web_view_);
-  if (immersive_web_view_) {
+  // Only request focus if the tab is active so that an inactive tab in Split
+  // View does not steal focus when its immersive overlay is shown.
+  if (immersive_web_view_ && (!tab || tab->IsActivated())) {
     immersive_web_view_->RequestFocus();
   }
 }

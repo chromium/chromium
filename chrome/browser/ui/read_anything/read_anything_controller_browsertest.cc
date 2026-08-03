@@ -2541,6 +2541,34 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest, Reopen_HasFocus) {
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ShowImmersiveFromSidePanel_HasFocus) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Open Side Panel
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Show Immersive Mode from Side Panel
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+
+  views::View* overlay_view = GetActiveImmersiveOverlay();
+  ASSERT_TRUE(overlay_view);
+  auto* web_view = static_cast<views::WebView*>(overlay_view->children()[0]);
+
+  // It should be focused
+  EXPECT_TRUE(base::test::RunUntil([&]() { return web_view->HasFocus(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        GlueAttachedAndDetachedCorrectly) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);

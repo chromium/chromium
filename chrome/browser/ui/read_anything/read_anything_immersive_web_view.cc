@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -33,17 +32,6 @@ ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
       trigger_(trigger) {
   SetWebContents(contents_wrapper_->web_contents());
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  // Calling ReadAnythingImmersiveWebView::ShowUI is not necessary if it's not
-  // been shown yet- the WebUI will call ShowUI when it is ready. If the UI has
-  // been shown once, the reused WebUI will be available but won't send a new
-  // "showUI" message. Manually call ShowUI() to make the view visible.
-  auto* controller =
-      ReadAnythingControllerGlue::FromWebContents(web_contents())->controller();
-  if (controller && controller->has_shown_ui()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ReadAnythingImmersiveWebView::ShowUI,
-                                  weak_factory_.GetWeakPtr()));
-  }
 }
 
 ReadAnythingImmersiveWebView::~ReadAnythingImmersiveWebView() = default;
