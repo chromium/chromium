@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1729,7 +1730,11 @@ class WebAuthnUAFReproductionTest
       public ChromeAuthenticatorRequestDelegate::TestObserver,
       public AuthenticatorRequestDialogModel::Observer {
  public:
-  WebAuthnUAFReproductionTest() = default;
+  WebAuthnUAFReproductionTest() {
+#if BUILDFLAG(IS_WIN)
+    win_api_.set_available(false);
+#endif
+  }
   ~WebAuthnUAFReproductionTest() override = default;
 
   // ChromeAuthenticatorRequestDelegate::TestObserver:
@@ -1740,9 +1745,7 @@ class WebAuthnUAFReproductionTest
   }
 
   void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
+    delegate_shown_future_.SetValue(delegate);
   }
 
   void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
@@ -1752,7 +1755,9 @@ class WebAuthnUAFReproductionTest
   // AuthenticatorRequestDialogModel::Observer:
   void OnStepTransition() override {
     if (model_ &&
-        model_->step() == AuthenticatorRequestDialogModel::Step::kClosed) {
+        (model_->step() == AuthenticatorRequestDialogModel::Step::kClosed ||
+         model_->step() ==
+             AuthenticatorRequestDialogModel::Step::kPlatformAuthenticator)) {
       DeleteWebContents();
     }
   }
@@ -1788,8 +1793,13 @@ class WebAuthnUAFReproductionTest
 
   raw_ptr<ChromeAuthenticatorRequestDelegate> delegate_ = nullptr;
   raw_ptr<AuthenticatorRequestDialogModel> model_ = nullptr;
-  std::unique_ptr<base::RunLoop> run_loop_;
+  base::test::TestFuture<ChromeAuthenticatorRequestDelegate*>
+      delegate_shown_future_;
   bool web_contents_deleted_ = false;
+#if BUILDFLAG(IS_WIN)
+  device::FakeWinWebAuthnApi win_api_;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override_{&win_api_};
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnUAFReproductionTest, CancelUAF) {
@@ -1816,10 +1826,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnUAFReproductionTest, CancelUAF) {
     });
   )");
 
-  if (!delegate_) {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
+  ASSERT_TRUE(delegate_shown_future_.Wait());
   ASSERT_TRUE(delegate_);
   ASSERT_TRUE(delegate_->dialog_controller());
 
@@ -1829,6 +1836,39 @@ IN_PROC_BROWSER_TEST_F(WebAuthnUAFReproductionTest, CancelUAF) {
 
   // Trigger UAF
   delegate_->dialog_controller()->CancelAuthenticatorRequest();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnUAFReproductionTest, HideDialogUAF) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Trigger WebAuthn flow asynchronously
+  content::ExecuteScriptAsync(web_contents, R"(
+    navigator.credentials.create({
+      publicKey: {
+        challenge: new Uint8Array([1, 2, 3, 4]),
+        rp: { name: "Example" },
+        user: {
+          id: new Uint8Array([1, 2, 3, 4]),
+          name: "test",
+          displayName: "test"
+        },
+        pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+        timeout: 60000
+      }
+    });
+  )");
+
+  ASSERT_TRUE(delegate_shown_future_.Wait());
+  ASSERT_TRUE(delegate_);
+  ASSERT_TRUE(delegate_->dialog_controller());
+
+  // Trigger UAF
+  delegate_->dialog_controller()->HideDialogAndDispatchToPlatformAuthenticator(
+      std::nullopt);
 }
 
 }  // namespace
