@@ -6,17 +6,14 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {convertDateToWindowsEpoch} from '../../time.js';
 import type {PerformanceMetricsProxy} from '../performance_metrics_proxy.js';
 import {MemorySaverModeExceptionListAction, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
 
-import {getTemplate} from './exception_add_input.html.js';
-import type {ExceptionValidationMixinInterface} from './exception_validation_mixin.js';
+import {getHtml} from './exception_add_input.html.js';
 import {ExceptionValidationMixin, TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
 
 export interface ExceptionAddInputElement {
@@ -25,24 +22,24 @@ export interface ExceptionAddInputElement {
   };
 }
 
-type Constructor<T> = new (...args: any[]) => T;
-const ExceptionAddInputElementBase =
-    ExceptionValidationMixin(ListPropertyUpdateMixin(PolymerElement)) as
-    Constructor<ExceptionValidationMixinInterface&
-                ListPropertyUpdateMixinInterface&PolymerElement>;
+const ExceptionAddInputElementBase = ExceptionValidationMixin(CrLitElement);
 
-export class ExceptionAddInputElement extends
-    ExceptionAddInputElementBase {
+export class ExceptionAddInputElement extends ExceptionAddInputElementBase {
   static get is() {
     return 'tab-discard-exception-add-input';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
+
+  protected onRuleValueChanged_(e: CustomEvent<{value: string}>) {
+    this.rule = e.detail.value;
+    this.validate();
+  }
 
   submit() {
     assert(!this.submitDisabled);

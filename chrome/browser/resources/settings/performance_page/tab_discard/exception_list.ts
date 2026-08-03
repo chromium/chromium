@@ -14,7 +14,6 @@ import './exception_entry.js';
 import './exception_tabbed_add_dialog.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import type {PrefServiceObserverMixinInterface} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -22,13 +21,11 @@ import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {TooltipMixinInterface} from '../../tooltip_mixin.js';
 import {TooltipMixin} from '../../tooltip_mixin.js';
 import type {PerformanceMetricsProxy} from '../performance_metrics_proxy.js';
 import {MemorySaverModeExceptionListAction, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
@@ -52,12 +49,8 @@ export interface ExceptionListElement {
   };
 }
 
-type Constructor<T> = new (...args: any[]) => T;
-const ExceptionListElementBase =
-    TooltipMixin(
-        ListPropertyUpdateMixin(PrefServiceObserverMixin(PolymerElement))) as
-    Constructor<TooltipMixinInterface&ListPropertyUpdateMixinInterface&
-                PrefServiceObserverMixinInterface&PolymerElement>;
+const ExceptionListElementBase = TooltipMixin(
+    ListPropertyUpdateMixin(PrefServiceObserverMixin(PolymerElement)));
 
 export class ExceptionListElement extends
     ExceptionListElementBase {

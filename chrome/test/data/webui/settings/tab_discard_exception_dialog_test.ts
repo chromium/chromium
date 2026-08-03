@@ -70,11 +70,12 @@ suite('TabDiscardExceptionsDialog', function() {
     return addDialog;
   }
 
-  function setupEditDialog(): ExceptionEditDialogElement {
+  async function setupEditDialog(): Promise<ExceptionEditDialogElement> {
     const editDialog: ExceptionEditDialogElement =
         document.createElement('tab-discard-exception-edit-dialog');
     setupDialog(editDialog);
     editDialog.setRuleToEditForTesting(EXISTING_RULE);
+    await microtasksFinished();
     return editDialog;
   }
 
@@ -123,7 +124,7 @@ suite('TabDiscardExceptionsDialog', function() {
   });
 
   test('ExceptionListEditDialogState', async function() {
-    dialog = setupEditDialog();
+    dialog = await setupEditDialog();
     assertTrue(dialog.$.dialog.open);
     assertFalse(dialog.$.input.$.input.invalid);
     assertFalse(dialog.$.actionButton.disabled);
@@ -151,7 +152,7 @@ suite('TabDiscardExceptionsDialog', function() {
   });
 
   test('ExceptionEditDialogCancel', async function() {
-    dialog = setupEditDialog();
+    dialog = await setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertCancel();
   });
@@ -185,7 +186,7 @@ suite('TabDiscardExceptionsDialog', function() {
   });
 
   test('ExceptionEditDialogSubmit', async function() {
-    dialog = setupEditDialog();
+    dialog = await setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([VALID_RULE]);
     const action =
@@ -198,7 +199,7 @@ suite('TabDiscardExceptionsDialog', function() {
       [EXISTING_RULE]: convertDateToWindowsEpoch(),
       [VALID_RULE]: convertDateToWindowsEpoch(),
     });
-    dialog = setupEditDialog();
+    dialog = await setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([VALID_RULE]);
   });
@@ -222,7 +223,7 @@ suite('TabDiscardExceptionsDialog', function() {
   }
 
   test('ExceptionEditDialogUpdateTimestamp', async function() {
-    dialog = setupEditDialog();
+    dialog = await setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([VALID_RULE]);
 
@@ -233,7 +234,7 @@ suite('TabDiscardExceptionsDialog', function() {
     await prefService.setPrefValue(
         TAB_DISCARD_EXCEPTIONS_PREF,
         {[EXISTING_RULE]: convertDateToWindowsEpoch()});
-    dialog = setupEditDialog();
+    dialog = await setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([VALID_RULE]);
     const updatedTimestamp = parseInt(
