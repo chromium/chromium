@@ -122,8 +122,6 @@ void BlinkOTSContext::AppendErrorMessage(const String& new_error_string) {
 ots::TableAction BlinkOTSContext::GetTableAction(uint32_t tag) {
   const uint32_t kCbdtTag = OTS_TAG('C', 'B', 'D', 'T');
   const uint32_t kCblcTag = OTS_TAG('C', 'B', 'L', 'C');
-  const uint32_t kEbdtTag = OTS_TAG('E', 'B', 'D', 'T');
-  const uint32_t kEblcTag = OTS_TAG('E', 'B', 'L', 'C');
   const uint32_t kColrTag = OTS_TAG('C', 'O', 'L', 'R');
   const uint32_t kCpalTag = OTS_TAG('C', 'P', 'A', 'L');
   const uint32_t kCff2Tag = OTS_TAG('C', 'F', 'F', '2');
@@ -151,8 +149,6 @@ ots::TableAction BlinkOTSContext::GetTableAction(uint32_t tag) {
     // Google Color Emoji Tables
     case kCbdtTag:
     case kCblcTag:
-    case kEbdtTag:
-    case kEblcTag:
     // Windows Color Emoji Tables
     case kColrTag:
     case kCpalTag:

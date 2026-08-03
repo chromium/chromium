@@ -147,8 +147,7 @@ bool WebFontTypefaceFactory::CreateTypeface(
   CHECK(!typeface);
 
   if (!format_check.IsVariableFont() && !format_check.IsColorFont() &&
-      !format_check.IsCff2OutlineFont() &&
-      !format_check.IsEbdtEblcMonochromeFont()) {
+      !format_check.IsCff2OutlineFont()) {
     typeface = instantiator.make_system(data);
     if (typeface) {
       ReportInstantiationResult(
@@ -175,9 +174,6 @@ bool WebFontTypefaceFactory::CreateTypeface(
   } instantiation_rules[] = {
       // We don't expect variable CBDT/CBLC or Sbix variable fonts for now.
       {&FontFormatCheck::IsCbdtCblcColorFont, &MakeFontationsFallbackPreferred,
-       InstantiationResult::kSuccessCbdtCblcColorFont, std::nullopt},
-      {&FontFormatCheck::IsEbdtEblcMonochromeFont,
-       &MakeFontationsFallbackPreferred,
        InstantiationResult::kSuccessCbdtCblcColorFont, std::nullopt},
       {&FontFormatCheck::IsColrCpalColorFontV1,
        &MakeFontationsFallbackPreferred,
