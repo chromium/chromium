@@ -15,7 +15,6 @@ import type {ClientCapabilities} from '../../glic_api/glic_api.js';
 import {ObservableValue} from '../../observable.js';
 import type {ObservableValueReadOnly} from '../../observable.js';
 import {TaskQueue} from '../../task_queue.js';
-import {OneShotTimer} from '../../timer.js';
 import {ActorClientImpl, ActorHostMessageHandler} from '../actor/actor_host.js';
 import {ActorClientDef, ActorHostDef} from '../actor/actor_types.js';
 import {AnnotationHostMessageHandler} from '../annotation/annotation_host.js';
@@ -55,11 +54,11 @@ export enum DetailedWebClientState {
   WEB_CLIENT_NOT_CREATED = 1,
   WEB_CLIENT_INITIALIZE_FAILED = 2,
   WEB_CLIENT_NOT_INITIALIZED = 3,
-  TEMPORARY_UNRESPONSIVE = 4,
-  PERMANENT_UNRESPONSIVE = 5,
+  // OBSOLETE: TEMPORARY_UNRESPONSIVE = 4,
+  // OBSOLETE: PERMANENT_UNRESPONSIVE = 5,
   RESPONSIVE = 6,
-  RESPONSIVE_INACTIVE = 7,
-  UNRESPONSIVE_INACTIVE = 8,
+  // OBSOLETE: RESPONSIVE_INACTIVE = 7,
+  // OBSOLETE: UNRESPONSIVE_INACTIVE = 8,
   // OBSOLETE: MOJO_PIPE_CLOSED_UNEXPECTEDLY = 9,
   MOJO_PIPE_CLOSED_UNEXPECTEDLY_BEFORE_INITIALIZE = 10,
   MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE = 11,
@@ -201,7 +200,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   panelIsActive = false;
 
   private handler: WebClientHandlerRemote;
-  private webClientErrorTimer: OneShotTimer;
   private webClientState =
       ObservableValue.withValue<WebClientState>(WebClientState.UNINITIALIZED);
   openCloseTasks = new TaskQueue();
@@ -214,7 +212,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   // processing is async.
   private panelOpenState = PanelOpenState.CLOSED;
   private instanceIsActive = true;
-  private hasShownDebuggerAttachedWarning = false;
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
   // Present while the client is monitoring pin candidates.
   pinCandidatesObserver?: PinCandidatesObserverImpl;
@@ -253,8 +250,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
         this.handler.$.bindNewPipeAndPassReceiver());
     this.hostMessageHandler =
         new HostMessageHandler(this.handler, embedder, this);
-    this.webClientErrorTimer = new OneShotTimer(
-        loadTimeData.getInteger('clientUnresponsiveUiMaxTimeMs'));
 
     communicator.setHost(this);
   }
@@ -262,7 +257,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   destroy() {
     this.webClientState = ObservableValue.withValue<WebClientState>(
         WebClientState.ERROR);  // Final state
-    this.webClientErrorTimer.reset();
     this.hostMessageHandler.destroy();
     this.pinCandidatesObserver?.disconnectFromSource();
     this.captureRegionObserver?.destroy();
@@ -419,7 +413,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   webClientInitialized() {
     this.detailedWebClientState = DetailedWebClientState.RESPONSIVE;
     this.setWebClientState(WebClientState.RESPONSIVE);
-    this.responsiveCheckLoop();
   }
 
   webClientInitializeFailed() {
@@ -439,121 +432,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
 
   getDetailedWebClientState(): DetailedWebClientState {
     return this.detailedWebClientState;
-  }
-
-  async responsiveCheckLoop() {
-    if (!loadTimeData.getBoolean('isClientResponsivenessCheckEnabled')) {
-      return;
-    }
-
-    // Timeout duration for waiting for a response. Increased in dev mode.
-    const timeoutMs: number =
-        loadTimeData.getInteger('clientResponsivenessCheckTimeoutMs') *
-        (loadTimeData.getBoolean('devMode') ? 1000 : 1);
-    // Interval in between the consecutive checks.
-    const checkIntervalMs: number =
-        loadTimeData.getInteger('clientResponsivenessCheckIntervalMs');
-
-    while (this.webClientState.getCurrentValue() !== WebClientState.ERROR) {
-      if (!this.isClientActive()) {
-        if (this.webClientState.getCurrentValue() ===
-            WebClientState.UNRESPONSIVE) {
-          this.detailedWebClientState =
-              DetailedWebClientState.UNRESPONSIVE_INACTIVE;
-          // Prevent unresponsive overlay showing forever while checking is
-          // paused.
-          this.setWebClientState(WebClientState.RESPONSIVE);
-          this.webClientErrorTimer.reset();
-        } else {
-          this.detailedWebClientState =
-              DetailedWebClientState.RESPONSIVE_INACTIVE;
-        }
-        await this.clientActiveObs.waitUntil((active) => active);
-      }
-      const SMALL_QUEUE_SIZE = 50;
-      const hostSendMessageQueueLength =
-          this.sender.rawSender().messageQueueLength() +
-          this.sender.rawSender().inFlightRequestCount();
-      if (hostSendMessageQueueLength >= SMALL_QUEUE_SIZE) {
-        chrome.histograms.recordMediumCount(
-            'Glic.Host.HostSendMessageQueueLength', hostSendMessageQueueLength);
-      }
-
-      let gotResponse = false;
-      const responsePromise =
-          this.sender.requestWithResponse('checkResponsive', undefined)
-              .then((response: {clientSendMessageQueueLength: number}) => {
-                gotResponse = true;
-                if (response.clientSendMessageQueueLength >= SMALL_QUEUE_SIZE) {
-                  chrome.histograms.recordMediumCount(
-                      'Glic.Host.ClientSendMessageQueueLength',
-                      response.clientSendMessageQueueLength);
-                }
-              });
-      const responseTimeout = sleep(timeoutMs);
-
-      await Promise.race([responsePromise, responseTimeout]);
-      if (this.webClientState.getCurrentValue() === WebClientState.ERROR) {
-        return;  // ERROR state is final.
-      }
-
-      if (gotResponse) {  // Success
-        this.webClientErrorTimer.reset();
-        this.setWebClientState(WebClientState.RESPONSIVE);
-        this.detailedWebClientState = DetailedWebClientState.RESPONSIVE;
-
-        await sleep(checkIntervalMs);
-        continue;
-      }
-
-      // Failed, not responsive.
-      if (this.webClientState.getCurrentValue() === WebClientState.RESPONSIVE) {
-        const ignoreUnresponsiveClient =
-            await this.shouldAllowUnresponsiveClient();
-        if (!ignoreUnresponsiveClient) {
-          console.warn('GlicApiHost: web client is unresponsive');
-          this.detailedWebClientState =
-              DetailedWebClientState.TEMPORARY_UNRESPONSIVE;
-          this.setWebClientState(WebClientState.UNRESPONSIVE);
-          this.startWebClientErrorTimer();
-        }
-      }
-
-      // Crucial: Wait for the original (late) response promise to settle before
-      // the next check cycle starts.
-      await responsePromise;
-    }
-  }
-
-  private async shouldAllowUnresponsiveClient(): Promise<boolean> {
-    if (loadTimeData.getBoolean(
-            'clientResponsivenessCheckIgnoreWhenDebuggerAttached')) {
-      const isDebuggerAttached: boolean =
-          await this.handler.isDebuggerAttached()
-              .then(result => result.isAttachedToWebview)
-              .catch(() => false);
-
-      if (isDebuggerAttached) {
-        if (!this.hasShownDebuggerAttachedWarning) {
-          console.warn(
-              'GlicApiHost: ignoring unresponsive client because ' +
-              'a debugger (likely DevTools) is attached');
-          this.hasShownDebuggerAttachedWarning = true;
-        }
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  startWebClientErrorTimer() {
-    this.webClientErrorTimer.start(() => {
-      console.warn('GlicApiHost: web client is permanently unresponsive');
-      this.detailedWebClientState =
-          DetailedWebClientState.PERMANENT_UNRESPONSIVE;
-      this.setWebClientState(WebClientState.ERROR);
-    });
   }
 
   openLinkInPopup(url: string, initialWidth: number, initialHeight: number) {
@@ -691,8 +569,3 @@ enum GlicRequestEvent {
   MAX_VALUE = REQUEST_RECEIVED_WHILE_INACTIVE,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
-
-// Returns a Promise resolving after 'ms' milliseconds
-function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}

@@ -19,6 +19,8 @@ namespace glic {
 class GlicWebClientAccess {
  public:
   virtual ~GlicWebClientAccess() = default;
+  virtual mojom::WebClient* web_client() = 0;
+  virtual mojom::WebClientState web_client_state() const = 0;
 
   using PanelWillOpenCallback = mojom::WebClient::NotifyPanelWillOpenCallback;
 

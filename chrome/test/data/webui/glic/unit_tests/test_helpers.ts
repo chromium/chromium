@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {ApiHostEmbedder, BrowserProxy, PageHandlerInterface, PageType, WebviewDelegate} from 'chrome://glic/glic.js';
+import {PageCallbackRouter} from 'chrome://glic/glic.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -35,6 +36,7 @@ export class FakePageHandler implements Partial<PageHandlerInterface> {
 
 export class FakeBrowserProxy implements BrowserProxy {
   pageHandler = new FakePageHandler() as PageHandlerInterface;
+  pageCallbackRouter = new PageCallbackRouter();
 }
 
 export class FakeWebviewDelegate implements WebviewDelegate {

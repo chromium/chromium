@@ -654,9 +654,6 @@ export const WebClientDef = defInterface({
     },
     {
       name: 'checkResponsive',
-      response: defMessage<{
-        clientSendMessageQueueLength: number,
-      }>(),
     },
     {
       name: 'notifyManualResizeChanged',

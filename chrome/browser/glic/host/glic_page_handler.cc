@@ -23,6 +23,8 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/host/glic_web_client_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -64,6 +66,8 @@ GlicPageHandler::GlicPageHandler(
   CHECK(host_);
   MarkProcessAsGlic(webui_contents->GetPrimaryMainFrame()->GetProcess());
   host_->WebUIPageHandlerAdded(this);
+  host_->AddObserver(this);
+  page_->WebClientStateChanged(host_->web_client_state());
   host_->instance().AddStateObserver(this);
   UpdatePageState(host_->instance().GetPanelState().kind);
   subscriptions_.push_back(
@@ -81,6 +85,7 @@ GlicPageHandler::~GlicPageHandler() {
   // synchronously without leaving a dangling raw_ptr during teardown.
   Host* host = host_;
   host_ = nullptr;
+  host->RemoveObserver(this);
   host->WebUIPageHandlerRemoved(this);
 }
 
@@ -257,7 +262,7 @@ void GlicPageHandler::EnableDragResize(bool enabled) {
   host().EnableDragResize(enabled);
 }
 
-void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
+void GlicPageHandler::OnWebUiStateChanged(glic::mojom::WebUiState new_state) {
   host().WebUiStateChanged(this, new_state);
 }
 
@@ -273,6 +278,10 @@ void GlicPageHandler::UpdatePageState(mojom::PanelStateKind panelStateKind) {
 void GlicPageHandler::UpdateProfileReadyState() {
   page_->SetProfileReadyState(GlicEnabling::GetProfileReadyState(
       Profile::FromBrowserContext(browser_context_)));
+}
+
+void GlicPageHandler::WebClientStateChanged(mojom::WebClientState state) {
+  page_->WebClientStateChanged(state);
 }
 
 }  // namespace glic

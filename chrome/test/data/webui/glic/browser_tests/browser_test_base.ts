@@ -169,6 +169,7 @@ export class WebClient implements GlicWebClient {
   panelOpenStateKind = ObservableValue.withNoValue<PanelStateKind>();
   panelOpenData = ObservableValue.withNoValue<PanelOpeningData>();
   invokeData = ObservableValue.withNoValue<InvokeOptions>();
+  onCheckResponsive: () => Promise<void> = () => Promise.resolve();
 
   async invoke(options: InvokeOptions): Promise<void> {
     this.invokeData.assignAndSignal(options);
@@ -206,6 +207,10 @@ export class WebClient implements GlicWebClient {
 
   async stopMicrophone(): Promise<void> {
     this.onStopMicrophone();
+  }
+
+  checkResponsive(): Promise<void> {
+    return Promise.resolve();
   }
 
   waitForFirstOpen(): Promise<void> {

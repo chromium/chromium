@@ -322,7 +322,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     }
     this.state = newState;
     this.states.get(this.state)!.onEnter?.call(this);
-    this.browserProxy.pageHandler.webUiStateChanged(this.state);
+    this.browserProxy.pageHandler.onWebUiStateChanged(this.state);
     this.browserProxy.pageHandler.enableDragResize(
         this.state === WebUiState.kReady && this.guestResizeEnabled);
   }

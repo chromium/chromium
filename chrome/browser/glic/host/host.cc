@@ -170,9 +170,7 @@ void Host::Reload() {
   }
 
   if (base::FeatureList::IsEnabled(kGlicReloadUsesFreshWebContents)) {
-    if (auto* client = GetPrimaryWebClient()) {
-      UnsetWebClient(client);
-    }
+    UnsetWebClient();
     Shutdown();
     CreateContents();
     delegate_->OnReload();
@@ -275,7 +273,7 @@ void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
     // handler. This is currently needed because, on reload, the web client
     // isn't cleared soon enough otherwise.
     if (web_client_access_) {
-      UnsetWebClient(web_client_access_.get());
+      UnsetWebClient();
     }
   }
   handler_info_ = PageHandlerInfo();
@@ -292,7 +290,7 @@ void Host::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
   // handler. This is currently needed because, on reload, the web client
   // isn't cleared soon enough otherwise.
   if (web_client_access_) {
-    UnsetWebClient(web_client_access_.get());
+    UnsetWebClient();
   }
 }
 
@@ -362,8 +360,11 @@ void Host::Zoom(mojom::ZoomAction zoom_action) {
   }
 }
 
-void Host::UnsetWebClient(GlicWebClientAccess* web_client) {
-  if (web_client_ == web_client && web_client_ != nullptr) {
+void Host::UnsetWebClient() {
+  if (!web_client_access_) {
+    return;
+  }
+  if (web_client_) {
     web_client_ = nullptr;
     if (handler_info_ && handler_info_->context_access_indicator_enabled) {
       observers_.Notify(&Observer::ContextAccessIndicatorChanged, false);
@@ -371,21 +372,22 @@ void Host::UnsetWebClient(GlicWebClientAccess* web_client) {
     instance_delegate().OnWebClientCleared();
     observers_.Notify(&Observer::WebClientDisconnected);
   }
-  if (web_client_access_ && web_client_access_.get() == web_client) {
-    web_client_access_.reset();
-  }
+  web_client_access_.reset();
 }
 
 void Host::CreateWebClient(
     mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver) {
   if (web_client_access_) {
-    UnsetWebClient(web_client_access_.get());
+    UnsetWebClient();
   }
-  web_client_access_ =
-      MakeGlicWebClient(this, profile_, std::move(web_client_receiver));
+  web_client_access_ = MakeGlicWebClient(
+      this, profile_, std::move(web_client_receiver),
+      base::BindOnce(&Host::UnsetWebClient, base::Unretained(this)),
+      base::BindRepeating(&Host::OnWebClientStateChanged,
+                          base::Unretained(this)));
 }
 
-void Host::SetWebClient() {
+void Host::WebClientInitialized() {
   CHECK(web_client_access_);
   web_client_ = web_client_access_.get();
 
@@ -443,10 +445,8 @@ void Host::SetWebClient() {
   observers_.Notify(&Observer::WebClientConnected);
 }
 
-void Host::WebClientInitializeFailed(GlicWebClientAccess* web_client) {
-  if (web_client_access_.get() == web_client) {
-    observers_.Notify(&Observer::WebClientInitializeFailed);
-  }
+void Host::WebClientInitializeFailed() {
+  observers_.Notify(&Observer::WebClientInitializeFailed);
 }
 
 void Host::SetContextAccessIndicator(bool enabled) {
@@ -572,6 +572,10 @@ std::vector<GlicPageHandler*> Host::GetPageHandlersForTesting() {
 
 GlicPageHandler* Host::GetPrimaryPageHandlerForTesting() {
   return handler_info_ ? handler_info_->page_handler : nullptr;
+}
+
+void Host::OnWebClientStateChanged(mojom::WebClientState state) {
+  observers_.Notify(&Observer::WebClientStateChanged, state);
 }
 
 void Host::PanelWillOpenComplete(GlicWebClientAccess* client,

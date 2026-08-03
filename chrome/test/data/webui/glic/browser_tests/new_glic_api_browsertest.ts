@@ -16,6 +16,13 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testDoNothing() {}
 
+  async testUnresponsive() {
+    // Don't respond to responsiveness checks.
+    this.client.checkResponsive = () => {
+      return new Promise<void>(() => {});
+    };
+  }
+
   async testGetFileUploadAllowedCapability() {
     assertTrue(!!this.host.getFileUploadAllowedCapability);
     const allowed =

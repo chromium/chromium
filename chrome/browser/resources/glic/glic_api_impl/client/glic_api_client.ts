@@ -79,6 +79,10 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
     return {openPanelInfo};
   }
 
+  async checkResponsive(): Promise<void> {
+    await this.webClient.checkResponsive?.();
+  }
+
   async notifyPanelWasClosed(): Promise<void> {
     try {
       this.host.notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
@@ -186,15 +190,6 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
 
   notifyPanelActiveChanged(payload: {panelActive: boolean}): void {
     this.host.panelActiveValue.assignAndSignal(payload.panelActive);
-  }
-
-  async checkResponsive(): Promise<{clientSendMessageQueueLength: number}> {
-    await this.webClient.checkResponsive?.();
-    return {
-      clientSendMessageQueueLength:
-          this.host.clientRemote.rawSender().messageQueueLength() +
-          this.host.clientRemote.rawSender().inFlightRequestCount(),
-    };
   }
 
   notifyManualResizeChanged(payload: {resizing: boolean}) {

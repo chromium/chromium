@@ -12,6 +12,7 @@ import {ObservableValue} from './observable.js';
 
 export interface BrowserProxy {
   pageHandler: PageHandlerInterface;
+  pageCallbackRouter: PageCallbackRouter;
   glicPreloadHandler?: GlicPreloadHandlerInterface;
 }
 

@@ -218,11 +218,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Web client not created"/>
   <int value="2" label="Web client initialize failed"/>
   <int value="3" label="Web client created but not initialized"/>
-  <int value="4" label="Temporary unresponsive"/>
-  <int value="5" label="Permanent unresponsive"/>
+  <int value="4" label="(Obsolete) Temporary unresponsive"/>
+  <int value="5" label="(Obsolete) Permanent unresponsive"/>
   <int value="6" label="Responsive"/>
-  <int value="7" label="Responsive Inactive"/>
-  <int value="8" label="Unresponsive Inactive"/>
+  <int value="7" label="(Obsolete) Responsive Inactive"/>
+  <int value="8" label="(Obsolete) Unresponsive Inactive"/>
   <int value="9" label="(Obsolete) Mojo pipe closed unexpectedly"/>
   <int value="10" label="Mojo pipe closed unexpectedly before initialize"/>
   <int value="11" label="Mojo pipe closed unexpectedly after initialization"/>

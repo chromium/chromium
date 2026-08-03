@@ -40,12 +40,14 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/host/glic_web_client_responsiveness_monitor.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/page_metadata_manager.h"
@@ -352,17 +354,21 @@ class DebouncerDeduper {
 // events through GlicKeyedService to other components, relies on the assumption
 // that there is exactly 1 WebUI instance. If this assumption is ever violated
 // then many classes will break.
-class GlicWebClientHandler : public mojom::WebClientHandler,
-                             public PanelStateObserver,
-                             public GlicWebClientAccess,
-                             public BrowserAttachObserver,
-                             public ActiveStateCalculator::Observer,
-                             public BrowserIsOpenCalculator::Observer {
+class GlicWebClientHandler
+    : public mojom::WebClientHandler,
+      public PanelStateObserver,
+      public GlicWebClientAccess,
+      public BrowserAttachObserver,
+      public ActiveStateCalculator::Observer,
+      public BrowserIsOpenCalculator::Observer,
+      public GlicWebClientResponsivenessMonitor::Delegate {
  public:
   explicit GlicWebClientHandler(
       Host* host,
       content::BrowserContext* browser_context,
-      mojo::PendingReceiver<mojom::WebClientHandler> receiver)
+      mojo::PendingReceiver<mojom::WebClientHandler> receiver,
+      base::OnceClosure disconnect_callback,
+      WebClientStateChangedCallback state_changed_callback)
       : profile_(Profile::FromBrowserContext(browser_context)),
         host_(host),
         glic_service_(
@@ -372,19 +378,30 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
         active_state_calculator_(host),
         browser_is_open_calculator_(profile_, this),
         receiver_(this, std::move(receiver)),
+        disconnect_callback_(std::move(disconnect_callback)),
+        state_changed_callback_(std::move(state_changed_callback)),
         annotation_manager_(
             std::make_unique<GlicAnnotationManager>(glic_service_, host)) {
     VLOG(1) << "Glic [WebClientHandler] Constructor";
     receiver_.set_disconnect_handler(base::BindOnce(
-        &Host::UnsetWebClient, base::Unretained(host_.get()), this));
+        &GlicWebClientHandler::OnDisconnected, base::Unretained(this)));
     active_state_calculator_.AddObserver(this);
   }
 
   ~GlicWebClientHandler() override {
     VLOG(1) << "Glic [WebClientHandler] Destructor";
+    responsiveness_monitor_.reset();
+    SetState(mojom::WebClientState::kUninitialized);
     active_state_calculator_.RemoveObserver(this);
     if (web_client_) {
       Uninstall();
+    }
+  }
+
+  // GlicWebClientResponsivenessMonitor::Delegate implementation.
+  void CheckResponsive(base::OnceClosure callback) override {
+    if (web_client_) {
+      web_client_->CheckResponsive(std::move(callback));
     }
   }
 
@@ -436,7 +453,7 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
     VLOG(1) << "Glic [WebClientHandler] WebClientCreated";
     web_client_.Bind(std::move(web_client));
     web_client_.set_disconnect_handler(base::BindOnce(
-        &Host::UnsetWebClient, base::Unretained(host_.get()), this));
+        &GlicWebClientHandler::OnDisconnected, base::Unretained(this)));
 
     page_metadata_manager_ =
         std::make_unique<PageMetadataManager>(profile_, web_client_.get());
@@ -554,13 +571,24 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
     std::move(callback).Run(std::move(state));
   }
 
+  mojom::WebClient* web_client() override { return web_client_.get(); }
+  mojom::WebClientState web_client_state() const override { return state_; }
+
   void WebClientInitializeFailed() override {
-    host().WebClientInitializeFailed(this);
+    SetState(mojom::WebClientState::kError);
+    host().WebClientInitializeFailed();
   }
 
   void WebClientInitialized() override {
     VLOG(1) << "Glic [WebClientHandler] WebClientInitialized";
-    host().SetWebClient();
+    host().WebClientInitialized();
+    SetState(mojom::WebClientState::kResponsive);
+    responsiveness_monitor_ =
+        std::make_unique<GlicWebClientResponsivenessMonitor>(
+            this, host_->GetGuestMainFrame(),
+            base::BindRepeating(&GlicWebClientHandler::OnResponsivenessChanged,
+                                base::Unretained(this)));
+    responsiveness_monitor_->Start();
     // If chrome://glic is opened in a tab for testing, send a synthetic open
     // signal.
     if (!base::FeatureList::IsEnabled(features::kGlicTabGroups) &&
@@ -1575,9 +1603,29 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
     browser_attach_observation_.reset();
   }
 
-  void WebClientDisconnected() {
-    VLOG(1) << "Glic [WebClientHandler] WebClientDisconnected";
-    host().UnsetWebClient(this);
+  void SetState(mojom::WebClientState new_state) {
+    if (state_ == new_state || state_ == mojom::WebClientState::kError) {
+      return;
+    }
+    state_ = new_state;
+    // Error state is terminal.
+    if (state_ == mojom::WebClientState::kError) {
+      if (web_client_) {
+        Uninstall();
+      }
+    }
+    if (state_changed_callback_) {
+      state_changed_callback_.Run(state_);
+    }
+  }
+
+  void OnResponsivenessChanged(mojom::WebClientState state) { SetState(state); }
+
+  void OnDisconnected() {
+    VLOG(1) << "Glic [WebClientHandler] OnDisconnected";
+    if (disconnect_callback_) {
+      std::move(disconnect_callback_).Run();
+    }
   }
 
   void OnUserEnabledActuationOnWebChanged() {
@@ -1684,6 +1732,10 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
   base::CallbackListSubscription consent_subscription_;
   mojo::Receiver<mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
+  base::OnceClosure disconnect_callback_;
+  WebClientStateChangedCallback state_changed_callback_;
+  mojom::WebClientState state_ = mojom::WebClientState::kUninitialized;
+  std::unique_ptr<GlicWebClientResponsivenessMonitor> responsiveness_monitor_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
   const std::unique_ptr<GlicAnnotationManager> annotation_manager_;
   std::unique_ptr<system_permission_settings::ScopedObservation>
@@ -1697,9 +1749,12 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
 std::unique_ptr<GlicWebClientAccess> MakeGlicWebClient(
     Host* host,
     content::BrowserContext* browser_context,
-    mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver) {
-  return std::make_unique<GlicWebClientHandler>(host, browser_context,
-                                                std::move(receiver));
+    mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver,
+    base::OnceClosure disconnect_callback,
+    WebClientStateChangedCallback state_changed_callback) {
+  return std::make_unique<GlicWebClientHandler>(
+      host, browser_context, std::move(receiver),
+      std::move(disconnect_callback), std::move(state_changed_callback));
 }
 
 }  // namespace glic

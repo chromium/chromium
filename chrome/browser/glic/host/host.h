@@ -136,6 +136,9 @@ class Host : public GlicSharingManagerProvider {
     // Called when Glic is disconnected from the WebClient.
     virtual void WebClientDisconnected() {}
 
+    // Called when the web client state changes.
+    virtual void WebClientStateChanged(mojom::WebClientState state) {}
+
     // Called when the client is ready to show, invoked sometime after
     // `Host::PanelWillOpen()` is called.
     virtual void ClientReadyToShow(const mojom::OpenPanelInfo&) {}
@@ -276,6 +279,14 @@ class Host : public GlicSharingManagerProvider {
   // This transitions to false after PanelWasClosed() is called.
   bool IsPrimaryClientOpen();
 
+  mojom::WebClientState web_client_state() const {
+    return web_client_access_ ? web_client_access_->web_client_state()
+                              : mojom::WebClientState::kUninitialized;
+  }
+  bool is_web_client_ready() const {
+    return web_client_state() == mojom::WebClientState::kResponsive;
+  }
+
   // Whether the primary web client is connected. Guaranteed not to be true
   // until the initialize() handshake has completed.
   virtual bool IsWebClientConnected() const;
@@ -327,10 +338,8 @@ class Host : public GlicSharingManagerProvider {
   // Called when a login page was committed in a glic webview.
   void LoginPageCommitted(GlicPageHandler* page_handler);
 
-  // Called when a page handler's web client is created or destroyed.
-  void SetWebClient();
-  void UnsetWebClient(GlicWebClientAccess* web_client);
-  void WebClientInitializeFailed(GlicWebClientAccess* web_client);
+  void WebClientInitialized();
+  void WebClientInitializeFailed();
 
   void SetContextAccessIndicator(bool enabled);
 
@@ -392,8 +401,10 @@ class Host : public GlicSharingManagerProvider {
   void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
 
  private:
+  void UnsetWebClient();
   void InvokeInternal(mojom::InvokeOptionsPtr options,
                       base::OnceClosure callback);
+  void OnWebClientStateChanged(mojom::WebClientState state);
 
   GlicKeyedService& glic_service();
   GlicPageHandler* page_handler() const;

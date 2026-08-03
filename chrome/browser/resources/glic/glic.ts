@@ -8,7 +8,7 @@ import './main.js';
 
 export type {BrowserProxy} from './browser_proxy.js';
 export type {PageHandlerInterface} from './glic.mojom-webui.js';
-export {ZoomAction} from './glic.mojom-webui.js';
+export {PageCallbackRouter, ZoomAction} from './glic.mojom-webui.js';
 export {ObservableSetByTabId} from './glic_api_impl/client/observable_set_by_tab_id.js';
 export type {ObservableSetByTabIdDelegate, ObservableSetByTabIdObservable} from './glic_api_impl/client/observable_set_by_tab_id.js';
 export type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';

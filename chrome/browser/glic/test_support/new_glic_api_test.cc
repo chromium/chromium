@@ -31,9 +31,11 @@ void WebUIStateListener::WebUiStateChanged(mojom::WebUiState state) {
 
 void WebUIStateListener::WaitForWebUiState(mojom::WebUiState state) {
   ASSERT_TRUE(host_);
+  std::vector<mojom::WebUiState> ignored_states;
   ASSERT_TRUE(base::test::RunUntil([&]() {
     while (!states_.empty()) {
       if (states_.front() != state) {
+        ignored_states.push_back(states_.front());
         states_.pop_front();
         continue;
       }
@@ -41,7 +43,8 @@ void WebUIStateListener::WaitForWebUiState(mojom::WebUiState state) {
     }
     return false;
   })) << "Timed out waiting for WebUI state "
-      << state << ". State =" << host_->GetPrimaryWebUiState();
+      << state << ". State=" << host_->GetPrimaryWebUiState()
+      << " ignored=" << testing::PrintToString(ignored_states);
 }
 
 }  // namespace glic

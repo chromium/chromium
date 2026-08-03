@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 // <if expr="not enable_extensions_core">
@@ -11,8 +12,7 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
-import {ZoomAction} from './glic.mojom-webui.js';
-import type {Subscriber} from './glic_api/glic_api.js';
+import {WebClientState as WebClientStateMojo, ZoomAction} from './glic.mojom-webui.js';
 import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/host/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
 import {ObservableValue} from './observable.js';
@@ -162,7 +162,6 @@ export class WebviewController {
   private host?: GlicApiHost;
   private dormant = false;
   private communicator?: GlicApiCommunicator;
-  private hostSubscriber?: Subscriber;
   private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
   private hasPendingCrossDocumentNavigation = false;
@@ -185,6 +184,32 @@ export class WebviewController {
         this.webview, loadTimeData.getString('chromeVersion'),
         loadTimeData.getString('chromeChannel'),
         loadTimeData.getString('glicHeaderRequestTypes'));
+
+    this.browserProxy.pageCallbackRouter.webClientStateChanged.addListener(
+        (state: WebClientStateMojo) => {
+          switch (state) {
+            case WebClientStateMojo.kResponsive:
+              this.persistentState.onClientReady();
+              this.webClientState.assignAndSignal(WebClientState.RESPONSIVE);
+              break;
+            case WebClientStateMojo.kUnresponsive:
+              this.webClientState.assignAndSignal(WebClientState.UNRESPONSIVE);
+              break;
+            case WebClientStateMojo.kError:
+              this.reportOnDestroy();
+              this.destroyHost(WebClientState.ERROR);
+              break;
+            case WebClientStateMojo.kUninitialized:
+              if (this.webClientState.getCurrentValue() ===
+                  WebClientState.RESPONSIVE) {
+                this.reportOnDestroy();
+                this.destroyHost(WebClientState.ERROR);
+              }
+              break;
+            default:
+              assertNotReachedCase(state);
+          }
+        });
 
     if (isFullWebView(this.webview)) {
       // Intercept all main frame requests, and block them if they are not
@@ -309,10 +334,6 @@ export class WebviewController {
   }
 
   private destroyHost(webClientState?: WebClientState) {
-    if (this.hostSubscriber) {
-      this.hostSubscriber.unsubscribe();
-      this.hostSubscriber = undefined;
-    }
     if (this.host) {
       this.host.destroy();
       this.host = undefined;
@@ -473,12 +494,6 @@ export class WebviewController {
           new GlicApiCommunicator(urlObj.origin, this.webview.contentWindow);
       this.host = new GlicApiHost(
           this.browserProxy, this.communicator, this.hostEmbedder);
-      this.hostSubscriber = this.host.getWebClientState().subscribe(state => {
-        if (state === WebClientState.RESPONSIVE) {
-          this.persistentState.onClientReady();
-        }
-        this.webClientState.assignAndSignal(state);
-      });
     }
 
     this.browserProxy.pageHandler.webviewCommitted(url);

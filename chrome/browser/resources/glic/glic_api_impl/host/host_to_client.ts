@@ -26,6 +26,10 @@ export class WebClientImpl implements WebClientInterface {
     this.clientCreated.resolve();
   }
 
+  async checkResponsive(): Promise<void> {
+    return this.sender.requestWithResponse('checkResponsive', undefined);
+  }
+
   async processNotifyPanelWillOpen(panelOpeningData: PanelOpeningDataMojo):
       Promise<{openPanelInfo: OpenPanelInfoMojo}> {
     await this.clientCreated.promise;

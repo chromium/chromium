@@ -2000,16 +2000,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
-// TODO(crbug.com/462121221): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_testPinTabsStatePersistWhenClientRestarts \
-  DISABLED_testPinTabsStatePersistWhenClientRestarts
-#else
-#define MAYBE_testPinTabsStatePersistWhenClientRestarts \
-  testPinTabsStatePersistWhenClientRestarts
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       MAYBE_testPinTabsStatePersistWhenClientRestarts) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsStatePersistWhenClientRestarts) {
   NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
@@ -2022,7 +2013,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 
   WebUIStateListener listener(GetHost());
   ReloadGlicWebui();
-  listener.WaitForWebUiState(mojom::WebUiState::kUninitialized);
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
 
   ExecuteJsTest(
       {.params = base::Value(base::DictValue().Set("isFirstRun", false))});

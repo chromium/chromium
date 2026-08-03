@@ -166,6 +166,14 @@ interface PreloadPage {
   SetProfileReadyState(ProfileReadyState ready_state);
 };
 
+// State of the web client running inside the webview.
+enum WebClientState {
+  kUninitialized,
+  kResponsive,
+  kUnresponsive,
+  kError,
+};
+
 // Functions provided by the WebUI page.
 interface Page {
   // Called before the page is shown.
@@ -182,6 +190,9 @@ interface Page {
 
   // Notifies the page to adjust the zoom level of its hosted webview.
   Zoom(ZoomAction action);
+
+  // Notifies the page when the web client state changes.
+  WebClientStateChanged(WebClientState state);
 };
 
 // Page handler for pre-loading tasks.
@@ -314,7 +325,7 @@ enum HelpCenterTopic {
   kIneligibleAccount,
 };
 
-// Page handler for the glic WebUI.
+// Page handler for the glic WebUI, implemented by the browser.
 interface PageHandler {
   // Creates a WebClientHandler, for use by a single web client instance.
   CreateWebClient(pending_receiver<WebClientHandler> web_client_receiver);
@@ -356,7 +367,7 @@ interface PageHandler {
   EnableDragResize(bool enabled);
 
   // Notifies the PageHandler that the state of the WebUI has changed.
-  WebUiStateChanged(WebUiState new_state);
+  OnWebUiStateChanged(WebUiState new_state);
 };
 
 // @generate glic_api
@@ -2279,6 +2290,10 @@ interface ExperimentalTriggeringClient {
 
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
+  // Lightweight check sent by C++ browser process to verify guest JS event-loop
+  // responsiveness.
+  CheckResponsive() => ();
+
   // Informs the web client that the panel will open. Chrome will wait to open
   // the panel until after this returns, and will use the data in the returned
   // `OpenPanelInfo` to setup the opening panel.
