@@ -46,8 +46,7 @@ StringView StripLeadingAndTrailingHtmlSpaces(const StringView& string) {
 
 Vector<String> SplitOnASCIIWhitespace(const String& input) {
   return input.SplitSkippingEmpty(
-      [](const StringView& input,
-         string_size_t pos) -> std::optional<string_size_t> {
+      [](const StringView& input, wtf_size_t pos) -> std::optional<wtf_size_t> {
         // SAFETY: SplitSkippingEmpty() guarantees that pos is always in bounds.
         if (IsHTMLSpace(UNSAFE_BUFFERS(input[pos]))) {
           return 1u;

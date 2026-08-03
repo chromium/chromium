@@ -158,13 +158,12 @@ Vector<gfx::RectF> ComputeInteriorSpaceRects(const FragmentItem& text_item,
     return rects;
   }
 
-  const string_size_t len = item_text.length();
-  const string_size_t item_start = text_item.StartOffset();
-  string_size_t last_non_space =
-      item_text.ReverseFind(IsNotDecorationSkipSpace);
+  const wtf_size_t len = item_text.length();
+  const wtf_size_t item_start = text_item.StartOffset();
+  wtf_size_t last_non_space = item_text.ReverseFind(IsNotDecorationSkipSpace);
 
   // Skip leading spaces.
-  string_size_t i = item_text.Find(IsNotDecorationSkipSpace);
+  wtf_size_t i = item_text.Find(IsNotDecorationSkipSpace);
   // Walk through the non-space portions; collect space runs encountered between
   // two non-space characters.
   while (i < len) {
@@ -175,9 +174,9 @@ Vector<gfx::RectF> ComputeInteriorSpaceRects(const FragmentItem& text_item,
     }
 
     // Found a space run starting at i. Find its end.
-    string_size_t space_start = i;
+    wtf_size_t space_start = i;
     i = item_text.Find(IsNotDecorationSkipSpace, i);
-    string_size_t space_end = i;
+    wtf_size_t space_end = i;
 
     // If this space run starts after the last non-space character, it is a
     // trailing run — stop (handled separately via SpaceSkipWidths).
@@ -207,11 +206,11 @@ SpaceSkipWidths ComputeSpaceSkipWidths(const FragmentItem& text_item,
     return result;
   }
 
-  const string_size_t item_start = text_item.StartOffset();
-  const string_size_t item_end = text_item.EndOffset();
+  const wtf_size_t item_start = text_item.StartOffset();
+  const wtf_size_t item_end = text_item.EndOffset();
   if (check_start && EnumHasFlags(skip, TextDecorationSkipSpaces::kStart)) {
     // Find how many leading spaces are in this item.
-    string_size_t i = item_text.Find(IsNotDecorationSkipSpace);
+    wtf_size_t i = item_text.Find(IsNotDecorationSkipSpace);
     i = (i == kNotFound) ? item_text.length() : i;
     if (i > 0) {
       auto [left, right] = text_item.LineLeftAndRightForOffsets(
@@ -222,9 +221,9 @@ SpaceSkipWidths ComputeSpaceSkipWidths(const FragmentItem& text_item,
 
   if (check_end && EnumHasFlags(skip, TextDecorationSkipSpaces::kEnd)) {
     // Find how many trailing spaces are in this item.
-    const string_size_t len = item_text.length();
-    string_size_t pos = item_text.ReverseFind(IsNotDecorationSkipSpace);
-    string_size_t i = (pos == kNotFound) ? 0 : pos + 1;
+    const wtf_size_t len = item_text.length();
+    wtf_size_t pos = item_text.ReverseFind(IsNotDecorationSkipSpace);
+    wtf_size_t i = (pos == kNotFound) ? 0 : pos + 1;
     if (i < len) {
       auto [left, right] = text_item.LineLeftAndRightForOffsets(
           item_text, item_start + i, item_end);

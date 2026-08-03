@@ -1911,7 +1911,7 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
     const char kToken[] = "%s";
     String user_url = protocol_handler->url.GetString();
     String tokenless_url = protocol_handler->url.GetString();
-    string_size_t token_position = user_url.find(kToken);
+    wtf_size_t token_position = user_url.find(kToken);
     if (token_position != String::npos) {
       tokenless_url.erase(token_position, std::size(kToken) - 1);
     }

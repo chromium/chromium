@@ -255,7 +255,7 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
       execution_context->GetContentSecurityPolicy()
           ->AllowTrustedTypeAssignmentFailure(
               GetMessage(kind),
-              strip ? value.substr(static_cast<string_size_t>(strip)) : value,
+              strip ? value.substr(static_cast<wtf_size_t>(strip)) : value,
               prefix, issue_id);
 
   // TODO(1087743): Add a console message for Trusted Type-related Function

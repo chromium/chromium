@@ -307,7 +307,7 @@ FileList* FileInputType::CreateFileList(ExecutionContext& context,
   // |base_dir|.
   if (size && !base_dir.empty()) {
     base::FilePath root_path = base_dir.DirName();
-    string_size_t root_length = FilePathToString(root_path).length();
+    wtf_size_t root_length = FilePathToString(root_path).length();
     DCHECK(root_length);
     if (!root_path.EndsWithSeparator())
       root_length += 1;

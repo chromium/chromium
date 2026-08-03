@@ -396,11 +396,11 @@ void HTMLViewSourceDocument::AddText(const StringView& text,
   }
 }
 
-string_size_t HTMLViewSourceDocument::AddRange(const String& source,
-                                               string_size_t start,
-                                               string_size_t end,
-                                               const AtomicString& class_name,
-                                               const Link* link) {
+wtf_size_t HTMLViewSourceDocument::AddRange(const String& source,
+                                            wtf_size_t start,
+                                            wtf_size_t end,
+                                            const AtomicString& class_name,
+                                            const Link* link) {
   DCHECK_LE(start, end);
   if (start == end)
     return start;

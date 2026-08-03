@@ -207,7 +207,7 @@ Token Parser::LexString() {
 }
 
 Token Parser::LexNumber() {
-  string_size_t start_pos = next_pos_;
+  wtf_size_t start_pos = next_pos_;
   bool seen_dot = false;
 
   // Go until end or a non-digits character.

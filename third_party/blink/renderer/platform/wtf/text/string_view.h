@@ -59,7 +59,7 @@ class WTF_EXPORT StringView {
   DISALLOW_NEW();
 
  public:
-  using size_type = string_size_t;
+  using size_type = wtf_size_t;
   static constexpr size_type npos = kNotFound;
 
   // A buffer that allows for short strings to be held on the stack during a
@@ -193,7 +193,7 @@ class WTF_EXPORT StringView {
   // If you'd like to iterate code units, just use [] and length().
   //
   // * Iterate code units
-  //    for (string_size_t i = 0; i < view.length(); ++i) {
+  //    for (wtf_size_t i = 0; i < view.length(); ++i) {
   //      UChar code_unit = view[i];
   //      ...
   // * Iterate code points

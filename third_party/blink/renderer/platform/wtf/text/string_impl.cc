@@ -101,12 +101,12 @@ void CopyAndReplace(base::span<DestChar> dest,
 // Compute the new size for a string with the original length of `length` after
 // replacing `match_count` matches of `old_pattern_length` with
 // `new_pattern_length`. Used by the various Replace() variants.
-string_size_t ComputeSizeAfterReplacement(string_size_t length,
-                                          string_size_t match_count,
-                                          string_size_t old_pattern_length,
-                                          string_size_t new_pattern_length) {
-  const base::CheckedNumeric<string_size_t> checked_match_count(match_count);
-  base::CheckedNumeric<string_size_t> checked_new_size(length);
+wtf_size_t ComputeSizeAfterReplacement(wtf_size_t length,
+                                       wtf_size_t match_count,
+                                       wtf_size_t old_pattern_length,
+                                       wtf_size_t new_pattern_length) {
+  const base::CheckedNumeric<wtf_size_t> checked_match_count(match_count);
+  base::CheckedNumeric<wtf_size_t> checked_new_size(length);
   checked_new_size -= checked_match_count * old_pattern_length;
   checked_new_size += checked_match_count * new_pattern_length;
   return checked_new_size.ValueOrDie();
@@ -424,7 +424,7 @@ class StringImplAllocator {
   using ResultStringType = scoped_refptr<StringImpl>;
 
   template <typename CharType>
-  scoped_refptr<StringImpl> Alloc(string_size_t length,
+  scoped_refptr<StringImpl> Alloc(wtf_size_t length,
                                   base::span<CharType>& buffer) {
     return StringImpl::CreateUninitialized(length, buffer);
   }
@@ -810,16 +810,16 @@ StringImpl::size_type StringImpl::Find(const StringView& match_string,
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-ALWAYS_INLINE static string_size_t FindIgnoringCaseInternal(
+ALWAYS_INLINE static wtf_size_t FindIgnoringCaseInternal(
     base::span<const SearchCharacterType> search,
     base::span<const MatchCharacterType> match,
-    string_size_t index) {
+    wtf_size_t index) {
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  string_size_t delta =
-      base::checked_cast<string_size_t>(search.size() - match.size());
+  wtf_size_t delta =
+      base::checked_cast<wtf_size_t>(search.size() - match.size());
 
-  string_size_t i = 0;
+  wtf_size_t i = 0;
   const SearchCharacterType* search_data = search.data();
   // Keep looping until we match.
   // SAFETY: The `i == delta` check below guarantees the span is in `search`.
@@ -863,16 +863,16 @@ StringImpl::size_type StringImpl::DeprecatedFindIgnoringCase(
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-ALWAYS_INLINE static string_size_t FindIgnoringAsciiCaseInternal(
+ALWAYS_INLINE static wtf_size_t FindIgnoringAsciiCaseInternal(
     base::span<const SearchCharacterType> search,
     base::span<const MatchCharacterType> match,
-    string_size_t index) {
+    wtf_size_t index) {
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  string_size_t delta =
-      base::checked_cast<string_size_t>(search.size() - match.size());
+  wtf_size_t delta =
+      base::checked_cast<wtf_size_t>(search.size() - match.size());
 
-  string_size_t i = 0;
+  wtf_size_t i = 0;
   const SearchCharacterType* search_data = search.data();
   // Keep looping until we match.
   // SAFETY: The `i == delta` check below guarantees the span is in `search`.
@@ -1263,8 +1263,8 @@ scoped_refptr<StringImpl> StringImpl::UpconvertedString() {
 
 static inline bool StringImplContentEqual(const StringImpl* a,
                                           const StringImpl* b) {
-  string_size_t a_length = a->length();
-  string_size_t b_length = b->length();
+  wtf_size_t a_length = a->length();
+  wtf_size_t b_length = b->length();
   if (a_length != b_length)
     return false;
 
@@ -1314,7 +1314,7 @@ template <typename StringType>
 UNSAFE_BUFFER_USAGE bool EqualToCString(const StringType* a, const LChar* b) {
   DCHECK(b);
   return VisitCharacters(*a, [b](auto chars) {
-    for (string_size_t i = 0; auto ac : chars) {
+    for (wtf_size_t i = 0; auto ac : chars) {
       LChar bc = b[i++];
       if (!bc || ac != bc) {
         return false;

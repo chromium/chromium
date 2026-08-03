@@ -399,7 +399,7 @@ TEST(StringTest, SplitByString) {
 TEST(StringTest, SplitByFinder) {
   // Test splitting by zero-length separator (split into characters)
   auto result = String("abc").Split(
-      [](const StringView&, string_size_t pos) -> std::optional<string_size_t> {
+      [](const StringView&, wtf_size_t pos) -> std::optional<wtf_size_t> {
         if (pos > 0) {
           return 0u;
         }
@@ -413,7 +413,7 @@ TEST(StringTest, SplitByFinder) {
   // Test splitting by character simulation
   result = String("foo,,bar")
                .Split([](const StringView& str,
-                         string_size_t pos) -> std::optional<string_size_t> {
+                         wtf_size_t pos) -> std::optional<wtf_size_t> {
                  // SAFETY: Split() guarantees that pos is always in bounds.
                  if (UNSAFE_BUFFERS(str[pos]) == ',') {
                    return 1u;
@@ -427,7 +427,7 @@ TEST(StringTest, SplitByFinder) {
 
   // Test splitting by \n or \r\n
   auto eol_finder = [](const StringView& str,
-                       string_size_t pos) -> std::optional<string_size_t> {
+                       wtf_size_t pos) -> std::optional<wtf_size_t> {
     auto sub = str.subview(pos);
     if (sub.starts_with('\n')) {
       return 1u;

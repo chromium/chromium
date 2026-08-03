@@ -92,7 +92,7 @@ typedef HashMap<wtf_size_t, StringImpl*, AlreadyHashedTraits>
 // https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/platform/wtf/text/README.md
 class WTF_EXPORT StringImpl {
  public:
-  using size_type = string_size_t;
+  using size_type = wtf_size_t;
   static constexpr size_type npos = kNotFound;
 
  private:
@@ -902,9 +902,9 @@ ALWAYS_INLINE bool EqualIgnoringAsciiCase(base::span<const UChar> a,
 }
 
 template <typename CharType>
-inline string_size_t Find(base::span<const CharType> characters,
-                          CharType match_character,
-                          string_size_t index = 0) {
+inline wtf_size_t Find(base::span<const CharType> characters,
+                       CharType match_character,
+                       wtf_size_t index = 0) {
   if (index >= characters.size()) {
     return kNotFound;
   }
@@ -916,31 +916,31 @@ inline string_size_t Find(base::span<const CharType> characters,
   return it == end ? kNotFound : CheckedDistance(begin, it);
 }
 
-ALWAYS_INLINE string_size_t Find(base::span<const UChar> characters,
-                                 LChar match_character,
-                                 string_size_t index = 0) {
+ALWAYS_INLINE wtf_size_t Find(base::span<const UChar> characters,
+                              LChar match_character,
+                              wtf_size_t index = 0) {
   return Find(characters, static_cast<UChar>(match_character), index);
 }
 
-inline string_size_t Find(base::span<const LChar> characters,
-                          UChar match_character,
-                          string_size_t index = 0) {
+inline wtf_size_t Find(base::span<const LChar> characters,
+                       UChar match_character,
+                       wtf_size_t index = 0) {
   if (match_character & ~0xFF)
     return kNotFound;
   return Find(characters, static_cast<LChar>(match_character), index);
 }
 
 template <typename CharacterType>
-inline string_size_t Find(base::span<const CharacterType> characters,
-                          char match_character,
-                          string_size_t index = 0) {
+inline wtf_size_t Find(base::span<const CharacterType> characters,
+                       char match_character,
+                       wtf_size_t index = 0) {
   return Find(characters, static_cast<LChar>(match_character), index);
 }
 
 template <typename CharType>
-inline string_size_t Find(base::span<const CharType> characters,
-                          CharacterMatchFunctionPtr match_function,
-                          string_size_t index = 0) {
+inline wtf_size_t Find(base::span<const CharType> characters,
+                       CharacterMatchFunctionPtr match_function,
+                       wtf_size_t index = 0) {
   if (index >= characters.size()) {
     return kNotFound;
   }
@@ -953,11 +953,10 @@ inline string_size_t Find(base::span<const CharType> characters,
 }
 
 template <typename CharType>
-inline string_size_t ReverseFind(base::span<const CharType> characters,
-                                 CharacterMatchFunctionPtr match_function,
-                                 string_size_t index) {
-  const string_size_t length =
-      base::checked_cast<string_size_t>(characters.size());
+inline wtf_size_t ReverseFind(base::span<const CharType> characters,
+                              CharacterMatchFunctionPtr match_function,
+                              wtf_size_t index) {
+  const wtf_size_t length = base::checked_cast<wtf_size_t>(characters.size());
   if (!length) {
     return kNotFound;
   }
@@ -993,13 +992,13 @@ inline StringImpl::size_type StringImpl::Find(UChar character,
 
 // Null-terminated strings is generally discouraged as it has high chance to
 // cause Buffer overflow.
-UNSAFE_BUFFER_USAGE inline string_size_t LengthOfNullTerminatedString(
+UNSAFE_BUFFER_USAGE inline wtf_size_t LengthOfNullTerminatedString(
     const UChar* string) {
   size_t length = 0;
   while (string[length] != 0) {
     ++length;
   }
-  return base::checked_cast<string_size_t>(length);
+  return base::checked_cast<wtf_size_t>(length);
 }
 
 template <typename CharacterType1,

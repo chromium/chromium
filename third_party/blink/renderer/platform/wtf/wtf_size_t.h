@@ -39,10 +39,6 @@ namespace blink {
 using wtf_size_t = uint32_t;
 const wtf_size_t kNotFound = UINT_MAX;
 
-// The size type for Blink string classes.
-// The name is lower_snake_case for consistency with wtf_size_t.
-using string_size_t = wtf_size_t;
-
 template <typename Iter>
 inline wtf_size_t CheckedDistance(Iter begin, Iter end) {
   return base::checked_cast<wtf_size_t>(std::distance(begin, end));

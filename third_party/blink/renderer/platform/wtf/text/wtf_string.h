@@ -57,7 +57,7 @@ class WTF_EXPORT String {
   USING_FAST_MALLOC(String);
 
  public:
-  using size_type = string_size_t;
+  using size_type = wtf_size_t;
   static constexpr size_type npos = kNotFound;
 
   // Factories ------------------------------------------------------
