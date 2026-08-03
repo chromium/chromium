@@ -161,17 +161,7 @@ FilterUiController::FilterUiController(tabs::TabInterface& tab)
 }
 
 FilterUiController::~FilterUiController() {
-  if (!suggestion_state_ ||
-      suggestion_state_->view_state == SuggestionViewState::kInactive) {
-    return;
-  }
-  constexpr SuggestionUserDecision kDecision = SuggestionUserDecision::kIgnored;
-  LogSuggestionUiDecision(log_router_, *suggestion_state_, kDecision);
-  if (suggestion_state_->callbacks.on_user_interaction) {
-    std::move(suggestion_state_->callbacks.on_user_interaction).Run(kDecision);
-  }
-  ClosePromo(kDecision);
-  favicon_task_tracker_.TryCancelAll();
+  ClearSuggestion(SuggestionUserDecision::kIgnored);
 }
 
 void FilterUiController::OnSuggestionGenerated(
