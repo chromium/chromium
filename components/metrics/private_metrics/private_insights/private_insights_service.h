@@ -64,6 +64,9 @@ inline constexpr char kContributedTaskCountHistogram[] =
     "PrivateMetrics.PrivateInsights.ContributedTaskCount";
 inline constexpr char kFederatedComputationOutcomeHistogram[] =
     "PrivateMetrics.PrivateInsights.FederatedComputationOutcome";
+inline constexpr char kContextualCueEventsLoggingOnShutdownCountHistogram[] =
+    "PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging."
+    "OnShutdownCount";
 inline constexpr char kContextualCueEventsLoggingQueuedCountHistogram[] =
     "PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging.QueuedCount";
 inline constexpr char kContextualCueEventsLoggingRemovedCountHistogram[] =

@@ -194,6 +194,9 @@ void PrivateInsightsService::Stop() {
 
 void PrivateInsightsService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramCounts100(
+      kContextualCueEventsLoggingOnShutdownCountHistogram,
+      static_cast<int>(contextual_cue_events_.size()));
   Stop();
 }
 

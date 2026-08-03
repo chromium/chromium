@@ -72,6 +72,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging.OnShutdownCount"
+    units="events" expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of in-memory queued contextual cue events when the
+    PrivateInsightsService is shutting down. Logged once during service
+    shutdown.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging.QueuedCount"
     units="events" expires_after="2027-06-01">
   <owner>kjarosz@google.com</owner>
