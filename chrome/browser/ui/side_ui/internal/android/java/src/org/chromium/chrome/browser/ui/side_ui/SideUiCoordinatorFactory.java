@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 
@@ -46,6 +47,7 @@ public final class SideUiCoordinatorFactory {
      *     container.
      * @param tabStripBottomPxSupplier The supplier for the Side UI's top margin added for tab
      *     strip.
+     * @param incognitoStateProvider The {@link IncognitoStateProvider} to observe incognito state.
      * @return The newly-created {@link SideUiCoordinator}, or {@code null} if it was not created.
      */
     @Nullable
@@ -60,7 +62,8 @@ public final class SideUiCoordinatorFactory {
             @Nullable ViewStub leftAnchorContainerStub,
             @Nullable ViewStub rightAnchorContainerStub,
             @Nullable ViewStub webContentHairlineContainerStub,
-            @Nullable NonNullObservableSupplier<Integer> tabStripBottomPxSupplier) {
+            @Nullable NonNullObservableSupplier<Integer> tabStripBottomPxSupplier,
+            IncognitoStateProvider incognitoStateProvider) {
         if (!AndroidSidePanelEnabledFn.isEnabled()
                 && !VerticalTabUtils.isVerticalTabsEligible(parentActivity)) {
             return null;
@@ -85,6 +88,7 @@ public final class SideUiCoordinatorFactory {
                 leftAnchorContainerStub,
                 rightAnchorContainerStub,
                 webContentHairlineContainerStub,
-                tabStripBottomPxSupplier);
+                tabStripBottomPxSupplier,
+                incognitoStateProvider);
     }
 }

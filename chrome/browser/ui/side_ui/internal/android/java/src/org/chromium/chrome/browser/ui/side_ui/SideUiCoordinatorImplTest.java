@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
@@ -89,6 +90,7 @@ public class SideUiCoordinatorImplTest {
     @Mock private ViewStub mRightAnchorContainerStub;
     @Mock private ViewStub mWebContentHairlineContainerStub;
     @Mock private SideUiObserver mSideUiObserver;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
 
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
 
@@ -153,7 +155,8 @@ public class SideUiCoordinatorImplTest {
                         mLeftAnchorContainerStub,
                         mRightAnchorContainerStub,
                         mWebContentHairlineContainerStub,
-                        mTabStripBottomPxSupplier);
+                        mTabStripBottomPxSupplier,
+                        mIncognitoStateProvider);
 
         // Initialize the SideUiContainer View.
         mSideUiContainerView = new View(mTestActivity);

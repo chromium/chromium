@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
@@ -46,6 +47,7 @@ public class SideUiWebContentHairlineManagerTest {
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private SideUiStateProvider mSideUiStateProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
 
     private SideUiWebContentHairlineManager mManager;
 
@@ -81,7 +83,10 @@ public class SideUiWebContentHairlineManagerTest {
 
         mManager =
                 new SideUiWebContentHairlineManager(
-                        mBrowserControlsStateProvider, mSideUiStateProvider, hairlineContainer);
+                        mBrowserControlsStateProvider,
+                        mSideUiStateProvider,
+                        hairlineContainer,
+                        mIncognitoStateProvider);
     }
 
     @Test
@@ -94,9 +99,15 @@ public class SideUiWebContentHairlineManagerTest {
                 ArgumentCaptor.forClass(SideUiObserver.class);
         verify(mSideUiStateProvider).addObserver(sideUiObserverCaptor.capture());
 
+        ArgumentCaptor<IncognitoStateProvider.IncognitoStateObserver> incognitoObserverCaptor =
+                ArgumentCaptor.forClass(IncognitoStateProvider.IncognitoStateObserver.class);
+        verify(mIncognitoStateProvider)
+                .addIncognitoStateObserverAndTrigger(incognitoObserverCaptor.capture());
+
         mManager.destroy();
         verify(mBrowserControlsStateProvider).removeObserver(controlsObserverCaptor.getValue());
         verify(mSideUiStateProvider).removeObserver(sideUiObserverCaptor.getValue());
+        verify(mIncognitoStateProvider).removeObserver(incognitoObserverCaptor.getValue());
     }
 
     @Test

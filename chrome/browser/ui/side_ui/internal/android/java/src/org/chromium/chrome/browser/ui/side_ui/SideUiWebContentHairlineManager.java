@@ -15,6 +15,8 @@ import com.google.errorprone.annotations.DoNotMock;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -28,9 +30,11 @@ import java.util.Set;
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final SideUiStateProvider mSideUiStateProvider;
+    private final IncognitoStateProvider mIncognitoStateProvider;
 
     private final WebContentHairlineControlsObserver mWebContentHairlineControlsObserver;
     private final WebContentHairlineAdjuster mWebContentHairlineAdjuster;
+    private final WebContentHairlineIncognitoObserver mWebContentHairlineIncognitoObserver;
 
     /**
      * Creates a {@link SideUiWebContentHairlineManager}.
@@ -39,13 +43,16 @@ import java.util.Set;
      *     controls changes.
      * @param sideUiStateProvider The {@link SideUiStateProvider} to observe SideUI changes.
      * @param sideUiWebContentHairlineContainer The group that contains the WebContent hairlines.
+     * @param incognitoStateProvider The {@link IncognitoStateProvider} to observe incognito state.
      */
     /* package */ SideUiWebContentHairlineManager(
             BrowserControlsStateProvider browserControlsStateProvider,
             SideUiStateProvider sideUiStateProvider,
-            SideUiWebContentHairlineContainer sideUiWebContentHairlineContainer) {
+            SideUiWebContentHairlineContainer sideUiWebContentHairlineContainer,
+            IncognitoStateProvider incognitoStateProvider) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mSideUiStateProvider = sideUiStateProvider;
+        mIncognitoStateProvider = incognitoStateProvider;
 
         mWebContentHairlineControlsObserver =
                 new WebContentHairlineControlsObserver(
@@ -59,12 +66,18 @@ import java.util.Set;
                 new WebContentHairlineAdjuster(
                         sideUiStateProvider, sideUiWebContentHairlineContainer);
         sideUiStateProvider.addObserver(mWebContentHairlineAdjuster);
+
+        mWebContentHairlineIncognitoObserver =
+                new WebContentHairlineIncognitoObserver(sideUiWebContentHairlineContainer);
+        mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(
+                mWebContentHairlineIncognitoObserver);
     }
 
     /** Destroys all owned objects. */
     /* package */ void destroy() {
         mBrowserControlsStateProvider.removeObserver(mWebContentHairlineControlsObserver);
         mSideUiStateProvider.removeObserver(mWebContentHairlineAdjuster);
+        mIncognitoStateProvider.removeObserver(mWebContentHairlineIncognitoObserver);
     }
 
     /** Updates the WebContent hairline container. */
@@ -185,6 +198,25 @@ import java.util.Set;
                     .setVisibility(rightHairlineVisibility);
 
             super.onSideUiSpecsChanged(sideUiSpecs);
+        }
+    }
+
+    /**
+     * Implementation of {@link IncognitoStateObserver} that updates the colors of the hairlines and
+     * rounded corners when incognito mode changes.
+     */
+    private static final class WebContentHairlineIncognitoObserver
+            implements IncognitoStateObserver {
+        private final SideUiWebContentHairlineContainer mSideUiWebContentHairlineContainer;
+
+        WebContentHairlineIncognitoObserver(
+                SideUiWebContentHairlineContainer sideUiWebContentHairlineContainer) {
+            mSideUiWebContentHairlineContainer = sideUiWebContentHairlineContainer;
+        }
+
+        @Override
+        public void onIncognitoStateChanged(boolean isIncognito) {
+            mSideUiWebContentHairlineContainer.setIncognitoState(isIncognito);
         }
     }
 }

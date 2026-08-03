@@ -2317,7 +2317,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,
                         webContentHairlineContainerStub,
-                        stripBottomPxSupplier);
+                        stripBottomPxSupplier,
+                        mIncognitoStateProvider);
         if (mSideUiCoordinator == null) {
             return;
         }

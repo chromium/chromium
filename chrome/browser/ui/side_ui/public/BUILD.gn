@@ -34,6 +34,7 @@ android_library_factory("factory_java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
   ]
   sources = [ "//chrome/browser/ui/side_ui/internal/android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorFactory.java" ]

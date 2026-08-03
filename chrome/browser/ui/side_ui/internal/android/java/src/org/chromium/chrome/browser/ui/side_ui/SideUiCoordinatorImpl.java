@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.ViewUtils;
 
@@ -114,6 +115,7 @@ final class SideUiCoordinatorImpl
      *     container.
      * @param tabStripBottomPxSupplier The supplier for the Side UI's top margin added for tab
      *     strip.
+     * @param incognitoStateProvider The {@link IncognitoStateProvider} to observe incognito state.
      */
     /* package */ SideUiCoordinatorImpl(
             Activity parentActivity,
@@ -126,7 +128,8 @@ final class SideUiCoordinatorImpl
             ViewStub leftAnchorContainerStub,
             ViewStub rightAnchorContainerStub,
             ViewStub webContentHairlineContainerStub,
-            NonNullObservableSupplier<Integer> tabStripBottomPxSupplier) {
+            NonNullObservableSupplier<Integer> tabStripBottomPxSupplier,
+            IncognitoStateProvider incognitoStateProvider) {
         mParentActivity = parentActivity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -153,7 +156,11 @@ final class SideUiCoordinatorImpl
                 new SideUiWebContentHairlineManager(
                         browserControlsStateProvider,
                         /* sideUiStateProvider= */ this,
-                        webContentHairlineContainer);
+                        webContentHairlineContainer,
+                        incognitoStateProvider);
+
+        // TODO(crbug.com/540566058): Investigate if we need to recolor the anchor containers when
+        //  toggling Incognito state.
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::onLayoutStateProviderAvailable));
