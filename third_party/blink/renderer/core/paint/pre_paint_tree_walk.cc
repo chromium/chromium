@@ -356,7 +356,7 @@ void PrePaintTreeWalk::UpdateContainerTimingContext(
   }
 
   // This node is either a container timing root (has containertiming attr),
-  // a stop node (has containertiming-ignore), or inherits its ancestor root.
+  // a stop node (has containertimingignore), or inherits its ancestor root.
   // The result is cached in ShouldInheritContainerTimingRoot so that
   // subsequent pre-paint walks skip nodes that haven't changed.
   if (context.container_timing_context_changed) {
@@ -394,7 +394,7 @@ void PrePaintTreeWalk::UpdateContainerTimingContext(
         element->FastHasAttribute(html_names::kContainertimingAttr)) {
       context.container_timing_context_root = element;
     } else {
-      // Stop node (containertiming-ignore without containertiming).
+      // Stop node (containertimingignore without containertiming).
       context.container_timing_context_root = nullptr;
     }
   }

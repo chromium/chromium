@@ -478,6 +478,10 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnPopoverChanged},
       {html_names::kContainertimingAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnContainerTimingAttrChanged},
+      {html_names::kContainertimingignoreAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::OnContainerTimingIgnoreAttrChanged},
+      // Deprecated dashed spelling: still functional, but warns. Remove once
+      // the origin trial ends.
       {html_names::kContainertimingIgnoreAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnContainerTimingIgnoreAttrChanged},
 
@@ -4442,14 +4446,32 @@ void HTMLElement::OnContainerTimingAttrChanged(
 
 void HTMLElement::OnContainerTimingIgnoreAttrChanged(
     const AttributeModificationParams& params) {
+  // Both spellings are handled here and share the same use counter. The dashed
+  // `containertiming-ignore` one is deprecated in favor of
+  // `containertimingignore`: it stays functional for the remainder of the
+  // origin trial, but warns. The warning fires on every occurrence on purpose:
+  // measured usage is negligible and the spelling goes away when the trial
+  // ends, so it is not worth tracking per-page state to suppress repeats.
   if (!params.new_value.IsNull() && !IsInUserAgentShadowRoot()) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kContainerTimingIgnoreAttribute);
+    if (params.name == html_names::kContainertimingIgnoreAttr) {
+      AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kDeprecation,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "The 'containertiming-ignore' attribute is deprecated and will be "
+          "removed. Use 'containertimingignore' instead.");
+    }
   }
 
   if (!RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext())) {
     return;
   }
+  // Only this spelling's presence is tracked here. That is still correct when
+  // the element carries both spellings: the branches below either consult
+  // RecalcSelfOrAncestorHasContainerTiming(), which sees the other spelling
+  // through HasContainerTimingIgnoreAttribute(), or re-clear an already cleared
+  // subtree.
   bool had_container_timing_ignore = !params.old_value.IsNull();
   bool has_container_timing_ignore = !params.new_value.IsNull();
   if (had_container_timing_ignore == has_container_timing_ignore) {
@@ -4463,7 +4485,7 @@ void HTMLElement::OnContainerTimingIgnoreAttrChanged(
     }
   } else if (!had_container_timing_ignore && has_container_timing_ignore &&
              !FastHasAttribute(html_names::kContainertimingAttr)) {
-    // containertiming has precedence over containertiming-ignore, only unset
+    // containertiming has precedence over containertimingignore, only unset
     // the tree if the node has ignore only
     ClearSelfOrAncestorHasContainerTiming();
     UpdateDescendantHasContainerTiming(false /* has_container_timing */);

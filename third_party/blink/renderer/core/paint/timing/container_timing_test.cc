@@ -171,8 +171,8 @@ TEST_P(ContainerTimingPropagationTest, Propagation_AddIgnoreStopsPropagation) {
   auto count_after_first_paint = GetContainerEntryCount();
   EXPECT_EQ(2u, count_after_first_paint);
 
-  // An element with containertiming-ignore blocks propagation upwards.
-  inner->setAttribute(html_names::kContainertimingIgnoreAttr, g_empty_atom);
+  // An element with containertimingignore blocks propagation upwards.
+  inner->setAttribute(html_names::kContainertimingignoreAttr, g_empty_atom);
   // Run the lifecycle so attribution picks up the ignore flag (updates the
   // pre-paint tracker when the feature is enabled).
   UpdateAllLifecyclePhasesForTest();
@@ -190,7 +190,7 @@ TEST_P(ContainerTimingPropagationTest,
        Propagation_RemoveIgnoreRestoresPropagation) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
-      <div id="inner" containertiming="inner" containertiming-ignore>
+      <div id="inner" containertiming="inner" containertimingignore>
         <div id="content">x</div>
       </div>
     </div>
@@ -208,7 +208,7 @@ TEST_P(ContainerTimingPropagationTest,
   auto count_after_first_paint = GetContainerEntryCount();
   EXPECT_EQ(1u, count_after_first_paint);
 
-  inner->removeAttribute(html_names::kContainertimingIgnoreAttr);
+  inner->removeAttribute(html_names::kContainertimingignoreAttr);
   // Run the lifecycle so attribution restores propagation (updates the
   // pre-paint tracker when the feature is enabled).
   UpdateAllLifecyclePhasesForTest();
@@ -291,7 +291,7 @@ TEST_P(ContainerTimingPropagationTest,
        Propagation_IgnoreBlocksOnMultiplePaints) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
-      <div id="inner" containertiming="inner" containertiming-ignore>
+      <div id="inner" containertiming="inner" containertimingignore>
         <div id="content">x</div>
       </div>
     </div>
@@ -417,7 +417,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 // Regression test for removing the ContainerTimingChanged() cleanliness CHECKs
 // from OnElementPainted. That method runs at presentation time, so the painted
 // element's ContainerTimingChanged() bit can be dirty when an attribute was
-// toggled since the last pre-paint. Toggling containertiming-ignore on a
+// toggled since the last pre-paint. Toggling containertimingignore on a
 // self-root keeps its containertiming attribute (so it stays a valid root)
 // while MarkContainerTimingChanged() dirties its layout object. Painting must
 // proceed without crashing and still record.
@@ -438,7 +438,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 
   // Dirty the layout object's ContainerTimingChanged() bit without a pre-paint
   // to clear it. #root keeps its containertiming attribute.
-  root->setAttribute(html_names::kContainertimingIgnoreAttr, g_empty_atom);
+  root->setAttribute(html_names::kContainertimingignoreAttr, g_empty_atom);
   ASSERT_TRUE(root->GetLayoutObject());
   ASSERT_TRUE(root->GetLayoutObject()->ContainerTimingChanged());
 
@@ -483,13 +483,13 @@ TEST_F(ContainerTimingPrepaintTraversalTest, Propagation_CachedRootPath) {
 
 // Exercises the cached stop-node branch in pre_paint_tree_walk's
 // UpdateContainerTimingContext: after the initial walk caches the
-// containertiming-ignore element as a stop node, a subsequent walk triggered
+// containertimingignore element as a stop node, a subsequent walk triggered
 // by a non-CT change must reuse the cached state and continue to block
 // propagation.
 TEST_F(ContainerTimingPrepaintTraversalTest, Propagation_CachedStopNodePath) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
-      <div id="stop" containertiming-ignore>
+      <div id="stop" containertimingignore>
         <div id="content" style="width: 100px;">x</div>
       </div>
     </div>
@@ -514,13 +514,13 @@ TEST_F(ContainerTimingPrepaintTraversalTest, Propagation_CachedStopNodePath) {
   EXPECT_EQ(0u, GetContainerEntryCount());
 }
 
-// A container root with containertiming-ignore that contains text must
+// A container root with containertimingignore that contains text must
 // receive its own paints (via the text-aggregation descent in pre-paint), but
 // must not propagate to an ancestor container root.
 TEST_F(ContainerTimingPrepaintTraversalTest, TextRootWithIgnore_SelfReported) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
-      <div id="text-root" containertiming="text-root" containertiming-ignore>
+      <div id="text-root" containertiming="text-root" containertimingignore>
         Hello
       </div>
     </div>
@@ -540,13 +540,13 @@ TEST_F(ContainerTimingPrepaintTraversalTest, TextRootWithIgnore_SelfReported) {
 }
 
 // On the legacy fixture (feature OFF → ContainerRootFallback path), an
-// ancestor with only `containertiming-ignore` (no `containertiming`) must stop
+// ancestor with only `containertimingignore` (no `containertiming`) must stop
 // the upward walk and produce no entries. Covers the ignore-stops-walk branch
 // in ContainerRootFallback().
 TEST_F(ContainerTimingTest, Propagation_FallbackIgnoreOnlyStopsWalk) {
   SetBodyContent(R"HTML(
     <div containertiming="outer">
-      <div containertiming-ignore>
+      <div containertimingignore>
         <div id="content">x</div>
       </div>
     </div>
@@ -576,7 +576,7 @@ TEST_F(ContainerTimingTest, Propagation_FallbackNoRootInAncestors) {
   EXPECT_EQ(0u, GetContainerEntryCount());
 }
 
-// On the prepaint fixture, toggling `containertiming-ignore` via setAttribute
+// On the prepaint fixture, toggling `containertimingignore` via setAttribute
 // after the initial layout exercises the prepaint-enabled branch in
 // OnContainerTimingIgnoreAttrChanged that marks the layout object so the
 // pre-paint walk reattributes the subtree. Mirrors the legacy fixture's
@@ -606,7 +606,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
   // OnContainerTimingIgnoreAttrChanged. With prepaint enabled, this also calls
   // MarkContainerTimingChanged() on inner's LayoutObject so the next pre-paint
   // walk re-attributes the subtree.
-  inner->setAttribute(html_names::kContainertimingIgnoreAttr, g_empty_atom);
+  inner->setAttribute(html_names::kContainertimingignoreAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
 
   // Second paint must now stop at the inner root.

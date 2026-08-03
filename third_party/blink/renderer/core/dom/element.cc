@@ -13891,7 +13891,7 @@ bool Element::RecalcSelfOrAncestorHasContainerTiming() const {
   if (IsHTMLElement()) {
     if (FastHasAttribute(html_names::kContainertimingAttr)) {
       return true;
-    } else if (FastHasAttribute(html_names::kContainertimingIgnoreAttr)) {
+    } else if (HasContainerTimingIgnoreAttribute()) {
       return false;
     }
   }
@@ -13908,7 +13908,7 @@ void Element::UpdateDescendantHasContainerTiming(bool has_container_timing) {
   while (element) {
     if (element->IsHTMLElement()) {
       if (element->FastHasAttribute(html_names::kContainertimingAttr) ||
-          element->FastHasAttribute(html_names::kContainertimingIgnoreAttr)) {
+          element->HasContainerTimingIgnoreAttribute()) {
         element = ElementTraversal::NextSkippingChildren(*element, this);
         continue;
       }
@@ -13932,11 +13932,16 @@ void Element::UpdateDescendantHasContainerTiming(bool has_container_timing) {
   }
 }
 
+bool Element::HasContainerTimingIgnoreAttribute() const {
+  return FastHasAttribute(html_names::kContainertimingignoreAttr) ||
+         FastHasAttribute(html_names::kContainertimingIgnoreAttr);
+}
+
 bool Element::DoesChildContainerTimingNeedChange(const Node& node) const {
   auto* element = DynamicTo<Element>(node);
   if (element && element->IsHTMLElement() &&
       (element->FastHasAttribute(html_names::kContainertimingAttr) ||
-       element->FastHasAttribute(html_names::kContainertimingIgnoreAttr))) {
+       element->HasContainerTimingIgnoreAttribute())) {
     return false;
   }
   return SelfOrAncestorHasContainerTiming() !=

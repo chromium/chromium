@@ -34,12 +34,12 @@ Element* ContainerRootFallback(Element* element) {
     return element;
   }
   // Walk up the DOM looking for a container root. Stops at
-  // containertiming-ignore (unless that element also has containertiming).
+  // containertimingignore (unless that element also has containertiming).
   while ((element = element->parentElement())) {
     if (element->FastHasAttribute(html_names::kContainertimingAttr)) {
       return element;
     }
-    if (element->FastHasAttribute(html_names::kContainertimingIgnoreAttr)) {
+    if (element->HasContainerTimingIgnoreAttribute()) {
       return nullptr;
     }
   }
@@ -192,10 +192,9 @@ void ContainerTiming::OnElementPainted(
     Record* record = GetOrCreateRecord(paint_timing_info, container_root);
     record->MaybeUpdateLastNewPaintedArea(paint_timing_info, element,
                                           enclosing_rect);
-    // A container root with containertiming-ignore does not propagate to
+    // A container root with containertimingignore does not propagate to
     // ancestor roots.
-    if (container_root->FastHasAttribute(
-            html_names::kContainertimingIgnoreAttr)) {
+    if (container_root->HasContainerTimingIgnoreAttribute()) {
       break;
     }
     container_root =

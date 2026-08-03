@@ -2018,6 +2018,17 @@ class CORE_EXPORT Element : public ContainerNode {
 
   bool RecalcSelfOrAncestorHasContainerTiming() const;
 
+  // True if this element carries the container timing ignore marker, either
+  // spelled `containertimingignore` or with the deprecated dashed
+  // `containertiming-ignore` spelling. Both are functional; the dashed one
+  // additionally warns in the console.
+  //
+  // TODO(crbug.com/539984792): the dashed spelling is going away right after
+  // the origin trial ends. Once it does, drop this helper and inline
+  // FastHasAttribute(html_names::kContainertimingignoreAttr) back into its
+  // callers.
+  bool HasContainerTimingIgnoreAttribute() const;
+
   // The "nonce" attribute is hidden when:
   // 1) The Content-Security-Policy is delivered from the HTTP headers.
   // 2) The Element is part of the active document.

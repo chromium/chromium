@@ -4183,8 +4183,8 @@ TEST_F(ContainerTimingDisplayLockContextTest, IgnoreInsideLockedSubtree) {
   // Content sits inside the lock, so the walk did not reach it yet.
   EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
 
-  // Add containertiming-ignore inside the locked subtree.
-  ignored_element->setAttribute(html_names::kContainertimingIgnoreAttr,
+  // Add containertimingignore inside the locked subtree.
+  ignored_element->setAttribute(html_names::kContainertimingignoreAttr,
                                 g_empty_atom);
 
   // Dirty bit fires on the ignored element and stops at the lock.

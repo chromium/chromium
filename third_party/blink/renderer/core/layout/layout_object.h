@@ -4144,7 +4144,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(should_inherit_soft_navigation_context_,
                          ShouldInheritSoftNavigationContext);
 
-    // Set when the containertiming or containertiming-ignore attribute changes
+    // Set when the containertiming or containertimingignore attribute changes
     // on this node, triggering a re-walk by
     // ContainerTimingPaintAttributionTracker. Initialized to true so every new
     // LayoutObject is visited by the pre-paint walk at least once to populate
