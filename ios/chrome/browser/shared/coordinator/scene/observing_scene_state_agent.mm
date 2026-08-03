@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+
 @implementation ObservingSceneAgent
 
 #pragma mark - SceneAgent
