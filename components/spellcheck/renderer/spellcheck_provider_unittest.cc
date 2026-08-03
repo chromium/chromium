@@ -628,6 +628,50 @@ TEST_P(CombineSpellCheckResultsTest, ShouldCorrectlyCombineHybridResults) {
     }
   }
 }
+
+// Verifies that the per-document custom word set is applied on the Windows
+// hybrid path.
+TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryFiltersHybridResults) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "SpellCheckCustomDictionaryAPI", true);
+
+  // Configure a hybrid check: one native locale and one Hunspell locale.
+  provider_.spellcheck()->InitializeSpellCheckForLocale("en-US",
+                                                        /*use_hunspell=*/false);
+  provider_.spellcheck()->InitializeSpellCheckForLocale("en-US",
+                                                        /*use_hunspell=*/true);
+
+  // Push a custom word through the per-frame web API entry point.
+  static_cast<blink::WebTextCheckClient*>(&provider_)
+      ->SpellCheckCustomDictionaryChanged({"Pikachu"}, {});
+
+  FakeTextCheckingResult completion;
+  SpellCheckProvider::HybridSpellCheckRequestInfo request_info = {
+      /*used_hunspell=*/true, /*used_native=*/true, base::TimeTicks::Now()};
+  int check_id = provider_.AddCompletionForTest(
+      std::make_unique<FakeTextCheckingCompletion>(&completion), request_info);
+
+  // The native spell checker flags both "Pikachu" (offset 7) and "soem"
+  // (offset 15). Only "Pikachu" is a custom word; "soem" is misspelled in the
+  // en-US Hunspell dictionary as well.
+  std::vector<SpellCheckResult> native_results = {
+      SpellCheckResult(spellcheck::Decoration::SPELLING, /*loc=*/7, /*len=*/7),
+      SpellCheckResult(spellcheck::Decoration::SPELLING, /*loc=*/15,
+                       /*len=*/4)};
+  provider_.OnRespondTextCheck(check_id, u"i love Pikachu soem",
+                               native_results);
+
+  EXPECT_EQ(completion.completion_count_, 1u);
+  EXPECT_EQ(completion.cancellation_count_, 0u);
+
+  // "Pikachu" was dropped by the custom word filter. "soem" went through the
+  // Hunspell re-check, which agreed it is misspelled, so it is still reported.
+  ASSERT_EQ(completion.results_.size(), 1u);
+  EXPECT_EQ(completion.results_[0].location, 15);
+  EXPECT_EQ(completion.results_[0].length, 4);
+  EXPECT_EQ(completion.results_[0].decoration,
+            blink::WebTextDecorationType::kWebTextDecorationTypeSpelling);
+}
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(IS_WIN)
