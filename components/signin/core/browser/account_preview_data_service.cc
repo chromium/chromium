@@ -12,6 +12,7 @@ namespace signin {
 // static
 void AccountPreviewDataService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kAccountPreviewDataLastFetchAccounts);
   registry->RegisterTimePref(prefs::kAccountPreviewDataLastUpdatePref,
                              base::Time());
   registry->RegisterDictionaryPref(prefs::kAccountPreviewPreference);

@@ -26,6 +26,11 @@ const char kAccountPreviewPreference[] = "signin.account_preview_preference";
 const char kAccountPreviewDataLastUpdatePref[] =
     "signin.account_preview_data_last_update";
 
+// List pref that tracks the GAIA IDs of accounts present during the last data
+// fetch.
+const char kAccountPreviewDataLastFetchAccounts[] =
+    "signin.account_preview_data_last_fetch_accounts";
+
 // Integer pref that tracks the number of non-periodic full fetches until the
 // next periodic fetch.
 const char kAccountPreviewNonPeriodicFetchCountPref[] =

@@ -132,6 +132,9 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
 
   GaiaId gaia_id = it->second;
   account_id_to_gaia_id_.erase(it);
+  if (account_id_to_gaia_id_.empty()) {
+    pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
+  }
 
   cached_data_.erase(gaia_id);
   if (active_fetchers_.contains(gaia_id)) {
@@ -193,7 +196,9 @@ void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
 }
 
 void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
-  cached_data_.clear();
+  // Clear data to ensure a new fresh fetch and oreferred data computation is
+  // performed.
+  ClearAllDataAndResults();
   EnsureAllAccountsFetched(FetchTriggerCause::kPeriodicRefresh);
 }
 
@@ -210,6 +215,7 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   auto accounts = identity_manager_->GetAccountsWithRefreshTokens();
   // If there are no accounts, there is no need to fetch any data.
   if (accounts.empty()) {
+    ClearAllDataAndResults();
     if (cause == FetchTriggerCause::kPeriodicRefresh) {
       // Treat `prefs::kAccountPreviewNonPeriodicFetchCountPref` pref.
       int count = pref_service_->GetInteger(
@@ -228,9 +234,26 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   base::UmaHistogramEnumeration("Signin.AccountPreview.AllFetchTriggerCause",
                                 cause);
 
-  std::vector<GaiaId> gaia_ids_to_fetch;
+  account_id_to_gaia_id_.clear();
   for (const auto& account : accounts) {
     account_id_to_gaia_id_[account.account_id] = account.gaia;
+  }
+
+  if (switches::kAccountPreviewDataPersistAccounts.Get() &&
+      cached_data_.empty() && !HaveAccountsMutatedSinceLastFetch(accounts)) {
+    base::UmaHistogramEnumeration(
+        "Signin.AccountPreview.TriggerCauseAccountsUnchangedSinceLastFetch",
+        cause);
+
+    all_accounts_fetched_barrier_.Reset();
+    if (all_data_available_callback_for_testing_) {
+      std::move(all_data_available_callback_for_testing_).Run();
+    }
+    return;
+  }
+
+  std::vector<GaiaId> gaia_ids_to_fetch;
+  for (const auto& account : accounts) {
     if (!cached_data_.contains(account.gaia)) {
       gaia_ids_to_fetch.push_back(account.gaia);
     }
@@ -308,19 +331,51 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   return std::nullopt;
 }
 
+bool AccountPreviewDataServiceImpl::HaveAccountsMutatedSinceLastFetch(
+    const std::vector<CoreAccountInfo>& accounts) const {
+  absl::flat_hash_set<std::string> last_used_gaia_ids;
+  for (const auto& val :
+       pref_service_->GetList(prefs::kAccountPreviewDataLastFetchAccounts)) {
+    if (const std::string* str = val.GetIfString()) {
+      last_used_gaia_ids.insert(*str);
+    }
+  }
+
+  if (accounts.size() != last_used_gaia_ids.size()) {
+    return true;
+  }
+  for (const auto& account : accounts) {
+    if (!last_used_gaia_ids.contains(account.gaia.ToString())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void AccountPreviewDataServiceImpl::RecordAccountsUsedForLastFetch() {
+  if (switches::kAccountPreviewDataPersistAccounts.Get()) {
+    base::ListValue account_list;
+    for (const auto& [account_id, gaia_id] : account_id_to_gaia_id_) {
+      account_list.Append(gaia_id.ToString());
+    }
+    pref_service_->SetList(prefs::kAccountPreviewDataLastFetchAccounts,
+                           std::move(account_list));
+  } else {
+    pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
+  }
+}
+
 void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
     bool should_reset_periodic_timer) {
   all_accounts_fetched_barrier_.Reset();
+
+  RecordAccountsUsedForLastFetch();
 
   if (base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccount)) {
     std::optional<AccountPreviewPreference> preferred_account =
         ComputePreferredAccount();
-    if (preferred_account) {
-      WritePreviewPreferenceToPrefs(*preferred_account);
-    } else {
-      pref_service_->ClearPref(prefs::kAccountPreviewPreference);
-    }
+    WritePreferredAccountToPrefs(preferred_account);
   }
 
   if (should_reset_periodic_timer) {
@@ -361,12 +416,17 @@ AccountPreviewDataServiceImpl::ReadPreviewPreferenceFromPrefs() const {
   return preference;
 }
 
-void AccountPreviewDataServiceImpl::WritePreviewPreferenceToPrefs(
-    const AccountPreviewPreference& preference) {
+void AccountPreviewDataServiceImpl::WritePreferredAccountToPrefs(
+    std::optional<AccountPreviewPreference> preference) {
+  if (!preference.has_value()) {
+    pref_service_->ClearPref(prefs::kAccountPreviewPreference);
+    return;
+  }
+
   base::DictValue dict;
-  dict.Set(kPreferredAccountDictGaiaIdKey, preference.gaia_id.ToString());
+  dict.Set(kPreferredAccountDictGaiaIdKey, preference->gaia_id.ToString());
   base::ListValue data_types_list;
-  for (syncer::DataType data_type : preference.preferred_data_types) {
+  for (syncer::DataType data_type : preference->preferred_data_types) {
     data_types_list.Append(syncer::DataTypeToStableIdentifier(data_type));
   }
   dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
@@ -388,6 +448,13 @@ void AccountPreviewDataServiceImpl::CreateAndStartRepeatingTimer() {
           &AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData,
           weak_ptr_factory_.GetWeakPtr()));
   repeating_timer_->Start();
+}
+
+void AccountPreviewDataServiceImpl::ClearAllDataAndResults() {
+  cached_data_.clear();
+  account_id_to_gaia_id_.clear();
+  pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
+  WritePreferredAccountToPrefs(std::nullopt);
 }
 
 }  // namespace signin
