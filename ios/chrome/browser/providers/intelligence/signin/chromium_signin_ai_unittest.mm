@@ -31,8 +31,8 @@ TEST_F(ChromiumAITest, TestGetAITierFullName) {
   EXPECT_NSEQ(@"AI 4", ios::provider::GetAITierFullName(4));
 }
 
-// Tests that GetPremiumRingImage returns a valid image.
-TEST_F(ChromiumAITest, TestGetPremiumRingImage) {
-  UIImage* image = ios::provider::GetPremiumRingImage();
+// Tests that GetPremiumDiscImage returns a valid image.
+TEST_F(ChromiumAITest, TestGetPremiumDiscImage) {
+  UIImage* image = ios::provider::GetPremiumDiscImage();
   EXPECT_NSNE(nil, image);
 }

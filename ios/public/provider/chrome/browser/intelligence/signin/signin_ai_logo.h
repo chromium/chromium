@@ -17,10 +17,10 @@ NSString* GetAITierName(int ai_tier);
 // or unknown.
 NSString* GetAITierFullName(int ai_tier);
 
-// TODO(crbug.com/522144942): Rename this to GetPremiumDiskImage because it
-// returns a disk and not a ring.
-// Returns the disk image to be used for the AI tier ring.
-UIImage* GetPremiumRingImage();
+// Returns the disc from which the premium ring is created.
+// The disc should be resized first, then a 3px-width circle is extracted from
+// it.
+UIImage* GetPremiumDiscImage();
 
 }  // namespace ios::provider
 

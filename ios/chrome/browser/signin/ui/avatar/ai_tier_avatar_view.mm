@@ -38,10 +38,10 @@
       CGFloat ringDiameter =
           avatarDiameter + 2.0 * (kAiTierRingWidth + kAiTierAndAvatarDistance);
 
-      UIImage* ringImage = ios::provider::GetPremiumRingImage();
+      UIImage* discImage = ios::provider::GetPremiumDiscImage();
       CGSize ringSize = CGSizeMake(ringDiameter, ringDiameter);
-      ringImage = ResizeImage(ringImage, ringSize, ProjectionMode::kAspectFit);
-      _ringImageView = [[AITierRingImageView alloc] initWithImage:ringImage];
+      discImage = ResizeImage(discImage, ringSize, ProjectionMode::kAspectFit);
+      _ringImageView = [[AITierRingImageView alloc] initWithImage:discImage];
       _ringImageView.translatesAutoresizingMaskIntoConstraints = NO;
       _ringImageView.accessibilityIdentifier =
           kPremiumAvatarRingAccessibilityIdentifier;

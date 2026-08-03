@@ -29,8 +29,8 @@ NSString* GetAITierFullName(int ai_tier) {
   return [NSString stringWithFormat:@"AI %@", name];
 }
 
-UIImage* GetPremiumRingImage() {
-  return [UIImage imageNamed:@"premium_disk"];
+UIImage* GetPremiumDiscImage() {
+  return [UIImage imageNamed:@"premium_disc"];
 }
 
 }  // namespace ios::provider
