@@ -131,18 +131,42 @@ TEST_F(ContextualSearchActionTest, GetVectorIcon) {
               &vector_icons::kGoogleLensLogoIcon);
   }
 
-  // Case 2a: Tweaks disabled, AskG flag enabled, SwapIcon enabled -> Should return kSearchSparkIcon
+  // Case 2a: Tweaks disabled, AskG flag enabled, SwapIcon enabled -> Should
+  // return kSearchSparkIcon (if rounded icons enabled) or kSearchSparkOldIcon (if disabled)
   {
-    scoped_feature_list.Reset();
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kWebUIOmniboxAskGAboutThisPage,
-        {{"Omnibox_AskGSwapIcon", "true"}});
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::ContextualSearch>
-        scoped_config;
-    scoped_config.Get().open_lens_action_ui_tweaks = false;
+    // Sub-case: Rounded icons enabled
+    {
+      scoped_feature_list.Reset();
+      scoped_feature_list.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{omnibox::kWebUIOmniboxAskGAboutThisPage,
+            {{"Omnibox_AskGSwapIcon", "true"}}},
+           {features::kRoundedIcons, {}}},
+          /*disabled_features=*/{});
+      omnibox_feature_configs::ScopedConfigForTesting<
+          omnibox_feature_configs::ContextualSearch>
+          scoped_config;
+      scoped_config.Get().open_lens_action_ui_tweaks = false;
 
-    EXPECT_EQ(&open_lens_action->GetVectorIcon(), &omnibox::kSearchSparkIcon);
+      EXPECT_EQ(&open_lens_action->GetVectorIcon(), &omnibox::kSearchSparkIcon);
+    }
+
+    // Sub-case: Rounded icons disabled
+    {
+      scoped_feature_list.Reset();
+      scoped_feature_list.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{omnibox::kWebUIOmniboxAskGAboutThisPage,
+            {{"Omnibox_AskGSwapIcon", "true"}}}},
+          /*disabled_features=*/{features::kRoundedIcons});
+      omnibox_feature_configs::ScopedConfigForTesting<
+          omnibox_feature_configs::ContextualSearch>
+          scoped_config;
+      scoped_config.Get().open_lens_action_ui_tweaks = false;
+
+      EXPECT_EQ(&open_lens_action->GetVectorIcon(),
+                &omnibox::kSearchSparkOldIcon);
+    }
   }
 
   // Case 2b: Tweaks disabled, AskG flag enabled, SwapIcon disabled (default) -> Should return kGoogleLensMonochromeLogoIcon
