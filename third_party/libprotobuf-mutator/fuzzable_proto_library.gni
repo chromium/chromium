@@ -2,211 +2,147 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# A fuzzable_proto_library is a proto_library that is the same as any other in
-# non-fuzzer builds (ie: use_libfuzzer=false). However, in fuzzer builds, the
-# proto_library is built with the full protobuf runtime and any "optimize_for =
-# LITE_RUNTIME" options are ignored. This is done because libprotobuf-mutator
-# needs the full protobuf runtime, but proto_libraries shipped in Chrome must
-# use the optimize for LITE_RUNTIME option which is incompatible with the full
-# protobuf runtime. tl;dr: A fuzzable_proto_library is a proto_library that can
-# be fuzzed with libprotobuf-mutator and shipped in Chrome.
+# A fuzzable_proto_library is a proto_library that generates a _fuzzable
+# target that can be used with FUZZ_TEST and libprotobuf-mutator.
 #
-# Setting `use_experimental_fuzzable_proto` to true, generates a
-# "${target_name}_fuzzable" target which contains a copy of the original protos
+# The "${target_name}_fuzzable" target contains a copy of the original protos
 # but with a `fuzzable.` package prefix and optimized for SPEED, meaning they
-# can be used for fuzzing outside of fuzzing builds.
-# TODO(crbug.com/505034799): Make this default to true once all fuzzers are
-# migrated.
+# can be used for fuzzing outside of fuzzing builds. It also defines a normal
+# proto_library "${target_name}" optimized for LITE_RUNTIME so consumers in
+# Chrome can depend on it without pulling in the full protobuf runtime.
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # TODO(https://crbug.com/1197634): Fold this into proto_library.
 template("fuzzable_proto_library") {
-  if (defined(invoker.use_experimental_fuzzable_proto) &&
-      invoker.use_experimental_fuzzable_proto) {
-    assert(!defined(invoker.proto_library_deps),
-           "proto_library_deps is deprecated and not supported with " +
-               "use_experimental_fuzzable_proto = true. Use deps instead.")
+  assert(!defined(invoker.proto_library_deps),
+         "proto_library_deps is deprecated. Use deps instead.")
 
-    _source_abspaths = rebase_path(invoker.sources, "//")
-    _rebased_root_gen_dir = rebase_path(root_gen_dir, "//") + "/"
+  _source_abspaths = rebase_path(invoker.sources, "//")
+  _rebased_root_gen_dir = rebase_path(root_gen_dir, "//") + "/"
 
-    _prepended_protos = []
-    _file_mappings_for_script = []
+  _prepended_protos = []
+  _file_mappings_for_script = []
 
-    foreach(_source_abspath, _source_abspaths) {
-      # Strip root_gen_dir prefix for generated files.
-      _base_path = string_replace(_source_abspath, _rebased_root_gen_dir, "")
+  foreach(_source_abspath, _source_abspaths) {
+    # Strip root_gen_dir prefix for generated files.
+    _base_path = string_replace(_source_abspath, _rebased_root_gen_dir, "")
 
-      _dir = get_path_info(_base_path, "dir")
-      _name = get_path_info(_base_path, "name")
-      _prepended_proto = "$root_gen_dir/$_dir/${_name}_fuzzable.proto"
-      _prepended_protos += [ _prepended_proto ]
+    _dir = get_path_info(_base_path, "dir")
+    _name = get_path_info(_base_path, "name")
+    _prepended_proto = "$root_gen_dir/$_dir/${_name}_fuzzable.proto"
+    _prepended_protos += [ _prepended_proto ]
 
-      _input_file_for_script =
-          rebase_path("//" + _source_abspath, root_build_dir)
-      _output_file_for_script = rebase_path(_prepended_proto, root_build_dir)
-      _file_mappings_for_script += [
-        _input_file_for_script,
-        _output_file_for_script,
-      ]
+    _input_file_for_script = rebase_path("//" + _source_abspath, root_build_dir)
+    _output_file_for_script = rebase_path(_prepended_proto, root_build_dir)
+    _file_mappings_for_script += [
+      _input_file_for_script,
+      _output_file_for_script,
+    ]
+  }
+
+  _prepend_fuzzable_target = "${target_name}_prepend_fuzzable"
+  action(_prepend_fuzzable_target) {
+    script = "//third_party/libprotobuf-mutator/prepend_fuzzable.py"
+    inputs = invoker.sources
+    outputs = _prepended_protos
+    response_file_contents = _file_mappings_for_script
+    args = [
+      "--file-list",
+      "{{response_file_name}}",
+    ]
+    if (defined(invoker.proto_deps)) {
+      deps = invoker.proto_deps
+    }
+  }
+
+  # Generate a unique export macro name for this proto.
+  _dir_suffix = string_replace(rebase_path(".", "//"), "/", "_")
+  _dir_suffix = string_replace(_dir_suffix, "-", "_")
+  _dir_suffix = string_replace(_dir_suffix, ".", "_")
+  _export_macro_name = "FUZZABLE_PROTO_EXPORT_${_dir_suffix}_${target_name}"
+
+  proto_library("${target_name}_fuzzable") {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "sources",
+                             "deps",
+                             "proto_deps",
+                             "proto_in_dir",
+                             "proto_out_dir",
+                             "component_build_force_source_set",
+                             "use_experimental_fuzzable_proto",
+                             "import_dirs",
+                           ])
+
+    testonly = true
+    sources = _prepended_protos
+    proto_deps = [ ":$_prepend_fuzzable_target" ]
+
+    if (defined(invoker.proto_in_dir)) {
+      _src_relative_in_dir = rebase_path(invoker.proto_in_dir, "//")
+    } else {
+      # Use the directory of the first source to match proto_library and
+      # strip root_gen_dir prefix for generated files.
+      # E.g.: //foo/bar/foo.proto -> foo/bar
+      # E.g.: //out/Debug/gen/foo/bar/foo.proto -> foo/bar
+      _sources = invoker.sources
+      _first_source_dir = rebase_path(get_path_info(_sources[0], "dir"), "//")
+      _src_relative_in_dir =
+          string_replace(_first_source_dir, _rebased_root_gen_dir, "")
+    }
+    proto_in_dir = "$root_gen_dir/$_src_relative_in_dir"
+    if (defined(invoker.proto_out_dir)) {
+      proto_out_dir = invoker.proto_out_dir
+    } else {
+      proto_out_dir = _src_relative_in_dir
     }
 
-    _prepend_fuzzable_target = "${target_name}_prepend_fuzzable"
-    action(_prepend_fuzzable_target) {
-      script = "//third_party/libprotobuf-mutator/prepend_fuzzable.py"
-      inputs = invoker.sources
-      outputs = _prepended_protos
-      response_file_contents = _file_mappings_for_script
-      args = [
-        "--file-list",
-        "{{response_file_name}}",
-      ]
-      if (defined(invoker.proto_deps)) {
-        deps = invoker.proto_deps
+    if (defined(invoker.import_dirs)) {
+      _import_dirs_abspaths = rebase_path(invoker.import_dirs, "//")
+      import_dirs = []
+      foreach(_abspath, _import_dirs_abspaths) {
+        _base_path = string_replace(_abspath, _rebased_root_gen_dir, "")
+        import_dirs += [ "$root_gen_dir/$_base_path" ]
       }
     }
 
-    # Generate a unique export macro name for this proto.
-    _dir_suffix = string_replace(rebase_path(".", "//"), "/", "_")
-    _dir_suffix = string_replace(_dir_suffix, "-", "_")
-    _dir_suffix = string_replace(_dir_suffix, ".", "_")
-    _export_macro_name = "FUZZABLE_PROTO_EXPORT_${_dir_suffix}_${target_name}"
-
-    proto_library("${target_name}_fuzzable") {
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "sources",
-                               "deps",
-                               "proto_deps",
-                               "proto_in_dir",
-                               "proto_out_dir",
-                               "component_build_force_source_set",
-                               "use_experimental_fuzzable_proto",
-                               "import_dirs",
-                             ])
-
-      testonly = true
-      sources = _prepended_protos
-      proto_deps = [ ":$_prepend_fuzzable_target" ]
-
-      if (defined(invoker.proto_in_dir)) {
-        _src_relative_in_dir = rebase_path(invoker.proto_in_dir, "//")
-      } else {
-        # Use the directory of the first source to match proto_library and
-        # strip root_gen_dir prefix for generated files.
-        # E.g.: //foo/bar/foo.proto -> foo/bar
-        # E.g.: //out/Debug/gen/foo/bar/foo.proto -> foo/bar
-        _sources = invoker.sources
-        _first_source_dir = rebase_path(get_path_info(_sources[0], "dir"), "//")
-        _src_relative_in_dir =
-            string_replace(_first_source_dir, _rebased_root_gen_dir, "")
-      }
-      proto_in_dir = "$root_gen_dir/$_src_relative_in_dir"
-      if (defined(invoker.proto_out_dir)) {
-        proto_out_dir = invoker.proto_out_dir
-      } else {
-        proto_out_dir = _src_relative_in_dir
-      }
-
-      if (defined(invoker.import_dirs)) {
-        _import_dirs_abspaths = rebase_path(invoker.import_dirs, "//")
-        import_dirs = []
-        foreach(_abspath, _import_dirs_abspaths) {
-          _base_path = string_replace(_abspath, _rebased_root_gen_dir, "")
-          import_dirs += [ "$root_gen_dir/$_base_path" ]
-        }
-      }
-
-      if (defined(invoker.deps)) {
-        deps = []
-        foreach(dep, invoker.deps) {
-          deps += [ get_label_info(dep, "label_no_toolchain") + "_fuzzable" ]
-        }
-      }
-
-      # Full protos are registered globally and registering them twice causes a
-      # crash. To avoid this we make them components, which are shared libraries
-      # in component builds.
-      force_component = true
-
-      # Override LITE_RUNTIME settings in the protobuf files and export symbols.
-      cc_generator_options =
-          "speed,dllexport_decl=FUZZABLE_PROTO_EXPORT($_export_macro_name):"
-      cc_include = "third_party/libprotobuf-mutator/fuzzable_proto_export.h"
-      extra_configs = [ "//third_party/protobuf:protobuf_config" ]
-
-      # proto_library has a use_protobuf_full option which automatically adds
-      # the protobuf_full dependency. Unfortunately using that option would
-      # force all fuzzable_proto_libraries to be added to the visibility list of
-      # protobuf_full. To avoid this, use protobuf_full_for_fuzzing which is a
-      # wrapper group that provides protobuf_full to fuzzing and test targets
-      # without having to add them to protobuf's visibility list.
-      link_public_deps =
-          [ "//third_party/libprotobuf-mutator:protobuf_full_for_fuzzing" ]
-
-      if (!defined(defines)) {
-        defines = []
-      }
-      defines += [ "IS_${_export_macro_name}_IMPL=1" ]
-    }
-
-    # Also define original proto target so consumers can still depend on it.
-    proto_library(target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             [ "use_experimental_fuzzable_proto" ])
-    }
-  } else if (use_fuzzing_engine_with_lpm &&
-             current_toolchain != "//build/toolchain/cros:target") {
-    proto_library(target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "proto_library_deps",
-                               "component_build_force_source_set",
-                             ])
-
-      # Full protos are registered globally and registering them twice causes a
-      # crash. To avoid this we make them components, which are shared libraries
-      # in component builds.
-      force_component = true
-
-      if (defined(invoker.proto_library_deps)) {
-        if (!defined(deps)) {
-          deps = []
-        }
-        deps += invoker.proto_library_deps
-      }
-
-      # Override LITE_RUNTIME settings in the protobuf files.
-      cc_generator_options = "speed"
-      extra_configs = [ "//third_party/protobuf:protobuf_config" ]
-      if (!is_win) {
-        # Ensure symbols are exported across shared library boundaries.
-        extra_configs += [ "//build/config/gcc:symbol_visibility_default" ]
-      }
-
-      # proto_library has a use_protobuf_full option which automatically adds
-      # the protobuf_full dependency. Unfortunately using that option would
-      # force all fuzzable_proto_libraries to be added to the visibility list of
-      # protobuf_full. To avoid this, use protobuf_full which is a wrapper
-      # target that provides protobuf_full to fuzzing and test targets without
-      # having to add them to protobuf's visibility list.
-      link_public_deps = [ "//third_party/libprotobuf-mutator:protobuf_full" ]
-    }
-  } else {
-    # fuzzable_proto_library should behave like a proto_library when
-    # !use_libfuzzer.
-    proto_library(target_name) {
-      forward_variables_from(invoker, "*", [ "proto_library_deps" ])
-      if (defined(invoker.proto_library_deps)) {
-        if (!defined(deps)) {
-          deps = []
-        }
-        deps += invoker.proto_library_deps
+    if (defined(invoker.deps)) {
+      deps = []
+      foreach(dep, invoker.deps) {
+        deps += [ get_label_info(dep, "label_no_toolchain") + "_fuzzable" ]
       }
     }
+
+    # Full protos are registered globally and registering them twice causes a
+    # crash. To avoid this we make them components, which are shared libraries
+    # in component builds.
+    force_component = true
+
+    # Override LITE_RUNTIME settings in the protobuf files and export symbols.
+    cc_generator_options =
+        "speed,dllexport_decl=FUZZABLE_PROTO_EXPORT($_export_macro_name):"
+    cc_include = "third_party/libprotobuf-mutator/fuzzable_proto_export.h"
+    extra_configs = [ "//third_party/protobuf:protobuf_config" ]
+
+    # proto_library has a use_protobuf_full option which automatically adds
+    # the protobuf_full dependency. Unfortunately using that option would
+    # force all fuzzable_proto_libraries to be added to the visibility list of
+    # protobuf_full. To avoid this, use protobuf_full_for_fuzzing which is a
+    # wrapper group that provides protobuf_full to fuzzing and test targets
+    # without having to add them to protobuf's visibility list.
+    link_public_deps =
+        [ "//third_party/libprotobuf-mutator:protobuf_full_for_fuzzing" ]
+
+    if (!defined(defines)) {
+      defines = []
+    }
+    defines += [ "IS_${_export_macro_name}_IMPL=1" ]
+  }
+
+  # Also define original proto target so consumers can still depend on it.
+  proto_library(target_name) {
+    forward_variables_from(invoker, "*", [ "use_experimental_fuzzable_proto" ])
   }
 }

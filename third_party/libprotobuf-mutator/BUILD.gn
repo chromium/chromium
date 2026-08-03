@@ -77,20 +77,8 @@ fuzzable_proto_library("lpm_test_fuzzer_proto") {
   use_experimental_fuzzable_proto = true
 }
 
-# Avoid CQ complaints on platforms we don't care about (ie: iOS).
-# Also prevent people from using this to include protobuf_full into a production
-# build of Chrome.
-if (use_fuzzing_engine_with_lpm) {
-  # Group that can provide protobuf_full to non-testonly targets
-  # TODO(crbug.com/505034799): Remove in favor of `:protobuf_full_for_fuzzing`.
-  group("protobuf_full") {
-    public_deps = [ "//third_party/protobuf:protobuf_full" ]
-  }
-}
-
 # Wrapper group that provides protobuf_full to fuzzing and test targets without
-# having to add them to protobuf's visibility list. Similar to `protobuf_full`
-# above.
+# having to add them to protobuf's visibility list.
 group("protobuf_full_for_fuzzing") {
   testonly = true
   public_deps = [ "//third_party/protobuf:protobuf_full" ]
