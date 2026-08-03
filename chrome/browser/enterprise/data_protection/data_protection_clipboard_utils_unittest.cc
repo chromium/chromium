@@ -1132,6 +1132,65 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest, CopyContentAna
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest, CopyContentAnalysisWarnedCancelled) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(
+                    enterprise_connectors::ContentAnalysisResponse::Result::
+                        SUCCESS,
+                    "dlp",
+                    enterprise_connectors::ContentAnalysisResponse::Result::
+                        TriggeredRule::WARN);
+          }),
+          "dm_token"));
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData(std::string(100, 'a'), "", {}), future.GetCallback());
+
+  // Wait until the tracker is populated, then cancel and clear it.
+  while (!enterprise_connectors::CopyWarningDelegateTracker::FromWebContents(
+      contents())) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  enterprise_connectors::CopyWarningDelegateTracker::CancelAndClear(contents());
+
+  EXPECT_EQ(future.Get<0>(), ui::ClipboardFormatType::PlainTextType());
+  EXPECT_TRUE(future.Get<1>().text.empty());
+  auto replacement = future.Get<2>();
+  // Verify that the copy was blocked due to cancellation.
+  EXPECT_TRUE(replacement.has_value());
+  EXPECT_EQ(*replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_BLOCKED_MESSAGE));
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kBlocked);
+}
+
 TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest, CopyContentAnalysisKeptInManagedChrome) {
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(),

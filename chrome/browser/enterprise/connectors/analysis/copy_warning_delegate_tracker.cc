@@ -55,6 +55,21 @@ void CopyWarningDelegateTracker::BypassAndClear(
 }
 
 // static
+void CopyWarningDelegateTracker::CancelAndClear(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  auto* tracker = FromWebContents(web_contents);
+  if (tracker && tracker->delegate_) {
+    auto* delegate = tracker->delegate_.get();
+    tracker->delegate_ = nullptr;
+    delegate->Cancel(/*warning=*/true);
+    delegate->Delete();
+  }
+}
+
+// static
 void CopyWarningDelegateTracker::ClearIfMatches(
     content::WebContents* web_contents,
     ContentAnalysisDelegate* delegate) {

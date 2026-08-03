@@ -36,6 +36,10 @@ class CopyWarningDelegateTracker
   // delegate.
   static void BypassAndClear(content::WebContents* web_contents);
 
+  // Cancels the copy warning for the given WebContents and clears the
+  // delegate.
+  static void CancelAndClear(content::WebContents* web_contents);
+
   // Clears the delegate from the tracker for the given WebContents if it
   // matches the given delegate.
   // This is used when the delegate is destroyed to avoid the tracker holding

@@ -509,6 +509,36 @@ void ReportDragData(const content::ClipboardEndpoint& source,
   }
 }
 
+// Replaces `clipboard_paste_data` with the original clipboard data if it was
+// replaced by a warning message. Returns true if the paste should proceed to
+// content analysis, or false if content analysis should be skipped and the
+// callback run immediately with the current data.
+bool ReplaceClipboardDataIfRequired(
+    const content::ClipboardEndpoint& source,
+    const ui::ClipboardMetadata& metadata,
+    content::ClipboardPasteData& clipboard_paste_data) {
+  // If the data currently being pasted was replaced when it was initially
+  // copied from Chrome, replace it back since it hasn't triggered a Data
+  // Controls rule when pasting (or the warning rule was bypassed). Only do this
+  // if `source` has a known browser context to ensure we're not letting through
+  // data that was replaced by policies that are no longer applicable due to the
+  // profile being closed.
+  if (source.browser_context() &&
+      metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
+    auto restriction_level =
+        data_controls::GetLastReplacedClipboardData().restriction_level;
+    if (restriction_level != data_controls::CopyRestrictionLevel::kBlocked &&
+        restriction_level !=
+            data_controls::CopyRestrictionLevel::kOngoingScan) {
+      clipboard_paste_data =
+          data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
 void OnDataControlsPasteWarning(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
@@ -527,15 +557,9 @@ void OnDataControlsPasteWarning(
                                  /*bypassed=*/true);
   }
 
-  // If the data currently being pasted was replaced when it was initially
-  // copied from Chrome, replace it back since the warn rule was bypassed. Only
-  // do this if `source` has a known browser context to ensure we're not letting
-  // through data that was replaced by policies that are no longer applicable
-  // due to the profile being closed.
-  if (source.browser_context() &&
-      metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
-    clipboard_paste_data =
-        data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
+  if (!ReplaceClipboardDataIfRequired(source, metadata, clipboard_paste_data)) {
+    std::move(callback).Run(std::move(clipboard_paste_data));
+    return;
   }
 
 #if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -607,15 +631,9 @@ void PasteIfAllowedByDataControls(
       break;
   }
 
-  // If the data currently being pasted was replaced when it was initially
-  // copied from Chrome, replace it back since it hasn't triggered a Data
-  // Controls rule when pasting. Only do this if `source` has a known browser
-  // context to ensure we're not letting through data that was replaced by
-  // policies that are no longer applicable due to the profile being closed.
-  if (source.browser_context() &&
-      metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
-    clipboard_paste_data =
-        data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
+  if (!ReplaceClipboardDataIfRequired(source, metadata, clipboard_paste_data)) {
+    std::move(callback).Run(std::move(clipboard_paste_data));
+    return;
   }
 
 #if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
