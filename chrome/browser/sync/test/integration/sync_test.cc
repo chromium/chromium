@@ -144,9 +144,6 @@ using syncer::SyncServiceImpl;
 
 namespace {
 
-constexpr int kMaxRetriesForSetup = 3;
-constexpr int kExponentialBackOffMinimalConstantInMs = 50;
-
 // A small ChromeBrowserMainExtraParts that invokes a callback when threads are
 // ready.
 class ChromeBrowserMainExtraPartsThreadNotifier final
@@ -231,22 +228,7 @@ void SyncTest::SetUp() {
       break;
     }
     case IN_PROCESS_FAKE_SERVER: {
-      bool initialized = false;
-      for (int attempt = 0; attempt < kMaxRetriesForSetup; ++attempt) {
-        if (embedded_test_server()->InitializeAndListen()) {
-          initialized = true;
-          break;
-        }
-        // Sleep till the initialization can be retried. Don't sleep after
-        // the last attempt to exit early in case initialization
-        // failed.
-        if (attempt < kMaxRetriesForSetup - 1) {
-          base::PlatformThread::Sleep(
-              base::Milliseconds(kExponentialBackOffMinimalConstantInMs));
-        }
-      }
-      ASSERT_TRUE(initialized)
-          << "Failed to initialize embedded test server after retries.";
+      ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 #if BUILDFLAG(IS_ANDROID)
       sync_test_utils_android::SetUpFakeAuthForTesting();
 #endif
