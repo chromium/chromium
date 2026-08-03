@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserActionPrefsListener;
 class BrowserWindowInterface;
@@ -22,6 +23,11 @@ class ActionItem;
 // Actions that a user can take that are scoped to a browser window.
 class BrowserActions {
  public:
+  DECLARE_USER_DATA(BrowserActions);
+
+  static BrowserActions* From(BrowserWindowInterface* browser);
+  static const BrowserActions* From(const BrowserWindowInterface* browser);
+
   explicit BrowserActions(BrowserWindowInterface* bwi);
   BrowserActions(const BrowserActions&) = delete;
   BrowserActions& operator=(const BrowserActions&) = delete;
@@ -59,6 +65,7 @@ class BrowserActions {
   std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_;
   const raw_ref<BrowserWindowInterface> bwi_;
   const raw_ref<Profile> profile_;
+  ui::ScopedUnownedUserData<BrowserActions> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_ACTIONS_H_

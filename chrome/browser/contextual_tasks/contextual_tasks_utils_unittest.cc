@@ -33,8 +33,6 @@ class ContextualTasksUtilsTest : public testing::Test {
         .WillByDefault(testing::Return(profile_.get()));
 
     browser_actions_ = std::make_unique<BrowserActions>(browser_window_.get());
-    ON_CALL(*browser_window_, GetActions())
-        .WillByDefault(testing::Return(browser_actions_.get()));
   }
 
   void TearDown() override {
@@ -64,7 +62,6 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_NullWindow) {
 }
 
 TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_NullActions) {
-  ON_CALL(*browser_window_, GetActions()).WillByDefault(testing::Return(nullptr));
   UpdatePinButtonVisibilityState(browser_window_.get(), true);
 }
 

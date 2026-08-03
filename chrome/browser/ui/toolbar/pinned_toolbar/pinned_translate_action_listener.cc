@@ -73,7 +73,7 @@ void PinnedTranslateActionListener::TabForegrounded(tabs::TabInterface* tab) {
 actions::ActionItem* PinnedTranslateActionListener::GetTranslateActionItem(
     BrowserWindowInterface* browser) {
   return actions::ActionManager::Get().FindAction(
-      kActionShowTranslate, browser->GetActions()->root_action_item());
+      kActionShowTranslate, BrowserActions::From(browser)->root_action_item());
 }
 
 void PinnedTranslateActionListener::UpdateTranslateIndicator() {

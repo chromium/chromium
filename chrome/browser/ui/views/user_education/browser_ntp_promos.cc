@@ -107,9 +107,8 @@ NtpPromoSpecification::Eligibility CheckCustomizationPromoEligibility(
 void InvokeCustomizationPromo(ContextPtr context) {
   actions::ActionManager::Get()
       .FindAction(kActionSidePanelShowCustomizeChrome,
-                  context->AsA<BrowserUserEducationContext>()
-                      ->GetBrowser()
-                      ->GetActions()
+                  BrowserActions::From(
+                      context->AsA<BrowserUserEducationContext>()->GetBrowser())
                       ->root_action_item())
       ->InvokeAction(
           actions::ActionInvocationContext::Builder()

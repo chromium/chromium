@@ -62,7 +62,8 @@ void CastDialogCoordinator::OnBubbleAnchorVisible(
   }
   if (anchor.has_value()) {
     auto* action_item = actions::ActionManager::Get().FindAction(
-        kActionRouteMedia, browser->GetActions()->root_action_item());
+        kActionRouteMedia,
+        BrowserActions::From(browser.get())->root_action_item());
     Show(anchor.value(), views::BubbleBorder::TOP_RIGHT, controller.get(),
          browser->GetProfile(), start_time, activation_location, action_item,
          std::move(after_shown_callback));

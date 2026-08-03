@@ -1266,7 +1266,7 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
   actions::ActionItem* passwords_action_item =
       actions::ActionManager::Get().FindAction(
           kActionShowPasswordsBubbleOrPage,
-          browser->GetActions()->root_action_item());
+          BrowserActions::From(browser)->root_action_item());
   UpdatePasswordIconAndBubbleState(controller, passwords_action_item);
 }
 

@@ -109,7 +109,7 @@ void QRCodeGeneratorBubble::Show() {
     qrcode_action_item_ =
         actions::ActionManager::Get()
             .FindAction(kActionQrCodeGenerator,
-                        browser->GetActions()->root_action_item())
+                        BrowserActions::From(browser)->root_action_item())
             ->GetAsWeakPtr();
     qrcode_action_item_.get()->SetIsShowingBubble(true);
   }

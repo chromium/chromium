@@ -193,7 +193,8 @@ HorizontalTabStripRegionViewOld::HorizontalTabStripRegionViewOld(
 
     actions::ActionItem* const unfocus_action =
         actions::ActionManager::Get().FindAction(
-            kActionUnfocusTabGroup, browser->GetActions()->root_action_item());
+            kActionUnfocusTabGroup,
+            BrowserActions::From(browser)->root_action_item());
     CHECK(unfocus_action);
     action_view_controller_->CreateActionViewRelationship(
         unfocus_button_.get(), unfocus_action->GetAsWeakPtr());
@@ -750,7 +751,7 @@ HorizontalTabStripRegionViewNew::HorizontalTabStripRegionViewNew(
     BrowserView* browser_view)
     : BaseTabStripRegionView(
           browser_view,
-          browser_view->browser()->GetActions()->root_action_item(),
+          BrowserActions::From(browser_view->browser())->root_action_item(),
           TabStripOrientation::kHorizontal),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   views::SetCascadingColorProviderColor(

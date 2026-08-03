@@ -341,7 +341,8 @@ void LensOverlayEntryPointController::OnTemplateURLServiceShuttingDown() {
 actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {
   return actions::ActionManager::Get().FindAction(
       kActionSidePanelShowLensOverlayResults,
-      /*scope=*/browser_window_interface_->GetActions()->root_action_item());
+      /*scope=*/BrowserActions::From(browser_window_interface_)
+          ->root_action_item());
 }
 
 void LensOverlayEntryPointController::UpdatePageActionState() {

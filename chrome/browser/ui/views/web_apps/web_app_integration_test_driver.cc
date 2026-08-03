@@ -1543,7 +1543,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   install_observer.BeginListening();
   actions::ActionManager::Get()
       .FindAction(kActionInstallPwa,
-                  browser()->GetActions()->root_action_item())
+                  BrowserActions::From(browser())->root_action_item())
       ->InvokeAction();
 
   WaitForAndAcceptInstallDialogForSite(InstallableSiteToSite(site));

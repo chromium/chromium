@@ -98,7 +98,10 @@ if (!is_android) {
 
   source_set("browser_actions") {
     public = [ "browser_actions.h" ]
-    public_deps = [ "//base" ]
+    public_deps = [
+      "//base",
+      "//ui/base/unowned_user_data",
+    ]
   }
 
   source_set("browser_actions_impl") {

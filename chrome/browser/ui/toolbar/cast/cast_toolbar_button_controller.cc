@@ -178,7 +178,8 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
           return true;
         }
         auto* action_item = actions::ActionManager::Get().FindAction(
-            kActionRouteMedia, browser->GetActions()->root_action_item());
+            kActionRouteMedia,
+            BrowserActions::From(browser)->root_action_item());
         // Update the action item's pinnable state based on the enterprise
         // policy.
         if (shown_by_policy) {
@@ -208,11 +209,11 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
 void CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction() {
   bool checked = profile_->GetPrefs()->GetBoolean(
       media_router::prefs::kMediaRouterMediaRemotingEnabled);
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([checked](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [checked](BrowserWindowInterface* browser) {
         actions::ActionManager::Get()
             .FindAction(kActionMediaRouterToggleMediaRemoting,
-                        browser->GetActions()->root_action_item())
+                        BrowserActions::From(browser)->root_action_item())
             ->SetChecked(checked);
         return true;
       });

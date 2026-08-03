@@ -289,9 +289,9 @@ void OfferNotificationBubbleControllerImpl::UpdatePageActionIcon() {
   }
   actions::ActionId action_id = *GetActionIdForPageAction();
   auto* action = actions::ActionManager::Get().FindAction(
-      action_id, tab_interface_->GetBrowserWindowInterface()
-                     ->GetActions()
-                     ->root_action_item());
+      action_id,
+      BrowserActions::From(tab_interface_->GetBrowserWindowInterface())
+          ->root_action_item());
   action->SetEnabled(ShouldShowPageAction());
 #endif  // BUILDFLAG(IS_ANDROID)
 }

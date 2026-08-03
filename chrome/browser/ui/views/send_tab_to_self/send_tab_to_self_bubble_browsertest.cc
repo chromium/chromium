@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
   // Pin send tab to self to the toolbar.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   actions::ActionItem* browser_action_item =
-      browser()->browser_actions()->root_action_item();
+      BrowserActions::From(browser())->root_action_item();
   auto* action_item = actions::ActionManager::Get().FindAction(
       kActionSendTabToSelf, browser_action_item);
   action_item->SetEnabled(true);
