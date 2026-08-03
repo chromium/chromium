@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   PrefService* local_state = g_browser_process->local_state();
   static_cast<PrefRegistrySimple*>(local_state->DeprecatedGetPrefRegistry())
       ->RegisterIntegerPref(kRestoreIdPrefName, 0);
-  local_state->SetInteger(kRestoreIdPrefName, browser->session_id().id());
+  local_state->SetInteger(kRestoreIdPrefName, browser->GetSessionID().id());
   AddBlankTabAndShow(browser);
   aura::Window* window = browser->GetWindow()->GetNativeWindow();
   ASSERT_NE(kCurrentBounds, window->bounds());

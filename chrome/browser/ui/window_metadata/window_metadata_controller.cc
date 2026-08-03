@@ -282,6 +282,6 @@ void WindowMetadataController::SetWindowUserTitle(
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(browser_->GetProfile());
   if (session_service) {
-    session_service->SetWindowUserTitle(browser_->session_id(), user_title);
+    session_service->SetWindowUserTitle(browser_->GetSessionID(), user_title);
   }
 }

@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorTabFunctionalBrowserTest, CreateActorTab) {
   // Navigate the current tab to the initiator URL.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetInitiatorTabUrl()));
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
-  SessionID initiator_window_id = browser()->session_id();
+  SessionID initiator_window_id = browser()->GetSessionID();
   tabs::TabHandle initiator_tab = active_tab()->GetHandle();
 
   base::expected<TaskId, std::string> task_id = CreateTask();
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorTabFunctionalBrowserTest,
   // Navigate the current tab to the initiator URL.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetInitiatorTabUrl()));
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
-  SessionID initiator_window_id = browser()->session_id();
+  SessionID initiator_window_id = browser()->GetSessionID();
   tabs::TabHandle initiator_tab = active_tab()->GetHandle();
 
   base::expected<TaskId, std::string> task_id = CreateTask();

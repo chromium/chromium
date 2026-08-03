@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, Workspace) {
   std::string expected_workspace =
       BrowserWindow::FromBrowser(browser())->GetWorkspace();
   std::unique_ptr<sessions::SessionCommand> workspace_command =
-      sessions::CreateSetWindowWorkspaceCommand(browser()->session_id(),
+      sessions::CreateSetWindowWorkspaceCommand(browser()->GetSessionID(),
                                                 expected_workspace);
   for (const auto& command : pending_commands) {
     if (command->id() == workspace_command->id() &&
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, WorkspaceSavedOnOpened) {
   std::string expected_workspace =
       BrowserWindow::FromBrowser(browser())->GetWorkspace();
   std::unique_ptr<sessions::SessionCommand> workspace_command =
-      sessions::CreateSetWindowWorkspaceCommand(browser()->session_id(),
+      sessions::CreateSetWindowWorkspaceCommand(browser()->GetSessionID(),
                                                 expected_workspace);
   for (const auto& command : pending_commands) {
     if (command->id() == workspace_command->id() &&
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, VisibleOnAllWorkspaces) {
       BrowserWindow::FromBrowser(browser())->IsVisibleOnAllWorkspaces();
   std::unique_ptr<sessions::SessionCommand> visible_on_all_workspaces_command =
       sessions::CreateSetWindowVisibleOnAllWorkspacesCommand(
-          browser()->session_id(), expected_visible);
+          browser()->GetSessionID(), expected_visible);
   for (const auto& command : pending_commands) {
     if (command->id() == visible_on_all_workspaces_command->id() &&
         command->contents() == visible_on_all_workspaces_command->contents()) {
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, PinnedAfterReset) {
 
 IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, LogExit) {
   EXPECT_FALSE(FindMostRecentEventOfType(SessionServiceEventLogType::kExit));
-  service()->WindowClosing(browser()->session_id());
+  service()->WindowClosing(browser()->GetSessionID());
   auto exit_event =
       FindMostRecentEventOfType(SessionServiceEventLogType::kExit);
   ASSERT_TRUE(exit_event);

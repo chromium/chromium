@@ -49,7 +49,7 @@ BrowserType BrowserDelegateImpl::GetType() const {
 }
 
 SessionID BrowserDelegateImpl::GetSessionID() const {
-  return browser_->session_id();
+  return browser_->GetSessionID();
 }
 
 const AccountId& BrowserDelegateImpl::GetAccountId() const {

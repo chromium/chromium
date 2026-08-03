@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   Browser* const auto_launched_browser = FindBocaSystemWebAppBrowser();
   ASSERT_THAT(auto_launched_browser, NotNull());
   system_web_app_manager.CloseSystemWebAppWindow(
-      auto_launched_browser->session_id());
+      auto_launched_browser->GetSessionID());
   content::RunAllTasksUntilIdle();
   ASSERT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
 
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_THAT(boca_app_browser, NotNull());
   EXPECT_TRUE(
       OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
-  EXPECT_EQ(boca_app_browser->session_id(),
+  EXPECT_EQ(boca_app_browser->GetSessionID(),
             system_web_app_manager.GetActiveSystemWebAppWindowID());
 }
 
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   Browser* const auto_launched_browser = FindBocaSystemWebAppBrowser();
   ASSERT_THAT(auto_launched_browser, NotNull());
   system_web_app_manager.CloseSystemWebAppWindow(
-      auto_launched_browser->session_id());
+      auto_launched_browser->GetSessionID());
   content::RunAllTasksUntilIdle();
   ASSERT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
 
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_THAT(boca_app_browser, NotNull());
   EXPECT_TRUE(
       OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
-  EXPECT_EQ(boca_app_browser->session_id(),
+  EXPECT_EQ(boca_app_browser->GetSessionID(),
             system_web_app_manager.GetActiveSystemWebAppWindowID());
 
   // Verify the homepage is the custom url.
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Close Boca app and verify there is no active app instance.
   system_web_app_manager.CloseSystemWebAppWindow(
-      boca_app_browser->session_id());
+      boca_app_browser->GetSessionID());
   content::RunAllTasksUntilIdle();
   EXPECT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
 }
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Pin the Boca app and verify result.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/true, boca_app_browser->session_id());
+      /*pinned=*/true, boca_app_browser->GetSessionID());
   EXPECT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->GetWindow()->GetNativeWindow()));
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Pin the Boca app and verify result.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/true, boca_app_browser->session_id());
+      /*pinned=*/true, boca_app_browser->GetSessionID());
   EXPECT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->GetWindow()->GetNativeWindow()));
@@ -252,13 +252,13 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_THAT(boca_app_browser, NotNull());
 
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/true, boca_app_browser->session_id());
+      /*pinned=*/true, boca_app_browser->GetSessionID());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   ASSERT_TRUE(boca_app_browser->GetWindow()->IsVisible());
 
   // Unpin the Boca app and verify result.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/false, boca_app_browser->session_id());
+      /*pinned=*/false, boca_app_browser->GetSessionID());
   EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->GetWindow()->GetNativeWindow()));
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Attempt to unpin the Boca app and verify result.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/false, boca_app_browser->session_id());
+      /*pinned=*/false, boca_app_browser->GetSessionID());
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
@@ -303,15 +303,15 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Create tab so we can verify we are on boca homepage when paused.
   system_web_app_manager.CreateBackgroundTabWithUrl(
-      boca_app_browser->session_id(), GURL(kTestUrl),
+      boca_app_browser->GetSessionID(), GURL(kTestUrl),
       LockedNavigationOptions::BLOCK_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
 
   // Pin and pause the Boca app and verify result.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/true, boca_app_browser->session_id());
+      /*pinned=*/true, boca_app_browser->GetSessionID());
   system_web_app_manager.SetPauseStateForSystemWebAppWindow(
-      /*paused=*/true, boca_app_browser->session_id());
+      /*paused=*/true, boca_app_browser->GetSessionID());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_TRUE(boca_app_browser->GetWindow()->IsVisible());
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
@@ -363,9 +363,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Pin and pause the Boca app.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/true, boca_app_browser->session_id());
+      /*pinned=*/true, boca_app_browser->GetSessionID());
   system_web_app_manager.SetPauseStateForSystemWebAppWindow(
-      /*paused=*/true, boca_app_browser->session_id());
+      /*paused=*/true, boca_app_browser->GetSessionID());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->GetWindow()->GetNativeWindow()));
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Unpause the Boca app and verify result.
   system_web_app_manager.SetPauseStateForSystemWebAppWindow(
-      /*paused=*/false, boca_app_browser->session_id());
+      /*paused=*/false, boca_app_browser->GetSessionID());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->GetWindow()->GetNativeWindow()));
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // Create tab from the url and verify that Boca has the tab.
   system_web_app_manager.SetWindowTrackerForTesting(&window_tracker);
   system_web_app_manager.CreateBackgroundTabWithUrl(
-      boca_app_browser->session_id(), GURL(kTestUrl),
+      boca_app_browser->GetSessionID(), GURL(kTestUrl),
       LockedNavigationOptions::BLOCK_NAVIGATION);
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   content::WebContents* web_contents =
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // Create tab from the url and verify that Boca has the tab.
   system_web_app_manager.SetWindowTrackerForTesting(&window_tracker);
   const SessionID tab_id = system_web_app_manager.CreateBackgroundTabWithUrl(
-      boca_app_browser->session_id(), GURL(kTestUrl),
+      boca_app_browser->GetSessionID(), GURL(kTestUrl),
       LockedNavigationOptions::BLOCK_NAVIGATION);
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   content::WebContents* const web_contents_1 =
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Remove tab with the tab id and verify that Boca no longer has the tab.
   const std::set<SessionID> tab_ids_to_remove = {tab_id};
-  system_web_app_manager.RemoveTabsWithTabIds(boca_app_browser->session_id(),
+  system_web_app_manager.RemoveTabsWithTabIds(boca_app_browser->GetSessionID(),
                                               tab_ids_to_remove);
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
   content::WebContents* const web_contents_2 =
@@ -517,13 +517,13 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Create tab so we can verify it gets cleaned up with window prep.
   system_web_app_manager.CreateBackgroundTabWithUrl(
-      boca_app_browser->session_id(), GURL(kTestUrl),
+      boca_app_browser->GetSessionID(), GURL(kTestUrl),
       LockedNavigationOptions::BLOCK_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
 
   // Verify that the tab is cleaned up after window prep.
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
-      boca_app_browser->session_id(), /*close_bundle_content=*/true);
+      boca_app_browser->GetSessionID(), /*close_bundle_content=*/true);
   EXPECT_TRUE(
       OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(
@@ -552,13 +552,13 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Create tab so we can verify it does not get cleaned up after window prep.
   system_web_app_manager.CreateBackgroundTabWithUrl(
-      boca_app_browser->session_id(), GURL(kTestUrl),
+      boca_app_browser->GetSessionID(), GURL(kTestUrl),
       LockedNavigationOptions::BLOCK_NAVIGATION);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
 
   // Verify that the tab is not destroyed after window prep.
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
-      boca_app_browser->session_id(), /*close_bundle_content=*/false);
+      boca_app_browser->GetSessionID(), /*close_bundle_content=*/false);
   EXPECT_TRUE(
       OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Verify that dev tools commands are disabled.
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
-      boca_app_browser->session_id(), /*close_bundle_content=*/false);
+      boca_app_browser->GetSessionID(), /*close_bundle_content=*/false);
   chrome::BrowserCommandController* const command_controller =
       chrome::BrowserCommandController::From(boca_app_browser);
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS));
@@ -601,12 +601,12 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_THAT(boca_app_browser, NotNull());
 
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/true, boca_app_browser->session_id());
+      /*pinned=*/true, boca_app_browser->GetSessionID());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
 
   // Unpin the Boca app and verify that dev tools commands are disabled.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/false, boca_app_browser->session_id());
+      /*pinned=*/false, boca_app_browser->GetSessionID());
   EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   chrome::BrowserCommandController* const command_controller =
       chrome::BrowserCommandController::From(boca_app_browser);
@@ -629,9 +629,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Pin the Boca app and verify result.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
-      /*pinned=*/true, boca_app_browser->session_id());
+      /*pinned=*/true, boca_app_browser->GetSessionID());
   EXPECT_TRUE(
-      system_web_app_manager.IsWindowPinned(boca_app_browser->session_id()));
+      system_web_app_manager.IsWindowPinned(boca_app_browser->GetSessionID()));
 }
 
 }  // namespace

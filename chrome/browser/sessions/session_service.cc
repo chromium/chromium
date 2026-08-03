@@ -405,19 +405,19 @@ void SessionService::WindowOpened(Browser* browser) {
   }
 
   RestoreIfNecessary(StartupTabs(), browser, /* restore_apps */ false);
-  SetWindowType(browser->session_id(), browser->GetType());
-  SetWindowAppName(browser->session_id(),
+  SetWindowType(browser->GetSessionID(), browser->GetType());
+  SetWindowAppName(browser->GetSessionID(),
                    BrowserInitState::From(browser)->create_params().app_name);
-  SetWindowUserTitle(browser->session_id(),
+  SetWindowUserTitle(browser->GetSessionID(),
                      WindowMetadataController::From(browser)->user_title());
 
   // Save a browser workspace after window is created in `Browser()`.
   // Bento desks restore feature in ash requires this line to restore correctly
   // after creating a new browser window in a particular desk.
-  SetWindowWorkspace(browser->session_id(),
+  SetWindowWorkspace(browser->GetSessionID(),
                      BrowserWindow::FromBrowser(browser)->GetWorkspace());
   SetWindowVisibleOnAllWorkspaces(
-      browser->session_id(),
+      browser->GetSessionID(),
       BrowserWindow::FromBrowser(browser)->IsVisibleOnAllWorkspaces());
 }
 

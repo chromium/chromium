@@ -129,14 +129,14 @@ void SaveWindowPlacement(Browser* browser,
   // showing, and we don't want to bring in the session service this early.
   SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(browser);
   if (service) {
-    service->SetWindowBounds(browser->session_id(), bounds, show_state);
+    service->SetWindowBounds(browser->GetSessionID(), bounds, show_state);
   }
 }
 
 void SaveWindowWorkspace(Browser* browser, const std::string& workspace) {
   SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(browser);
   if (service) {
-    service->SetWindowWorkspace(browser->session_id(), workspace);
+    service->SetWindowWorkspace(browser->GetSessionID(), workspace);
   }
 }
 
@@ -144,7 +144,7 @@ void SaveWindowVisibleOnAllWorkspaces(Browser* browser,
                                       bool visible_on_all_workspaces) {
   SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(browser);
   if (service) {
-    service->SetWindowVisibleOnAllWorkspaces(browser->session_id(),
+    service->SetWindowVisibleOnAllWorkspaces(browser->GetSessionID(),
                                              visible_on_all_workspaces);
   }
 }

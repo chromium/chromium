@@ -38,7 +38,7 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
     auto window_bounds =
         protocol::Browser::Bounds::Create().SetWindowState(state).Build();
     BrowserHandler handler(nullptr, "");
-    handler.SetWindowBounds(browser()->session_id().id(),
+    handler.SetWindowBounds(browser()->GetSessionID().id(),
                             std::move(window_bounds));
   }
 
@@ -49,7 +49,7 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
                              .SetHeight(400)
                              .Build();
     BrowserHandler handler(nullptr, "");
-    handler.SetWindowBounds(browser()->session_id().id(),
+    handler.SetWindowBounds(browser()->GetSessionID().id(),
                             std::move(window_bounds));
   }
 

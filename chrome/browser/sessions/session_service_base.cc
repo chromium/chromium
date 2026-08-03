@@ -676,44 +676,45 @@ void SessionServiceBase::BuildCommandsForBrowser(
     std::set<SessionID>* windows_to_track) {
   DCHECK(is_saving_enabled_);
   DCHECK(browser);
-  DCHECK(browser->session_id().is_valid());
+  DCHECK(browser->GetSessionID().is_valid());
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetWindowBoundsCommand(
-          browser->session_id(), browser->GetWindow()->GetRestoredBounds(),
+          browser->GetSessionID(), browser->GetWindow()->GetRestoredBounds(),
           browser->GetWindow()->GetRestoredState()));
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetWindowTypeCommand(
-          browser->session_id(), WindowTypeForBrowserType(browser->GetType())));
+          browser->GetSessionID(),
+          WindowTypeForBrowserType(browser->GetType())));
 
   if (!BrowserInitState::From(browser)->create_params().app_name.empty()) {
     command_storage_manager()->AppendRebuildCommand(
         sessions::CreateSetWindowAppNameCommand(
-            browser->session_id(),
+            browser->GetSessionID(),
             BrowserInitState::From(browser)->create_params().app_name));
   }
 
   if (!WindowMetadataController::From(browser)->user_title().empty()) {
     command_storage_manager()->AppendRebuildCommand(
         sessions::CreateSetWindowUserTitleCommand(
-            browser->session_id(),
+            browser->GetSessionID(),
             WindowMetadataController::From(browser)->user_title()));
   }
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetWindowWorkspaceCommand(
-          browser->session_id(),
+          browser->GetSessionID(),
           BrowserWindow::FromBrowser(browser)->GetWorkspace()));
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetWindowVisibleOnAllWorkspacesCommand(
-          browser->session_id(),
+          browser->GetSessionID(),
           BrowserWindow::FromBrowser(browser)->IsVisibleOnAllWorkspaces()));
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetSelectedTabInWindowCommand(
-          browser->session_id(), browser->tab_strip_model()->active_index()));
+          browser->GetSessionID(), browser->tab_strip_model()->active_index()));
 
   // Set the visual data for each tab group.
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -758,13 +759,14 @@ void SessionServiceBase::BuildCommandsForBrowser(
       const std::optional<split_tabs::SplitTabId> split_id =
           tab_strip->GetSplitForTab(index);
 
-      BuildCommandsForTab(browser->session_id(), tab, index, group_id, split_id,
-                          tab_interface->IsPinned(), tab_to_available_range);
+      BuildCommandsForTab(browser->GetSessionID(), tab, index, group_id,
+                          split_id, tab_interface->IsPinned(),
+                          tab_to_available_range);
 
       index++;
     }
 
-  windows_to_track->insert(browser->session_id());
+    windows_to_track->insert(browser->GetSessionID());
 }
 
 void SessionServiceBase::BuildCommandsFromBrowsers(

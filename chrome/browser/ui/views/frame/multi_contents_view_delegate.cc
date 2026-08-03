@@ -78,7 +78,7 @@ void MultiContentsViewDelegateImpl::ResizeWebContents(double start_ratio,
 
     const split_tabs::SplitTabVisualData* visual_data =
         tab_strip_model_->GetSplitData(split_id)->visual_data();
-    session_service->SetSplitTabData(browser_->session_id(), split_id,
+    session_service->SetSplitTabData(browser_->GetSessionID(), split_id,
                                      visual_data);
   }
 }

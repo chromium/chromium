@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 
   // Set up window tracker to track the app window. This is needed to activate
   // the navigation throttle.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
 
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 
   // Set up window tracker to track the app window. This is needed to activate
   // the navigation throttle.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   ASSERT_TRUE(boca::OnTaskLockedController::From(boca_app_browser)
                   ->is_locked_for_on_task());
 
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   CreateBackgroundTabAndWait(
       window_id, embedded_test_server()->GetURL(kTabUrl1Host, "/"),
       ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -822,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -973,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1215,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1267,7 +1267,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1355,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1534,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1573,7 +1573,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1611,7 +1611,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1650,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1709,7 +1709,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1767,7 +1767,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1833,7 +1833,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1888,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1937,7 +1937,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -1989,7 +1989,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -2032,7 +2032,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->is_locked_for_on_task());
 
   // Set up window tracker to track the app window.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});

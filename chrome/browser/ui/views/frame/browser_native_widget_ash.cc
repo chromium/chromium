@@ -194,7 +194,7 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
   const int32_t restore_id =
       BrowserInitState::From(browser)->create_params().restore_id;
   params.init_properties_container.SetProperty(app_restore::kWindowIdKey,
-                                               browser->session_id().id());
+                                               browser->GetSessionID().id());
   params.init_properties_container.SetProperty(app_restore::kRestoreWindowIdKey,
                                                restore_id);
 

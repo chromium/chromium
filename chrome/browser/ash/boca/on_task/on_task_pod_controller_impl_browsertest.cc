@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_P(OnTaskPodControllerImplSetupBrowserTest,
 
   // Set up window tracker to track the app window. Verify that the pod is set
   // up only when the feature flag is enabled.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, BackButtonDisabled) {
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, ReloadCurrentTab) {
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, HidePodWhenPaused) {
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -782,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, SetPodSnapLocation) {
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -901,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 
   // Set up window tracker to track the app window. This is when the OnTask pod
   // is set up.
-  const SessionID window_id = boca_app_browser->session_id();
+  const SessionID window_id = boca_app_browser->GetSessionID();
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});

@@ -321,9 +321,6 @@ class Browser : public TabStripModelObserver,
   // avoided.
   BrowserView& GetBrowserView();
 
-
-  SessionID session_id() const { return session_id_; }
-
   base::WeakPtr<Browser> AsWeakPtr();
   base::WeakPtr<const Browser> AsWeakPtr() const;
 

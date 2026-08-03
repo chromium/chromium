@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   const int initial_tab_count = browser()->tab_strip_model()->count();
 
   std::unique_ptr<ToolRequest> action =
-      MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
+      MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/true);
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   const int initial_tab_count = browser()->tab_strip_model()->count();
 
   std::unique_ptr<ToolRequest> action =
-      MakeCreateTabRequest(browser()->session_id(), /*foreground=*/false);
+      MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/false);
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   // Create a new tab, ensure it's added to the set of acted on tabs.
   {
     std::unique_ptr<ToolRequest> action =
-        MakeCreateTabRequest(browser()->session_id(), /*foreground=*/false);
+        MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/false);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   // Create a second tab, ensure it too is added to the set of acted on tabs.
   {
     std::unique_ptr<ToolRequest> action =
-        MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
+        MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/true);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   std::unique_ptr<ToolRequest> action =
-      MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
+      MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/true);
   ActResultFuture act_result;
   actor_task().Act(ToRequestList(action), act_result.GetCallback());
   ExpectOkResult(act_result);
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   // Create a new tab, ensure it's added to the set of acted on tabs.
   {
     std::unique_ptr<ToolRequest> action =
-        MakeCreateTabRequest(browser()->session_id(), /*foreground=*/false);
+        MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/false);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   // Create a second tab, ensure it too is added to the set of acted on tabs.
   {
     std::unique_ptr<ToolRequest> action =
-        MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
+        MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/true);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);

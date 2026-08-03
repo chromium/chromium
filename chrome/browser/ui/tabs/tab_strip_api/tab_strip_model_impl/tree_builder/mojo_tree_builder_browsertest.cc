@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceMojoTreeBuilderBrowserTest,
 
   auto result =
       MojoTreeBuilder(GetTabStripModel(),
-                      base::NumberToString(browser()->session_id().id()))
+                      base::NumberToString(browser()->GetSessionID().id()))
           .Build(GetTabStripModel()->Root()->GetHandle());
 
   // First layer is just the root collection (TabStrip).
