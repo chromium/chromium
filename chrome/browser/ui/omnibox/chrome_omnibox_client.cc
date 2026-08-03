@@ -333,7 +333,7 @@ omnibox::OmniboxPopupCloser* ChromeOmniboxClient::GetOmniboxPopupCloser() {
   if (!browser_) {
     return nullptr;
   }
-  auto* bwf = browser_->browser_window_features();
+  auto* bwf = &browser_->GetFeatures();
   if (!bwf) {
     return nullptr;
   }

@@ -466,8 +466,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        OnSkillDeletedTriggersToast) {
   // Ensure no toast is initially showing.
-  const auto* toast_controller =
-      browser()->browser_window_features()->toast_controller();
+  const auto* toast_controller = browser()->GetFeatures().toast_controller();
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
   // Trigger the deletion notification on the Tab Controller.

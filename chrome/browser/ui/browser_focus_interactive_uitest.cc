@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
   ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
 
   // Simulate ESC being pressed to close the omnibox suggestions popup.
-  browser()->browser_window_features()->omnibox_popup_closer()->CloseWithReason(
+  browser()->GetFeatures().omnibox_popup_closer()->CloseWithReason(
       omnibox::PopupCloseReason::kEscapeKeyPressed);
 
   // Loop through the focus chain twice in each direction for good measure.

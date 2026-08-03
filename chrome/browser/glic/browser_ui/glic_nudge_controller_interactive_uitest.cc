@@ -52,7 +52,7 @@ class GlicNudgeControllerInteractiveUiTest : public test::InteractiveGlicTest {
   }
 
   GlicNudgeController* nudge_controller() {
-    return browser()->browser_window_features()->glic_nudge_controller();
+    return browser()->GetFeatures().glic_nudge_controller();
   }
 
   TabStripActionContainer* tab_strip_action_container() {

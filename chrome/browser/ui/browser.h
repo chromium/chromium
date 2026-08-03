@@ -323,9 +323,6 @@ class Browser : public TabStripModelObserver,
 
 
   SessionID session_id() const { return session_id_; }
-  BrowserWindowFeatures* browser_window_features() const {
-    return features_.get();
-  }
 
   base::WeakPtr<Browser> AsWeakPtr();
   base::WeakPtr<const Browser> AsWeakPtr() const;

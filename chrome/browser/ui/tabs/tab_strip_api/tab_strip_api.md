@@ -36,7 +36,7 @@ instance from the BrowserWindowFeatures and bind a remote to it.
 // ...
 mojo::Remote<tabs_api::mojom::TabStripService> remote;
 auto* tab_strip_service =
-        browser_->browser_window_features()->tab_strip_service();
+        browser_->GetFeatures().tab_strip_service();
 
 if (tab_strip_service) {
   tab_strip_service->Accept(remote.BindNewPipeAndPassReceiver());

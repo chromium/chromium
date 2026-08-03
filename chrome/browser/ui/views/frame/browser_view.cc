@@ -4137,8 +4137,7 @@ void BrowserView::OnWidgetMove() {
   BookmarkBubbleView::Hide();
 
   // Close the omnibox popup, if any.
-  if (auto* popup_closer =
-          browser()->browser_window_features()->omnibox_popup_closer()) {
+  if (auto* popup_closer = browser()->GetFeatures().omnibox_popup_closer()) {
     popup_closer->CloseWithReason(
         omnibox::PopupCloseReason::kBrowserWidgetMoved);
   }

@@ -786,8 +786,8 @@ void Browser::OnWindowCloseComplete() {
 // Browser, Tab adding/showing functions:
 
 void Browser::WindowFullscreenStateChanged() {
-  browser_window_features()
-      ->exclusive_access_manager()
+  GetFeatures()
+      .exclusive_access_manager()
       ->fullscreen_controller()
       ->WindowFullscreenStateChanged();
   chrome::BrowserCommandController::From(this)->FullscreenStateChanged();
@@ -980,7 +980,7 @@ void Browser::OnTabClosing(tabs::TabInterface* tab,
       page_load_metrics::MetricsWebContentsObserver::FromWebContents(contents);
   metrics_observer->WebContentsWillSoonBeDestroyed();
 
-  browser_window_features()->exclusive_access_manager()->OnTabClosing(contents);
+  GetFeatures().exclusive_access_manager()->OnTabClosing(contents);
 }
 
 void Browser::OnTabDetached(tabs::TabInterface* tab,
@@ -1022,8 +1022,7 @@ void Browser::RestoreFocusAfterTabModalPopupClose(
 }
 
 void Browser::OnTabDeactivated(WebContents* contents) {
-  browser_window_features()->exclusive_access_manager()->OnTabDeactivated(
-      contents);
+  GetFeatures().exclusive_access_manager()->OnTabDeactivated(contents);
   SearchTabHelper::FromWebContents(contents)->OnTabDeactivated();
 
   // Save what the user's currently typing, so it can be restored when we
@@ -1039,7 +1038,7 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
   // even if the tab strip is empty.
   if (change.type() != TabStripModelChange::kReplaced &&
       !tab_strip_model_->closing_all()) {
-    SidePanelUI* side_panel_ui = browser_window_features()->side_panel_ui();
+    SidePanelUI* side_panel_ui = GetFeatures().side_panel_ui();
     if (side_panel_ui) {
       side_panel_ui->OnActiveTabChanged(
           selection.old_contents, selection.new_contents,
@@ -1096,7 +1095,7 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
   window_->OnActiveTabChanged(selection.old_contents, selection.new_contents,
                               index, selection.reason);
 
-  browser_window_features()->exclusive_access_manager()->OnTabDetachedFromView(
+  GetFeatures().exclusive_access_manager()->OnTabDetachedFromView(
       selection.old_contents);
 
   // If we have any update pending, do it now.
@@ -1148,8 +1147,7 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
     did_active_tab_change_callback_list_.Notify(this);
   }
   TabDetachedAtImpl(old_contents, was_active, DetachType::kReplace);
-  browser_window_features()->exclusive_access_manager()->OnTabClosing(
-      old_contents);
+  GetFeatures().exclusive_access_manager()->OnTabClosing(old_contents);
   OnTabInsertedAt(new_contents, index);
 
   if (!new_contents->GetController().IsInitialBlankNavigation()) {

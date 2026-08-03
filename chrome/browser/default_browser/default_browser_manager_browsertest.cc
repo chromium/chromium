@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerBrowserTest, OnAcceptedShowsToast) {
   EXPECT_EQ(future.Get(), DefaultBrowserState::IS_DEFAULT);
 
   ToastController* toast_controller =
-      browser()->browser_window_features()->toast_controller();
+      browser()->GetFeatures().toast_controller();
   ASSERT_TRUE(toast_controller);
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_EQ(toast_controller->GetCurrentToastId(),

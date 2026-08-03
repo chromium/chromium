@@ -547,9 +547,8 @@ void ToolbarView::Init() {
         ttc::AiOverlayDialogController::From(browser_)) {
       actions::ActionItem* action_item =
           actions::ActionManager::Get().FindAction(
-              kActionShowAiOverlayDialog, browser_->browser_window_features()
-                                              ->browser_actions()
-                                              ->root_action_item());
+              kActionShowAiOverlayDialog,
+              browser_->GetFeatures().browser_actions()->root_action_item());
       if (action_item) {
         action_item->SetVisible(true);
         action_item->SetEnabled(true);

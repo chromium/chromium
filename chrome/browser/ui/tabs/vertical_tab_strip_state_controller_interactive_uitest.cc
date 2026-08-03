@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
 
   // Get ToastController
   ToastController* const toast_controller =
-      browser()->browser_window_features()->toast_controller();
+      browser()->GetFeatures().toast_controller();
   ASSERT_NE(toast_controller, nullptr);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
 
   // Get ToastController
   ToastController* const toast_controller =
-      browser()->browser_window_features()->toast_controller();
+      browser()->GetFeatures().toast_controller();
   ASSERT_NE(toast_controller, nullptr);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 

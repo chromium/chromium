@@ -298,10 +298,8 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents());
 
   actions::ActionItem* action = actions::ActionManager::Get().FindAction(
-      kActionMultistepFilter, browser()
-                                  ->browser_window_features()
-                                  ->browser_actions()
-                                  ->root_action_item());
+      kActionMultistepFilter,
+      browser()->GetFeatures().browser_actions()->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction(actions::ActionInvocationContext());
 
@@ -411,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
   EXPECT_FALSE(test_api(*ui_controller).suggestion_state().has_value());
 
   ToastController* toast_controller =
-      browser()->browser_window_features()->toast_controller();
+      browser()->GetFeatures().toast_controller();
   EXPECT_FALSE(toast_controller->IsShowingToast());
 }
 #endif

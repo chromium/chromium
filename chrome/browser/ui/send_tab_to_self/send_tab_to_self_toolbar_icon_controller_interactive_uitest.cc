@@ -83,8 +83,8 @@ class SendTabToSelfToolbarIconControllerInteractiveUiTest
   auto StopToastTimer() {
     return Do([this]() {
       browser()
-          ->browser_window_features()
-          ->toast_controller()
+          ->GetFeatures()
+          .toast_controller()
           ->GetToastCloseTimerForTesting()
           ->Stop();
     });

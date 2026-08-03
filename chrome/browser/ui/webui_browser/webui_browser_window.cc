@@ -1295,5 +1295,5 @@ void WebUIBrowserWindow::CloseSidePanel() {
 
 WebUIBrowserSidePanelUI* WebUIBrowserWindow::GetWebUIBrowserSidePanelUI() {
   return static_cast<WebUIBrowserSidePanelUI*>(
-      browser_->browser_window_features()->side_panel_ui());
+      browser_->GetFeatures().side_panel_ui());
 }

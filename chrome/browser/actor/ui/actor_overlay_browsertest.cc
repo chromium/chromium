@@ -107,25 +107,23 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ControllerExistsForNormalBrowsers) {
   // Normal browser window
   Browser* const normal_browser = browser();
   ASSERT_NE(ActorUiWindowController::From(normal_browser), nullptr);
-  ASSERT_NE(ActorUiTabController::From(normal_browser->browser_window_features()
-                                           ->tab_strip_model()
-                                           ->GetActiveTab()),
-            nullptr);
+  ASSERT_NE(
+      ActorUiTabController::From(
+          normal_browser->GetFeatures().tab_strip_model()->GetActiveTab()),
+      nullptr);
 
   // Popup window
   Browser* const popup_browser = CreateBrowserForPopup(profile);
   ASSERT_EQ(ActorUiWindowController::From(popup_browser), nullptr);
-  ASSERT_EQ(ActorUiTabController::From(popup_browser->browser_window_features()
-                                           ->tab_strip_model()
-                                           ->GetActiveTab()),
+  ASSERT_EQ(ActorUiTabController::From(
+                popup_browser->GetFeatures().tab_strip_model()->GetActiveTab()),
             nullptr);
 
   // App window
   Browser* const app_browser = CreateBrowserForApp("test_app_name", profile);
   ASSERT_EQ(ActorUiWindowController::From(app_browser), nullptr);
-  ASSERT_EQ(ActorUiTabController::From(app_browser->browser_window_features()
-                                           ->tab_strip_model()
-                                           ->GetActiveTab()),
+  ASSERT_EQ(ActorUiTabController::From(
+                app_browser->GetFeatures().tab_strip_model()->GetActiveTab()),
             nullptr);
 
   // Picture-in-Picture window
@@ -833,25 +831,23 @@ IN_PROC_BROWSER_TEST_F(GlicActorDisabledTest,
   // Normal browser window
   Browser* const normal_browser = browser();
   ASSERT_EQ(ActorUiWindowController::From(normal_browser), nullptr);
-  ASSERT_EQ(ActorUiTabController::From(normal_browser->browser_window_features()
-                                           ->tab_strip_model()
-                                           ->GetActiveTab()),
-            nullptr);
+  ASSERT_EQ(
+      ActorUiTabController::From(
+          normal_browser->GetFeatures().tab_strip_model()->GetActiveTab()),
+      nullptr);
 
   // Popup window
   Browser* const popup_browser = CreateBrowserForPopup(profile);
   ASSERT_EQ(ActorUiWindowController::From(popup_browser), nullptr);
-  ASSERT_EQ(ActorUiTabController::From(popup_browser->browser_window_features()
-                                           ->tab_strip_model()
-                                           ->GetActiveTab()),
+  ASSERT_EQ(ActorUiTabController::From(
+                popup_browser->GetFeatures().tab_strip_model()->GetActiveTab()),
             nullptr);
 
   // App window
   Browser* const app_browser = CreateBrowserForApp("test_app_name", profile);
   ASSERT_EQ(ActorUiWindowController::From(app_browser), nullptr);
-  ASSERT_EQ(ActorUiTabController::From(app_browser->browser_window_features()
-                                           ->tab_strip_model()
-                                           ->GetActiveTab()),
+  ASSERT_EQ(ActorUiTabController::From(
+                app_browser->GetFeatures().tab_strip_model()->GetActiveTab()),
             nullptr);
 
   // Picture-in-Picture window

@@ -2111,8 +2111,7 @@ void LocationBarView::OnLocationIconDragged(const ui::MouseEvent& event) {
     return;
   }
 
-  if (auto* popup_closer =
-          browser_->browser_window_features()->omnibox_popup_closer()) {
+  if (auto* popup_closer = browser_->GetFeatures().omnibox_popup_closer()) {
     popup_closer->CloseWithReason(
         omnibox::PopupCloseReason::kLocationIconDragged);
   }

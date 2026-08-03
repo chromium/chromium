@@ -141,7 +141,7 @@ class ToastControllerInteractiveTest
   }
 
   ToastController* GetToastController() {
-    return browser()->browser_window_features()->toast_controller();
+    return browser()->GetFeatures().toast_controller();
   }
 
   auto ShowToast(ToastParams params) {

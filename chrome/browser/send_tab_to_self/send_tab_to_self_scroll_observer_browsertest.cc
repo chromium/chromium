@@ -48,7 +48,7 @@ void SimulateOpeningReceivedTab(Browser* browser,
 
   if (!controller->IsBubbleShowing()) {
     PinnedToolbarActions* pinned_controller =
-        browser->browser_window_features()->pinned_toolbar_actions();
+        browser->GetFeatures().pinned_toolbar_actions();
     pinned_controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf,
                                                       true);
     auto anchor = pinned_controller->GetBubbleAnchor(kActionSendTabToSelf);

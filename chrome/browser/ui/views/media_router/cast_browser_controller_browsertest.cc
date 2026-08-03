@@ -70,8 +70,7 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
                       ->toolbar_button_provider()
                       ->GetPinnedToolbarActions())
                   ->GetButtonFor(kActionRouteMedia);
-    controller_ =
-        browser()->browser_window_features()->cast_browser_controller();
+    controller_ = browser()->GetFeatures().cast_browser_controller();
     media_router_ =
         MediaRouterFactory::GetApiForBrowserContext(browser()->GetProfile());
 

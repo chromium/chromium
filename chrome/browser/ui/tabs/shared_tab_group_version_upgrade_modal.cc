@@ -88,8 +88,7 @@ void ShowSharedTabGroupVersionUpToDateToast(
     return;
   }
 
-  ToastController* toast_controller =
-      browser->browser_window_features()->toast_controller();
+  ToastController* toast_controller = browser->GetFeatures().toast_controller();
   if (!toast_controller) {
     return;
   }
