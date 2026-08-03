@@ -38,7 +38,9 @@
 namespace network {
 namespace {
 
-TEST(URLRequestMojomTraitsTest, Roundtrips_URLRequestReferrerPolicy) {
+using URLRequestMojomTraitsTest = testing::Test;
+
+TEST_F(URLRequestMojomTraitsTest, Roundtrips_URLRequestReferrerPolicy) {
   for (auto referrer_policy :
        {net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
         net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
@@ -59,7 +61,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_URLRequestReferrerPolicy) {
   }
 }
 
-TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
+TEST_F(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   network::ResourceRequest original;
   original.method = "POST";
   original.url = GURL("https://example.com/resources/dummy.xml");
@@ -181,7 +183,61 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   EXPECT_TRUE(original.EqualsForTesting(copied));
 }
 
-TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams) {
+TEST_F(URLRequestMojomTraitsTest,
+       Roundtrips_ResourceRequestWithRevalidationMetadata) {
+  network::ResourceRequest original;
+  original.url = GURL("https://example.com/");
+  original.revalidation_etag = "\"12345\"";
+  original.revalidation_last_modified = "Wed, 21 Oct 2015 07:28:00 GMT";
+
+  network::ResourceRequest copied;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original, copied));
+  EXPECT_EQ(copied.revalidation_etag, "\"12345\"");
+  EXPECT_EQ(copied.revalidation_last_modified, "Wed, 21 Oct 2015 07:28:00 GMT");
+}
+
+TEST_F(URLRequestMojomTraitsTest, RevalidationMetadata_InvalidValues) {
+  {
+    // Empty etag should fail deserialization
+    network::ResourceRequest original;
+    original.url = GURL("https://example.com/");
+    original.revalidation_etag = "";
+    network::ResourceRequest copied;
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::URLRequest>(
+        original, copied));
+  }
+  {
+    // Invalid header value (containing CRLF) in etag should fail
+    // deserialization
+    network::ResourceRequest original;
+    original.url = GURL("https://example.com/");
+    original.revalidation_etag = "invalid\r\nheader";
+    network::ResourceRequest copied;
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::URLRequest>(
+        original, copied));
+  }
+  {
+    // Empty last_modified should fail deserialization
+    network::ResourceRequest original;
+    original.url = GURL("https://example.com/");
+    original.revalidation_last_modified = "";
+    network::ResourceRequest copied;
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::URLRequest>(
+        original, copied));
+  }
+  {
+    // Invalid header value in last_modified should fail deserialization
+    network::ResourceRequest original;
+    original.url = GURL("https://example.com/");
+    original.revalidation_last_modified = "invalid\r\nheader";
+    network::ResourceRequest copied;
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::URLRequest>(
+        original, copied));
+  }
+}
+
+TEST_F(URLRequestMojomTraitsTest, Roundtrips_TrustedParams) {
   network::ResourceRequest::TrustedParams original;
   original.disable_secure_dns = true;
   original.allow_cookies_from_browser = true;
@@ -227,7 +283,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams) {
   EXPECT_TRUE(copied.response_body_stream->pipe.is_valid());
 }
 
-TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams_NullOpt) {
+TEST_F(URLRequestMojomTraitsTest, Roundtrips_TrustedParams_NullOpt) {
   network::ResourceRequest::TrustedParams original;
   original.enabled_client_hints = std::nullopt;
   network::ResourceRequest::TrustedParams copied;

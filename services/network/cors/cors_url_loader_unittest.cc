@@ -54,6 +54,46 @@ using ::testing::Pointee;
 
 class CorsURLLoaderTest : public CorsURLLoaderTestBase {};
 
+class CorsURLLoaderTestWithSafeRevalidation
+    : public CorsURLLoaderTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  CorsURLLoaderTestWithSafeRevalidation() {
+    feature_list_.InitWithFeatureState(features::kSafeRevalidation, GetParam());
+  }
+
+  bool IsSafeRevalidationEnabled() const { return GetParam(); }
+
+  void SetRevalidationMetadata(ResourceRequest& request,
+                               const std::string& etag,
+                               const std::string& last_modified) {
+    if (IsSafeRevalidationEnabled()) {
+      if (!etag.empty()) {
+        request.revalidation_etag = etag;
+      }
+      if (!last_modified.empty()) {
+        request.revalidation_last_modified = last_modified;
+      }
+    } else {
+      request.is_revalidating = true;
+      if (!etag.empty()) {
+        request.headers.SetHeader(net::HttpRequestHeaders::kIfNoneMatch, etag);
+      }
+      if (!last_modified.empty()) {
+        request.headers.SetHeader(net::HttpRequestHeaders::kIfModifiedSince,
+                                  last_modified);
+      }
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CorsURLLoaderTestWithSafeRevalidation,
+                         testing::Bool());
+
 class BadMessageTestHelper {
  public:
   BadMessageTestHelper()
@@ -1838,10 +1878,9 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_POST) {
             url::Origin::Create(origin).Serialize());
 }
 
-TEST_F(CorsURLLoaderTest, 304ForSimpleRevalidation) {
+TEST_P(CorsURLLoaderTestWithSafeRevalidation, 304ForSimpleRevalidation) {
   const GURL origin("https://example.com");
   const GURL url("https://other.example.com/foo.png");
-  const GURL new_url("https://other2.example.com/bar.png");
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kCors;
@@ -1849,10 +1888,7 @@ TEST_F(CorsURLLoaderTest, 304ForSimpleRevalidation) {
   request.method = "GET";
   request.url = url;
   request.request_initiator = url::Origin::Create(origin);
-  request.headers.SetHeader("If-Modified-Since", "x");
-  request.headers.SetHeader("If-None-Match", "y");
-  request.headers.SetHeader("Cache-Control", "z");
-  request.is_revalidating = true;
+  SetRevalidationMetadata(request, "y", "x");
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
 
@@ -1924,10 +1960,9 @@ TEST_F(CorsURLLoaderTest, 200ForSimpleRevalidation) {
   EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
 }
 
-TEST_F(CorsURLLoaderTest, RevalidationAndPreflight) {
+TEST_P(CorsURLLoaderTestWithSafeRevalidation, RevalidationAndPreflight) {
   const GURL origin("https://example.com");
   const GURL url("https://other.example.com/foo.png");
-  const GURL new_url("https://other2.example.com/bar.png");
 
   ResourceRequest original_request;
   original_request.mode = mojom::RequestMode::kCors;
@@ -1935,11 +1970,8 @@ TEST_F(CorsURLLoaderTest, RevalidationAndPreflight) {
   original_request.method = "GET";
   original_request.url = url;
   original_request.request_initiator = url::Origin::Create(origin);
-  original_request.headers.SetHeader("If-Modified-Since", "x");
-  original_request.headers.SetHeader("If-None-Match", "y");
-  original_request.headers.SetHeader("Cache-Control", "z");
+  SetRevalidationMetadata(original_request, "y", "x");
   original_request.headers.SetHeader("foo", "bar");
-  original_request.is_revalidating = true;
   CreateLoaderAndStart(original_request);
   RunUntilCreateLoaderAndStartCalled();
 
@@ -1959,6 +1991,9 @@ TEST_F(CorsURLLoaderTest, RevalidationAndPreflight) {
   EXPECT_EQ(2, num_created_loaders());
   EXPECT_EQ(GetRequest().url, url);
   EXPECT_EQ(GetRequest().method, "GET");
+  EXPECT_EQ(GetRequest().headers.GetHeader("If-Modified-Since"), "x");
+  EXPECT_EQ(GetRequest().headers.GetHeader("If-None-Match"), "y");
+  EXPECT_EQ(GetRequest().headers.GetHeader("foo"), "bar");
 
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://example.com"}});
@@ -3415,6 +3450,64 @@ TEST_F(RedirectCorsURLLoaderTest, UpdateRequestFor302PostRedirect) {
 
 TEST_F(RedirectCorsURLLoaderTest, UpdateRequestFor303Redirect) {
   VerifyUpdateRequestForRedirect(303, "FOO");
+}
+
+TEST_F(CorsURLLoaderTest, SafeRevalidationIgnoresSpoofedIsRevalidating) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSafeRevalidation);
+
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/secret");
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  request.is_revalidating = true;  // Spoofed flag without metadata!
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  // 304 response without Access-Control-Allow-Origin header
+  NotifyLoaderClientOnReceiveResponse(304, {});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, SafeRevalidationWithStructuredMetadata) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSafeRevalidation);
+
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/secret");
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  request.revalidation_etag = "\"my-etag\"";
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_EQ(GetRequest().headers.GetHeader("If-None-Match"), "\"my-etag\"");
+
+  // 304 response without ACAO should pass when safe revalidation metadata is
+  // present
+  NotifyLoaderClientOnReceiveResponse(304, {});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
 }
 
 }  // namespace

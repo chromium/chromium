@@ -444,6 +444,10 @@ struct URLRequest {
   // some CORS logic for a revalidating request.
   bool is_revalidating;
 
+  // Metadata passed for safe revalidation handling in Network Service.
+  string? revalidation_etag;
+  string? revalidation_last_modified;
+
   // The profile ID of network conditions to throttle the network request.
   mojo_base.mojom.UnguessableToken? throttling_profile_id;
 

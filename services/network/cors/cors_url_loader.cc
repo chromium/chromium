@@ -75,6 +75,14 @@ enum class PreflightRequiredReason {
   kDisallowedHeader
 };
 
+bool IsRevalidatingRequest(const ResourceRequest& request) {
+  if (base::FeatureList::IsEnabled(features::kSafeRevalidation)) {
+    return request.revalidation_etag.has_value() ||
+           request.revalidation_last_modified.has_value();
+  }
+  return request.is_revalidating;
+}
+
 // Returns std::nullopt when a preflight isn't needed. Otherwise returns the
 // reason why a preflight is needed.
 std::optional<PreflightRequiredReason> NeedsPreflight(
@@ -99,8 +107,13 @@ std::optional<PreflightRequiredReason> NeedsPreflight(
       request.trusted_params &&
       request.trusted_params->is_ad_auction_trusted_signals_request;
 
+  const bool is_revalidating_for_headers =
+      base::FeatureList::IsEnabled(features::kSafeRevalidation)
+          ? false
+          : request.is_revalidating;
+
   if (!CorsUnsafeNotForbiddenRequestHeaderNames(
-           request.headers.GetHeaderVector(), request.is_revalidating,
+           request.headers.GetHeaderVector(), is_revalidating_for_headers,
            is_ad_auction_trusted_signals_request)
            .empty()) {
     return PreflightRequiredReason::kDisallowedHeader;
@@ -611,7 +624,7 @@ void CorsURLLoader::OnReceiveResponse(
 
   // See 10.7.4 of https://fetch.spec.whatwg.org/#http-network-or-cache-fetch
   const bool is_304_for_revalidation =
-      request_.is_revalidating && response_head->headers &&
+      IsRevalidatingRequest(request_) && response_head->headers &&
       response_head->headers->response_code() == 304;
   if (fetch_cors_flag_ && !is_304_for_revalidation) {
     const auto result = CheckAccess(
@@ -1114,6 +1127,17 @@ void CorsURLLoader::StartNetworkRequest() {
   network_loader_.reset();
 
   network_loader_start_time_ = base::TimeTicks::Now();
+
+  if (base::FeatureList::IsEnabled(features::kSafeRevalidation)) {
+    if (request_.revalidation_etag) {
+      request_.headers.SetHeader(net::HttpRequestHeaders::kIfNoneMatch,
+                                 *request_.revalidation_etag);
+    }
+    if (request_.revalidation_last_modified) {
+      request_.headers.SetHeader(net::HttpRequestHeaders::kIfModifiedSince,
+                                 *request_.revalidation_last_modified);
+    }
+  }
 
   if (sync_network_loader_factory_) {
     sync_network_loader_factory_->CreateLoaderAndStartWithSyncClient(

@@ -258,6 +258,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   int previews_state = 0;
   bool upgrade_if_insecure = false;
   bool is_revalidating = false;
+  std::optional<std::string> revalidation_etag;
+  std::optional<std::string> revalidation_last_modified;
   std::optional<base::UnguessableToken> throttling_profile_id;
   std::optional<base::UnguessableToken> fetch_window_id;
   std::optional<std::string> devtools_request_id;

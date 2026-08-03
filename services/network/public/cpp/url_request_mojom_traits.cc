@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "net/http/http_util.h"
 #include "services/network/public/cpp/crash_keys.h"
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 #include "services/network/public/cpp/isolation_info_mojom_traits.h"
@@ -203,6 +204,22 @@ bool StructTraits<
   out->previews_state = data.previews_state();
   out->upgrade_if_insecure = data.upgrade_if_insecure();
   out->is_revalidating = data.is_revalidating();
+  if (!data.ReadRevalidationEtag(&out->revalidation_etag) ||
+      !data.ReadRevalidationLastModified(&out->revalidation_last_modified)) {
+    return false;
+  }
+  if (out->revalidation_etag.has_value()) {
+    if (out->revalidation_etag->empty() ||
+        !net::HttpUtil::IsValidHeaderValue(*out->revalidation_etag)) {
+      return false;
+    }
+  }
+  if (out->revalidation_last_modified.has_value()) {
+    if (out->revalidation_last_modified->empty() ||
+        !net::HttpUtil::IsValidHeaderValue(*out->revalidation_last_modified)) {
+      return false;
+    }
+  }
   out->is_fetch_like_api = data.is_fetch_like_api();
   out->is_fetch_later_api = data.is_fetch_later_api();
   out->is_favicon = data.is_favicon();

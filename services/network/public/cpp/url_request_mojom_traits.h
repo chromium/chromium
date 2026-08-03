@@ -371,6 +371,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool is_revalidating(const network::ResourceRequest& request) {
     return request.is_revalidating;
   }
+  static const std::optional<std::string>& revalidation_etag(
+      const network::ResourceRequest& request) {
+    return request.revalidation_etag;
+  }
+  static const std::optional<std::string>& revalidation_last_modified(
+      const network::ResourceRequest& request) {
+    return request.revalidation_last_modified;
+  }
   static const std::optional<base::UnguessableToken>& throttling_profile_id(
       const network::ResourceRequest& request) {
     return request.throttling_profile_id;
