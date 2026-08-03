@@ -11,16 +11,20 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_startup_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -36,29 +40,43 @@
   raw_ptr<WebStateList> _webStateList;
   // Profile for the browser.
   raw_ptr<ProfileIOS> _profile;
-  // The gateway for bridging internal protocols.
-  __strong id<BWGGatewayProtocol> _gateway;
   // Track if we have triggered feature engagement for Gemini Live IPH or New
   // Badge.
   BOOL _hasTriggeredGeminiLiveIPH;
   BOOL _hasTriggeredGeminiLiveNewBadge;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                             profile:(ProfileIOS*)profile
-                             gateway:(id<BWGGatewayProtocol>)gateway {
+- (instancetype)initWithBrowser:(Browser*)browser
+                         target:(GeminiViewStateChangeHandlerTarget*)target {
   self = [super init];
   if (self) {
-    _webStateList = webStateList;
-    _profile = profile;
-    _gateway = gateway;
+    if (browser) {
+      _webStateList = browser->GetWebStateList();
+      _profile = browser->GetProfile();
+    }
+    _gatewayManager = [[GeminiGatewayManager alloc] initWithBrowser:browser
+                                                             target:target];
+    if (self.gateway && browser) {
+      [self configureGemini];
+    }
   }
   return self;
 }
 
-- (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
-    (GeminiStartupState*)startupState {
-  web::WebState* webState = _webStateList->GetActiveWebState();
+#pragma mark - Property Getters
+
+- (id<BWGGatewayProtocol>)gateway {
+  return _gatewayManager.gateway;
+}
+
+#pragma mark - Public Methods
+
+- (GeminiConfiguration*)
+    createGeminiConfigurationForActiveWebState:(GeminiStartupState*)startupState
+                            baseViewController:
+                                (UIViewController*)baseViewController {
+  web::WebState* webState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
   if (!webState) {
     return nil;
   }
@@ -72,9 +90,45 @@
       geminiTabHelper->GetPartialPageContext();
   [self applyUserPrefsToPageContext:initialPageContext];
 
-  return [self createGeminiConfigurationWithTabHelper:geminiTabHelper
-                                          pageContext:initialPageContext
-                                         startupState:startupState];
+  GeminiConfiguration* config =
+      [self createGeminiConfigurationWithTabHelper:geminiTabHelper
+                                       pageContext:initialPageContext
+                                      startupState:startupState];
+  if (baseViewController) {
+    // TODO(crbug.com/537730178): Delegate the permission prompt request up to
+    // a delegate protocol implemented by GeminiContainerCoordinator, which will
+    // present the UIAlertController using its own baseViewController.
+    [_gatewayManager.pageStateChangeHandler
+        setBaseViewController:baseViewController];
+
+    // TODO(crbug.com/535579970): Remove after migration. Embadded floaty
+    // doesn't need the baseViewController.
+    config.baseViewController = baseViewController;
+  }
+
+  return config;
+}
+
+- (void)configureGemini {
+  if (!_profile) {
+    return;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(_profile);
+  if (!authService || !authService->HasPrimaryIdentity()) {
+    return;
+  }
+
+  GeminiStartupConfiguration* config =
+      [[GeminiStartupConfiguration alloc] init];
+  config.authService = authService;
+  config.gateway = self.gateway;
+  config.imageRemixEnabled =
+      gemini::IsFeatureAvailable(gemini::Feature::kImageRemix, _profile);
+  config.geminiLiveEnabled =
+      gemini::IsFeatureAvailable(gemini::Feature::kLive, _profile);
+
+  ios::provider::ConfigureWithStartupConfiguration(config);
 }
 
 - (BOOL)shouldShowSuggestionChipsForEntryPoint:
@@ -97,9 +151,10 @@
   return shouldShow;
 }
 
-- (void)disconnect {
+- (void)onFloatyDismiss {
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(_profile);
+      _profile ? feature_engagement::TrackerFactory::GetForProfile(_profile)
+               : nullptr;
   if (tracker) {
     if (_hasTriggeredGeminiLiveIPH) {
       tracker->Dismissed(feature_engagement::kIPHiOSGeminiLiveIPHFeature);
@@ -110,6 +165,15 @@
       _hasTriggeredGeminiLiveNewBadge = NO;
     }
   }
+}
+
+- (void)disconnect {
+  [self onFloatyDismiss];
+
+  _webStateList = nullptr;
+  _profile = nullptr;
+  [_gatewayManager disconnect];
+  _gatewayManager = nil;
 }
 
 #pragma mark - Private
@@ -137,7 +201,7 @@
   config.authService = AuthenticationServiceFactory::GetForProfile(_profile);
   config.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
-  config.gateway = _gateway;
+  config.gateway = self.gateway;
   config.gateway.sessionHandler.isFirstSession = startupState.isFirstSession;
   config.imageAttachment = startupState.imageAttachment;
 

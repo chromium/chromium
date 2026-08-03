@@ -18,6 +18,9 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
@@ -45,14 +48,19 @@ class GeminiContainerMediatorTest : public PlatformTest {
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    mock_gateway_ = OCMProtocolMock(@protocol(BWGGatewayProtocol));
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
+    [dispatcher startDispatchingToTarget:mock_settings_handler_
+                             forProtocol:@protocol(SettingsCommands)];
+    mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
+    [dispatcher startDispatchingToTarget:mock_gemini_handler_
+                             forProtocol:@protocol(GeminiCommands)];
+
     startup_state_ = [[GeminiStartupState alloc]
         initWithEntryPoint:gemini::EntryPoint::Promo];
 
-    mediator_ = [[GeminiContainerMediator alloc]
-        initWithWebStateList:browser_->GetWebStateList()
-                     profile:profile_.get()
-                     gateway:mock_gateway_];
+    mediator_ = [[GeminiContainerMediator alloc] initWithBrowser:browser_.get()
+                                                          target:nullptr];
   }
 
   static std::unique_ptr<KeyedService> CreateMockTracker(ProfileIOS* context) {
@@ -77,17 +85,18 @@ class GeminiContainerMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  id<BWGGatewayProtocol> mock_gateway_;
   GeminiStartupState* startup_state_;
   GeminiContainerMediator* mediator_;
+  id mock_settings_handler_;
+  id mock_gemini_handler_;
 };
 
 // Tests that createGeminiConfigurationForActiveWebState returns nil when no
 // active web state exists.
 TEST_F(GeminiContainerMediatorTest, TestCreateConfigurationNoActiveWebState) {
-  EXPECT_EQ(
-      nil,
-      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_]);
+  EXPECT_EQ(nil,
+            [mediator_ createGeminiConfigurationForActiveWebState:startup_state_
+                                               baseViewController:nil]);
 }
 
 // Tests that createGeminiConfigurationForActiveWebState returns a valid
@@ -96,9 +105,10 @@ TEST_F(GeminiContainerMediatorTest, TestCreateConfigurationActiveWebState) {
   AppendActiveWebState();
 
   GeminiConfiguration* config =
-      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_];
+      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_
+                                         baseViewController:nil];
   EXPECT_NE(nil, config);
-  EXPECT_EQ(mock_gateway_, config.gateway);
+  EXPECT_EQ(mediator_.gateway, config.gateway);
 }
 
 // Tests that kIPHiOSGeminiLiveIPHFeature and kIPHiOSGeminiLiveNewBadgeFeature
@@ -123,7 +133,8 @@ TEST_F(GeminiContainerMediatorTest, TestGeminiLiveIPHAndNewBadgeFET) {
   AppendActiveWebState();
 
   GeminiConfiguration* config =
-      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_];
+      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_
+                                         baseViewController:nil];
   EXPECT_TRUE(config.shouldShowGeminiLiveIPH);
   EXPECT_TRUE(config.shouldShowGeminiLiveNewBadge);
 
@@ -160,7 +171,8 @@ TEST_F(GeminiContainerMediatorTest,
   AppendActiveWebState();
 
   GeminiConfiguration* config =
-      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_];
+      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_
+                                         baseViewController:nil];
   EXPECT_FALSE(config.shouldShowGeminiLiveIPH);
   EXPECT_FALSE(config.shouldShowGeminiLiveNewBadge);
 
@@ -190,7 +202,8 @@ TEST_F(GeminiContainerMediatorTest,
       initWithEntryPoint:gemini::EntryPoint::AppSwitcherAISummarization];
 
   GeminiConfiguration* config = [mediator_
-      createGeminiConfigurationForActiveWebState:app_switcher_startup_state];
+      createGeminiConfigurationForActiveWebState:app_switcher_startup_state
+                              baseViewController:nil];
   EXPECT_FALSE(config.shouldShowSuggestionChips);
 }
 

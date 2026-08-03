@@ -30,6 +30,8 @@ source_set("model") {
     "gemini_tab_picker_delegate.h",
     "gemini_tab_picker_handler.h",
     "gemini_tab_picker_handler.mm",
+    "gemini_view_state_change_handler.h",
+    "gemini_view_state_change_handler.mm",
     "gemini_view_state_delegate.h",
   ]
   deps = [
@@ -73,11 +75,10 @@ source_set("browser_agent") {
     "gemini_browser_agent.mm",
     "gemini_browser_agent_observer_bridge.h",
     "gemini_browser_agent_observer_bridge.mm",
-    "gemini_view_state_change_handler.h",
-    "gemini_view_state_change_handler.mm",
   ]
   deps = [
     ":config",
+    ":gateway_manager",
     ":gemini_capabilities_manager",
     ":gemini_capabilities_manager_factory",
     ":gemini_service",
@@ -271,6 +272,29 @@ source_set("gemini_service_factory") {
   ]
 }
 
+source_set("gateway_manager") {
+  sources = [
+    "gemini_gateway_manager.h",
+    "gemini_gateway_manager.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/bwg/utils:feature_availability",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
+  ]
+}
+
 source_set("config") {
   sources = [
     "gemini_configuration.h",
@@ -335,6 +359,7 @@ source_set("unit_tests") {
     "gemini_capabilities_manager_factory_unittest.mm",
     "gemini_capabilities_manager_unittest.mm",
     "gemini_configuration_unittest.mm",
+    "gemini_gateway_manager_unittest.mm",
     "gemini_link_opening_handler_unittest.mm",
     "gemini_page_context_unittest.mm",
     "gemini_page_state_change_handler_unittest.mm",
@@ -351,6 +376,7 @@ source_set("unit_tests") {
   deps = [
     ":browser_agent",
     ":config",
+    ":gateway_manager",
     ":gemini_capabilities_manager",
     ":gemini_capabilities_manager_factory",
     ":gemini_service",

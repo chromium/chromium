@@ -289,11 +289,6 @@ class GeminiBrowserAgentTest : public PlatformTest {
     return gemini_browser_agent_->GetSharedTabs().count;
   }
 
-  // Getter for `bwg_session_handler_`.
-  GeminiSessionHandler* GetSessionHandler() {
-    return gemini_browser_agent_->bwg_session_handler_;
-  }
-
   // Wrapper for `DetachTabWithID`.
   void DetachTabWithID(NSString* tab_id) {
     gemini_browser_agent_->DetachTabWithID(tab_id);

@@ -11,9 +11,13 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 @interface GeminiContainerCoordinator () <AssistantContainerDelegate,
@@ -42,18 +46,17 @@
 }
 
 - (void)start {
-  GeminiBrowserAgent* agent = GeminiBrowserAgent::FromBrowser(self.browser);
-  agent->SetSessionCommandHandlers();
-
   // TODO(crbug.com/535579970): After bottom sheet migration, the startup state
   // can be added to the init params.
   _mediator = [[GeminiContainerMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()
-                   profile:self.browser->GetProfile()
-                   gateway:agent->bwg_gateway()];
+      initWithBrowser:self.browser
+               target:GeminiBrowserAgent::FromBrowser(self.browser)];
 
-  GeminiConfiguration* config =
-      [_mediator createGeminiConfigurationForActiveWebState:_startupState];
+  [self setSessionCommandHandlers];
+
+  GeminiConfiguration* config = [_mediator
+      createGeminiConfigurationForActiveWebState:_startupState
+                              baseViewController:self.baseViewController];
 
   // TODO(crbug.com/522834798): Add all the applicable logic from
   // StartGeminiFlow, PresentFloaty and InvokeFloaty before presenting the
@@ -107,6 +110,16 @@
       animateAssistantContainerToDetent:AssistantContainerDetent::kLarge
                                duration:duration
                                   curve:curve];
+}
+
+#pragma mark - Private
+
+- (void)setSessionCommandHandlers {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  _mediator.gatewayManager.sessionHandler.settingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  _mediator.gatewayManager.sessionHandler.geminiHandler =
+      HandlerForProtocol(dispatcher, GeminiCommands);
 }
 
 @end

@@ -4,7 +4,22 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
+
+@interface FakeBWGGateway : NSObject <BWGGatewayProtocol>
+@end
+
+@implementation FakeBWGGateway
+@synthesize actuationHandler = _actuationHandler;
+@synthesize cameraHandler = _cameraHandler;
+@synthesize consentProviderHandler = _consentProviderHandler;
+@synthesize linkOpeningHandler = _linkOpeningHandler;
+@synthesize pageStateChangeHandler = _pageStateChangeHandler;
+@synthesize sessionHandler = _sessionHandler;
+@synthesize suggestionHandler = _suggestionHandler;
+@synthesize tabPickerHandler = _tabPickerHandler;
+@end
 
 namespace ios::provider {
 
@@ -28,7 +43,7 @@ const std::u16string GetPageContextShouldDetachScript() {
 }
 
 id<BWGGatewayProtocol> CreateGeminiGateway() {
-  return nil;
+  return [[FakeBWGGateway alloc] init];
 }
 
 void CheckGeminiEligibility(AuthenticationService* auth_service,
