@@ -1,0 +1,60 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
+ * #import=./omnibox_popup_shared_style.css.js
+ * #include=composebox-shared-style omnibox-popup-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+#context {
+  color: var(--color-searchbox-results-foreground);
+}
+
+#context[is-oblong-shape] {
+  --contextual-entrypoint-oblong-margin-inline-start: 2px;
+}
+
+/* Keeps the hover state color for entrypoint button when the menu is open. */
+#context.menu-open:not([apply-context-button-background])::part(entrypoint-button) {
+  background-color: var(
+    --color-composebox-context-entrypoint-hover-background);
+}
+
+#context[apply-context-button-background]::part(context-menu-entrypoint-icon) {
+  --cr-composebox-entrypoint-background-color: var(
+    --color-omnibox-composebox-context-entrypoint-background);
+  --cr-icon-button-hover-background-color: var(
+      --cr-active-neutral-on-subtle-background-color);
+}
+
+.context-menu-container {
+  --omnibox-context-menu-container-margin-top: 0px;
+  margin-top: var(--omnibox-context-menu-container-margin-top);
+}
+
+:host([searchbox-layout-mode='TallBottomContext']) .context-menu-container:has(*),
+:host([searchbox-layout-mode='Compact']) .context-menu-container:has(*) {
+  height: 40px;
+}
+
+:host([searchbox-layout-mode='Compact']) .context-menu-container,
+:host([searchbox-layout-mode^='Tall']) .context-menu-container:not(:has(#context)) {
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
+}
+
+:host([searchbox-layout-mode^='Tall']) #context {
+  padding-inline: 8px;
+}
+
+#lensSearchIcon {
+  margin-inline-start: auto;
+  margin-inline-end: 16px;
+}
