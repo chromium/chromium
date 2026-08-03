@@ -368,9 +368,8 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
           case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
           case sync_pb::AutofillValuableSpecifics::kRedressNumber:
           case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
-          case sync_pb::AutofillValuableSpecifics::kEventTicket:
-          case sync_pb::AutofillValuableSpecifics::kTransitPass:
-          case sync_pb::AutofillValuableSpecifics::kOffer:
+          case sync_pb::AutofillValuableSpecifics::kOrder:
+          case sync_pb::AutofillValuableSpecifics::kShipment:
             if (std::optional<EntityInstance> entity =
                     CreateEntityInstanceFromSpecificsAndLoadMetadata(
                         specifics, *GetEntityTable())) {
@@ -380,6 +379,11 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
               }
             }
             break;
+          // Event ticket, transit pass and offer are not supported by Chrome.
+          case sync_pb::AutofillValuableSpecifics::kEventTicket:
+          case sync_pb::AutofillValuableSpecifics::kTransitPass:
+          case sync_pb::AutofillValuableSpecifics::kOffer:
+          // Ignore new entry types that the client doesn't know about.
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             break;
         }
@@ -491,11 +495,16 @@ bool ValuableSyncBridge::IsEntityDataValid(
     case sync_pb::AutofillValuableSpecifics::kRedressNumber:
     case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
       return IsSyncWalletPrivatePassesEnabled();
+    case sync_pb::AutofillValuableSpecifics::kOrder:
+    case sync_pb::AutofillValuableSpecifics::kShipment:
+      // TODO(crbug.com/541119872): Add feature flag controlling orders and
+      // shipments.
+      return false;
     case sync_pb::AutofillValuableSpecifics::kEventTicket:
     case sync_pb::AutofillValuableSpecifics::kTransitPass:
     case sync_pb::AutofillValuableSpecifics::kOffer:
+    // Ignore new entry types that the client doesn't know about.
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
-      // Ignore new entry types that the client doesn't know about.
       return false;
   }
 }
@@ -652,17 +661,20 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
           case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
           case sync_pb::AutofillValuableSpecifics::kRedressNumber:
           case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
+          case sync_pb::AutofillValuableSpecifics::kOrder:
+          case sync_pb::AutofillValuableSpecifics::kShipment:
             if (std::optional<EntityInstance> entity =
                     CreateEntityInstanceFromSpecificsAndLoadMetadata(
                         autofill_valuable, *GetEntityTable())) {
               entities.push_back(std::move(*entity));
             }
             break;
+          // Event ticket, transit pass and offer are not supported by Chrome.
           case sync_pb::AutofillValuableSpecifics::kEventTicket:
           case sync_pb::AutofillValuableSpecifics::kTransitPass:
           case sync_pb::AutofillValuableSpecifics::kOffer:
+          // Ignore new entry types that the client doesn't know about.
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
-            // Ignore new entry types that the client doesn't know about.
             break;
         }
 

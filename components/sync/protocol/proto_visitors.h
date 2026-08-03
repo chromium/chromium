@@ -2232,6 +2232,8 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(event_ticket);
   VISIT(transit_pass);
   VISIT(offer);
+  VISIT(order);
+  VISIT(shipment);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::Any& proto) {
@@ -2351,6 +2353,24 @@ VISIT_PROTO_FIELDS(const sync_pb::Offer& proto) {
   VISIT(offer_code);
   VISIT(offer_title_image_url);
   VISIT_REP(issuer_domains);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::Order& proto) {
+  VISIT(id);
+  VISIT(account);
+  VISIT(order_date);
+  VISIT(merchant_name);
+  VISIT(merchant_domain);
+  VISIT_REP(product_names);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::Shipment& proto) {
+  VISIT(tracking_number);
+  VISIT(delivery_zip_code);
+  VISIT(shipping_date);
+  VISIT(carrier_name);
+  VISIT(carrier_domain);
+  VISIT_REP(associated_order_ids);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableMetadataSpecifics& proto) {

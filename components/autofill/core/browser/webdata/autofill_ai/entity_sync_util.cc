@@ -755,6 +755,10 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
+    case sync_pb::AutofillValuableSpecifics::kOrder:
+    case sync_pb::AutofillValuableSpecifics::kShipment:
+      // TODO(crbug.com/541119872): Implement a conversion to `EntityInstance`.
+      return std::nullopt;
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::kEventTicket:
     case sync_pb::AutofillValuableSpecifics::kTransitPass:

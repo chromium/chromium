@@ -252,6 +252,11 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
       }
       break;
     }
+    case AutofillValuableSpecifics::kOrder:
+    case AutofillValuableSpecifics::kShipment: {
+      // TODO(crbug.com/541119872): Implement trimming.
+      break;
+    }
     case AutofillValuableSpecifics::kEventTicket:
     case AutofillValuableSpecifics::kTransitPass:
     case AutofillValuableSpecifics::kOffer: {
