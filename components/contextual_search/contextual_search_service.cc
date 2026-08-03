@@ -9,6 +9,7 @@
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_entry.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/internal/composebox_query_controller.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -69,7 +70,8 @@ void ContextualSearchService::RegisterProfilePrefs(
       kSearchContentSharingSettings,
       static_cast<int>(kSearchContentSharingAllowedDefault));
   registry->RegisterIntegerPref(
-      kDriveConsentState, 0, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      kDriveConsentState, static_cast<int>(DriveConsentState::kRestricted),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 // static

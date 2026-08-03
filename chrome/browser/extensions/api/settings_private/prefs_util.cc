@@ -43,6 +43,7 @@
 #include "components/component_updater/pref_names.h"
 #include "components/compose/buildflags.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/dom_distiller/core/pref_names.h"
 #include "components/drive/drive_pref_names.h"
@@ -284,6 +285,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 #endif
   (*s_allowlist)[::prefs::kShowHomeButton] = settings_api::PrefType::kBoolean;
+  (*s_allowlist)[contextual_search::kDriveConsentState] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[::prefs::kShowForwardButton] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kPinContextualTaskButton] =

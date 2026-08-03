@@ -546,6 +546,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("googleSearchAiModeWorkspaceUrl",
                          chrome::kMyActivitySearchServicesAppsUrl);
+  html_source->AddString("googleSearchAiModeRestrictedUrl",
+                         "https://myactivity.google.com/myactivity");
 }
 
 void AddAppearanceStrings(content::WebUIDataSource* html_source,

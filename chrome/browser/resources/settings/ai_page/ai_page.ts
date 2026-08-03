@@ -176,8 +176,27 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         AiPageInteractions.GOOGLE_SEARCH_AI_MODE_WORKSPACE_CLICK,
         'Settings.AiPage.GoogleSearchAiModeWorkspaceEntryPointClick');
 
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('googleSearchAiModeWorkspaceUrl'));
+    let isRestricted = false;
+    try {
+      const consentState =
+          this.getPref('contextual_search.drive_consent_state').value;
+      isRestricted = consentState === 1;  // DriveConsentState::kRestricted
+    } catch (e) {
+      console.error(
+          'Failed to read contextual_search.drive_consent_state pref:', e);
+    }
+
+    let url;
+    try {
+      url = loadTimeData.getString(
+          isRestricted ? 'googleSearchAiModeRestrictedUrl' :
+                         'googleSearchAiModeWorkspaceUrl');
+    } catch (e) {
+      console.error('Failed to read URL from loadTimeData:', e);
+      return;
+    }
+
+    OpenWindowProxyImpl.getInstance().openUrl(url);
   }
 
 
