@@ -626,9 +626,9 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mMediator.stopAutocomplete(AutocompleteStopReason.CLOBBERED);
     }
 
-    /** {@see AutocompleteMediator#loadUrlFromVoice(String)} */
+    /** {@see AutocompleteMediator#loadUrlFromVoice(String, Profile)} */
     public void loadUrlFromVoice(String query) {
-        mMediator.loadUrlFromVoice(query);
+        mMediator.loadUrlFromVoice(query, mProfileSupplier.get());
     }
 
     /** Returns whether Autocomplete is serving suggestions. */
