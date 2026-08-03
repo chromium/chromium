@@ -51,6 +51,7 @@ import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu.Delegate;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
 import org.chromium.ui.listmenu.ListMenuUtils;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
@@ -263,22 +264,39 @@ public class TabStripContextMenuCoordinator {
         if (VerticalTabUtils.isVerticalTabsEligible(mContext)) {
             itemList.add(BasicListMenu.buildMenuDivider(isIncognito));
 
+            boolean isEnablingVerticalTabs = mTabStripLayout == TabStripLayoutType.HORIZONTAL;
             int layoutTitleRes =
-                    mTabStripLayout == TabStripLayoutType.VERTICAL
-                            ? R.string.show_tabs_horizontally
-                            : R.string.show_tabs_vertically;
+                    isEnablingVerticalTabs
+                            ? R.string.show_tabs_vertically
+                            : R.string.show_tabs_horizontally;
 
             boolean enabled =
                     mCanActivateTabLayoutToggleMenuSupplier == null
                             || mCanActivateTabLayoutToggleMenuSupplier.getAsBoolean();
 
-            itemList.add(
+            boolean showNewBadge =
+                    isEnablingVerticalTabs
+                            && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(mContext);
+
+            CharSequence title;
+            if (showNewBadge) {
+                // Increment view count every time the badge is shown.
+                VerticalTabUtils.incrementNewBadgeViewCount();
+                // Prepare the title with the "New" badge.
+                title = VerticalTabUtils.getTitleWithNewBadge(mContext, layoutTitleRes);
+            } else {
+                // Show the regular title without the "New" badge.
+                title = mContext.getString(layoutTitleRes);
+            }
+
+            ListItem item =
                     new ListItemBuilder()
-                            .withTitleRes(layoutTitleRes)
+                            .withTitle(title)
                             .withMenuId(R.id.toggle_tab_layout_menu_id)
                             .withIsIncognito(isIncognito)
                             .withEnabled(enabled)
-                            .build());
+                            .build();
+            itemList.add(item);
 
             // Add "Send feedback" option
             if (FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
@@ -334,6 +352,10 @@ public class TabStripContextMenuCoordinator {
                 TabStripMenuMetricsUtils.recordStripMenuUserAction(
                         StripMenuAction.TOGGLE_TAB_LAYOUT, mTabStripLayout);
                 boolean isEnablingVerticalTabs = mTabStripLayout == TabStripLayoutType.HORIZONTAL;
+                if (isEnablingVerticalTabs) {
+                    // Mark as clicked so the "New" badge never shows again.
+                    VerticalTabUtils.markNewBadgeAsDismissed();
+                }
                 VerticalTabUtils.recordLayoutToggle(
                         LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU, isEnablingVerticalTabs);
                 if (mContext instanceof MenuOrKeyboardActionController controller) {

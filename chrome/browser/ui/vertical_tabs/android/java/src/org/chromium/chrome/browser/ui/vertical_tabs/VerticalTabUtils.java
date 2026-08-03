@@ -5,16 +5,25 @@
 package org.chromium.chrome.browser.ui.vertical_tabs;
 
 import android.content.Context;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.SuperscriptSpan;
 import android.util.TypedValue;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,6 +42,9 @@ public class VerticalTabUtils {
      * enable collapse button.
      */
     public static final int MIN_EXPAND_WINDOW_WIDTH_DP = 652;
+
+    /** Maximum number of times the "New" badge is shown on the Vertical Tabs entry points. */
+    public static final int NEW_BADGE_MAX_VIEW_COUNT = 3;
 
     @IntDef({
         LayoutSwitchEntryPoint.APP_MENU,
@@ -161,6 +173,68 @@ public class VerticalTabUtils {
     public static boolean isGroupHeaderDragEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, GROUP_HEADER_DRAG_PARAM, false);
+    }
+
+    /** Reads the current view count for the Vertical Tabs "New" badge from shared preferences. */
+    public static int getNewBadgeViewCount() {
+        return ChromeSharedPreferences.getInstance()
+                .readInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
+    }
+
+    /** Increments the view count for the Vertical Tabs "New" badge in shared preferences. */
+    public static void incrementNewBadgeViewCount() {
+        ChromeSharedPreferences.getInstance()
+                .incrementInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT);
+    }
+
+    /**
+     * Returns whether the "New" badge should be shown for the "Show tabs vertically" menu item.
+     *
+     * <p>The badge is shown only on tablets (excluding desktop form factor) and capped at 3
+     * impressions until the user clicks the menu item.
+     */
+    public static boolean shouldShowNewBadgeForVerticalTabs(Context context) {
+        // Show only on tablet devices, not on Desktop.
+        if (!isVerticalTabsEligible(context) || DeviceInfo.isDesktop()) {
+            return false;
+        }
+        return getNewBadgeViewCount() < NEW_BADGE_MAX_VIEW_COUNT;
+    }
+
+    /**
+     * Marks the "New" badge for Vertical Tabs as permanently dismissed across all entry points by
+     * setting the view count directly to the maximum impression limit.
+     */
+    public static void markNewBadgeAsDismissed() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT,
+                        NEW_BADGE_MAX_VIEW_COUNT);
+    }
+
+    /**
+     * Returns a formatted title string containing the "New" badge for Vertical Tabs entry points.
+     *
+     * <p>This helper applies visual spans to the string resource and is designed to be reusable
+     * across various Vertical Tabs entry points.
+     *
+     * @param context The active {@link Context}.
+     * @param layoutTitleRes The string resource ID for the layout toggle title (e.g., {@code
+     *     R.string.show_tabs_vertically}).
+     * @return A {@link CharSequence} with styled "New" badge spans attached.
+     */
+    public static CharSequence getTitleWithNewBadge(
+            Context context, @StringRes int layoutTitleRes) {
+        String rawTitle = context.getString(layoutTitleRes);
+        return SpanApplier.applySpans(
+                context.getString(R.string.prefs_new_label, rawTitle),
+                new SpanInfo(
+                        "<new>",
+                        "</new>",
+                        new SuperscriptSpan(),
+                        new RelativeSizeSpan(0.75f),
+                        new ForegroundColorSpan(
+                                SemanticColorUtils.getDefaultTextColorAccent1(context))));
     }
 
     private static @LayoutToggleSourceAndDirection int getLayoutToggleSourceAndDirection(

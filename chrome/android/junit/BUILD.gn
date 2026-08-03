@@ -679,6 +679,7 @@ if (is_android) {
       "//chrome/browser/glic/android:jni_headers_java",
       "//chrome/browser/task_manager/android:factory_java",
       "//chrome/browser/task_manager/android:java",
+      "//chrome/browser/ui/vertical_tabs:java",
     ]
   }
 

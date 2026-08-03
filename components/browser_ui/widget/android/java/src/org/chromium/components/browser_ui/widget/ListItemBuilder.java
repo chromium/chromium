@@ -48,7 +48,7 @@ public class ListItemBuilder {
     private int mEndIconWidth;
     private @Nullable List<ListItem> mSubmenuItems;
     private @StyleRes int mTextAppearanceStyle;
-    private @Nullable String mTitle;
+    private @Nullable CharSequence mTitle;
     private @Nullable String mSubtitle;
 
     /** Constructs a new builder for a {@link ListItem}. By default, the item is enabled. */
@@ -68,7 +68,7 @@ public class ListItemBuilder {
     /**
      * @param title The text on the menu item. By default, this is set to null.
      */
-    public ListItemBuilder withTitle(String title) {
+    public ListItemBuilder withTitle(CharSequence title) {
         mTitle = title;
         return this;
     }
