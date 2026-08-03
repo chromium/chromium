@@ -27,6 +27,7 @@
 #include "chrome/grit/skills_resources.h"
 #include "chrome/grit/skills_resources_map.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/google/core/common/google_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
@@ -171,6 +172,10 @@ SkillsUI::SkillsUI(content::WebUI* web_ui)
   source->AddBoolean(
       "isSkillsWebViewV2Enabled",
       base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled));
+
+  std::string application_locale = g_browser_process->GetApplicationLocale();
+  std::string google_locale = google_util::GetGoogleLocale(application_locale);
+  source->AddString("languageCode", google_locale);
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   source->AddBoolean("devMode", command_line->HasSwitch("skills-dev"));

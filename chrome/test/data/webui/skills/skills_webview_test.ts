@@ -63,4 +63,40 @@ suite('SkillsWebviewTest', () => {
     assertEquals('some_id', url.searchParams.get('id'));
     assertEquals(null, url.searchParams.get(IS_FIRST_PARTY_QUERY_PARAMETER));
   });
+
+  test('SkillsWebview_LanguageCode', () => {
+    loadTimeData.overrideValues({
+      devMode: true,
+      isSkillsWebViewV2Enabled: true,
+      languageCode: 'es',
+    });
+
+    const webviewApp = new TestSkillsWebview();
+    const url = new URL(webviewApp.getRemoteUrlForTesting());
+    assertEquals('es', url.searchParams.get('hl'));
+  });
+
+  test('SkillsWebview_EmptyLanguageCode_OmitHl', () => {
+    loadTimeData.overrideValues({
+      devMode: true,
+      isSkillsWebViewV2Enabled: true,
+      languageCode: '',
+    });
+
+    const webviewApp = new TestSkillsWebview();
+    const url = new URL(webviewApp.getRemoteUrlForTesting());
+    assertEquals(null, url.searchParams.get('hl'));
+  });
+
+  test('SkillsWebview_NullLanguageCode_OmitHl', () => {
+    loadTimeData.overrideValues({
+      devMode: true,
+      isSkillsWebViewV2Enabled: true,
+      languageCode: null,
+    });
+
+    const webviewApp = new TestSkillsWebview();
+    const url = new URL(webviewApp.getRemoteUrlForTesting());
+    assertEquals(null, url.searchParams.get('hl'));
+  });
 });

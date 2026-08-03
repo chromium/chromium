@@ -333,6 +333,24 @@ suite('SkillsWebviewBridgeTest', () => {
         getRemoteUrlForChromePath('/yourSkills'), received.url?.href ?? '');
   });
 
+  test('GetRemoteUrlForChromePath_IncludesLanguageCode', () => {
+    loadTimeData.overrideValues({languageCode: 'ja'});
+    const url = new URL(getRemoteUrlForChromePath('/yourSkills'));
+    assertEquals('ja', url.searchParams.get('hl'));
+  });
+
+  test('GetRemoteUrlForChromePath_OmitHlWhenEmpty', () => {
+    loadTimeData.overrideValues({languageCode: ''});
+    const url = new URL(getRemoteUrlForChromePath('/yourSkills'));
+    assertEquals(null, url.searchParams.get('hl'));
+  });
+
+  test('GetRemoteUrlForChromePath_OmitHlWhenNull', () => {
+    loadTimeData.overrideValues({languageCode: null});
+    const url = new URL(getRemoteUrlForChromePath('/yourSkills'));
+    assertEquals(null, url.searchParams.get('hl'));
+  });
+
   test('GetChromePathForRemoteUrl_ValidPath', () => {
     const url = new URL(getRemoteUrlForChromePath('/yourSkills'));
     assertEquals('/yourSkills', getChromePathForRemoteUrl(url));
