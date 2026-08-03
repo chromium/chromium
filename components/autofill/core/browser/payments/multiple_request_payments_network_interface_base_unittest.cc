@@ -92,21 +92,21 @@ TEST_F(MultipleRequestsTest, Success) {
   RequestId id1 =
       payments_network_interface_base_->IssueRequest(std::move(request1_));
   IssueOAuthToken();
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Second request starts.
   RequestId id2 =
       payments_network_interface_base_->IssueRequest(std::move(request2_));
   IssueOAuthToken();
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
 
   // Simulate response for first request is received.
   ReturnResponseForOperation(id1, net::HTTP_OK, "{}");
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Response for second request is received.
   ReturnResponseForOperation(id2, net::HTTP_OK, "{}");
-  EXPECT_EQ(0U, operations_size());
+  EXPECT_EQ(operations_size(), 0U);
 }
 
 // Tests that one request failing in access token fetching does not affect
@@ -120,18 +120,18 @@ TEST_F(MultipleRequestsTest, AccessTokenFetchFailed) {
   RequestId id1 =
       payments_network_interface_base_->IssueRequest(std::move(request1_));
   IssueOAuthToken();
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Second request is never sent because of the access token fetching failure.
   payments_network_interface_base_->IssueRequest(std::move(request2_));
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromConnectionError(net::ERR_TIMED_OUT));
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Simulate response for first request is received.
   ReturnResponseForOperation(id1, net::HTTP_OK, "{}");
-  EXPECT_EQ(0U, operations_size());
+  EXPECT_EQ(operations_size(), 0U);
 }
 
 // Tests that one request having access token expired does not affect
@@ -145,27 +145,27 @@ TEST_F(MultipleRequestsTest, AccessTokenExpired_RetrySucceeded) {
   RequestId id1 =
       payments_network_interface_base_->IssueRequest(std::move(request1_));
   IssueOAuthToken();
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Second request starts.
   RequestId id2 =
       payments_network_interface_base_->IssueRequest(std::move(request2_));
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
 
   // Simulate response for first request is received, but with an unauthorized
   // error. Token refetch should start.
   ReturnResponseForOperation(id1, net::HTTP_UNAUTHORIZED, "{}");
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
 
   // Issue another token and resend request.
   IssueOAuthToken();
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
   ReturnResponseForOperation(id1, net::HTTP_OK, "{}");
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Response for the second request is received.
   ReturnResponseForOperation(id2, net::HTTP_OK, "{}");
-  EXPECT_EQ(0U, operations_size());
+  EXPECT_EQ(operations_size(), 0U);
 }
 
 // Tests that one request having access token expired does not affect
@@ -180,28 +180,28 @@ TEST_F(MultipleRequestsTest, AccessTokenExpired_RetryFailed) {
   RequestId id1 =
       payments_network_interface_base_->IssueRequest(std::move(request1_));
   IssueOAuthToken();
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Second request starts.
   RequestId id2 =
       payments_network_interface_base_->IssueRequest(std::move(request2_));
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
 
   // Simulate response for first request is received, but with an unauthorized
   // error. Token refetch should start.
   ReturnResponseForOperation(id1, net::HTTP_UNAUTHORIZED, "{}");
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
 
   // Issue another token and resend request, but still receive an unauthorized
   // error. This time the request will end with permanent failure.
   IssueOAuthToken();
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
   ReturnResponseForOperation(id1, net::HTTP_UNAUTHORIZED, "{}");
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Response for the second request is received.
   ReturnResponseForOperation(id2, net::HTTP_OK, "{}");
-  EXPECT_EQ(0U, operations_size());
+  EXPECT_EQ(operations_size(), 0U);
 }
 
 // Test that one request with an error response does not affect another request.
@@ -214,13 +214,13 @@ TEST_F(MultipleRequestsTest, ResponseError) {
   RequestId id1 =
       payments_network_interface_base_->IssueRequest(std::move(request1_));
   IssueOAuthToken();
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Second request starts.
   RequestId id2 =
       payments_network_interface_base_->IssueRequest(std::move(request2_));
   IssueOAuthToken();
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
 
   // Simulate response for first request is received but with a temporary error.
   ReturnResponseForOperation(id1, net::HTTP_OK,
@@ -229,11 +229,11 @@ TEST_F(MultipleRequestsTest, ResponseError) {
                              "\"decline_details\": {\"user_message_title\": "
                              "\"\", \"user_message_description\": "
                              "\"\"}}");
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Response for second request is received.
   ReturnResponseForOperation(id2, net::HTTP_OK, "{}");
-  EXPECT_EQ(0U, operations_size());
+  EXPECT_EQ(operations_size(), 0U);
 }
 
 // Tests that canceling one request does not affect other requests.
@@ -245,24 +245,24 @@ TEST_F(MultipleRequestsTest, RequestCanceled) {
   RequestId id1 =
       payments_network_interface_base_->IssueRequest(std::move(request1_));
   IssueOAuthToken();
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
 
   // Second request starts.
   RequestId id2 =
       payments_network_interface_base_->IssueRequest(std::move(request2_));
   IssueOAuthToken();
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
 
   // Cancel the second request (it is invalidated but is still being tracked).
   payments_network_interface_base_->CancelRequestWithId(id2);
-  EXPECT_EQ(2U, operations_size());
+  EXPECT_EQ(operations_size(), 2U);
 
   // Simulate response for first request is received.
   ReturnResponseForOperation(id1, net::HTTP_OK, "{}");
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(operations_size(), 1U);
   // Simulate response for second request is received.
   ReturnResponseForOperation(id2, net::HTTP_OK, "{}");
-  EXPECT_EQ(0U, operations_size());
+  EXPECT_EQ(operations_size(), 0U);
 }
 
 }  // namespace autofill::payments
