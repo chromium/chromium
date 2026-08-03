@@ -376,4 +376,49 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingSearchQueryDisabledTest,
   EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), script));
 }
 
+class ContextualTasksExtensionMessagingOnlyApiPrivateTest
+    : public ContextualTasksExtensionMessagingTest {
+ public:
+  ContextualTasksExtensionMessagingOnlyApiPrivateTest()
+      : ContextualTasksExtensionMessagingTest(
+            /*enabled_features=*/{extensions_features::
+                                      kApiContextualTasksPrivate},
+            /*disabled_features=*/{
+                contextual_tasks::kContextualTasksRearchitecture}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingOnlyApiPrivateTest,
+                       GetStateReturnsValidStateObject) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kContextualTasksExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), GURL("https://google.com/search")));
+
+  std::string script = base::StringPrintf(
+      R"(
+      (async () => {
+        return new Promise((resolve) => {
+          chrome.runtime.sendMessage(
+              '%s', {type: 'contextualTasksPrivate.getState'}, (response) => {
+                if (chrome.runtime.lastError) {
+                  resolve('lastError: ' + chrome.runtime.lastError.message);
+                } else if (
+                    response && response.state &&
+                    typeof response.state.isEligible === 'boolean') {
+                  resolve('valid_state');
+                } else {
+                  resolve('invalid_response: ' + JSON.stringify(response));
+                }
+              });
+        });
+      })()
+      )",
+      extension_misc::kContextualTasksExtensionId);
+
+  EXPECT_EQ("valid_state", content::EvalJs(GetActiveWebContents(), script));
+}
+
 }  // namespace extensions

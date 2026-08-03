@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "pdf/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -111,7 +112,8 @@ ChromeComponentExtensionResourceManager::Data::Data() {
           omnibox::kAimEligibilityComponentExtension)) {
     AddComponentResourceEntries(kAimEligibilityExtensionResources);
   }
-  if (contextual_tasks::IsContextualTasksRearchitectureEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiContextualTasksPrivate)) {
     AddComponentResourceEntries(kContextualTasksExtensionResources);
   }
 
