@@ -12,10 +12,12 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -572,6 +574,44 @@ sync_pb::AutofillValuableSpecifics GetKnownTravelerNumberSpecifics(
   return specifics;
 }
 
+base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+GetOrderAttributesFromSpecifics(const sync_pb::Order& order,
+                                const sync_pb::Any& serialized_metadata) {
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+  AddAttribute(kOrderId, order.id(), attributes);
+  AddAttribute(kOrderAccount, order.account(), attributes);
+  AddDateAttribute(kOrderDate, order.order_date(), attributes);
+  AddAttribute(kOrderMerchantName, order.merchant_name(), attributes);
+  AddAttribute(kOrderMerchantDomain, order.merchant_domain(), attributes);
+  AddAttribute(kOrderProductNames,
+               base::JoinString(base::ToVector(order.product_names()), ", "),
+               attributes);
+  FinalizeEntityAttributes(EntityType(EntityTypeName::kOrder),
+                           serialized_metadata, attributes);
+  return attributes;
+}
+
+base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+GetShipmentAttributesFromSpecifics(const sync_pb::Shipment& shipment,
+                                   const sync_pb::Any& serialized_metadata) {
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+  AddAttribute(kShipmentTrackingNumber, shipment.tracking_number(), attributes);
+  AddAttribute(kShipmentDeliveryZipCode, shipment.delivery_zip_code(),
+               attributes);
+  AddDateAttribute(kShipmentShippedDate, shipment.shipping_date(), attributes);
+  AddAttribute(kShipmentCarrierName, shipment.carrier_name(), attributes);
+  AddAttribute(kShipmentCarrierDomain, shipment.carrier_domain(), attributes);
+  AddAttribute(
+      kShipmentOrderIds,
+      base::JoinString(base::ToVector(shipment.associated_order_ids()), ", "),
+      attributes);
+  FinalizeEntityAttributes(EntityType(EntityTypeName::kShipment),
+                           serialized_metadata, attributes);
+  return attributes;
+}
+
 #undef SET_OR_CLEAR_STRING_FIELD
 
 }  // namespace
@@ -755,10 +795,30 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
-    case sync_pb::AutofillValuableSpecifics::kOrder:
-    case sync_pb::AutofillValuableSpecifics::kShipment:
-      // TODO(crbug.com/541119872): Implement a conversion to `EntityInstance`.
-      return std::nullopt;
+    case sync_pb::AutofillValuableSpecifics::kOrder: {
+      return EntityInstance(
+          EntityType(EntityTypeName::kOrder),
+          GetOrderAttributesFromSpecifics(
+              specifics.order(),
+              specifics.serialized_chrome_valuables_metadata()),
+          guid,
+          /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          /*frecency_override=*/"");
+    }
+    case sync_pb::AutofillValuableSpecifics::kShipment: {
+      return EntityInstance(
+          EntityType(EntityTypeName::kShipment),
+          GetShipmentAttributesFromSpecifics(
+              specifics.shipment(),
+              specifics.serialized_chrome_valuables_metadata()),
+          guid,
+          /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          /*frecency_override=*/"");
+    }
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::kEventTicket:
     case sync_pb::AutofillValuableSpecifics::kTransitPass:
