@@ -407,6 +407,10 @@ void AutofillClient::ShowAutofillAiFetchEntityFailureNotification() {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::ShowAtMemoryFetchFailureNotification() {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::ShowAutofillAiPreFetchFailureNotification() {
   NOTIMPLEMENTED();
 }

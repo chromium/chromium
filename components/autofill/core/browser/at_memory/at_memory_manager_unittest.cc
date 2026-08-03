@@ -99,6 +99,7 @@ class MockAutofillClient : public TestAutofillClient {
               ShowAutofillAiFetchEntityFailureNotification,
               (),
               (override));
+  MOCK_METHOD(void, ShowAtMemoryFetchFailureNotification, (), (override));
   MOCK_METHOD(void,
               HideSuggestions,
               (SuggestionHidingReason, std::optional<FillingProduct>),
@@ -890,7 +891,7 @@ TEST_F(AtMemoryManagerTest,
 }
 
 // Tests that when fetching the unmasked Personal Context value fails, the
-// manager does not fill any value.
+// manager triggers the fetch error notification and does not fill any value.
 TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
   base::HistogramTester histogram_tester;
   auto [form_id, field_id] = SeeFormAndShowPopup();
@@ -917,6 +918,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
       .WillOnce(RunOnceCallback<5>(base::unexpected(
           AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed)));
 
+  EXPECT_CALL(autofill_client(), ShowAtMemoryFetchFailureNotification());
   EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,

@@ -70,6 +70,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui_browser:headers",
+    "//components/autofill/core/browser",
     "//components/data_sharing/public:features",
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:features",

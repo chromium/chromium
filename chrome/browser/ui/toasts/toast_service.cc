@@ -41,6 +41,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -448,6 +449,17 @@ void ToastService::RegisterToasts(
                 ? vector_icons::kPersonTextIcon
                 : vector_icons::kPersonTextOldIcon,
             IDS_AUTOFILL_AI_FETCH_ENTITY_FAILURE_NOTIFICATION)
+            .AddGlobalScoped()
+            .Build());
+  }
+  if (autofill::IsAtMemoryFeatureEnabled(/*google_groups_manager=*/nullptr)) {
+    toast_registry_->RegisterToast(
+        ToastId::kAtMemorySpiiFetchErrorMessage,
+        ToastSpecification::Builder(
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kInfoIcon
+                : vector_icons::kInfoRefreshOldIcon,
+            IDS_AUTOFILL_AT_MEMORY_FETCH_ERROR_NOTIFICATION)
             .AddGlobalScoped()
             .Build());
   }

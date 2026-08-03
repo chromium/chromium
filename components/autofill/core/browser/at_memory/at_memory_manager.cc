@@ -773,7 +773,6 @@ IsAsync AtMemoryManager::FillSearchResult(
         metadata) {
   const Suggestion::AtMemoryPayload& payload =
       suggestion.GetPayload<Suggestion::AtMemoryPayload>();
-
   if (at_memory_metrics_recorder_) {
     at_memory_metrics_recorder_->OnSuggestionAccepted(
         payload.memory_data_type, payload.sources_bitmask, metadata);
@@ -1338,6 +1337,7 @@ void AtMemoryManager::OnSensitivePersonalContextDataFetched(
     if (metrics) {
       metrics->OnFetchPersonalContextPiiDataFailed(result.error());
     }
+    owner_->client().ShowAtMemoryFetchFailureNotification();
     return;
   }
   if (metrics) {
