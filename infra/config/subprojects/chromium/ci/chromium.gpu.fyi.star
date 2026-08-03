@@ -283,6 +283,7 @@ ci.thin_tester(
             config = "base_config",
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -348,6 +349,7 @@ ci.thin_tester(
             config = "base_config",
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         # If the experimental configuration is the same as stable, this should
@@ -420,6 +422,7 @@ ci.thin_tester(
             config = "base_config",
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -592,6 +595,7 @@ ci.thin_tester(
             config = "base_config",
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
