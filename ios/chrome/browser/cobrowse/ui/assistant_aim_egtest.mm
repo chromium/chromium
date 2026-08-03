@@ -167,6 +167,28 @@ id<GREYMatcher> CloseButton() {
   return config;
 }
 
+- (BOOL)backgroundApplication {
+  XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
+  // Tell the system to background the app.
+  // TODO(crbug.com/540470551): pressButton:XCUIDeviceButtonHome is broken on
+  // < iOS 27 when Xcode 27 is installed. Use springboard activation workaround.
+  if (@available(iOS 27, *)) {
+    [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
+  } else {
+    [[[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]
+        activate];
+  }
+  BOOL (^conditionBlock)(void) = ^BOOL {
+    return currentApplication.state == XCUIApplicationStateRunningBackground ||
+           currentApplication.state ==
+               XCUIApplicationStateRunningBackgroundSuspended;
+  };
+  GREYCondition* condition =
+      [GREYCondition conditionWithName:@"check if backgrounded"
+                                 block:conditionBlock];
+  return [condition waitWithTimeout:20.0 pollInterval:0.5];
+}
+
 - (void)tearDownHelper {
   [ChromeEarlGrey removeUserDefaultsObjectForKey:@"EnableOmniboxDebugging"];
   [super tearDownHelper];
@@ -256,6 +278,76 @@ id<GREYMatcher> CloseButton() {
   id<GREYMatcher> composeboxMatcher =
       grey_accessibilityID(kComposeboxAccessibilityIdentifier);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:composeboxMatcher];
+}
+
+// Tests that opening an external URL from the launcher while the app is in the
+// background dismisses an active Co-browse session that is in minimized state.
+- (void)testOpenExternalURLWithActiveCoBrowse {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  // Open Co-browse session on an eligible search page.
+  OpenCoBrowse(_defaultURL);
+
+  // Wait for the assistant container to appear in Medium state.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  // Background the app.
+  [self backgroundApplication];
+
+  // Trigger opening an external URL via user activity (e.g. Universal Link /
+  // Handoff) while backgrounded.
+  GURL destinationURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey
+      sceneContinueUserActivityWithType:NSUserActivityTypeBrowsingWeb
+                                    url:base::SysUTF8ToNSString(
+                                            destinationURL.spec())];
+
+  // Re-activate the application to bring it back to the foreground so the scene
+  // processes the user activity.
+  [[[XCUIApplication alloc] init] activate];
+
+  // Verify the assistant is dismissed after handling the external URL.
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that opening a WidgetKit URL scheme while the app is in the background
+// dismisses an active Co-browse session that is in minimized state.
+- (void)testWidgetKitInvocationWithActiveCoBrowse {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  // Open Co-browse session on an eligible search page.
+  OpenCoBrowse(_defaultURL);
+
+  // Wait for the assistant container to appear in Medium state.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  WaitForDetent(AssistantContainerDetent::kMedium);
+
+  // Swipe down to transition to Minimized state.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kAssistantContainerDetentMediumIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  WaitForDetent(AssistantContainerDetent::kMinimized);
+
+  // Background the app.
+  [self backgroundApplication];
+
+  // Trigger opening a WidgetKit URL scheme (e.g. Search Widget).
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/search")];
+
+  // Re-activate the application to bring it back to the foreground.
+  [[[XCUIApplication alloc] init] activate];
+
+  // Verify the assistant is dismissed after handling the WidgetKit invocation.
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that the assistant can be dismissed and reopened multiple times.
