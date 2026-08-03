@@ -2,24 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
-#include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/test/widget_test.h"
@@ -103,6 +107,12 @@ IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
           .GetCastDialogWidget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->HasObserver(dialog_controller_));
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+  // While the dialog is showing, tab fullscreen cannot be entered.
+  EXPECT_FALSE(content::ExecJs(initiator_,
+                               "document.documentElement.requestFullscreen()"));
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
   dialog_controller_->CloseMediaRouterDialog();
   EXPECT_FALSE(dialog_controller_->IsShowingMediaRouterDialog());
   EXPECT_EQ(dialog_controller_->GetCastDialogCoordinatorForTesting()

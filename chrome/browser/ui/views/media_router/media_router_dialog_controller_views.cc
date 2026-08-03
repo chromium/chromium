@@ -72,20 +72,12 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
   // Block tab fullscreen. There is no toolbar to anchor the cast dialog to in
   // tab fullscreen mode. It is unsafe to show the dialog entirely within the
   // content area, as this would make it susceptible to spoofing attacks.
-  if (browser) {
-    ExclusiveAccessManager* exclusive_access_manager =
-        ExclusiveAccessManager::From(browser);
-    FullscreenController* fullscreen_controller =
-        exclusive_access_manager->fullscreen_controller();
-    if (fullscreen_controller->IsTabFullscreen()) {
-      auto blocker =
-          initiator()->ForSecurityDropFullscreen(display::kInvalidDisplayId);
-      if (!blocker) {
-        return;
-      }
-      fullscreen_blocker_ = std::move(*blocker);
-    }
+  auto blocker =
+      initiator()->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+  if (!blocker) {
+    return;
   }
+  fullscreen_blocker_ = std::move(*blocker);
 
   BrowserView* browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
