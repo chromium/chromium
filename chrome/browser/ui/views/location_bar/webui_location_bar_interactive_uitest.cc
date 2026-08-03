@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -44,6 +45,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -1489,4 +1491,26 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_ContextMenu2) {
       WaitForShow(OmniboxContextMenuMixinBase::kShowFullUrlsMenuItem),
       SelectMenuItem(OmniboxContextMenuMixinBase::kShowFullUrlsMenuItem),
       WaitTillOmniboxViewText("https://local.test"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, PasteSanitizesText) {
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"  javascript:javascript:alert(1)\r\nhello world\n");
+  }
+
+  ui::Accelerator paste_accel(ui::VKEY_V,
+#if BUILDFLAG(IS_MAC)
+                              ui::EF_COMMAND_DOWN
+#else
+                              ui::EF_CONTROL_DOWN
+#endif
+  );
+
+  RunTestSequence(
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      FocusWebContents(kWebUIToolbarId),
+      ExecuteJsAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "el => el.focus()"),
+      SendAccelerator(kWebUIToolbarId, paste_accel),
+      WaitTillOmniboxViewText("alert(1) hello world"));
 }

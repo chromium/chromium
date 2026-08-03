@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -237,6 +238,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     textInput.addEventListener('keyup', this.onInputKeyUp.bind(this));
     textInput.addEventListener('copy', this.onInputCopy_.bind(this));
     textInput.addEventListener('cut', this.onInputCut_.bind(this));
+    textInput.addEventListener('paste', this.onInputPaste_.bind(this));
     textInput.addEventListener(
         'compositionstart', this.onInputCompositionstart_.bind(this));
     textInput.addEventListener(
@@ -927,6 +929,27 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       // Go via execCommand to keep Ctrl-Z happy.
       document.execCommand('delete');
       this.onInputInput();
+    }
+  }
+
+  private onInputPaste_(e: ClipboardEvent): void {
+    if (!e.clipboardData) {
+      return;
+    }
+
+    // Extract text/plain or fall back to text/uri-list (for link/file drops
+    // when text/plain is missing). Other text formats like text/html already
+    // provide a text/plain representation. Non-text formats and unhandled
+    // clipboard MIME types are explicitly blocked by preventDefault().
+    let rawText = e.clipboardData.getData('text/plain');
+    if (!rawText) {
+      rawText = e.clipboardData.getData('text/uri-list');
+    }
+
+    if (rawText) {
+      e.preventDefault();
+      const sanitizedText = sanitizeTextForPaste(rawText);
+      document.execCommand('insertText', false, sanitizedText);
     }
   }
 

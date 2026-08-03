@@ -1239,4 +1239,47 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('', getStringSelection());
   });
 
+  test(
+      'Pasting text/plain sanitizes javascript schema and newlines',
+      async () => {
+        const input = getTextInput();
+        input.focus();
+
+        const clipboardData = new DataTransfer();
+        clipboardData.setData(
+            'text/plain', '  javascript:javascript:alert(1)\r\nhello world\n');
+        const pasteEvent = new ClipboardEvent('paste', {
+          clipboardData,
+          bubbles: true,
+          cancelable: true,
+        });
+
+        input.dispatchEvent(pasteEvent);
+        await microtasksFinished();
+
+        assertTrue(pasteEvent.defaultPrevented);
+        assertEquals('alert(1) hello world', input.value);
+      });
+
+  test(
+      'Pasting text/uri-list fallback sanitizes javascript schema',
+      async () => {
+        const input = getTextInput();
+        input.focus();
+
+        const clipboardData = new DataTransfer();
+        clipboardData.setData('text/uri-list', 'javascript:alert(1)');
+        const pasteEvent = new ClipboardEvent('paste', {
+          clipboardData,
+          bubbles: true,
+          cancelable: true,
+        });
+
+        input.dispatchEvent(pasteEvent);
+        await microtasksFinished();
+
+        assertTrue(pasteEvent.defaultPrevented);
+        assertEquals('alert(1)', input.value);
+      });
+
 });
