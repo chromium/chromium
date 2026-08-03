@@ -73,8 +73,9 @@ email thread):
 4.  Maintenance:
 
     You will be responsible for [owning the dependency](#add-owners), keeping it
-    up to date with security and stability fixes. Ideally you'll autoroll the
-    dependency; any other strategy will require an exception, as discussed in
+    up to date with security and stability fixes. Third party dependencies must
+    be [kept up to date](#fresh-deps), so you'll need a plan to autoroll it. If
+    it cannot be autorolled, you will need an exception, as discussed in
     "[Update Mechanism](#update-mechanism)" and
     "[Autoroll Exceptions](#autoroll-exceptions)" below.
 
@@ -151,12 +152,29 @@ in third_party/OWNERS for help.
 
 See [Chrome Code Policy](https://goto.google.com/chrome-code-policy)
 
+# Keeping dependencies up to date (fresh) {#fresh-deps}
+
+It is Chromium policy that third party dependencies be kept up to date, or
+"fresh". Fresh means:
+
+* There is no newer minor or patch version that has been available for 3+ months.
+* There is no newer major version that has been available for 1 year or more.
+* The upstream project has had a release within the last 2 years.
+
+The easiest way to ensure your dependency meets this criteria is to onboard it
+to an autoroller. Refer to
+[managing-third-party](https://chromium.googlesource.com/chromium/src/+/main/docs/managing-third-party/)
+for options and user guides. While the autoroller will detect new versions as
+they become available and attempt to roll them into Chromium, OWNERS are
+responsible for resolving any issues which arise as a result of the update and
+landing the update as soon as feasible. If you cannot autoroll your dependency,
+you will need an [autoroll exception](#autoroll-exception).
 
 # Get the code
 
 There are two common ways to depend on third-party code: you can reference a
 Git repo directly (via entries in the DEPS file) or you can check in a
-snapshot. The former is preferable in most cases:
+snapshot (vendor the code). The former is preferable in most cases:
 
 1. If you are actively developing in the upstream repo, then having the DEPS
    file include the upstream (that's been mirrored to GoB, see [here](/docs/dependencies.md#adding-to-GoB))
@@ -175,7 +193,7 @@ snapshot. The former is preferable in most cases:
 Checking in a snapshot is useful if this is effectively taking on maintenance
 of an unmaintained project (e.g. an ancient library that we're going to GN-ify
 that hasn't been updated in years). And, of course, if the code you need isn't
-in a Git repo, then you have to snapshot.
+in a Git repo, then you have to snapshot/vendor.
 
 ## Node packages
 
@@ -302,9 +320,6 @@ into the product and does any of the following:
 
 ## Update Mechanism {#update-mechanism}
 
-We aim to eventually autoroll as many dependencies as is feasible, and track those
-that can't with an [exception](https://issues.chromium.org/issues/new?component=1801247&template=2135097).
-
 The `Update Mechanism:` field specifies how this dependency is kept up-to-date.
 You will use one of the following values below. The bug link should be an
 approved autoroll exception ([example](https://crbug.com/422921734)).
@@ -354,7 +369,7 @@ has diverged from the upstream, and is no longer updatable.
 > from the upstream. This may return some false positives but ensures
 > coverage is optimal.
 
-### Autoroll Exceptions
+### Autoroll Exceptions {#autoroll-exceptions}
 
 You can request your dependency to be exempted from autorolling. You MUST
 demonstrate a strong technical need for doing so.
