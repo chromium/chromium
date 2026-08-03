@@ -4,13 +4,28 @@
 
 import {createAutocompleteMatch, createKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {SearchboxSelectionMixin, selectionIsNativelySupported, selectionsEqual, selectionToString} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
-import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {PageHandlerRemote, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-class TestElement extends SearchboxSelectionMixin
-(HTMLElement) {
+const TestElementBase = SearchboxSelectionMixin(CrLitElement);
+
+class TestSearchboxSelectionMixinElement extends TestElementBase {
+  static get is() {
+    return 'test-searchbox-selection-mixin';
+  }
   isAimVisible: boolean = false;
   showEntrypoint: boolean = false;
+  dropdownIsVisible: boolean = true;
+  result: any = null;
+  mockPageHandler: TestMock<PageHandlerRemote> =
+      TestMock.fromClass(PageHandlerRemote);
+  mockInputElement: any = {
+    inputElement: {value: ''},
+    focus: () => {},
+    setInput: () => {},
+  };
 
   override get isAimButtonVisible() {
     return this.isAimVisible;
@@ -18,15 +33,24 @@ class TestElement extends SearchboxSelectionMixin
   override get showContextEntrypoint() {
     return this.showEntrypoint;
   }
+  pageHandler() {
+    return this.mockPageHandler;
+  }
+  getInputElement() {
+    return this.mockInputElement;
+  }
+  get selectedMatch() {
+    return this.result?.matches[this.selection.line] ?? null;
+  }
 }
-customElements.define('test-element', TestElement);
+customElements.define(TestSearchboxSelectionMixinElement.is, TestSearchboxSelectionMixinElement);
 
 suite('CrComponentsSearchboxSelectionMixinTest', () => {
-  let element: TestElement;
+  let element: TestSearchboxSelectionMixinElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    element = new TestElement();
+    element = new TestSearchboxSelectionMixinElement();
     document.body.appendChild(element);
   });
 
@@ -55,17 +79,21 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     element.showEntrypoint = false;
     let selections = element.getAvailableSelections(result);
     assertEquals(3, selections.length);
-    assertDeepEquals(
-        selections[0],
-        {line: -1, state: SelectionLineState.kNormal, actionIndex: 0});
+    assertDeepEquals(selections[0], {
+      line: -1,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    });
     assertDeepEquals(selections[1], {
       line: -1,
       state: SelectionLineState.kFocusedButtonAim,
       actionIndex: 0,
     });
-    assertDeepEquals(
-        selections[2],
-        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
+    assertDeepEquals(selections[2], {
+      line: 0,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    });
 
     element.isAimVisible = false;
     element.showEntrypoint = true;
@@ -199,8 +227,11 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     assertDeepEquals(
         available[1]!,
         element.getNextSelection(
-            result, available[0]!, SelectionDirection.kForward,
-            SelectionStep.kStateOrLine));
+            result,
+            available[0]!,
+            SelectionDirection.kForward,
+            SelectionStep.kStateOrLine,
+            ));
     assertDeepEquals(
         available[2]!,
         element.getNextSelection(
