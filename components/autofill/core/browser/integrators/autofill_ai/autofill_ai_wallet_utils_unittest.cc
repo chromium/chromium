@@ -231,6 +231,13 @@ TEST_F(AutofillAiWalletUtilsTest, GetWalletManagementURL_PublicPasses) {
             "https://wallet.google.com/wallet/passes");
 }
 
+TEST_F(AutofillAiWalletUtilsTest, GetWalletManagementURL_Shopping) {
+  EntityInstance entity = test::GetOrderEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_EQ(GetWalletManagementURL(entity),
+            "https://wallet.google.com/wallet/transactions");
+}
+
 TEST_F(AutofillAiWalletUtilsTest, GetWalletManagementURL_PrivatePasses) {
   EntityInstance entity =
       test::GetPassportEntityInstance(

@@ -546,10 +546,9 @@ constexpr EntityInstance::WalletPassType GetWalletPassType(
       return EntityInstance::WalletPassType::kPrivate;
     case EntityTypeName::kFlightReservation:
     case EntityTypeName::kVehicle:
-      return EntityInstance::WalletPassType::kPublic;
     case EntityTypeName::kOrder:
     case EntityTypeName::kShipment:
-      return EntityInstance::WalletPassType::kUnsupported;
+      return EntityInstance::WalletPassType::kPublic;
   }
 
   return EntityInstance::WalletPassType::kUnsupported;

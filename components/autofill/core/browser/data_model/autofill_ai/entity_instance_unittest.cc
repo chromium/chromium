@@ -685,13 +685,12 @@ TEST_F(AutofillEntityInstanceTest, GetWalletPassTypeExpectedTypes) {
   EXPECT_EQ(GetWalletPassType(EntityType(kVehicle),
                               EntityInstance::RecordType::kServerWallet),
             EntityInstance::WalletPassType::kPublic);
-
   EXPECT_EQ(GetWalletPassType(EntityType(kOrder),
                               EntityInstance::RecordType::kServerWallet),
-            EntityInstance::WalletPassType::kUnsupported);
+            EntityInstance::WalletPassType::kPublic);
   EXPECT_EQ(GetWalletPassType(EntityType(kShipment),
                               EntityInstance::RecordType::kServerWallet),
-            EntityInstance::WalletPassType::kUnsupported);
+            EntityInstance::WalletPassType::kPublic);
 }
 
 // Tests that personal context SPII types have at least one obfuscated

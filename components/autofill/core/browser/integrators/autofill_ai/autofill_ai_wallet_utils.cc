@@ -41,6 +41,9 @@ constexpr char kWalletPrivatePassPageURL[] =
     "wallet?p=walletpass&ppid=%s&utm_source=chrome&utm_medium=settings&utm_"
     "campaign=enhanced_autofill";
 
+constexpr char kWalletTransactionsPageURL[] =
+    "https://wallet.google.com/wallet/transactions";
+
 // Defines UI actions that can be taken after a Wallet upsert response.
 enum class UiAction {
   kLocalSaveNotification,
@@ -123,14 +126,22 @@ void HandleWalletUpsertResponse(
 }
 
 std::string GetWalletManagementURL(const EntityInstance& entity) {
-  switch (GetWalletPassType(entity.type(), entity.record_type())) {
-    case EntityInstance::WalletPassType::kUnsupported:
-      NOTREACHED();
-    case EntityInstance::WalletPassType::kPublic:
+  CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kServerWallet);
+  switch (entity.type().name()) {
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kFlightReservation:
       // TODO(crbug.com/454899556): Implement a deep link for public passes.
       // This is not supported by the backend yet.
       return kWalletPassesPageURL;
-    case EntityInstance::WalletPassType::kPrivate:
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      // TODO(crbug.com/542052269): Implement a deep link.
+      return kWalletTransactionsPageURL;
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
       // Only deep link for private passes if the corresponding feature is
       // enabled.
       if (!base::FeatureList::IsEnabled(
@@ -142,6 +153,7 @@ std::string GetWalletManagementURL(const EntityInstance& entity) {
           base::EscapeQueryParamValue(entity.guid().value(),
                                       /*use_plus=*/false));
   }
+  NOTREACHED();
 }
 
 consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
