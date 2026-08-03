@@ -441,16 +441,12 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
                      withAction:@selector(userInterfaceStyleDidChange)];
 }
 
-- (void)viewWillLayoutSubviews {
-  [super viewWillLayoutSubviews];
-  [self updateLayoutConstraints];
-}
-
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
   _bannerPromoBackgroundHeightConstraint.constant = [self
       bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
 }
+
 #pragma mark - UIContentContainer
 
 - (void)viewWillTransitionToSize:(CGSize)size
