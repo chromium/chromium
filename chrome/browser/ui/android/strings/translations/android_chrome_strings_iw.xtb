@@ -313,6 +313,7 @@
 <translation id="2328474416100889417">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' וכל הקישורים להזמנה יושבתו</translation>
 <translation id="2329500425421091035">‏חדש: מצב AI ב-Chrome</translation>
 <translation id="2330186936255788117">עוד סימניות</translation>
+<translation id="2330243730505117832">הגיליון התחתון "בחירת מכשיר" נסגר.</translation>
 <translation id="2332515770639153015">הגרסה המשופרת של הגלישה הבטוחה מופעלת</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
 <translation id="2334275697832662087">‏אמצעי האבטחה של Chrome שמבוססים על AI מגינים עליך מפני איומים אונליין, ומעניקים לך יותר ביטחון בזמן הגלישה</translation>
@@ -502,6 +503,7 @@
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037517125981011456">‏יוצגו הודעות לצורך כניסה אל Chrome</translation>
 <translation id="3038272154009688107">הצגת כל האתרים</translation>
+<translation id="3044436568790455247">הגיליון "בחירת מכשיר" נפתח בגובה מלא.</translation>
 <translation id="3057938290530993634">כדי להצמיד את האתרים הנצפים ביותר לקבלת גישה נוחה בפעם הבאה, צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימנייה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}one{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
@@ -510,6 +512,7 @@
 <translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3070005020161560471">יש לתרגם אוטומטית</translation>
 <translation id="3072980200212375806">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />. גם <ph name="BEGIN_LINK3" />מדיניות הפרטיות<ph name="END_LINK3" /> חלה.</translation>
+<translation id="3075397426753215787">צריך לבחור מכשיר.</translation>
 <translation id="3080375898390966733">‏חיפוש כרטיסייה עם Google Lens</translation>
 <translation id="3080525922482950719">ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין</translation>
 <translation id="3087734570205094154">תחתית</translation>
@@ -549,6 +552,7 @@
 <translation id="3282801380074962248">הרחבת הקטע</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{‫<ph name="TAB_GROUPS_PART" />, כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}one{‫<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> כרטיסיות}two{‫<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> כרטיסיות}other{‫<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> כרטיסיות}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{‏סיסמה אחת שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google.}one{‏‫# סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}two{‏‫# סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}other{‏‫# סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}}</translation>
+<translation id="3287664192482809715">הגיליון התחתון "בחירת מכשיר" נפתח בחצי מגובה המסך.</translation>
 <translation id="3293181007446299124">היסטוריית הגלישה נשמרת באופן פרטי במכשיר, והדוחות נשלחים לאחר השהיה כדי להגן על הפרטיות שלך.</translation>
 <translation id="3301639354590628973">לעבור לחשבון אחר?</translation>
 <translation id="3301936297336370235">אישור של ההצעה לסיסמה</translation>

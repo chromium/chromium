@@ -1081,6 +1081,7 @@
 <translation id="2631387782019878060">קוד אימות: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏לא ניתן היה למצוא את כתובת ה-IP של השרת של <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">חתימה</translation>
+<translation id="2638070510549214427">סימון שהאתר בטוח</translation>
 <translation id="2638567100095052009">אפשר להזין @ כדי לחפש ב-<ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">סטטוס:</translation>
 <translation id="2644219706149911059">‏מתבצעת העלאה ל-Google Drive…</translation>
@@ -1384,6 +1385,7 @@
 <translation id="3121994479408824897">מעבר אל <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">הצגת תוצאות מ-30 הימים האחרונים</translation>
 <translation id="3126023634486644099">Labels (Permanent)</translation>
+<translation id="3131746543143948171">האתר דומה לאתרים אחרים שקשורים לפישינג, לתוכנות זדוניות ולתרמיות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">‏לשמור את מספר ה-Redress?</translation>
 <translation id="3133565499688974786">מנוע החיפוש שמוגדר כברירת מחדל הוא <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="3134859781443140237">רשת מקומית</translation>
@@ -4566,6 +4568,7 @@ Del</translation>
 <translation id="7979595116210197019">שירות מזון</translation>
 <translation id="798134797138789862">האתר יכול לבקש הרשאה להשתמש בנתונים ובמכשירים של מציאות מדומה</translation>
 <translation id="7983008347525536475">רכבי פנאי</translation>
+<translation id="7983569303268727247">הפרטים שלך נטענים</translation>
 <translation id="7984945080620862648">‏לא ניתן לבקר כעת באתר <ph name="SITE" /> מכיוון שהאתר שלח אישורים משובשים ש-Chrome אינו יכול לעבד. שגיאות רשת ותקיפות מתרחשות בדרך כלל לזמן מוגבל, כך שסביר להניח שדף זה יפעל מאוחר יותר.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">‏רשימת המנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" שזמינים כדי לשלם בתשלומים נפתחה במסך מלא.</translation>
@@ -5024,6 +5027,7 @@ Del</translation>
 <translation id="8738058698779197622">‏כדי ליצור חיבור מאובטח, השעון צריך להיות מוגדר כהלכה. הסיבה לכך היא שהאישורים שבהם אתרים משתמשים כדי לזהות את עצמם תקפים רק למשך פרקי זמן מסוימים. מאחר שהשעון במכשיר שלך שגוי, Chromium לא יכול לאמת את האישורים האלו.</translation>
 <translation id="8740359287975076522">‏לא ניתן היה למצוא את &lt;abbr id="dnsDefinition"&gt;כתובת ה-DNS&lt;/abbr&gt; של <ph name="HOST_NAME" />. מאבחן את הבעיה.</translation>
 <translation id="874918643257405732">הוספת הכרטיסייה לסימניות</translation>
+<translation id="8749274696886550762">נראה שהאתר הזה לא תקין</translation>
 <translation id="8751426954251315517">אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="8753913772043329557">יומני המדיניות</translation>
 <translation id="8754546574216727970">מגפיים</translation>
@@ -5311,6 +5315,7 @@ Del</translation>
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9192947025498305328">קוסמטיקה ידידותית לסביבה</translation>
 <translation id="9193018794001479794">יצירת פירוט</translation>
+<translation id="9194783551575429711">אפשר לשאול את <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="9195969368671142407">‏כשהארגון מגביל את האפשרות לשמור בחשבון Google, לא ניתן לשתף קבוצות של כרטיסיות או להצטרף אליהן</translation>
 <translation id="9198613052465150219">‏אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">ההדפסה חסומה</translation>
