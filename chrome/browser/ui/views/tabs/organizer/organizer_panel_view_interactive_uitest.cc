@@ -70,7 +70,7 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
 
   auto OpenOrganizerPanel() {
     return Steps(WaitForShow(kTabSearchButtonElementId),
-                 MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
+                 PressButton(kTabSearchButtonElementId),
                  Do([this]() { RunScheduledLayouts(); }),
                  WaitForShow(kOrganizerPanelViewElementId),
                  Do([this]() { RunScheduledLayouts(); }));
@@ -131,17 +131,14 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, CloseOnClickOutside) {
                 ->IsOrganizerPanelVisible();
           },
           false),
-      // Click Organizer Panel Button and Verify Visibilities.
-      EnsurePresent(kTabSearchButtonElementId),
-      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
+      // Open Organizer Panel and Verify Visibilities.
+      OpenOrganizerPanel(),
       CheckResult(
           [this]() {
             return organizer_panel_state_controller()
                 ->IsOrganizerPanelVisible();
           },
           true),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kOrganizerPanelViewElementId),
       // Click on the Omnibox (outside the panel).
       MoveMouseTo(kOmniboxElementId), ClickMouse(),
       // Verify Organizer Panel is hidden.
@@ -223,17 +220,14 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
                 ->IsOrganizerPanelVisible();
           },
           false),
-      // Click Organizer Panel Button and Verify Visibilities.
-      EnsurePresent(kTabSearchButtonElementId),
-      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
+      // Open Organizer Panel and Verify Visibilities.
+      OpenOrganizerPanel(),
       CheckResult(
           [this]() {
             return organizer_panel_state_controller()
                 ->IsOrganizerPanelVisible();
           },
           true),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kOrganizerPanelViewElementId),
       // Click inside the panel view (background).
       MoveMouseTo(kOrganizerPanelViewElementId), ClickMouse(),
       // Verify Organizer Panel is still shown.
@@ -258,17 +252,14 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, CloseOnEsc) {
                 ->IsOrganizerPanelVisible();
           },
           false),
-      // Click Organizer Panel Button and Verify Visibilities.
-      EnsurePresent(kTabSearchButtonElementId),
-      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
+      // Open Organizer Panel and Verify Visibilities.
+      OpenOrganizerPanel(),
       CheckResult(
           [this]() {
             return organizer_panel_state_controller()
                 ->IsOrganizerPanelVisible();
           },
           true),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kOrganizerPanelViewElementId),
       // Press Esc.
       Do([this]() { RunScheduledLayouts(); }),
       SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE),
@@ -292,12 +283,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
   RunTestSequence(
       // Resize the Vertical Tabs region to a large width.
       ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
-      Do([this]() { RunScheduledLayouts(); }),
-      // Open the Organizer Panel.
-      EnsurePresent(kTabSearchButtonElementId),
-      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kOrganizerPanelViewElementId),
+      Do([this]() { RunScheduledLayouts(); }), OpenOrganizerPanel(),
       // Verify that the panel matches the width of Vertical Tabs and does not
       // have rounded corners.
       CheckPanelHasExpectedWidthAndStyling(
@@ -314,12 +300,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
   RunTestSequence(
       // Resize the Vertical Tabs region to a small width.
       ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
-      Do([this]() { RunScheduledLayouts(); }),
-      // Open the Organizer Panel.
-      EnsurePresent(kTabSearchButtonElementId),
-      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kOrganizerPanelViewElementId),
+      Do([this]() { RunScheduledLayouts(); }), OpenOrganizerPanel(),
       // Verify that the panel is at its minimum width and has rounded corners.
       CheckPanelHasExpectedWidthAndStyling(
           organizer_panel::kOrganizerPanelMinWidth,
@@ -335,12 +316,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
   RunTestSequence(
       // Resize the Vertical Tabs region to a small width.
       ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
-      Do([this]() { RunScheduledLayouts(); }),
-      // Open the Organizer Panel.
-      EnsurePresent(kTabSearchButtonElementId),
-      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kOrganizerPanelViewElementId),
+      Do([this]() { RunScheduledLayouts(); }), OpenOrganizerPanel(),
       // Verify that the panel is at its minimum width and has rounded corners.
       CheckPanelHasExpectedWidthAndStyling(
           organizer_panel::kOrganizerPanelMinWidth -
