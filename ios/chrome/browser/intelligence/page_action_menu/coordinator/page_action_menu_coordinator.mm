@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_mediator.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_controls_view.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_view_controller.h"
@@ -93,6 +94,8 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
 
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(activeWebState);
+  ReaderModeBrowserAgent* readerModeBrowserAgent =
+      ReaderModeBrowserAgent::FromBrowser(self.browser);
   GeminiTabHelper* geminiTabHelper =
       GeminiTabHelper::FromWebState(activeWebState);
 
@@ -108,6 +111,7 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
                geminiService:geminiService
              geminiTabHelper:geminiTabHelper
          readerModeTabHelper:readerModeTabHelper
+      readerModeBrowserAgent:readerModeBrowserAgent
       hostContentSettingsMap:hostContentSettingsMap];
 
   id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(

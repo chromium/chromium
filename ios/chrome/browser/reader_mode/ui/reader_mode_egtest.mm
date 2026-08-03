@@ -202,12 +202,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 
   if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
       [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)] ||
+      [self isRunningTest:@selector(
+                              testPageActionMenuDismissedOnReaderModeHide)] ||
 #if TARGET_OS_SIMULATOR
-      [self isRunningTest:@selector
-            (testSampleContextualChipVisibleInReaderMode)] ||
+      [self isRunningTest:@selector(
+                              testSampleContextualChipVisibleInReaderMode)] ||
 #else
-      [self isRunningTest:@selector
-            (FLAKY_testSampleContextualChipVisibleInReaderMode)] ||
+      [self isRunningTest:
+                @selector(FLAKY_testSampleContextualChipVisibleInReaderMode)] ||
 #endif
       [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
     config.features_enabled.push_back(kPageActionMenu);
@@ -1157,6 +1159,45 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 
   // The Reader Mode UI is not visible.
   [self assertReaderModePageIsHidden];
+}
+
+// Tests that opening the Page Action Menu while in Reader Mode and then
+// programmatically hiding Reader Mode automatically dismisses the Page Action
+// Menu.
+- (void)testPageActionMenuDismissedOnReaderModeHide {
+  [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  // Tap the Reader mode customization badge to open the Page Action Menu.
+  [[EarlGrey selectElementWithMatcher:grey_allOf(ReaderModeBadge(),
+                                                 grey_interactable(), nil)]
+      performAction:grey_tap()];
+
+  // Verify the Page Action Menu bottom sheet appears and is interactable.
+  id<GREYMatcher> bottomSheet =
+      grey_accessibilityID(kAIHubBottomSheetAccessibilityIdentifier);
+  id<GREYMatcher> readingModeOptionsButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_AI_HUB_READER_MODE_OPTIONS_BUTTON_TITLE);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_allOf(
+                                                       grey_ancestor(
+                                                           bottomSheet),
+                                                       readingModeOptionsButton,
+                                                       grey_interactable(),
+                                                       nil)];
+
+  // Programmatically hide Reader mode.
+  [ChromeEarlGrey hideReaderMode];
+
+  // Verify the Page Action Menu bottom sheet automatically disappears.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:bottomSheet];
 }
 
 // Tests that the text zoom UI can be opened from reader mode and that it

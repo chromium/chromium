@@ -128,6 +128,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
                  geminiService:fake_gemini_service_.get()
                geminiTabHelper:gemini_tab_helper_
            readerModeTabHelper:nil
+        readerModeBrowserAgent:nil
         hostContentSettingsMap:settings_map_];
     fake_consumer_ = [[FakePageActionMenuConsumer alloc] init];
     mediator_.consumer = fake_consumer_;
@@ -289,6 +290,7 @@ TEST_F(PageActionMenuMediatorTest, PopupBlocker) {
                geminiService:fake_gemini_service_.get()
              geminiTabHelper:GeminiTabHelper::FromWebState(real_web_state.get())
          readerModeTabHelper:nil
+      readerModeBrowserAgent:nil
       hostContentSettingsMap:settings_map_];
 
   FakePageActionMenuConsumer* local_consumer =

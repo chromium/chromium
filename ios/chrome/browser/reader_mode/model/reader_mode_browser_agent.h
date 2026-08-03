@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_H_
 
+#import "base/observer_list.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_delegate.h"
@@ -28,10 +29,25 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
                                public web::WebStateObserver,
                                public ReaderModeTabHelper::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnReaderModeContentShown(ReaderModeBrowserAgent* agent) {}
+    virtual void OnReaderModeContentHidden(ReaderModeBrowserAgent* agent) {}
+    virtual void ReaderModeBrowserAgentDestroyed(
+        ReaderModeBrowserAgent* agent) {}
+
+   protected:
+    ~Observer() override = default;
+  };
+
   ReaderModeBrowserAgent(const ReaderModeBrowserAgent&) = delete;
   ReaderModeBrowserAgent& operator=(const ReaderModeBrowserAgent&) = delete;
 
   ~ReaderModeBrowserAgent() override;
+
+  // Adds and removes observers.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Sets the `delegate_`.
   void SetDelegate(id<ReaderModeBrowserAgentDelegate> delegate);
@@ -93,6 +109,7 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
 
   // The delegate for this agent.
   id<ReaderModeBrowserAgentDelegate> delegate_;
+  base::ObserverList<Observer> observers_;
   ReaderModeDependencyBridge bridge_;
 };
 

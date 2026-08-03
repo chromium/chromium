@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/prefs/pref_service.h"
@@ -35,6 +36,8 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -65,7 +68,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 
 }  // namespace
 
-@interface PageActionMenuMediator () <CRWWebStateObserver>
+@interface PageActionMenuMediator () <CRWWebStateObserver,
+                                      ReaderModeBrowserAgentObserving>
 @end
 
 @implementation PageActionMenuMediator {
@@ -93,6 +97,13 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   // The tab helper for Reader mode.
   raw_ptr<ReaderModeTabHelper> _readerModeTabHelper;
 
+  // The browser agent for Reader mode bridge.
+  std::unique_ptr<ReaderModeBrowserAgentObserverBridge>
+      _readerModeObserverBridge;
+  std::optional<base::ScopedObservation<ReaderModeBrowserAgent,
+                                        ReaderModeBrowserAgent::Observer>>
+      _readerModeScopedObservation;
+
   // The host content settings map for managing site permissions.
   raw_ptr<HostContentSettingsMap> _hostContentSettingsMap;
 }
@@ -104,6 +115,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
                    geminiService:(GeminiService*)geminiService
                  geminiTabHelper:(GeminiTabHelper*)geminiTabHelper
              readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
+          readerModeBrowserAgent:(ReaderModeBrowserAgent*)readerModeBrowserAgent
           hostContentSettingsMap:
               (HostContentSettingsMap*)hostContentSettingsMap {
   self = [super init];
@@ -118,6 +130,13 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
     _hostContentSettingsMap = hostContentSettingsMap;
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
+
+    if (readerModeBrowserAgent) {
+      _readerModeObserverBridge =
+          std::make_unique<ReaderModeBrowserAgentObserverBridge>(self);
+      _readerModeScopedObservation.emplace(_readerModeObserverBridge.get());
+      _readerModeScopedObservation->Observe(readerModeBrowserAgent);
+    }
   }
   return self;
 }
@@ -129,12 +148,25 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 #pragma mark - Public
 
 - (void)disconnect {
+  _readerModeScopedObservation.reset();
+  _readerModeObserverBridge.reset();
   _readerModeTabHelper = nullptr;
   [self detachFromWebState];
 }
 
 - (BOOL)isLensAvailableForProfile {
   return IsLensOverlayAllowedByPolicy(_profilePrefs);
+}
+
+#pragma mark - ReaderModeBrowserAgentObserving
+
+- (void)readerModeBrowserAgent:(ReaderModeBrowserAgent*)agent
+            didHideModeContent:(BOOL)animated {
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
+}
+
+- (void)readerModeBrowserAgentDestroyed:(ReaderModeBrowserAgent*)agent {
+  _readerModeScopedObservation.reset();
 }
 
 #pragma mark - PageActionMenuMutator

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_delegate.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -220,4 +221,28 @@ TEST_F(ReaderModeBrowserAgentTest, NavigationInActiveWebState) {
 
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+}
+
+// Tests that ObserverBridge receives notifications when Reader mode is shown or
+// hidden.
+TEST_F(ReaderModeBrowserAgentTest, ObserverBridgeNotifications) {
+  id observer_mock =
+      OCMProtocolMock(@protocol(ReaderModeBrowserAgentObserving));
+  auto bridge =
+      std::make_unique<ReaderModeBrowserAgentObserverBridge>(observer_mock);
+  base::ScopedObservation<ReaderModeBrowserAgent,
+                          ReaderModeBrowserAgent::Observer>
+      scoped_observation{bridge.get()};
+  scoped_observation.Observe(GetReaderModeBrowserAgent());
+
+  OCMExpect([observer_mock readerModeBrowserAgent:GetReaderModeBrowserAgent()
+                               didShowModeContent:YES]);
+  EnableReaderMode(GetActiveWebState(), ReaderModeAccessPoint::kContextualChip);
+  WaitForAvailableReaderModeContentInWebState(GetActiveWebState());
+  EXPECT_OCMOCK_VERIFY(observer_mock);
+
+  OCMExpect([observer_mock readerModeBrowserAgent:GetReaderModeBrowserAgent()
+                               didHideModeContent:YES]);
+  DisableReaderMode(GetActiveWebState());
+  EXPECT_OCMOCK_VERIFY(observer_mock);
 }

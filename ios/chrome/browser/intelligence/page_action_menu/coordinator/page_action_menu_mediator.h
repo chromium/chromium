@@ -14,6 +14,7 @@ class AuthenticationService;
 class GeminiService;
 class GeminiTabHelper;
 class PrefService;
+class ReaderModeBrowserAgent;
 class ReaderModeTabHelper;
 class TemplateURLService;
 class HostContentSettingsMap;
@@ -36,6 +37,7 @@ class WebState;
                    geminiService:(GeminiService*)geminiService
                  geminiTabHelper:(GeminiTabHelper*)geminiTabHelper
              readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
+          readerModeBrowserAgent:(ReaderModeBrowserAgent*)readerModeBrowserAgent
           hostContentSettingsMap:(HostContentSettingsMap*)hostContentSettingsMap
     NS_DESIGNATED_INITIALIZER;
 

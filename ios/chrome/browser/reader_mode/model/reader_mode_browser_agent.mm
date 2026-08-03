@@ -23,7 +23,17 @@
 
 #pragma mark - Public
 
-ReaderModeBrowserAgent::~ReaderModeBrowserAgent() = default;
+ReaderModeBrowserAgent::~ReaderModeBrowserAgent() {
+  observers_.Notify(&Observer::ReaderModeBrowserAgentDestroyed, this);
+}
+
+void ReaderModeBrowserAgent::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ReaderModeBrowserAgent::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void ReaderModeBrowserAgent::SetDelegate(
     id<ReaderModeBrowserAgentDelegate> delegate) {
@@ -86,6 +96,8 @@ void ReaderModeBrowserAgent::ShowReaderModeUI(BOOL animated) {
   crash_keys::SetCurrentlyInReaderMode(true);
   [delegate_ readerModeBrowserAgent:this showContentAnimated:animated];
 
+  observers_.Notify(&Observer::OnReaderModeContentShown, this);
+
   id<ReaderModeChipCommands> reader_mode_chip_handler = HandlerForProtocol(
       browser_->GetCommandDispatcher(), ReaderModeChipCommands);
   [reader_mode_chip_handler showReaderModeChip];
@@ -104,6 +116,8 @@ void ReaderModeBrowserAgent::HideReaderModeUI(BOOL animated) {
       browser_->GetCommandDispatcher(), ReaderModeChipCommands);
   [reader_mode_chip_handler hideReaderModeChip];
   [delegate_ readerModeBrowserAgent:this hideContentAnimated:animated];
+
+  observers_.Notify(&Observer::OnReaderModeContentHidden, this);
 
   UpdateHandlersOnActiveWebState();
 }

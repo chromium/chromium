@@ -99,11 +99,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_action_menu/ui",
     "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
@@ -117,5 +119,6 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
