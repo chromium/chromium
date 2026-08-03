@@ -16,18 +16,22 @@ cargo_crate("lib") {
       "//third_party/rust/chromium_crates_io/vendor/zeroize-v1/src/lib.rs"
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/zeroize-v1/src/aarch64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zeroize-v1/src/barrier.rs",
     "//third_party/rust/chromium_crates_io/vendor/zeroize-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zeroize-v1/src/stack.rs",
     "//third_party/rust/chromium_crates_io/vendor/zeroize-v1/src/x86.rs",
   ]
-  inputs = []
+  inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/zeroize-v1/src/../README.md",
+  ]
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The RustCrypto Project Developers"
   cargo_pkg_name = "zeroize"
   cargo_pkg_description = "Securely clear secrets from memory with a simple trait built on stable Rust primitives which guarantee memory is zeroed using an operation will not be 'optimized away' by the compiler. Uses a portable pure Rust implementation that works everywhere, even WASM!"
   cargo_pkg_repository = "https://github.com/RustCrypto/utils"
-  cargo_pkg_version = "1.8.2"
+  cargo_pkg_version = "1.9.0"
 
   allow_unsafe = true
 

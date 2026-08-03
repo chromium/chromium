@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.9.0 (2026-06-12)
+### Added
+- `Zeroizing` is now `repr(transparent)` ([#1253])
+- `optimization_barrier` function ([#1261])
+- `Zeroizing` now supports `?Sized` ([#1318])
+- `zeroize_stack` function ([#1331])
+
+### Changed
+- Edition changed to 2024 and MSRV bumped to 1.85 ([#1149])
+- Replace `atomic_fence` with `optimization_barrier` ([#1252])
+- Bump `zeroize_derive` to v1.5 ([#1492])
+- Always enable AVX-512 support ([#1493])
+
+[#1149]: https://github.com/RustCrypto/utils/pull/1149
+[#1252]: https://github.com/RustCrypto/utils/pull/1252
+[#1253]: https://github.com/RustCrypto/utils/pull/1253
+[#1261]: https://github.com/RustCrypto/utils/pull/1261
+[#1318]: https://github.com/RustCrypto/utils/pull/1318
+[#1331]: https://github.com/RustCrypto/utils/pull/1331
+[#1492]: https://github.com/RustCrypto/utils/pull/1492
+[#1493]: https://github.com/RustCrypto/utils/pull/1493
+
 ## 1.8.2 (2025-09-29)
 ### Changed
 - Switch from `doc_auto_cfg` to `doc_cfg` ([#1228])
@@ -94,7 +116,7 @@ NOTE: yanked because [#900] bumped MSRV to 1.60, which vioates our MSRV policy.
 
 ## 1.5.4 (2022-03-16)
 ### Added
-- Nightly-only upport for zeroizing ARM64 SIMD registers ([#749])
+- Nightly-only support for zeroizing ARM64 SIMD registers ([#749])
 
 [#749]: https://github.com/RustCrypto/utils/pull/749
 
@@ -154,7 +176,7 @@ if you would like to support older Rust versions.
 ## 1.3.0 (2021-04-19)
 ### Added
 - impl `Zeroize` for `Box<[Z]>`
-- Clear residual space within `Option
+- Clear residual space within `Option`
 
 ### Changed
 - Ensure `Option` is `None` when zeroized
@@ -162,7 +184,7 @@ if you would like to support older Rust versions.
 
 ## 1.2.0 (2020-12-09)
 ### Added
-- `Zeroize` support for x86(_64) SIMD registers
+- `Zeroize` support for x86(-64) SIMD registers
 
 ### Changed
 - Simplify `String::zeroize`
@@ -220,7 +242,7 @@ are deriving `Zeroize`.
 - Bound blanket array impls on `Zeroize` instead of `DefaultIsZeroes`
 - Require `zeroize(drop)` or `zeroize(no_drop)` attributes when deriving
   `Zeroize` .
-- Support stablized 'alloc' crate
+- Support stabilized 'alloc' crate
 
 ## 0.8.0 (2019-05-20)
 - Impl `Drop` by default when deriving `Zeroize`

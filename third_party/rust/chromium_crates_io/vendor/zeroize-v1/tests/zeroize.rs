@@ -1,10 +1,18 @@
 //! zeroize integration tests.
 
-use std::{
+#![allow(
+    clippy::missing_safety_doc,
+    clippy::std_instead_of_alloc,
+    clippy::undocumented_unsafe_blocks
+)]
+
+use core::{
     marker::{PhantomData, PhantomPinned},
-    mem::{size_of, MaybeUninit},
+    mem::{MaybeUninit, size_of},
     num::*,
+    ptr,
 };
+use std::sync::Arc;
 use zeroize::*;
 
 #[cfg(feature = "std")]
@@ -55,7 +63,7 @@ fn zeroize_byte_arrays() {
 #[test]
 fn zeroize_on_drop_byte_arrays() {
     let mut arr = [ZeroizedOnDrop(42); 1];
-    unsafe { core::ptr::drop_in_place(&mut arr) };
+    unsafe { ptr::drop_in_place(&raw mut arr) };
     assert_eq!(arr.as_ref(), [ZeroizedOnDrop(0); 1].as_ref());
 }
 
@@ -90,11 +98,11 @@ fn zeroize_check_tuple() {
 #[test]
 fn zeroize_on_drop_check_tuple() {
     let mut tup1 = (ZeroizedOnDrop(42),);
-    unsafe { core::ptr::drop_in_place(&mut tup1) };
+    unsafe { ptr::drop_in_place(&raw mut tup1) };
     assert_eq!(tup1, (ZeroizedOnDrop(0),));
 
     let mut tup2 = (ZeroizedOnDrop(42), ZeroizedOnDrop(42));
-    unsafe { core::ptr::drop_in_place(&mut tup2) };
+    unsafe { ptr::drop_in_place(&raw mut tup2) };
     assert_eq!(tup2, (ZeroizedOnDrop(0), ZeroizedOnDrop(0)));
 }
 
@@ -120,14 +128,12 @@ fn zeroize_vec_entire_capacity() {
 
     impl Drop for PanicOnNonZeroDrop {
         fn drop(&mut self) {
-            if self.0 != 0 {
-                panic!("dropped non-zeroized data");
-            }
+            assert!(self.0 == 0, "dropped non-zeroized data");
         }
     }
 
-    // Ensure that the entire capacity of the vec is zeroized and that no
-    // unitinialized data is ever interpreted as initialized
+    // Ensure that the entire capacity of the vec is zeroized and that no unitinialized data
+    // is ever interpreted as initialized
     let mut vec = vec![PanicOnNonZeroDrop(42); 2];
 
     unsafe {
@@ -166,8 +172,7 @@ fn zeroize_string_entire_capacity() {
     assert!(as_vec.iter().all(|byte| *byte == 0));
 }
 
-// TODO(tarcieri): debug flaky test (with potential UB?) See:
-// RustCrypto/utils#774
+// TODO(tarcieri): debug flaky test (with potential UB?) See: RustCrypto/utils#774
 #[cfg(feature = "std")]
 #[ignore]
 #[test]
@@ -176,8 +181,8 @@ fn zeroize_c_string() {
     let orig_len = cstring.as_bytes().len();
     let orig_ptr = cstring.as_bytes().as_ptr();
     cstring.zeroize();
-    // This doesn't quite test that the original memory has been cleared, but only
-    // that cstring now owns an empty buffer
+    // This doesn't quite test that the original memory has been cleared, but only that
+    // cstring now owns an empty buffer
     assert!(cstring.as_bytes().is_empty());
     for i in 0..orig_len {
         unsafe {
@@ -208,4 +213,92 @@ fn asref() {
     let mut buffer: Zeroizing<Box<[u8]>> = Default::default();
     let _asmut: &mut [u8] = buffer.as_mut();
     let _asref: &[u8] = buffer.as_ref();
+}
+
+#[cfg(feature = "alloc")]
+#[test]
+fn box_unsized_zeroizing() {
+    let mut b: Box<Zeroizing<[u8]>> = Box::new(Zeroizing::new([1, 2, 3, 4]));
+    {
+        let s: &[u8] = &b;
+        assert_eq!(s, &[1, 2, 3, 4]);
+
+        let s: &[u8] = b.as_ref();
+        assert_eq!(s, &[1, 2, 3, 4]);
+
+        let s: &mut [u8] = b.as_mut();
+        assert_eq!(s, &[1, 2, 3, 4]);
+    }
+
+    unsafe {
+        ptr::drop_in_place(&raw mut *b);
+    }
+
+    let s: &[u8] = &b;
+    assert_eq!(s, &[0, 0, 0, 0]);
+}
+
+#[cfg(feature = "alloc")]
+#[test]
+fn arc_unsized_zeroizing() {
+    let mut arc: Arc<Zeroizing<[u8]>> = Arc::new(Zeroizing::new([1, 2, 3, 4]));
+    {
+        let s: &[u8] = &arc;
+        assert_eq!(s, &[1, 2, 3, 4]);
+
+        let s: &[u8] = arc.as_ref();
+        assert_eq!(s, &[1, 2, 3, 4]);
+    }
+
+    unsafe {
+        let inner = Arc::get_mut(&mut arc).unwrap();
+        ptr::drop_in_place(inner);
+    }
+
+    let s: &[u8] = &arc;
+    assert_eq!(s, &[0, 0, 0, 0]);
+}
+
+// This is a weird way to use zeroizing, but it's technically allowed b/c
+// unsized types can be stored inside Zeroizing, so make sure it works as
+// expected.
+#[test]
+fn zeroizing_dyn_trait() {
+    trait TestTrait: Zeroize {
+        fn data(&self) -> &[u8];
+    }
+
+    struct TestStruct {
+        data: [u8; 4],
+    }
+
+    impl Zeroize for TestStruct {
+        fn zeroize(&mut self) {
+            self.data.zeroize();
+        }
+    }
+
+    impl Drop for TestStruct {
+        fn drop(&mut self) {
+            self.zeroize();
+        }
+    }
+
+    impl TestTrait for TestStruct {
+        fn data(&self) -> &[u8] {
+            &self.data
+        }
+    }
+
+    let mut b: Box<Zeroizing<dyn TestTrait>> =
+        Box::new(Zeroizing::new(TestStruct { data: [1, 2, 3, 4] }));
+
+    unsafe {
+        ptr::drop_in_place(&raw mut *b);
+    }
+
+    let inner: &Zeroizing<dyn TestTrait> = &b;
+    let inner: &dyn TestTrait = core::ops::Deref::deref(inner);
+
+    assert_eq!(inner.data(), &[0, 0, 0, 0]);
 }

@@ -809,7 +809,6 @@ third_party/rust/chromium_crates_io/vendor/zmij-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/zmij-v1/src
 third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5
 third_party/rust/miniz_oxide/v0_8
-third_party/rust/zeroize_derive/v1
 third_party/screen-ai
 third_party/sentencepiece/src
 third_party/sentencepiece/src/src
