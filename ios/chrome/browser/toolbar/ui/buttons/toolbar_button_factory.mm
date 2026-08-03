@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
@@ -19,6 +20,8 @@
 namespace {
 // Default point size for toolbar buttons.
 constexpr CGFloat kDefaultSymbolPointSize = 19;
+// Symbol point size for the legacy toolbar button design.
+constexpr CGFloat kLegacySymbolPointSize = 24;
 }  // namespace
 
 @implementation ToolbarButtonFactory {
@@ -129,8 +132,9 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
 - (ToolbarButton*)makeShareButton {
   // Shift the button up 2px by adding 4px of padding at the bottom.
   UIImage* (^imageLoader)(void) = ^UIImage* {
-    UIImage* image =
-        DefaultSymbolWithPointSize(kShareSymbol, kDefaultSymbolPointSize);
+    CGFloat pointSize = IsNextOldDesignEnabled() ? kLegacySymbolPointSize
+                                                 : kDefaultSymbolPointSize;
+    UIImage* image = DefaultSymbolWithPointSize(kShareSymbol, pointSize);
     CGSize newSize = CGSizeMake(image.size.width, image.size.height + 4);
 
     UIGraphicsImageRendererFormat* format =
@@ -198,20 +202,21 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
 
 #pragma mark - Private
 
-// Returns a toolbar button with the given image, which can be a default symbol
-// or not.
+// Returns a toolbar button with the given symbol.
 - (ToolbarButton*)toolbarButtonForImageNamed:(NSString*)imageName
                                 defaultImage:(BOOL)defaultImage {
+  CGFloat pointSize = IsNextOldDesignEnabled() ? kLegacySymbolPointSize
+                                               : kDefaultSymbolPointSize;
   if (defaultImage) {
     return [[ToolbarButton alloc]
         initWithImageLoader:^UIImage* {
-          return DefaultSymbolWithPointSize(imageName, kDefaultSymbolPointSize);
+          return DefaultSymbolWithPointSize(imageName, pointSize);
         }
                   incognito:_incognito];
   }
   return [[ToolbarButton alloc]
       initWithImageLoader:^UIImage* {
-        return CustomSymbolWithPointSize(imageName, kDefaultSymbolPointSize);
+        return CustomSymbolWithPointSize(imageName, pointSize);
       }
                 incognito:_incognito];
 }

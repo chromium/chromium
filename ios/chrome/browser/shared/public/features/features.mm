@@ -1314,3 +1314,12 @@ BASE_FEATURE(kDefaultBottomOmniboxOnIOS, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsDefaultBottomOmniboxOnIOSEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBottomOmniboxOnIOS);
 }
+
+BASE_FEATURE(kNextOldDesign, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNextOldDesignEnabled() {
+  if (!IsChromeNextIaEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kNextOldDesign);
+}

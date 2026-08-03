@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 
 #import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -20,6 +21,9 @@ constexpr CGFloat kBlueDotWhiteBorderThickness = 2;
 
 // Returns the tint color to be used in the normal mode.
 UIColor* NormalTintColor() {
+  if (IsNextOldDesignEnabled()) {
+    return [UIColor colorNamed:kToolbarButtonColor];
+  }
   return [UIColor colorNamed:kSolidBlackColor];
 }
 
@@ -52,18 +56,21 @@ UIColor* NormalTintColor() {
       [self.heightAnchor constraintEqualToConstant:kToolbarButtonSize],
     ]];
 
-    _backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    _backgroundView.backgroundColor = ToolbarElementBackgroundColor(incognito);
-    _backgroundView.userInteractionEnabled = NO;
-    _backgroundView.clipsToBounds = YES;
-    [self insertSubview:_backgroundView belowSubview:self.imageView];
-    AddSameConstraints(self, _backgroundView);
+    if (!IsNextOldDesignEnabled()) {
+      _backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+      _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      _backgroundView.backgroundColor =
+          ToolbarElementBackgroundColor(incognito);
+      _backgroundView.userInteractionEnabled = NO;
+      _backgroundView.clipsToBounds = YES;
+      [self insertSubview:_backgroundView belowSubview:self.imageView];
+      AddSameConstraints(self, _backgroundView);
 
-    ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
-                                                   self.traitCollection);
+      ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
+                                                     self.traitCollection);
 
-    ConfigureShadowForToolbarElement(self);
+      ConfigureShadowForToolbarElement(self);
+    }
 
     self.tintColor = NormalTintColor();
 
@@ -180,8 +187,13 @@ UIColor* NormalTintColor() {
   if (_iphHighlighted && !_hasBlueDot) {
     if (!_gradientView) {
       _gradientView = CreateIPHGradientView();
-      [_backgroundView addSubview:_gradientView];
-      AddSameConstraints(_backgroundView, _gradientView);
+      if (_backgroundView) {
+        [_backgroundView addSubview:_gradientView];
+        AddSameConstraints(_backgroundView, _gradientView);
+      } else {
+        [self insertSubview:_gradientView belowSubview:self.imageView];
+        AddSameConstraints(self, _gradientView);
+      }
     }
     _gradientView.hidden = NO;
     ConfigureIPHImageStyleForImageView(self.imageView);
@@ -194,6 +206,9 @@ UIColor* NormalTintColor() {
 
 // Updates the mask on the background for the blue dot.
 - (void)updateMask {
+  if (!_backgroundView) {
+    return;
+  }
   if (_hasBlueDot) {
     CAShapeLayer* maskLayer = [CAShapeLayer layer];
     UIBezierPath* path =
@@ -255,7 +270,9 @@ UIColor* NormalTintColor() {
       self.hidden = !isCurrentCompactHeight;
       break;
     case ToolbarButtonVisibility::kWhenEnabled:
-      self.hidden = !self.enabled;
+      self.hidden = IsNextOldDesignEnabled()
+                        ? !(isCurrentRegularRegular || self.enabled)
+                        : !self.enabled;
       break;
   }
   [self checkImageVisibility];
@@ -265,6 +282,9 @@ UIColor* NormalTintColor() {
 // current size class of the UI. In windows with compact width, the
 // ToolbarButton should be square. Otherwise, they should be circular.
 - (void)updateShape {
+  if (!_backgroundView) {
+    return;
+  }
   ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
                                                  self.traitCollection);
   [self updateMask];

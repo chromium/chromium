@@ -2886,6 +2886,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kDefaultBottomOmniboxOnIOSName,
      flag_descriptions::kDefaultBottomOmniboxOnIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBottomOmniboxOnIOS)},
+    {"next-old-design", flag_descriptions::kNextOldDesignName,
+     flag_descriptions::kNextOldDesignDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kNextOldDesign)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
