@@ -32,4 +32,9 @@ void RecordCupValidationTime(base::TimeDelta time) {
   base::UmaHistogramTimes("UpdateClient.CupValidationTime", time);
 }
 
+void RecordCupFallbackToEtag(bool fallback_occurred) {
+  base::UmaHistogramBoolean("UpdateClient.CupFallbackToEtag",
+                            fallback_occurred);
+}
+
 }  // namespace update_client::metrics

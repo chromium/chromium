@@ -20,6 +20,8 @@ void RecordCupValidationResult(bool valid);
 
 void RecordCupValidationTime(base::TimeDelta time);
 
+void RecordCupFallbackToEtag(bool fallback_occurred);
+
 }  // namespace update_client::metrics
 
 #endif  // COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_METRICS_H_
