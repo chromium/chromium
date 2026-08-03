@@ -139,10 +139,10 @@ public final class ProfileStore {
     }
 
     public static boolean requiresStartup() {
-        return !CommandLine.getInstance()
+        return !(CommandLine.getInstance()
                         .hasSwitch(AwSwitches.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP)
-                && !WebViewCachedFlags.get()
+                || WebViewCachedFlags.get()
                         .isCachedFeatureEnabled(
-                                AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP);
+                                AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP));
     }
 }
