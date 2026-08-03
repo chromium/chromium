@@ -574,6 +574,7 @@ bool WindowState::IsRestoring(WindowStateType previous_state) const {
 void WindowState::DisableZOrdering(aura::Window* window_on_top) {
   ui::ZOrderLevel z_order = GetZOrdering();
   if (z_order != ui::ZOrderLevel::kNormal && !IsPip()) {
+    aura::Window::ScopedDeleteBlocker blocker(window_);
     // |window_| is hidden first to avoid canceling fullscreen mode when it is
     // no longer always on top and gets added to default container. This avoids
     // sending redundant OnFullscreenStateChanged to the layout manager. The

@@ -59,6 +59,31 @@ namespace ash {
 using chromeos::AppType;
 namespace {
 
+class WindowDestroyerOnHide : public aura::WindowObserver {
+ public:
+  explicit WindowDestroyerOnHide(std::unique_ptr<aura::Window> window)
+      : window_(std::move(window)) {
+    window_->AddObserver(this);
+  }
+  WindowDestroyerOnHide(const WindowDestroyerOnHide&) = delete;
+  WindowDestroyerOnHide& operator=(const WindowDestroyerOnHide&) = delete;
+  ~WindowDestroyerOnHide() override {
+    if (window_) {
+      window_->RemoveObserver(this);
+    }
+  }
+
+  // aura::WindowObserver:
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    if (window == window_.get() && !visible) {
+      window_.reset();
+    }
+  }
+
+ private:
+  std::unique_ptr<aura::Window> window_;
+};
+
 class AlwaysMaximizeTestState : public WindowState::State {
  public:
   explicit AlwaysMaximizeTestState(WindowStateType initial_state_type)
@@ -2463,8 +2488,35 @@ TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
   histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
 }
 
-// TODO(skuhne): Add more unit test to verify the correctness for the restore
-// operation.
+using WindowStateDeathTest = WindowStateTest;
+
+TEST_F(WindowStateDeathTest, DisableZOrderingWindowDestroyedDuringHide) {
+  std::unique_ptr<aura::Window> w(CreateTestWindowInShell({.window_id = 1}));
+  w->SetProperty(aura::client::kZOrderingKey, ui::ZOrderLevel::kFloatingWindow);
+  WindowState* window_state = WindowState::Get(w.get());
+
+  auto observer = std::make_unique<WindowDestroyerOnHide>(std::move(w));
+
+  // The window should be destroyed during Hide() in DisableZOrdering.
+  // Since we added ScopedDeleteBlocker, it should crash.
+  EXPECT_DEATH(window_state->DisableZOrdering(nullptr), "");
+}
+
+TEST_F(WindowStateDeathTest,
+       DisableZOrderingWindowDestroyedDuringHideViaFullscreen) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShell({.window_id = 1}));
+  w1->SetProperty(aura::client::kZOrderingKey,
+                  ui::ZOrderLevel::kFloatingWindow);
+  auto observer = std::make_unique<WindowDestroyerOnHide>(std::move(w1));
+
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell({.window_id = 2}));
+  WindowState* window_state2 = WindowState::Get(w2.get());
+
+  // Toggle fullscreen on w2. This will trigger UpdateAlwaysOnTop which calls
+  // DisableZOrdering on w1. It should crash due to ScopedDeleteBlocker.
+  const WMEvent toggle_fullscreen(WM_EVENT_TOGGLE_FULLSCREEN);
+  EXPECT_DEATH(window_state2->OnWMEvent(&toggle_fullscreen), "");
+}
 
 }  // namespace
 }  // namespace ash
