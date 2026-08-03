@@ -1883,17 +1883,17 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
       {.id = u"123",
        .merchant_domain = u"example.com",
        .record_type = EntityInstance::RecordType::kServerWallet});
-  EntityInstance order_local = test::GetOrderEntityInstanceWithRandomGuid(
+  EntityInstance pcontext = test::GetOrderEntityInstanceWithRandomGuid(
       {.id = u"123",
        .merchant_domain = u"example.com",
-       .record_type = EntityInstance::RecordType::kLocal});
+       .record_type = EntityInstance::RecordType::kPersonalContext});
 
-  SetEntities({order_local, order_server});
+  SetEntities({pcontext, order_server});
   SetForm({ORDER_ID});
 
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
-  // Since `order_local` is a subset/duplicate of `order_server`, only one child
-  // suggestion should be generated in the fallback menu.
+  // Since `order_pcontext` is a subset/duplicate of `order_server`, only one
+  // child suggestion should be generated in the fallback menu.
   EXPECT_THAT(res,
               ShoppingSuggestionsAre(AllOf(
                   SuggestionTypeHasTextAndAcceptability(
