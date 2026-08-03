@@ -792,7 +792,10 @@ Response TargetHandler::Disable() {
   SetDiscoverTargets(false, {});
   hidden_target_manager_.Clear();
   auto_attached_sessions_.clear();
-  attached_sessions_.clear();
+  // Destroying a session may synchronously close attached targets which can
+  // try to detach sibling sessions, so move the map aside before releasing.
+  auto attached_sessions = std::move(attached_sessions_);
+  attached_sessions.clear();
 
   DevToolsManagerDelegate* delegate =
       DevToolsManager::GetInstance()->delegate();
