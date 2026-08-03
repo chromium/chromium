@@ -168,8 +168,9 @@ class DataControlsTabHelper
                          std::string_view org_domain,
                          base::OnceCallback<void(bool)> on_bypassed_callback);
 
-  // Shows a snackbar to inform the user that an action was blocked by policy.
-  void ShowRestrictSnackbar(std::string_view org_domain);
+  // Shows a snackbar message to inform the user that an action was blocked by
+  // policy or content analysis.
+  void ShowRestrictSnackbar(NSString* title);
 
   // Returns the management domain for the given `profile`.
   std::string GetManagementDomain(ProfileIOS* profile);

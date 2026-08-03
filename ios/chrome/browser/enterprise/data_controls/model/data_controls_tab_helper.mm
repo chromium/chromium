@@ -55,6 +55,13 @@ void DataControlsTabHelper::ShouldAllowCopy(
   CopyPolicyVerdicts verdicts =
       IsCopyAllowedByPolicy(source_url, metadata, profile);
 
+  std::string domain = GetManagementDomain(profile);
+  NSString* snackbar_title =
+      domain.empty()
+          ? l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+          : l10n_util::GetNSStringF(IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
+                                    base::UTF8ToUTF16(domain));
+
   switch (verdicts.copy_action_verdict.level()) {
     case Rule::Level::kWarn:
       ShowWarningDialog(
@@ -66,7 +73,7 @@ void DataControlsTabHelper::ShouldAllowCopy(
                          std::move(callback)));
       break;
     case Rule::Level::kBlock:
-      ShowRestrictSnackbar(GetManagementDomain(profile));
+      ShowRestrictSnackbar(snackbar_title);
       [[fallthrough]];
     case Rule::Level::kReport:
     case Rule::Level::kAllow:
@@ -102,6 +109,12 @@ void DataControlsTabHelper::ShouldAllowPaste(
       source.source_profile ? source.source_profile->AsWeakPtr()
                             : base::WeakPtr<ProfileIOS>{};
 
+  NSString* snackbar_title =
+      domain.empty()
+          ? l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+          : l10n_util::GetNSStringF(IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
+                                    base::UTF8ToUTF16(domain));
+
   switch (policy_verdict.verdict.level()) {
     case Rule::Level::kWarn:
       paste_event_state_ = PasteEventState::kDisplayingWarningDialog;
@@ -114,7 +127,7 @@ void DataControlsTabHelper::ShouldAllowPaste(
               std::move(policy_verdict.verdict), std::move(callback)));
       break;
     case Rule::Level::kBlock:
-      ShowRestrictSnackbar(domain);
+      ShowRestrictSnackbar(snackbar_title);
       [[fallthrough]];
     case Rule::Level::kReport:
     case Rule::Level::kAllow:
@@ -238,18 +251,15 @@ void DataControlsTabHelper::PasteIfAllowedByContentAnalysis(
       break;
     case RequestHandlerResultActionLevel::kWarn:
       paste_event_state_ = PasteEventState::kDisplayingWarningDialog;
-      // TODO(crbug.com/537763044): change the DialogType to pasted content when
-      // UI is finalized.
       ShowWarningDialog(
-          enterprise::DialogType::kClipboardPasteWarn, std::string(),
+          enterprise::DialogType::kPastedContentWarn, std::string(),
           base::BindOnce(&DataControlsTabHelper::FinishPaste,
                          weak_factory_.GetWeakPtr(), std::move(callback),
                          /*verdict_or_scan_success=*/false));
       break;
     case RequestHandlerResultActionLevel::kBlock:
-      // TODO(crbug.com/537763044): Change snackbar message when UI is
-      // finalized.
-      ShowRestrictSnackbar(std::string());
+      ShowRestrictSnackbar(l10n_util::GetNSString(
+          IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_BLOCKED_MESSAGE));
       FinishPaste(std::move(callback), /*verdict_or_scan_success=*/false,
                   /*analysis_warn_bypassed=*/false);
       break;
@@ -506,12 +516,7 @@ void DataControlsTabHelper::ShowWarningDialog(
   }
 }
 
-void DataControlsTabHelper::ShowRestrictSnackbar(std::string_view org_domain) {
-  NSString* title =
-      org_domain.empty()
-          ? l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
-          : l10n_util::GetNSStringF(IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
-                                    base::UTF8ToUTF16(org_domain));
+void DataControlsTabHelper::ShowRestrictSnackbar(NSString* title) {
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
   [snackbar_handler_ showSnackbarMessageAfterDismissingKeyboard:message];
 }

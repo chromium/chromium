@@ -1345,8 +1345,9 @@ TEST_F(DataControlsTabHelperTest,
                                                              SnackbarMessage*
                                                                  obj) {
         return [obj.title
-            isEqualToString:l10n_util::GetNSString(
-                                IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)];
+            isEqualToString:
+                l10n_util::GetNSString(
+                    IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_BLOCKED_MESSAGE)];
       }]]);
   tab_helper()->SetSnackbarHandler(snackbar_handler);
 
