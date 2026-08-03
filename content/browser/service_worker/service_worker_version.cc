@@ -73,6 +73,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
@@ -1866,6 +1867,12 @@ void ServiceWorkerVersion::GetClientInternal(const std::string& client_uuid,
 
 void ServiceWorkerVersion::OpenNewTab(const GURL& url,
                                       OpenNewTabCallback callback) {
+  if (ancestor_frame_type_ == blink::mojom::AncestorFrameType::kFencedFrame) {
+    associated_interface_receiver_.ReportBadMessage(
+        "Received Clients#openWindow() request from a fenced frame.");
+    receiver_.reset();
+    return;
+  }
   // TODO(crbug.com/40177656): After StorageKey implements partitioning update
   // this to reject with InvalidAccessError if key_ is partitioned.
   OpenWindow(url, service_worker_client_utils::WindowType::NEW_TAB_WINDOW,
@@ -1880,6 +1887,14 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
     std::move(callback).Run(
         false /* success */, nullptr /* client */,
         std::string("The service worker system is shutting down."));
+    return;
+  }
+
+  if (ancestor_frame_type_ == blink::mojom::AncestorFrameType::kFencedFrame) {
+    associated_interface_receiver_.ReportBadMessage(
+        "Received PaymentRequestEvent#openWindow() request from a fenced "
+        "frame.");
+    receiver_.reset();
     return;
   }
 
@@ -2072,6 +2087,12 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
     auto result = blink::mojom::FocusResult::NewErrorCode(
         blink::mojom::FocusError::CLIENT_NOT_FOUND);
     std::move(callback).Run(std::move(result));
+    return;
+  }
+  if (ancestor_frame_type_ == blink::mojom::AncestorFrameType::kFencedFrame) {
+    associated_interface_receiver_.ReportBadMessage(
+        "Received WindowClient#focus() request from a fenced frame.");
+    receiver_.reset();
     return;
   }
   ServiceWorkerClient* service_worker_client =

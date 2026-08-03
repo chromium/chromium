@@ -475,7 +475,8 @@ std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
 scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
     ServiceWorkerRegistry& registry,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
-    const blink::StorageKey& key) {
+    const blink::StorageKey& key,
+    blink::mojom::AncestorFrameType ancestor_frame_type) {
   scoped_refptr<ServiceWorkerRegistration> registration;
   // Using nestable run loop because:
   // * The CreateNewRegistration() internally uses a mojo remote and the
@@ -488,7 +489,7 @@ scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
   // problematic.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   registry.CreateNewRegistration(
-      options, key, blink::mojom::AncestorFrameType::kNormalFrame,
+      options, key, ancestor_frame_type,
       base::BindLambdaForTesting(
           [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
             registration = std::move(new_registration);
