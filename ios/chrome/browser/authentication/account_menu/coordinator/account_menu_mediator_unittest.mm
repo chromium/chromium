@@ -185,6 +185,10 @@ class AccountMenuMediatorTest : public PlatformTest {
     run_loop.Run();
   }
 
+ protected:
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   id<AccountMenuMediatorDelegate> delegate_mock_;
   id<SyncErrorSettingsCommandHandler> sync_error_settings_mock_;
   id<AccountMenuConsumer> consumer_mock_;
@@ -211,10 +215,6 @@ class AccountMenuMediatorTest : public PlatformTest {
   void AddSecondaryIdentity() {
     fake_system_identity_manager_->AddIdentity(kSecondaryIdentity);
   }
-
-  web::WebTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
 #pragma mark - Test for ChromeAccountManagerServiceObserver
