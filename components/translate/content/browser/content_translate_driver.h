@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -125,10 +126,20 @@ class ContentTranslateDriver : public TranslateDriver,
       bool page_level_translation_criteria_met) override;
 
  private:
+
   void OnPageAway(int page_seq_no);
+  void OnSidePanelAway(int page_seq_no);
+
+  int UpdatePageSequenceNumber();
+  void BindTranslateAgent(
+      int page_seq_no,
+      mojo::PendingRemote<mojom::TranslateAgent> translate_agent,
+      const GURL& url);
 
   void InitiateTranslationIfReload(
       content::NavigationHandle* navigation_handle);
+
+  mojom::TranslateAgent* GetTranslateAgent(int page_seq_no);
 
   raw_ptr<TranslateManager, DanglingUntriaged> translate_manager_;
 
@@ -143,12 +154,19 @@ class ContentTranslateDriver : public TranslateDriver,
   // Max number of attempts before checking if a page has been reloaded.
   int max_reload_check_attempts_;
 
+  ukm::SourceId last_registered_page_id_;
+  int active_page_seq_no_;
+
   // Records mojo connections with all current alive pages.
   int next_page_seq_no_;
   // mojo::Remote<TranslateAgent> is the connection between this driver and a
   // TranslateAgent (which are per RenderFrame). Each TranslateAgent has a
   // |binding_| member, representing the other end of this pipe.
-  std::map<int, mojo::Remote<mojom::TranslateAgent>> translate_agents_;
+  struct PageAgents {
+    mojo::Remote<mojom::TranslateAgent> main_agent;
+    mojo::Remote<mojom::TranslateAgent> side_panel_agent;
+  };
+  std::map<int, PageAgents> translate_agents_;
 
   // Histogram to be notified about detected language of every page visited. Not
   // owned here.
