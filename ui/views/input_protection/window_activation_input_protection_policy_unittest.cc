@@ -88,8 +88,16 @@ class WindowActivationInputProtectionPolicyTest : public WidgetTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+// TODO(crbug.com/464455929): Crash in llvm on Fuchsia arm64 in debug.
+#define MAYBE_ParentInvisibleOnActivation_TriggersProtection \
+  DISABLED_ParentInvisibleOnActivation_TriggersProtection
+#else
+#define MAYBE_ParentInvisibleOnActivation_TriggersProtection \
+  ParentInvisibleOnActivation_TriggersProtection
+#endif
 TEST_F(WindowActivationInputProtectionPolicyTest,
-       ParentInvisibleOnActivation_TriggersProtection) {
+       MAYBE_ParentInvisibleOnActivation_TriggersProtection) {
   // Create parent widget.
   auto parent_widget = CreateWidgetWithZOrder();
   parent_widget->SetBounds(gfx::Rect(0, 0, 400, 400));
