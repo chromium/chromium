@@ -348,6 +348,9 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
     return false;
   }
 #endif
+  if (guest_contents->HasLiveOriginalOpenerChain()) {
+    return false;
+  }
 
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
