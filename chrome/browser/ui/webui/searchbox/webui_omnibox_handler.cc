@@ -320,16 +320,54 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
         searchbox_internal::kReplyRotated180IconResourceName;
   }
 
-  mojom_match.value()->has_instant_keyword =
-      match.HasInstantKeyword(turl_service);
-  if (mojom_match && !match.HasInstantKeyword(turl_service) && edit_model() &&
-      edit_model()->IsPopupControlPresentOnMatch(
-          OmniboxPopupSelection{line, OmniboxPopupSelection::KEYWORD_MODE})) {
-    const auto names = SelectedKeywordView::GetKeywordLabelNames(
-        match.associated_keyword, turl_service);
-    mojom_match.value()->keyword_chip_hint = base::UTF16ToUTF8(names.full_name);
-    mojom_match.value()->keyword_chip_a11y =
-        l10n_util::GetStringFUTF8(IDS_ACC_KEYWORD_MODE, names.short_name);
+  if (mojom_match) {
+    // Get keyword state from .cc source of truth.
+    KeywordState keyword_state;
+    std::u16string keyword;
+    std::u16string keyword_placeholder;
+    match.GetKeywordUiState(const_cast<TemplateURLService*>(turl_service),
+                            controller_->client()->IsHistoryEmbeddingsEnabled(),
+                            &keyword_state, &keyword, &keyword_placeholder);
+
+    // Map the .cc `KeywordState` to mojom `KeywordType`. The .cc `KeywordState`
+    // does not distinguish between hint (aka chip) and instant keywords. It
+    // also has a 0-none value; whereas mojom simply nulls the `keyword_model`
+    // field for this case. The mojom approach is clearer and the .cc should
+    // mimic it.
+    searchbox::mojom::KeywordType keyword_type;
+    bool has_keyword = false;
+    if (keyword_state == KeywordState::kKeyword) {
+      keyword_type = searchbox::mojom::KeywordType::kInKeyword;
+      has_keyword = true;
+    } else if (match.HasInstantKeyword(turl_service)) {
+      keyword_type = searchbox::mojom::KeywordType::kInstant;
+      has_keyword = true;
+    } else if (keyword_state == KeywordState::kHint ||
+               !match.associated_keyword.empty()) {
+      keyword_type = searchbox::mojom::KeywordType::kChip;
+      has_keyword = true;
+    }
+
+    // Populate `keyword_model`.
+    if (has_keyword) {
+      auto keyword_model = searchbox::mojom::KeywordModel::New();
+      keyword_model->type = keyword_type;
+      keyword_model->keyword = base::UTF16ToUTF8(keyword);
+      keyword_model->placeholder = base::UTF16ToUTF8(keyword_placeholder);
+      const auto names =
+          SelectedKeywordView::GetKeywordLabelNames(keyword, turl_service);
+      keyword_model->chip_hint = base::UTF16ToUTF8(names.full_name);
+      keyword_model->chip_a11y =
+          l10n_util::GetStringFUTF8(IDS_ACC_KEYWORD_MODE, names.short_name);
+
+      // Legacy keyword fields.
+      mojom_match.value()->has_instant_keyword =
+          keyword_type == searchbox::mojom::KeywordType::kInstant;
+      mojom_match.value()->keyword_chip_hint = keyword_model->chip_hint;
+      mojom_match.value()->keyword_chip_a11y = keyword_model->chip_a11y;
+
+      mojom_match.value()->keyword_model = std::move(keyword_model);
+    }
   }
 
   return mojom_match;
