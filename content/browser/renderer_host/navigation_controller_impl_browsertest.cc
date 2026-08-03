@@ -24278,6 +24278,49 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
 }
 
 // Tests that a browser-initiated navigation that's a duplicate of an ongoing
+// browser-initiated navigation is NOT ignored if the scheme is not HTTP/HTTPS
+// (e.g., a data: URL).
+IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
+                       DuplicateDataURLIsNotIgnored) {
+  GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  GURL data_url("data:text/html,<html><body>test</body></html>");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // 1. Start the first navigation to the data: URL.
+  TestNavigationManager nav_manager(shell()->web_contents(), data_url);
+  shell()->LoadURL(data_url);
+
+  // Pause the navigation at request start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  int first_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
+  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+
+  // 2. Start the second navigation to the exact same data: URL.
+  shell()->LoadURL(data_url);
+
+  // Wait for the first navigation to finish.
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  // Since data: URLs are not HTTP/HTTPS, they should NOT be deduplicated.
+  // Therefore, the second navigation should cancel the first one, meaning
+  // the first navigation will NOT commit, regardless of whether the
+  // ignore_duplicate_nav flag is enabled or not.
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  // The second navigation will replace the first one and eventually commit.
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(data_url, root->current_frame_host()->GetLastCommittedURL());
+
+  // The committed navigation ID should be different from the first one,
+  // confirming the second navigation is the one that actually committed.
+  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+}
+
+// Tests that a browser-initiated navigation that's a duplicate of an ongoing
 // browser-initiated navigation does not get ignored if a cookie for the target
 // URL changed.
 IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,

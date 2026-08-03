@@ -6509,6 +6509,7 @@ void RenderFrameImpl::BeginNavigationInternal(
     if (begin_params->was_initiated_by_link_click ==
             prev_begin_params.was_initiated_by_link_click &&
         common_params->url == prev_common_params.url &&
+        common_params->url.SchemeIsHTTPOrHTTPS() &&
         common_params->method == "GET" && prev_common_params.method == "GET" &&
         common_params->initiator_origin ==
             prev_common_params.initiator_origin &&
