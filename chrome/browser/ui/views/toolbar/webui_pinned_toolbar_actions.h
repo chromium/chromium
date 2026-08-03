@@ -84,6 +84,9 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   // PinnedToolbarActionsModel::Observer:
   void OnActionsChanged() override;
 
+  bool ShouldDisplayAction(actions::ActionItem* item);
+  std::vector<actions::ActionId> GetVisiblePinnedActionIds();
+
   void OnElementShown(actions::ActionId action_id, ui::TrackedElement* element);
   void RetryPostOrQueueAction(base::OnceClosure action,
                               BubbleAnchorResult result);

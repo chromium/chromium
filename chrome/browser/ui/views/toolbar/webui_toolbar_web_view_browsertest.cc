@@ -6561,7 +6561,13 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                        MovePinnedAction_UpdatesModelAndOrder) {
   auto* pinned_actions = GetPinnedToolbarActions();
-  actions::ActionId action1 = kActionShowDownloads;
+
+  // Ensure nothing is pinned before testing.
+  while (!pinned_actions->PinnedActionIds().empty()) {
+    model_->UpdatePinnedState(pinned_actions->PinnedActionIds().front(), false);
+  }
+
+  actions::ActionId action1 = kActionClearBrowsingData;
   actions::ActionId action2 = kActionPrint;
 
   model_->UpdatePinnedState(action1, true);
@@ -6574,26 +6580,40 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
 
   const auto& ids_after = pinned_actions->PinnedActionIds();
   EXPECT_EQ(ids_after[0], action2);
+
+  // Cleanup.
+  model_->UpdatePinnedState(action1, false);
+  model_->UpdatePinnedState(action2, false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                        MovePinnedActionBy_RespectsBounds) {
   auto* pinned_actions = GetPinnedToolbarActions();
-  actions::ActionId action1 = kActionShowDownloads;
+
+  // Ensure nothing is pinned before testing.
+  while (!pinned_actions->PinnedActionIds().empty()) {
+    model_->UpdatePinnedState(pinned_actions->PinnedActionIds().front(), false);
+  }
+
+  actions::ActionId action1 = kActionClearBrowsingData;
   actions::ActionId action2 = kActionPrint;
 
   model_->UpdatePinnedState(action1, true);
   model_->UpdatePinnedState(action2, true);
 
-  pinned_actions->MovePinnedAction(action1, 0);
-  EXPECT_EQ(pinned_actions->PinnedActionIds()[0], action1);
+  pinned_actions->MovePinnedAction(action2, 0);
+  EXPECT_EQ(pinned_actions->PinnedActionIds()[0], action2);
 
-  pinned_actions->MovePinnedActionBy(action1, -1);
-  EXPECT_EQ(pinned_actions->PinnedActionIds()[0], action1);
+  pinned_actions->MovePinnedActionBy(action2, -1);
+  EXPECT_EQ(pinned_actions->PinnedActionIds()[0], action2);
 
-  pinned_actions->MovePinnedActionBy(action1, 1);
-  EXPECT_NE(pinned_actions->PinnedActionIds()[0], action1);
-  EXPECT_EQ(pinned_actions->PinnedActionIds()[1], action1);
+  pinned_actions->MovePinnedActionBy(action2, 1);
+  EXPECT_NE(pinned_actions->PinnedActionIds()[0], action2);
+  EXPECT_EQ(pinned_actions->PinnedActionIds()[1], action2);
+
+  // Cleanup.
+  model_->UpdatePinnedState(action1, false);
+  model_->UpdatePinnedState(action2, false);
 }
 
 struct DragTestParam {

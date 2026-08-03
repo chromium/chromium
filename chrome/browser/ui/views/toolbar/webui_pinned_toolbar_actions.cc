@@ -90,13 +90,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
         base::BindRepeating(&WebUIPinnedToolbarActions::OnActionsChanged,
                             base::Unretained(this))));
 
-    if (!item->GetVisible()) {
-      return;
-    }
-    if (static_cast<actions::ActionPinnableState>(
-            item->GetProperty(actions::kActionItemPinnableKey)) ==
-            actions::ActionPinnableState::kNotPinnable &&
-        IsActionPinned(id)) {
+    if (!ShouldDisplayAction(item)) {
       return;
     }
     auto mojo_id = webui_toolbar::ActionItemToPinnedToolbarAction(item);
@@ -358,24 +352,64 @@ void WebUIPinnedToolbarActions::UpdatePinnedStateAndAnnounce(
   model_->UpdatePinnedState(id, pin);
 }
 
+bool WebUIPinnedToolbarActions::ShouldDisplayAction(actions::ActionItem* item) {
+  if (!item || !item->GetVisible()) {
+    return false;
+  }
+  auto action_id = item->GetActionId();
+  CHECK(action_id);
+  if (static_cast<actions::ActionPinnableState>(
+          item->GetProperty(actions::kActionItemPinnableKey)) ==
+          actions::ActionPinnableState::kNotPinnable &&
+      IsActionPinned(*action_id)) {
+    return false;
+  }
+  return true;
+}
+
+std::vector<actions::ActionId>
+WebUIPinnedToolbarActions::GetVisiblePinnedActionIds() {
+  std::vector<actions::ActionId> visible_pinned_actions;
+  for (actions::ActionId id : model_->PinnedActionIds()) {
+    actions::ActionItem* item = GetActionItemFor(id);
+    if (ShouldDisplayAction(item)) {
+      visible_pinned_actions.push_back(id);
+    }
+  }
+  return visible_pinned_actions;
+}
+
 void WebUIPinnedToolbarActions::MovePinnedAction(actions::ActionId action_id,
                                                  int target_index) {
-  model_->MovePinnedAction(action_id, target_index);
+  // `target_index` passed from WebUI is the index within the visible pinned
+  // actions. Map it to the index in `model_->PinnedActionIds()`.
+  std::vector<actions::ActionId> visible_pinned_actions =
+      GetVisiblePinnedActionIds();
+  if (target_index >= 0 &&
+      target_index < static_cast<int>(visible_pinned_actions.size())) {
+    actions::ActionId target_action_id = visible_pinned_actions[target_index];
+    const auto& pinned_action_ids = model_->PinnedActionIds();
+    auto iter = std::ranges::find(pinned_action_ids, target_action_id);
+    if (iter != pinned_action_ids.end()) {
+      int visible_target_index = std::distance(pinned_action_ids.begin(), iter);
+      model_->MovePinnedAction(action_id, visible_target_index);
+    }
+  }
 }
 
 void WebUIPinnedToolbarActions::MovePinnedActionBy(actions::ActionId action_id,
                                                    int delta) {
   DCHECK(IsActionPinned(action_id));
-  const auto& pinned_action_ids = model_->PinnedActionIds();
-  auto iter = std::ranges::find(pinned_action_ids, action_id);
-  if (iter == pinned_action_ids.end()) {
+  const auto& pinned_actions = GetVisiblePinnedActionIds();
+  auto iter = std::ranges::find(pinned_actions, action_id);
+  if (iter == pinned_actions.end()) {
     return;
   }
-  int current_index = std::distance(pinned_action_ids.begin(), iter);
+  int current_index = std::distance(pinned_actions.begin(), iter);
   int target_index = current_index + delta;
   if (target_index >= 0 &&
-      target_index < static_cast<int>(pinned_action_ids.size())) {
-    model_->MovePinnedAction(action_id, target_index);
+      target_index < static_cast<int>(pinned_actions.size())) {
+    MovePinnedAction(action_id, target_index);
   }
 }
 
