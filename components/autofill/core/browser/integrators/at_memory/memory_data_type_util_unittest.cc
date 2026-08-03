@@ -384,6 +384,52 @@ TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultFormatsTypedValue) {
       ElementsAre(Field(&EntryMetadata::typed_value, Ne(std::nullopt))));
 }
 
+// Tests that `FormatMemoryDataTypeLabelValue` formats flight departure and
+// arrival dates into a short "MMM d" string (e.g. "Jun 7") when provided with a
+// Date or DateTime TypedValue or a string fallback.
+TEST(MemoryDataTypeUtilTest, FormatMemoryDataTypeLabelValueFlightDate) {
+  personal_context::proto::TypedValue date_typed;
+  date_typed.mutable_date()->set_year(2024);
+  date_typed.mutable_date()->set_month(6);
+  date_typed.mutable_date()->set_day(7);
+
+  // FormatMemoryDataTypeLabelValue formats flight dates as "MMM d" for labels
+  EXPECT_EQ(FormatMemoryDataTypeLabelValue(
+                MemoryDataType::kFlightReservationDepartureDate, u"2024-06-07",
+                date_typed),
+            u"Jun 7");
+
+  personal_context::proto::TypedValue datetime_typed;
+  datetime_typed.mutable_date_time()->set_year(2024);
+  datetime_typed.mutable_date_time()->set_month(6);
+  datetime_typed.mutable_date_time()->set_day(7);
+  datetime_typed.mutable_date_time()->set_hours(15);
+  datetime_typed.mutable_date_time()->set_minutes(30);
+
+  EXPECT_EQ(FormatMemoryDataTypeLabelValue(
+                MemoryDataType::kFlightReservationArrivalDate,
+                u"2024-06-07 3:30 PM", datetime_typed),
+            u"Jun 7");
+
+  // String fallback test with space separator
+  EXPECT_EQ(FormatMemoryDataTypeLabelValue(
+                MemoryDataType::kFlightReservationDepartureDate,
+                u"2024-06-07 3:30 PM", std::nullopt),
+            u"Jun 7");
+
+  // String fallback test with 'T' separator
+  EXPECT_EQ(FormatMemoryDataTypeLabelValue(
+                MemoryDataType::kFlightReservationArrivalDate,
+                u"2024-06-07T03:30:39", std::nullopt),
+            u"Jun 7");
+
+  // Non-flight date types should return the value untouched
+  EXPECT_EQ(FormatMemoryDataTypeLabelValue(
+                MemoryDataType::kFlightReservationPassengerName, u"John Doe",
+                std::nullopt),
+            u"John Doe");
+}
+
 // Tests equality comparison between TypedValue proto messages using operator==.
 TEST(MemoryDataTypeUtilTest, TypedValueEquality) {
   personal_context::proto::TypedValue a;

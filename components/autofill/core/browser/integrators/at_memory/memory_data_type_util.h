@@ -71,6 +71,13 @@ MemorySearchResult ConvertToMemorySearchResult(
     const personal_context::proto::AtMemorySearchResult& proto_result,
     std::string_view app_locale);
 
+// Returns the formatted label representation for `value`. If `typed_value` is
+// provided, it's used to format the label (for example, flight dates).
+std::u16string FormatMemoryDataTypeLabelValue(
+    MemoryDataType type,
+    std::u16string_view value,
+    const std::optional<personal_context::proto::TypedValue>& typed_value);
+
 // Returns the primary attribute type for a given entity type.
 AttributeType GetPrimaryAttributeType(EntityType entity_type);
 }  // namespace autofill

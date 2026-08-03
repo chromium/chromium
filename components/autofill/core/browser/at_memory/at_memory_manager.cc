@@ -495,7 +495,9 @@ Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
     if (!label_row.empty()) {
       label_row.emplace_back(u"\u2022");  // Bullet (•)
     }
-    label_row.emplace_back(MaybeObfuscateValue(metadata.value, metadata.type,
+    std::u16string label_value = FormatMemoryDataTypeLabelValue(
+        metadata.type, metadata.value, metadata.typed_value);
+    label_row.emplace_back(MaybeObfuscateValue(label_value, metadata.type,
                                                is_personal_context_sourced));
   }
   if (!label_row.empty()) {
