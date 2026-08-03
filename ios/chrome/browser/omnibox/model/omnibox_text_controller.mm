@@ -916,9 +916,14 @@ const char kOmniboxFocusResultedInNavigation[] =
   // Prevent inline-autocomplete if the IME is currently composing or if the
   // cursor is not at the end of the text.
   const BOOL IMEComposing = [textInput markedTextRange] != nil;
+  // Cobrowse should not show inline-autocomplete regardless of all other
+  // conditions.
+  const BOOL isCobrowse =
+      _presentationContext == OmniboxPresentationContext::kCobrowse;
   NSRange currentSelection = [self currentSelection];
   BOOL preventInlineAutocomplete =
-      IMEComposing || NSMaxRange(currentSelection) != [textInput.text length];
+      isCobrowse || IMEComposing ||
+      NSMaxRange(currentSelection) != [textInput.text length];
   [self startAutocompletePreventingInline:preventInlineAutocomplete];
 
   [self updatePopupLayoutDirection];
