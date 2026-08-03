@@ -73,7 +73,7 @@ fn main() {
     // core::error::Error stabilized in Rust 1.81
     // https://blog.rust-lang.org/2024/09/05/Rust-1.81.0.html#coreerrorerror
     let rustc = rustc_minor_version();
-    if cfg!(not(feature = "std")) && rustc.map_or(false, |rustc| rustc < 81) {
+    if cfg!(not(feature = "std")) && rustc.is_some_and(|rustc| rustc < 81) {
         println!("cargo:rustc-cfg=feature=\"std\"");
     }
 
@@ -115,10 +115,8 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
     let rustc_wrapper = env::var_os("RUSTC_WRAPPER").filter(|wrapper| !wrapper.is_empty());
     let rustc_workspace_wrapper =
         env::var_os("RUSTC_WORKSPACE_WRAPPER").filter(|wrapper| !wrapper.is_empty());
-    let mut rustc = rustc_wrapper
-        .into_iter()
-        .chain(rustc_workspace_wrapper)
-        .chain(iter::once(rustc));
+    let mut rustc =
+        rustc_wrapper.into_iter().chain(rustc_workspace_wrapper).chain(iter::once(rustc));
     let mut cmd = Command::new(rustc.next().unwrap());
     cmd.args(rustc);
 

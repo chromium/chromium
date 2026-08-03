@@ -16,8 +16,6 @@ This library provides a convenient derive macro for the standard library's
 thiserror = "2"
 ```
 
-*Compiler support: requires rustc 1.68+*
-
 <br>
 
 ## Example

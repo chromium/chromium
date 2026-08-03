@@ -65,8 +65,8 @@
 //!   #
 //!   #[derive(Error, Debug)]
 //!   pub enum Error {
-//!       #[error("invalid rdo_lookahead_frames {0} (expected < {max})", max = i32::MAX)]
-//!       InvalidLookahead(u32),
+//!       #[error("invalid rdo_lookahead_frames {0} (expected < {max})", max =
+//! i32::MAX)]       InvalidLookahead(u32),
 //!   }
 //!   ```
 //!
@@ -89,10 +89,10 @@
 //!   #
 //!   #[derive(Error, Debug)]
 //!   pub enum Error {
-//!       #[error("first letter must be lowercase but was {:?}", first_char(.0))]
-//!       WrongCase(String),
-//!       #[error("invalid index {idx}, expected at least {} and at most {}", .limits.lo, .limits.hi)]
-//!       OutOfBounds { idx: usize, limits: Limits },
+//!       #[error("first letter must be lowercase but was {:?}",
+//! first_char(.0))]       WrongCase(String),
+//!       #[error("invalid index {idx}, expected at least {} and at most {}",
+//! .limits.lo, .limits.hi)]       OutOfBounds { idx: usize, limits: Limits },
 //!   }
 //!   ```
 //!
@@ -222,8 +222,8 @@
 //!       # */
 //!
 //!       #[error(transparent)]
-//!       Other(#[from] anyhow::Error),  // source and Display delegate to anyhow::Error
-//!   }
+//!       Other(#[from] anyhow::Error),  // source and Display delegate to
+//! anyhow::Error   }
 //!   ```
 //!
 //!   Another use case is hiding implementation details of an error
@@ -260,7 +260,7 @@
 //! [`Display`]: std::fmt::Display
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/thiserror/2.0.18")]
+#![doc(html_root_url = "https://docs.rs/thiserror/2.0.19")]
 #![allow(
     clippy::elidable_lifetime_names,
     clippy::module_name_repetitions,

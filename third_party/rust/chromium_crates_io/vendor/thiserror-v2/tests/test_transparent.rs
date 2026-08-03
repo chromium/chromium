@@ -1,3 +1,5 @@
+#![allow(clippy::items_after_statements)]
+
 use anyhow::anyhow;
 use std::error::Error as _;
 use std::io;
@@ -64,6 +66,37 @@ fn test_transparent_enum_with_default_message() {
 }
 
 #[test]
+fn test_transparent_enum_generic() {
+    #[derive(Error, Debug)]
+    enum Error<E> {
+        #[error("this failed")]
+        This,
+        #[error(transparent)]
+        Other(E),
+    }
+
+    #[derive(Error, Debug)]
+    #[error("inner error")]
+    struct Inner;
+
+    let error = Error::<Inner>::This;
+    assert_eq!("this failed", error.to_string());
+
+    let error = Error::Other(Inner);
+    assert_eq!("inner error", error.to_string());
+    assert!(error.source().is_none());
+
+    #[derive(Error, Debug)]
+    #[error("wrapped")]
+    struct WithSource(#[source] io::Error);
+
+    let io = io::Error::new(io::ErrorKind::Other, "oh no!");
+    let error = Error::Other(WithSource(io));
+    assert_eq!("wrapped", error.to_string());
+    assert_eq!("oh no!", error.source().unwrap().to_string());
+}
+
+#[test]
 fn test_anyhow() {
     #[derive(Error, Debug)]
     #[error(transparent)]
@@ -88,9 +121,7 @@ fn test_non_static() {
         Unexpected { token: &'a str },
     }
 
-    let error = Error {
-        inner: ErrorKind::Unexpected { token: "error" },
-    };
+    let error = Error { inner: ErrorKind::Unexpected { token: "error" } };
     assert_eq!("unexpected token: \"error\"", error.to_string());
     assert!(error.source().is_none());
 }

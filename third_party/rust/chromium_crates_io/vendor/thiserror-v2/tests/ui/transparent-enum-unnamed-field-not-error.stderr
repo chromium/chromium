@@ -7,14 +7,14 @@ error[E0599]: the method `as_dyn_error` exists for reference `&String`, but its 
  ::: $RUST/alloc/src/string.rs
   |
   | pub struct String {
-  | ----------------- doesn't satisfy `String: AsDynError<'_>` or `String: std::error::Error`
+  | ----------------- doesn't satisfy `String: std::error::Error` or `String: thiserror::__private18::AsDynError<'_>`
   |
   = note: the following trait bounds were not satisfied:
           `String: std::error::Error`
-          which is required by `String: AsDynError<'_>`
+          which is required by `String: thiserror::__private18::AsDynError<'_>`
           `&String: std::error::Error`
-          which is required by `&String: AsDynError<'_>`
+          which is required by `&String: thiserror::__private18::AsDynError<'_>`
           `str: Sized`
-          which is required by `str: AsDynError<'_>`
+          which is required by `str: thiserror::__private18::AsDynError<'_>`
           `str: std::error::Error`
-          which is required by `str: AsDynError<'_>`
+          which is required by `str: thiserror::__private18::AsDynError<'_>`

@@ -381,18 +381,12 @@ fn impl_enum(input: Enum) -> TokenStream {
 
     let display_impl = if input.has_display() {
         let mut display_inferred_bounds = InferredBounds::new();
-        let has_bonus_display = input.variants.iter().any(|v| {
-            v.attrs
-                .display
-                .as_ref()
-                .map_or(false, |display| display.has_bonus_display)
-        });
+        let has_bonus_display = input
+            .variants
+            .iter()
+            .any(|v| v.attrs.display.as_ref().is_some_and(|display| display.has_bonus_display));
         let use_as_display = use_as_display(has_bonus_display);
-        let void_deref = if input.variants.is_empty() {
-            Some(quote!(*))
-        } else {
-            None
-        };
+        let void_deref = if input.variants.is_empty() { Some(quote!(*)) } else { None };
         let arms = input.variants.iter().map(|variant| {
             let mut display_implied_bounds = Set::new();
             let display = if let Some(display) = &variant.attrs.display {

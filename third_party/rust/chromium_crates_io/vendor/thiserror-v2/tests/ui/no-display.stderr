@@ -9,7 +9,7 @@ error[E0599]: the method `as_display` exists for reference `&NoDisplay`, but its
   |
   = note: the following trait bounds were not satisfied:
           `NoDisplay: std::fmt::Display`
-          which is required by `&NoDisplay: AsDisplay<'_>`
+          which is required by `&NoDisplay: thiserror::__private18::AsDisplay<'_>`
 note: the trait `std::fmt::Display` must be implemented
  --> $RUST/core/src/fmt/mod.rs
   |
@@ -17,7 +17,7 @@ note: the trait `std::fmt::Display` must be implemented
   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   = help: items from traits can only be used if the trait is implemented and in scope
   = note: the following trait defines an item `as_display`, perhaps you need to implement it:
-          candidate #1: `AsDisplay`
+          candidate #1: `thiserror::__private18::AsDisplay`
 
 error[E0277]: the trait bound `NoDisplay: Octal` is not satisfied
   --> tests/ui/no-display.rs:13:9

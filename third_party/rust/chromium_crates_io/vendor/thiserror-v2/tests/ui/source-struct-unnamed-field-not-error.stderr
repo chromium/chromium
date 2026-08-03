@@ -2,14 +2,14 @@ error[E0599]: the method `as_dyn_error` exists for struct `NotError`, but its tr
  --> tests/ui/source-struct-unnamed-field-not-error.rs:8:24
   |
 4 | struct NotError;
-  | --------------- method `as_dyn_error` not found for this struct because it doesn't satisfy `NotError: AsDynError<'_>` or `NotError: std::error::Error`
+  | --------------- method `as_dyn_error` not found for this struct because it doesn't satisfy `NotError: std::error::Error` or `NotError: thiserror::__private18::AsDynError<'_>`
 ...
 8 | pub struct ErrorStruct(#[source] NotError);
   |                        ^^^^^^^^^ method cannot be called on `NotError` due to unsatisfied trait bounds
   |
   = note: the following trait bounds were not satisfied:
           `NotError: std::error::Error`
-          which is required by `NotError: AsDynError<'_>`
+          which is required by `NotError: thiserror::__private18::AsDynError<'_>`
 note: the trait `std::error::Error` must be implemented
  --> $RUST/core/src/error.rs
   |
@@ -17,4 +17,4 @@ note: the trait `std::error::Error` must be implemented
   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   = help: items from traits can only be used if the trait is implemented and in scope
   = note: the following trait defines an item `as_dyn_error`, perhaps you need to implement it:
-          candidate #1: `AsDynError`
+          candidate #1: `thiserror::__private18::AsDynError`

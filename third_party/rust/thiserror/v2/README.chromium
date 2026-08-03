@@ -1,7 +1,7 @@
 Name: thiserror
 URL: https://crates.io/crates/thiserror
-Version: 2.0.18
-Revision: dc0f6a23a3fb6ae34ef117133ec43650450c4b32
+Version: 2.0.19
+Revision: e13a7854338e446f184725fc8b9c9e86a0a537d2
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/thiserror-v2/LICENSE-APACHE

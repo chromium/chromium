@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.68"
+rust-version = "1.71"
 name = "thiserror-impl"
-version = "2.0.18"
+version = "2.0.19"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 autolib = false
@@ -49,4 +49,4 @@ version = "1.0.74"
 version = "1.0.35"
 
 [dependencies.syn]
-version = "2.0.87"
+version = "3"
