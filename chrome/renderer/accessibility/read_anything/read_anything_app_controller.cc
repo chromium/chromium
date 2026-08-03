@@ -2224,7 +2224,21 @@ bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
   bool is_bold = ax_node->HasTextStyle(ax::mojom::TextStyle::kBold);
   bool is_italic = ax_node->HasTextStyle(ax::mojom::TextStyle::kItalic);
   bool is_underline = ax_node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
-  return is_bold || is_italic || is_underline;
+  if (is_bold || is_italic || is_underline) {
+    return true;
+  }
+
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
+      !model_.is_pdf()) {
+    return false;
+  }
+
+  // TextStyle::kBold is only marked true on PDFs for font weights >= 700.
+  // Return true for ShouldBold if the font weight is at least semi-bold.
+  static constexpr int kSemiBoldFontWeight = 600;
+  float font_weight =
+      ax_node->GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight);
+  return font_weight >= kSemiBoldFontWeight;
 }
 
 bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {

@@ -1839,6 +1839,22 @@ TEST_F(ReadAnythingAppControllerTest, ShouldBold) {
   EXPECT_EQ(true, controller().ShouldBold(4));
 }
 
+TEST_F(ReadAnythingAppControllerTest, ShouldBold_PDFFontWeight) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+  model().set_is_pdf(true);
+
+  ui::AXNodeData semibold_node;
+  semibold_node.id = 3;
+  semibold_node.AddFloatAttribute(ax::mojom::FloatAttribute::kFontWeight, 600);
+
+  SendUpdateWithNodes({std::move(semibold_node)});
+  OnAXTreeDistilled(tree_id_, {});
+
+  EXPECT_TRUE(controller().ShouldBold(3));
+}
+
 TEST_F(ReadAnythingAppControllerTest, IsOverline) {
   ui::AXNodeData overline_node;
   overline_node.id = 2;
