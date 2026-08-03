@@ -379,10 +379,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 // Sets the proper entrypoint visual features depending on current infobar
 // badges status and whether the Contextual Panel is open.
 - (void)refreshEntrypointVisualElements {
-  BOOL shouldAccountForVisibleInfobarBadges =
-      _infobarBadgesCurrentlyShown && !IsReaderModeAvailable();
-  BOOL shouldShowMutedColors =
-      shouldAccountForVisibleInfobarBadges || _entrypointTapped;
+  BOOL shouldShowMutedColors = _entrypointTapped;
 
   // Entrypoint icon tint color.
   _imageView.tintColor = shouldShowMutedColors
@@ -394,10 +391,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
       shouldShowMutedColors ? 0 : kEntrypointContainerShadowOpacity;
 
   // Entrypoint container background color.
-  UIColor* untappedEntrypointColor =
-      shouldAccountForVisibleInfobarBadges
-          ? nil
-          : [UIColor colorNamed:kBackgroundColor];
+  UIColor* untappedEntrypointColor = [UIColor colorNamed:kBackgroundColor];
 
   UIColor* entrypointContainerBackgroundColor =
       _entrypointTapped ? [UIColor colorNamed:kGrey100Color]

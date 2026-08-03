@@ -222,7 +222,6 @@
       break;
     }
     case InProductHelpType::kReaderModeOptions: {
-      CHECK(IsReaderModeAvailable());
       [_presenter presentReaderModeOptionsBubble];
       break;
     }

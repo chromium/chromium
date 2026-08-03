@@ -121,14 +121,6 @@ void TapDoneButtonOnInfobarModal() {
 
 @implementation PermissionsTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(testPermissionsWithReaderMode)]) {
-    config.features_enabled.push_back(kEnableReaderModeInUS);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   // Disable translate to avoid the translate badge showing automatically.

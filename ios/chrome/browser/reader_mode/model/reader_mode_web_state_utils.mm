@@ -9,7 +9,7 @@
 #import "ios/web/public/web_state.h"
 
 bool IsReaderModeActiveInWebState(web::WebState* web_state) {
-  if (!IsReaderModeAvailable() || !web_state) {
+  if (!web_state) {
     return false;
   }
   ReaderModeTabHelper* tab_helper =

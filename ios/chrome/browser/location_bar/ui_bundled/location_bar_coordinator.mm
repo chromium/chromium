@@ -336,18 +336,16 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
         didMoveToParentViewController:self.viewController];
   }
 
-  if (IsReaderModeAvailable()) {
-    self.readerModeChipCoordinator = [[ReaderModeChipCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
-    if (!IsLocationBarBadgeMigrationEnabled()) {
-      self.readerModeChipCoordinator.visibilityDelegate =
-          self.viewController.readerModeChipVisibilityDelegate;
-    }
-    [self.readerModeChipCoordinator start];
-    [self.viewController setReaderModeChipView:self.readerModeChipCoordinator
-                                                   .viewController.view];
+  self.readerModeChipCoordinator = [[ReaderModeChipCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  if (!IsLocationBarBadgeMigrationEnabled()) {
+    self.readerModeChipCoordinator.visibilityDelegate =
+        self.viewController.readerModeChipVisibilityDelegate;
   }
+  [self.readerModeChipCoordinator start];
+  [self.viewController
+      setReaderModeChipView:self.readerModeChipCoordinator.viewController.view];
 
   // Create button factory that wil be used by the ViewController to get
   // BadgeButtons for a BadgeType.

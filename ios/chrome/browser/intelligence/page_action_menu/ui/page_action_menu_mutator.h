@@ -20,9 +20,6 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Returns whether Reader mode is currently active.
 - (BOOL)isReaderModeActive;
 
-// Returns whether Reader mode is available.
-- (BOOL)isReaderModeAvailable;
-
 // Returns Gemini floaty entry point configuration item.
 - (PageActionMenuContentEntryPoint*)geminiEntryPoint;
 

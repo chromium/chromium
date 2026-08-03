@@ -4199,10 +4199,6 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - Private WebState management methods
 
 - (web::WebState*)activeWebStateOrReaderMode {
-  if (!IsReaderModeAvailable()) {
-    return self.activeWebState;
-  }
-
   if (self.activeWebState) {
     ReaderModeTabHelper* tabHelper =
         ReaderModeTabHelper::FromWebState(self.activeWebState);
