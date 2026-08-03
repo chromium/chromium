@@ -178,6 +178,9 @@ BASE_FEATURE(kPreventAPCOnFederatedLogin, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPreventPasswordManagerOnFederatedLogin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Remove in or after M155.
+BASE_FEATURE(kRecordPasswordReadiness, base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kRestartToGainAccessToKeychain,
 #if BUILDFLAG(IS_MAC)

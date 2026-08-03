@@ -4194,6 +4194,20 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.TrustedVaultPasswordReadiness" enum="Boolean"
+    expires_after="2027-03-22">
+  <owner>ylahodiuk@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records the trusted vault readiness state of passwords (whether the trusted
+    vault encryption key is available) for Google Password Manager users with
+    trusted vault encryption. Currently it is recorded on desktop only, 30
+    seconds after Chrome startup when Sync engine is initialized and passwords
+    encryption type is trusted vault.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UI.OpenedPasswordDetailsWhileSearching"
     enum="BooleanSuccess" expires_after="2026-09-14">
   <owner>vsemeniuk@google.com</owner>

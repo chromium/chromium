@@ -194,6 +194,10 @@ BASE_DECLARE_FEATURE(kPreventAPCOnFederatedLogin);
 // Prevents password manager from showing save/update UI on federated login.
 BASE_DECLARE_FEATURE(kPreventPasswordManagerOnFederatedLogin);
 
+// Enables publishing of the password readines metric for users with the trusted
+// vault passphrase type.
+BASE_DECLARE_FEATURE(kRecordPasswordReadiness);
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables "Needs access to keychain, restart chrome" bubble and banner.
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);

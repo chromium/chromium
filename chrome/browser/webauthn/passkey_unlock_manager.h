@@ -153,21 +153,30 @@ class PasskeyUnlockManager : public KeyedService,
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
-  // Schedules recording the `WebAuthentication.PasskeyCount` histogram if it
-  // hasn't been recorded yet.
+  // TODO(crbug.com/540854648): Decouple the metrics publishing logic.
+  // Schedules recording the `WebAuthentication.PasskeyCount` histogram
+  // if it hasn't been recorded yet.
   void MaybeRecordDelayedPasskeyCountHistogram();
   // Records the `WebAuthentication.PasskeyCount` histogram.
   void RecordPasskeyCountHistogram();
+  // TODO(crbug.com/540854648): Decouple the metrics publishing logic.
   // Schedules recording the `WebAuthentication.PasskeyReadiness` histogram.
   void MaybeRecordDelayedPasskeyReadinessHistogram();
   // Records the `WebAuthentication.PasskeyReadiness` histogram.
   void RecordPasskeyReadinessHistogram();
+  // TODO(crbug.com/540854648): Decouple the metrics publishing logic.
   // Schedules recording the `WebAuthentication.GpmPinStatus` histogram.
   void MaybeRecordDelayedGpmPinStatusHistogram(
       EnclaveManager::GpmPinAvailability gpm_pin_availability);
   // Records the `WebAuthentication.GpmPinStatus` histogram.
   void RecordGpmPinStatusHistogram(
       EnclaveManager::GpmPinAvailability gpm_pin_availability);
+  // TODO(crbug.com/540854648): Decouple the metrics publishing logic.
+  // Schedules recording the `PasswordManager.TrustedVaultPasswordReadiness`
+  // histogram.
+  void MaybeRecordDelayedPasswordReadinessHistogram();
+  // Records the `PasswordManager.TrustedVaultPasswordReadiness` histogram.
+  void RecordPasswordReadinessHistogram(bool password_readiness);
 
   std::optional<bool> has_passkeys_;
   std::optional<bool> enclave_ready_;
@@ -190,6 +199,10 @@ class PasskeyUnlockManager : public KeyedService,
   // histogram needs to be recorded. Set to true iff histogram was already
   // recorded.
   bool gpm_pin_status_recorded_on_startup_ = false;
+  // Used for UMA to determine whether
+  // `PasswordManager.TrustedVaultPasswordReadiness` histogram needs to be
+  // recorded. Set to true iff histogram was already recorded.
+  bool password_readiness_recorded_on_startup_ = false;
 
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
       download_account_state_request_;

@@ -16,6 +16,7 @@
 #include "chrome/browser/webauthn/mock_enclave_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -63,7 +64,10 @@ class PasskeyUnlockManagerTest : public testing::Test {
   void ConfigureProfileAndSyncService(
       EnclaveManagerStatus enclave_manager_status,
       PasskeyModelStatus passkey_model_status,
-      GpmPinStatus gpm_pin_status) {
+      GpmPinStatus gpm_pin_status,
+      syncer::PassphraseType passphrase_type =
+          syncer::PassphraseType::kKeystorePassphrase,
+      bool trusted_vault_key_required = false) {
     test_enclave_manager_ = CreateMockEnclaveManager(
         /*is_enclave_manager_loaded=*/true,
         /*is_enclave_manager_ready=*/enclave_manager_status == kEnclaveReady,
@@ -71,6 +75,9 @@ class PasskeyUnlockManagerTest : public testing::Test {
     test_passkey_model_ =
         CreateMockPasskeyModel(passkey_model_status == kPasskeyModelReady);
     test_sync_service_ = CreateTestSyncService();
+    test_sync_service()->GetUserSettings()->SetPassphraseType(passphrase_type);
+    test_sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(
+        trusted_vault_key_required);
     passkey_unlock_manager_ = std::make_unique<PasskeyUnlockManager>(
         test_enclave_manager_.get(), test_passkey_model_.get(),
         test_sync_service_.get());
@@ -455,6 +462,60 @@ TEST_F(PasskeyUnlockManagerTest, TextLablesForDifferentUiExperimentArms) {
   EXPECT_EQ(
       passkey_unlock_manager()->GetPasskeyErrorProfileMenuButtonLabel(),
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK));
+}
+
+TEST_F(PasskeyUnlockManagerTest,
+       LogsPasswordReadinessHistogram_PasswordsAreReady) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kRecordPasswordReadiness};
+
+  base::HistogramTester histogram_tester;
+  ConfigureProfileAndSyncService(
+      kEnclaveNotReady, kPasskeyModelReady, GpmPinStatus::kGpmPinUnset,
+      syncer::PassphraseType::kTrustedVaultPassphrase,
+      /*trusted_vault_key_required=*/false);
+
+  AdvanceClock(base::Seconds(31));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TrustedVaultPasswordReadiness",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PasskeyUnlockManagerTest,
+       LogsPasswordReadinessHistogram_PasswordsAreNotReady) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kRecordPasswordReadiness};
+
+  base::HistogramTester histogram_tester;
+  ConfigureProfileAndSyncService(
+      kEnclaveNotReady, kPasskeyModelReady, GpmPinStatus::kGpmPinUnset,
+      syncer::PassphraseType::kTrustedVaultPassphrase,
+      /*trusted_vault_key_required=*/true);
+
+  AdvanceClock(base::Seconds(31));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TrustedVaultPasswordReadiness",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PasskeyUnlockManagerTest,
+       DoesNotLogPasswordReadinessHistogramWhenNotTrustedVault) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kRecordPasswordReadiness};
+
+  base::HistogramTester histogram_tester;
+  ConfigureProfileAndSyncService(kEnclaveNotReady, kPasskeyModelReady,
+                                 GpmPinStatus::kGpmPinUnset,
+                                 syncer::PassphraseType::kKeystorePassphrase);
+
+  AdvanceClock(base::Seconds(31));
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.TrustedVaultPasswordReadiness", 0);
 }
 
 }  // namespace
