@@ -107,6 +107,8 @@ bool OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
       profile_management::features::kOidcNavigationThrottleAsyncMode);
 
   if (interception_in_progress_) {
+    RecordOidcInterceptionResult(
+        OidcInterceptionResult::kInterceptionInProgress);
     VLOG_POLICY(1, OIDC_ENROLLMENT) << "OIDC Interception already in progress";
     return !async_mode;
   }
