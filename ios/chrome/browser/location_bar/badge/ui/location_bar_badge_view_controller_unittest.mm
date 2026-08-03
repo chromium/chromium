@@ -55,9 +55,7 @@ TEST_F(LocationBarBadgeViewControllerTest,
   [view_controller_ view];
   ContextualPanelItemConfiguration configuration(
       ContextualPanelItemType::SamplePanelItem);
-  configuration.entrypoint_image_name = "chrome_product";
-  configuration.image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+  configuration.entrypoint_symbol = SymbolChromeProduct;
   [view_controller_ setEntrypointConfig:&configuration];
 
   OCMExpect(

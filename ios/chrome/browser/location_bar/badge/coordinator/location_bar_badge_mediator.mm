@@ -838,20 +838,8 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   NSString* accessibilityLabel =
       base::SysUTF8ToNSString(config->accessibility_label);
 
-  UIImage* image;
-  CGFloat symbolPointSize = kBadgeSymbolPointSize;
-  switch (config->image_type) {
-    case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
-      image = DefaultSymbolWithPointSize(
-          base::SysUTF8ToNSString(config->entrypoint_image_name),
-          symbolPointSize);
-      break;
-    case ContextualPanelItemConfiguration::EntrypointImageType::Image:
-      image = CustomSymbolWithPointSize(
-          base::SysUTF8ToNSString(config->entrypoint_image_name),
-          symbolPointSize);
-      break;
-  }
+  UIImage* image =
+      SymbolWithPointSize(config->entrypoint_symbol, kBadgeSymbolPointSize);
 
   LocationBarBadgeConfiguration* badgeConfig =
       [[LocationBarBadgeConfiguration alloc]

@@ -529,9 +529,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelOneConfiguration) {
 
   ContextualPanelItemConfiguration configuration(
       ContextualPanelItemType::SamplePanelItem);
-  configuration.entrypoint_image_name = "chrome_product";
-  configuration.image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+  configuration.entrypoint_symbol = SymbolChromeProduct;
 
   FakeContextualPanelTabHelper* tab_helper =
       static_cast<FakeContextualPanelTabHelper*>(
@@ -586,9 +584,7 @@ TEST_F(LocationBarBadgeMediatorTest,
       std::make_unique<SamplePanelItemConfiguration>();
   configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
   configuration->entrypoint_message = "test";
-  configuration->entrypoint_image_name = "chrome_product";
-  configuration->image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+  configuration->entrypoint_symbol = SymbolChromeProduct;
 
   FakeContextualPanelTabHelper* tab_helper =
       static_cast<FakeContextualPanelTabHelper*>(
@@ -654,9 +650,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelIPHEntrypointAppears) {
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   configuration->iph_text = "test_text";
   configuration->iph_title = "test_title";
-  configuration->entrypoint_image_name = "chrome_product";
-  configuration->image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+  configuration->entrypoint_symbol = SymbolChromeProduct;
 
   OCMStub([mock_entrypoint_iph_handler_
               showContextualPanelEntrypointIPHWithConfig:configuration.get()

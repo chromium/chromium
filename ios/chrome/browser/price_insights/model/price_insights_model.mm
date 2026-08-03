@@ -190,10 +190,7 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
     return;
   }
 
-  execution_it->second->config->entrypoint_image_name =
-      base::SysNSStringToUTF8(kDownTrendSymbol);
-  execution_it->second->config->image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+  execution_it->second->config->entrypoint_symbol = SymbolDownTrend;
   execution_it->second->config->accessibility_label =
       l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY);
   execution_it->second->config->iph_feature =
@@ -245,12 +242,11 @@ PriceInsightsItemConfiguration::PriceInsightsItemConfiguration(
       price_insights_info(config->price_insights_info) {
   entrypoint_message = config->entrypoint_message;
   accessibility_label = config->accessibility_label;
-  entrypoint_image_name = config->entrypoint_image_name;
+  entrypoint_symbol = config->entrypoint_symbol;
   iph_feature = config->iph_feature;
   iph_entrypoint_used_event_name = config->iph_entrypoint_used_event_name;
   iph_entrypoint_explicitly_dismissed =
       config->iph_entrypoint_explicitly_dismissed;
-  image_type = config->image_type;
   relevance = config->relevance;
   iph_title = config->iph_title;
   iph_text = config->iph_text;

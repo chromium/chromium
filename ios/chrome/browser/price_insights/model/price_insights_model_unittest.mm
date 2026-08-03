@@ -600,10 +600,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketUnknownEmptyMessageLowRelevance) {
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY),
             config->accessibility_label);
   EXPECT_EQ("", config->entrypoint_message);
-  EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
-            config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
+  EXPECT_EQ(SymbolDownTrend, config->entrypoint_symbol);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
             config->iph_feature);
@@ -657,10 +654,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketLowGoodDealMessageHighRelevance) {
             config->accessibility_label);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL),
             config->entrypoint_message);
-  EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
-            config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
+  EXPECT_EQ(SymbolDownTrend, config->entrypoint_symbol);
   EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
             config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
@@ -714,10 +708,7 @@ TEST_F(PriceInsightsModelTest,
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY),
             config->accessibility_label);
   EXPECT_EQ("", config->entrypoint_message);
-  EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
-            config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
+  EXPECT_EQ(SymbolDownTrend, config->entrypoint_symbol);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
             config->iph_feature);
@@ -768,10 +759,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketLowNoHistoryLowRelevance) {
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY),
             config->accessibility_label);
   EXPECT_EQ("", config->entrypoint_message);
-  EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
-            config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
+  EXPECT_EQ(SymbolDownTrend, config->entrypoint_symbol);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
             config->iph_feature);

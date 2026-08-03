@@ -108,8 +108,7 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
   EXPECT_NE(configuration, nullptr);
 
   EXPECT_EQ(configuration->item_type, ContextualPanelItemType::ReaderModeItem);
-  EXPECT_EQ(configuration->image_type,
-            ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol);
+  EXPECT_EQ(SymbolReaderMode, configuration->entrypoint_symbol);
   EXPECT_EQ(configuration->relevance,
             ContextualPanelItemConfiguration::low_relevance - 1);
   EXPECT_TRUE(configuration->entrypoint_message_large_entrypoint_always_shown);

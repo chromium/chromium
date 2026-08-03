@@ -634,20 +634,8 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     NSString* accessibilityLabel =
         base::SysUTF8ToNSString(config->accessibility_label);
 
-    UIImage* image;
-    CGFloat symbolPointSize = kBadgeSymbolPointSize;
-    switch (config->image_type) {
-      case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
-        image = DefaultSymbolWithPointSize(
-            base::SysUTF8ToNSString(config->entrypoint_image_name),
-            symbolPointSize);
-        break;
-      case ContextualPanelItemConfiguration::EntrypointImageType::Image:
-        image = CustomSymbolWithPointSize(
-            base::SysUTF8ToNSString(config->entrypoint_image_name),
-            symbolPointSize);
-        break;
-    }
+    UIImage* image =
+        SymbolWithPointSize(config->entrypoint_symbol, kBadgeSymbolPointSize);
 
     LocationBarBadgeConfiguration* badgeConfig =
         [[LocationBarBadgeConfiguration alloc]
@@ -682,20 +670,8 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
     _label.text = base::SysUTF8ToNSString(config->entrypoint_message);
 
-    UIImage* image;
-    CGFloat symbolPointSize = kBadgeSymbolPointSize;
-    switch (config->image_type) {
-      case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
-        image = DefaultSymbolWithPointSize(
-            base::SysUTF8ToNSString(config->entrypoint_image_name),
-            symbolPointSize);
-        break;
-      case ContextualPanelItemConfiguration::EntrypointImageType::Image:
-        image = CustomSymbolWithPointSize(
-            base::SysUTF8ToNSString(config->entrypoint_image_name),
-            symbolPointSize);
-        break;
-    }
+    UIImage* image =
+        SymbolWithPointSize(config->entrypoint_symbol, kBadgeSymbolPointSize);
 
     _badgeIcon.image = image;
   }

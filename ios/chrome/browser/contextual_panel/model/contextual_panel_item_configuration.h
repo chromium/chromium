@@ -5,12 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_ITEM_CONFIGURATION_H_
 #define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_ITEM_CONFIGURATION_H_
 
-#include <string>
+#import <string>
 
-#include "base/feature_list.h"
+#import "base/feature_list.h"
 #import "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
+#import "base/memory/weak_ptr.h"
+#import "base/time/time.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 enum class ContextualPanelItemType;
 
@@ -40,14 +41,6 @@ struct ContextualPanelItemConfiguration {
   // can react accordingly depending on the type of configuration.
   virtual void DidTransitionToSmallEntrypoint();
 
-  // The different supported image types.
-  enum class EntrypointImageType {
-    // The image name is a UIImage to be loaded in.
-    Image,
-    // The image name is an SFSymbol to display.
-    SFSymbol,
-  };
-
   // The item type of this item.
   const ContextualPanelItemType item_type;
 
@@ -68,19 +61,15 @@ struct ContextualPanelItemConfiguration {
   // accessibility hint.
   std::string accessibility_hint;
 
-  // Required. The name of the image the UI can show the user if this item is
-  // the primary item in the contextual panel.
-  std::string entrypoint_image_name;
+  // Required. The symbol the UI can show the user if this item is the primary
+  // item in the contextual panel.
+  Symbol entrypoint_symbol;
 
   // Optional. If this is set, then this will be called when tapping the
   // contextual panel entrypoint while this item is the primary item, instead of
   // opening the contextual panel. If the contextual panel is already opened,
   // then it will be closed before the action is performed.
   base::RepeatingClosure entrypoint_custom_action;
-
-  // Required. The type of entrypoint image. This is used by the UI to decide
-  // how to interpret `entrypoint_image_name`.
-  EntrypointImageType image_type;
 
   // Required. A value from 0 to 100 representing the relevance of this item to
   // the user. Individual panel models can use one of the provided constants or

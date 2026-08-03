@@ -50,7 +50,7 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
       static_cast<SamplePanelItemConfiguration*>(returned_configuration_.get());
   EXPECT_EQ("sample_config", config->sample_name);
   EXPECT_EQ("Large entry point", config->entrypoint_message);
-  EXPECT_EQ("chrome_product", config->entrypoint_image_name);
+  EXPECT_EQ(SymbolChromeProduct, config->entrypoint_symbol);
   EXPECT_EQ("Large entry point", config->accessibility_label);
   EXPECT_EQ("Sample bubble", config->iph_title);
   EXPECT_EQ("Sample rich in-product help for the Contextual Panel, which "
@@ -64,8 +64,6 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
             config->iph_feature);
   EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
             config->relevance);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
-            config->image_type);
 }
 
 // Tests that fetching the configuration for the sample panel model on the NTP

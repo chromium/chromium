@@ -37,7 +37,7 @@ void SamplePanelModel::FetchConfigurationForWebState(
       IDS_IOS_CONTEXTUAL_PANEL_SAMPLE_MODEL_ENTRYPOINT_MESSAGE);
   item_configuration->entrypoint_message = l10n_util::GetStringUTF8(
       IDS_IOS_CONTEXTUAL_PANEL_SAMPLE_MODEL_ENTRYPOINT_MESSAGE);
-  item_configuration->entrypoint_image_name = "chrome_product";
+  item_configuration->entrypoint_symbol = SymbolChromeProduct;
   item_configuration->iph_title = l10n_util::GetStringUTF8(
       IDS_IOS_CONTEXTUAL_PANEL_SAMPLE_MODEL_ENTRYPOINT_IPH_TITLE);
   item_configuration->iph_text = l10n_util::GetStringUTF8(
@@ -48,8 +48,6 @@ void SamplePanelModel::FetchConfigurationForWebState(
       feature_engagement::events::kIOSContextualPanelSampleModelEntrypointUsed;
   item_configuration->iph_entrypoint_explicitly_dismissed =
       "ios_contextual_panel_sample_model_entrypoint_explicitly_dismissed";
-  item_configuration->image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::Image;
   item_configuration->relevance =
       ContextualPanelItemConfiguration::high_relevance;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
