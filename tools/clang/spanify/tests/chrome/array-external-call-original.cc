@@ -96,3 +96,16 @@ void fct6() {
   // No rewrite expected.
   f.ReadAtCurrentPos(&data[2], 8);
 }
+
+void ExternalVoidPtrApi(const void* data, int size);
+
+void TestVoidPtrCallsite() {
+  // Expected rewrite:
+  // std::array<int, 10> data;
+  int data[10];
+  data[UnsafeIndex()] = 42;
+
+  // Expected rewrite:
+  // ExternalVoidPtrApi(data.data(), 10);
+  ExternalVoidPtrApi(data, 10);
+}

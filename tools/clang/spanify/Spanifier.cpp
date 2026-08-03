@@ -3502,8 +3502,11 @@ class Spanifier {
         varDecl(rhs_type_loc, unless(anyOf(exclusions, hasExternalStorage())))
             .bind("rhs_begin");
 
+    auto void_pointer_type = pointerType(pointee(voidType()));
     auto lhs_param =
-        parmVarDecl(lhs_type_loc, unless(exclusions)).bind("lhs_begin");
+        parmVarDecl(anyOf(lhs_type_loc, hasType(void_pointer_type)),
+                    unless(exclusions))
+            .bind("lhs_begin");
 
     auto rhs_param =
         parmVarDecl(rhs_type_loc, unless(exclusions)).bind("rhs_begin");
