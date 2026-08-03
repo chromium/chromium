@@ -185,25 +185,10 @@ class MockPasswordFaviconLoader : public PasswordFaviconLoader {
 using TestParams =
     std::tuple<Suggestion, std::optional<PopupRowView::CellType>>;
 
-class BaseCreatePopupRowViewTest
-    : public UiBrowserTest,
-      public ::testing::WithParamInterface<TestParams> {
+class PopupRowViewTestBase : public UiBrowserTest {
  public:
-  BaseCreatePopupRowViewTest() = default;
-  ~BaseCreatePopupRowViewTest() override = default;
-
-  static std::string GetTestName(
-      const testing::TestParamInfo<TestParams>& info) {
-    const std::string suggestion_part =
-        base::UTF16ToUTF8(std::get<Suggestion>(info.param).main_text.value);
-    const auto selection =
-        std::get<std::optional<PopupRowView::CellType>>(info.param);
-    const std::string selection_part =
-        !selection.has_value()                          ? "NotSelected"
-        : selection == PopupRowView::CellType::kContent ? "ContentSelected"
-                                                        : "ControlSelected";
-    return suggestion_part + "_" + selection_part;
-  }
+  PopupRowViewTestBase() = default;
+  ~PopupRowViewTestBase() override = default;
 
  protected:
   MockAutofillPopupController& controller() { return controller_; }
@@ -278,7 +263,28 @@ class BaseCreatePopupRowViewTest
   NiceMock<MockPasswordFaviconLoader> favicon_loader_;
 };
 
-class CreatePopupRowViewTest : public BaseCreatePopupRowViewTest {
+class ParameterizedPopupRowViewTestBase
+    : public PopupRowViewTestBase,
+      public ::testing::WithParamInterface<TestParams> {
+ public:
+  ParameterizedPopupRowViewTestBase() = default;
+  ~ParameterizedPopupRowViewTestBase() override = default;
+
+  static std::string GetTestName(
+      const testing::TestParamInfo<TestParams>& info) {
+    const std::string suggestion_part =
+        base::UTF16ToUTF8(std::get<Suggestion>(info.param).main_text.value);
+    const auto selection =
+        std::get<std::optional<PopupRowView::CellType>>(info.param);
+    const std::string selection_part =
+        !selection.has_value()                          ? "NotSelected"
+        : selection == PopupRowView::CellType::kContent ? "ContentSelected"
+                                                        : "ControlSelected";
+    return suggestion_part + "_" + selection_part;
+  }
+};
+
+class CreatePopupRowViewTest : public ParameterizedPopupRowViewTestBase {
  public:
   CreatePopupRowViewTest() = default;
   ~CreatePopupRowViewTest() override = default;
@@ -361,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PasswordCustomIconLoader) {
   ShowAndVerifyUi();
 }
 
-class BnplCreatePopupRowViewTest : public BaseCreatePopupRowViewTest {
+class BnplCreatePopupRowViewTest : public ParameterizedPopupRowViewTestBase {
  public:
   BnplCreatePopupRowViewTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -388,7 +394,7 @@ INSTANTIATE_TEST_SUITE_P(
     BnplCreatePopupRowViewTest::GetTestName);
 
 class CreatePopupRowViewWithNoUserEducationRateLimitTest
-    : public BaseCreatePopupRowViewTest {
+    : public PopupRowViewTestBase {
  public:
   CreatePopupRowViewWithNoUserEducationRateLimitTest() = default;
   ~CreatePopupRowViewWithNoUserEducationRateLimitTest() override = default;
