@@ -244,8 +244,6 @@ struct IframeAttributes {
   network.mojom.ConnectionAllowlist? required_connection_allowlist;
   // 'credentialless' attribute of the iframe.
   bool credentialless;
-  // 'browsingtopics' attribute of the iframe.
-  bool browsing_topics;
   // 'id' attribute of the iframe. This can be optional because id might not be set.
   string? id;
   // 'name' attribute of the iframe. This is different from window.name, which is

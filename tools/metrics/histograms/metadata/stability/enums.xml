@@ -459,7 +459,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="297"
       label="BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="298" label="RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN"/>
-  <int value="299" label="RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE"/>
+  <int value="299"
+      label="OBSOLETE_RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE"/>
   <int value="300"
       label="OBSOLETE_RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT"/>
   <int value="301"

@@ -312,10 +312,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   connection_allowlist_attribute() const {
     return attributes_->required_connection_allowlist;
   }
-  // Tracks iframe's 'browsingtopics' attribute, indicating whether the
-  // navigation requests on this frame should calculate and send the
-  // `Sec-Browsing-Topics` header.
-  bool browsing_topics() const { return attributes_->browsing_topics; }
 
   const std::optional<std::string> html_id() const { return attributes_->id; }
   // This tracks iframe's 'name' attribute instead of window.name, which is
