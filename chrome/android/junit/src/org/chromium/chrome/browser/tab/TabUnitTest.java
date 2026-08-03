@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -577,5 +578,61 @@ public class TabUnitTest {
 
         verify(mNativeMock).sendWillDetachUpdate(1, DetachReason.DELETE);
         verify(mNativeMock).destroy(1);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION})
+    public void testStopOffscreenRendering_DestroyedWindow_PassesNullToWebContents() {
+        TabImplJni.setInstanceForTesting(mNativeMock);
+        TabImpl tab =
+                new TabImpl(
+                        TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI, /* isArchived= */ false) {
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+                };
+        tab.setWebContentsForTesting(mWebContents);
+        tab.setNativePtrForTesting(1);
+        tab.updateWindowAndroid(mWindowAndroid);
+
+        tab.startOffscreenRendering();
+        assertTrue(tab.isOffscreenRendering());
+
+        when(mWindowAndroid.isDestroyed()).thenReturn(true);
+
+        clearInvocations(mWebContents);
+        tab.stopOffscreenRendering();
+        assertFalse(tab.isOffscreenRendering());
+        verify(mWebContents).setTopLevelNativeWindow(null);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION})
+    public void testStopOffscreenRendering_ValidWindow_PassesWindowToWebContents() {
+        TabImplJni.setInstanceForTesting(mNativeMock);
+        TabImpl tab =
+                new TabImpl(
+                        TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI, /* isArchived= */ false) {
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+                };
+        tab.setWebContentsForTesting(mWebContents);
+        tab.setNativePtrForTesting(1);
+        tab.updateWindowAndroid(mWindowAndroid);
+
+        tab.startOffscreenRendering();
+        assertTrue(tab.isOffscreenRendering());
+
+        when(mWindowAndroid.isDestroyed()).thenReturn(false);
+
+        clearInvocations(mWebContents);
+        tab.stopOffscreenRendering();
+        assertFalse(tab.isOffscreenRendering());
+        verify(mWebContents).setTopLevelNativeWindow(mWindowAndroid);
     }
 }
