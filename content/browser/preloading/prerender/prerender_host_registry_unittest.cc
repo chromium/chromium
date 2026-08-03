@@ -1796,19 +1796,6 @@ TEST_F(PrerenderHostRegistryTest,
             insecure_navigations);
 }
 
-TEST_F(PrerenderHostRegistryTest,
-       HasPotentiallyTrustworthyUniqueOriginIsSetWhilePrerendering) {
-  SetupPrerenderAndCommit(
-      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
-        navigation->set_has_potentially_trustworthy_unique_origin(true);
-      }));
-  EXPECT_TRUE(contents()
-                  ->GetPrimaryMainFrame()
-                  ->frame_tree_node()
-                  ->current_replication_state()
-                  .has_potentially_trustworthy_unique_origin);
-}
-
 // End replication state matching tests ------------
 
 TEST_F(PrerenderHostRegistryTest, OneTaskToDeleteAllHosts) {

@@ -4010,8 +4010,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Update this frame's last committed origin. This will also update the origin
   // and the "has_potentially_trustworthy_unique_origin" bit in the
   // FrameReplicationState.
-  void SetLastCommittedOrigin(const url::Origin& origin,
-                              bool is_potentially_trustworthy_unique_origin);
+  void SetLastCommittedOrigin(const url::Origin& origin);
 
   // Stores a snapshot of the inherited base URL from the initiator's
   // FrameLoadRequest, if this document inherited one (e.g., about:srcdoc).

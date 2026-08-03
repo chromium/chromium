@@ -217,12 +217,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     insecure_navigations_set_ = insecure_navigations_set;
   }
 
-  void set_has_potentially_trustworthy_unique_origin(
-      bool has_potentially_trustworthy_unique_origin) {
-    has_potentially_trustworthy_unique_origin_ =
-        has_potentially_trustworthy_unique_origin;
-  }
-
   void set_supports_loading_mode_header(std::string value) {
     supports_loading_mode_header_ = value;
   }
@@ -405,7 +399,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   blink::mojom::InsecureRequestPolicy insecure_request_policy_ =
       blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
   std::vector<uint32_t> insecure_navigations_set_;
-  bool has_potentially_trustworthy_unique_origin_ = false;
 
   // Any DNS aliases, as read from CNAME records, for the request URL that
   // would be in the network::mojom::URLResponseHead. The alias chain order

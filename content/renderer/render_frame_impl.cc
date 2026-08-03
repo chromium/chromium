@@ -5178,9 +5178,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->insecure_request_policy = frame_->GetInsecureRequestPolicy();
   params->insecure_navigations_set = frame_->GetInsecureRequestToUpgrade();
 
-  params->has_potentially_trustworthy_unique_origin =
-      frame_origin.IsOpaque() && frame_origin.IsPotentiallyTrustworthy();
-
   // Set the URL to be displayed in the browser UI to the user. Note this might
   // be different than the URL actually used in the DocumentLoader (see comments
   // in GetLoadingUrl() and MaybeGetOverriddenURL()). This might not be the URL
