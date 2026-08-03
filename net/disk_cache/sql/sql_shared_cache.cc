@@ -217,7 +217,7 @@ void SqlSharedCache::ReadNextChunk(CacheEntryKey key,
                                    SqlSharedCacheRowId shared_cache_row_id) {
   CHECK_LE(offset, body_end);
   if (offset == body_end) {
-    OnCopyEntryComplete();
+    MoveBlobsToSharedCache(key, res_id, shared_cache_row_id);
     return;
   }
   int64_t chunk_size =
@@ -270,6 +270,26 @@ void SqlSharedCache::OnIsolatedDatabaseWritten(
   }
   ReadNextChunk(std::move(key), res_id, body_end, next_offset,
                 shared_cache_row_id);
+}
+
+void SqlSharedCache::MoveBlobsToSharedCache(
+    CacheEntryKey key,
+    SqlPersistentStore::ResId res_id,
+    SqlSharedCacheRowId shared_cache_row_id) {
+  store_->MoveBlobsToSharedCache(
+      key, res_id, {*shared_cache_db_id_, shared_cache_row_id},
+      base::BindOnce(
+          [](base::WeakPtr<SqlSharedCache> self,
+             SqlPersistentStore::Error error) {
+            if (self) {
+              if (error == SqlPersistentStore::Error::kOk) {
+                self->OnCopyEntryComplete();
+              } else {
+                self->OnCopyEntryFailed();
+              }
+            }
+          },
+          weak_factory_.GetWeakPtr()));
 }
 
 void SqlSharedCache::OnCopyEntryComplete() {

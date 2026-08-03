@@ -117,21 +117,27 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
   //  |    |                                               |
   //  |    v                            (error)            |
   //  |  OnEntryOpenedForSharedCache() ----------------> OnCopyEntryFailed()
-  //  |    | (body == 0)   | (body > 0)                    ^ ^ ^     ^
-  //  |    |               v                      (error)  | | |     |
-  //  |    |          OnEntryDataReadForInsert() ----------+ | |     |
-  //  |    |               | (OK)                            | |     |
-  //  |    v               v           (error)               | |     |
-  //  |  OnIsolatedDatabaseInserted() -----------------------+ |     |
-  //  |                    | (OK)                              |     |
-  //  |                    v                                   |     |
-  //  |               ReadNextChunk()                          |     |
-  //  |               |(done)  ^    | (has data)               |     |
-  //  |               v        |    v                 (error)  |     |
-  //  +- OnCopyEntryComplete() |   OnEntryDataRead() ----------+     |
-  //                           |    | (OK)                           |
-  //                       (OK)|    v                         (error)|
-  //                           +- OnIsolatedDatabaseWritten() -------+
+  //  |    | (body == 0)   | (body > 0)                    ^ ^ ^     ^ ^
+  //  |    |               v                      (error)  | | |     | |
+  //  |    |          OnEntryDataReadForInsert() ----------+ | |     | |
+  //  |    |               | (OK)                            | |     | |
+  //  |    v               v           (error)               | |     | |
+  //  |  OnIsolatedDatabaseInserted() -----------------------+ |     | |
+  //  |                    | (OK)                              |     | |
+  //  |                    v                                   |     | |
+  //  |               ReadNextChunk()                          |     | |
+  //  |               |(done)  ^    | (has data)               |     | |
+  //  |               |        |    v                 (error)  |     | |
+  //  |               |        |   OnEntryDataRead() ----------+     | |
+  //  |               |        |    | (OK)                           | |
+  //  |               |    (OK)|    v                         (error)| |
+  //  |               |        +- OnIsolatedDatabaseWritten() -------+ |
+  //  |               |                                                |
+  //  |               v                (error)                         |
+  //  |      MoveBlobsToSharedCache() ---------------------------------+
+  //  |               |  (OK)
+  //  |               v
+  //  +----- OnCopyEntryComplete()
   void CopyNextEntry();
   void OnEntryOpenedForSharedCache(
       SqlPersistentStore::SharedCacheEligibleEntry entry,
@@ -172,6 +178,9 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
       int64_t next_offset,
       SqlSharedCacheRowId shared_cache_row_id,
       base::expected<void, SqlSharedCacheIsolatedDatabase::Error> result);
+  void MoveBlobsToSharedCache(CacheEntryKey key,
+                              SqlPersistentStore::ResId res_id,
+                              SqlSharedCacheRowId shared_cache_row_id);
   void OnCopyEntryComplete();
   void OnCopyEntryFailed();
   void FinishCopy();

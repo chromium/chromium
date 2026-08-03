@@ -31,6 +31,8 @@ namespace disk_cache {
 
 namespace {
 
+constexpr SqlSharedCacheDbId kTestDbId(42);
+
 scoped_refptr<net::IOBufferWithSize> CreateHeadBuffer(
     const net::HttpResponseInfo& response_info,
     bool response_truncated = false) {
@@ -155,11 +157,10 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
         cleanup_tracker_);
 
-    SqlSharedCacheDbId db_id(42);
     bool init_success = false;
     cache->InitIsolatedDatabase(
-        db_id, base::BindLambdaForTesting(
-                   [&](bool success) { init_success = success; }));
+        kTestDbId, base::BindLambdaForTesting(
+                       [&](bool success) { init_success = success; }));
     async_task_manager_.RunUntilAllTasksCompleteForTest();
     EXPECT_TRUE(init_success);
 
@@ -223,6 +224,28 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
               SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
   }
 
+  SqlPersistentStore::OptionalEntryInfoOrError OpenStoreEntry(
+      const CacheEntryKey& key) {
+    base::test::TestFuture<SqlPersistentStore::OptionalEntryInfoOrError> future;
+    store_->OpenEntry(key, future.GetCallback());
+    async_task_manager_.RunUntilAllTasksCompleteForTest();
+    return future.Take();
+  }
+
+  void VerifyStoreEntrySharedCacheResourceId(
+      const CacheEntryKey& key,
+      SqlSharedCacheDbId expected_db_id,
+      SqlSharedCacheRowId expected_row_id) {
+    auto open_result = OpenStoreEntry(key);
+    ASSERT_TRUE(open_result.has_value());
+    ASSERT_TRUE(open_result.value().has_value());
+    ASSERT_TRUE(open_result.value()->shared_cache_resource_id.has_value());
+    EXPECT_EQ(open_result.value()->shared_cache_resource_id->db_id,
+              expected_db_id);
+    EXPECT_EQ(open_result.value()->shared_cache_resource_id->row_id,
+              expected_row_id);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -284,16 +307,15 @@ TEST_P(SqlSharedCacheTest, InitIsolatedDatabaseAndCleanup) {
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       cleanup_tracker_);
 
-  SqlSharedCacheDbId db_id(42);
   bool init_success = false;
 
   cache->InitIsolatedDatabase(
-      db_id, base::BindLambdaForTesting(
-                 [&](bool success) { init_success = success; }));
+      kTestDbId, base::BindLambdaForTesting(
+                     [&](bool success) { init_success = success; }));
 
   async_task_manager_.RunUntilAllTasksCompleteForTest();
 
-  EXPECT_EQ(cache->shared_cache_db_id(), db_id);
+  EXPECT_EQ(cache->shared_cache_db_id(), kTestDbId);
   EXPECT_TRUE(init_success);
 
   bool cleanup_done = false;
@@ -319,7 +341,6 @@ TEST_P(SqlSharedCacheTest, CleanupWithoutIsolatedDatabase) {
 }
 
 TEST_P(SqlSharedCacheTest, DestructionTriggersCleanup) {
-  SqlSharedCacheDbId db_id(42);
   {
     auto cache = std::make_unique<SqlSharedCache>(
         "test_nik", *store_, temp_dir_.GetPath(), base::DoNothing(),
@@ -330,8 +351,8 @@ TEST_P(SqlSharedCacheTest, DestructionTriggersCleanup) {
 
     bool init_success = false;
     cache->InitIsolatedDatabase(
-        db_id, base::BindLambdaForTesting(
-                   [&](bool success) { init_success = success; }));
+        kTestDbId, base::BindLambdaForTesting(
+                       [&](bool success) { init_success = success; }));
     async_task_manager_.RunUntilAllTasksCompleteForTest();
     EXPECT_TRUE(init_success);
     // `cache` goes out of scope here. Its destruction triggers the destruction
@@ -354,8 +375,8 @@ TEST_P(SqlSharedCacheTest, DestructionTriggersCleanup) {
 
   bool reinit_success = false;
   new_cache->InitIsolatedDatabase(
-      db_id, base::BindLambdaForTesting(
-                 [&](bool success) { reinit_success = success; }));
+      kTestDbId, base::BindLambdaForTesting(
+                     [&](bool success) { reinit_success = success; }));
   async_task_manager_.RunUntilAllTasksCompleteForTest();
   EXPECT_TRUE(reinit_success);
 }
@@ -386,6 +407,8 @@ TEST_P(SqlSharedCacheTest, CopyEntries) {
   EXPECT_TRUE(unprocessed.empty());
 
   VerifyIsolatedDatabaseEntryData(*cache, kKey, SqlSharedCacheRowId(1), kData);
+  VerifyStoreEntrySharedCacheResourceId(kKey, kTestDbId,
+                                        SqlSharedCacheRowId(1));
 }
 
 TEST_P(SqlSharedCacheTest, CopyEntriesMultiple) {
@@ -436,6 +459,55 @@ TEST_P(SqlSharedCacheTest, CopyEntriesMultiple) {
                                   kData2);
   VerifyIsolatedDatabaseEntryData(*cache, kKey3, SqlSharedCacheRowId(3),
                                   kData3);
+  VerifyStoreEntrySharedCacheResourceId(kKey1, kTestDbId,
+                                        SqlSharedCacheRowId(1));
+  VerifyStoreEntrySharedCacheResourceId(kKey2, kTestDbId,
+                                        SqlSharedCacheRowId(2));
+  VerifyStoreEntrySharedCacheResourceId(kKey3, kTestDbId,
+                                        SqlSharedCacheRowId(3));
+}
+
+TEST_P(SqlSharedCacheTest,
+       CopyEntriesMoveBlobsToSharedCacheFailureCleansUpPartialEntry) {
+  auto cache = CreateAndInitStoreAndCache();
+
+  const CacheEntryKey kKey(
+      "credential_key/post_key/https://example.com/fail_move");
+  std::string kData = "payload for move blobs failure test";
+  auto response_info = CreateTestHttpResponseInfo();
+
+  PopulateStoreEntry(kKey, response_info, kData);
+
+  base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries;
+  entries.push(CreateEligibleEntry(kKey, GURL("https://example.com/fail_move"),
+                                   response_info));
+
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false);
+  base::test::TestFuture<
+      base::queue<SqlPersistentStore::SharedCacheEligibleEntry>>
+      copy_future;
+
+  cache->CopyEntries(std::move(entries), abort_flag, copy_future.GetCallback());
+  // OpenEntry task is already enqueued on store runner. Enabling simulate
+  // failure now will cause MoveBlobsToSharedCache (which is enqueued later) to
+  // fail.
+  store_->SetSimulateDbFailureForTesting(true);
+
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  auto unprocessed = copy_future.Take();
+  EXPECT_TRUE(unprocessed.empty());
+
+  // Verify that row 1 was cleaned up (deleted) from isolated database upon
+  // failure.
+  base::test::TestFuture<bool> has_row_future;
+  cache->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::HasRowForTesting)
+      .WithArgs(SqlSharedCacheRowId(1))
+      .Then(has_row_future.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_FALSE(has_row_future.Get());
 }
 
 TEST_P(SqlSharedCacheTest, CopyEntriesExceedingMaxCopySizeSkipped) {
