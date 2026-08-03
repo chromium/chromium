@@ -168,44 +168,41 @@ TEST(UmpMessageUtilTest, DispatchMidiFromUmpWords) {
       // Expectation: Dispatches 2 bytes [0xC0, 0x12].
       (2u << 28) | (0u << 24) | (0xC0u << 16) | (0x12u << 8),
 
-      // 3. Complete SysEx (MT=3, Group=0, Status=0 (Complete), Len=5),
-      //    bytes: F0 01 02 03 F7
+      // 3. Complete SysEx (MT=3, Group=0, Status=0 (Complete), Len=3),
+      //    payload: 01 02 03
       // Word 0: [MT=3 (4 bits) | Group=0 (4 bits) | Status=0 (4 bits) |
-      //          Len=5 (4 bits) | Byte1=F0 (8 bits) | Byte2=01 (8 bits)]
-      // Word 1: [Byte3=02 (8 bits) | Byte4=03 (8 bits) | Byte5=F7 (8 bits) |
-      //          Byte6=00 (8 bits)]
+      //          Len=3 (4 bits) | Byte1=01 (8 bits) | Byte2=02 (8 bits)]
+      // Word 1: [Byte3=03 (8 bits) | remaining bytes zero]
       // Expectation: Dispatches 5 bytes [0xF0, 0x01, 0x02, 0x03, 0xF7].
-      (3u << 28) | (0u << 24) | (0u << 20) | (5u << 16) | (0xF0u << 8) | 0x01u,
-      (0x02u << 24) | (0x03u << 16) | (0xF7u << 8),
+      (3u << 28) | (0u << 24) | (0u << 20) | (3u << 16) | (0x01u << 8) | 0x02u,
+      (0x03u << 24),
 
       // 4. SysEx Start (MT=3, Group=0, Status=1 (Start), Len=6),
-      //    bytes: F0 01 02 03 04 05
+      //    payload: 01 02 03 04 05 06
       // Word 0: [MT=3 (4 bits) | Group=0 (4 bits) | Status=1 (4 bits) |
-      //          Len=6 (4 bits) | Byte1=F0 (8 bits) | Byte2=01 (8 bits)]
-      // Word 1: [Byte3=02 (8 bits) | Byte4=03 (8 bits) | Byte5=04 (8 bits) |
-      //          Byte6=05 (8 bits)]
-      // Expectation: Dispatches 6 bytes [0xF0, 0x01, 0x02, 0x03, 0x04, 0x05].
-      (3u << 28) | (0u << 24) | (1u << 20) | (6u << 16) | (0xF0u << 8) | 0x01u,
-      (0x02u << 24) | (0x03u << 16) | (0x04u << 8) | 0x05u,
+      //          Len=6 (4 bits) | Byte1=01 (8 bits) | Byte2=02 (8 bits)]
+      // Word 1: [Byte3=03 (8 bits) | Byte4=04 (8 bits) | Byte5=05 (8 bits) |
+      //          Byte6=06 (8 bits)]
+      // Expectation: Dispatches 7 bytes [0xF0, 0x01, ..., 0x06].
+      (3u << 28) | (0u << 24) | (1u << 20) | (6u << 16) | (0x01u << 8) | 0x02u,
+      (0x03u << 24) | (0x04u << 16) | (0x05u << 8) | 0x06u,
 
       // 5. SysEx Continue (MT=3, Group=0, Status=2 (Continue), Len=6),
-      //    bytes: 06 07 08 09 0A 0B
+      //    payload: 07 08 09 0A 0B 0C
       // Word 0: [MT=3 (4 bits) | Group=0 (4 bits) | Status=2 (4 bits) |
-      //          Len=6 (4 bits) | Byte1=06 (8 bits) | Byte2=07 (8 bits)]
-      // Word 1: [Byte3=08 (8 bits) | Byte4=09 (8 bits) | Byte5=0A (8 bits) |
-      //          Byte6=0B (8 bits)]
-      // Expectation: Dispatches 6 bytes [0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B].
-      (3u << 28) | (0u << 24) | (2u << 20) | (6u << 16) | (0x06u << 8) | 0x07u,
-      (0x08u << 24) | (0x09u << 16) | (0x0Au << 8) | 0x0Bu,
+      //          Len=6 (4 bits) | Byte1=07 (8 bits) | Byte2=08 (8 bits)]
+      // Word 1: [Byte3=09 (8 bits) | Byte4=0A (8 bits) | Byte5=0B (8 bits) |
+      //          Byte6=0C (8 bits)]
+      // Expectation: Dispatches 6 bytes [0x07, ..., 0x0C].
+      (3u << 28) | (0u << 24) | (2u << 20) | (6u << 16) | (0x07u << 8) | 0x08u,
+      (0x09u << 24) | (0x0Au << 16) | (0x0Bu << 8) | 0x0Cu,
 
-      // 6. SysEx End (MT=3, Group=0, Status=3 (End), Len=3), bytes: 0C 0D F7
+      // 6. SysEx End (MT=3, Group=0, Status=3 (End), Len=1), payload: 0D
       // Word 0: [MT=3 (4 bits) | Group=0 (4 bits) | Status=3 (4 bits) |
-      //          Len=3 (4 bits) | Byte1=0C (8 bits) | Byte2=0D (8 bits)]
-      // Word 1: [Byte3=F7 (8 bits) | Byte4=00 (8 bits) | Byte5=00 (8 bits) |
-      //          Byte6=00 (8 bits)]
-      // Expectation: Dispatches 3 bytes [0x0C, 0x0D, 0xF7].
-      (3u << 28) | (0u << 24) | (3u << 20) | (3u << 16) | (0x0Cu << 8) | 0x0Du,
-      (0xF7u << 24),
+      //          Len=1 (4 bits) | Byte1=0D (8 bits) | Byte2=00 (8 bits)]
+      // Word 1: all bytes zero
+      // Expectation: Dispatches 2 bytes [0x0D, 0xF7].
+      (3u << 28) | (0u << 24) | (3u << 20) | (1u << 16) | (0x0Du << 8), 0u,
 
       // 7. MIDI Time Code Quarter Frame (MT=1, Group=0, Status=F1, Data1=15) -
       // 2 bytes
@@ -252,14 +249,14 @@ TEST(UmpMessageUtilTest, DispatchMidiFromUmpWords) {
   // 3. Complete SysEx (5 bytes)
   EXPECT_EQ((std::vector<uint8_t>{0xF0, 0x01, 0x02, 0x03, 0xF7}),
             received_messages[2]);
-  // 4. SysEx Start chunk (6 bytes)
-  EXPECT_EQ((std::vector<uint8_t>{0xF0, 0x01, 0x02, 0x03, 0x04, 0x05}),
+  // 4. SysEx Start chunk
+  EXPECT_EQ((std::vector<uint8_t>{0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06}),
             received_messages[3]);
   // 5. SysEx Continue chunk (6 bytes)
-  EXPECT_EQ((std::vector<uint8_t>{0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B}),
+  EXPECT_EQ((std::vector<uint8_t>{0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C}),
             received_messages[4]);
-  // 6. SysEx End chunk (3 bytes)
-  EXPECT_EQ((std::vector<uint8_t>{0x0C, 0x0D, 0xF7}), received_messages[5]);
+  // 6. SysEx End chunk
+  EXPECT_EQ((std::vector<uint8_t>{0x0D, 0xF7}), received_messages[5]);
   // 7. MIDI Time Code (2 bytes)
   EXPECT_EQ((std::vector<uint8_t>{0xF1, 0x15}), received_messages[6]);
   // 8. Song Position Pointer (3 bytes)
@@ -287,15 +284,14 @@ TEST(UmpMessageUtilTest, TranslateMidiToUmpWords) {
       // 2. Program Change (0xC0, 0x12) [2 bytes]
       0xC0, 0x12,
 
-      // 3. Complete SysEx (5 bytes: 0xF0, 0x01, 0x02, 0x03, 0xF7)
-      // Expectation: 1 UMP packet (2 words), Status=0 (Complete), Len=5
+      // 3. Complete SysEx (5 legacy bytes, 3 payload bytes)
+      // Expectation: 1 UMP packet (2 words), Status=0 (Complete), Len=3
       0xF0, 0x01, 0x02, 0x03, 0xF7,
 
-      // 4. Long SysEx (14 bytes)
-      // Expectation: 3 UMP packets (6 words):
-      // - Packet 1: Status=1 (Start), Len=6 [F0 01 02 03 04 05]
-      // - Packet 2: Status=2 (Continue), Len=6 [06 07 08 09 0A 0B]
-      // - Packet 3: Status=3 (End), Len=2 [0C F7]
+      // 4. Long SysEx (14 legacy bytes, 12 payload bytes)
+      // Expectation: 2 UMP packets (4 words):
+      // - Packet 1: Status=1 (Start), Len=6 [01 02 03 04 05 06]
+      // - Packet 2: Status=3 (End), Len=6 [07 08 09 0A 0B 0C]
       0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
       0x0C, 0xF7,
 
@@ -312,7 +308,7 @@ TEST(UmpMessageUtilTest, TranslateMidiToUmpWords) {
       // F0 01 02 F8 03 F7
       // Expectation:
       // - Timing Clock (0xF8) -> 1 UMP packet (1 word)
-      // - Complete SysEx (F0 01 02 03 F7) -> 1 UMP packet (2 words)
+      // - Complete SysEx payload (01 02 03) -> 1 UMP packet (2 words)
       0xF0, 0x01, 0x02, 0xF8, 0x03, 0xF7,
 
       // 9. Interleaved Real-Time message in Channel Voice Message (4 bytes)
@@ -325,8 +321,8 @@ TEST(UmpMessageUtilTest, TranslateMidiToUmpWords) {
   std::vector<uint32_t> ump_words;
   TranslateMidiToUmpWords(legacy_data, 0, ump_words);
 
-  ASSERT_EQ(18u, ump_words.size());  // 1 + 1 + 2 + 6 + 1 + 1 + 1 + (1 + 2) + (1
-                                     // + 1) = 18 words
+  ASSERT_EQ(16u, ump_words.size());  // 1 + 1 + 2 + 4 + 1 + 1 + 1 + (1 + 2) + (1
+                                     // + 1) = 16 words
 
   size_t w = 0;
   // 1. Note On
@@ -337,31 +333,25 @@ TEST(UmpMessageUtilTest, TranslateMidiToUmpWords) {
   EXPECT_EQ((2u << 28) | (0u << 24) | (0xC0u << 16) | (0x12u << 8),
             ump_words[w++]);
 
-  // 3. Complete SysEx (Status=0, Len=5)
+  // 3. Complete SysEx (Status=0, Len=3)
   EXPECT_EQ(
-      (3u << 28) | (0u << 24) | (0u << 20) | (5u << 16) | (0xF0u << 8) | 0x01u,
+      (3u << 28) | (0u << 24) | (0u << 20) | (3u << 16) | (0x01u << 8) | 0x02u,
       ump_words[w++]);
-  EXPECT_EQ((0x02u << 24) | (0x03u << 16) | (0xF7u << 8), ump_words[w++]);
+  EXPECT_EQ((0x03u << 24), ump_words[w++]);
 
   // 4. Long SysEx - Start (Status=1, Len=6)
   EXPECT_EQ(
-      (3u << 28) | (0u << 24) | (1u << 20) | (6u << 16) | (0xF0u << 8) | 0x01u,
+      (3u << 28) | (0u << 24) | (1u << 20) | (6u << 16) | (0x01u << 8) | 0x02u,
       ump_words[w++]);
-  EXPECT_EQ((0x02u << 24) | (0x03u << 16) | (0x04u << 8) | 0x05u,
+  EXPECT_EQ((0x03u << 24) | (0x04u << 16) | (0x05u << 8) | 0x06u,
             ump_words[w++]);
 
-  // 4. Long SysEx - Continue (Status=2, Len=6)
+  // 4. Long SysEx - End (Status=3, Len=6)
   EXPECT_EQ(
-      (3u << 28) | (0u << 24) | (2u << 20) | (6u << 16) | (0x06u << 8) | 0x07u,
+      (3u << 28) | (0u << 24) | (3u << 20) | (6u << 16) | (0x07u << 8) | 0x08u,
       ump_words[w++]);
-  EXPECT_EQ((0x08u << 24) | (0x09u << 16) | (0x0Au << 8) | 0x0Bu,
+  EXPECT_EQ((0x09u << 24) | (0x0Au << 16) | (0x0Bu << 8) | 0x0Cu,
             ump_words[w++]);
-
-  // 4. Long SysEx - End (Status=3, Len=2)
-  EXPECT_EQ(
-      (3u << 28) | (0u << 24) | (3u << 20) | (2u << 16) | (0x0Cu << 8) | 0xF7u,
-      ump_words[w++]);
-  EXPECT_EQ(0x00000000u, ump_words[w++]);
 
   // 5. MIDI Time Code
   EXPECT_EQ((1u << 28) | (0u << 24) | (0xF1u << 16) | (0x15u << 8),
@@ -377,11 +367,11 @@ TEST(UmpMessageUtilTest, TranslateMidiToUmpWords) {
   // 8. Interleaved Timing Clock (F8)
   EXPECT_EQ((1u << 28) | (0u << 24) | (0xF8u << 16), ump_words[w++]);
 
-  // 8. Interleaved SysEx (F0 01 02 03 F7)
+  // 8. Interleaved SysEx payload (01 02 03)
   EXPECT_EQ(
-      (3u << 28) | (0u << 24) | (0u << 20) | (5u << 16) | (0xF0u << 8) | 0x01u,
+      (3u << 28) | (0u << 24) | (0u << 20) | (3u << 16) | (0x01u << 8) | 0x02u,
       ump_words[w++]);
-  EXPECT_EQ((0x02u << 24) | (0x03u << 16) | (0xF7u << 8), ump_words[w++]);
+  EXPECT_EQ((0x03u << 24), ump_words[w++]);
 
   // 9. Interleaved Active Sensing (FE)
   EXPECT_EQ((1u << 28) | (0u << 24) | (0xFEu << 16), ump_words[w++]);
@@ -391,12 +381,55 @@ TEST(UmpMessageUtilTest, TranslateMidiToUmpWords) {
             ump_words[w++]);
 }
 
+TEST(UmpMessageUtilTest, SysEx7PayloadBoundariesRoundTrip) {
+  // Section 7.7 permits 0 to 6 payload bytes per SysEx7 UMP. Verify the empty
+  // and full Complete forms, plus the first size that requires Start and End.
+  const std::vector<std::vector<uint8_t>> legacy_messages = {
+      {0xF0, 0xF7},
+      {0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xF7},
+      {0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0xF7},
+  };
+  const std::vector<std::vector<uint32_t>> expected_ump_words = {
+      {
+          (3u << 28) | (0u << 20) | (0u << 16),
+          0u,
+      },
+      {
+          (3u << 28) | (0u << 20) | (6u << 16) | (0x01u << 8) | 0x02u,
+          (0x03u << 24) | (0x04u << 16) | (0x05u << 8) | 0x06u,
+      },
+      {
+          (3u << 28) | (1u << 20) | (6u << 16) | (0x01u << 8) | 0x02u,
+          (0x03u << 24) | (0x04u << 16) | (0x05u << 8) | 0x06u,
+          (3u << 28) | (3u << 20) | (1u << 16) | (0x07u << 8),
+          0u,
+      },
+  };
+
+  ASSERT_EQ(legacy_messages.size(), expected_ump_words.size());
+  for (size_t i = 0; i < legacy_messages.size(); ++i) {
+    std::vector<uint32_t> ump_words;
+    TranslateMidiToUmpWords(legacy_messages[i], 0, ump_words);
+    EXPECT_EQ(expected_ump_words[i], ump_words);
+
+    std::vector<uint8_t> round_trip_message;
+    DispatchMidiFromUmpWords(
+        ump_words, base::TimeTicks(),
+        [&](base::span<const uint8_t> data, base::TimeTicks) {
+          round_trip_message.insert(round_trip_message.end(), data.begin(),
+                                    data.end());
+        });
+    EXPECT_EQ(legacy_messages[i], round_trip_message);
+  }
+}
+
 TEST(UmpMessageUtilTest, TranslateMidiToUmpWordsIncomplete) {
   // Test that TranslateMidiToUmpWords discards incomplete messages at the end
   // and only translates complete ones.
   std::vector<uint8_t> incomplete_data = {
       0x90, 0x3C, 0x50,  // Note On (complete, 3 bytes)
-      0xC0               // Program Change (incomplete, 1 byte)
+      0xC0,              // Program Change (incomplete, 1 byte)
+      0xF0, 0x01         // SysEx (incomplete, no 0xF7)
   };
   std::vector<uint32_t> ump_words;
   TranslateMidiToUmpWords(incomplete_data, 0, ump_words);

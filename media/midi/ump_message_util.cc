@@ -325,20 +325,44 @@ void DispatchMidiFromUmpWords(
       // - Word 0: [MT(4) | Group(4) | Status(4) | NumBytes(4) | Byte1(8) |
       // Byte2(8)]
       // - Word 1: [Byte3(8) | Byte4(8) | Byte5(8) | Byte6(8)]
+      //
+      // Per "UMP Format and MIDI 2.0 Protocol", section 7.7, the UMP payload
+      // excludes the MIDI 1.0 0xF0/0xF7 bracketing bytes. Reconstruct those
+      // bytes from the UMP status when converting back to MIDI 1.0:
+      // https://midi.org/?p=1381
       uint32_t word1 = ump_words[word_index + 1];
+      uint8_t ump_status =
+          (word0 >> kUmpSysExStatusShift) & kUmpSysExStatusMask;
       uint8_t number_of_bytes =
           (word0 >> kUmpSysExSizeShift) & kUmpSysExSizeMask;
 
-      if (number_of_bytes > 0 && number_of_bytes <= 6) {
-        uint8_t message[6];
-        message[0] = (word0 >> kUmpData1Shift) & kUmpData1Mask;
-        message[1] = (word0 >> kUmpData2Shift) & kUmpData2Mask;
-        message[2] = (word1 >> kUmpSysExByte3Shift) & 0xFF;
-        message[3] = (word1 >> kUmpSysExByte4Shift) & 0xFF;
-        message[4] = (word1 >> kUmpSysExByte5Shift) & 0xFF;
-        message[5] = (word1 >> kUmpSysExByte6Shift) & 0xFF;
+      if (ump_status <= kUmpSysExStatusEnd && number_of_bytes <= 6) {
+        uint8_t payload[6];
+        payload[0] = (word0 >> kUmpData1Shift) & kUmpData1Mask;
+        payload[1] = (word0 >> kUmpData2Shift) & kUmpData2Mask;
+        payload[2] = (word1 >> kUmpSysExByte3Shift) & 0xFF;
+        payload[3] = (word1 >> kUmpSysExByte4Shift) & 0xFF;
+        payload[4] = (word1 >> kUmpSysExByte5Shift) & 0xFF;
+        payload[5] = (word1 >> kUmpSysExByte6Shift) & 0xFF;
 
-        dispatch_helper(base::span(message).first(number_of_bytes), timestamp);
+        uint8_t message[8];
+        auto message_span = base::span(message);
+        size_t message_length = 0;
+        if (ump_status == kUmpSysExStatusComplete ||
+            ump_status == kUmpSysExStatusStart) {
+          message_span[message_length++] = 0xF0;
+        }
+        for (uint8_t byte : base::span(payload).first(number_of_bytes)) {
+          message_span[message_length++] = byte;
+        }
+        if (ump_status == kUmpSysExStatusComplete ||
+            ump_status == kUmpSysExStatusEnd) {
+          message_span[message_length++] = 0xF7;
+        }
+
+        if (message_length > 0) {
+          dispatch_helper(message_span.first(message_length), timestamp);
+        }
       }
     }
 
@@ -378,8 +402,23 @@ void TranslateMidiToUmpWords(base::span<const uint8_t> data,
       ump_words.push_back(word);
       message_index++;
     } else {
+      // Outbound Web MIDI data is validated before reaching this utility, so
+      // every SysEx message normally has its MIDI 1.0 0xF0/0xF7 brackets.
+      // Keep this check because the utility is also called directly by a
+      // fuzzer.
+      if (message_data.size() < 2 || message_data.front() != 0xF0 ||
+          message_data.back() != 0xF7) {
+        message_index++;
+        continue;
+      }
+
+      // "UMP Format and MIDI 2.0 Protocol", section 7.7, requires SysEx7 UMPs
+      // to omit the MIDI 1.0 bracketing bytes and carry only their payload:
+      // https://midi.org/?p=1381
+      message_data =
+          message_data.subspan<1>().first(message_data.size() - size_t{2});
       size_t sysex_offset = 0;
-      while (sysex_offset < message_data.size()) {
+      do {
         size_t chunk_length = std::min(message_data.size() - sysex_offset,
                                        static_cast<size_t>(6));
         uint8_t ump_status = 0;
@@ -417,7 +456,7 @@ void TranslateMidiToUmpWords(base::span<const uint8_t> data,
         ump_words.push_back(words[0]);
         ump_words.push_back(words[1]);
         sysex_offset += chunk_length;
-      }
+      } while (sysex_offset < message_data.size());
       message_index++;
     }
   }
