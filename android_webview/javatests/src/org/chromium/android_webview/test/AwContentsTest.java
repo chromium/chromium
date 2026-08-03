@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -58,6 +59,7 @@ import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
@@ -1436,16 +1438,26 @@ public class AwContentsTest extends AwParameterizedTest {
         }
     }
 
-    // This test verifies that Private Network Access' secure context
-    // restriction (feature flag BlockInsecurePrivateNetworkRequests) does not
-    // apply to Webview: insecure private network requests are allowed.
+    // This test verifies that Local Network Access' secure context restriction does not apply to
+    // Webview: insecure local network requests are allowed.
     //
     // This is a regression test for crbug.com/1255675.
     @Test
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
     @SmallTest
-    public void testInsecurePrivateNetworkAccess() throws Throwable {
+    public void testInsecureLocalNetworkAccess() throws Throwable {
+        EmbeddedTestServer testServer1 =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
+        // Extract the port assigned to the first server and override its IP address space to
+        // 'public'
+        int server1Port = Uri.parse(testServer1.getURL("/")).getPort();
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        "ip-address-space-overrides",
+                        String.format("127.0.0.1:%d=public", server1Port));
+
         mActivityTestRule.startBrowserProcess();
         final AwTestContainerView testContainer =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -1471,41 +1483,48 @@ public class AwContentsTest extends AwParameterizedTest {
         AwActivityTestRule.addJavascriptInterfaceOnUiThread(
                 awContents, injectedObject, "injectedObject");
 
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
+        TestWebServer testServer2 = TestWebServer.start();
+        try {
+            // Need to avoid http://localhost, which is considered secure, so we use
+            // http://foo.test, which resolves to 127.0.0.1 thanks to the host resolver rules
+            // command-line flag.
+            //
+            // The resulting document is a non-secure context in the public IP address space due to
+            // command-line overrides. If the secure context restriction were applied, it would not
+            // be allowed to fetch subresources from localhost.
+            String url = testServer1.getURLWithHostName("foo.test", "/defaultresponse");
 
-        // Need to avoid http://localhost, which is considered secure, so we
-        // use http://foo.test, which resolves to 127.0.0.1 thanks to the
-        // host resolver rules command-line flag.
-        //
-        // The resulting document is a non-secure context in the public IP
-        // address space. If the secure context restriction were applied, it
-        // would not be allowed to fetch subresources from localhost.
-        String url =
-                testServer.getURLWithHostName(
-                        "foo.test", "/set-header?Content-Security-Policy: treat-as-public-address");
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), url);
+            // Fetch a subresource from the second server, whose IP address/port combination is not
+            // overridden on the command line and thus belongs to the loopback IP address space.
+            // This should succeed.
+            List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+            headers.add(Pair.create("Access-Control-Allow-Origin", "*"));
+            String fetchUrl = testServer2.setResponse("/cors-ok.txt", "OK", headers);
 
-        // Fetch a subresource from the same server, whose IP address is still
-        // 127.0.0.1, thus belonging to the local IP address space.
-        // This should succeed.
-        mActivityTestRule.executeJavaScriptAndWaitForResult(
-                awContents,
-                mContentsClient,
-                """
-                fetch("/defaultresponse")
-                  .then(() => {
-                    injectedObject.success();
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    injectedObject.error();
-                  })
-                """);
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    awContents,
+                    mContentsClient,
+                    String.format(
+                            """
+                            fetch('%s')
+                              .then(() => {
+                                injectedObject.success();
+                              })
+                              .catch((err) => {
+                                console.log(err);
+                                injectedObject.error();
+                              })
+                            """,
+                            fetchUrl));
 
-        Assert.assertTrue(AwActivityTestRule.waitForFuture(fetchResultFuture));
+            Assert.assertTrue(AwActivityTestRule.waitForFuture(fetchResultFuture));
+        } finally {
+            testServer1.stopAndDestroyServer();
+            testServer2.shutdown();
+        }
     }
 
     private static final String HELLO_WORLD_URL = "/android_webview/test/data/hello_world.html";
