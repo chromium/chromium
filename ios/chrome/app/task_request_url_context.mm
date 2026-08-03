@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/widget_constants.h"
+#import "ios/chrome/common/x_callback_url.h"
 #import "net/base/apple/url_conversions.h"
 
 namespace {
@@ -222,6 +223,10 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 
 @end
 
+// Subclass handling X-Callback URLs (googlechrome://x-callback-url/).
+@interface TaskRequestForXCallbackURLContext : TaskRequestForURLContext
+@end
+
 @implementation TaskRequestForURLContext
 
 + (instancetype)taskRequestWithURLContext:(UIOpenURLContext*)URLContext
@@ -233,6 +238,12 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
         [[TaskRequestForWidgetURLContext alloc] initWithURLContext:URLContext
                                                         sceneState:sceneState
                                                        isColdStart:isColdStart];
+  }
+  if (IsXCallbackURL(net::GURLWithNSURL(url))) {
+    return [[TaskRequestForXCallbackURLContext alloc]
+        initWithURLContext:URLContext
+                sceneState:sceneState
+               isColdStart:isColdStart];
   }
   return [[TaskRequestForURLContext alloc] initWithURLContext:URLContext
                                                    sceneState:sceneState
@@ -357,6 +368,36 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
       base::RecordAction(base::UserMetricsAction(
           "MobileSearchPasswordsWidgetOpenPasswordManager"));
     }
+  }
+}
+
+@end
+
+#pragma mark - TaskRequestForXCallbackURLContext
+
+@implementation TaskRequestForXCallbackURLContext
+
+- (void)recordStartupMetrics {
+  [super recordStartupMetrics];
+
+  base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::X_CALLBACK);
+
+  NSString* action = [self.URLContext.URL path];
+  if ([action isEqualToString:
+                  [NSString stringWithFormat:
+                                @"/%s",
+                                app_group::kChromeAppGroupXCallbackCommand]]) {
+    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
+                              START_ACTION_XCALLBACK_APPGROUP_COMMAND,
+                              MOBILE_SESSION_START_ACTION_COUNT);
+  } else if ([action isEqualToString:@"/open"]) {
+    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
+                              START_ACTION_XCALLBACK_OPEN,
+                              MOBILE_SESSION_START_ACTION_COUNT);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
+                              START_ACTION_XCALLBACK_OTHER,
+                              MOBILE_SESSION_START_ACTION_COUNT);
   }
 }
 

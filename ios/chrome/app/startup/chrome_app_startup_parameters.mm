@@ -203,6 +203,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     appStartupParameters.openedViaWidgetScheme = YES;
     return appStartupParameters;
     // LINT.ThenChange(//ios/chrome/app/task_request_url_context.mm:WidgetKitScheme)
+    // LINT.IfChange(XCallbackURL)
+    // TODO(crbug.com/462018636): This code will be soon migrated to
+    // task_request_url_context.mm, so any change should be reflected also
+    // there. Contact fedegermi for additional information or support.
   } else if (IsXCallbackURL(parsedURL)) {
     base::UmaHistogramEnumeration(kAppLaunchSource,
                                   AppLaunchSource::X_CALLBACK);
@@ -233,6 +237,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_XCALLBACK_OPEN,
                               MOBILE_SESSION_START_ACTION_COUNT);
+    // LINT.ThenChange(//ios/chrome/app/task_request_url_context.mm:XCallbackURL)
 
     std::map<std::string, std::string> parameters =
         ExtractQueryParametersFromXCallbackURL(parsedURL);
