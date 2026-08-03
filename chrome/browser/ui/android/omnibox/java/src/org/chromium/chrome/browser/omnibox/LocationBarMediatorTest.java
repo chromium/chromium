@@ -2094,6 +2094,8 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout, never()).setMicButtonVisibility(true);
 
         reset(mLocationBarLayout);
+        doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
+        doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         mMediator.onFinishNativeInitialization();
@@ -2168,6 +2170,8 @@ public class LocationBarMediatorTest {
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         mMediator.onFinishNativeInitialization();
         reset(mLocationBarLayout);
+        doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
+        doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
 
         mMediator.updateButtonVisibility();
         verify(mLocationBarLayout).setDeleteButtonVisibility(false);
@@ -2207,6 +2211,8 @@ public class LocationBarMediatorTest {
         doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
         reset(mLocationBarTablet);
+        doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
+        doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
 
         mTabletMediator.updateButtonVisibility();
         updateTabletWidthConsumers(mTabletMediator);
@@ -2257,6 +2263,8 @@ public class LocationBarMediatorTest {
         mTabletMediator.onUrlFocusChange(true);
         doReturn(inputText).when(mUrlCoordinator).getTextWithAutocomplete();
         reset(mLocationBarTablet);
+        doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
+        doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
 
         mTabletMediator.updateButtonVisibility();
         updateTabletWidthConsumers(mTabletMediator);
@@ -2308,6 +2316,8 @@ public class LocationBarMediatorTest {
         mTabletMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
         reset(mLocationBarTablet);
+        doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
+        doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
 
         mTabletMediator.updateButtonVisibility();
         updateTabletWidthConsumers(mTabletMediator);
@@ -2322,6 +2332,8 @@ public class LocationBarMediatorTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         mTabletMediator.onFinishNativeInitialization();
         reset(mLocationBarTablet);
+        doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
+        doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
         int buttonWidth =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
@@ -2341,6 +2353,8 @@ public class LocationBarMediatorTest {
         mTabletMediator.onFinishNativeInitialization();
         mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(false);
         reset(mLocationBarTablet);
+        doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
+        doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
         mTabletMediator.updateButtonVisibility();
 
         verify(mLocationBarTablet).setMicButtonVisibility(false);
@@ -3522,6 +3536,8 @@ public class LocationBarMediatorTest {
         input.setUserText("modified text").setInitialUserText("initial text");
         input.setRequestType(AutocompleteRequestType.AI_MODE);
         reset(mLocationBarLayout);
+        doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
+        doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
         mMediator.deleteButtonClicked(null);
         assertEquals("", input.getUserText());
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
@@ -4272,11 +4288,16 @@ public class LocationBarMediatorTest {
     public void testUrlBarAccessibilityOrder() {
         mActivationChipVisibilitySupplier.set(true);
         verify(mUrlBar, atLeastOnce())
-            .setAccessibilityTraversalBefore(R.id.fusebox_activation_chip);
+                .setAccessibilityTraversalBefore(R.id.fusebox_activation_chip);
 
+        doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
         mActivationChipVisibilitySupplier.set(false);
+        verify(mUrlBar, atLeastOnce()).setAccessibilityTraversalBefore(R.id.delete_button);
+
+        doReturn(View.GONE).when(mDeleteButton).getVisibility();
+        mMediator.updateButtonVisibility();
         verify(mUrlBar, atLeastOnce())
-            .setAccessibilityTraversalBefore(R.id.omnibox_suggestions_dropdown);
+                .setAccessibilityTraversalBefore(R.id.omnibox_suggestions_dropdown);
     }
 
     @Test

@@ -1184,6 +1184,8 @@ class LocationBarMediator
             mLocationBarLayout
                     .getUrlBar()
                     .setAccessibilityTraversalBefore(R.id.fusebox_activation_chip);
+        } else if (mLocationBarLayout.getDeleteButton().getVisibility() == VISIBLE) {
+            mLocationBarLayout.getUrlBar().setAccessibilityTraversalBefore(R.id.delete_button);
         } else {
             mLocationBarLayout
                     .getUrlBar()
@@ -2135,6 +2137,8 @@ class LocationBarMediator
         mPreviousDeleteButtonVisible = showDeleteButton;
 
         mLocationBarLayout.setDeleteButtonVisibility(showDeleteButton);
+        updateUrlBarAccessibilityOrder(
+                mFuseboxCoordinator.getActivationChipVisibilitySupplier().get());
 
         if (showDeleteButton) {
             if (mCurrentInput != null
