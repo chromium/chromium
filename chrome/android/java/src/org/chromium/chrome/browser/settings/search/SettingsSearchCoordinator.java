@@ -1097,7 +1097,9 @@ public class SettingsSearchCoordinator
         }
         // Case for settings in tab.
         if (mActionBar != null) {
-            SettingsMenuHelper.updateNavigationIcon(mActionBar, mActivity, show, mUseMultiColumn);
+            boolean isMainSettings = mMultiColumnSettings != null && isShowingMainSettings();
+            SettingsMenuHelper.updateNavigationIcon(
+                    mActionBar, mActivity, show, mUseMultiColumn, isMainSettings);
         }
     }
 

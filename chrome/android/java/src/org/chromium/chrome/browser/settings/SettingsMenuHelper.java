@@ -146,13 +146,18 @@ public class SettingsMenuHelper {
 
     /**
      * Configures the navigation icon and click listener on the toolbar based on column layout. The
-     * Chrome logo is shown in multi-column layouts and a back button is shown in single-column
-     * layouts.
+     * Chrome logo is shown in multi-column layouts, or in single-column layouts when SettingsInTab
+     * is enabled and showing the top-level main settings. A back button is shown in single-column
+     * layouts otherwise.
      */
     public static void updateNavigationIcon(
-            Toolbar toolbar, Activity activity, boolean show, boolean isMultiColumn) {
+            Toolbar toolbar,
+            Activity activity,
+            boolean show,
+            boolean isMultiColumn,
+            boolean isMainSettings) {
         if (show) {
-            if (isMultiColumn) {
+            if (isMultiColumn || (SettingsInTab.isEnabled() && isMainSettings)) {
                 // Show the Chrome logo at 32x32 dp without tinting.
                 toolbar.setNavigationIcon(R.drawable.app_icon_32dp);
                 if (toolbar instanceof MaterialToolbar materialToolbar) {

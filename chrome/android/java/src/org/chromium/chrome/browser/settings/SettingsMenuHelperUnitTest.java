@@ -30,11 +30,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.ui.base.TestActivity;
 
@@ -178,10 +181,12 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testUpdateNavigationIcon_ShowMultiColumn() {
-        Activity activity = mock(Activity.class);
-
         SettingsMenuHelper.updateNavigationIcon(
-                mToolbar, activity, /* show= */ true, /* isMultiColumn= */ true);
+                mToolbar,
+                mActivity,
+                /* show= */ true,
+                /* isMultiColumn= */ true,
+                /* isMainSettings= */ true);
 
         verify(mToolbar).setNavigationIcon(R.drawable.app_icon_32dp);
         verify(mToolbar).setNavigationOnClickListener(null);
@@ -192,7 +197,48 @@ public class SettingsMenuHelperUnitTest {
         Activity activity = mock(Activity.class);
 
         SettingsMenuHelper.updateNavigationIcon(
-                mToolbar, activity, /* show= */ true, /* isMultiColumn= */ false);
+                mToolbar,
+                activity,
+                /* show= */ true,
+                /* isMultiColumn= */ false,
+                /* isMainSettings= */ false);
+
+        verify(mToolbar).setNavigationIcon(R.drawable.ic_arrow_back_24dp);
+        ArgumentCaptor<View.OnClickListener> listenerCaptor =
+                ArgumentCaptor.forClass(View.OnClickListener.class);
+        verify(mToolbar).setNavigationOnClickListener(listenerCaptor.capture());
+
+        listenerCaptor.getValue().onClick(null);
+        verify(activity).onBackPressed();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateNavigationIcon_ShowSingleColumn_SettingsInTabMainSettings() {
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar,
+                mActivity,
+                /* show= */ true,
+                /* isMultiColumn= */ false,
+                /* isMainSettings= */ true);
+
+        verify(mToolbar).setNavigationIcon(R.drawable.app_icon_32dp);
+        verify(mToolbar).setNavigationOnClickListener(null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateNavigationIcon_ShowSingleColumn_SettingsInTabDetailSettings() {
+        Activity activity = mock(Activity.class);
+
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar,
+                activity,
+                /* show= */ true,
+                /* isMultiColumn= */ false,
+                /* isMainSettings= */ false);
 
         verify(mToolbar).setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         ArgumentCaptor<View.OnClickListener> listenerCaptor =
@@ -205,10 +251,12 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testUpdateNavigationIcon_Hide() {
-        Activity activity = mock(Activity.class);
-
         SettingsMenuHelper.updateNavigationIcon(
-                mToolbar, activity, /* show= */ false, /* isMultiColumn= */ false);
+                mToolbar,
+                mActivity,
+                /* show= */ false,
+                /* isMultiColumn= */ false,
+                /* isMainSettings= */ false);
 
         verify(mToolbar).setNavigationIcon(null);
     }

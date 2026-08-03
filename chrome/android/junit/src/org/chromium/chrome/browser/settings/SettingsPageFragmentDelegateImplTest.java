@@ -620,18 +620,26 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
 
-        // Single-column mode -> back button navigation icon and description.
-        when(mMultiColumnSettings.isTwoColumn()).thenReturn(false);
-        mDelegate.onHeaderLayoutUpdated();
-        assertEquals(
-                ApplicationProvider.getApplicationContext().getString(R.string.back),
-                toolbar.getNavigationContentDescription());
-
         // Two-column mode -> app icon navigation icon and description.
         when(mMultiColumnSettings.isTwoColumn()).thenReturn(true);
         mDelegate.onHeaderLayoutUpdated();
         assertEquals(
                 ApplicationProvider.getApplicationContext().getString(R.string.app_name),
+                toolbar.getNavigationContentDescription());
+
+        // Single-column mode + main settings -> app icon navigation icon and description.
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(false);
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        mDelegate.onHeaderLayoutUpdated();
+        assertEquals(
+                ApplicationProvider.getApplicationContext().getString(R.string.app_name),
+                toolbar.getNavigationContentDescription());
+
+        // Single-column mode + detail settings -> back button navigation icon and description.
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(true);
+        mDelegate.onHeaderLayoutUpdated();
+        assertEquals(
+                ApplicationProvider.getApplicationContext().getString(R.string.back),
                 toolbar.getNavigationContentDescription());
     }
 

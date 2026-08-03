@@ -476,23 +476,38 @@ public class SettingsPageFragmentDelegateImpl
 
     @Override
     public void onTitleUpdated() {
+        updateNavigationIcon();
         updateBackPressState();
     }
 
     @Override
     public void onSlideStateUpdated(int newState) {
+        updateNavigationIcon();
         updateBackPressState();
     }
 
     @Override
     public void onHeaderLayoutUpdated() {
+        updateNavigationIcon();
+        updateBackPressState();
+    }
+
+    private void updateNavigationIcon() {
         if (mToolbar != null) {
             // The layout must be updated at least once before isTwoColumnSettingsVisible() returns
             // the correct value.
             SettingsMenuHelper.updateNavigationIcon(
-                    mToolbar, mActivity, /* show= */ true, isTwoColumnSettingsVisible());
+                    mToolbar,
+                    mActivity,
+                    /* show= */ true,
+                    isTwoColumnSettingsVisible(),
+                    isMainSettingsVisible());
         }
-        updateBackPressState();
+    }
+
+    private boolean isMainSettingsVisible() {
+        MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
+        return multiColumnSettings != null && !multiColumnSettings.isLayoutOpen();
     }
 
     @Override
