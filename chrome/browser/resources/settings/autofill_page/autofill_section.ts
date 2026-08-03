@@ -68,10 +68,6 @@ declare global {
   }
 }
 
-// TODO(crbug.com/447113309): This file along with all of its dependencies
-// should be moved to .../settings/your_saved_info_page directory after
-// full release of the `Your Saved Info` page.
-
 export interface SettingsAutofillSectionElement {
   $: {
     addAddress: CrButtonElement,

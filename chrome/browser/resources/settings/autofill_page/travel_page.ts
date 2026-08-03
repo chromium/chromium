@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-identity-docs-page', is a subpage of the "Your saved
- * info" section. It manages the user's autofill data for identity documents.
- * Users can add, edit, or delete their saved document details, as well as opt
- * out of the autofill functionality entirely.
+ * @fileoverview 'settings-travel-page', is a subpage of the "Your saved info"
+ * section. It manages the user's autofill data for traveling. Users can add,
+ * edit, or delete their saved document details, as well as opt out of the
+ * autofill functionality entirely.
  */
+
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/prefs/prefs.js';
-import '../autofill_page/autofill_ai_entries_list.js';
-import '../autofill_page/your_saved_info_shared.css.js';
+import './autofill_ai_entries_list.js';
+import './your_saved_info_shared.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
@@ -24,8 +25,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {AiEnterpriseFeaturePrefName} from '../ai_page/constants.js';
 import type {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
-import type {EntityDataManagerProxy} from '../autofill_page/entity_data_manager_proxy.js';
-import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
+import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
@@ -34,22 +35,21 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
-import {getTemplate} from './identity_docs_page.html.js';
 import {checkAutofillPoliciesAndModifyPrefIfNecessary} from './policy_utils.js';
+import {getTemplate} from './travel_page.html.js';
 
-export interface SettingsIdentityDocsPageElement {
+export interface SettingsTravelPageElement {
   $: {
     optInToggle: SettingsToggleButtonElement,
   };
 }
 
-const SettingsIdentityDocsPageElementBase =
+const SettingsTravelPageElementBase =
     SettingsViewMixin(PrefsMixin(PolymerElement));
 
-export class SettingsIdentityDocsPageElement extends
-    SettingsIdentityDocsPageElementBase {
+export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   static get is() {
-    return 'settings-identity-docs-page';
+    return 'settings-travel-page';
   }
 
   static get template() {
@@ -74,6 +74,11 @@ export class SettingsIdentityDocsPageElement extends
         },
       },
 
+      enhancedAutofillOptedIn_: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
          Whether the feature kAutofillAiAvailableByDefault is enabled. When
          enabled, users do not need to opt-in to enhanced Autofill to use
@@ -87,8 +92,8 @@ export class SettingsIdentityDocsPageElement extends
       },
 
       /**
-       Controls whether the user can use Autofill AI (in this context, identity
-       docs filling). As an example, this can be false if the extensions API
+       Controls whether the user can use Autofill AI (in this context travel
+       info filling). As an example, this can be false if the extensions API
        disables the feature.
       */
       canEnableOrDisableAutofillAi_: {
@@ -98,23 +103,17 @@ export class SettingsIdentityDocsPageElement extends
         },
       },
 
-      enhancedAutofillOptedIn_: {
-        type: Boolean,
-        value: false,
-      },
-
       /**
-         Fake preference used by `this.$.optInToggle`. Stores the value of
-         the `autofill.autofill_ai.identity_entities_enabled` preference if
-         the toggle is enabled (clickable). If the toggle is disabled, then the
-         value is overridden to be shown as false even if the preference is
-         true.
+         Fake preference used by `this.$.optInToggle`. Shows value of
+         `autofill.autofill_ai.travel_entities_enabled` preference if toggle
+         is enabled (clickable). If toggle is disabled then the value is
+         overridden to be shown as false even if the preference is true.
        */
-      identityDocsOptedIn_: {
+      travelOptedIn_: {
         type: Object,
-        computed: `computeIdentityDocsOptedIn_(enhancedAutofillEligibleUser_,
+        computed: `computeTravelOptedIn_(enhancedAutofillEligibleUser_,
               enhancedAutofillOptedIn_,
-              prefs.autofill.autofill_ai.identity_entities_enabled,
+              prefs.autofill.autofill_ai.travel_entities_enabled,
               prefs.autofill.profile_enabled.value,
               prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI},
               prefsInitialized_)`,
@@ -154,16 +153,15 @@ export class SettingsIdentityDocsPageElement extends
 
   declare private enhancedAutofillEligibleUser_: boolean;
   declare private enhancedAutofillOptedIn_: boolean;
+  declare private travelOptedIn_: chrome.settingsPrivate.PrefObject;
+  declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
-  declare private identityDocsOptedIn_: chrome.settingsPrivate.PrefObject;
-  declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
   declare private prefsInitialized_: boolean;
   declare private showSuggestionsFromGeminiSettings_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
-
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
@@ -188,7 +186,7 @@ export class SettingsIdentityDocsPageElement extends
           (!ignoreAddressAutofill && !addressAutofillOptInStatus);
     }
 
-    // The identity docs opt-in toggle should be enabled (editable) when all
+    // The travel opt-in toggle should be enabled (editable) when all
     // conditions are met:
     //  * User is eligible for enhanced autofill.
     //  * User is enrolled in enhanced autofill.
@@ -202,7 +200,7 @@ export class SettingsIdentityDocsPageElement extends
   }
 
   private onAutofillOptInStatusChange_() {
-    // If Autofill AI is enabled by default, there is no need to check the
+    // If autofill AI is enabled by default, there is no need to check the
     // opt-in status.
     if (this.autofillAiAvailableByDefault_) {
       return;
@@ -212,8 +210,7 @@ export class SettingsIdentityDocsPageElement extends
     });
   }
 
-  private computeIdentityDocsOptedIn_():
-      chrome.settingsPrivate.PrefObject<boolean> {
+  private computeTravelOptedIn_(): chrome.settingsPrivate.PrefObject<boolean> {
     const fakePref: chrome.settingsPrivate.PrefObject<boolean> = {
       key: 'fake',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -225,7 +222,7 @@ export class SettingsIdentityDocsPageElement extends
     }
 
     fakePref.value =
-        this.getPref<boolean>('autofill.autofill_ai.identity_entities_enabled')
+        this.getPref<boolean>('autofill.autofill_ai.travel_entities_enabled')
             .value;
 
     if (this.optInToggleDisabled_()) {
@@ -244,23 +241,25 @@ export class SettingsIdentityDocsPageElement extends
 
   private onOptInToggleChange_() {
     this.setPrefValue(
-        'autofill.autofill_ai.identity_entities_enabled',
+        'autofill.autofill_ai.travel_entities_enabled',
         this.$.optInToggle.checked);
   }
 
   private getAllowedEntityTypes_(): Set<EntityTypeName> {
     return new Set([
-      EntityTypeName.kDriversLicense,
-      EntityTypeName.kNationalIdCard,
-      EntityTypeName.kPassport,
+      EntityTypeName.kFlightReservation,
+      EntityTypeName.kKnownTravelerNumber,
+      EntityTypeName.kRedressNumber,
+      EntityTypeName.kVehicle,
     ]);
   }
 
   private getMetricEntityTypes_(): Record<EntityTypeName, string> {
     return {
-      [EntityTypeName.kDriversLicense]: 'DriversLicense',
-      [EntityTypeName.kNationalIdCard]: 'NationalIdCard',
-      [EntityTypeName.kPassport]: 'Passport',
+      [EntityTypeName.kFlightReservation]: 'FlightReservation',
+      [EntityTypeName.kKnownTravelerNumber]: 'KnownTravelerNumber',
+      [EntityTypeName.kRedressNumber]: 'RedressNumber',
+      [EntityTypeName.kVehicle]: 'Vehicle',
     } as Record<EntityTypeName, string>;
   }
 
@@ -278,7 +277,7 @@ export class SettingsIdentityDocsPageElement extends
 
   private onSuggestionsFromGeminiClick_() {
     this.metricsBrowserProxy_.recordSuggestionsFromGeminiEntryPointClick(
-        SuggestionsFromGeminiEntryPoint.IDENTITY_DOCS);
+        SuggestionsFromGeminiEntryPoint.TRAVEL);
     Router.getInstance().navigateTo(routes.SUGGESTIONS_FROM_GEMINI);
   }
 
@@ -300,9 +299,8 @@ export class SettingsIdentityDocsPageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-identity-docs-page': SettingsIdentityDocsPageElement;
+    'settings-travel-page': SettingsTravelPageElement;
   }
 }
 
-customElements.define(
-    SettingsIdentityDocsPageElement.is, SettingsIdentityDocsPageElement);
+customElements.define(SettingsTravelPageElement.is, SettingsTravelPageElement);

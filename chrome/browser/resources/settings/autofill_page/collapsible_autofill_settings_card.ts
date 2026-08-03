@@ -22,7 +22,7 @@ import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
-import '../autofill_page/walletable_pass_detection_toggle.js';
+import './walletable_pass_detection_toggle.js';
 
 // </if>
 
@@ -32,8 +32,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
-import type {EntityDataManagerProxy, EntityInstancesChangedListener} from '../autofill_page/entity_data_manager_proxy.js';
-import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
+import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';

@@ -11,7 +11,7 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/prefs/prefs.js';
-import '../autofill_page/your_saved_info_shared.css.js';
+import './your_saved_info_shared.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
@@ -22,8 +22,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AiEnterpriseFeaturePrefName} from '../ai_page/constants.js';
 import type {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
-import type {EntityDataManagerProxy} from '../autofill_page/entity_data_manager_proxy.js';
-import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
+import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';

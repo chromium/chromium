@@ -13,13 +13,13 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '../about_page/about_page.js';
 import '../ai_page/ai_page_index.js';
 import '../appearance_page/appearance_page_index.js';
+import '../autofill_page/your_saved_info_page_index.js';
 import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page_index.js';
 import '../performance_page/performance_page_index.js';
 import '../privacy_page/privacy_page_index.js';
 import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page_index.js';
-import '../your_saved_info_page/your_saved_info_page_index.js';
 // <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
 

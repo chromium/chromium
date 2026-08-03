@@ -156,7 +156,7 @@ enum class DataManagementSurvey {
   kIdentityDocs = 4,
   kTravel = 5,
 };
-// LINT.ThenChange(/chrome/browser/resources/settings/your_saved_info_page/saved_info_handler_proxy.ts:DataManagementSurvey)
+// LINT.ThenChange(/chrome/browser/resources/settings/autofill_page/saved_info_handler_proxy.ts:DataManagementSurvey)
 
 const std::string GetManagementSurveyTrigger(DataManagementSurvey survey) {
   switch (survey) {

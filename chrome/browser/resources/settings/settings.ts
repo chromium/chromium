@@ -72,8 +72,11 @@ export {SettingsAppearancePageElement, SystemTheme} from './appearance_page/appe
 export {SettingsAppearancePageIndexElement} from './appearance_page/appearance_page_index.js';
 export {HomeUrlInputElement} from './appearance_page/home_url_input.js';
 export {SettingsAutofillAiEntriesListElement} from './autofill_page/autofill_ai_entries_list.js';
+export {CollapsibleCardElement} from './autofill_page/collapsible_autofill_settings_card.js';
 export {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerPage} from './autofill_page/password_manager_proxy.js';
 export type {PasswordManagerProxy} from './autofill_page/password_manager_proxy.js';
+export {SettingsYourSavedInfoPageElement} from './autofill_page/your_saved_info_page.js';
+export {SettingsYourSavedInfoPageIndexElement} from './autofill_page/your_saved_info_page_index.js';
 export {BaseMixin} from './base_mixin.js';
 export {SettingsCheckboxListEntryElement} from './controls/settings_checkbox_list_entry.js';
 // <if expr="not is_chromeos">
@@ -160,6 +163,4 @@ export {SiteFaviconElement} from './site_favicon.js';
 export {convertDateToWindowsEpoch} from './time.js';
 export {TooltipMixin} from './tooltip_mixin.js';
 export type {TooltipMixinInterface} from './tooltip_mixin.js';
-export {CollapsibleCardElement} from './your_saved_info_page/collapsible_autofill_settings_card.js';
-export {SettingsYourSavedInfoPageElement} from './your_saved_info_page/your_saved_info_page.js';
-export {SettingsYourSavedInfoPageIndexElement} from './your_saved_info_page/your_saved_info_page_index.js';
+
