@@ -17,7 +17,6 @@
 @protocol GeminiCommands;
 @class LayoutGuideCenter;
 @class LayoutState;
-@protocol ResponderChaining;
 @protocol SceneMutator;
 @protocol SceneViewControllerDelegate;
 
@@ -31,6 +30,8 @@
 // The layout state to observe.
 @property(nonatomic, weak) LayoutState* layoutState;
 
+// A view to contain the TabGrid and BVC.
+@property(nonatomic, readonly) UIView* appContainer;
 // This view controller's LayoutGuideCenter.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 // Delegate for this view controller.
@@ -45,10 +46,7 @@
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
 // Sets the app bar.
-- (void)setAppBar:(UIViewController<ResponderChaining>*)appBar;
-
-// Sets the TabGrid.
-- (void)setTabGrid:(UIViewController<ResponderChaining>*)tabGrid;
+- (void)setAppBar:(UIViewController*)appBar;
 
 @end
 

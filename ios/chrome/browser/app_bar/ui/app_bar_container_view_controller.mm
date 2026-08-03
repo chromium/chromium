@@ -26,8 +26,6 @@
   AppBarViewController* _appBar;
   // The last fullscreen progress value received.
   CGFloat _fullscreenProgress;
-  // Following next responder for ResponderChaining.
-  __weak UIResponder* _followingNextResponder;
 }
 
 - (void)setLayoutState:(LayoutState*)layoutState {
@@ -88,27 +86,10 @@
   _fullscreenProgress = 1;
 }
 
-#pragma mark - ResponderChaining
-
-- (void)respondBeforeResponder:(UIResponder*)nextResponder {
-  _followingNextResponder = nextResponder;
-}
-
 #pragma mark - AppBarContainerViewDelegate
 
 - (void)appBarContainerDidMoveToWindow:(AppBarContainerView*)appBarContainer {
   [self updateLayout];
-}
-
-#pragma mark - UIResponder
-
-- (UIResponder*)nextResponder {
-  UIResponder* nextResponder = _followingNextResponder ?: [super nextResponder];
-  if (_appBar) {
-    [_appBar respondBeforeResponder:nextResponder];
-    nextResponder = _appBar;
-  }
-  return nextResponder;
 }
 
 #pragma mark - FullscreenUIElement

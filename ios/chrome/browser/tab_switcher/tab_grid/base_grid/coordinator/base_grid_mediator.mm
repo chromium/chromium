@@ -301,6 +301,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 
   configuration.selectAllButton = !allItemsSelected;
   configuration.deselectAllButton = allItemsSelected;
+  configuration.exitTabGridButton = YES;
   configuration.closeSelectedTabsButton = selectedItemsCount > 0;
   configuration.shareButton = selectedShareableItemsCount > 0;
   configuration.addToButton = selectedItemsCount > 0;

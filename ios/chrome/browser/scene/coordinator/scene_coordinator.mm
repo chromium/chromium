@@ -317,7 +317,18 @@ inline LayoutStateScenePassKey PassKey() {
     _viewController.delegate = self;
     _viewController.geminiHandler = HandlerForProtocol(
         _regularBrowser->GetCommandDispatcher(), GeminiCommands);
-    [_viewController setTabGrid:_tabGridCoordinator.viewController];
+    UIViewController* tabGridViewController =
+        _tabGridCoordinator.viewController;
+    [_viewController addChildViewController:tabGridViewController];
+    if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+      [_viewController.view addSubview:tabGridViewController.view];
+      [tabGridViewController.view addSubview:_viewController.appContainer];
+      tabGridViewController.view.frame = _viewController.view.bounds;
+    } else {
+      [_viewController.appContainer addSubview:tabGridViewController.view];
+      tabGridViewController.view.frame = _viewController.appContainer.bounds;
+    }
+    [tabGridViewController didMoveToParentViewController:_viewController];
     self.sceneState.window.rootViewController = _viewController;
 
     _sceneMediator = [[SceneMediator alloc]

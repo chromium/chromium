@@ -11,7 +11,6 @@
 
 @class BrowserLayoutViewController;
 class Browser;
-@protocol ResponderChaining;
 @protocol SceneCommands;
 @protocol TabGridCoordinatorDelegate;
 
@@ -38,8 +37,7 @@ class Browser;
 @property(nonatomic, readonly, strong) UIViewController* activeViewController;
 
 // The view controller for the Tab Grid.
-@property(nonatomic, readonly)
-    UIViewController<ResponderChaining>* viewController;
+@property(nonatomic, readonly) UIViewController* viewController;
 
 // If this property is YES, calls to `showTabGridPage:animated:` and
 // `showBrowserLayoutViewController:completion:` will present the

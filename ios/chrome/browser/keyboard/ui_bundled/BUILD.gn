@@ -9,7 +9,6 @@ source_set("ui_bundled") {
     "key_command_actions.h",
     "menu_builder.h",
     "menu_builder.mm",
-    "responder_chaining.h",
   ]
   deps = [
     "//base",
