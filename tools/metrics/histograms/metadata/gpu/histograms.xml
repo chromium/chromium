@@ -2791,6 +2791,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Viz.FrameDeadlineDecider.SelectionReason"
+    enum="FrameDeadlineDeciderSelectionReason" expires_after="2026-11-29">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Records the reason why a specific frame deadline was selected by
+    viz::FrameDeadlineDecider. Recorded every time a frame is drawn and swapped.
+  </summary>
+</histogram>
+
 <histogram name="Viz.FrameIntervalDecider.ActualIntervalDefault" units="ms"
     expires_after="2027-08-02">
   <owner>boliu@chromium.org</owner>

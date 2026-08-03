@@ -647,9 +647,11 @@ bool DisplayScheduler::CanDrawForPreviousFrame(
   bool is_handling_interaction =
       damage_tracker_ ? damage_tracker_->HasDamageDueToInteraction() : false;
   size_t deadline_index =
-      decider_.QueryDeadline(deadlines, begin_frame_args.interval,
-                             max_allowed_buffers, begin_frame_args.frame_time,
-                             earliest_input_time, is_handling_interaction);
+      decider_
+          .QueryDeadline(deadlines, begin_frame_args.interval,
+                         max_allowed_buffers, begin_frame_args.frame_time,
+                         earliest_input_time, is_handling_interaction)
+          .deadline_index;
   const auto& selected_deadline = deadlines.deadlines[deadline_index];
 
   base::TimeTicks latch_time =

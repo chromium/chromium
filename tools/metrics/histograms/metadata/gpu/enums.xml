@@ -409,6 +409,18 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="ANGLE D3D11 WARP"/>
 </enum>
 
+<!-- LINT.IfChange(FrameDeadlineDeciderSelectionReason) -->
+
+<enum name="FrameDeadlineDeciderSelectionReason">
+  <int value="0" label="PlatformPreferred"/>
+  <int value="1" label="OngoingSequence"/>
+  <int value="2" label="Chrome Preferred New Sequence"/>
+  <int value="3" label="kOsPreferredNoDeadlineWithinTarget"/>
+  <int value="4" label="kOsPreferredChromePreferredSooner"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/viz/service/display/frame_deadline_decider.h:SelectionReason) -->
+
 <enum name="FrameIntervalMatcherType">
   <int value="0" label="kNone"/>
   <int value="1" label="kInputBoost"/>

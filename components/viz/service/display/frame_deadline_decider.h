@@ -19,6 +19,31 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   static constexpr base::TimeDelta kPerceptibleLatencyThreshold =
       base::Milliseconds(100);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SelectionReason)
+  enum class SelectionReason {
+    kPlatformPreferred = 0,
+    kOngoingSequence = 1,
+    // Chrome preferred deadline was found in possible deadlines and we didn't
+    // have to fall back to OS preferred due to various reasons when starting a
+    // new sequence.
+    kChromePreferredNewSequence = 2,
+    // Fallback to OS preferred because no deadline exists with present delta <=
+    // target present delta.
+    kOsPreferredNoDeadlineWithinTarget = 3,
+    // Fallback to OS preferred because Chrome preferred is sooner than OS
+    // preferred.
+    kOsPreferredChromePreferredSooner = 4,
+    kMaxValue = kOsPreferredChromePreferredSooner,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:FrameDeadlineDeciderSelectionReason)
+
+  struct QueryResult {
+    size_t deadline_index;
+    SelectionReason reason;
+  };
+
   explicit FrameDeadlineDecider(bool use_platform_preferred_deadlines);
   ~FrameDeadlineDecider();
 
@@ -30,12 +55,12 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   // Queries the best deadline index for the given parameters without modifying
   // any internal state of the decider. This is safe to call multiple times or
   // from const methods.
-  size_t QueryDeadline(const PossibleDeadlines& possible_deadlines,
-                       base::TimeDelta vsync_interval,
-                       int max_allowed_buffers,
-                       base::TimeTicks frame_time,
-                       std::optional<base::TimeTicks> earliest_input_time,
-                       bool is_handling_interaction) const;
+  QueryResult QueryDeadline(const PossibleDeadlines& possible_deadlines,
+                            base::TimeDelta vsync_interval,
+                            int max_allowed_buffers,
+                            base::TimeTicks frame_time,
+                            std::optional<base::TimeTicks> earliest_input_time,
+                            bool is_handling_interaction) const;
 
   // Selects the best deadline index and updates the internal state of the
   // decider to lock to the selected deadline for the current sequence.
