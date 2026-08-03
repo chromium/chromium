@@ -103,21 +103,6 @@ std::string CurrentLocaleOrDefault();
 // proper fallback.
 void GetAllLocales(std::set<std::string>* all_locales);
 
-// Provides a vector of all fallback locales for message localization.
-// The vector is ordered by priority of locale - application locale,
-// first_parent, ..., `default_locale`.
-void GetAllFallbackLocales(const std::string& default_locale,
-                           std::vector<std::string>* all_fallback_locales);
-
-// Fill `valid_locales` with all valid locales under `locale_path`.
-// `valid_locales` is the intersection of the set of locales supported by
-// Chrome and the set of locales specified by `locale_path`.
-// Returns true if valid_locales contains at least one locale, false otherwise.
-// `error` contains an error message when a locale is corrupt or missing.
-bool GetValidLocales(const base::FilePath& locale_path,
-                     std::set<std::string>* valid_locales,
-                     std::string* error);
-
 // Loads messages file for the default locale and application locales
 // (application locales do not have to exist). Application locales include the
 // current locale and its parents. If `gzip_permission` is

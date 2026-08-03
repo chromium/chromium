@@ -16,6 +16,7 @@
 #include "base/containers/extend.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/i18n/icubridge/supported_locales.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/json/json_file_value_serializer.h"
@@ -45,6 +46,7 @@ namespace keys = extensions::manifest_keys;
 
 namespace {
 
+using ::base::i18n::GetKnownLanguageTag;
 using ::base::i18n::LanguageTag;
 using ::base::i18n::LanguageTagConverter;
 
@@ -56,11 +58,11 @@ bool g_allow_gzipped_messages_for_test = false;
 // version of the file and if found will decompresses it into a string first.
 std::optional<base::DictValue> LoadMessageFile(
     const base::FilePath& locale_path,
-    const std::string& locale,
+    const LanguageTag& locale,
     std::string* error,
     extension_l10n_util::GzippedMessagesPermission gzip_permission) {
-  base::FilePath file_path =
-      locale_path.AppendASCII(locale).Append(extensions::kMessagesFilename);
+  base::FilePath file_path = locale_path.AppendASCII(locale.ToLegacyICUFormat())
+                                 .Append(extensions::kMessagesFilename);
 
   std::optional<base::DictValue> dictionary;
   if (base::PathExists(file_path)) {
@@ -80,13 +82,13 @@ std::optional<base::DictValue> LoadMessageFile(
       std::string compressed_data;
       if (!base::ReadFileToString(compressed_file_path, &compressed_data)) {
         *error = base::StringPrintf("Failed to read compressed locale %s.",
-                                    locale.c_str());
+                                    locale.tag_string());
         return dictionary;
       }
       std::string data;
       if (!compression::GzipUncompress(compressed_data, &data)) {
         *error = base::StringPrintf("Failed to decompress locale %s.",
-                                    locale.c_str());
+                                    locale.tag_string());
         return dictionary;
       }
       base::JSONReader::Result value =
@@ -107,7 +109,7 @@ std::optional<base::DictValue> LoadMessageFile(
       // JSONFileValueSerializer just returns null if file cannot be read. It
       // doesn't set the error, so we have to do it.
       *error = base::StringPrintf("Catalog file is missing for locale %s.",
-                                  locale.c_str());
+                                  locale.tag_string());
     } else {
       *error = extensions::ErrorUtils::FormatErrorMessage(
           errors::kLocalesInvalidLocale,
@@ -384,30 +386,23 @@ bool LocalizeExtension(const base::FilePath& extension_path,
   return true;
 }
 
-bool AddLocale(const std::set<std::string>& chrome_locales,
-               const base::FilePath& locale_folder,
-               const std::string& locale_name,
-               std::set<std::string>* valid_locales,
-               std::string* error) {
-  // Accept name that starts with a . but don't add it to the list of supported
-  // locales.
-  if (base::StartsWith(locale_name, ".", base::CompareCase::SENSITIVE))
-    return true;
-  if (!chrome_locales.contains(locale_name)) {
+bool ShouldAddLocale(const base::FilePath& locale_folder,
+                     const LanguageTag& locale_tag,
+                     std::string* error) {
+  if (!base::i18n::GetSupportedIcuLocales().contains(locale_tag)) {
     // Warn if there is an extension locale that's not in the Chrome list,
     // but don't fail.
     DLOG(WARNING) << base::StringPrintf("Supplied locale %s is not supported.",
-                                        locale_name.c_str());
+                                        locale_tag.tag_string());
     return true;
   }
   // Check if messages file is actually present (but don't check content).
   if (!base::PathExists(locale_folder.Append(extensions::kMessagesFilename))) {
     *error = base::StringPrintf("Catalog file is missing for locale %s.",
-                                locale_name.c_str());
+                                locale_tag.tag_string());
     return false;
   }
 
-  valid_locales->insert(locale_name);
   return true;
 }
 
@@ -419,94 +414,96 @@ std::string CurrentLocaleOrDefault() {
   return "en";
 }
 
-std::vector<std::string> GetParentLocales(const std::string& locale) {
-  std::vector<std::string> parents;
-  for (std::optional<LanguageTag> tag =
-           LanguageTagConverter::GetInstance().FromString(locale);
-       tag; tag = tag->GetParentTag()) {
-    parents.push_back(tag->ToLegacyICUFormat());
-  }
-  return parents;
-}
-
 void GetAllLocales(std::set<std::string>* all_locales) {
-  const std::vector<std::string>& available_locales =
-      l10n_util::GetAvailableICULocales();
-  // Add all parents of the current locale to the available locales set.
-  // I.e. for sr_Cyrl_RS we add sr_Cyrl_RS, sr_Cyrl and sr.
-  for (const auto& locale : available_locales) {
-    std::vector<std::string> result = GetParentLocales(locale);
-    all_locales->insert(result.begin(), result.end());
+  for (const LanguageTag& tag : base::i18n::GetSupportedIcuLocales()) {
+    all_locales->emplace(tag.ToLegacyICUFormat());
   }
 }
 
-void GetAllFallbackLocales(const std::string& default_locale,
-                           std::vector<std::string>* all_fallback_locales) {
-  DCHECK(all_fallback_locales);
-  std::string application_locale = CurrentLocaleOrDefault();
+std::vector<LanguageTag> GetAllFallbackLocales(
+    const LanguageTag& default_locale) {
+  LanguageTag application_locale_tag =
+      GetProcessLocale().value_or(GetKnownLanguageTag("en"));
+  std::vector<LanguageTag> all_fallback_locales;
 
   // Use the preferred locale if available. Otherwise, fall back to the
   // application locale or the application locale's parent locales. Thus, a
   // preferred locale of "en_CA" with an application locale of "en_GB" will
   // first try to use an en_CA locale folder, followed by en_GB, followed by en.
   const std::optional<LanguageTag>& preferred_tag = GetPreferredLocale();
-  std::string preferred_locale =
-      preferred_tag ? preferred_tag->ToLegacyICUFormat() : "";
-  if (!preferred_locale.empty() && preferred_locale != default_locale &&
-      preferred_locale != application_locale) {
-    all_fallback_locales->push_back(preferred_locale);
+  if (preferred_tag && preferred_tag != default_locale &&
+      *preferred_tag != application_locale_tag) {
+    all_fallback_locales.push_back(*preferred_tag);
   }
 
-  if (!application_locale.empty() && application_locale != default_locale) {
-    base::Extend(*all_fallback_locales, GetParentLocales(application_locale));
+  if (application_locale_tag != default_locale) {
+    for (std::optional<LanguageTag> tag = application_locale_tag; tag;
+         tag = tag->GetParentTag()) {
+      all_fallback_locales.push_back(*tag);
+    }
   }
-  all_fallback_locales->push_back(default_locale);
+  all_fallback_locales.push_back(default_locale);
+  return all_fallback_locales;
 }
 
-bool GetValidLocales(const base::FilePath& locale_path,
-                     std::set<std::string>* valid_locales,
-                     std::string* error) {
-  std::set<std::string> chrome_locales;
-  GetAllLocales(&chrome_locales);
-
+std::set<LanguageTag> GetValidLocales(const base::FilePath& locale_path,
+                                      std::string* error) {
   // Enumerate all supplied locales in the extension.
   base::FileEnumerator locales(
       locale_path, false, base::FileEnumerator::DIRECTORIES);
   base::FilePath locale_folder;
+  std::set<LanguageTag> valid_locales;
   while (!(locale_folder = locales.Next()).empty()) {
     std::string locale_name = locale_folder.BaseName().MaybeAsASCII();
     if (locale_name.empty()) {
       NOTREACHED();  // Not ASCII.
     }
-    if (!AddLocale(
-            chrome_locales, locale_folder, locale_name, valid_locales, error)) {
-      valid_locales->clear();
-      return false;
+    // Locales that start with a "." are accepted but not included in
+    // `valid_locales`.
+    if (base::StartsWith(locale_name, ".")) {
+      continue;
     }
+    std::optional<LanguageTag> locale_tag =
+        base::i18n::GetLanguageTagFromString(locale_name);
+    if (!locale_tag.has_value()) {
+      DLOG(WARNING) << "Supplied locale " << locale_name << " is invalid.";
+      continue;
+    }
+    if (!base::i18n::GetSupportedIcuLocales().contains(*locale_tag)) {
+      DLOG(WARNING) << "Supplied locale " << locale_tag->tag_string()
+                    << " is not supported.";
+      continue;
+    }
+    if (!ShouldAddLocale(locale_folder, *locale_tag, error)) {
+      return {};
+    }
+    valid_locales.insert(*locale_tag);
   }
 
-  if (valid_locales->empty()) {
+  if (valid_locales.empty()) {
     *error = errors::kLocalesNoValidLocaleNamesListed;
-    return false;
+    return {};
   }
 
-  return true;
+  return valid_locales;
 }
 
 extensions::MessageBundle* LoadMessageCatalogs(
     const base::FilePath& locale_path,
-    const std::string& default_locale,
+    const LanguageTag& default_locale,
     GzippedMessagesPermission gzip_permission,
     std::string* error) {
-  std::vector<std::string> all_fallback_locales;
-  GetAllFallbackLocales(default_locale, &all_fallback_locales);
+  std::vector<LanguageTag> all_fallback_locales =
+      GetAllFallbackLocales(default_locale);
 
   extensions::MessageBundle::CatalogVector catalogs;
   for (const auto& fallback_locale : all_fallback_locales) {
     // Skip all parent locales that are not supplied.
-    base::FilePath this_locale_path = locale_path.AppendASCII(fallback_locale);
-    if (!base::PathExists(this_locale_path))
+    base::FilePath this_locale_path =
+        locale_path.AppendASCII(fallback_locale.ToLegacyICUFormat());
+    if (!base::PathExists(this_locale_path)) {
       continue;
+    }
     std::optional<base::DictValue> catalog =
         LoadMessageFile(locale_path, fallback_locale, error, gzip_permission);
     if (!catalog.has_value()) {
@@ -518,6 +515,21 @@ extensions::MessageBundle* LoadMessageCatalogs(
   }
 
   return extensions::MessageBundle::Create(catalogs, error);
+}
+
+extensions::MessageBundle* LoadMessageCatalogs(
+    const base::FilePath& locale_path,
+    const std::string& default_locale,
+    GzippedMessagesPermission gzip_permission,
+    std::string* error) {
+  std::optional<LanguageTag> default_locale_tag =
+      base::i18n::GetLanguageTagFromString(default_locale);
+  if (!default_locale_tag) {
+    *error = "Invalid default locale";
+    return nullptr;
+  }
+  return LoadMessageCatalogs(locale_path, *default_locale_tag, gzip_permission,
+                             error);
 }
 
 bool ValidateExtensionLocales(const base::FilePath& extension_path,
@@ -536,10 +548,11 @@ bool ValidateExtensionLocales(const base::FilePath& extension_path,
 
   base::FilePath locale_path = extension_path.Append(extensions::kLocaleFolder);
 
-  std::set<std::string> valid_locales;
+  std::set<LanguageTag> valid_locales =
+      GetValidLocales(locale_path, &utf8_error);
   // TODO(crbug.com/41317803): Continue removing std::string errors and
   // replacing with std::u16string.
-  if (!GetValidLocales(locale_path, &valid_locales, &utf8_error)) {
+  if (valid_locales.empty()) {
     *error = base::UTF8ToUTF16(utf8_error);
     return false;
   }
@@ -559,8 +572,8 @@ bool ValidateExtensionLocales(const base::FilePath& extension_path,
     if (!utf8_error.empty()) {
       utf8_error += '\n';
     }
-    base::FilePath file_path =
-        locale_path.AppendASCII(locale).Append(extensions::kMessagesFilename);
+    base::FilePath file_path = locale_path.AppendASCII(locale.tag_string())
+                                   .Append(extensions::kMessagesFilename);
     utf8_error.append(extensions::ErrorUtils::FormatErrorMessage(
         errors::kLocalesInvalidLocale,
         base::UTF16ToUTF8(file_path.LossyDisplayName()), locale_error));

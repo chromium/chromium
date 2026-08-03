@@ -119,77 +119,6 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithErroneousLocalizations) {
                   "There is no \"message\" element for key name.")));
 }
 
-TEST(ExtensionL10nUtil, GetValidLocalesEmptyLocaleFolder) {
-  base::ScopedTempDir temp;
-  ASSERT_TRUE(temp.CreateUniqueTempDir());
-
-  base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
-  ASSERT_TRUE(base::CreateDirectory(src_path));
-
-  std::string error;
-  std::set<std::string> locales;
-  EXPECT_FALSE(
-      extension_l10n_util::GetValidLocales(src_path, &locales, &error));
-
-  EXPECT_TRUE(locales.empty());
-}
-
-TEST(ExtensionL10nUtil, GetValidLocalesWithValidLocaleNoMessagesFile) {
-  base::ScopedTempDir temp;
-  ASSERT_TRUE(temp.CreateUniqueTempDir());
-
-  base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
-  ASSERT_TRUE(base::CreateDirectory(src_path));
-  ASSERT_TRUE(base::CreateDirectory(src_path.AppendASCII("sr")));
-
-  std::string error;
-  std::set<std::string> locales;
-  EXPECT_FALSE(
-      extension_l10n_util::GetValidLocales(src_path, &locales, &error));
-
-  EXPECT_TRUE(locales.empty());
-}
-
-TEST(ExtensionL10nUtil, GetValidLocalesWithUnsupportedLocale) {
-  base::ScopedTempDir temp;
-  ASSERT_TRUE(temp.CreateUniqueTempDir());
-
-  base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
-  ASSERT_TRUE(base::CreateDirectory(src_path));
-  // Supported locale.
-  base::FilePath locale_1 = src_path.AppendASCII("sr");
-  ASSERT_TRUE(base::CreateDirectory(locale_1));
-  ASSERT_TRUE(base::WriteFile(locale_1.Append(kMessagesFilename), ""));
-  // Unsupported locale.
-  base::FilePath locale_2 = src_path.AppendASCII("xxx_yyy");
-  ASSERT_TRUE(base::CreateDirectory(locale_2));
-  ASSERT_TRUE(base::WriteFile(locale_2.Append(kMessagesFilename), ""));
-
-  std::string error;
-  std::set<std::string> locales;
-  EXPECT_TRUE(extension_l10n_util::GetValidLocales(src_path, &locales, &error));
-
-  EXPECT_FALSE(locales.empty());
-  EXPECT_TRUE(locales.contains("sr"));
-  EXPECT_FALSE(locales.contains("xxx_yyy"));
-}
-
-TEST(ExtensionL10nUtil, GetValidLocalesWithValidLocalesAndMessagesFile) {
-  base::FilePath install_dir;
-  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &install_dir));
-  install_dir =
-      install_dir.AppendASCII("extension_with_locales").Append(kLocaleFolder);
-
-  std::string error;
-  std::set<std::string> locales;
-  EXPECT_TRUE(
-      extension_l10n_util::GetValidLocales(install_dir, &locales, &error));
-  EXPECT_EQ(3U, locales.size());
-  EXPECT_TRUE(locales.contains("sr"));
-  EXPECT_TRUE(locales.contains("en"));
-  EXPECT_TRUE(locales.contains("en_US"));
-}
-
 TEST(ExtensionL10nUtil, LoadMessageCatalogsValidFallback) {
   extension_l10n_util::ScopedLocaleForTest scoped_locale("en-US");
   base::FilePath install_dir;
@@ -832,29 +761,6 @@ TEST(ExtensionL10nUtil,
   // Requires relocalization as the preferred (en_CA) differs from current
   // (en_GB).
   EXPECT_TRUE(extension_l10n_util::ShouldRelocalizeManifest(manifest));
-}
-
-TEST(ExtensionL10nUtil, GetAllFallbackLocales) {
-  extension_l10n_util::ScopedLocaleForTest scoped_locale("en-US");
-  std::vector<std::string> fallback_locales;
-  extension_l10n_util::GetAllFallbackLocales("all", &fallback_locales);
-  ASSERT_EQ(3U, fallback_locales.size());
-
-  EXPECT_EQ("en_US", fallback_locales[0]);
-  EXPECT_EQ("en", fallback_locales[1]);
-  EXPECT_EQ("all", fallback_locales[2]);
-}
-
-TEST(ExtensionL10nUtil, GetAllFallbackLocalesWithPreferredLocale) {
-  extension_l10n_util::ScopedLocaleForTest scoped_locale("en-GB", "en-CA");
-  std::vector<std::string> fallback_locales;
-  extension_l10n_util::GetAllFallbackLocales("all", &fallback_locales);
-  ASSERT_EQ(4U, fallback_locales.size());
-
-  EXPECT_EQ("en_CA", fallback_locales[0]);
-  EXPECT_EQ("en_GB", fallback_locales[1]);
-  EXPECT_EQ("en", fallback_locales[2]);
-  EXPECT_EQ("all", fallback_locales[3]);
 }
 
 }  // namespace
