@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/android/tab_android.h"
@@ -173,20 +174,16 @@ static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
   const ShareEntryPoint entry_point =
       static_cast<ShareEntryPoint>(j_entry_point);
 
-  // TODO(crbug.com/492072882) Consider adding a `CHECK` once Android is updated
-  // to always provide the callback.
+  CHECK(j_callback);
   base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation =
-      base::DoNothing();
-  if (j_callback) {
-    commit_confirmation = base::BindOnce(
-        [](const base::android::ScopedJavaGlobalRef<jobject>& j_callback,
-           SendTabToSelfResult result) {
-          JNIEnv* env = base::android::AttachCurrentThread();
-          Java_CommitConfirmationCallback_onResult(env, j_callback,
-                                                   static_cast<int>(result));
-        },
-        base::android::ScopedJavaGlobalRef<jobject>(j_callback));
-  }
+      base::BindOnce(
+          [](const base::android::ScopedJavaGlobalRef<jobject>& j_callback,
+             SendTabToSelfResult result) {
+            JNIEnv* env = base::android::AttachCurrentThread();
+            Java_CommitConfirmationCallback_onResult(env, j_callback,
+                                                     static_cast<int>(result));
+          },
+          base::android::ScopedJavaGlobalRef<jobject>(j_callback));
 
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
