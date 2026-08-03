@@ -100,6 +100,24 @@ void TrimKnownTravelerNumber(sync_pb::KnownTravelerNumber& ktn) {
   ktn.clear_expiration_date();
 }
 
+void TrimOrder(sync_pb::Order& order) {
+  order.clear_id();
+  order.clear_account();
+  order.clear_order_date();
+  order.clear_merchant_name();
+  order.clear_merchant_domain();
+  order.clear_product_names();
+}
+
+void TrimShipment(sync_pb::Shipment& shipment) {
+  shipment.clear_tracking_number();
+  shipment.clear_delivery_zip_code();
+  shipment.clear_shipping_date();
+  shipment.clear_carrier_name();
+  shipment.clear_carrier_domain();
+  shipment.clear_associated_order_ids();
+}
+
 }  // namespace
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
@@ -253,9 +271,18 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
       }
       break;
     }
-    case AutofillValuableSpecifics::kOrder:
+    case AutofillValuableSpecifics::kOrder: {
+      TrimOrder(*trimmed_specifics.mutable_order());
+      if (trimmed_specifics.order().ByteSizeLong() == 0) {
+        trimmed_specifics.clear_order();
+      }
+      break;
+    }
     case AutofillValuableSpecifics::kShipment: {
-      // TODO(crbug.com/541119872): Implement trimming.
+      TrimShipment(*trimmed_specifics.mutable_shipment());
+      if (trimmed_specifics.shipment().ByteSizeLong() == 0) {
+        trimmed_specifics.clear_shipment();
+      }
       break;
     }
     case AutofillValuableSpecifics::kEventTicket:
