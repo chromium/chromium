@@ -36,3 +36,10 @@ include_rules = [
   "+services/network/public/mojom",
   "+services/service_manager/public/cpp",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+net/url_request/redirect_info.h",
+  ],
+}
+
