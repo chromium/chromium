@@ -82,6 +82,8 @@ class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MetadataDataSourceTest, AndroidMetadata);
+  FRIEND_TEST_ALL_PREFIXES(MetadataDataSourceTest,
+                           TraceCaptureDatetimeBundleFormatting);
 
 #if BUILDFLAG(IS_ANDROID)
   static void RecordAndroidMetadata(
@@ -90,6 +92,10 @@ class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
       const std::string& installer_package_name,
       const std::string& host_package_name);
 #endif
+
+  static void RecordTraceCaptureDatetime(
+      base::Time time,
+      perfetto::protos::pbzero::ChromeEventBundle* bundle);
 
   bool privacy_filtering_enabled_ = false;
 

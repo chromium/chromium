@@ -4,10 +4,11 @@
 
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time_override.h"
@@ -15,7 +16,6 @@
 #include "base/tracing/trace_time.h"
 #include "components/variations/active_field_trials.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/perfetto/protos/perfetto/common/data_source_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
@@ -144,6 +144,21 @@ void MetadataDataSource::RecordAndroidMetadata(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// static
+void MetadataDataSource::RecordTraceCaptureDatetime(
+    base::Time time,
+    perfetto::protos::pbzero::ChromeEventBundle* bundle) {
+  base::Time::Exploded exploded;
+  time.UTCExplode(&exploded);
+  CHECK(exploded.HasValidValues());
+  AddMetadataToBundle(
+      kTraceCaptureDatetimeKey,
+      base::StringPrintf("%d-%d-%d %d:%d:%d", exploded.year, exploded.month,
+                         exploded.day_of_month, exploded.hour, exploded.minute,
+                         exploded.second),
+      bundle);
+}
+
 void MetadataDataSource::WriteMetadata(
     uintptr_t instance,
     std::vector<BundleRecorder> bundle_recorders,
@@ -173,11 +188,7 @@ void MetadataDataSource::WriteMetadata(
 #endif
       AddMetadataToBundle(kClockDomainMetadataKey,
                           GetClockString(base::TimeTicks::GetClock()), bundle);
-      AddMetadataToBundle(
-          kTraceCaptureDatetimeKey,
-          base::UnlocalizedTimeFormatWithPattern(
-              TRACE_TIME_NOW(), "y-M-d H:m:s", icu::TimeZone::getGMT()),
-          bundle);
+      RecordTraceCaptureDatetime(TRACE_TIME_NOW(), bundle);
       for (auto& recorder : bundle_recorders) {
         if (recorder.is_null()) {
           continue;
