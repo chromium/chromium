@@ -11,31 +11,17 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cr-searchbox-dropdown-header-padding-inline-start: 16px;
-  --cr-searchbox-results-search-icon-size: 16px;
-  --cr-searchbox-icon-container-size: 28px;
-  --cr-searchbox-match-padding: 6px;
-  --cr-searchbox-match-padding-inline-start: 16px;
-  --cr-searchbox-match-text-padding-inline-end: 8px;
   --cr-searchbox-min-width: 75%;
-  --cr-searchbox-results-action-chip-height: 26px;
   --cr-searchbox-results-margin-bottom: 0;
   --cr-searchbox-results-padding-bottom: 0;
   --cr-searchbox-width: 100%;
-  --cr-searchbox-match-font-weight: 700;
 
   --text-input-inline-start-spacing: 16px;
-  --color-composebox-context-entrypoint-background: var(--color-omnibox-action-icon-hover);
-  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
-  --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
-  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-context-entrypoint-text);
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
 
   font-size: var(--omnibox-font-size);
-
-
 }
 
 :host([has-visible-matches_]) .dropdownContainer,
@@ -82,14 +68,6 @@
 
 :host([searchbox-layout-mode_^='Tall']) #context {
   padding-inline: 8px;
-}
-
-/**
- * Show the secondary side if it can be shown and is currently available to be
- * shown.
- */
-:host([can-show-secondary-side][has-secondary-side]) {
-  --cr-searchbox-secondary-side-display: block;
 }
 
 /**

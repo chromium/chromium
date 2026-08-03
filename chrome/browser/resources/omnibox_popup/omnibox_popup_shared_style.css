@@ -8,10 +8,22 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  /* TODO(b/524320143): aim_app.css has different definitions for the following
+   * colors. We should reconcile these, so that all popups use the same color.
+   * Requires UX input to determine which color is the correct one:
+   *   - --color-composebox-context-entrypoint-background
+   *   - --color-composebox-context-entrypoint-hover-background
+   *   - --color-composebox-context-entrypoint-text
+   *   - --composebox-context-menu-entrypoint-button-color */
+  --color-composebox-context-entrypoint-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
+  --color-composebox-document-chip-icon: var(--color-sys-on-surface-subtle);
   --color-composebox-file-carousel-divider: var(--color-omnibox-composebox-divider);
   --color-composebox-file-chip-background: var(--color-omnibox-composebox-chip-background);
   --color-composebox-file-chip-favicon-background: var(--color-omnibox-composebox-favicon-background);
   --color-composebox-file-chip-text: var(--color-omnibox-text);
+  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-context-entrypoint-text);
   --cr-composebox-font-size: 14px;
 
   --cr-searchbox-match-icon-container-background-fallback: var(--color-omnibox-results-background-hovered);
@@ -43,18 +55,22 @@
   --color-searchbox-results-url: var(--color-omnibox-results-url);
   --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
   --cr-searchbox-match-text-padding-inline-start: 12px;
-  /* TODO(b/524320143): Move other non-shared composebox colors from app.css once
-   * aim_app.css / composebox CSS variables are refactored/reconciled.
-   * Remaining variables to reconcile:
-   *   - --color-composebox-context-entrypoint-background
-   *   - --color-composebox-context-entrypoint-hover-background
-   *   - --color-composebox-context-entrypoint-text
-   *   - --composebox-context-menu-entrypoint-button-color */
-  --color-composebox-document-chip-icon: var(--color-sys-on-surface-subtle);
 
   /* Closely resembles the views Omnibox input font size.
    * TODO(crbug.com/450640041): Investigate webUI blink & views rendering
    * difference. */
   --omnibox-font-size: 14.3px;
   --omnibox-context-menu-container-margin-top: 2px;
+}
+
+cr-searchbox-dropdown {
+  --cr-searchbox-dropdown-header-padding-inline-start: 16px;
+  --cr-searchbox-icon-container-size: 28px;
+  --cr-searchbox-match-font-weight: 700;
+  --cr-searchbox-match-padding: 6px;
+  --cr-searchbox-match-padding-inline-start: 16px;
+  --cr-searchbox-match-text-padding-inline-end: 8px;
+  --cr-searchbox-results-action-chip-height: 26px;
+  --cr-searchbox-results-search-icon-size: 16px;
+  --cr-searchbox-secondary-side-display: block;
 }

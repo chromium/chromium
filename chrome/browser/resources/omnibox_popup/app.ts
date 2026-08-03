@@ -230,8 +230,9 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     }
     this.inputState_ =
         (await this.searchboxBrowserProxy_.handler.getInputState()).state;
-    canShowSecondarySideMediaQueryList.addEventListener(
-        'change', this.onCanShowSecondarySideChanged_.bind(this));
+    this.eventTracker_.add(
+        canShowSecondarySideMediaQueryList, 'change',
+        this.onCanShowSecondarySideChanged_.bind(this));
 
     if (!this.isDebug) {
       this.eventTracker_.add(
@@ -253,9 +254,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
       this.browserProxy_.callbackRouter.removeListener(listenerId);
     }
     this.popupListenerIds_ = [];
-
-    canShowSecondarySideMediaQueryList.removeEventListener(
-        'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
