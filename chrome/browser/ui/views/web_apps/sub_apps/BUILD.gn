@@ -16,3 +16,25 @@ source_set("sub_apps") {
     "//ui/base",
   ]
 }
+
+source_set("sub_apps_install_dialog") {
+  sources = [ "sub_apps_install_dialog.cc" ]
+
+  deps = [
+    ":sub_apps",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/constrained_window",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:vector_icons",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
