@@ -130,6 +130,12 @@ cr-searchbox-input::part(searchbox-input) {
 :host([ntp-realbox-next-enabled])
     cr-searchbox-input::part(searchbox-input) {
   padding-inline-start: 24px;
+  padding-inline-end: 64px;
+}
+
+:host([ntp-realbox-next-enabled][compose-button-enabled])
+    cr-searchbox-input::part(searchbox-input) {
+  padding-inline-end: 110px;
 }
 
 :host([multi-line-enabled][ntp-realbox-next-enabled])
@@ -395,7 +401,18 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 :host([ntp-realbox-next-enabled]) #composeButton {
   top: 10px;
-  margin-inline-end: 10px;
+  margin-inline-end: 58px;
+}
+
+#profileIcon {
+  position: absolute;
+  right: 16px;
+  top: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  z-index: 100;
+  pointer-events: auto;
 }
 
 #bottomControls {

@@ -90,6 +90,7 @@ export class OmniboxEverywhereOmniboxElement extends
       animationState_: {type: String},
       composeButtonEnabled: {type: Boolean, reflect: true},
       ntpRealboxNextEnabled: {type: Boolean, reflect: true},
+      profileAvatarUrl_: {type: String},
       contextMenuGlifAnimationState: {
         type: String,
         reflect: true,
@@ -121,6 +122,8 @@ export class OmniboxEverywhereOmniboxElement extends
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
   protected accessor ntpRealboxNextEnabled: boolean =
       loadTimeData.getBoolean('ntpRealboxNextEnabled');
+  protected accessor profileAvatarUrl_: string =
+      loadTimeData.getString('profileAvatarUrl');
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.STARTED;
   protected accessor inputState_: InputState|null = null;

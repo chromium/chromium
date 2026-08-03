@@ -6,8 +6,13 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -69,6 +74,23 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kOmniboxEverywhereResources,
                               IDR_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_HTML);
+
+  std::string profile_avatar_url =
+      "chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE";
+  if (g_browser_process && g_browser_process->profile_manager()) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile_->GetPath());
+    if (entry) {
+      gfx::Image icon =
+          profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(), 40, 40);
+      profile_avatar_url = webui::GetBitmapDataUrl(icon.AsBitmap());
+    }
+  }
+  source->AddString("profileAvatarUrl", profile_avatar_url);
+  source->AddLocalizedString("profileButtonLabel",
+                             IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE);
 
   // Sanitized image and favicon source initialization
   content::URLDataSource::Add(profile_,
