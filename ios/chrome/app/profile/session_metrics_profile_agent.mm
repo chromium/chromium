@@ -193,6 +193,7 @@
 
   localState->SetTime(prefs::kLastRecordedActiveDay, nowMidnight);
 
+  int activeDays28Count = -1;
   for (const auto& [config, count] : tracker->ListEvents(
            feature_engagement::kIPHiOSActiveDaysTrackingFeature)) {
     if (config.name == feature_engagement::events::kChromeActiveSessionDay) {
@@ -201,9 +202,15 @@
       } else if (config.window == 15) {
         base::UmaHistogramCounts100("IOS.PreviousActiveDays14", count);
       } else if (config.window == 29) {
+        activeDays28Count = count;
         base::UmaHistogramCounts100("IOS.PreviousActiveDays28", count);
       }
     }
+  }
+
+  if (activeDays28Count >= 0) {
+    localState->SetInteger(prefs::kLastRecordedActiveDaysInPast28Days,
+                           activeDays28Count);
   }
 
   tracker->NotifyEvent(feature_engagement::events::kChromeActiveSessionDay);

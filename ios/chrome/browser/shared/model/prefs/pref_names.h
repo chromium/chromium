@@ -955,6 +955,11 @@ inline constexpr char kCrossPlatformPromosIOS16thActiveDay[] =
 // tracker event was fired.
 inline constexpr char kLastRecordedActiveDay[] = "ios.last_recorded_active_day";
 
+// Integer preference holding the number of active days recorded in the past
+// 28-day window during session metrics logging.
+inline constexpr char kLastRecordedActiveDaysInPast28Days[] =
+    "ios.last_recorded_active_days_in_past_28_days";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

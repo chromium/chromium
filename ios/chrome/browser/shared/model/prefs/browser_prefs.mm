@@ -477,6 +477,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 0);
 
   registry->RegisterTimePref(prefs::kLastRecordedActiveDay, base::Time());
+  registry->RegisterIntegerPref(prefs::kLastRecordedActiveDaysInPast28Days, -1);
 
   // Deprecated 02/2025.
   registry->RegisterIntegerPref(

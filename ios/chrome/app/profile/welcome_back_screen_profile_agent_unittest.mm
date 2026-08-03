@@ -48,8 +48,6 @@
 - (WelcomeBackPromoRegistrationResult)promoRegistrationResultWithActiveDays:
     (int)days;
 
-- (void)onTrackerInitialized:(BOOL)success;
-
 @end
 
 namespace {
@@ -129,20 +127,10 @@ class WelcomeBackScreenProfileAgentTest : public PlatformTest {
         kWelcomeBack, {{kWelcomeBackUseActiveDaysParam, "true"}});
   }
 
-  // Helper to mock the active days count returned by the tracker.
-  void MockActiveDays(int days) {
-    feature_engagement::Tracker::EventList events;
-    if (days >= 0) {
-      feature_engagement::EventConfig config;
-      config.name = feature_engagement::events::kChromeActiveSessionDay;
-      config.window = 29;
-      events.push_back({config, days});
-    }
-
-    EXPECT_CALL(*mock_tracker(),
-                ListEvents(testing::Ref(
-                    feature_engagement::kIPHiOSActiveDaysTrackingFeature)))
-        .WillRepeatedly(testing::Return(events));
+  // Helper to set active days count in local state pref.
+  void SetActiveDaysPref(int days) {
+    PrefService* local_state = GetApplicationContext()->GetLocalState();
+    local_state->SetInteger(prefs::kLastRecordedActiveDaysInPast28Days, days);
   }
 
   // Helper to configure the eligible Welcome Back features in the local state.
@@ -159,18 +147,10 @@ class WelcomeBackScreenProfileAgentTest : public PlatformTest {
   // first run.
   void SetupActiveDaysVariation(std::optional<int> recency_days = 50) {
     EnableActiveDaysVariation();
-    RunTransitionsToFinal();
     if (recency_days.has_value()) {
       ForceFirstRunRecency(*recency_days);
     } else {
       ResetFirstRunSentinel();
-    }
-  }
-
-  // Helper to call onTrackerInitialized directly within an autorelease pool.
-  void TriggerTrackerInitializedCallback(BOOL success) {
-    @autoreleasepool {
-      [agent_ onTrackerInitialized:success];
     }
   }
 
@@ -187,6 +167,15 @@ class WelcomeBackScreenProfileAgentTest : public PlatformTest {
                                  int count = 1) {
     tester.ExpectBucketCount("IOS.WelcomeBack.ActiveDaysInPast28Days", days,
                              count);
+  }
+
+  // Helper to expect a specific ActiveDaysInPast28DaysForInactives histogram
+  // count.
+  void ExpectInactivesActiveDaysHistogram(const base::HistogramTester& tester,
+                                          int days,
+                                          int count = 1) {
+    tester.ExpectBucketCount(
+        "IOS.WelcomeBack.ActiveDaysInPast28DaysForInactives", days, count);
   }
 
   // Helper to mock expectations on PromosManager registration calls.
@@ -257,53 +246,56 @@ TEST_F(WelcomeBackScreenProfileAgentTest, RegistrationResultSessionEndTimeNil) {
             WelcomeBackPromoRegistrationResult::kFailureSessionEndTimeNil);
 }
 
-// Tests that onTrackerInitialized registers the Welcome Back promo when the
+// Tests that maybeRegisterPromo registers the Welcome Back promo when the
 // active days count <= 1 and the feature has enough eligible items.
 TEST_F(WelcomeBackScreenProfileAgentTest, ActiveDaysRegistrationSuccess) {
   SetupActiveDaysVariation();
+  SetActiveDaysPref(1);
   base::HistogramTester histogram_tester;
 
   SetEligibleFeatures({BestFeaturesItemType::kLensSearch,
                        BestFeaturesItemType::kEnhancedSafeBrowsing});
-  MockActiveDays(1);
   ExpectPromoRegistrationTimes(1);
 
-  TriggerTrackerInitializedCallback(YES);
+  RunTransitionsToFinal();
 
   ExpectRegistrationResult(histogram_tester,
                            WelcomeBackPromoRegistrationResult::kSuccess);
   ExpectActiveDaysHistogram(histogram_tester, 1);
+  ExpectInactivesActiveDaysHistogram(histogram_tester, 1);
   ResetFirstRunSentinel();
 }
 
-// Tests that onTrackerInitialized does not register the Welcome Back promo
+// Tests that maybeRegisterPromo does not register the Welcome Back promo
 // when the active days count > 1.
 TEST_F(WelcomeBackScreenProfileAgentTest, ActiveDaysRegistrationFailure) {
   SetupActiveDaysVariation();
+  SetActiveDaysPref(2);
   base::HistogramTester histogram_tester;
 
-  MockActiveDays(2);
   ExpectPromoRegistrationTimes(0);
 
-  TriggerTrackerInitializedCallback(YES);
+  RunTransitionsToFinal();
 
   ExpectRegistrationResult(
       histogram_tester,
       WelcomeBackPromoRegistrationResult::kFailureTimeSinceActiveLimitNotMet);
   ExpectActiveDaysHistogram(histogram_tester, 2);
+  histogram_tester.ExpectTotalCount(
+      "IOS.WelcomeBack.ActiveDaysInPast28DaysForInactives", 0);
   ResetFirstRunSentinel();
 }
 
-// Tests that onTrackerInitialized does not register the Welcome Back promo
+// Tests that maybeRegisterPromo does not register the Welcome Back promo
 // when the app is in its first run, even if active days count <= 1.
 TEST_F(WelcomeBackScreenProfileAgentTest, ActiveDaysFirstRunFailure) {
   SetupActiveDaysVariation(std::nullopt);
+  SetActiveDaysPref(1);
   base::HistogramTester histogram_tester;
 
-  MockActiveDays(1);
   ExpectPromoRegistrationTimes(0);
 
-  TriggerTrackerInitializedCallback(YES);
+  RunTransitionsToFinal();
 
   ExpectRegistrationResult(
       histogram_tester, WelcomeBackPromoRegistrationResult::kFailureFirstRun);
@@ -311,16 +303,16 @@ TEST_F(WelcomeBackScreenProfileAgentTest, ActiveDaysFirstRunFailure) {
   ResetFirstRunSentinel();
 }
 
-// Tests that onTrackerInitialized does not register the Welcome Back promo
-// when the tracker fails to return the event data (returns -1 / empty list).
+// Tests that maybeRegisterPromo does not register the Welcome Back promo
+// when the pref returns failure / uninitialized (-1).
 TEST_F(WelcomeBackScreenProfileAgentTest, ActiveDaysTrackerFailure) {
   SetupActiveDaysVariation();
+  SetActiveDaysPref(-1);
   base::HistogramTester histogram_tester;
 
-  MockActiveDays(-1);
   ExpectPromoRegistrationTimes(0);
 
-  TriggerTrackerInitializedCallback(YES);
+  RunTransitionsToFinal();
 
   ExpectRegistrationResult(
       histogram_tester,
@@ -328,17 +320,17 @@ TEST_F(WelcomeBackScreenProfileAgentTest, ActiveDaysTrackerFailure) {
   ResetFirstRunSentinel();
 }
 
-// Tests that onTrackerInitialized does not register the Welcome Back promo
+// Tests that maybeRegisterPromo does not register the Welcome Back promo
 // when the app is installed too recently (first run recency < 28 days), even if
 // active days count <= 1.
 TEST_F(WelcomeBackScreenProfileAgentTest, ActiveDaysRecencyFailure) {
   SetupActiveDaysVariation(5);
+  SetActiveDaysPref(1);
   base::HistogramTester histogram_tester;
 
-  MockActiveDays(1);
   ExpectPromoRegistrationTimes(0);
 
-  TriggerTrackerInitializedCallback(YES);
+  RunTransitionsToFinal();
 
   ExpectRegistrationResult(
       histogram_tester,

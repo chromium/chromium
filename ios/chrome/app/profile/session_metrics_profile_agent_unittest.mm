@@ -414,4 +414,6 @@ TEST_F(SessionMetricsProfileAgentTest, ActiveDaysCount) {
   histogram_tester.ExpectTotalCount(kActiveDays7Histogram, 9);
   histogram_tester.ExpectTotalCount(kActiveDays14Histogram, 9);
   histogram_tester.ExpectTotalCount(kActiveDays28Histogram, 9);
+  EXPECT_EQ(
+      local_state()->GetInteger(prefs::kLastRecordedActiveDaysInPast28Days), 8);
 }
