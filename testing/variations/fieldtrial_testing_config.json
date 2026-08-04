@@ -8113,9 +8113,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_without_new_badge",
+                    "name": "Enabled_with_new_badge",
                     "params": {
-                        "show_new_badge": "false",
+                        "show_new_badge": "true",
                         "url": "https://www.google.com/chrome/go-mobile?entry_point_id=1&email=$1"
                     },
                     "enable_features": [
@@ -8123,9 +8123,9 @@
                     ]
                 },
                 {
-                    "name": "Enabled_with_new_badge",
+                    "name": "Enabled_without_new_badge",
                     "params": {
-                        "show_new_badge": "true",
+                        "show_new_badge": "false",
                         "url": "https://www.google.com/chrome/go-mobile?entry_point_id=1&email=$1"
                     },
                     "enable_features": [
