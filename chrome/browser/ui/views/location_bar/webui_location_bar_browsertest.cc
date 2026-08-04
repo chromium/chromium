@@ -15,12 +15,14 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -38,6 +40,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_recipe.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "url/gurl.h"
 
@@ -372,6 +378,122 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   // Verify that icons exist and animation state is stable.
   EXPECT_TRUE(content::EvalJs(GetWebUIToolbarWebContents(), kCheckIconScript)
                   .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
+                       StarredPageActionIconColor) {
+  WaitForInitialWebUIToolbar(browser());
+
+  auto* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  page_actions::WebUIPageActionControl control(
+      BrowserActions::From(browser())->root_action_item());
+  control.Init(GetWebUIToolbarWebView());
+  control.UpdateController(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  auto* bookmark_controller = BookmarkPageActionController::From(tab);
+  ASSERT_TRUE(bookmark_controller);
+
+  // Set unstarred:
+  bookmark_controller->URLStarredChanged(
+      browser()->tab_strip_model()->GetActiveWebContents(), /*starred=*/false);
+  auto states_unstarred = control.GetPageActionStates();
+  auto it_unstarred = std::find_if(
+      states_unstarred.begin(), states_unstarred.end(), [](const auto& state) {
+        return state->page_action_id ==
+               toolbar_ui_api::mojom::PageActionId::kActionBookmarkThisTab;
+      });
+  ASSERT_NE(it_unstarred, states_unstarred.end());
+
+  auto fetcher_unstarred = GetWebUIToolbarWebView()->GetIconTableFetcher();
+  auto full_state_unstarred = fetcher_unstarred->GetFullState();
+  auto icon_update_unstarred = std::find_if(
+      full_state_unstarred.begin(), full_state_unstarred.end(),
+      [&](const toolbar_ui_api::mojom::IconUpdatePtr& update) {
+        return update->handle_id == (*it_unstarred)->icon.HandleId().value();
+      });
+  EXPECT_TRUE((*icon_update_unstarred)->color.has_value());
+
+  // Set starred:
+  bookmark_controller->URLStarredChanged(
+      browser()->tab_strip_model()->GetActiveWebContents(), /*starred=*/true);
+  auto states_starred = control.GetPageActionStates();
+  auto it_starred = std::find_if(
+      states_starred.begin(), states_starred.end(), [](const auto& state) {
+        return state->page_action_id ==
+               toolbar_ui_api::mojom::PageActionId::kActionBookmarkThisTab;
+      });
+  ASSERT_NE(it_starred, states_starred.end());
+
+  auto fetcher_starred = GetWebUIToolbarWebView()->GetIconTableFetcher();
+  auto full_state_starred = fetcher_starred->GetFullState();
+  auto icon_update_starred = std::find_if(
+      full_state_starred.begin(), full_state_starred.end(),
+      [&](const toolbar_ui_api::mojom::IconUpdatePtr& update) {
+        return update->handle_id == (*it_starred)->icon.HandleId().value();
+      });
+  ASSERT_NE(icon_update_starred, full_state_starred.end());
+  const SkColor expected_color =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetColorProvider()
+          ->GetColor(ui::kColorFocusableBorderFocused);
+  EXPECT_EQ((*icon_update_starred)->color, expected_color);
+  EXPECT_NE((*icon_update_unstarred)->color, (*icon_update_starred)->color);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
+                       StarredPageActionLowContrastBlending) {
+  // Override ColorProvider to simulate a low-contrast custom theme where both
+  // the toolbar background (`kColorToolbar`) and the accent color
+  // (`ui::kColorFocusableBorderFocused`) are set to identical blue, resulting
+  // in an initial contrast ratio of 1:1.
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(
+          [](ui::ColorProvider* provider, const ui::ColorProviderKey& key) {
+            ui::ColorMixer& mixer = provider->AddMixer();
+            mixer[kColorToolbar] = {SK_ColorBLUE};
+            mixer[ui::kColorFocusableBorderFocused] = {SK_ColorBLUE};
+          }));
+  BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->ThemeChanged();
+
+  auto* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  BookmarkPageActionController::From(tab)->URLStarredChanged(
+      browser()->tab_strip_model()->GetActiveWebContents(), /*starred=*/true);
+
+  page_actions::WebUIPageActionControl control(
+      BrowserActions::From(browser())->root_action_item());
+  control.Init(GetWebUIToolbarWebView());
+  control.UpdateController(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  auto states = control.GetPageActionStates();
+  auto it = std::find_if(states.begin(), states.end(), [](const auto& state) {
+    return state->page_action_id ==
+           toolbar_ui_api::mojom::PageActionId::kActionBookmarkThisTab;
+  });
+  ASSERT_NE(it, states.end());
+
+  auto full_state =
+      GetWebUIToolbarWebView()->GetIconTableFetcher()->GetFullState();
+  auto icon_update =
+      std::find_if(full_state.begin(), full_state.end(),
+                   [&](const toolbar_ui_api::mojom::IconUpdatePtr& update) {
+                     return update->handle_id == (*it)->icon.HandleId().value();
+                   });
+  ASSERT_NE(icon_update, full_state.end());
+  ASSERT_TRUE((*icon_update)->color.has_value());
+
+  // Verify that `color_utils::BlendForMinContrast()` automatically adjusted
+  // the icon color so it is no longer identical to `SK_ColorBLUE`, ensuring
+  // the contrast against the toolbar background meets or exceeds the 3.0:1
+  // threshold.
+  const SkColor actual_color = (*icon_update)->color.value();
+  EXPECT_NE(actual_color, SK_ColorBLUE);
+  EXPECT_GE(color_utils::GetContrastRatio(actual_color, SK_ColorBLUE),
+            color_utils::kMinimumVisibleContrastRatio);
 }
 
 }  // namespace

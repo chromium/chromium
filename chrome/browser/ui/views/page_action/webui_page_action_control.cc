@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_model.h"
@@ -26,6 +27,8 @@
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/actions/actions.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/color_utils.h"
 
 namespace page_actions {
 
@@ -208,9 +211,32 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
       webui_toolbar::ActionIdToMojomPageActionId(action_id_);
   state->accessible_name = model->GetAccessibleName();
   state->tooltip_text = model->GetTooltipText();
+  ui::ImageModel image_model = model->GetImage();
+  if (model->GetColorSource() ==
+          page_actions::PageActionColorSource::kCascadingAccent &&
+      image_model.IsVectorIcon()) {
+    const auto& vector_icon_model = image_model.GetVectorIcon();
+    const ui::ColorProvider* color_provider =
+        owner_->webui_delegate_->GetView()->GetColorProvider();
+    const SkColor default_color =
+        color_provider->GetColor(ui::kColorFocusableBorderFocused);
+    // Page actions are displayed on the toolbar, so `kColorToolbar` is used as
+    // the background color for contrast calculations (matching what
+    // `views::GetCascadingBackgroundColor()` resolves in native Views via
+    // `ToolbarView`).
+    const SkColor background_color = color_provider->GetColor(kColorToolbar);
+    const SkColor blended_color =
+        color_utils::BlendForMinContrast(
+            default_color, background_color, std::nullopt,
+            color_utils::kMinimumVisibleContrastRatio)
+            .color;
+    image_model = ui::ImageModel::FromVectorIcon(
+        *vector_icon_model.vector_icon(), blended_color,
+        vector_icon_model.icon_size(), vector_icon_model.badge_icon());
+  }
   state->icon = cached_icon_ =
       owner_->webui_delegate_->GetIconTable().RegisterImageModelTryReuse(
-          model->GetImage(), cached_icon_);
+          image_model, cached_icon_);
   return state;
 }
 
