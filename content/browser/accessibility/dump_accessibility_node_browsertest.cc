@@ -408,6 +408,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameButtonLabelledby) {
   RunAccNameTest(FILE_PATH_LITERAL("name-button-labelledby.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameButtonLabelledbySelf) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-button-labelledby-self.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameButtonRoleContentOnly) {
   RunAccNameTest(FILE_PATH_LITERAL("name-button-role-content-only.html"));

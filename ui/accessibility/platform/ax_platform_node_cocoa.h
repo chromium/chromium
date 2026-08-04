@@ -46,11 +46,11 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // accessibilityLabel (legacy AXDescription attribute).
 - (BOOL)isNameFromLabel;
 
-// Returns an accessible element serving as a title UI element, an element
-// representing the accessible name of the object and which is exposed via
-// accessibilityTitleUIElement (or AXTitleUIElement legacy attribute) not via
-// accessibilityTitle (or legacy AXTitle attribute) or accessibilityLabel
-// (legacy AXDescription attribute).
+// Returns an accessible element serving as a title UI element. The title
+// UI element can be used for calculating the accessible name for this
+// object, or, can be used when the "Skip redundant labels" setting of
+// VoiceOver is on to skip redundant labels when content of title UI element
+// is the same as the AXTitle.
 - (id)titleUIElement;
 
 // Adds UI elements to the array from the given attribute.

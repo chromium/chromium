@@ -82,6 +82,9 @@ data/accessibility/accname/name-button-label-labelledby.html
 data/accessibility/accname/name-button-label.html
 data/accessibility/accname/name-button-labelledby-expected-blink.txt
 data/accessibility/accname/name-button-labelledby-expected-mac.txt
+data/accessibility/accname/name-button-labelledby-self-expected-blink.txt
+data/accessibility/accname/name-button-labelledby-self-expected-mac.txt
+data/accessibility/accname/name-button-labelledby-self.html
 data/accessibility/accname/name-button-labelledby.html
 data/accessibility/accname/name-button-role-content-only-expected-blink.txt
 data/accessibility/accname/name-button-role-content-only-expected-mac.txt

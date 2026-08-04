@@ -1,7 +1,7 @@
 AXWebArea
 ++AXHeading AXTitle='My Documents' AXValue=3
 ++++AXStaticText AXValue='My Documents'
-++AXOutline AXTitleUIElement=:2
+++AXOutline AXTitle='My Documents' AXTitleUIElement=:2
 ++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=2 AXIndex=0 AXTitle='Projects'
 ++++++AXStaticText AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Projects'

@@ -569,6 +569,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (!_node->HasNameFromOtherElement())
     return nil;
 
+  // TODO(crbug.com/535058209): When aria-labelledby refers to two elements in
+  // the DOM and one is aria-hidden, even though the name uses the content that
+  // is aria-hidden, this int attribute only has one value: the non-aria-hidden
+  // one. In this case, titleUIElement should not be returned because the name
+  // came from two places.
   std::vector<int32_t> labelledby_ids =
       _node->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
   if (labelledby_ids.size() != 1)
@@ -2937,11 +2942,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   if ([self isNameFromLabel])
-    return @"";
-
-  // If we're exposing the title in TitleUIElement, don't also redundantly
-  // expose it in AXDescription.
-  if ([self titleUIElement])
     return @"";
 
   ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
