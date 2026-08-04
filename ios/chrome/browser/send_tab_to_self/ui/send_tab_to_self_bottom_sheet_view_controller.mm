@@ -166,10 +166,11 @@ NSString* const kSendTabToSelfModalMenuButton =
   if (index >= 0 && index < static_cast<NSInteger>(_targetDeviceList.size())) {
     const send_tab_to_self::TargetDeviceInfo& device = _targetDeviceList[index];
 
-    NSString* deviceName = base::SysUTF8ToNSString(device.device_name);
-    [_delegate sendTabToTargetDeviceCacheGUID:base::SysUTF8ToNSString(
-                                                  device.cache_guid)
-                             targetDeviceName:deviceName];
+    [_delegate
+        sendTabToTargetDeviceCacheGUID:base::SysUTF8ToNSString(
+                                           device.cache_guid)
+                      targetDeviceName:base::SysUTF8ToNSString(
+                                           device.device_name)];
   }
 }
 

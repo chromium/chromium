@@ -23,16 +23,17 @@ enum class ShareEntryPoint;
 // The delegate of this coordinator.
 @property(nonatomic, weak) id<SendTabToSelfCoordinatorDelegate> delegate;
 
-- (id)initWithBaseViewController:(UIViewController*)baseViewController
-                         browser:(Browser*)browser
-                 signinPresenter:(id<SigninPresenter>)signinPresenter
-                             url:(const GURL&)url
-                           title:(NSString*)title
-                      entryPoint:(send_tab_to_self::ShareEntryPoint)entryPoint
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                           signinPresenter:(id<SigninPresenter>)signinPresenter
+                                       url:(const GURL&)url
+                                     title:(NSString*)title
+                                entryPoint:(send_tab_to_self::ShareEntryPoint)
+                                               entryPoint
     NS_DESIGNATED_INITIALIZER;
 
-- (id)initWithBaseViewController:(UIViewController*)baseViewController
-                         browser:(Browser*)browser NS_UNAVAILABLE;
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

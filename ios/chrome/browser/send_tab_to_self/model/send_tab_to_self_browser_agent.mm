@@ -12,29 +12,44 @@
 #import "base/check.h"
 #import "base/containers/span.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/send_tab_to_self/features.h"
-#import "components/send_tab_to_self/metrics_util.h"
+#import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/send_tab_to_self/model/ios_send_tab_to_self_infobar_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_load_navigation_user_data.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_tab_card_label_data.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -78,6 +93,89 @@ const send_tab_to_self::SendTabToSelfEntry* GetMostRecentlySharedEntry(
         return first_entry->GetSharedTime() < second_entry->GetSharedTime();
       });
   return *max_it;
+}
+
+// Displays the appropriate post-send snackbar or toast based on `result`.
+void ShowPostSendSnackbar(
+    id<SnackbarCommands> snackbar_commands,
+    const std::string& target_device_name,
+    NSString* email,
+    send_tab_to_self::SendTabToSelfResult result) {
+  if (!snackbar_commands) {
+    return;
+  }
+
+  bool post_send_toast_enabled = base::FeatureList::IsEnabled(
+      send_tab_to_self::kSendTabToSelfPostSendToast);
+
+  NSString* message_text = nil;
+  switch (result) {
+    case send_tab_to_self::SendTabToSelfResult::kSuccess: {
+      TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+      NSString* text = nil;
+      if (!post_send_toast_enabled) {
+        text = l10n_util::GetNSStringF(
+            IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
+            base::UTF8ToUTF16(target_device_name));
+      } else {
+        text = l10n_util::GetNSStringF(
+            IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+            base::UTF8ToUTF16(target_device_name));
+      }
+      SnackbarMessage* message =
+          [[SnackbarMessage alloc] initWithTitle:text];
+      if (post_send_toast_enabled && email.length > 0) {
+        message.subtitle = email;
+      }
+      [snackbar_commands showSnackbarMessage:message];
+      return;
+    }
+    case send_tab_to_self::SendTabToSelfResult::kSuccessThrottled: {
+      TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+      NSString* text = nil;
+      if (!post_send_toast_enabled) {
+        text = l10n_util::GetNSStringF(
+            IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
+            base::UTF8ToUTF16(target_device_name));
+      } else {
+        text = l10n_util::GetNSStringF(
+            IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST,
+            base::UTF8ToUTF16(target_device_name));
+      }
+      SnackbarMessage* message =
+          [[SnackbarMessage alloc] initWithTitle:text];
+      [snackbar_commands showSnackbarMessage:message];
+      return;
+    }
+    case send_tab_to_self::SendTabToSelfResult::kFailureNoInternetConnection:
+    case send_tab_to_self::SendTabToSelfResult::kFailureCommitTimeout: {
+      if (!post_send_toast_enabled) {
+        return;
+      }
+      TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeError);
+      message_text = l10n_util::GetNSString(
+          IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST);
+      break;
+    }
+    case send_tab_to_self::SendTabToSelfResult::kFailureNotTrackingMetadata:
+    case send_tab_to_self::SendTabToSelfResult::kFailureInvalidUrl:
+    case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptFailed:
+    case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptError:
+    case send_tab_to_self::SendTabToSelfResult::kFailureSyncDisabled:
+    case send_tab_to_self::SendTabToSelfResult::kFailureEntryRemoved: {
+      if (!post_send_toast_enabled) {
+        return;
+      }
+      TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeError);
+      message_text =
+          l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST);
+      break;
+    }
+  }
+
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:message_text];
+  [snackbar_commands showSnackbarMessage:message];
 }
 
 }  // namespace
@@ -380,6 +478,109 @@ void SendTabToSelfBrowserAgent::CheckAndOpenPendingEntriesIfBrowserVisible() {
     DisplayInfoBar(web_state, GetMostRecentlySharedEntry(pending_entries),
                    pending_entries.size());
   }
+}
+
+void SendTabToSelfBrowserAgent::SendTabToTargetDevice(
+    const GURL& url,
+    const std::string& title,
+    const std::string& target_guid,
+    const std::string& target_device_name,
+    send_tab_to_self::ShareEntryPoint entry_point) {
+  if (!browser_) {
+    return;
+  }
+
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  send_tab_to_self::PageContext page_context;
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfPropagateFormFields) &&
+      web_state) {
+    page_context = send_tab_to_self::ExtractFormFieldsFromWebState(web_state);
+  }
+
+  if (!web_state || web_state->IsLoading() ||
+      web_state->GetLastCommittedURL() != url ||
+      !base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfPropagateScrollPosition)) {
+    HandleTextFragmentGenerated(url, title, target_guid, target_device_name,
+                                entry_point, std::move(page_context),
+                                std::nullopt);
+    return;
+  }
+
+  SendTabToSelfTextFragmentSelectorGenerator::GetInstance()->GetTextFragment(
+      web_state,
+      base::BindOnce(&SendTabToSelfBrowserAgent::HandleTextFragmentGenerated,
+                     weak_ptr_factory_.GetWeakPtr(), url, title, target_guid,
+                     target_device_name, entry_point, std::move(page_context)));
+}
+
+void SendTabToSelfBrowserAgent::HandleTextFragmentGenerated(
+    const GURL& url,
+    const std::string& title,
+    const std::string& target_guid,
+    const std::string& target_device_name,
+    send_tab_to_self::ShareEntryPoint entry_point,
+    send_tab_to_self::PageContext page_context,
+    std::optional<SendTabToSelfTextFragment> fragment) {
+  if (!browser_) {
+    return;
+  }
+
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile());
+  if (!service || !service->GetSendTabToSelfModel()) {
+    return;
+  }
+
+  id<SnackbarCommands> snackbar_commands = nil;
+  if (browser_->GetCommandDispatcher() &&
+      [browser_->GetCommandDispatcher()
+          dispatchingForProtocol:@protocol(SnackbarCommands)]) {
+    snackbar_commands =
+        HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
+  }
+
+  if (fragment &&
+      fragment->status == TextFragmentGenerationStatus::kSuccess &&
+      !fragment->text_start.empty()) {
+    page_context.scroll_position.text_fragment =
+        send_tab_to_self::TextFragmentData(
+            fragment->text_start, fragment->text_end,
+            fragment->prefix, fragment->suffix);
+  }
+
+  service->GetSendTabToSelfModel()->SendEntry(
+      url, title, target_guid, page_context,
+      send_tab_to_self::NavigationHistory(),
+      base::BindOnce(&SendTabToSelfBrowserAgent::HandleEntrySent,
+                     weak_ptr_factory_.GetWeakPtr(), snackbar_commands,
+                     target_device_name),
+      entry_point);
+}
+
+void SendTabToSelfBrowserAgent::HandleEntrySent(
+    id<SnackbarCommands> snackbar_commands,
+    const std::string& target_device_name,
+    send_tab_to_self::SendTabToSelfResult result) {
+  if (!snackbar_commands) {
+    return;
+  }
+
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
+  id<SystemIdentity> account =
+      auth_service ? auth_service->GetPrimaryIdentity() : nil;
+  NSString* email = account ? account.userEmail : nil;
+
+  ShowPostSendSnackbar(snackbar_commands, target_device_name, email, result);
+}
+
+void SendTabToSelfBrowserAgent::HandleEntrySentForTest(
+    id<SnackbarCommands> snackbar_commands,
+    const std::string& target_device_name,
+    send_tab_to_self::SendTabToSelfResult result) {
+  HandleEntrySent(snackbar_commands, target_device_name, result);
 }
 
 void SendTabToSelfBrowserAgent::OpenEntryInBackgroundTab(

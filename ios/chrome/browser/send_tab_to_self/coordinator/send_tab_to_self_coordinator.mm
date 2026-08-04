@@ -81,144 +81,6 @@
 
 namespace {
 
-void DisplaySendToSelfSnackbar(id<SnackbarCommands> snackbar_handler,
-                               NSString* device_name) {
-  CHECK(!base::FeatureList::IsEnabled(
-      send_tab_to_self::kSendTabToSelfPostSendToast));
-  // `snackbar_handler` can be nil if the command dispatcher was already
-  // destroyed or if no handler was registered for SnackbarCommands.
-  if (!snackbar_handler) {
-    return;
-  }
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  NSString* text =
-      l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
-                              base::SysNSStringToUTF16(device_name));
-  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
-  [snackbar_handler showSnackbarMessage:message];
-}
-
-void DisplaySendToSelfSuccessSnackbar(id<SnackbarCommands> snackbar_handler,
-                                      std::string_view device_name,
-                                      NSString* email) {
-  CHECK(base::FeatureList::IsEnabled(
-      send_tab_to_self::kSendTabToSelfPostSendToast));
-  // `snackbar_handler` can be nil if the command dispatcher was already
-  // destroyed or if no handler was registered for SnackbarCommands.
-  if (!snackbar_handler) {
-    return;
-  }
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  NSString* text =
-      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                              base::UTF8ToUTF16(device_name));
-  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
-  if (email.length > 0) {
-    message.subtitle = email;
-  }
-  [snackbar_handler showSnackbarMessage:message];
-}
-
-void DisplaySendToSelfThrottledSnackbar(id<SnackbarCommands> snackbar_handler,
-                                        std::string_view device_name) {
-  CHECK(base::FeatureList::IsEnabled(
-      send_tab_to_self::kSendTabToSelfPostSendToast));
-  // `snackbar_handler` can be nil if the command dispatcher was already
-  // destroyed or if no handler was registered for SnackbarCommands.
-  if (!snackbar_handler) {
-    return;
-  }
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  NSString* text =
-      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST,
-                              base::UTF8ToUTF16(device_name));
-  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
-  [snackbar_handler showSnackbarMessage:message];
-}
-
-void DisplaySendToSelfNoInternetSnackbar(
-    id<SnackbarCommands> snackbar_handler) {
-  CHECK(base::FeatureList::IsEnabled(
-      send_tab_to_self::kSendTabToSelfPostSendToast));
-  if (!snackbar_handler) {
-    return;
-  }
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeError);
-  NSString* text =
-      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST);
-  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
-  [snackbar_handler showSnackbarMessage:message];
-}
-
-void DisplaySendToSelfFailureSnackbar(id<SnackbarCommands> snackbar_handler) {
-  CHECK(base::FeatureList::IsEnabled(
-      send_tab_to_self::kSendTabToSelfPostSendToast));
-  if (!snackbar_handler) {
-    return;
-  }
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeError);
-  NSString* text =
-      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST);
-  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
-  [snackbar_handler showSnackbarMessage:message];
-}
-
-// Handles the completion of a send transaction when no bottom sheet is shown
-// (or after it has been dismissed), by displaying a post-send snackbar.
-// This is used when the enhanced bottom sheet is disabled, or for future
-// integrations like the native share sheet.
-void ShowPostSendSnackbar(id<SnackbarCommands> snackbar_handler,
-                          std::string_view device_name,
-                          NSString* email,
-                          send_tab_to_self::SendTabToSelfResult result) {
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPostSendToast)) {
-    return;
-  }
-
-  switch (result) {
-    case send_tab_to_self::SendTabToSelfResult::kSuccess: {
-      // Post to the main thread to safely present the snackbar and allow the
-      // current call stack to unwind.
-      web::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DisplaySendToSelfSuccessSnackbar, snackbar_handler,
-                         std::string(device_name), email));
-      break;
-    }
-    case send_tab_to_self::SendTabToSelfResult::kSuccessThrottled: {
-      web::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DisplaySendToSelfThrottledSnackbar, snackbar_handler,
-                         std::string(device_name)));
-      break;
-    }
-    case send_tab_to_self::SendTabToSelfResult::kFailureNoInternetConnection:
-    case send_tab_to_self::SendTabToSelfResult::kFailureCommitTimeout: {
-      web::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&DisplaySendToSelfNoInternetSnackbar,
-                                    snackbar_handler));
-      break;
-    }
-    case send_tab_to_self::SendTabToSelfResult::kFailureNotTrackingMetadata:
-    case send_tab_to_self::SendTabToSelfResult::kFailureInvalidUrl:
-    case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptFailed:
-    case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptError:
-    case send_tab_to_self::SendTabToSelfResult::kFailureSyncDisabled:
-    case send_tab_to_self::SendTabToSelfResult::kFailureEntryRemoved: {
-      web::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DisplaySendToSelfFailureSnackbar, snackbar_handler));
-      break;
-    }
-  }
-}
-
 // TODO(crbug.com/519101926): Consider moving TargetDeviceListWaiter to
 // components/send_tab_to_self as a shared C++ utility to be shared with
 // Android.
@@ -310,15 +172,6 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 @property(nonatomic, copy) ProceduralBlock dismissedCompletion;
 @property(nonatomic, assign) BOOL stopped;
 
-// Sends the current tab to the target device with `cacheGUID`, with the
-// `textFragment` (if any) and `pageContext` already captured.
-- (void)
-    sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
-                  targetDeviceName:(NSString*)deviceName
-                      textFragment:
-                          (std::optional<SendTabToSelfTextFragment>)textFragment
-                       pageContext:(send_tab_to_self::PageContext)pageContext;
-
 @end
 
 @implementation SendTabToSelfCoordinator {
@@ -332,12 +185,13 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 #pragma mark - Public
 
-- (id)initWithBaseViewController:(UIViewController*)baseViewController
-                         browser:(Browser*)browser
-                 signinPresenter:(id<SigninPresenter>)signinPresenter
-                             url:(const GURL&)url
-                           title:(NSString*)title
-                      entryPoint:(send_tab_to_self::ShareEntryPoint)entryPoint {
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                           signinPresenter:(id<SigninPresenter>)signinPresenter
+                                       url:(const GURL&)url
+                                     title:(NSString*)title
+                                entryPoint:(send_tab_to_self::ShareEntryPoint)
+                                               entryPoint {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (!self) {
     return nil;
@@ -368,6 +222,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
     return;
   }
+
   _mediator = [[SendTabToSelfMediator alloc]
       initWithAuthenticationService:AuthenticationServiceFactory::GetForProfile(
                                         self.profile)
@@ -466,91 +321,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 }
 
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
-                      targetDeviceName:(NSString*)deviceName {
-  web::WebState* webState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-
-  send_tab_to_self::PageContext pageContext;
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateFormFields)) {
-    // TODO(crbug.com/519101926): Making assumptions about which precise
-    // WebState is being sent appears fishy. Ideally, the information should
-    // come from higher layers.
-    pageContext = send_tab_to_self::ExtractFormFieldsFromWebState(webState);
-  }
-
-  // STTS scroll position restoration works by generating a text fragment
-  // corresponding to the center of the viewport. We must fetch this
-  // asynchronously from the web page via
-  // SendTabToSelfTextFragmentSelectorGenerator before proceeding to create the
-  // STTS entry.
-  //
-  // Guardrails: Only attempt fragment generation if the web state is present,
-  // is not actively loading a new page, and its URL still matches the URL the
-  // user originally intended to share.
-  if (!webState || webState->IsLoading() ||
-      webState->GetLastCommittedURL() != self.url ||
-      !base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateScrollPosition)) {
-    [self sendTabToTargetDeviceCacheGUID:cacheGUID
-                        targetDeviceName:deviceName
-                            textFragment:std::nullopt
-                             pageContext:pageContext];
-    return;
-  }
-
-  __weak SendTabToSelfCoordinator* weakSelf = self;
-  auto callback =
-      base::BindOnce(^(std::optional<SendTabToSelfTextFragment> fragment) {
-        [weakSelf sendTabToTargetDeviceCacheGUID:cacheGUID
-                                targetDeviceName:deviceName
-                                    textFragment:fragment
-                                     pageContext:pageContext];
-      });
-
-  SendTabToSelfTextFragmentSelectorGenerator::GetInstance()->GetTextFragment(
-      webState, std::move(callback));
-}
-
-- (void)
-    sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
-                  targetDeviceName:(NSString*)deviceName
-                      textFragment:
-                          (std::optional<SendTabToSelfTextFragment>)textFragment
-                       pageContext:(send_tab_to_self::PageContext)pageContext {
-  if (textFragment &&
-      textFragment->status == TextFragmentGenerationStatus::kSuccess) {
-    if (!textFragment->text_start.empty()) {
-      pageContext.scroll_position.text_fragment =
-          send_tab_to_self::TextFragmentData(
-              textFragment->text_start, textFragment->text_end,
-              textFragment->prefix, textFragment->suffix);
-    }
-  }
-
-  __weak id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-
-  id<SystemIdentity> account =
-      AuthenticationServiceFactory::GetForProfile(self.profile)
-          ->GetPrimaryIdentity();
-  NSString* email = account ? account.userEmail : nil;
-
-  SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
-      ->GetSendTabToSelfModel()
-      ->SendEntry(self.url, base::SysNSStringToUTF8(self.title),
-                  base::SysNSStringToUTF8(cacheGUID), pageContext,
-                  send_tab_to_self::NavigationHistory(),
-                  base::BindOnce(&ShowPostSendSnackbar, snackbarHandler,
-                                 base::SysNSStringToUTF8(deviceName), email),
-                  _entryPoint);
-
-  // If the post-send toast is disabled, show the legacy snackbar message when
-  // the sheet is dismissed.
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPostSendToast)) {
-    self.dismissedCompletion = base::CallbackToBlock(base::BindRepeating(
-        &DisplaySendToSelfSnackbar, snackbarHandler, deviceName));
+                      targetDeviceName:(NSString*)targetDeviceName {
+  SendTabToSelfBrowserAgent* browserAgent =
+      SendTabToSelfBrowserAgent::FromBrowser(self.browser);
+  if (browserAgent) {
+    browserAgent->SendTabToTargetDevice(
+        self.url, base::SysNSStringToUTF8(self.title),
+        base::SysNSStringToUTF8(cacheGUID),
+        base::SysNSStringToUTF8(targetDeviceName), _entryPoint);
   }
 
   [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];

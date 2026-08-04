@@ -17,6 +17,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/page_context.h"
+#import "base/run_loop.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -43,6 +45,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
 using send_tab_to_self::FakeSendTabToSelfModel;
@@ -57,8 +60,9 @@ const char kDeviceID[] = "device_id";
 class SendTabToSelfBrowserAgentTest : public PlatformTest {
  public:
   explicit SendTabToSelfBrowserAgentTest(
-      const std::vector<base::test::FeatureRef>& enabled_features = {}) {
-    feature_list_.InitWithFeatures(enabled_features, {});
+      const std::vector<base::test::FeatureRef>& enabled_features = {},
+      const std::vector<base::test::FeatureRef>& disabled_features = {}) {
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
@@ -85,6 +89,10 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
         SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
             ->GetSendTabToSelfModel());
   }
+  ~SendTabToSelfBrowserAgentTest() override = default;
+
+  ProfileIOS* profile() { return profile_.get(); }
+  id mock_scene_commands() { return mock_scene_commands_; }
 
   web::FakeWebState* AppendNewWebState(const GURL& url,
                                        bool activate = true,
@@ -713,6 +721,97 @@ TEST_F(SendTabToSelfBrowserAgentAutoOpenInTabGridTest,
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.AutoOpenOutcome2",
       send_tab_to_self::AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
+}
+
+// Tests that sending a tab to a specified target device adds a corresponding
+// entry to the Send Tab to Self model when the model is ready.
+TEST_F(SendTabToSelfBrowserAgentTest,
+       SendTabToTargetDevice_AddsEntryToModelWhenReady) {
+  agent_->SendTabToTargetDevice(GURL("https://example.com"), "Title", "target",
+                                "My Phone",
+                                send_tab_to_self::ShareEntryPoint::kShareSheet);
+
+  EXPECT_EQ(1u, model_->GetAllGuids().size());
+  const send_tab_to_self::SendTabToSelfEntry* entry =
+      model_->GetEntryByGUID(model_->GetAllGuids()[0]);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetURL(), GURL("https://example.com"));
+  EXPECT_EQ(entry->GetTitle(), "Title");
+  EXPECT_EQ(entry->GetTargetDeviceSyncCacheGuid(), "target");
+}
+
+class SendTabToSelfBrowserAgentToastEnabledTest
+    : public SendTabToSelfBrowserAgentTest {
+ public:
+  SendTabToSelfBrowserAgentToastEnabledTest()
+      : SendTabToSelfBrowserAgentTest(
+            {send_tab_to_self::kSendTabToSelfPostSendToast},
+            {}) {}
+};
+
+class SendTabToSelfBrowserAgentToastDisabledTest
+    : public SendTabToSelfBrowserAgentTest {
+ public:
+  SendTabToSelfBrowserAgentToastDisabledTest()
+      : SendTabToSelfBrowserAgentTest(
+            {},
+            {send_tab_to_self::kSendTabToSelfPostSendToast}) {}
+};
+
+// Tests that invoking HandleEntrySentForTest with kSuccess displays the
+// success toast when toast feature is enabled.
+TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
+       HandleEntrySent_SuccessShowsToast) {
+  id mock_snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg any]]);
+
+  agent_->HandleEntrySentForTest(
+      mock_snackbar_commands, "My Phone",
+      send_tab_to_self::SendTabToSelfResult::kSuccess);
+
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
+}
+
+// Tests that invoking HandleEntrySentForTest with kSuccessThrottled displays
+// the throttled toast when toast feature is enabled.
+TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
+       HandleEntrySent_SuccessThrottledShowsToast) {
+  id mock_snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg any]]);
+
+  agent_->HandleEntrySentForTest(
+      mock_snackbar_commands, "My Phone",
+      send_tab_to_self::SendTabToSelfResult::kSuccessThrottled);
+
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
+}
+
+// Tests that invoking HandleEntrySentForTest with a failure result displays
+// the failure toast when toast feature is enabled.
+TEST_F(SendTabToSelfBrowserAgentToastEnabledTest,
+       HandleEntrySent_FailureShowsErrorToast) {
+  id mock_snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg any]]);
+
+  agent_->HandleEntrySentForTest(
+      mock_snackbar_commands, "",
+      send_tab_to_self::SendTabToSelfResult::kFailureNoInternetConnection);
+
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
+}
+
+// Tests that invoking HandleEntrySentForTest with kSuccess displays the
+// legacy snackbar when toast feature is disabled.
+TEST_F(SendTabToSelfBrowserAgentToastDisabledTest,
+       HandleEntrySent_LegacySnackbarDisplayedOnlyOnSuccess) {
+  id mock_snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([mock_snackbar_commands showSnackbarMessage:[OCMArg any]]);
+
+  agent_->HandleEntrySentForTest(
+      mock_snackbar_commands, "My Phone",
+      send_tab_to_self::SendTabToSelfResult::kSuccess);
+
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
 }
 
 }  // anonymous namespace
