@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/basic_types.h"
+#include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/js.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -94,6 +95,30 @@ constexpr auto kBooleanAttributes =
 
 namespace {
 
+Status IsElementCssVisible(Session* session,
+                           WebView* web_view,
+                           const std::string& element_id,
+                           bool* is_css_visible) {
+  std::string display;
+  Status status = GetElementEffectiveStyle(session, web_view, element_id,
+                                           "display", &display);
+  if (status.IsError()) {
+    return status;
+  }
+
+  std::string visibility;
+  status = GetElementEffectiveStyle(session, web_view, element_id, "visibility",
+                                    &visibility);
+  if (status.IsError()) {
+    return status;
+  }
+
+  *is_css_visible = !base::EqualsCaseInsensitiveASCII(display, "none") &&
+                    !base::EqualsCaseInsensitiveASCII(visibility, "hidden") &&
+                    !base::EqualsCaseInsensitiveASCII(visibility, "collapse");
+  return Status(kOk);
+}
+
 Status FocusToElement(
     Session* session,
     WebView* web_view,
@@ -126,7 +151,19 @@ Status FocusToElement(
     if (is_focused)
       break;
     if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
-      return Status(kElementNotVisible);
+      // IS_DISPLAYED fails for off-screen elements. Keyboard input does not
+      // require viewport position, but CSS-hidden elements must not run
+      // kFocusScript because it can blur the current active element.
+      bool is_css_visible = false;
+      status =
+          IsElementCssVisible(session, web_view, element_id, &is_css_visible);
+      if (status.IsError()) {
+        return status;
+      }
+      if (!is_css_visible) {
+        return Status(kElementNotVisible);
+      }
+      break;
     }
     base::PlatformThread::Sleep(base::Milliseconds(100));
   }
@@ -141,6 +178,7 @@ Status FocusToElement(
   if (!is_focused) {
     base::ListValue args;
     args.Append(CreateElement(element_id, session->w3c_compliant));
+    args.Append(session->chrome->GetBrowserInfo()->is_android);
     std::unique_ptr<base::Value> unused;
     status = web_view->CallFunction(session->GetCurrentFrameId(), kFocusScript,
                                     args, &unused);

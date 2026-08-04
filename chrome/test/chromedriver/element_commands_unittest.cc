@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -21,8 +22,12 @@ namespace {
 
 class MockChrome : public StubChrome {
  public:
-  MockChrome() : web_view_("1") {}
+  explicit MockChrome(bool is_android = false) : web_view_("1") {
+    browser_info_.is_android = is_android;
+  }
   ~MockChrome() override = default;
+
+  const BrowserInfo* GetBrowserInfo() const override { return &browser_info_; }
 
   Status GetWebViewById(const std::string& id, WebView** web_view) override {
     if (id == web_view_.GetId()) {
@@ -36,6 +41,7 @@ class MockChrome : public StubChrome {
   // Using a StubWebView does not allow testing the functionality end-to-end,
   // more details in crbug.com/40579857
   StubWebView web_view_;
+  BrowserInfo browser_info_;
 };
 
 typedef Status (*Command)(Session* session,
@@ -49,8 +55,9 @@ Status CallElementCommand(Command command,
                           const std::string& element_id,
                           const base::DictValue& params = {},
                           bool w3c_compliant = true,
-                          std::unique_ptr<base::Value>* value = nullptr) {
-  MockChrome* chrome = new MockChrome();
+                          std::unique_ptr<base::Value>* value = nullptr,
+                          bool is_android = false) {
+  MockChrome* chrome = new MockChrome(is_android);
   Session session("id", std::unique_ptr<Chrome>(chrome));
   session.w3c_compliant = w3c_compliant;
 
@@ -127,6 +134,172 @@ TEST(ElementCommandsTest, ExecuteSendKeysToElement_ValueNotAList) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
   ASSERT_NE(status.message().find("'value' must be a list"), std::string::npos)
       << status.message();
+}
+
+namespace {
+
+class KeyboardInteractabilityWebView : public StubWebView {
+ public:
+  KeyboardInteractabilityWebView(bool is_displayed,
+                                 std::string display,
+                                 std::string visibility)
+      : StubWebView("1"),
+        is_displayed_(is_displayed),
+        display_(std::move(display)),
+        visibility_(std::move(visibility)) {}
+  ~KeyboardInteractabilityWebView() override = default;
+
+  bool focus_called() const { return focus_called_; }
+  bool focus_script_android_arg_was_expected() const {
+    return focus_script_android_arg_was_expected_;
+  }
+
+  void ExpectFocusScriptAndroidArg(bool expected) {
+    check_focus_script_android_arg_ = true;
+    expected_focus_script_android_arg_ = expected;
+  }
+
+  Status EvaluateScript(const std::string& frame,
+                        const std::string& expression,
+                        const bool await_promise,
+                        std::unique_ptr<base::Value>* result) override {
+    if (expression == "document.hasFocus()") {
+      *result = std::make_unique<base::Value>(false);
+      return Status(kOk);
+    }
+    *result = std::make_unique<base::Value>();
+    return Status(kOk);
+  }
+
+  Status CallFunction(const std::string& frame,
+                      const std::string& function,
+                      const base::ListValue& args,
+                      std::unique_ptr<base::Value>* result) override {
+    if (function ==
+        webdriver::atoms::asString(webdriver::atoms::IS_DISPLAYED)) {
+      *result = std::make_unique<base::Value>(is_displayed_);
+      return Status(kOk);
+    }
+    if (function == webdriver::atoms::asString(webdriver::atoms::IS_ENABLED)) {
+      *result = std::make_unique<base::Value>(true);
+      return Status(kOk);
+    }
+    if (function ==
+        webdriver::atoms::asString(webdriver::atoms::GET_EFFECTIVE_STYLE)) {
+      if (args.size() >= 2 && args[1].is_string()) {
+        const std::string& property = args[1].GetString();
+        if (property == "display") {
+          *result = std::make_unique<base::Value>(display_);
+          return Status(kOk);
+        }
+        if (property == "visibility") {
+          *result = std::make_unique<base::Value>(visibility_);
+          return Status(kOk);
+        }
+      }
+      *result = std::make_unique<base::Value>("");
+      return Status(kOk);
+    }
+    if (function ==
+        webdriver::atoms::asString(webdriver::atoms::GET_ATTRIBUTE)) {
+      if (args.size() >= 2 && args[1].is_string()) {
+        const std::string& attr = args[1].GetString();
+        if (attr == "tagName") {
+          *result = std::make_unique<base::Value>("input");
+          return Status(kOk);
+        }
+        if (attr == "type") {
+          *result = std::make_unique<base::Value>("text");
+          return Status(kOk);
+        }
+      }
+      *result = std::make_unique<base::Value>();
+      return Status(kOk);
+    }
+    if (function.find("isContentEditable") != std::string::npos) {
+      *result = std::make_unique<base::Value>(false);
+      return Status(kOk);
+    }
+    if (function.find("function focus") != std::string::npos) {
+      focus_called_ = true;
+      if (check_focus_script_android_arg_ &&
+          (args.size() < 2 || !args[1].is_bool() ||
+           args[1].GetBool() != expected_focus_script_android_arg_)) {
+        return Status(kUnknownError, "unexpected focus script Android arg");
+      }
+      focus_script_android_arg_was_expected_ = check_focus_script_android_arg_;
+      *result = std::make_unique<base::Value>();
+      return Status(kOk);
+    }
+
+    *result = std::make_unique<base::Value>();
+    return Status(kOk);
+  }
+
+  Status DispatchKeyEvents(const std::vector<KeyEvent>& events,
+                           bool async_dispatch_events) override {
+    return Status(kOk);
+  }
+
+ private:
+  bool is_displayed_;
+  std::string display_;
+  std::string visibility_;
+  bool focus_called_ = false;
+  bool check_focus_script_android_arg_ = false;
+  bool expected_focus_script_android_arg_ = false;
+  bool focus_script_android_arg_was_expected_ = false;
+};
+
+}  // namespace
+
+TEST(ElementCommandsTest,
+     ExecuteSendKeysToElement_HiddenElementDoesNotCallFocusScript) {
+  KeyboardInteractabilityWebView webview(/*is_displayed=*/false,
+                                         /*display=*/"none",
+                                         /*visibility=*/"visible");
+  base::DictValue params;
+  params.Set("text", "x");
+  std::unique_ptr<base::Value> result_value;
+  Status status =
+      CallElementCommand(ExecuteSendKeysToElement, &webview, "test-element-id",
+                         params, true, &result_value);
+  EXPECT_EQ(kElementNotInteractable, status.code()) << status.message();
+  EXPECT_FALSE(webview.focus_called());
+}
+
+TEST(ElementCommandsTest,
+     ExecuteSendKeysToElement_CssVisibleOffscreenElementCallsFocusScript) {
+  KeyboardInteractabilityWebView webview(/*is_displayed=*/false,
+                                         /*display=*/"inline-block",
+                                         /*visibility=*/"visible");
+  webview.ExpectFocusScriptAndroidArg(false);
+  base::DictValue params;
+  params.Set("text", "");
+  std::unique_ptr<base::Value> result_value;
+  Status status =
+      CallElementCommand(ExecuteSendKeysToElement, &webview, "test-element-id",
+                         params, true, &result_value);
+  ASSERT_TRUE(status.IsOk()) << status.message();
+  EXPECT_TRUE(webview.focus_called());
+  EXPECT_TRUE(webview.focus_script_android_arg_was_expected());
+}
+
+TEST(ElementCommandsTest,
+     ExecuteSendKeysToElement_AndroidPassesFocusDocumentElementArg) {
+  KeyboardInteractabilityWebView webview(/*is_displayed=*/false,
+                                         /*display=*/"inline-block",
+                                         /*visibility=*/"visible");
+  webview.ExpectFocusScriptAndroidArg(true);
+  base::DictValue params;
+  params.Set("text", "");
+  std::unique_ptr<base::Value> result_value;
+  Status status =
+      CallElementCommand(ExecuteSendKeysToElement, &webview, "test-element-id",
+                         params, true, &result_value, /*is_android=*/true);
+  ASSERT_TRUE(status.IsOk()) << status.message();
+  EXPECT_TRUE(webview.focus_called());
+  EXPECT_TRUE(webview.focus_script_android_arg_was_expected());
 }
 
 namespace {
