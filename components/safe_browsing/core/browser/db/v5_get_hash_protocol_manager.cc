@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -151,6 +152,18 @@ void V5GetHashProtocolManager::GetFullHashes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!full_hash_to_threat_types.empty());
 
+  base::flat_set<SBThreatType> unique_attempt_threat_types;
+  for (const auto& [full_hash, threat_types] : full_hash_to_threat_types) {
+    unique_attempt_threat_types.insert(threat_types.begin(),
+                                       threat_types.end());
+  }
+  for (SBThreatType threat_type : unique_attempt_threat_types) {
+    base::UmaHistogramEnumeration("SafeBrowsing.V5GetHash.AttemptThreatType",
+                                  threat_type);
+    base::UmaHistogramEnumeration("SafeBrowsing.SBGetHash.AttemptThreatType",
+                                  threat_type);
+  }
+
   std::vector<std::string> hash_prefixes_to_request;
   std::vector<V5::FullHash> cached_full_hashes;
 
@@ -192,6 +205,22 @@ void V5GetHashProtocolManager::GetFullHashes(
                               hash_prefixes_to_request.size());
   base::UmaHistogramCounts100("SafeBrowsing.SBGetHash.Request.CountOfPrefixes",
                               hash_prefixes_to_request.size());
+
+  base::flat_set<std::string> requested_prefixes(hash_prefixes_to_request);
+  base::flat_set<SBThreatType> unique_network_threat_types;
+  for (const auto& [full_hash, threat_types] : full_hash_to_threat_types) {
+    if (requested_prefixes.contains(
+            SBProtocolManagerUtil::GetHashPrefix(full_hash))) {
+      unique_network_threat_types.insert(threat_types.begin(),
+                                         threat_types.end());
+    }
+  }
+  for (SBThreatType threat_type : unique_network_threat_types) {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.V5GetHash.Network.RequestThreatType", threat_type);
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.SBGetHash.Network.RequestThreatType", threat_type);
+  }
 
   // Build the request.
   V5::SearchHashesRequest request;

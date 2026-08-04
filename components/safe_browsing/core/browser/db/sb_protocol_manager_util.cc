@@ -407,6 +407,50 @@ std::string GetV5ListName(const ListIdentifier& list_identifier) {
   }
 }
 
+// TODO(crbug.com/372395685): Delete this method with v4 deprecation.
+SBThreatType GetSBThreatTypeForList(const ListIdentifier& list_id) {
+  if (list_id.uses_v5_api()) {
+    return list_id.sb_threat_type();
+  }
+  if (list_id == GetUrlSocEngId()) {
+    return SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
+  }
+  if (list_id == GetUrlMalwareId()) {
+    return SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
+  }
+  if (list_id == GetUrlUwsId()) {
+    return SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
+  }
+  if (list_id == GetUrlMalBinId()) {
+    return SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE;
+  }
+  if (list_id == GetChromeExtMalwareId()) {
+    return SBThreatType::SB_THREAT_TYPE_EXTENSION;
+  }
+  if (list_id == GetUrlBillingId()) {
+    return SBThreatType::SB_THREAT_TYPE_BILLING;
+  }
+  if (list_id == GetUrlCsdDownloadAllowlistId()) {
+    return SBThreatType::SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST;
+  }
+  if (list_id == GetUrlCsdAllowlistId()) {
+    return SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST;
+  }
+  if (list_id == GetUrlSubresourceFilterId()) {
+    return SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER;
+  }
+  if (list_id == GetUrlSuspiciousSiteId()) {
+    return SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE;
+  }
+  if (list_id == GetChromeUrlApiId()) {
+    return SBThreatType::SB_THREAT_TYPE_API_ABUSE;
+  }
+  if (list_id == GetUrlHighConfidenceAllowlistId()) {
+    return SBThreatType::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST;
+  }
+  return SBThreatType::SB_THREAT_TYPE_UNUSED;
+}
+
 StoreAndHashPrefix::StoreAndHashPrefix(ListIdentifier list_id,
                                        const HashPrefixStr& hash_prefix)
     : list_id(list_id), hash_prefix(hash_prefix) {}

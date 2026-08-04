@@ -337,6 +337,9 @@ PrefixSize GetV5PrefixSizeForThreatType(SBThreatType threat_type);
 // Get the name of a v5 list.
 std::string GetV5ListName(const ListIdentifier& list_identifier);
 
+// Returns the SBThreatType corresponding to a given ListIdentifier.
+SBThreatType GetSBThreatTypeForList(const ListIdentifier& list_id);
+
 // Represents the state of each store.
 using StoreStateMap = std::unordered_map<ListIdentifier, std::string>;
 

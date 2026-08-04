@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 
 #include "base/base64url.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -266,6 +268,21 @@ void V4GetHashProtocolManager::GetFullHashes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!full_hash_to_store_and_hash_prefixes.empty());
 
+  base::flat_set<SBThreatType> unique_attempt_threat_types;
+  for (const auto& [full_hash, store_and_prefixes] :
+       full_hash_to_store_and_hash_prefixes) {
+    for (const auto& store_and_prefix : store_and_prefixes) {
+      unique_attempt_threat_types.insert(
+          GetSBThreatTypeForList(store_and_prefix.list_id));
+    }
+  }
+  for (SBThreatType threat_type : unique_attempt_threat_types) {
+    base::UmaHistogramEnumeration("SafeBrowsing.V4GetHash.AttemptThreatType",
+                                  threat_type);
+    base::UmaHistogramEnumeration("SafeBrowsing.SBGetHash.AttemptThreatType",
+                                  threat_type);
+  }
+
   std::vector<HashPrefixStr> prefixes_to_request;
   std::vector<FullHashInfo> cached_full_hash_infos;
   GetFullHashCachedResults(full_hash_to_store_and_hash_prefixes, Time::Now(),
@@ -296,6 +313,24 @@ void V4GetHashProtocolManager::GetFullHashes(
     }
     std::move(callback).Run(cached_full_hash_infos);
     return;
+  }
+
+  base::flat_set<HashPrefixStr> requested_prefixes(prefixes_to_request);
+  base::flat_set<SBThreatType> unique_network_threat_types;
+  for (const auto& [full_hash, store_and_prefixes] :
+       full_hash_to_store_and_hash_prefixes) {
+    for (const auto& store_and_prefix : store_and_prefixes) {
+      if (requested_prefixes.contains(store_and_prefix.hash_prefix)) {
+        unique_network_threat_types.insert(
+            GetSBThreatTypeForList(store_and_prefix.list_id));
+      }
+    }
+  }
+  for (SBThreatType threat_type : unique_network_threat_types) {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.V4GetHash.Network.RequestThreatType", threat_type);
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.SBGetHash.Network.RequestThreatType", threat_type);
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

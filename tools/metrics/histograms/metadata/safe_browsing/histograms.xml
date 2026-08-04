@@ -4781,6 +4781,31 @@ failing to fetch the updates which puts users' security at risk. -->
   <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}GetHash.AttemptThreatType"
+    enum="SBThreatType" expires_after="2027-08-01">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs each unique threat type that matched a prefix in the
+    {SafeBrowsingV4OrV5OrSB} local database and initiated a full-hash lookup
+    attempt (before checking the local cache).
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}GetHash.Network.RequestThreatType"
+    enum="SBThreatType" expires_after="2027-08-01">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs each unique threat type included in a {SafeBrowsingV4OrV5OrSB} GetHash
+    network request.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
 <histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}GetHash.Network.Result"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-07-14">
   <owner>thefrog@chromium.org</owner>

@@ -318,6 +318,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingParallelRequests) {
 }
 
 TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingOK) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<V4GetHashProtocolManager> pm(CreateProtocolManager());
 
   base::Time now = base::Time::UnixEpoch();
@@ -355,6 +356,64 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingOK) {
   EXPECT_EQ(FullHashStr("Everything's shiny, Cap'n."),
             cached_result.full_hash_infos[0].full_hash);
   EXPECT_TRUE(callback_called());
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V4GetHash.AttemptThreatType",
+      /*sample=*/SBThreatType::SB_THREAT_TYPE_API_ABUSE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SBGetHash.AttemptThreatType",
+      /*sample=*/SBThreatType::SB_THREAT_TYPE_API_ABUSE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V4GetHash.Network.RequestThreatType",
+      /*sample=*/SBThreatType::SB_THREAT_TYPE_API_ABUSE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SBGetHash.Network.RequestThreatType",
+      /*sample=*/SBThreatType::SB_THREAT_TYPE_API_ABUSE,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(V4GetHashProtocolManagerTest, TestGetHashCachedOK) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<V4GetHashProtocolManager> pm(CreateProtocolManager());
+
+  base::Time now = base::Time::Now();
+  SetTestClock(now, pm.get());
+
+  HashPrefixStr prefix("Everything");
+  FullHashStr full_hash("Everything's shiny, Cap'n.");
+  FullHashToStoreAndHashPrefixesMap matched_locally;
+  matched_locally[full_hash].emplace_back(GetChromeUrlApiId(), prefix);
+
+  // Pre-populate the cache so that GetFullHashes hits the cache.
+  FullHashCache* cache = pm->full_hash_cache_for_tests();
+  CachedHashPrefixInfo* entry = &(*cache)[prefix];
+  entry->negative_expiry = now + base::Minutes(5);
+
+  std::vector<FullHashInfo> expected_results;
+  pm->GetFullHashes(
+      matched_locally, {},
+      base::BindOnce(&V4GetHashProtocolManagerTest::ValidateGetV4HashResults,
+                     base::Unretained(this), expected_results));
+
+  EXPECT_TRUE(callback_called());
+
+  // Since it was a cache hit, only the attempt threat type metrics should be
+  // logged; no network request threat type metrics should be logged.
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V4GetHash.AttemptThreatType",
+      /*sample=*/SBThreatType::SB_THREAT_TYPE_API_ABUSE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SBGetHash.AttemptThreatType",
+      /*sample=*/SBThreatType::SB_THREAT_TYPE_API_ABUSE,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.V4GetHash.Network.RequestThreatType", 0);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.SBGetHash.Network.RequestThreatType", 0);
 }
 
 TEST_F(V4GetHashProtocolManagerTest,
