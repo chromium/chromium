@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -3824,6 +3825,105 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest, Disallowed) {
   // The response is not handled as a download.
   ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_FALSE(handle_observer.is_download());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
+                       OpenerCrossOriginDownload_SanitizesConsoleUrl) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL popup_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  GURL download_url(embedded_test_server()->GetURL(
+      "b.com", "/download-test1.lib?token=SECRET_12345"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "*Navigating a cross-origin opener to a download*");
+
+  // Open a cross-origin popup from a.com.
+  ShellAddedObserver shell_observer;
+  std::string open_script = JsReplace("window.open($1, 'popup');", popup_url);
+  EXPECT_TRUE(ExecJs(shell(), open_script));
+  Shell* popup = shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
+
+  // Navigate opener (a.com) to cross-origin download from the cross-origin
+  // popup (c.com).
+  std::string script = JsReplace("window.opener.location = $1;", download_url);
+  EXPECT_TRUE(ExecJs(popup->web_contents(), script));
+
+  ASSERT_TRUE(console_observer.Wait());
+  ASSERT_EQ(1u, console_observer.messages().size());
+  std::string msg = base::UTF16ToUTF8(console_observer.messages()[0].message);
+
+  // Verify the console message contains the origin (b.com) but not full path or
+  // secret query token.
+  EXPECT_THAT(msg, ::testing::HasSubstr("b.com"));
+  EXPECT_THAT(msg, ::testing::Not(::testing::HasSubstr("SECRET_12345")));
+  EXPECT_THAT(msg, ::testing::Not(::testing::HasSubstr("download-test1.lib")));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
+                       OpenerCrossOrigin_BrowserOverridesCompromisedRenderer) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL popup_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  GURL download_url(
+      embedded_test_server()->GetURL("b.com", "/download-test1.lib"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  ShellAddedObserver shell_observer;
+  std::string open_script = JsReplace("window.open($1, 'popup');", popup_url);
+  EXPECT_TRUE(ExecJs(shell(), open_script));
+  Shell* popup = shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
+
+  RenderFrameHostImpl* main_rfh =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* popup_rfh =
+      static_cast<WebContentsImpl*>(popup->web_contents())
+          ->GetPrimaryMainFrame();
+
+  EXPECT_NE(nullptr, popup_rfh->frame_tree_node()->opener());
+  EXPECT_EQ(main_rfh->frame_tree_node(),
+            popup_rfh->frame_tree_node()->opener());
+
+  TestNavigationManager manager(shell()->web_contents(), download_url);
+  std::string script = JsReplace("window.opener.location = $1;", download_url);
+  EXPECT_TRUE(ExecJs(popup->web_contents(), script));
+
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  NavigationRequest* request =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame()
+          ->frame_tree_node()
+          ->navigation_request();
+
+  // Simulate a compromised renderer that stripped the kOpenerCrossOrigin flag
+  // from IPC.
+  request->common_params_->download_policy.observed_types.reset();
+  request->common_params_->download_policy.disallowed_types.reset();
+
+  EXPECT_FALSE(request->common_params_->download_policy.IsType(
+      blink::NavigationDownloadType::kOpenerCrossOrigin));
+  EXPECT_TRUE(request->common_params_->download_policy.IsDownloadAllowed());
+
+  // Close the initiator popup to destroy the initiator RenderFrameHost. This
+  // verifies that browser-side enforcement relies on cached state recorded at
+  // NavigationRequest creation, preventing a race condition bypass where a
+  // compromised renderer closes itself or navigates away before policy
+  // recomputation.
+  popup->Close();
+
+  // Run browser recomputation:
+  request->ComputeDownloadPolicy();
+
+  // Verify browser recomputation enforced kOpenerCrossOrigin even after
+  // initiator RFH destruction:
+  EXPECT_TRUE(request->common_params_->download_policy.IsType(
+      blink::NavigationDownloadType::kOpenerCrossOrigin));
+  EXPECT_FALSE(request->common_params_->download_policy.IsDownloadAllowed());
 }
 
 class NavigationRequestBackForwardBrowserTest
