@@ -115,7 +115,9 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
       composeboxSmartComposeEnabled: true,
       composeboxShowZps: true,
     });
-    createComposeboxElement(testProxy);
+    createComposeboxElement(testProxy, {
+      searchboxNextEnabled: true,
+    });
     await microtasksFinished();
 
     const inputElement = testProxy.element.getInputElement().$.input;
