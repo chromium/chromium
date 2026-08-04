@@ -52,6 +52,13 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
 
   void TriggerOnLoginsRetainedForAndroid(
       const std::vector<StoredCredential>& credentials);
+  // Note: On Android, affiliations are not computed in Chrome (they are
+  // provided by GMSCore/UPM), so the test backend directly injects affiliated
+  // and grouped realms. On Desktop, affiliations are computed in Chrome via
+  // `AffiliatedMatchHelper`.
+  // Do NOT enable this method on Desktop; instead, attach a
+  // `MockAffiliatedMatchHelper` via `SetAffiliatedMatchHelper()` and use
+  // `ExpectCallToGetAffiliatedAndGrouped()`.
 #if BUILDFLAG(IS_ANDROID)
   void SetAffiliatedAndGroupedRealms(
       const std::string& realm,
