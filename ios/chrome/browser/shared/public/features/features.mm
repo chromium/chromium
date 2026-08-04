@@ -1025,10 +1025,19 @@ const char kIOSSoftLockBackgroundThresholdParam[] =
 const base::FeatureParam<base::TimeDelta> kIOSSoftLockBackgroundThreshold{
     &kIOSSoftLock, kIOSSoftLockBackgroundThresholdParam, base::Minutes(10)};
 
+#if BUILDFLAG(IOS_ENABLE_AIM_COBROWSE)
 BASE_FEATURE(kAimCobrowse, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 bool IsAimCobrowseEnabled() {
+#if BUILDFLAG(IOS_ENABLE_AIM_COBROWSE)
+  if (GetChannel() == version_info::Channel::STABLE) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kAimCobrowse);
+#else
+  return false;
+#endif
 }
 
 BASE_FEATURE(kFeedbackEntryPointsRequireCanSubmitFeedbackCapability,

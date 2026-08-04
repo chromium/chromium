@@ -123,6 +123,7 @@
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/shared/public/features/aim_cobrowse_buildflags.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
@@ -2473,9 +2474,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSSaveToPhotosSignedOutName,
      flag_descriptions::kIOSSaveToPhotosSignedOutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSSaveToPhotosSignedOut)},
+#if BUILDFLAG(IOS_ENABLE_AIM_COBROWSE)
     {"aim-cobrowse", flag_descriptions::kAimCobrowseName,
      flag_descriptions::kAimCobrowseDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAimCobrowse)},
+#endif
     {"aim-cobrowse-header", flag_descriptions::kAimCobrowseHeaderName,
      flag_descriptions::kAimCobrowseHeaderDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kAIMCobrowseHeader,

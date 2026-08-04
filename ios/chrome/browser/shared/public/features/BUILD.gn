@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//ios/chrome/features.gni")
+
+buildflag_header("aim_cobrowse_buildflags") {
+  header = "aim_cobrowse_buildflags.h"
+  flags = [ "IOS_ENABLE_AIM_COBROWSE=$ios_enable_aim_cobrowse" ]
+}
+
 source_set("features") {
   sources = [
     "features.h",
@@ -25,7 +33,10 @@ source_set("features") {
     "//ios/chrome/common",
     "//ui/base",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":aim_cobrowse_buildflags",
+    "//base",
+  ]
 }
 
 source_set("system_flags") {

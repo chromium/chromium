@@ -13,4 +13,7 @@ declare_args() {
 
   # Enable profile altering tests e.g. adding media to the photo library.
   ios_chrome_enable_profile_altering_tests = false
+
+  # Enable the AIM Co-browse feature.
+  ios_enable_aim_cobrowse = !is_official_build
 }
