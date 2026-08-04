@@ -14,7 +14,7 @@ found in the LICENSE file.
     app:textArrangement="vertical"
     app:chipColor="@macro/default_bg_color"
     app:primaryTextAppearance="@style/TextAppearance.TextAccentMediumThick"
-    app:secondaryTextAppearance="@style/TextAppearance.TextSmall"
+    app:secondaryTextAppearance="@style/TextAppearance.TextSmall.Secondary"
     app:chipStartPadding="@dimen/at_memory_flyout_default_margin"
     app:chipEndPadding="@dimen/at_memory_flyout_default_margin"
     app:primaryTextStartPadding="0dp"
