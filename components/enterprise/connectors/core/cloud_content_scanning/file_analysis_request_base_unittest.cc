@@ -637,4 +637,16 @@ TEST_F(FileAnalysisRequestBaseTest,
   EXPECT_TRUE(run_loop.AnyQuitCalled());
 }
 
+TEST_F(FileAnalysisRequestBaseTest, VirtualFilesOnChromeOS) {
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(FileAnalysisRequestBase::IsVirtualFile(
+      base::FilePath(FILE_PATH_LITERAL("/media/fuse/fusebox/odfs/large.doc"))));
+  EXPECT_FALSE(FileAnalysisRequestBase::IsVirtualFile(base::FilePath(
+      FILE_PATH_LITERAL("/home/chronos/user/Downloads/large.doc"))));
+#else
+  EXPECT_FALSE(FileAnalysisRequestBase::IsVirtualFile(
+      base::FilePath(FILE_PATH_LITERAL("/media/fuse/fusebox/odfs/large.doc"))));
+#endif
+}
+
 }  // namespace enterprise_connectors

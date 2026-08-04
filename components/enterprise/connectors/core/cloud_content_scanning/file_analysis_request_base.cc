@@ -486,4 +486,13 @@ void FileAnalysisRequestBase::GetData(
                      weakptr_factory_.GetWeakPtr()));
 }
 
+// static
+bool FileAnalysisRequestBase::IsVirtualFile(const base::FilePath& path) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::FilePath("/media/fuse").IsParent(path);
+#else
+  return false;
+#endif
+}
+
 }  // namespace enterprise_connectors
