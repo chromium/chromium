@@ -4343,6 +4343,14 @@
       name: "NoIdleEncodingForWebTests",
       status: "test",
     },
+    {
+      // When copying, a lone space between two inline elements is kept as an
+      // ordinary breaking space instead of being converted to a non-breaking
+      // space. Spaces at the selection edges and runs of two or more spaces are
+      // still converted to non-breaking spaces. See https://crbug.com/448047353
+      name: "NoNbspForInterElementSpaceOnCopy",
+      status: "stable",
+    },
     // Doesn't insert empty blockquotes on outdenting a blockquote. See
     // https://crbug.com/323960902
     {

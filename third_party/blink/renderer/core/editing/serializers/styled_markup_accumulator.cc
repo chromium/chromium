@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
+#include "third_party/blink/renderer/core/editing/serializers/html_interchange.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -123,11 +124,20 @@ void StyledMarkupAccumulator::AppendTextWithInlineStyle(
     StringBuilder buffer;
     MarkupFormatter::AppendCharactersReplacingEntities(
         content, kEntityMaskInPcdata, buffer);
+    // Tell the converter whether this text node sits at the selection's start
+    // or end, so an edge space becomes a non-breaking space but an interior one
+    // does not.
+    const IsAtSelectionStart is_at_selection_start(start_.IsNotNull() &&
+                                                   start_.GetText() == &text);
+    const IsAtSelectionEnd is_at_selection_end(end_.IsNotNull() &&
+                                               end_.GetText() == &text);
     // Keep collapsible white spaces as is during markup sanitization.
     const String text_to_append =
         IsForMarkupSanitization()
             ? buffer.ToString()
-            : ConvertHtmlTextToInterchangeFormat(buffer.ToString(), text);
+            : ConvertHtmlTextToInterchangeFormat(buffer.ToString(), text,
+                                                 is_at_selection_start,
+                                                 is_at_selection_end);
     result_.Append(text_to_append);
   }
   if (inline_style)

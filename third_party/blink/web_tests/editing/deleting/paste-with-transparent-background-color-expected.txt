@@ -15,5 +15,4 @@ After cut and paste:
 |   class="test"
 |   style="background: transparent;"
 |   "world"
-| " "
-| "WebKit<#selection-caret>"
+| " WebKit<#selection-caret>"

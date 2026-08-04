@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_HTML_INTERCHANGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_HTML_INTERCHANGE_H_
 
+#include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -34,8 +35,16 @@ class Text;
 
 #define AppleInterchangeNewline "Apple-interchange-newline"
 
-String ConvertHtmlTextToInterchangeFormat(const String&, const Text&);
+// Whether the text node is at the start/end of the range being serialized, so
+// a boundary space can be preserved as a non-breaking space.
+using IsAtSelectionStart = base::StrongAlias<class IsAtSelectionStartTag, bool>;
+using IsAtSelectionEnd = base::StrongAlias<class IsAtSelectionEndTag, bool>;
 
+String ConvertHtmlTextToInterchangeFormat(
+    const String&,
+    const Text&,
+    IsAtSelectionStart is_at_selection_start,
+    IsAtSelectionEnd is_at_selection_end);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_HTML_INTERCHANGE_H_

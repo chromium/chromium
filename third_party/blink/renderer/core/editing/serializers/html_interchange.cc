@@ -28,12 +28,17 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-String ConvertHtmlTextToInterchangeFormat(const String& in, const Text& node) {
+String ConvertHtmlTextToInterchangeFormat(
+    const String& in,
+    const Text& node,
+    IsAtSelectionStart is_at_selection_start,
+    IsAtSelectionEnd is_at_selection_end) {
   // Assume all the text comes from node.
   if (node.GetLayoutObject() &&
       node.GetLayoutObject()->StyleRef().ShouldPreserveBreaks()) {
@@ -67,12 +72,33 @@ String ConvertHtmlTextToInterchangeFormat(const String& in, const Text& node) {
             add = 3;
             break;
           case 1:
-            if (i == 0 || i + 1 == in.length())  // at start or end of string
-              s.Append(kConvertedSpaceString);
-            else
-              s.Append(' ');
+            if (RuntimeEnabledFeatures::
+                    NoNbspForInterElementSpaceOnCopyEnabled()) {
+              // A lone space is only trimmed at the selection's edges. Convert
+              // it to a non-breaking space there; an interior space (e.g.
+              // between two inline elements) stays an ordinary breaking space.
+              if ((i == 0 && is_at_selection_start.value()) ||
+                  (i + 1 == in.length() && is_at_selection_end.value())) {
+                s.Append(kConvertedSpaceString);
+              } else {
+                s.Append(' ');
+              }
+            } else {
+              // Legacy behavior: a lone space at either end of the string is
+              // always converted to a non-breaking space.
+              if (i == 0 || i + 1 == in.length()) {
+                s.Append(kConvertedSpaceString);
+              } else {
+                s.Append(' ');
+              }
+            }
             break;
           case 2:
+            // A run of two or more collapsible spaces would collapse back to a
+            // single space when re-parsed, so at least one must always become a
+            // non-breaking space to survive the round trip, regardless of the
+            // selection edges. The selection-edge check therefore only applies
+            // to the lone-space case above.
             if (i == 0) {
               // at start of string
               s.Append(kConvertedSpaceString);
