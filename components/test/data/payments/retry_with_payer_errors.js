@@ -6,6 +6,7 @@
 
 let gShowPromise = null;
 let gPaymentResponse = null;
+let gRetryPromise = null;
 
 /**
  * Launches the PaymentRequest UI
@@ -66,5 +67,14 @@ function retry(validationErrors) {
     print(JSON.stringify(gPaymentResponse, undefined, 2));
   });
 
-  gPaymentResponse.retry(validationErrors);
+  gRetryPromise = gPaymentResponse.retry(validationErrors);
+}
+
+/**
+ * Waits for the outstanding gRetryPromise to resolve, and then updates the HTML
+ * body text with the retried response for test consumption.
+ */
+async function processRetryResponse() {
+  await gRetryPromise;
+  print(JSON.stringify(gPaymentResponse, undefined, 2));
 }

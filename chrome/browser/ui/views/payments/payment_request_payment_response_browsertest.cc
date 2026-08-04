@@ -93,11 +93,9 @@ IN_PROC_BROWSER_TEST_F(
     RetryWithPayerErrors_HasSameValueButDifferentErrorsShown) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
-  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
-                    &a_method_name);
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &a_method_name);
   std::string b_method_name;
-  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
-                    &b_method_name);
+  InstallPaymentApp("b.com", "/payment_handler_sw.js", &b_method_name);
 
   NavigateTo("/payment_request_retry_with_payer_errors.html");
 
@@ -116,7 +114,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Click on pay.
   EXPECT_TRUE(IsPayButtonEnabled());
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
   ASSERT_TRUE(
@@ -125,19 +126,26 @@ IN_PROC_BROWSER_TEST_F(
                       "\"payerEmail\": \"johndoe@hades.com\"",
                       "\"payerPhone\": \"+16502111111\""});
 
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::SPEC_DONE_UPDATING,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION});
-  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "retry({});"));
+  RetryPaymentRequest("{}", dialog_view());
 
-  // Select "contact2" profile
+  // Select "contact2" profile.
   OpenContactInfoScreen();
   views::View* list_view = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::CONTACT_INFO_SHEET_LIST_VIEW));
   DCHECK(list_view);
+  ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
   ClickOnDialogViewAndWait(list_view->children()[1]);
 
+  // Click on pay again to complete the retried payment.
+  EXPECT_TRUE(IsPayButtonEnabled());
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(), "processRetryResponse();"));
   ExpectBodyContains({"\"payerName\": \"Jane A. Smith\"",
                       "\"payerEmail\": \"jsmith@example.com\"",
                       "\"payerPhone\": \"+13105557889\""});
