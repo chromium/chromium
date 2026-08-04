@@ -791,3 +791,9 @@ void RightClickExtensionButton(content::WebContents* web_contents,
         }));
       )")));
 }
+
+std::string GetButtonAppJS(const std::string& selector) {
+  return base::StringPrintf(
+      "document.querySelector('toolbar-app')?.shadowRoot?.querySelector('%s')",
+      selector.c_str());
+}

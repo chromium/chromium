@@ -70,6 +70,9 @@ void LeftClickExtensionButton(content::WebContents* web_contents,
 void RightClickExtensionButton(content::WebContents* web_contents,
                                const std::string& id);
 
+// Returns JavaScript expression selecting an element inside toolbar-app.
+std::string GetButtonAppJS(const std::string& selector);
+
 class AvatarButtonUpdateWaiter : public AvatarToolbarButtonInterface::Observer {
  public:
   explicit AvatarButtonUpdateWaiter(AvatarToolbarButtonInterface* button);
