@@ -137,6 +137,17 @@ void CreateHTMLAudioElementCapturer(
   descriptor->AddRemoteTrack(media_stream_component);
 }
 
+void DidStopMediaStreamSource(MediaStreamSource* source) {
+  if (!source) {
+    return;
+  }
+  WebPlatformMediaStreamSource* const platform_source =
+      source->GetPlatformSource();
+  DCHECK(platform_source);
+  platform_source->SetSourceMuted(true);
+  platform_source->StopSource();
+}
+
 // Class to register to the events of |m_mediaElement|, acting accordingly on
 // the tracks of |m_mediaStream|.
 class MediaElementEventListener final : public NativeEventListener {
@@ -150,9 +161,14 @@ class MediaElementEventListener final : public NativeEventListener {
   void Invoke(ExecutionContext*, Event*) override;
 
  private:
+  void CreateTracksFromMediaElement(ExecutionContext*);
+
   Member<HTMLMediaElement> media_element_;
   Member<MediaStream> media_stream_;
   HeapHashSet<WeakMember<MediaStreamSource>> sources_;
+
+  // Whether captured tracks should be recreated when playback restarts.
+  bool recreate_tracks_on_play_ = false;
 };
 
 MediaElementEventListener::MediaElementEventListener(HTMLMediaElement* element,
@@ -175,7 +191,7 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
     // https://www.w3.org/TR/mediastream-recording/#dom-mediarecorder-start
     // step 14.4.
     for (const auto& track : tracks) {
-      track->stopTrack(context);
+      DidStopMediaStreamSource(track->Component()->Source());
     }
     for (const auto& track : tracks) {
       media_stream_->RemoveTrackByComponentAndFireEvents(
@@ -184,10 +200,24 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
     }
 
     media_stream_->StreamEnded();
+    recreate_tracks_on_play_ = true;
     return;
   }
+
+  if (event->type() == event_type_names::kPlay) {
+    if (!recreate_tracks_on_play_ ||
+        media_element_->GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream) {
+      return;
+    }
+    recreate_tracks_on_play_ = false;
+    CreateTracksFromMediaElement(context);
+    return;
+  }
+
   if (event->type() != event_type_names::kLoadedmetadata)
     return;
+
+  recreate_tracks_on_play_ = false;
 
   // If |media_element_| is a MediaStream, clone the new tracks.
   if (media_element_->GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream) {
@@ -218,6 +248,11 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
     return;
   }
 
+  CreateTracksFromMediaElement(context);
+}
+
+void MediaElementEventListener::CreateTracksFromMediaElement(
+    ExecutionContext* context) {
   auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
       CreateCanonicalUuidString(), MediaStreamComponentVector(),
       MediaStreamComponentVector());
@@ -258,16 +293,6 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
            << " #audiotracks: " << audio_components.size();
 
   UpdateSources(context);
-}
-
-void DidStopMediaStreamSource(MediaStreamSource* source) {
-  if (!source)
-    return;
-  WebPlatformMediaStreamSource* const platform_source =
-      source->GetPlatformSource();
-  DCHECK(platform_source);
-  platform_source->SetSourceMuted(true);
-  platform_source->StopSource();
 }
 
 void MediaElementEventListener::UpdateSources(ExecutionContext* context) {
@@ -333,6 +358,7 @@ MediaStream* HTMLMediaElementCapture::captureStream(
       MakeGarbageCollected<MediaElementEventListener>(&element, stream);
   element.addEventListener(event_type_names::kLoadedmetadata, listener, false);
   element.addEventListener(event_type_names::kEnded, listener, false);
+  element.addEventListener(event_type_names::kPlay, listener, false);
 
   // If |element| is actually playing a MediaStream, just clone it.
   if (element.GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream) {

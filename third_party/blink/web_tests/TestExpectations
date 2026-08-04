@@ -3006,7 +3006,6 @@ crbug.com/484675900 [ Android ] external/wpt/webdriver/tests/classic/new_session
 crbug.com/484398834 [ Win ] external/wpt/css/css-typed-om/the-stylepropertymap/properties/gap.html [ Pass Timeout ]
 crbug.com/484393255 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/window_open.py [ Failure ]
 crbug.com/484258336 external/wpt/mediacapture-fromelement/capture-audio-unaffected-volume.html [ Timeout ]
-crbug.com/484258336 external/wpt/mediacapture-fromelement/restart-after-ended.html [ Timeout ]
 crbug.com/484353698 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/user_contexts.py [ Failure ]
 crbug.com/484353698 external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/client_hints.py [ Failure ]
 crbug.com/484353698 external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/contexts.py [ Failure ]
