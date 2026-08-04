@@ -1383,14 +1383,18 @@ PositionWithAffinity PositionRespectingEditingBoundary(
   if (!target_object)
     return PositionWithAffinity();
 
-  if (RuntimeEnabledFeatures::
+  Element* editable_element = UserSelectContainBoundaryOf(position);
+
+  if ((!editable_element ||
+       !RuntimeEnabledFeatures::
+           NoExtendSelectionToUserSelectNoneOutOfFlowUnlessEditableEnabled()) &&
+      RuntimeEnabledFeatures::
           NoExtendSelectionToUserSelectNoneOutOfFlowEnabled() &&
       !position.IsNull() && !target_object->IsSelectable() &&
       !HaveSameOutOfFlowAncestor(*position.AnchorNode(), *target_node)) {
     return PositionWithAffinity();
   }
 
-  Element* editable_element = UserSelectContainBoundaryOf(position);
   if (!editable_element || editable_element->contains(target_node))
     return hit_test_result.GetPosition();
 

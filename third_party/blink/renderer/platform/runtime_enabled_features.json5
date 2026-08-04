@@ -4331,6 +4331,13 @@
       status: "stable"
     },
     {
+      // Fix for https://crbug.com/522844903, a regression from
+      // crrev.com/c/7617189. Gated behind its own flag rather than
+      // changing NoExtendSelectionToUserSelectNoneOutOfFlow's behavior.
+      name: "NoExtendSelectionToUserSelectNoneOutOfFlowUnlessEditable",
+      status: "stable"
+    },
+    {
       // This turns off all font antialiasing for tests unless it is
       // explicitly required and enabled using the
       // "--enable-font-antialiasing" flag like in the case of
