@@ -44,6 +44,8 @@ public class VerticalTabListProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_COLLAPSE_BUTTON_ENABLED =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_GRID_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
@@ -55,11 +57,11 @@ public class VerticalTabListProperties {
     public static final PropertyModel.WritableObjectPropertyKey<
                     Callback<@RailCollapseState Integer>>
             EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 COLLAPSE_STATE,
                 IS_COLLAPSE_BUTTON_ENABLED,
+                IS_INCOGNITO,
                 ON_GRID_CLICK_LISTENER,
                 ON_SEARCH_CLICK_LISTENER,
                 ON_NEW_TAB_CLICK_LISTENER,

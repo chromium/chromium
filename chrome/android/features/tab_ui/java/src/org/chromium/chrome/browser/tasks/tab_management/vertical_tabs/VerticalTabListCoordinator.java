@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -785,6 +786,10 @@ public class VerticalTabListCoordinator {
         }
     }
 
+    /**
+     * Resets the vertical tab list and container models with tabs from the given tab model. Updates
+     * incognito container styling when running in a shared activity window.
+     */
     private void resetWithListOfTabs(@Nullable TabModel tabModel) {
         if (tabModel == null) return;
 
@@ -793,6 +798,9 @@ public class VerticalTabListCoordinator {
                 /* tabGroupSyncIds */ null,
                 /* quickMode */ false);
         mPinnedTabsMediator.updateTabModel(tabModel);
+        boolean isIncognito =
+                !IncognitoUtils.shouldOpenIncognitoAsWindow() && tabModel.isIncognitoBranded();
+        mContainerModel.set(VerticalTabListProperties.IS_INCOGNITO, isIncognito);
     }
 
     private void handleNewTabButtonClick() {
