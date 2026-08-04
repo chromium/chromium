@@ -110,7 +110,7 @@ export function getHtml(this: SpComponentsDemoElement) {
 <div class="demos">
   <div class="sp-icon-buttons-row">
     <cr-icon-button iron-icon="cr:add"></cr-icon-button>
-    <cr-icon-button iron-icon="cr:print"></cr-icon-button>
+    <cr-icon-button iron-icon="cr:print-filled"></cr-icon-button>
     <cr-icon-button iron-icon="cr:more-vert"></cr-icon-button>
   </div>
 </div>

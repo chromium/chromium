@@ -211,7 +211,7 @@ std::string GetManagedUiWebUIIcon(Profile* profile) {
 
   if (ShouldDisplayManagedByParentUi(profile)) {
     // The Family Link "kite" icon.
-    return "cr20:kite";
+    return "cr20:family-link";
   }
 
   // This method can be called even if we shouldn't display the managed UI.

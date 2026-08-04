@@ -60,20 +60,20 @@ export class CrPolicyIndicatorElement extends CrLitElement {
   protected getIndicatorIcon_(): string {
     switch (this.indicatorType) {
       case CrPolicyIndicatorType.EXTENSION:
-        return 'cr:extension';
+        return 'cr:chrome-extension-filled';
       case CrPolicyIndicatorType.NONE:
         return '';
       case CrPolicyIndicatorType.PRIMARY_USER:
-        return 'cr:group';
+        return 'cr:group-filled';
       case CrPolicyIndicatorType.OWNER:
-        return 'cr:person';
+        return 'cr:person-filled';
       case CrPolicyIndicatorType.USER_POLICY:
       case CrPolicyIndicatorType.DEVICE_POLICY:
       case CrPolicyIndicatorType.RECOMMENDED:
         return 'cr20:domain';
       case CrPolicyIndicatorType.PARENT:
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
-        return 'cr20:kite';
+        return 'cr20:family-link';
       default:
         assertNotReachedCase(this.indicatorType);
     }

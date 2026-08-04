@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUIIconSupervised) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   if (ExpectManagedUiForSupervisedUsers()) {
-    EXPECT_EQ("cr20:kite", GetManagedUiWebUIIcon(profile.get()));
+    EXPECT_EQ("cr20:family-link", GetManagedUiWebUIIcon(profile.get()));
   } else {
     EXPECT_TRUE(GetManagedUiWebUIIcon(profile.get()).empty());
   }

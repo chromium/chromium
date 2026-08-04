@@ -76,7 +76,7 @@ suite('HistoryFilterChipsTest', function() {
     assertTrue(eventDetail.userVisits);
     assertTrue(eventDetail.actorVisits);
     assertFalse(userChip.hasAttribute('selected'));
-    assertEquals('cr:person', userIcon.icon);
+    assertEquals('cr:person-filled', userIcon.icon);
   });
 
   test('ToggleActorChip', async () => {
@@ -206,7 +206,7 @@ suite('HistoryFilterChipsTest', function() {
     const actorIcon = actorChip.querySelector('cr-icon');
     assertTrue(!!userIcon && !!actorIcon);
 
-    assertEquals('cr:person-outline', userIcon.icon);
+    assertEquals('cr:person', userIcon.icon);
 
     // <if expr="_google_chrome">
     assertEquals('history-internal:arrow-selector-spark', actorIcon.icon);

@@ -48,7 +48,7 @@ suite('CrPolicyPrefIndicator', function() {
         'pref.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
     flush();
     assertFalse(icon.hidden);
-    assertEquals('cr:person', icon.iconClass);
+    assertEquals('cr:person-filled', icon.iconClass);
     assertEquals('owner: owner_name', icon.tooltipText);
     // </if>
 
@@ -77,7 +77,7 @@ suite('CrPolicyPrefIndicator', function() {
         chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED);
     flush();
     assertFalse(icon.hidden);
-    assertEquals('cr20:kite', icon.iconClass);
+    assertEquals('cr20:family-link', icon.iconClass);
     assertEquals(CrPolicyStrings.controlledSettingParent, icon.tooltipText);
     // </if>
 

@@ -23,7 +23,7 @@ export function getHtml(this: ContextHubAppElement) {
                 @selected-changed="${this.onSelectedChanged_}"
                 @click="${this.onSelectorClick_}">
                 <a role="menuitem" href="#ai-taskbox" data-route="ai-taskbox" class="cr-nav-menu-item">
-                    <cr-icon icon="cr:extension"></cr-icon>
+                    <cr-icon icon="cr:chrome-extension-filled"></cr-icon>
                     AI Taskbox
                 </a>
                 <a role="menuitem" href="#memory-banks" data-route="memory-banks" class="cr-nav-menu-item">

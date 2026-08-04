@@ -16,7 +16,7 @@ export function getHtml(this: TabElement) {
   <span id="title">${this.tabData.title}</span>
   <cr-icon-button
       class="close"
-      iron-icon="cr:clear"
+      iron-icon="cr:close"
       @click="${this.onCloseClick}">
   </cr-icon-button>
   <div id="bottomCorners" ?hidden="${!this.tabData.isActive}">

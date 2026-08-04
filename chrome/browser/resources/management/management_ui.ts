@@ -392,9 +392,9 @@ export class ManagementUiElement extends ManagementUiElementBase {
             'management:report-filled' :
             'management:report-old';
       case DeviceReportingType.PRINT:
-        return 'cr:print';
+        return 'cr:print-filled';
       case DeviceReportingType.PRINT_JOBS:
-        return 'cr:print';
+        return 'cr:print-filled';
       case DeviceReportingType.DLP_EVENTS:
         return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
             'management:policy-filled' :
@@ -406,7 +406,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
             'management:account-circle-filled' :
             'management:account-circle-old';
       case DeviceReportingType.EXTENSION:
-        return 'cr:extension';
+        return 'cr:chrome-extension-filled';
       case DeviceReportingType.ANDROID_APPLICATION:
         return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
             'management:play-prism-filled' :
@@ -495,7 +495,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
       case ReportingType.DEVICE:
         return 'cr:computer';
       case ReportingType.EXTENSIONS:
-        return 'cr:extension';
+        return 'cr:chrome-extension-filled';
       case ReportingType.USER:
         return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
             'management:account-circle-filled' :

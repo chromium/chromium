@@ -85,7 +85,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
     if (this.isUserSelected()) {
       return 'cr:check';
     }
-    return this.isCriticalActionsEnabled_() ? 'cr:person-outline' : 'cr:person';
+    return this.isCriticalActionsEnabled_() ? 'cr:person' : 'cr:person-filled';
   }
 
   protected getActorVisitsIcon_(): string {

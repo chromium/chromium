@@ -66,7 +66,7 @@ suite('CrPolicyIndicator', function() {
     await microtasksFinished();
 
     assertTrue(getIconVisible());
-    assertEquals('cr20:kite', getIconClass());
+    assertEquals('cr20:family-link', getIconClass());
     assertEquals('parent', getIconTooltipText());
   });
 
@@ -75,7 +75,7 @@ suite('CrPolicyIndicator', function() {
     await microtasksFinished();
 
     assertTrue(getIconVisible());
-    assertEquals('cr20:kite', getIconClass());
+    assertEquals('cr20:family-link', getIconClass());
     assertEquals('Restricted for child', getIconTooltipText());
   });
 
@@ -94,7 +94,7 @@ suite('CrPolicyIndicator', function() {
     await microtasksFinished();
 
     assertTrue(getIconVisible());
-    assertEquals('cr:extension', getIconClass());
+    assertEquals('cr:chrome-extension-filled', getIconClass());
     assertEquals('extension: Extension name', getIconTooltipText());
   });
 
@@ -104,7 +104,7 @@ suite('CrPolicyIndicator', function() {
     await microtasksFinished();
 
     assertTrue(getIconVisible());
-    assertEquals('cr:extension', getIconClass());
+    assertEquals('cr:chrome-extension-filled', getIconClass());
     assertEquals('extension', getIconTooltipText());
   });
 
@@ -115,7 +115,7 @@ suite('CrPolicyIndicator', function() {
     await microtasksFinished();
 
     assertTrue(getIconVisible());
-    assertEquals('cr:group', getIconClass());
+    assertEquals('cr:group-filled', getIconClass());
     assertEquals('shared: user@example.com', getIconTooltipText());
   });
   // </if>
@@ -134,7 +134,7 @@ suite('CrPolicyIndicator', function() {
     indicator.indicatorSourceName = 'foo@example.com';
     await microtasksFinished();
 
-    assertEquals('cr:person', icon.iconClass);
+    assertEquals('cr:person-filled', icon.iconClass);
     assertEquals('owner: foo@example.com', icon.tooltipText);
     // </if>
 
@@ -142,14 +142,14 @@ suite('CrPolicyIndicator', function() {
     await microtasksFinished();
 
     assertFalse(icon.hidden);
-    assertEquals('cr20:kite', icon.iconClass);
+    assertEquals('cr20:family-link', icon.iconClass);
     assertEquals('parent', icon.tooltipText);
 
     indicator.indicatorType = CrPolicyIndicatorType.CHILD_RESTRICTION;
     await microtasksFinished();
 
     assertFalse(icon.hidden);
-    assertEquals('cr20:kite', icon.iconClass);
+    assertEquals('cr20:family-link', icon.iconClass);
     assertEquals('Restricted for child', icon.tooltipText);
   });
 });

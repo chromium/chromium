@@ -63,7 +63,7 @@ export function getHtml(this: WebuiBrowserAppElement) {
       </webui-browser-extensions-bar>
       <cr-icon-button id="bookmarksButton" iron-icon="webui-browser:bookmark"
         @click="${this.onBookmarksClick_}"></cr-icon-button>
-      <cr-icon-button id="avatarButton" iron-icon="cr:person"
+      <cr-icon-button id="avatarButton" iron-icon="cr:person-filled"
         @click="${this.onAvatarClick_}"></cr-icon-button>
       <cr-icon-button id="appMenuButton" iron-icon="cr:more-vert"
         title="$i18n{appMenuTooltip}"

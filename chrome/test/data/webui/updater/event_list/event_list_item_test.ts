@@ -742,7 +742,7 @@ suite('EventListItemElement', () => {
 
       const iconElement = item.shadowRoot.querySelector('cr-icon');
       assertTrue(!!iconElement);
-      assertEquals('cr:person', iconElement.icon);
+      assertEquals('cr:person-filled', iconElement.icon);
       assertEquals(loadTimeData.getString('scopeUser'), iconElement.title);
     });
 

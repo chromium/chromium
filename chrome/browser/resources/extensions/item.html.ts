@@ -184,7 +184,7 @@ export function getHtml(this: ItemElement) {
     <cr-tooltip-icon id="parentDisabledPermissionsToolTip"
         ?hidden="${!this.data.disableReasons.parentDisabledPermissions}"
         tooltip-text="$i18n{parentDisabledPermissions}"
-        icon-class="cr20:kite"
+        icon-class="cr20:family-link"
         icon-aria-label="$i18n{parentDisabledPermissions}">
     </cr-tooltip-icon>
     <cr-toggle id="enableToggle"

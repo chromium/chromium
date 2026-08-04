@@ -15,7 +15,7 @@ ${this.showing_ ? html`
   <div id="frame">
     <div id="header">
       <h2>${this.title_}</h2>
-      <cr-icon-button id="closeButton" iron-icon="cr:clear"
+      <cr-icon-button id="closeButton" iron-icon="cr:close"
         @click="${this.onCloseClick_}">
       </cr-icon-button>
     </div>

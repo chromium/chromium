@@ -11,12 +11,12 @@ export function getHtml(this: CrChipDemoElement) {
 <h1>cr-chip</h1>
 <div class="demos">
   <cr-chip>
-    <cr-icon icon="cr:print"></cr-icon>
+    <cr-icon icon="cr:print-filled"></cr-icon>
     Action
   </cr-chip>
 
   <cr-chip chip-role="link">
-    <cr-icon icon="cr:print"></cr-icon>
+    <cr-icon icon="cr:print-filled"></cr-icon>
     Action Link
   </cr-chip>
 
@@ -31,7 +31,7 @@ export function getHtml(this: CrChipDemoElement) {
   </cr-chip>
 
   <cr-chip disabled>
-    <cr-icon icon="cr:clear"></cr-icon>
+    <cr-icon icon="cr:close"></cr-icon>
     Disabled filter
   </cr-chip>
 </div>`;

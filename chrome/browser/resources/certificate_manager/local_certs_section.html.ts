@@ -68,7 +68,7 @@ export function getHtml(this: LocalCertsSectionElement) {
         ${this.showUserSection_() ? html`
           <div id="userCertsSection">
             <cr-link-row id="userCertsInstalledLinkRow"
-                start-icon="cr:person"
+                start-icon="cr:person-filled"
                 label="$i18n{certificateManagerV2UserCertsTitle}"
                 sub-label="${this.numUserCertsString_}"
                 @click="${this.onUserCertsInstalledLinkRowClick_}">

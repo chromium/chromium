@@ -46,7 +46,7 @@ export class ScopeIconElement extends CrLitElement {
 
   computeIcon(): string {
     assert(this.scope !== undefined);
-    return this.scope === 'SYSTEM' ? 'cr:computer' : 'cr:person';
+    return this.scope === 'SYSTEM' ? 'cr:computer' : 'cr:person-filled';
   }
 
   computeLabel(): string {

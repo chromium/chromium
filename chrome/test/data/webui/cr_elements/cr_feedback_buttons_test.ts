@@ -34,41 +34,41 @@ suite('CrFeedbackButtonsTest', () => {
 
   test('TogglesIconState', async () => {
     assertEquals(CrFeedbackOption.UNSPECIFIED, element.selectedOption);
-    assertEquals('cr:thumbs-up', element.$.thumbsUp.ironIcon);
+    assertEquals('cr:thumb-up', element.$.thumbsUp.ironIcon);
     assertEquals('false', element.$.thumbsUp.ariaPressed);
-    assertEquals('cr:thumbs-down', element.$.thumbsDown.ironIcon);
+    assertEquals('cr:thumb-down', element.$.thumbsDown.ironIcon);
     assertEquals('false', element.$.thumbsDown.ariaPressed);
 
     element.$.thumbsUp.click();
     await eventToPromise('selected-option-changed', element);
     assertEquals(CrFeedbackOption.THUMBS_UP, element.selectedOption);
-    assertEquals('cr:thumbs-up-filled', element.$.thumbsUp.ironIcon);
+    assertEquals('cr:thumb-up-filled', element.$.thumbsUp.ironIcon);
     assertEquals('true', element.$.thumbsUp.ariaPressed);
-    assertEquals('cr:thumbs-down', element.$.thumbsDown.ironIcon);
+    assertEquals('cr:thumb-down', element.$.thumbsDown.ironIcon);
     assertEquals('false', element.$.thumbsDown.ariaPressed);
 
     element.$.thumbsUp.click();
     await eventToPromise('selected-option-changed', element);
     assertEquals(CrFeedbackOption.UNSPECIFIED, element.selectedOption);
-    assertEquals('cr:thumbs-up', element.$.thumbsUp.ironIcon);
+    assertEquals('cr:thumb-up', element.$.thumbsUp.ironIcon);
     assertEquals('false', element.$.thumbsUp.ariaPressed);
-    assertEquals('cr:thumbs-down', element.$.thumbsDown.ironIcon);
+    assertEquals('cr:thumb-down', element.$.thumbsDown.ironIcon);
     assertEquals('false', element.$.thumbsDown.ariaPressed);
 
     element.$.thumbsDown.click();
     await eventToPromise('selected-option-changed', element);
     assertEquals(CrFeedbackOption.THUMBS_DOWN, element.selectedOption);
-    assertEquals('cr:thumbs-up', element.$.thumbsUp.ironIcon);
+    assertEquals('cr:thumb-up', element.$.thumbsUp.ironIcon);
     assertEquals('false', element.$.thumbsUp.ariaPressed);
-    assertEquals('cr:thumbs-down-filled', element.$.thumbsDown.ironIcon);
+    assertEquals('cr:thumb-down-filled', element.$.thumbsDown.ironIcon);
     assertEquals('true', element.$.thumbsDown.ariaPressed);
 
     element.$.thumbsDown.click();
     await eventToPromise('selected-option-changed', element);
     assertEquals(CrFeedbackOption.UNSPECIFIED, element.selectedOption);
-    assertEquals('cr:thumbs-up', element.$.thumbsUp.ironIcon);
+    assertEquals('cr:thumb-up', element.$.thumbsUp.ironIcon);
     assertEquals('false', element.$.thumbsUp.ariaPressed);
-    assertEquals('cr:thumbs-down', element.$.thumbsDown.ironIcon);
+    assertEquals('cr:thumb-down', element.$.thumbsDown.ironIcon);
     assertEquals('false', element.$.thumbsDown.ariaPressed);
   });
 
@@ -99,7 +99,7 @@ suite('CrFeedbackButtonsTest', () => {
   test('AcceptsSelectedOptionBinding', async () => {
     element.selectedOption = CrFeedbackOption.THUMBS_UP;
     await microtasksFinished();
-    assertEquals('cr:thumbs-up-filled', element.$.thumbsUp.ironIcon);
+    assertEquals('cr:thumb-up-filled', element.$.thumbsUp.ironIcon);
     assertEquals('true', element.$.thumbsUp.ariaPressed);
   });
 });

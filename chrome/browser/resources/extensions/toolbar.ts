@@ -146,7 +146,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   }
 
   protected getIcon_(): string {
-    return this.isChildAccount ? 'cr20:kite' : 'cr20:domain';
+    return this.isChildAccount ? 'cr20:family-link' : 'cr20:domain';
   }
 
   protected onDevModeToggleChange_(e: CustomEvent<boolean>) {
