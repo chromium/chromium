@@ -4858,4 +4858,32 @@ TEST_F(StyleResolverTest, FindContainerForElement_LayoutSiblings) {
             scroller);
 }
 
+TEST_F(StyleResolverTest, FindContainerForElement_SkeletonPseudo) {
+  ScopedDeclarativeSkeletonsForTest enable(true);
+
+  Element* root = GetDocument().documentElement();
+  root->SetInlineStyleProperty(CSSPropertyID::kContainerType, "inline-size");
+  root->SetInlineStyleProperty(CSSPropertyID::kContainerName, "--root");
+  UpdateAllLifecyclePhasesForTest();
+
+  ContainerSelector size_selector(g_null_atom, kPhysicalAxesNone,
+                                  kLogicalAxesInline,
+                                  /*scroll_state=*/false,
+                                  /*anchored_query=*/false);
+  ContainerSelector named_selector(AtomicString("--root"), kPhysicalAxesNone,
+                                   kLogicalAxesNone,
+                                   /*scroll_state=*/false,
+                                   /*anchored_query=*/false);
+
+  PseudoElement& skeleton =
+      GetDocument().documentElement()->EnsureSkeletonPseudo();
+
+  EXPECT_EQ(StyleResolver::FindContainerForElement(&skeleton, size_selector,
+                                                   &GetDocument()),
+            nullptr);
+  EXPECT_EQ(StyleResolver::FindContainerForElement(&skeleton, named_selector,
+                                                   &GetDocument()),
+            nullptr);
+}
+
 }  // namespace blink

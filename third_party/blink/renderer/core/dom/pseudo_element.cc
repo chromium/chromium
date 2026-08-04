@@ -401,7 +401,7 @@ bool PseudoElement::IsLayoutSiblingOfOriginatingElement(
     const Element& originating_element,
     PseudoId pseudo_id) {
   if (originating_element.IsDocumentElement()) {
-    return false;
+    return pseudo_id == kPseudoIdSkeleton;
   }
   return pseudo_id == kPseudoIdScrollButtonBlockStart ||
          pseudo_id == kPseudoIdScrollButtonInlineStart ||
