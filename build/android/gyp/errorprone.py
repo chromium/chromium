@@ -84,9 +84,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'ThrowSpecificExceptions',
     'ThrowsUncheckedException',
     'TooManyParameters',
-
-    # TODO(crbug.com/534779546): Re-enabled after next Error Prone roll.
-    'TimeUnitMismatch',
     'TryFailRefactoring',
     'TypeParameterNaming',
     'UngroupedOverloads',
