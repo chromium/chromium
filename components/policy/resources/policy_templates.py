@@ -38,8 +38,8 @@ def _SafeListDir(directory):
   # are no such group as .DS_Store. Skip the file to prevent the error.
   return filter(lambda name:(name != '.DS_Store'),sorted(os.listdir(directory)))
 
-TEMPLATES_PATH =  os.path.join(
-  os.path.dirname(__file__), 'templates')
+TEMPLATES_PATH =  os.path.relpath(os.path.join(
+  os.path.dirname(__file__), 'templates'))
 
 DEFAULT_TEMPLATES_GEN_PATH =  os.path.join(
   os.path.dirname(__file__), 'policy_templates.json')
