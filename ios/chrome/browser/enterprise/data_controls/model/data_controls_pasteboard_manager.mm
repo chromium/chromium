@@ -122,20 +122,6 @@ std::optional<data_controls::PasteboardContentDLP> ProcessPasteboardItems(
           content.text.append(str_utf8);
         }
       }
-
-      // Catch the custom data case or where the text UTType above is NSData
-      // instead of NSString.
-      if (NSData* data = base::apple::ObjCCast<NSData>(item[key])) {
-        if (0 < data.length) {
-          if (text_size + data.length >
-              data_controls::kMaxPasteboardContentSizeToProcess) {
-            return std::nullopt;
-          }
-          text_size += data.length;
-          content.text.append(static_cast<const char*>(data.bytes),
-                              data.length);
-        }
-      }
     }
   }
   return content;
