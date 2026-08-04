@@ -41,3 +41,23 @@ source_set("unit_tests") {
     "//ui/gfx/geometry",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tab_strip_ui_controller_impl_browsertest.cc" ]
+
+  deps = [
+    ":controllers",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support",
+    "//components/browser_apis/tab_strip:mojom_ui_controller",
+    "//components/browser_apis/tab_strip/adapters",
+    "//components/browser_apis/tab_strip/types",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}
