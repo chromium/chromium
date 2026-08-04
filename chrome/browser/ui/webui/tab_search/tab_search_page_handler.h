@@ -202,10 +202,6 @@ class TabSearchPageHandler
   // UI for metric collection purposes.
   bool sent_initial_payload_ = false;
 
-  // Tracks whether the user has evoked |SwitchToTab()| for metric collection
-  // purposes.
-  bool called_switch_to_tab_ = false;
-
   bool disable_last_active_time_for_testing_ = false;
 
   // Notifies this when the browser window context changes.

@@ -464,17 +464,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Skipped (Empty URL)"/>
 </enum>
 
-<enum name="TabSearchCloseActions">
-  <int value="0" label="User did not close via Tab Search UI">
-    The UI was dismissed via interactions outside what is offered by the Tab
-    Search UI.
-  </int>
-  <int value="1" label="User switched to an open tab">
-    The Tab Search UI was dismissed as a result of the user opting to switch to
-    a currently open tab.
-  </int>
-</enum>
-
 <enum name="TabSearchOpenActions">
   <int value="0" label="User opened the Tab Search UI via a mouse click"/>
   <int value="1" label="User opened the Tab Search UI via keyboard navigation"/>

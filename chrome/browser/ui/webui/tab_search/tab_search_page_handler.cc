@@ -200,10 +200,6 @@ TabSearchPageHandler::TabSearchPageHandler(
 TabSearchPageHandler::~TabSearchPageHandler() {
   base::UmaHistogramCounts1000("Tabs.TabSearch.NumTabsClosedPerInstance",
                                num_tabs_closed_);
-  base::UmaHistogramEnumeration("Tabs.TabSearch.CloseAction",
-                                called_switch_to_tab_
-                                    ? TabSearchCloseAction::kTabSwitch
-                                    : TabSearchCloseAction::kNoAction);
   pref_change_registrar_.Reset();
 }
 
@@ -352,8 +348,6 @@ void TabSearchPageHandler::SwitchToTab(
   if (!tab) {
     return;
   }
-
-  called_switch_to_tab_ = true;
 
   profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
 
