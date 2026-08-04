@@ -59,6 +59,16 @@ public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
         return mDelegate.getIsShowingGlicNudge();
     }
 
+    @CalledByNative
+    public void setGlicShowState(boolean show) {
+        mDelegate.setGlicShowState(show);
+    }
+
+    @CalledByNative
+    public void setGlicPanelIsOpen(boolean open) {
+        mDelegate.setGlicPanelIsOpen(open);
+    }
+
     /** Notifies native side of user nudge activity. */
     public void onNudgeActivity(@GlicNudgeActivity int event) {
         if (mNativePtr != 0) {

@@ -74,8 +74,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowability;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
-import org.chromium.components.prefs.PrefChangeRegistrar;
-import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -101,7 +99,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private ActivityWindowAndroid mWindowAndroid;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
     @Mock private PrefService mPrefService;
     @Mock private StripLayoutTrailingButtonsObserver mObserver;
     @Mock private ChromeAndroidTaskTracker mTaskTracker;
@@ -140,8 +137,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
-        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
-        when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
 
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.emptyList());
@@ -183,6 +178,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         mObserver);
         ShadowLooper.idleMainLooper();
         mCoordinator.onProfileAvailable(mProfile);
+        mCoordinator.getGlicSplitButtonDelegateForTesting().setGlicShowState(true);
         mCoordinator.setLayerTitleCache(mLayerTitleCache);
         mCoordinator.onSizeChanged(1000.f, 0.f, 0.f, 0.f);
         mGlicButton = mCoordinator.getGlicButton();

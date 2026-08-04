@@ -27,4 +27,18 @@ public interface GlicSplitButtonDelegate {
 
     /** Returns whether the Glic nudge UI is currently showing. */
     boolean getIsShowingGlicNudge();
+
+    /**
+     * Called when native C++ updates whether the Glic button should be shown.
+     *
+     * @param show True if the Glic button should be shown in the UI.
+     */
+    void setGlicShowState(boolean show);
+
+    /**
+     * Called when native C++ updates whether the Glic panel UI is open.
+     *
+     * @param open True if the Glic panel is currently open.
+     */
+    void setGlicPanelIsOpen(boolean open);
 }

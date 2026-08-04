@@ -59,6 +59,16 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
         base::android::AttachCurrentThread(), j_delegate_);
   }
 
+  void SetGlicShowState(bool show) override {
+    Java_GlicSplitButtonDelegateBridge_setGlicShowState(
+        base::android::AttachCurrentThread(), j_delegate_, show);
+  }
+
+  void SetGlicPanelIsOpen(bool open) override {
+    Java_GlicSplitButtonDelegateBridge_setGlicPanelIsOpen(
+        base::android::AttachCurrentThread(), j_delegate_, open);
+  }
+
   // Methods invoked from Java GlicSplitButtonDelegateBridge via JNI:
   void OnNudgeActivity(GlicNudgeActivity activity) {
     if (controller_) {
