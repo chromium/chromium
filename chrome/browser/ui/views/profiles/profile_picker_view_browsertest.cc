@@ -4457,6 +4457,29 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+                       OpenProfileFromPickerCancelAndReopen) {
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
+
+  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  ClickDisclaimerButton("cancel-button");
+
+  WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Picking the profile again should re-show the disclaimer without crashing.
+  OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
+  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerClosePicker) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 

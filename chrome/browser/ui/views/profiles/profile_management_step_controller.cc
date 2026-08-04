@@ -12,6 +12,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -374,13 +375,17 @@ class DeviceSignalsDisclaimerStepController
  public:
   DeviceSignalsDisclaimerStepController(
       ProfilePickerWebContentsHost* host,
-      content::WebContents* web_contents,
+      Profile* profile,
       base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback)
       : ProfileManagementStepController(host),
-        web_contents_(web_contents),
+        web_contents_(content::WebContents::Create(
+            content::WebContents::CreateParams(profile))),
         callback_(std::move(callback)) {
+    CHECK(profile);
     CHECK(web_contents_);
     CHECK(callback_);
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kProfileCreationFlow);
   }
 
   ~DeviceSignalsDisclaimerStepController() override = default;
@@ -409,7 +414,7 @@ class DeviceSignalsDisclaimerStepController
         CreateForDeviceSignalsDisclaimer(account_info, std::move(callback_),
                                          /*is_modal_dialog=*/false);
     ManagedUserProfileNoticeParams::CreateForWebContents(
-        web_contents_, /*browser=*/nullptr,
+        web_contents_.get(), /*browser=*/nullptr,
         ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer,
         std::move(params));
 
@@ -420,19 +425,22 @@ class DeviceSignalsDisclaimerStepController
               << "ManagedUserProfileNoticeParams was not consumed.";
           std::move(callback).Run(true);
         },
-        std::move(step_shown_callback.value()), web_contents_);
+        std::move(step_shown_callback.value()), web_contents_.get());
 
     // TODO(b/535164842): Once the refreshed profile picker UI is launched this
     // screen will be inconsistent with the rest of the flow. This screen should
     // be then updated to match the new flow.
-    host()->ShowScreen(web_contents_,
+    host()->ShowScreen(web_contents_.get(),
                        GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                        std::move(navigation_finished_closure));
   }
 
  private:
-  // The web contents in which we want to display the screen.
-  raw_ptr<content::WebContents> web_contents_;
+  // The web contents in which we want to display the disclaimer.
+  std::unique_ptr<content::WebContents> web_contents_;
+
+  // Keep the profile alive while the step is active.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // Callback called when the user makes a choice on the dialog.
   base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback_;
@@ -504,10 +512,10 @@ ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementStepController::CreateForDeviceSignalsDisclaimer(
     ProfilePickerWebContentsHost* host,
-    content::WebContents* web_contents,
+    Profile* profile,
     base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback) {
   return std::make_unique<DeviceSignalsDisclaimerStepController>(
-      host, web_contents, std::move(callback));
+      host, profile, std::move(callback));
 }
 
 ProfileManagementStepController::ProfileManagementStepController(

@@ -77,7 +77,7 @@ class ProfileManagementStepController {
   static std::unique_ptr<ProfileManagementStepController>
   CreateForDeviceSignalsDisclaimer(
       ProfilePickerWebContentsHost* host,
-      content::WebContents* web_contents,
+      Profile* profile,
       base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback);
 
   explicit ProfileManagementStepController(ProfilePickerWebContentsHost* host);

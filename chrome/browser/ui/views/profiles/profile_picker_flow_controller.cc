@@ -918,14 +918,10 @@ void ProfilePickerFlowController::OnProfileLoadedForPicking(
       UnregisterStep(Step::kDeviceSignalsDisclaimer);
     }
 
-    // Despite the name we can use these WebContents for our needs,
-    // there is nothing signout specific about them.
-    CreateSignedOutFlowWebContents(profile);
-
     RegisterStep(
         Step::kDeviceSignalsDisclaimer,
         ProfileManagementStepController::CreateForDeviceSignalsDisclaimer(
-            host(), GetSignedOutFlowWebContents(),
+            host(), profile,
             base::BindOnce(
                 &ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult,
                 weak_ptr_factory_.GetWeakPtr(), profile, open_command_line_urls,

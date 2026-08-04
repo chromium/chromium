@@ -228,11 +228,13 @@ class DeviceSignalsDisclaimerUIWindowPixelTest
                                            base::DoNothing()),
         ProfileManagementFlowController::Step::kDeviceSignalsDisclaimer,
         /*step_controller_factory=*/
-        base::BindRepeating([](ProfilePickerWebContentsHost* host) {
-          return ProfileManagementStepController::
-              CreateForDeviceSignalsDisclaimer(host, host->GetPickerContents(),
-                                               base::DoNothing());
-        }));
+        base::BindRepeating(
+            [](Profile* profile, ProfilePickerWebContentsHost* host) {
+              return ProfileManagementStepController::
+                  CreateForDeviceSignalsDisclaimer(host, profile,
+                                                   base::DoNothing());
+            },
+            browser()->GetProfile()));
     profile_picker_view_->views::View::AddObserver(this);
     profile_picker_view_->ShowAndWait(GetParam().window_size);
     if (ProfilePicker::GetWebViewForTesting()) {
