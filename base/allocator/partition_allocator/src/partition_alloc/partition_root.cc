@@ -1369,40 +1369,48 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   }
   size_t current_usable_size = GetSlotUsableSize(slot_span);
 
+#define PARTITION_ALLOC_HAS_DCHECKED_BRP \
+  (PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && PA_BUILDFLAG(DCHECKS_ARE_ON))
+#define PARTITION_ALLOC_REALLOC_MANIPULATES_IN_SLOT_METADATA \
+  PARTITION_ALLOC_HAS_DCHECKED_BRP ||                        \
+      PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+
   // Trying to allocate |new_size| would use the same amount of underlying
   // memory as we're already using, so re-use the allocation after updating
   // statistics (and cookie, if present).
+#if PARTITION_ALLOC_REALLOC_MANIPULATES_IN_SLOT_METADATA
+  internal::InSlotMetadata* ref_count = nullptr;
+  if (brp_enabled()) [[likely]] {
+    ref_count = InSlotMetadataPointerFromSlotStartAndSize(
+        internal::UntaggedSlotStart(slot_start), slot_span->bucket->slot_size);
+  }
+#endif  // PARTITION_ALLOC_REALLOC_MANIPULATES_IN_SLOT_METADATA
+
   if (slot_span->CanStoreRawSize()) {
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && PA_BUILDFLAG(DCHECKS_ARE_ON)
-    internal::InSlotMetadata* old_ref_count = nullptr;
-    if (brp_enabled()) [[likely]] {
-      old_ref_count = InSlotMetadataPointerFromSlotStartAndSize(
-          internal::UntaggedSlotStart(slot_start),
-          slot_span->bucket->slot_size);
-    }
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
-        // PA_BUILDFLAG(DCHECKS_ARE_ON)
     size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
     slot_span->SetRawSize(new_raw_size);
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PARTITION_ALLOC_HAS_DCHECKED_BRP
     if (brp_enabled()) [[likely]] {
       internal::InSlotMetadata* new_ref_count =
           InSlotMetadataPointerFromSlotStartAndSize(
               internal::UntaggedSlotStart(slot_start),
               slot_span->bucket->slot_size);
-      PA_DCHECK(new_ref_count == old_ref_count);
+      PA_DCHECK(new_ref_count == ref_count);
     }
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
-        // PA_BUILDFLAG(DCHECKS_ARE_ON)
-        // Write a new trailing cookie only when it is possible to keep track
-        // raw size (otherwise we wouldn't know where to look for it later).
+#endif  // PARTITION_ALLOC_HAS_DCHECKED_BRP
+
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
+    // Write a new trailing cookie only when it is possible to keep track
+    // raw size (otherwise we wouldn't know where to look for it later).
     if (settings_.use_cookie) {
       internal::PartitionCookieWriteValue(PA_UNSAFE_TODO(
           static_cast<unsigned char*>(object) + GetSlotUsableSize(slot_span)));
     }
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
   }
+
+#undef PARTITION_ALLOC_REALLOC_MANIPULATES_IN_SLOT_METADATA
+#undef PARTITION_ALLOC_HAS_DCHECKED_BRP
 
   // Always record a realloc() as a free() + malloc(), even if it's in
   // place. When we cannot do it in place (`return false` above), the allocator
