@@ -84,29 +84,31 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
         mojom::SharedDictionaryError::kWriteErrorInvalidStructuredHeader);
   }
 
-  std::optional<std::string> match_value;
+  std::string* match_value = nullptr;
   // Maybe we don't need to support multiple match-dest.
   // https://github.com/httpwg/http-extensions/issues/2722
   std::set<network::mojom::RequestDestination> match_dest_values;
-  std::string type_value = std::string(kDefaultTypeRaw);
-  std::string id_value;
+  std::string* type_value = nullptr;
+  std::string* id_value = nullptr;
   std::optional<base::TimeDelta> ttl;
-  for (const auto& entry : dictionary.value()) {
-    if (entry.first == shared_dictionary::kOptionNameMatch) {
-      if ((entry.second.member.size() != 1u) ||
-          !entry.second.member.front().item.is_string()) {
+  for (auto& [key, value] : dictionary.value()) {
+    if (key == shared_dictionary::kOptionNameMatch) {
+      match_value = value.member.size() != 1u
+                        ? nullptr
+                        : value.member.front().item.GetIfString();
+      if (!match_value) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonStringMatchField);
       }
-      match_value = entry.second.member.front().item.GetString();
-    } else if (entry.first == shared_dictionary::kOptionNameMatchDest) {
-      if (!entry.second.member_is_inner_list) {
+    } else if (key == shared_dictionary::kOptionNameMatchDest) {
+      if (!value.member_is_inner_list) {
         // `match-dest` must be a list.
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonListMatchDestField);
       }
-      for (const auto& item : entry.second.member) {
-        if (!item.item.is_string()) {
+      for (const auto& item : value.member) {
+        const std::string* str = item.item.GetIfString();
+        if (!str) {
           return base::unexpected(mojom::SharedDictionaryError::
                                       kWriteErrorNonStringInMatchDestList);
         }
@@ -114,50 +116,52 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
         // `match-dest`.
         std::optional<mojom::RequestDestination> dest_value =
             RequestDestinationFromString(
-                item.item.GetString(),
-                EmptyRequestDestinationOption::kUseTheEmptyString);
+                *str, EmptyRequestDestinationOption::kUseTheEmptyString);
         if (dest_value) {
           match_dest_values.insert(*dest_value);
         }
       }
       // A list that is entirely made up of unknown destinations will never
       // match anything.
-      if (!entry.second.member.empty() && match_dest_values.empty()) {
+      if (!value.member.empty() && match_dest_values.empty()) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorInvalidMatchDestList);
       }
-    } else if (entry.first == shared_dictionary::kOptionNameType) {
-      if ((entry.second.member.size() != 1u) ||
-          !entry.second.member.front().item.is_token()) {
+    } else if (key == shared_dictionary::kOptionNameType) {
+      type_value = value.member.size() != 1u
+                       ? nullptr
+                       : value.member.front().item.GetIfToken();
+      if (!type_value) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonTokenTypeField);
       }
-      type_value = entry.second.member.front().item.GetString();
-    } else if (entry.first == shared_dictionary::kOptionNameId) {
-      if ((entry.second.member.size() != 1u) ||
-          !entry.second.member.front().item.is_string()) {
+    } else if (key == shared_dictionary::kOptionNameId) {
+      id_value = value.member.size() != 1u
+                     ? nullptr
+                     : value.member.front().item.GetIfString();
+      if (!id_value) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonStringIdField);
       }
-      id_value = entry.second.member.front().item.GetString();
-      if (id_value.size() > shared_dictionary::kDictionaryIdMaxLength) {
+      if (id_value->size() > shared_dictionary::kDictionaryIdMaxLength) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorTooLongIdField);
       }
-    } else if (entry.first == shared_dictionary::kOptionNameTTL &&
+    } else if (key == shared_dictionary::kOptionNameTTL &&
                base::FeatureList::IsEnabled(
                    features::kCompressionDictionaryTTL)) {
-      if ((entry.second.member.size() != 1u) ||
-          !entry.second.member.front().item.is_integer()) {
+      const int64_t* ttl_seconds =
+          value.member.size() != 1u ? nullptr
+                                    : value.member.front().item.GetIfInteger();
+      if (!ttl_seconds) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonIntegerTTLField);
       }
-      int64_t ttl_seconds = entry.second.member.front().item.GetInteger();
-      if (ttl_seconds <= 0) {
+      if (*ttl_seconds <= 0) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorInvalidTTLField);
       }
-      ttl = base::Seconds(ttl_seconds);
+      ttl = base::Seconds(*ttl_seconds);
     }
   }
   if (!match_value) {
@@ -167,7 +171,8 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
 
   return DictionaryHeaderInfo(
       std::move(*match_value), std::move(match_dest_values),
-      std::move(type_value), std::move(id_value), std::move(ttl));
+      type_value ? std::move(*type_value) : std::string(kDefaultTypeRaw),
+      id_value ? std::move(*id_value) : std::string(), std::move(ttl));
 }
 
 }  // namespace
