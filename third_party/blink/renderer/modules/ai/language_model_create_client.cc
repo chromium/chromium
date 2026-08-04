@@ -498,12 +498,6 @@ void LanguageModelCreateClient::OnError(
           static_cast<double>(quota_error_info->requested));
       break;
     }
-    case AIManagerCreateClientError::kIncompatiblePreferenceOptions: {
-      GetResolver()->RejectWithDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          kExceptionMessageIncompatiblePreferenceOptions);
-      break;
-    }
   }
   Cleanup();
 }

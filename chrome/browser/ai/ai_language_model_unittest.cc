@@ -1040,14 +1040,12 @@ TEST_F(AILanguageModelTest, UnsupportedOutputCapability) {
   options->expected_outputs.emplace();
   options->expected_outputs->push_back(std::move(expected_output));
   TestCreateLanguageModelClient language_model_client;
+  mojo::test::BadMessageObserver observer;
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options),
       /*monitor=*/mojo::NullRemote());
 
-  auto result = language_model_client.result().Take();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error,
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+  EXPECT_EQ(observer.WaitForBadMessage(), "Invalid output types");
 }
 
 TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {

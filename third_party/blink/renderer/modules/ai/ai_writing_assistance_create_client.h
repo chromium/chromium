@@ -148,12 +148,6 @@ class AIWritingAssistanceCreateClient
             static_cast<double>(quota_error_info->requested));
         break;
       }
-      case AIManagerCreateClientError::kIncompatiblePreferenceOptions: {
-        this->GetResolver()->RejectWithDOMException(
-            DOMExceptionCode::kNotSupportedError,
-            kExceptionMessageIncompatiblePreferenceOptions);
-        break;
-      }
     }
   }
 

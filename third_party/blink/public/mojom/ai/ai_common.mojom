@@ -41,9 +41,5 @@ enum AIManagerCreateClientError {
   // The initial input (context or prompt) exceeds the quota limit.
   kInitialInputTooLarge = 2,
 
-  // The specified options are not supported with the requested performance
-  // preference.
-  kIncompatiblePreferenceOptions = 3,
-
   // Append new line here
 };

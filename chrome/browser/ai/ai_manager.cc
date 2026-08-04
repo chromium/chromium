@@ -964,11 +964,7 @@ void AIManager::CreateLanguageModelInternal(
   // Models can generate text and tool calls, but not multimodal content or
   // tool responses.
   if (HasInvalidOutputTypes(options->expected_outputs)) {
-    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-        client_remote(std::move(client));
-    on_device_ai::SendClientRemoteError(
-        client_remote,
-        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    receivers_.ReportBadMessage("Invalid output types");
     return;
   }
   if (!params->capabilities.empty()) {
@@ -1099,11 +1095,7 @@ void AIManager::CreateSummarizer(
     }
     auto result = IsSpeedPreferenceCompatible(options);
     if (!result.has_value()) {
-      mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
-          std::move(client));
-      on_device_ai::SendClientRemoteError(
-          client_remote, blink::mojom::AIManagerCreateClientError::
-                             kIncompatiblePreferenceOptions);
+      receivers_.ReportBadMessage("Incompatible speed preference options");
       return;
     }
     if (options->format == blink::mojom::AISummarizerFormat::kMarkDown) {

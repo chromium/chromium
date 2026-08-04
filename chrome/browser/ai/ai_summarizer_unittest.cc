@@ -1235,15 +1235,13 @@ TEST_F(AISummarizerManifestTest, CreateIncompatibleOptionsForSpeedPreference) {
   options->length = blink::mojom::AISummarizerLength::kLong;
 
   TestCreateSummarizerClient create_summarizer_client;
+  mojo::test::BadMessageObserver observer;
   GetAIManagerRemote()->CreateSummarizer(
       create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
       /*monitor=*/mojo::NullRemote());
 
-  CreateSummarizerResult result = create_summarizer_client.result().Take();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(
-      result.error().error,
-      blink::mojom::AIManagerCreateClientError::kIncompatiblePreferenceOptions);
+  EXPECT_EQ(observer.WaitForBadMessage(),
+            "Incompatible speed preference options");
 }
 
 TEST_F(AISummarizerManifestTest, SummarizeWithSpeedPreferenceAndContextFails) {
