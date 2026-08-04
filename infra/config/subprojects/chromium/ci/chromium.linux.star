@@ -681,7 +681,7 @@ ci.thin_tester(
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
                     # Move to faster machine types to reduce capacity impact.
-                    # TODO(crbug.com/475614290): Can remove this if/when
+                    # TODO(crbug.com/541675870): Can remove this if/when
                     # everything's been migrated.
                     optional_dimensions = {
                         30: {
