@@ -237,7 +237,8 @@ class OmniboxEditModel {
 
   // Invoked any time the text may have changed in the edit. Notifies the
   // controller.
-  void OnChanged();
+  // Virtual for testing.
+  virtual void OnChanged();
 
   // Reverts the edit model back to its unedited state (permanent text showing,
   // no user input in progress).
@@ -404,7 +405,8 @@ class OmniboxEditModel {
   void OnControlKeyChanged(bool pressed);
 
   // Called when the user pastes in text.
-  void OnPaste();
+  // Virtual for testing.
+  virtual void OnPaste();
 
   // Called when the user presses arrow up, arrow down, page up, or page down.
   void OnUpOrDownPressed(bool down, bool page);
@@ -462,8 +464,10 @@ class OmniboxEditModel {
   // If `allow_keyword_ui_change` is false then the change should not affect
   // keyword UI state, even if the text matches a keyword exactly. This value
   // may be false when the user is composing a text with an IME.
-  bool OnAfterPossibleChange(const OmniboxView::StateChanges& state_changes,
-                             bool allow_keyword_ui_change);
+  // Virtual for testing.
+  virtual bool OnAfterPossibleChange(
+      const OmniboxView::StateChanges& state_changes,
+      bool allow_keyword_ui_change);
 
   // Called when the current match has changed in the OmniboxController.
   void OnCurrentMatchChanged();

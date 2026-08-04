@@ -487,6 +487,9 @@ export class OmniboxPopupSearchboxElement extends
 
     e.preventDefault();
     const sanitizedText = sanitizeTextForPaste(text);
+    if (!sanitizedText) {
+      return;
+    }
 
     const input = this.getInputElement().inputElement;
     const start = input.selectionStart || 0;
@@ -494,16 +497,22 @@ export class OmniboxPopupSearchboxElement extends
     const newValue = input.value.substring(0, start) + sanitizedText +
         input.value.substring(end);
 
+    this.userInputInProgress_ = true;
+    this.hasUserInput_ = !!newValue.trim();
     this.getInputElement().setInput({text: newValue, inline: ''});
     const cursorPos = start + sanitizedText.length;
     this.getInputElement().setSelectionRange(cursorPos, cursorPos);
-    this.getInputElement().dispatchEvent(
-        new CustomEvent('searchbox-input-text-updated', {
-          detail: {
-            value: newValue,
-            isComposing: false,
-          },
-        }));
+
+    const selectionRange = {start: cursorPos, end: cursorPos};
+    this.popupPageHandler_.onPaste(
+        newValue, selectionRange, this.currentSequenceNum_);
+
+    if (newValue.trim()) {
+      this.queryAutocomplete(
+          newValue, /*preventInlineAutocomplete=*/ true, /*isOnFocus=*/ false);
+    } else {
+      this.clearAutocompleteMatches();
+    }
   }
 
   protected showFullUrlOnDeselect_() {
