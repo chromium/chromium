@@ -9,9 +9,9 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,8 +36,8 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  ash::test::TestUserSessionManager test_user_session_manager_{
+      TestingBrowserProcess::GetGlobal()->local_state()};
   ash::DemoModeTestHelper demo_helper_;
   ArcDemoModeDelegateImpl delegate_;
 };

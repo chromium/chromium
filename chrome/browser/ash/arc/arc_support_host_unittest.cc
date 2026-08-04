@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/extensions/fake_arc_support.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/global_features.h"
@@ -19,7 +18,6 @@
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +68,6 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     // The code under test should not be tied to browser sync consent.
@@ -94,7 +91,6 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
     fake_arc_support_.reset();
     support_host_.reset();
     identity_test_env_adaptor_.reset();
-    fake_user_manager_.Reset();
 
     BrowserWithTestWindowTest::TearDown();
   }
@@ -129,8 +125,6 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
