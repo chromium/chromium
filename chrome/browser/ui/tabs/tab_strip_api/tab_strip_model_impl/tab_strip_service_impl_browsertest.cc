@@ -84,9 +84,9 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
   }
 
   void OnDataChanged(tabs_api::mojom::OnDataChangedEventPtr& event) {
-    // TODO(crbug.com/412738255): this is a hack, because we are not correctly
-    // adding the initial tab that is created by the tab strip. We should have
-    // a test for GetTabSnapshot and properly populate the initial tab.
+    // This is a hack, because we are not correctly adding the initial tab that
+    // is created by the tab strip. We should have a test for GetTabSnapshot and
+    // properly populate the initial tab.
     switch (event->which()) {
       case tabs_api::mojom::OnDataChangedEvent::Tag::kTab: {
         const auto& tab = event->get_tab()->data;
@@ -102,13 +102,13 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
       }
       case tabs_api::mojom::OnDataChangedEvent::Tag::kTabGroup:
       case tabs_api::mojom::OnDataChangedEvent::Tag::kSplitTab:
-        // TODO(crbug.com/412955607): implement this.
+        // Unimplemented.
         break;
     }
   }
 
   void OnCollectionCreated(tabs_api::mojom::OnCollectionCreatedEventPtr event) {
-    // TODO(crbug.com/412955607): implement this.
+    // Unimplemented
     created_events.push_back(std::move(event));
   }
 
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SetSelectedTabs) {
   CreateTabs(remote, 5, GURL("http://some.where/nowhere"));
   observation->receiver.FlushForTesting();
 
-  // TODO(crbug.com/412738255): need to account for the initial tab.
+  // Need to account for the initial tab.
   ASSERT_EQ(6, GetTabStripModel()->count());
 
   // Now select 3 of the tabs.
@@ -675,8 +675,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SetSelectedTabs) {
     auto& observation_tab = observation->client.tabs.at(tab_id);
     ASSERT_EQ(should_be_active, observation_tab->is_active)
         << "bad id was: " << tab_id;
-    // TODO(crbug.com/412738255): there is a race that is preventing this from
-    // reliably completing. Fix then retest.
+    // There is a race that is preventing this from reliably completing. Fix
+    // then retest.
   }
 }
 

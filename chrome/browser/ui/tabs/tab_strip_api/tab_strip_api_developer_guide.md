@@ -41,8 +41,6 @@ intra-process boundaries.
 ```
 
 ## Adding a new method
-TODO(crbug.com/409086859): Add a link to a sample CL.
-
 How to add a new method that a client can invoke.
 
 1. Define the interface

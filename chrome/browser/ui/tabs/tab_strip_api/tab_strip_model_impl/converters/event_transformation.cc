@@ -168,8 +168,8 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
         base::STLSetDifference<std::set<size_t>>(old_selected, new_selected);
 
     auto tabs = adapter.GetTabs();
-    // TODO(crbug.com/412738255): There is a bug here where a selected state
-    // might not be correctly cleared due to index shift. This is very
+    // TODO(crbug.com/crbug.com/542677767): There is a bug here where a selected
+    // state might not be correctly cleared due to index shift. This is very
     // difficult to solve at this point, so we should probably change the
     // selection change event to use handles instead of indices to fix this
     // issue.
