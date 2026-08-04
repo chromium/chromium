@@ -159,7 +159,7 @@ def apply_patches(patches_dir, checkout_dir):
         run_cmd(cmd, cwd=checkout_dir)
 
 
-def main(*, do_latest, do_install, runtime_deps):
+def main(*, do_latest, do_install, runtime_deps, include_deps_hash=True):
     logging.basicConfig(
         level=logging.DEBUG,
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
@@ -189,15 +189,21 @@ def main(*, do_latest, do_install, runtime_deps):
     if args.action == 'latest':
         version = do_latest()
         assert version, 'do_latest() returned ' + repr(version)
-        extra_paths = []
-        for p in _resolve_runtime_deps(runtime_deps):
-            extra_paths += _all_files(p)
-        deps_hash = scripthash.compute(extra_paths=extra_paths)
-        print(f'{version}.{deps_hash}')
+        # Packages pinned per-platform via ${platform} in DEPS need a version
+        # that is identical across platforms, so the per-build script hash is
+        # omitted when include_deps_hash is False.
+        if include_deps_hash:
+            extra_paths = []
+            for p in _resolve_runtime_deps(runtime_deps):
+                extra_paths += _all_files(p)
+            deps_hash = scripthash.compute(extra_paths=extra_paths)
+            version = f'{version}.{deps_hash}'
+        print(version)
         return
 
-    # Remove the hash at the end: 30.4.0-alpha05.HASH => 30.4.0-alpha05
-    args.version = args.version.rsplit('.', 1)[0]
+    if include_deps_hash:
+        # Remove the hash at the end: 30.4.0-alpha05.HASH => 30.4.0-alpha05
+        args.version = args.version.rsplit('.', 1)[0]
     if args.action == 'checkout':
         copy_runtime_deps(args.checkout_dir, runtime_deps)
         return

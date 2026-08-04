@@ -59,7 +59,13 @@ def do_install(args):
 
 
 def main():
-    common.main(do_latest=do_latest, do_install=do_install, runtime_deps=[])
+    # aapt2 is pinned per-platform in DEPS via ${platform}, which needs a
+    # version tag that is identical across platforms. Omit the per-build script
+    # hash so the version stays stable and platform-invariant.
+    common.main(do_latest=do_latest,
+                do_install=do_install,
+                runtime_deps=[],
+                include_deps_hash=False)
 
 
 if __name__ == '__main__':
