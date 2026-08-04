@@ -3,8 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 assert(is_chromeos)
+assert(enable_extensions)
+assert(toolkit_views)
 
 source_set("document_scanner_discovery_confirmation_dialog") {
   sources = [
@@ -49,5 +52,18 @@ source_set("print_job_confirmation_dialog") {
     "//ui/base",
     "//ui/gfx",
     "//ui/views",
+  ]
+}
+
+source_set("request_file_system_dialog") {
+  sources = [ "request_file_system_dialog.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
   ]
 }
