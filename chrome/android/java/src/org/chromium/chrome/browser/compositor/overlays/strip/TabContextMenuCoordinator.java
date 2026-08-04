@@ -545,10 +545,15 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             int position = tabModel.indexOf(anchorTab) + 1;
             UrlConstantResolver urlConstantResolver =
                     UrlConstantResolverFactory.getForProfile(assumeNonNull(tabModel.getProfile()));
+            @TabLaunchType
+            int launchType =
+                    anchorTab.getTabGroupId() != null
+                            ? TabLaunchType.FROM_TAB_GROUP_UI
+                            : TabLaunchType.FROM_CHROME_UI;
             tabModel.getTabCreator()
                     .createNewTab(
                             new LoadUrlParams(urlConstantResolver.getNtpUrl()),
-                            TabLaunchType.FROM_CHROME_UI,
+                            launchType,
                             anchorTab,
                             position);
         }

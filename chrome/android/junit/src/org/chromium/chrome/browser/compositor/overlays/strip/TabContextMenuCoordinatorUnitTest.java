@@ -1251,6 +1251,42 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    public void testNewTabToTheRight_notInGroup() {
+        when(mTabModel.indexOf(mTabOutsideOfGroup)).thenReturn(1);
+        mOnItemClickedCallback.onClick(
+                R.id.new_tab_to_the_right_menu_id,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+        verify(mTabCreator)
+                .createNewTab(
+                        any(LoadUrlParams.class),
+                        eq(TabLaunchType.FROM_CHROME_UI),
+                        eq(mTabOutsideOfGroup),
+                        eq(2));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testNewTabToTheRight_inGroup() {
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        mOnItemClickedCallback.onClick(
+                R.id.new_tab_to_the_right_menu_id,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+        verify(mTabCreator)
+                .createNewTab(
+                        any(LoadUrlParams.class),
+                        eq(TabLaunchType.FROM_TAB_GROUP_UI),
+                        eq(mTab1),
+                        eq(1));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
     public void testRemoveFromGroup() {
         mOnItemClickedCallback.onClick(
                 R.id.remove_from_tab_group,
