@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "components/security_state/content/content_utils.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
@@ -80,8 +80,9 @@ CreateCertificateSecurityState(
   net::SSLCipherSuiteToStrings(&key_exchange_str, &cipher, &mac, &is_aead,
                                &is_tls13, cipher_suite);
   std::string key_exchange;
-  if (key_exchange_str)
+  if (key_exchange_str) {
     key_exchange = key_exchange_str;
+  }
 
   const char* key_exchange_group = SSL_get_curve_name(state.key_exchange_group);
 
@@ -134,10 +135,12 @@ CreateCertificateSecurityState(
     certificate_security_state->SetCertificateNetworkError(
         net::ErrorToString(net::MapCertStatusToNetError(state.cert_status)));
   }
-  if (key_exchange_group)
+  if (key_exchange_group) {
     certificate_security_state->SetKeyExchangeGroup(key_exchange_group);
-  if (mac)
+  }
+  if (mac) {
     certificate_security_state->SetMac(mac);
+  }
 
   return certificate_security_state;
 }
@@ -160,11 +163,11 @@ std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
 }
 
 std::unique_ptr<protocol::Security::VisibleSecurityState>
-CreateVisibleSecurityState(SecurityStateTabHelper* helper) {
-  DCHECK(helper);
-  auto state = helper->GetVisibleSecurityState();
-  std::string security_state =
-      SecurityLevelToProtocolSecurityState(helper->GetSecurityLevel());
+CreateVisibleSecurityState(content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  auto state = chrome_security_state::GetVisibleSecurityState(web_contents);
+  std::string security_state = SecurityLevelToProtocolSecurityState(
+      chrome_security_state::GetSecurityLevel(web_contents));
 
   bool scheme_is_cryptographic =
       security_state::IsSchemeCryptographic(state->url);
@@ -172,40 +175,52 @@ CreateVisibleSecurityState(SecurityStateTabHelper* helper) {
                            security_state::MALICIOUS_CONTENT_STATUS_NONE;
 
   bool secure_origin = scheme_is_cryptographic;
-  if (!scheme_is_cryptographic)
+  if (!scheme_is_cryptographic) {
     secure_origin = network::IsUrlPotentiallyTrustworthy(state->url);
+  }
 
   bool cert_missing_subject_alt_name =
       state->certificate &&
       !state->certificate->GetSubjectAltName(nullptr, nullptr);
 
   std::vector<std::string> security_state_issue_ids;
-  if (!secure_origin)
+  if (!secure_origin) {
     security_state_issue_ids.push_back(kInsecureOriginSecurityStateIssueId);
-  if (!scheme_is_cryptographic)
+  }
+  if (!scheme_is_cryptographic) {
     security_state_issue_ids.push_back(
         kSchemeIsNotCryptographicSecurityStateIssueId);
-  if (malicious_content)
+  }
+  if (malicious_content) {
     security_state_issue_ids.push_back(kMalicousContentSecurityStateIssueId);
-  if (state->displayed_mixed_content)
+  }
+  if (state->displayed_mixed_content) {
     security_state_issue_ids.push_back(
         kDisplayedMixedContentSecurityStateIssueId);
-  if (state->contained_mixed_form)
+  }
+  if (state->contained_mixed_form) {
     security_state_issue_ids.push_back(kContainedMixedFormSecurityStateIssueId);
-  if (state->ran_mixed_content)
+  }
+  if (state->ran_mixed_content) {
     security_state_issue_ids.push_back(kRanMixedContentSecurityStateIssueId);
-  if (state->displayed_content_with_cert_errors)
+  }
+  if (state->displayed_content_with_cert_errors) {
     security_state_issue_ids.push_back(
         kDisplayedContentWithCertErrorsSecurityStateIssueId);
-  if (state->ran_content_with_cert_errors)
+  }
+  if (state->ran_content_with_cert_errors) {
     security_state_issue_ids.push_back(
         kRanContentWithCertErrorSecurityStateIssueId);
-  if (state->pkp_bypassed)
+  }
+  if (state->pkp_bypassed) {
     security_state_issue_ids.push_back(kPkpBypassedSecurityStateIssueId);
-  if (state->is_error_page)
+  }
+  if (state->is_error_page) {
     security_state_issue_ids.push_back(kIsErrorPageSecurityStateIssueId);
-  if (cert_missing_subject_alt_name)
+  }
+  if (cert_missing_subject_alt_name) {
     security_state_issue_ids.push_back(kCertMissingSubjectAltName);
+  }
 
   auto visible_security_state =
       protocol::Security::VisibleSecurityState::Create()
@@ -222,8 +237,9 @@ CreateVisibleSecurityState(SecurityStateTabHelper* helper) {
   }
 
   auto safety_tip_info = CreateSafetyTipInfo(state->safety_tip_info);
-  if (safety_tip_info)
+  if (safety_tip_info) {
     visible_security_state->SetSafetyTipInfo(std::move(safety_tip_info));
+  }
 
   return visible_security_state;
 }
@@ -242,8 +258,9 @@ SecurityHandler::SecurityHandler(content::WebContents* web_contents,
 SecurityHandler::~SecurityHandler() = default;
 
 protocol::Response SecurityHandler::Enable() {
-  if (enabled_)
+  if (enabled_) {
     return protocol::Response::FallThrough();
+  }
   enabled_ = true;
   DidChangeVisibleSecurityState();
   // Do not mark the command as handled. Let it fall through instead, so that
@@ -259,13 +276,14 @@ protocol::Response SecurityHandler::Disable() {
 }
 
 void SecurityHandler::DidChangeVisibleSecurityState() {
-  if (!enabled_)
+  if (!enabled_) {
     return;
+  }
 
-  SecurityStateTabHelper* helper = web_contents() ? SecurityStateTabHelper::FromWebContents(web_contents()) : nullptr;
-  if (!helper)
+  if (!web_contents()) {
     return;
+  }
 
-  auto visible_security_state = CreateVisibleSecurityState(helper);
+  auto visible_security_state = CreateVisibleSecurityState(web_contents());
   frontend_->VisibleSecurityStateChanged(std::move(visible_security_state));
 }

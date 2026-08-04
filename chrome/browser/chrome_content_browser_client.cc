@@ -171,7 +171,7 @@
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
 #include "chrome/browser/speech/on_device_speech_recognition_util.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
@@ -3647,8 +3647,6 @@ bool ChromeContentBrowserClient::AllowWorkerWebLocks(
                                                storage_key);
 }
 
-
-
 bool ChromeContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,
@@ -7092,10 +7090,8 @@ bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
   if (net::IsLocalhost(caller_origin.GetURL())) {
     return true;
   }
-  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  security_state::SecurityLevel security_level = helper->GetSecurityLevel();
+  security_state::SecurityLevel security_level =
+      chrome_security_state::GetSecurityLevel(web_contents);
   return security_level == security_state::SecurityLevel::SECURE ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kIgnoreCertificateErrors);
@@ -7843,7 +7839,6 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
     }
   }
 }
-
 
 void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
     content::RenderFrameHost* rfh,

@@ -5,8 +5,8 @@
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 
 #include "base/logging.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
@@ -32,8 +32,7 @@ bool ChromeWebappsClient::IsOriginConsideredSecure(const url::Origin& origin) {
 security_state::SecurityLevel
 ChromeWebappsClient::GetSecurityLevelForWebContents(
     content::WebContents* web_contents) {
-  return SecurityStateTabHelper::FromWebContents(web_contents)
-      ->GetSecurityLevel();
+  return chrome_security_state::GetSecurityLevel(web_contents);
 }
 
 infobars::ContentInfoBarManager*

@@ -25,6 +25,7 @@ source_set("impl") {
   deps = [
     ":webapps",
     "//base",
+    "//chrome/browser/ssl",
     "//components/infobars/content",
     "//components/security_state/content",
     "//components/strings",

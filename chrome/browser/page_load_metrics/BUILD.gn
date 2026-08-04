@@ -149,6 +149,7 @@ source_set("impl") {
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",
+    "//chrome/browser/ssl",
     "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",

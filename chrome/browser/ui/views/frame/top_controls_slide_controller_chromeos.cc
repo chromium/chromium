@@ -12,13 +12,13 @@
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/common/url_constants.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_controller.h"
@@ -93,8 +93,7 @@ cc::BrowserControlsState GetBrowserControlsStateConstraints(
     return cc::BrowserControlsState::kShown;
   }
 
-  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
-  switch (helper->GetSecurityLevel()) {
+  switch (chrome_security_state::GetSecurityLevel(contents)) {
     case security_state::WARNING:
     case security_state::DANGEROUS:
       return cc::BrowserControlsState::kShown;

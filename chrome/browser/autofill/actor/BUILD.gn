@@ -18,6 +18,7 @@ static_library("actor") {
     "//chrome/browser/affiliations",
     "//chrome/browser/autofill",
     "//chrome/browser/profiles",
+    "//chrome/browser/ssl",
     "//chrome/browser/ui/autofill",
     "//chrome/common:chrome_features",
     "//components/actor/core:journal",

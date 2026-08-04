@@ -17,10 +17,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/common/url_constants.h"
 #include "components/permissions/chooser_controller.h"
 #include "components/permissions/permission_util.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -153,9 +153,6 @@ SerialChooserDialogAndroid::CreateInternal(
           render_frame_host->GetMainFrame()));
   std::u16string origin_string =
       url_formatter::FormatOriginForSecurityDisplay(origin);
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  CHECK(helper);
 
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
@@ -170,7 +167,8 @@ SerialChooserDialogAndroid::CreateInternal(
 
   dialog->java_dialog_ =
       std::move(create_java_dialog_callback)
-          .Run(env, window_android, origin_string, helper->GetSecurityLevel(),
+          .Run(env, window_android, origin_string,
+               chrome_security_state::GetSecurityLevel(web_contents),
                j_profile_android, dialog.get());
   if (!dialog->java_dialog_) {
     return nullptr;

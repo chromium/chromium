@@ -15,10 +15,10 @@
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -197,13 +197,10 @@ void DownloadUIController::OnDownloadCreated(content::DownloadManager* manager,
   if (web_contents && (item->IsSavePackageDownload() ||
                        (web_contents->GetURL() != item->GetOriginalUrl() &&
                         web_contents->GetURL() != item->GetURL()))) {
-    auto* security_state_tab_helper =
-        SecurityStateTabHelper::FromWebContents(web_contents);
-    if (security_state_tab_helper) {
-      UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.DownloadStarted",
-                                security_state_tab_helper->GetSecurityLevel(),
-                                security_state::SECURITY_LEVEL_COUNT);
-    }
+    UMA_HISTOGRAM_ENUMERATION(
+        "Security.SecurityLevel.DownloadStarted",
+        chrome_security_state::GetSecurityLevel(web_contents),
+        security_state::SECURITY_LEVEL_COUNT);
   }
 
   if (web_contents) {

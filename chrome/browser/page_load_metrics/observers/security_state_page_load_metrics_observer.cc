@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/security_state/content/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "components/security_state/core/security_state.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -40,8 +40,9 @@ SecurityStatePageLoadMetricsObserver::MaybeCreateForProfile(
   // If the site engagement service is not enabled, this observer will not track
   // site engagement metrics, but will still track the security level and
   // navigation related metrics.
-  if (!site_engagement::SiteEngagementService::IsEnabled())
+  if (!site_engagement::SiteEngagementService::IsEnabled()) {
     return std::make_unique<SecurityStatePageLoadMetricsObserver>(nullptr);
+  }
   auto* engagement_service =
       site_engagement::SiteEngagementServiceFactory::GetForProfile(
           static_cast<Profile*>(profile));
@@ -53,16 +54,16 @@ SecurityStatePageLoadMetricsObserver::MaybeCreateForProfile(
 std::string
 SecurityStatePageLoadMetricsObserver::GetEngagementFinalHistogramNameForTesting(
     security_state::SecurityLevel level) {
-  return security_state::GetSecurityLevelHistogramName(
-      kEngagementFinalPrefix, level);
+  return security_state::GetSecurityLevelHistogramName(kEngagementFinalPrefix,
+                                                       level);
 }
 
 // static
 std::string SecurityStatePageLoadMetricsObserver::
     GetSecurityLevelPageEndReasonHistogramNameForTesting(
         security_state::SecurityLevel level) {
-  return security_state::GetSecurityLevelHistogramName(
-      kPageEndReasonPrefix, level);
+  return security_state::GetSecurityLevelHistogramName(kPageEndReasonPrefix,
+                                                       level);
 }
 
 // static
@@ -96,8 +97,8 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SecurityStatePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // All data aggregation are done in SiteEngagementService and
-  // SecurityStateTabHelper, and this class just monitors the timings to record
+  // All data aggregation are done in SiteEngagementService and the security
+  // state computation, and this class just monitors the timings to record
   // the aggregated data. As the outermost page's OnCommit and OnComplete are
   // the timing this class is interested in, it just stops observing
   // FencedFrames.
@@ -139,8 +140,9 @@ void SecurityStatePageLoadMetricsObserver::DidActivatePrerenderedPage(
 
 void SecurityStatePageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!GetDelegate().DidCommit())
+  if (!GetDelegate().DidCommit()) {
     return;
+  }
 
   // Don't record UKMs while prerendering. Also, we dispose data if the
   // prerendered page is not used.
@@ -148,12 +150,12 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
       page_load_metrics::PrerenderingState::kInPrerendering) {
     return;
   }
-  if (!security_state_tab_helper_) {
+  if (!web_contents_) {
     return;
   }
 
   security_state::SafetyTipStatus safety_tip_status =
-      security_state_tab_helper_->GetVisibleSecurityState()
+      chrome_security_state::GetVisibleSecurityState(web_contents_)
           ->safety_tip_info.status;
 
   if (engagement_service_) {
@@ -215,10 +217,12 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
 void SecurityStatePageLoadMetricsObserver::DidChangeVisibleSecurityState() {
   DCHECK_NE(GetDelegate().GetPrerenderingState(),
             page_load_metrics::PrerenderingState::kInPrerendering);
-  if (!security_state_tab_helper_)
+  if (!web_contents_) {
     return;
+  }
 
-  current_security_level_ = security_state_tab_helper_->GetSecurityLevel();
+  current_security_level_ =
+      chrome_security_state::GetSecurityLevel(web_contents_);
 }
 
 void SecurityStatePageLoadMetricsObserver::RecordSecurityLevelHistogram(
@@ -229,19 +233,12 @@ void SecurityStatePageLoadMetricsObserver::RecordSecurityLevelHistogram(
 
   // Gather initial security level after all server redirects have been
   // resolved.
-  security_state_tab_helper_ =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  // TODO(https://crbug.com/355894536): There are some features that currently
-  // instantiate a SecurityStatePageLoadMetricsObserver without a
-  // ChromeSecurityStateTabHelper. This does not make sense conceptually. For
-  // now add an early return.
-  if (!security_state_tab_helper_) {
-    return;
-  }
+  web_contents_ = web_contents;
 
   DCHECK_EQ(initial_security_level_, security_state::NONE);
   DCHECK_EQ(current_security_level_, security_state::NONE);
-  initial_security_level_ = security_state_tab_helper_->GetSecurityLevel();
+  initial_security_level_ =
+      chrome_security_state::GetSecurityLevel(web_contents_);
   current_security_level_ = initial_security_level_;
 
   base::UmaHistogramEnumeration(kSecurityLevelOnCommit, initial_security_level_,

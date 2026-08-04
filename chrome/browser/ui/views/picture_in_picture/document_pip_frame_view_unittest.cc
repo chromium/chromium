@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
@@ -80,31 +82,6 @@ blink::mojom::PictureInPictureWindowOptions MakePipOptions(
 gfx::Rect MakeDefaultInitialBounds() {
   return gfx::Rect(20, 30, 400, 300);
 }
-
-// A SecurityStateTabHelper whose security state is fixed by tests, so the chip
-// can be driven to a DANGEROUS level (and its billing/managed-policy sub-cases)
-// that a plain NavigateAndCommit cannot produce. Attaches under the base
-// SecurityStateTabHelper key, so DocumentPipFrameView's
-// SecurityStateTabHelper::FromWebContents() reads it.
-class FakeSecurityStateTabHelper : public SecurityStateTabHelper {
- public:
-  FakeSecurityStateTabHelper(
-      content::WebContents* web_contents,
-      security_state::MaliciousContentStatus malicious_content_status)
-      : SecurityStateTabHelper(web_contents, UsesEmbedderInformation(false)),
-        malicious_content_status_(malicious_content_status) {}
-
-  std::unique_ptr<security_state::VisibleSecurityState>
-  GetVisibleSecurityState() override {
-    auto state = std::make_unique<security_state::VisibleSecurityState>();
-    state->url = GURL("https://example.com/");
-    state->malicious_content_status = malicious_content_status_;
-    return state;
-  }
-
- private:
-  const security_state::MaliciousContentStatus malicious_content_status_;
-};
 
 }  // namespace
 
@@ -282,13 +259,11 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
     }
   }
 
-  // Replaces the opener's SecurityStateTabHelper with a fake reporting the
-  // given malicious-content status, so the chip is computed at DANGEROUS level.
+  // Overrides the computed malicious-content status, so the chip is
+  // computed at DANGEROUS level.
   void SeedFakeSecurityState(
       security_state::MaliciousContentStatus malicious_content_status) {
-    opener()->SetUserData(SecurityStateTabHelper::UserDataKey(),
-                          std::make_unique<FakeSecurityStateTabHelper>(
-                              opener(), malicious_content_status));
+    scoped_malicious_content_status_.emplace(malicious_content_status);
   }
 
   AutoPipSettingOverlayView* GetAutoPipOverlay(
@@ -321,6 +296,8 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   TestingProfile profile_;
   std::unique_ptr<views::Widget> opener_host_widget_;
+  std::optional<chrome_security_state::ScopedMaliciousContentStatusForTesting>
+      scoped_malicious_content_status_;
   std::unique_ptr<content::WebContents> opener_web_contents_;
 };
 

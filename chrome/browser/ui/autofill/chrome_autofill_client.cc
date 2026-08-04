@@ -66,6 +66,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -155,7 +156,6 @@
 #include "components/personal_context/first_run/personal_context_first_run_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -266,7 +266,6 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   }
   NOTREACHED();
 }
-
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -708,17 +707,7 @@ url::Origin ChromeAutofillClient::GetLastCommittedPrimaryMainFrameOrigin()
 
 security_state::SecurityLevel
 ChromeAutofillClient::GetSecurityLevelForUmaHistograms() {
-  SecurityStateTabHelper* helper =
-      ::SecurityStateTabHelper::FromWebContents(web_contents());
-
-  // If there is no helper, it means we are not in a "web" state (for example
-  // the file picker on CrOS). Return SECURITY_LEVEL_COUNT which will not be
-  // logged.
-  if (!helper) {
-    return security_state::SecurityLevel::SECURITY_LEVEL_COUNT;
-  }
-
-  return helper->GetSecurityLevel();
+  return chrome_security_state::GetSecurityLevel(web_contents());
 }
 
 const translate::LanguageState* ChromeAutofillClient::GetLanguageState() {
@@ -1006,7 +995,6 @@ void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
         GetStringRepresentatioOfSavedEntitiesTypes(saved_entities)}});
 }
 
-
 bool ChromeAutofillClient::IsTabInActorMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::FeatureList::IsEnabled(features::debug::kAutofillForceActorMode)) {
@@ -1087,13 +1075,8 @@ bool ChromeAutofillClient::UsesPlatformAutofill() const {
 }
 
 bool ChromeAutofillClient::IsContextSecure() const {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents());
-  if (!helper) {
-    return false;
-  }
-
-  const auto security_level = helper->GetSecurityLevel();
+  const auto security_level =
+      chrome_security_state::GetSecurityLevel(web_contents());
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
 

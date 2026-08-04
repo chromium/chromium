@@ -17,6 +17,7 @@ source_set("device_dialog") {
     "//base",
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser/profiles",
+    "//chrome/browser/ssl",
     "//chrome/common",
     "//components/permissions",
     "//components/security_state/content",

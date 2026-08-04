@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
@@ -36,6 +38,14 @@ namespace chrome_security_state {
 
 using password_manager::metrics_util::PasswordType;
 using safe_browsing::SafeBrowsingUIManager;
+
+namespace {
+std::optional<security_state::MaliciousContentStatus>&
+GetMaliciousContentStatusOverrideForTesting() {
+  static std::optional<security_state::MaliciousContentStatus> override;
+  return override;
+}
+}  // namespace
 
 std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
     content::WebContents* web_contents) {
@@ -95,6 +105,9 @@ security_state::SecurityLevel GetSecurityLevel(
 
 security_state::MaliciousContentStatus GetMaliciousContentStatus(
     content::WebContents* web_contents) {
+  if (GetMaliciousContentStatusOverrideForTesting().has_value()) {
+    return *GetMaliciousContentStatusOverrideForTesting();
+  }
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   using enum safe_browsing::SBThreatType;
 
@@ -189,6 +202,17 @@ security_state::MaliciousContentStatus GetMaliciousContentStatus(
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;
+}
+
+ScopedMaliciousContentStatusForTesting::ScopedMaliciousContentStatusForTesting(
+    security_state::MaliciousContentStatus status) {
+  CHECK(!GetMaliciousContentStatusOverrideForTesting().has_value());
+  GetMaliciousContentStatusOverrideForTesting() = status;
+}
+
+ScopedMaliciousContentStatusForTesting::
+    ~ScopedMaliciousContentStatusForTesting() {
+  GetMaliciousContentStatusOverrideForTesting().reset();
 }
 
 }  // namespace chrome_security_state

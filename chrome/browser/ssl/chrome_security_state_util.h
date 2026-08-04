@@ -33,6 +33,21 @@ security_state::SecurityLevel GetSecurityLevel(
 security_state::MaliciousContentStatus GetMaliciousContentStatus(
     content::WebContents* web_contents);
 
+// Overrides the malicious content status returned by
+// GetMaliciousContentStatus() (and therefore the one written into
+// GetVisibleSecurityState()) for the lifetime of this object. Allows tests
+// to drive DANGEROUS security levels that a test navigation cannot produce.
+class ScopedMaliciousContentStatusForTesting {
+ public:
+  explicit ScopedMaliciousContentStatusForTesting(
+      security_state::MaliciousContentStatus status);
+  ScopedMaliciousContentStatusForTesting(
+      const ScopedMaliciousContentStatusForTesting&) = delete;
+  ScopedMaliciousContentStatusForTesting& operator=(
+      const ScopedMaliciousContentStatusForTesting&) = delete;
+  ~ScopedMaliciousContentStatusForTesting();
+};
+
 }  // namespace chrome_security_state
 
 #endif  // CHROME_BROWSER_SSL_CHROME_SECURITY_STATE_UTIL_H_

@@ -22,7 +22,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
@@ -521,13 +521,7 @@ security_state::SecurityLevel ChromePageInfoDelegate::GetSecurityLevel() {
     return security_level_for_tests_;
   }
 
-  // This is a no-op if a SecurityStateTabHelper already exists for
-  // |web_contents|.
-  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents_);
-
-  auto* helper = SecurityStateTabHelper::FromWebContents(web_contents_);
-  DCHECK(helper);
-  return helper->GetSecurityLevel();
+  return chrome_security_state::GetSecurityLevel(web_contents_);
 }
 
 security_state::VisibleSecurityState
@@ -536,13 +530,7 @@ ChromePageInfoDelegate::GetVisibleSecurityState() {
     return visible_security_state_for_tests_;
   }
 
-  // This is a no-op if a SecurityStateTabHelper already exists for
-  // |web_contents|.
-  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents_);
-
-  auto* helper = SecurityStateTabHelper::FromWebContents(web_contents_);
-  DCHECK(helper);
-  return *helper->GetVisibleSecurityState();
+  return *chrome_security_state::GetVisibleSecurityState(web_contents_);
 }
 
 void ChromePageInfoDelegate::OnCookiesPageOpened() {

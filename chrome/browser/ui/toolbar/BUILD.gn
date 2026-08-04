@@ -19,6 +19,7 @@ source_set("toolbar") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ssl",
     "//chrome/browser/ui/login",
     "//chrome/common",
     "//chrome/common:constants",
