@@ -10,7 +10,6 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
-#import "ios/chrome/browser/shared/public/features/aim_cobrowse_buildflags.h"
 
 enum class FeedActivityBucket;
 
@@ -830,10 +829,8 @@ extern const base::FeatureParam<base::TimeDelta>
 // Whether the Soft Lock feature is enabled.
 bool IsIOSSoftLockEnabled();
 
-#if BUILDFLAG(IOS_ENABLE_AIM_COBROWSE)
 // Enables the AimCobrowse feature.
 BASE_DECLARE_FEATURE(kAimCobrowse);
-#endif
 
 // Returns true if the AimCobrowse feature is enabled.
 bool IsAimCobrowseEnabled();
