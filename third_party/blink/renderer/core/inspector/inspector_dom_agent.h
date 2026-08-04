@@ -280,6 +280,10 @@ class CORE_EXPORT InspectorDOMAgent final
       std::unique_ptr<protocol::Array<int>>* out_nodeIds) override;
   void WillHidePopover(HTMLElement* element, bool* force_open);
 
+  protocol::Response forceShowInterest(int node_id, bool enable) override;
+  void WillLoseInterest(Element* element, bool* force_interest);
+  void ReleaseForcedInterestInvokers();
+
   bool Enabled() const;
   IncludeWhitespaceEnum IncludeWhitespace() const;
   void ReleaseDanglingNodes();
@@ -435,6 +439,7 @@ class CORE_EXPORT InspectorDOMAgent final
   HashSet<int> distributed_nodes_requested_;
   HashMap<int, int> cached_child_count_;
   HeapHashSet<WeakMember<Node>> forced_popovers_;
+  HeapHashSet<WeakMember<Node>> forced_interest_invokers_;
   int last_node_id_;
   Member<Document> document_;
   using SearchResults =

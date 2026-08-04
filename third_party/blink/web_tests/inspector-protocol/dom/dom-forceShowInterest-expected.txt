@@ -1,0 +1,31 @@
+Tests the DOM.forceShowInterest method
+1. Initial state:
+State: {
+    type : object
+    value : {
+        buttonInterestSource : false
+        popoverOpen : false
+        targetInterestTarget : false
+    }
+}
+
+2. Call DOM.forceShowInterest(enable: true):
+State after forceShowInterest(true): {
+    type : object
+    value : {
+        buttonInterestSource : true
+        popoverOpen : true
+        targetInterestTarget : true
+    }
+}
+
+3. Call DOM.forceShowInterest(enable: false):
+State after forceShowInterest(false): {
+    type : object
+    value : {
+        buttonInterestSource : false
+        popoverOpen : false
+        targetInterestTarget : false
+    }
+}
+

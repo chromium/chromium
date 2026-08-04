@@ -110,6 +110,7 @@
         "TopLayerElementsChanged",
         "PseudoElementDestroyed",
         "WillHidePopover",
+        "WillLoseInterest",
         "WillModifyDOMAttr",
         "WillPopShadowRoot",
         "WillRemoveDOMNode",

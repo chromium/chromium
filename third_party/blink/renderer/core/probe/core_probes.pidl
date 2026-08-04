@@ -246,6 +246,7 @@ interface CoreProbes {
   void UpdateScrollableFlag([Keep] Node* node, std::optional<bool>);
   void UpdateAdRelatedState([Keep] Node& node, std::optional<AdProvenance> ad_provenance);
   void WillHidePopover([Keep] HTMLElement* element, bool* force_open);
+  void WillLoseInterest([Keep] Element* element, bool* force_interest);
   void UpdateAffectedByStartingStylesFlag([Keep] Node* node, std::optional<bool> override_flag);
   void WebMCPToolAdded([Keep] Document* document, const ToolData& tool);
   void WebMCPToolRemoved([Keep] Document* document, const ToolData& tool);
