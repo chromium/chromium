@@ -37,6 +37,9 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)
 public class ActorForegroundServiceImplTest {
+    private static final String START_ACTOR_FOREGROUND_SERVICE =
+            "org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
@@ -184,7 +187,9 @@ public class ActorForegroundServiceImplTest {
                                 ActorForegroundServiceUmaHelper.ForegroundLifecycle.STARTED)
                         .build();
 
-        mServiceImpl.onStartCommand(new Intent(), /*flags=*/0, /*startId=*/1);
+        Intent intent = new Intent();
+        intent.setAction(START_ACTOR_FOREGROUND_SERVICE);
+        mServiceImpl.onStartCommand(intent, /*flags=*/0, /*startId=*/1);
 
         watcher.assertExpected();
     }
@@ -196,7 +201,7 @@ public class ActorForegroundServiceImplTest {
         when(mMockController.isTabbedActivityVisible()).thenReturn(false);
 
         Intent intent = new Intent();
-        intent.setAction("org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE");
+        intent.setAction(START_ACTOR_FOREGROUND_SERVICE);
         intent.putExtra(
                 "org.chromium.chrome.browser.actor.EXTRA_GLIC_TRIGGER_MESSAGE_ID",
                 "test-message-id");
@@ -213,7 +218,7 @@ public class ActorForegroundServiceImplTest {
         when(mMockController.isTabbedActivityVisible()).thenReturn(true);
 
         Intent intent = new Intent();
-        intent.setAction("org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE");
+        intent.setAction(START_ACTOR_FOREGROUND_SERVICE);
         intent.putExtra(
                 "org.chromium.chrome.browser.actor.EXTRA_GLIC_TRIGGER_MESSAGE_ID",
                 "test-message-id");
