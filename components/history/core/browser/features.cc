@@ -148,4 +148,19 @@ BASE_FEATURE(kWebHistoryUseNewApi, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHistoryDatabaseWriteAheadLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows tuning the task priority of the History backend task runner during
+// startup.
+BASE_FEATURE(kHistoryInitPrioritySettings, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<base::TaskPriority>::Option
+    kHistoryInitPriorityOptions[] = {
+        {base::TaskPriority::BEST_EFFORT, "best_effort"},
+        {base::TaskPriority::USER_VISIBLE, "user_visible"},
+        {base::TaskPriority::USER_BLOCKING, "user_blocking"},
+};
+
+const base::FeatureParam<base::TaskPriority> kHistoryInitPriority{
+    &kHistoryInitPrioritySettings, "priority",
+    base::TaskPriority::USER_BLOCKING, &kHistoryInitPriorityOptions};
+
 }  // namespace history
