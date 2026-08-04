@@ -200,12 +200,6 @@ class GlicInstanceImpl : public GlicInstance,
   // Closes the embedder identified by `key`.
   // NOTE: This method may result in the deletion of `this`.
   void Close(EmbedderKey key, const CloseOptions& options = {});
-  // Returns true when toggle shows the instance and false when it is closed.
-  bool Toggle(ShowOptions&& options,
-              bool prevent_close,
-              glic::mojom::InvocationSource source,
-              std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker =
-                  nullptr);
 
   bool IsActiveEmbedder(EmbedderKey key) const;
 
