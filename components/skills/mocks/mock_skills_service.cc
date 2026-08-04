@@ -6,7 +6,11 @@
 
 namespace skills {
 
-MockSkillsService::MockSkillsService() = default;
+MockSkillsService::MockSkillsService() {
+  ON_CALL(*this, GetSkills).WillByDefault(testing::ReturnRef(empty_skills_));
+  ON_CALL(*this, GetProvidedSkills)
+      .WillByDefault(testing::ReturnRef(empty_provided_skill_objects_map_));
+}
 MockSkillsService::~MockSkillsService() = default;
 
 }  // namespace skills

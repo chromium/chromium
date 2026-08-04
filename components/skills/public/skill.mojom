@@ -16,6 +16,10 @@ enum SkillSource {
   kUserCreated = 2,
   // Skill derived from a first party skill.
   kDerivedFromFirstParty = 3,
+  // Skill sourced from the EnterprisePublishedSkills enterprise policy.
+  kEnterprise = 4,
+  // Skill derived from an enterprise skill.
+  kDerivedFromEnterprise = 5,
 };
 // clang-format off
 // LINT.ThenChange(//components/sync/protocol/skill_specifics.proto:SkillSource,

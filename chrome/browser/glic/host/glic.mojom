@@ -896,6 +896,7 @@ struct SuggestionContent {
 };
 
 // @generate glic_api
+// Next version: 3
 // Enum to specify the source of the Skill.
 // LINT.IfChange(SkillSource)
 [Stable, Extensible]
@@ -907,6 +908,10 @@ enum SkillSource {
   kUserCreated = 2,
   // Skill derived from a first party skill.
   [MinVersion=1] kDerivedFromFirstParty = 3,
+  // Skill sourced from the EnterprisePublishedSkills enterprise policy.
+  [MinVersion=2] kEnterprise = 4,
+  // Skill derived from an enterprise skill.
+  [MinVersion=2] kDerivedFromEnterprise = 5,
 };
 
 // LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource,

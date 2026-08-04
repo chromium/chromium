@@ -259,10 +259,7 @@ std::unique_ptr<Skill> EnterpriseSkillsProvider::ParseAndValidateSkill(
   new_skill->description = parsed_desc;
   new_skill->icon = kDefaultEnterpriseSkillIcon;
   new_skill->prompt = prompt_content;
-  // TODO(b/536902210): Add SKILL_SOURCE_ENTERPRISE to skills.proto.
-  // For now, these are marked UNKNOWN since they are distinct from user or 1P
-  // skills. The frontend UI can rely on this downstream.
-  new_skill->source = sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN;
+  new_skill->source = sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE;
 
   // TODO(b/533517209): Record Enterprise.Skills.ValidationResult (kSuccess).
   return new_skill;

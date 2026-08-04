@@ -106,9 +106,19 @@ const Skill* SkillsServiceImpl::AddSkill(const std::string& source_skill_id,
   auto skill = std::make_unique<Skill>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), name, icon, prompt);
   skill->source_skill_id = source_skill_id;
+  // TODO(crbug.com/523255901): Add explicit UMA metrics for saving enterprise
+  // and enterprise-derived skills.
   // If the skill has a source skill id, it is a derived skill.
   if (!source_skill_id.empty()) {
-    skill->source = sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
+    const Skill* source_skill = GetSkillById(source_skill_id);
+    skill->source =
+        (source_skill &&
+         (source_skill->source ==
+              sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE ||
+          source_skill->source ==
+              sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE))
+            ? sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE
+            : sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
   }
   return AddSkillImpl(std::move(skill), UpdateSource::kLocal);
 }
@@ -177,12 +187,18 @@ void SkillsServiceImpl::DeleteSkill(std::string_view skill_id,
 }
 
 const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
-  // A skill can be either a 1st party skill, or a user generated skill.
-  // First, Attempt to retrieve the skill from the definitive list of 1P
-  // skills.
+  // A skill can be a 1st party skill, a provided skill (e.g. enterprise
+  // policy), or a user generated skill. First attempt to retrieve from 1P or
+  // provided collections; otherwise fall back to searching skills_ (user
+  // skills).
   auto it = first_party_skill_objects_map_.find(skill_id);
   if (it != first_party_skill_objects_map_.end()) {
     return &it->second;
+  }
+
+  auto provided_it = provided_skill_objects_map_.find(std::string(skill_id));
+  if (provided_it != provided_skill_objects_map_.end()) {
+    return provided_it->second.get();
   }
 
   std::optional<size_t> skill_position = GetSkillPosition(skill_id);
@@ -196,6 +212,11 @@ const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
 const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
     const {
   return skills_;
+}
+
+const std::unordered_map<std::string, std::unique_ptr<Skill>>&
+SkillsServiceImpl::GetProvidedSkills() const {
+  return provided_skill_objects_map_;
 }
 
 const SkillProtoList& SkillsServiceImpl::Get1PSkills() const {
@@ -466,6 +487,18 @@ void SkillsServiceImpl::AddProvider(std::unique_ptr<SkillsProvider> provider) {
 }
 
 void SkillsServiceImpl::OnProviderSkillsChanged(SkillsProvider* provider) {
+  provided_skill_objects_map_.clear();
+
+  // Populate provided_skill_objects_map_ from all active providers.
+  for (const auto& active_provider : providers_) {
+    for (const std::unique_ptr<Skill>& provided_skill :
+         active_provider->GetSkills()) {
+      provided_skill_objects_map_[provided_skill->id] =
+          std::make_unique<Skill>(*provided_skill);
+    }
+  }
+
+  // Notify observers that provided skills have changed.
   for (Observer& observer : observers_) {
     observer.OnProvidedSkillsChanged(provider);
   }

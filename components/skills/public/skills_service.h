@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -161,6 +162,11 @@ class SkillsService : public KeyedService {
   // Returns a const reference to the currently loaded skills. Returns an empty
   // list if the service is not in kReady state.
   virtual const std::vector<std::unique_ptr<Skill>>& GetSkills() const = 0;
+
+  // Returns a const reference to skills provided by registered SkillsProviders
+  // (e.g. enterprise policy skills), separate from sync-managed user skills.
+  virtual const std::unordered_map<std::string, std::unique_ptr<Skill>>&
+  GetProvidedSkills() const = 0;
 
   // Returns a const reference to the currently loaded 1p skills. If skills have
   // not been loaded yet, returns an empty list. The service does not have to be

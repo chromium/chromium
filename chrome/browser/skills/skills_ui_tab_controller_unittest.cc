@@ -184,6 +184,34 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
                                        SkillsInvokeResult::kSuccess, 1);
 }
 
+// Verifies that invoking an enterprise or enterprise-derived skill logs
+// explicit enterprise invoke metrics (kEnterprise and kDerivedFromEnterprise).
+TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsEnterpriseInvokeMetrics) {
+  controller_->test_skill_.id = kTestSkillId;
+  controller_->test_skill_.source =
+      sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE;
+  controller_->test_skill_.prompt = "Test Prompt";
+
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .Times(2);
+
+  controller_->InvokeSkill(kTestSkillId, "", "");
+
+  controller_->test_skill_.source =
+      sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE;
+  controller_->InvokeSkill(kTestSkillId, "", "");
+
+  histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
+                                      SkillsInvokeAction::kEnterprise, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Invoke.Action", SkillsInvokeAction::kDerivedFromEnterprise, 1);
+  histogram_tester_.ExpectUniqueSample("Skills.Invoke.Result",
+                                       SkillsInvokeResult::kSuccess, 2);
+}
+
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_SkillNotFound_LogsMetric) {
   auto* mock_glic_keyed_service =
       static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());

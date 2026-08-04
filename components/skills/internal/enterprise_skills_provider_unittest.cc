@@ -68,7 +68,7 @@ TEST_F(EnterpriseSkillsProviderTest, ValidSkillIsParsed) {
   EXPECT_EQ(skill->description, "Test description");
   EXPECT_EQ(skill->prompt, "Prompt goes here");
   EXPECT_EQ(skill->icon, "💼");
-  EXPECT_EQ(skill->source, sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN);
+  EXPECT_EQ(skill->source, sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE);
 }
 
 TEST_F(EnterpriseSkillsProviderTest, InvalidHashFailsValidation) {

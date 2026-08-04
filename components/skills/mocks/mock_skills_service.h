@@ -25,6 +25,10 @@ class MockSkillsService : public SkillsService {
               GetSkills,
               (),
               (const));
+  MOCK_METHOD((const std::unordered_map<std::string, std::unique_ptr<Skill>>&),
+              GetProvidedSkills,
+              (),
+              (const, override));
   MOCK_METHOD(const SkillProtoList&, Get1PSkills, (), (const, override));
   MOCK_METHOD(const std::vector<skills::proto::TopicInfo>&,
               Get1PTopicsInfo,
@@ -72,6 +76,11 @@ class MockSkillsService : public SkillsService {
               (std::string_view, DisplayState));
   MOCK_METHOD(void, NotifyPanelWillOpen, ());
   MOCK_METHOD(void, AddProvider, (std::unique_ptr<SkillsProvider>));
+
+ private:
+  std::vector<std::unique_ptr<Skill>> empty_skills_;
+  std::unordered_map<std::string, std::unique_ptr<Skill>>
+      empty_provided_skill_objects_map_;
 };
 
 }  // namespace skills

@@ -104,6 +104,8 @@ class SkillsServiceImpl : public SkillsService {
   const SkillProtoList& Get1PSkills() const override;
   const std::vector<skills::proto::TopicInfo>& Get1PTopicsInfo() const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
+  const std::unordered_map<std::string, std::unique_ptr<Skill>>&
+  GetProvidedSkills() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
@@ -155,6 +157,11 @@ class SkillsServiceImpl : public SkillsService {
 
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;
+
+  // The map of non-1P discovery skills provided by registered SkillsProviders
+  // to be shown on the browse page.
+  std::unordered_map<std::string, std::unique_ptr<Skill>>
+      provided_skill_objects_map_;
 
   // The list of skill providers.
   std::vector<std::unique_ptr<SkillsProvider>> providers_;

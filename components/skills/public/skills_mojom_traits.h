@@ -29,6 +29,10 @@ struct EnumTraits<skills::mojom::SkillSource, sync_pb::SkillSource> {
         return skills::mojom::SkillSource::kUserCreated;
       case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY:
         return skills::mojom::SkillSource::kDerivedFromFirstParty;
+      case sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE:
+        return skills::mojom::SkillSource::kEnterprise;
+      case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE:
+        return skills::mojom::SkillSource::kDerivedFromEnterprise;
     }
     NOTREACHED();
   }
@@ -43,6 +47,10 @@ struct EnumTraits<skills::mojom::SkillSource, sync_pb::SkillSource> {
         return sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
       case skills::mojom::SkillSource::kDerivedFromFirstParty:
         return sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
+      case skills::mojom::SkillSource::kEnterprise:
+        return sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE;
+      case skills::mojom::SkillSource::kDerivedFromEnterprise:
+        return sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE;
     }
     NOTREACHED();
   }

@@ -141,6 +141,12 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/skills",
     ]
   }
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/chromeos/policy/dlp/test:test_support",
+    ]
+  }
 }
 
 source_set("interactive_ui_tests") {

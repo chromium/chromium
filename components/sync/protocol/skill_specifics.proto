@@ -20,6 +20,8 @@ enum SkillSource {
   SKILL_SOURCE_FIRST_PARTY = 1;
   SKILL_SOURCE_USER_CREATED = 2;
   SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY = 3;
+  SKILL_SOURCE_ENTERPRISE = 4;
+  SKILL_SOURCE_DERIVED_FROM_ENTERPRISE = 5;
 }
 // clang-format off
 // LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource, //chrome/browser/glic/host/glic.mojom:SkillSource)

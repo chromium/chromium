@@ -24,6 +24,10 @@ glic::mojom::SkillSource SyncPbToGlicMojomSkillSource(
       return glic::mojom::SkillSource::kUserCreated;
     case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY:
       return glic::mojom::SkillSource::kDerivedFromFirstParty;
+    case sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE:
+      return glic::mojom::SkillSource::kEnterprise;
+    case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE:
+      return glic::mojom::SkillSource::kDerivedFromEnterprise;
   }
   NOTREACHED();
 }
@@ -39,6 +43,10 @@ sync_pb::SkillSource GlicMojomToSyncPbSkillSource(
       return sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
     case glic::mojom::SkillSource::kDerivedFromFirstParty:
       return sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
+    case glic::mojom::SkillSource::kEnterprise:
+      return sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE;
+    case glic::mojom::SkillSource::kDerivedFromEnterprise:
+      return sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE;
   }
   NOTREACHED();
 }
