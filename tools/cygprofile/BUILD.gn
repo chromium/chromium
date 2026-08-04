@@ -45,6 +45,9 @@ template("generate_orderfile_test") {
       "//testing:run_perf_test",
       "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
     ]
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
   }
 }
 
@@ -59,6 +62,10 @@ generate_orderfile_test("generate_orderfile_android_webview") {
   suffix = "_android_webview"
   arch = "arm"
   profile_webview = true
+  if (enable_chrome_android_internal) {
+    data_deps =
+        [ "//chrome/test:telemetry_perf_tests_android_clank_webview_bundle" ]
+  }
 }
 
 if (defined(android_app_secondary_abi)) {
@@ -74,5 +81,10 @@ if (defined(android_app_secondary_abi)) {
     suffix = "_android_webview"
     arch = "arm64"
     profile_webview = true
+    if (enable_chrome_android_internal) {
+      data_deps = [
+        "//chrome/test:telemetry_perf_tests_android_clank_webview_64_32_bundle",
+      ]
+    }
   }
 }
