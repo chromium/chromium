@@ -35,6 +35,7 @@
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -597,7 +598,23 @@ void AutocompleteControllerAndroid::CreateNavigationObserver(
     uintptr_t match_ptr) {
   auto* navigation_handle =
       reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
+  if (!navigation_handle) {
+    return;
+  }
+
   const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
+
+  // TODO(https://crbug.com/517725655): Revisit this part if the metrics show
+  // unidentified navigations are too many; it could be that omnibox
+  // navigations are not fully covered.
+  if (ui::PageTransitionCoreTypeIs(match.transition,
+                                   ui::PAGE_TRANSITION_TYPED)) {
+    AttachOmniboxDirectUrlInputNavigationHandleUserData(*navigation_handle);
+  } else if (ui::PageTransitionCoreTypeIs(match.transition,
+                                          ui::PAGE_TRANSITION_GENERATED)) {
+    AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
+        *navigation_handle);
+  }
 
   ChromeOmniboxNavigationObserverAndroid::Create(navigation_handle, profile_,
                                                  input_.text(), match);
