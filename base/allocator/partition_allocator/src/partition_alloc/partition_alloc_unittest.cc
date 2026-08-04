@@ -443,6 +443,9 @@ class PartitionAllocTest
         ThreadCache::SwapForTesting(nullptr,
                                     root->settings_.thread_cache_index);
         root->settings_.with_thread_cache = false;
+        if (ThreadCache::IsTombstone()) {
+          ThreadCache::RemoveTombstoneForTesting();
+        }
       }
     }
   };
