@@ -9641,6 +9641,34 @@
           }
         ]
       },
+      "linux-arm64-official": {
+        "contact_team_email": "chrome-browser-infra-team@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "build_time": {
+                "p50_mins": 240
+              },
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              }
+            }
+          }
+        ]
+      },
       "linux-arm64-rel-fyi": {
         "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [

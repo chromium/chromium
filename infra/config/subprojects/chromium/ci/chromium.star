@@ -623,8 +623,8 @@ ci.builder(
     cores = 32,
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "off",
+        category = "linux|off",
+        short_name = "x64",
     ),
     execution_timeout = 7 * time.hour,
     health_spec = health_spec.modified_default({
@@ -637,6 +637,59 @@ ci.builder(
     # crbug.com/427503493: It produces large amount of dwo files (>700GB).
     # Enabling remote linking without bytes avoids downloading them to the bot.
     # It also sets no-remote-timeout for long remote linking steps.
+    siso_configs = [
+        "builder",
+        "no-remote-timeout",
+    ],
+    siso_remote_linking = True,
+)
+
+ci.builder(
+    name = "linux-arm64-official",
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html = "Official builder for Linux ARM64.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "arm64",
+                "checkout_pgo_profiles",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = ["official_optimize", "remoteexec", "linux", "arm64"],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
+    builderless = False,
+    cores = 32,
+    # TODO(crbug.com/536941314): Add to gardening rotation once stable.
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|off",
+        short_name = "arm64",
+    ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    execution_timeout = 7 * time.hour,
+    health_spec = health_spec.modified_default({
+        "Unhealthy": health_spec.unhealthy_thresholds(
+            build_time = struct(
+                p50_mins = 240,
+            ),
+        ),
+    }),
     siso_configs = [
         "builder",
         "no-remote-timeout",

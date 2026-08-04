@@ -106,6 +106,24 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-arm64-official",
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    mirrors = [
+        "ci/linux-arm64-official",
+    ],
+    gn_args = gn_args.config(
+        configs = ["ci/linux-arm64-official", "try_builder"],
+    ),
+    ssd = True,
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    siso_configs = [
+        "builder",
+        "no-remote-timeout",
+    ],
+    siso_remote_linking = True,
+)
+
+try_.builder(
     name = "mac-official",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
