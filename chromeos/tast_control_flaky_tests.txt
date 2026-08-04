@@ -9,7 +9,7 @@
 # DO NOT ADD QUOTATION MARK AND TRAILING COMMA AT EACH LINE
 
 # b/512598250
-tast.crostini.AppAndroidStudio.bookworm_clamshell_stable
+tast.crostini.AppAndroidStudio.bookworm_clamshell_stable@volteer
 
 # b/537158036
 tast.flex.HWIS
