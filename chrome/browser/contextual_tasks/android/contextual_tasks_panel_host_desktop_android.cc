@@ -14,6 +14,8 @@
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_toast.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -24,6 +26,8 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
@@ -274,6 +278,26 @@ content::WebContents* ContextualTasksPanelHostDesktopAndroid::OpenURLFromTab(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   if (browser_window_) {
+    if (params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+        params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+      TabListInterface* tab_list = TabListInterface::From(browser_window_);
+      if (tab_list) {
+        tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+        if (active_tab && active_tab->GetContents()) {
+          NavigateParams nav_params(browser_window_, params.url,
+                                    params.transition);
+          nav_params.FillNavigateParamsFromOpenURLParams(params);
+          nav_params.source_contents = active_tab->GetContents();
+
+          base::WeakPtr<content::NavigationHandle> navigation_handle =
+              Navigate(&nav_params);
+          if (navigation_handle_callback && navigation_handle) {
+            std::move(navigation_handle_callback).Run(*navigation_handle);
+          }
+          return nav_params.navigated_or_inserted_contents;
+        }
+      }
+    }
     return browser_window_->OpenURL(params,
                                     std::move(navigation_handle_callback));
   }
