@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
@@ -431,16 +432,16 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         Slider originalSlider = panel.getSeekBarForTesting();
 
         // 2. Enable accessibility in Robolectric.
-        android.view.accessibility.AccessibilityManager accessibilityManager =
-                (android.view.accessibility.AccessibilityManager)
-                        visibleActivity.getSystemService("accessibility");
-        var shadowManager = org.robolectric.Shadows.shadowOf(accessibilityManager);
+        var shadowManager =
+                (org.robolectric.shadows.ShadowAccessibilityManager)
+                        org.robolectric.shadow.api.Shadow.extract(
+                                visibleActivity.getSystemService("accessibility"));
         shadowManager.setEnabled(true);
         android.accessibilityservice.AccessibilityServiceInfo serviceInfo =
                 new android.accessibilityservice.AccessibilityServiceInfo();
         serviceInfo.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;
         shadowManager.setEnabledAccessibilityServiceList(List.of(serviceInfo));
-        assertTrue(accessibilityManager.isEnabled());
+        assertTrue(AccessibilityState.isAccessibilityManagerEnabled());
 
         // 3. Remove original slider from panel.
         ViewGroup originalParent = (ViewGroup) originalSlider.getParent();
