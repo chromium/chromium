@@ -633,7 +633,9 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   auto VerifySubmitQueryMessage(
       lens::LensOverlayRequestId::MediaType expected_media_type,
       std::optional<std::string> expected_added_input_name = std::nullopt,
-      int expected_message_index = 0) {
+      int expected_message_index = 0,
+      std::optional<lens::LensOverlayContextualInputUploadType>
+          expected_upload_type = std::nullopt) {
     return Steps(
         // Wait until the inner WebContents receives the message at the expected
         // index.
@@ -644,7 +646,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                             expected_message_index)),
         WithElement(kInnerWebContentsId, [expected_media_type,
                                           expected_added_input_name,
-                                          expected_message_index](
+                                          expected_message_index,
+                                          expected_upload_type](
                                              ui::TrackedElement* el) {
           auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
           // Extract the binary protobuf message from JavaScript by converting
@@ -708,6 +711,21 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
             }
           } else {
             EXPECT_FALSE(message.submit_query().payload().has_added_inputs());
+          }
+
+          if (expected_upload_type.has_value()) {
+            bool found_type = false;
+            const auto& data_list =
+                message.submit_query().payload().lens_image_query_data();
+            for (const auto& payload : data_list) {
+              if (payload.contextual_input_upload_type() ==
+                  *expected_upload_type) {
+                found_type = true;
+                break;
+              }
+            }
+            EXPECT_TRUE(found_type)
+                << "Expected upload type not found in lens_image_query_data.";
           }
         }));
   }
@@ -1122,7 +1140,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       WaitForFaviconGroupWithTitle(kPrimaryTab, "title1.html"),
       WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
       VerifySubmitQueryMessage(
-          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE));
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          std::nullopt, 0,
+          lens::LensOverlayContextualInputUploadType::
+              CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -1462,7 +1483,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 
       // Verify the sent query includes the auto-suggested tab context.
       VerifySubmitQueryMessage(
-          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE));
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          std::nullopt, 0,
+          lens::LensOverlayContextualInputUploadType::
+              CONTEXTUAL_INPUT_UPLOAD_TYPE_AUTO_TAB_CHIP));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -1657,7 +1681,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
 
       // Verify the sent query includes the auto-suggested tab context.
       VerifySubmitQueryMessage(
-          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE));
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          std::nullopt, 0,
+          lens::LensOverlayContextualInputUploadType::
+              CONTEXTUAL_INPUT_UPLOAD_TYPE_AUTO_TAB_CHIP));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
