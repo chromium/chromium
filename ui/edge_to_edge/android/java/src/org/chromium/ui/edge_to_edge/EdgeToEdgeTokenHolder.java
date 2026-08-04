@@ -39,4 +39,9 @@ public class EdgeToEdgeTokenHolder {
     public boolean hasToken() {
         return mToken != TokenHolder.INVALID_TOKEN;
     }
+
+    /** Returns the {@link EdgeToEdgeStateProvider} this holder acquires/releases tokens from. */
+    public EdgeToEdgeStateProvider getProvider() {
+        return mProvider;
+    }
 }
