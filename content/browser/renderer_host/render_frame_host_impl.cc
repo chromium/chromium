@@ -13740,6 +13740,11 @@ void RenderFrameHostImpl::SetWebUI(NavigationRequest& request) {
   web_ui_type_ = new_web_ui_type;
 
   // WebUIs need the ability to request certain schemes.
+  if (!GetSiteInstance()->GetSiteInfo().site_url().SchemeIs(
+          kChromeUIUntrustedScheme)) {
+    web_ui_->AddRequestableScheme(kChromeUIScheme);
+    web_ui_->AddRequestableScheme(url::kFileScheme);
+  }
   for (const auto& scheme : web_ui_->GetRequestableSchemes()) {
     ChildProcessSecurityPolicyImpl::GetInstance()->GrantRequestScheme(
         GetProcess()->GetDeprecatedID(), scheme);

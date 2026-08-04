@@ -215,8 +215,7 @@ std::u16string WebUI::GetJavascriptCall(std::string_view function_name,
 }
 
 WebUIImpl::WebUIImpl(WebContents* web_contents)
-    : requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
-      web_contents_(web_contents),
+    : web_contents_(web_contents),
       web_contents_observer_(
           std::make_unique<WebUIMainFrameObserver>(this, web_contents_)) {
   DCHECK(web_contents_);
