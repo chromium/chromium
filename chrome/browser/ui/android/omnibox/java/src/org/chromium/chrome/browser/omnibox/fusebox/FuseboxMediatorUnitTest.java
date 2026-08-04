@@ -195,6 +195,8 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createNonNull("");
     private final SettableNonNullObservableSupplier<Boolean> mHasAttachmentsSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mWindowHasFocusSupplier =
+            ObservableSuppliers.createNonNull(true);
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     @Before
@@ -278,7 +280,8 @@ public class FuseboxMediatorUnitTest {
                         mOnActivationChipClickedWithQuery,
                         mClearUrlBarTextCallback,
                         mUrlBarText,
-                        mHasAttachmentsSupplier);
+                        mHasAttachmentsSupplier,
+                        mWindowHasFocusSupplier);
         mMediator.beginInput(createSession());
     }
 
@@ -2716,5 +2719,21 @@ public class FuseboxMediatorUnitTest {
         // Verify registrar is destroyed when ending input
         mMediator.endInput();
         assertNull(mMediator.mPrefChangeRegistrar);
+    }
+
+    @Test
+    public void activationChip_windowFocusChanged() {
+        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mInput.setPreviewMatchUrl(null);
+        recreateMediator();
+
+        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
+
+        mWindowHasFocusSupplier.set(false);
+        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
+
+        mWindowHasFocusSupplier.set(true);
+        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
     }
 }

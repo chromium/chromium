@@ -135,6 +135,8 @@ import java.util.function.Supplier;
     private final Supplier<String> mUrlBarTextSupplier;
     private final boolean mIsDesktopPlatform;
     private final SettableNonNullObservableSupplier<Boolean> mHasAttachmentsSupplier;
+    private final NonNullObservableSupplier<Boolean> mWindowHasFocusSupplier;
+    private final Callback<Boolean> mOnWindowFocusChanged = hasFocus -> updateActivationChip();
 
     private boolean mIsTextWrapping;
     private boolean mHasContextualTasksFocus;
@@ -180,7 +182,8 @@ import java.util.function.Supplier;
             Runnable onActivationChipClickedWithQuery,
             Runnable clearUrlBarTextRunnable,
             Supplier<String> urlBarTextSupplier,
-            SettableNonNullObservableSupplier<Boolean> hasAttachmentsSupplier) {
+            SettableNonNullObservableSupplier<Boolean> hasAttachmentsSupplier,
+            NonNullObservableSupplier<Boolean> windowHasFocusSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -203,6 +206,8 @@ import java.util.function.Supplier;
         mUrlBarTextSupplier = urlBarTextSupplier;
         mIsDesktopPlatform = OmniboxCapabilities.isDesktopPlatform();
         mHasAttachmentsSupplier = hasAttachmentsSupplier;
+        mWindowHasFocusSupplier = windowHasFocusSupplier;
+        mWindowHasFocusSupplier.addSyncObserver(mOnWindowFocusChanged);
 
         // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
@@ -245,6 +250,7 @@ import java.util.function.Supplier;
     /* package */ void destroy() {
         endInput();
         mBackPressManager.removeHandler(this);
+        mWindowHasFocusSupplier.removeObserver(mOnWindowFocusChanged);
     }
 
     public boolean wasActionTaken() {
@@ -1050,6 +1056,7 @@ import java.util.function.Supplier;
     /* package */ void updateActivationChip() {
         boolean showActivationChip =
                 isInInputSession()
+                        && mWindowHasFocusSupplier.get()
                         && mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
                                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER
                         && mInput.getRequestType() == AutocompleteRequestType.SEARCH

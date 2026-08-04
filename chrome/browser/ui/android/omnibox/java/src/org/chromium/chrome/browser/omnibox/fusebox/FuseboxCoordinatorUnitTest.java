@@ -178,7 +178,8 @@ public class FuseboxCoordinatorUnitTest {
                 /* onActivationChipClickedWithQuery= */ () -> {},
                 /* clearUrlBarTextRunnable= */ () -> {},
                 /* urlBarTextSupplier= */ () -> "",
-                isForcedPhoneStyleOmnibox);
+                isForcedPhoneStyleOmnibox,
+                ObservableSuppliers.createNonNull(true));
     }
 
     private FuseboxSessionState createSession() {

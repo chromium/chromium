@@ -143,6 +143,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final Runnable mClearUrlBarTextCallback;
     private final Supplier<String> mUrlBarTextSupplier;
     private final boolean mIsForcedPhoneStyleOmnibox;
+    private final NonNullObservableSupplier<Boolean> mWindowHasFocusSupplier;
 
     /**
      * Creates a new instance of {@link FuseboxCoordinator}.
@@ -159,6 +160,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @param clearUrlBarTextRunnable Callback to clear the URL bar text.
      * @param urlBarTextSupplier Supplier for the current URL bar text
      * @param isForcedPhoneStyleOmnibox Whether to force phone-style Omnibox layout.
+     * @param windowHasFocusSupplier Supplier for whether the window currently has focus.
      */
     public FuseboxCoordinator(
             Context context,
@@ -172,7 +174,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             Runnable onActivationChipClickedWithQuery,
             Runnable clearUrlBarTextRunnable,
             Supplier<String> urlBarTextSupplier,
-            boolean isForcedPhoneStyleOmnibox) {
+            boolean isForcedPhoneStyleOmnibox,
+            NonNullObservableSupplier<Boolean> windowHasFocusSupplier) {
         mActivity = assumeNonNull(ContextUtils.activityFromContext(context));
         mWindowAndroid = windowAndroid;
         mParent = parent;
@@ -188,6 +191,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mOnActivationChipClickedWithQuery = onActivationChipClickedWithQuery;
         mClearUrlBarTextCallback = clearUrlBarTextRunnable;
         mUrlBarTextSupplier = urlBarTextSupplier;
+        mWindowHasFocusSupplier = windowHasFocusSupplier;
 
         if (!OmniboxFeatures.isMultimodalInputEnabled(context)
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
@@ -314,7 +318,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mOnActivationChipClickedWithQuery,
                         mClearUrlBarTextCallback,
                         mUrlBarTextSupplier,
-                        mHasAttachmentsSupplier);
+                        mHasAttachmentsSupplier,
+                        mWindowHasFocusSupplier);
         mMediator.onContextualTaskFocusChanged(mHasContextualTasksFocus);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);

@@ -278,6 +278,8 @@ public class LocationBarMediatorTest {
                     ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
     private final SettableNonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mWindowHasFocusSupplier =
+            ObservableSuppliers.createNonNull(true);
     private final SettableNonNullObservableSupplier<Boolean> mHasAttachmentsSupplier =
             ObservableSuppliers.createNonNull(false);
     private final UserDataHost mTabUserDataHost = new UserDataHost();
@@ -421,7 +423,8 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        mScrimHandler);
+                        mScrimHandler,
+                        mWindowHasFocusSupplier);
         verify(mFuseboxCoordinator)
                 .setOnInteractionCompletedCallback(mOnInteractionCompletedCallbackCaptor.capture());
         mOnInteractionCompletedCallback = mOnInteractionCompletedCallbackCaptor.getValue();
@@ -491,7 +494,8 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        /* scrimHandler= */ null);
+                        /* scrimHandler= */ null,
+                        mWindowHasFocusSupplier);
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
         doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
         doReturn(mActivationChip)
@@ -1911,7 +1915,8 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        mScrimHandler);
+                        mScrimHandler,
+                        mWindowHasFocusSupplier);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mProfileSupplier.set(mProfile);
@@ -4335,11 +4340,11 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout).setShowStandbyRing(true);
 
         // Lose window focus -> standby ring should be hidden.
-        mMediator.onWindowFocusChanged(false);
+        mWindowHasFocusSupplier.set(false);
         verify(mLocationBarLayout).setShowStandbyRing(false);
 
         // Regain window focus -> standby ring should be shown again.
-        mMediator.onWindowFocusChanged(true);
+        mWindowHasFocusSupplier.set(true);
         verify(mLocationBarLayout, times(2)).setShowStandbyRing(true);
     }
 }
