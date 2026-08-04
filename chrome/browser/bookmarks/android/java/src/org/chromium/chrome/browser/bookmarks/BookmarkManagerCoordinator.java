@@ -254,6 +254,8 @@ public class BookmarkManagerCoordinator
                     new BookmarkDesktopNavigationCoordinator(
                             activity, navigationPane, mBookmarkModel, bookmarkDelegateSupplier);
         }
+        BookmarkUndoController bookmarkUndoController =
+                new BookmarkUndoController(activity, mBookmarkModel, snackbarManager);
         mBookmarkToolbarCoordinator =
                 new BookmarkToolbarCoordinator(
                         activity,
@@ -272,7 +274,8 @@ public class BookmarkManagerCoordinator
                         () -> IncognitoUtils.isIncognitoModeEnabled(profile),
                         bookmarkManagerOpener,
                         mSnackbarManager,
-                        /* nextFocusableView= */ mMainView.findViewById(R.id.list_content));
+                        /* nextFocusableView= */ mMainView.findViewById(R.id.list_content),
+                        bookmarkUndoController);
         if (!isDesktopLayoutEnabled) {
             mSelectableListLayout.configureWideDisplayStyle();
         }
@@ -286,9 +289,6 @@ public class BookmarkManagerCoordinator
                         mBookmarkModel,
                         mImageFetcher,
                         BookmarkViewUtils.getRoundedIconGenerator(activity, displayPref));
-
-        BookmarkUndoController bookmarkUndoController =
-                new BookmarkUndoController(activity, mBookmarkModel, snackbarManager);
         Consumer<OnScrollListener> onScrollListenerConsumer =
                 onScrollListener -> mRecyclerView.addOnScrollListener(onScrollListener);
         mMediator =

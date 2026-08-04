@@ -210,6 +210,37 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
+    public void testDeleteBookmarks_withOriginator() {
+        BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", A_COM);
+        BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", B_COM);
+
+        AtomicReference<String[]> originatorTitles = new AtomicReference<>();
+        AtomicReference<String[]> observer1Titles = new AtomicReference<>();
+
+        BookmarkModel.BookmarkDeleteObserver originator =
+                (titles, isUndoable) -> originatorTitles.set(titles);
+        BookmarkModel.BookmarkDeleteObserver observer1 =
+                (titles, isUndoable) -> observer1Titles.set(titles);
+
+        mBookmarkModel.addDeleteObserver(observer1);
+
+        // Deleting with originator should only notify originator, not observer1.
+        mBookmarkModel.deleteBookmarks(originator, bookmarkA);
+        Assert.assertNotNull(originatorTitles.get());
+        Assert.assertNull(observer1Titles.get());
+
+        // Deleting without originator should notify registered observers.
+        mBookmarkModel.deleteBookmarks(
+                /* originator= */ (BookmarkModel.BookmarkDeleteObserver) null, bookmarkB);
+        Assert.assertNotNull(observer1Titles.get());
+
+        mBookmarkModel.removeDeleteObserver(observer1);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Bookmark"})
     public void testDeleteBookmarksRepeatedly() {
         BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", A_COM);
         BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", B_COM);

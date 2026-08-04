@@ -1648,7 +1648,7 @@ class BookmarkManagerMediator
                         RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
                     } else if (textId == R.string.bookmark_item_delete) {
                         if (mBookmarkModel != null) {
-                            mBookmarkModel.deleteBookmarks(bookmarkId);
+                            mBookmarkModel.deleteBookmarks(mBookmarkUndoController, bookmarkId);
                             RecordUserAction.record("Android.BookmarkPage.RemoveItem");
                             if (bookmarkId.getType() == BookmarkType.READING_LIST) {
                                 RecordUserAction.record(

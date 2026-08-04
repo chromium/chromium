@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.Before;
@@ -38,6 +39,9 @@ public class FakeBookmarkModelTest {
 
     private FakeBookmarkModel mBookmarkModel;
     @Mock private BookmarkModelObserver mBookmarkModelObserver;
+    @Mock private BookmarkModel.BookmarkDeleteObserver mDeleteObserver1;
+    @Mock private BookmarkModel.BookmarkDeleteObserver mDeleteObserver2;
+    @Mock private BookmarkModel.BookmarkDeleteObserver mOriginator;
 
     @Before
     public void setup() {
@@ -271,5 +275,31 @@ public class FakeBookmarkModelTest {
                     verifyNoMoreInteractions(mBookmarkModelObserver);
                 });
         verify(mBookmarkModelObserver).bookmarkModelChanged();
+    }
+
+    @Test
+    public void testDeleteBookmarks_withOriginator() {
+        mBookmarkModel.addDeleteObserver(mDeleteObserver1);
+        mBookmarkModel.addDeleteObserver(mDeleteObserver2);
+
+        BookmarkItem parent = mBookmarkModel.getBookmarkById(mBookmarkModel.getOtherFolderId());
+        BookmarkId bookmark1 =
+                mBookmarkModel.addBookmark(
+                        parent.getId(), 0, "Bookmark 1", new GURL("https://test1.com"));
+
+        mBookmarkModel.deleteBookmarks(mOriginator, bookmark1);
+
+        verify(mOriginator).onDeleteBookmarks(new String[] {"Bookmark 1"}, true);
+        verifyNoInteractions(mDeleteObserver1, mDeleteObserver2);
+
+        BookmarkId bookmark2 =
+                mBookmarkModel.addBookmark(
+                        parent.getId(), 0, "Bookmark 2", new GURL("https://test2.com"));
+
+        mBookmarkModel.deleteBookmarks(
+                /* originator= */ (BookmarkModel.BookmarkDeleteObserver) null, bookmark2);
+
+        verify(mDeleteObserver1).onDeleteBookmarks(new String[] {"Bookmark 2"}, true);
+        verify(mDeleteObserver2).onDeleteBookmarks(new String[] {"Bookmark 2"}, true);
     }
 }

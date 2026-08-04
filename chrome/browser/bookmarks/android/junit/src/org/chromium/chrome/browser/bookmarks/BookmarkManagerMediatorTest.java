@@ -1457,7 +1457,7 @@ public class BookmarkManagerMediatorTest {
 
         // Delete.
         clickChildAt(menu, 4);
-        verify(mBookmarkModel).deleteBookmarks(mBookmarkId21);
+        verify(mBookmarkModel).deleteBookmarks(mBookmarkUndoController, mBookmarkId21);
 
         // Open in new tab.
         clickChildAt(menu, 5);

@@ -154,7 +154,8 @@ public class BookmarkToolbarMediatorTest {
                         mIncognitoEnabledSupplier,
                         mBookmarkManagerOpener,
                         mSnackbarManager,
-                        mClipboard);
+                        mClipboard,
+                        /* bookmarkDeleteObserver= */ null);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
         RobolectricUtil.runAllBackgroundAndUi();
     }
@@ -192,7 +193,8 @@ public class BookmarkToolbarMediatorTest {
                         mIncognitoEnabledSupplier,
                         mBookmarkManagerOpener,
                         mSnackbarManager,
-                        mClipboard);
+                        mClipboard,
+                        /* bookmarkDeleteObserver= */ null);
     }
 
     @Test

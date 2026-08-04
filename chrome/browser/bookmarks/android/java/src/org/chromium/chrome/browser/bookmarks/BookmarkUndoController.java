@@ -17,7 +17,6 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import java.util.Locale;
 
 /** Shows an undo bar when the user modifies bookmarks, allowing them to undo their changes. */
-// TODO(crbug.com/40900777): Write tests for this class.
 @NullMarked
 public class BookmarkUndoController extends BookmarkModelObserver
         implements SnackbarManager.SnackbarController, BookmarkDeleteObserver {
@@ -118,9 +117,14 @@ public class BookmarkUndoController extends BookmarkModelObserver
 
     // BookmarkDeleteObserver implementation.
 
+    /**
+     * Called when bookmarks are deleted. Dismisses any active snackbar for this controller before
+     * showing the new undo snackbar.
+     */
     @Override
     public void onDeleteBookmarks(String[] titles, boolean isUndoable) {
         assert titles != null && titles.length >= 1;
+        mSnackbarManager.dismissSnackbars(this);
 
         Snackbar snackbar;
         if (titles.length == 1) {

@@ -234,6 +234,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkUiPrefsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkUiStateTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkUndoControllerTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModelTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkQueryHandlerTest.java",

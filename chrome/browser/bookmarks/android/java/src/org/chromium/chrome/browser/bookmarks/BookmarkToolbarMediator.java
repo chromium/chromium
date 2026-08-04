@@ -19,6 +19,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel.BookmarkDeleteObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
@@ -88,6 +89,7 @@ class BookmarkToolbarMediator
     private final BookmarkManagerOpener mBookmarkManagerOpener;
     private final SnackbarManager mSnackbarManager;
     private final Clipboard mClipboard;
+    private final @Nullable BookmarkDeleteObserver mBookmarkDeleteObserver;
 
     // TODO(crbug.com/40255666): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
@@ -110,7 +112,8 @@ class BookmarkToolbarMediator
             BooleanSupplier incognitoEnabledSupplier,
             BookmarkManagerOpener bookmarkManagerOpener,
             SnackbarManager snackbarManager,
-            Clipboard clipboard) {
+            Clipboard clipboard,
+            @Nullable BookmarkDeleteObserver bookmarkDeleteObserver) {
         mContext = context;
         mProfile = profile;
         mModel = model;
@@ -130,6 +133,7 @@ class BookmarkToolbarMediator
         mBookmarkManagerOpener = bookmarkManagerOpener;
         mSnackbarManager = snackbarManager;
         mClipboard = clipboard;
+        mBookmarkDeleteObserver = bookmarkDeleteObserver;
 
         mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS, SORT_MENU_IDS);
         mModel.set(
@@ -223,7 +227,8 @@ class BookmarkToolbarMediator
         } else if (id == R.id.selection_mode_delete_menu_id) {
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             if (list.size() >= 1) {
-                mBookmarkModel.deleteBookmarks(list.toArray(new BookmarkId[0]));
+                mBookmarkModel.deleteBookmarks(
+                        mBookmarkDeleteObserver, list.toArray(new BookmarkId[0]));
                 RecordUserAction.record("MobileBookmarkManagerDeleteBulk");
             }
             return true;

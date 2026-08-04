@@ -11,6 +11,8 @@ import android.view.View;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel.BookmarkDeleteObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -49,7 +51,8 @@ public class BookmarkToolbarCoordinator {
             BooleanSupplier incognitoEnabledSupplier,
             BookmarkManagerOpener bookmarkManagerOpener,
             SnackbarManager snackbarManager,
-            View nextFocusableView) {
+            View nextFocusableView,
+            @Nullable BookmarkDeleteObserver bookmarkDeleteObserver) {
         mToolbar =
                 (BookmarkToolbar)
                         selectableListLayout.initializeToolbar(
@@ -87,7 +90,8 @@ public class BookmarkToolbarCoordinator {
                 incognitoEnabledSupplier,
                 bookmarkManagerOpener,
                 snackbarManager,
-                Clipboard.getInstance());
+                Clipboard.getInstance(),
+                bookmarkDeleteObserver);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

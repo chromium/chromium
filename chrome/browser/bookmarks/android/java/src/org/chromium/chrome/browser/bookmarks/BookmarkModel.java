@@ -116,6 +116,18 @@ public class BookmarkModel extends BookmarkBridge {
      *     children once more will cause errors.
      */
     public void deleteBookmarks(BookmarkId... bookmarks) {
+        deleteBookmarks(/* originator= */ null, bookmarks);
+    }
+
+    /**
+     * Deletes bookmarks.
+     *
+     * @param originator If non-null, only this observer is notified (preventing duplicate snackbars
+     *     across multi-window setups). If null, all registered observers are notified.
+     * @param bookmarks Bookmarks to delete.
+     */
+    public void deleteBookmarks(
+            @Nullable BookmarkDeleteObserver originator, BookmarkId... bookmarks) {
         assert bookmarks != null && bookmarks.length > 0;
         // Store all titles of bookmarks.
         List<String> titles = new ArrayList<>();
@@ -131,8 +143,13 @@ public class BookmarkModel extends BookmarkBridge {
         }
         endGroupingUndos();
 
-        for (BookmarkDeleteObserver observer : mDeleteObservers) {
-            observer.onDeleteBookmarks(titles.toArray(new String[titles.size()]), isUndoable);
+        String[] titlesArray = titles.toArray(new String[0]);
+        if (originator != null) {
+            originator.onDeleteBookmarks(titlesArray, isUndoable);
+        } else {
+            for (BookmarkDeleteObserver observer : mDeleteObservers) {
+                observer.onDeleteBookmarks(titlesArray, isUndoable);
+            }
         }
     }
 
