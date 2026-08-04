@@ -60,19 +60,29 @@ void SidePanelDeferredEntryTracker::AddEntry(
 }
 
 std::optional<SidePanelUIBase::UniqueKey>
-SidePanelDeferredEntryTracker::GetEntry(
+SidePanelDeferredEntryTracker::GetTabOrWindowScopedEntry(
     const tabs::TabHandle& tab_handle) const {
   // 1. Check for tab-scoped deferred entry.
-  auto it = tab_scoped_deferred_entries_.find(tab_handle);
-  if (it != tab_scoped_deferred_entries_.end()) {
-    SidePanelUIBase::UniqueKey key{tab_handle, it->second};
-    return key;
+  if (auto tab_scoped_entry = GetTabScopedEntry(tab_handle)) {
+    return tab_scoped_entry;
   }
 
   // 2. Check for window-scoped deferred entry.
   if (window_scoped_deferred_entry_) {
     SidePanelUIBase::UniqueKey key{std::nullopt,
                                    *window_scoped_deferred_entry_};
+    return key;
+  }
+
+  return std::nullopt;
+}
+
+std::optional<SidePanelUIBase::UniqueKey>
+SidePanelDeferredEntryTracker::GetTabScopedEntry(
+    const tabs::TabHandle& tab_handle) const {
+  auto it = tab_scoped_deferred_entries_.find(tab_handle);
+  if (it != tab_scoped_deferred_entries_.end()) {
+    SidePanelUIBase::UniqueKey key{tab_handle, it->second};
     return key;
   }
 
@@ -88,7 +98,7 @@ void SidePanelDeferredEntryTracker::ClearEntry(
   }
 }
 
-void SidePanelDeferredEntryTracker::ClearEntryForTab(
+void SidePanelDeferredEntryTracker::ClearTabScopedEntry(
     const tabs::TabHandle& tab_handle) {
   tab_scoped_deferred_entries_.erase(tab_handle);
 }

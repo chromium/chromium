@@ -51,14 +51,19 @@ class SidePanelDeferredEntryTracker {
   //
   // The entry for a tab can be either tab-scoped or window-scoped, and the
   // priority is: tab-scoped deferred entry > window-scoped deferred entry.
-  std::optional<SidePanelUIBase::UniqueKey> GetEntry(
+  std::optional<SidePanelUIBase::UniqueKey> GetTabOrWindowScopedEntry(
+      const tabs::TabHandle& tab_handle) const;
+
+  // Returns the tab-scoped deferred entry for the given tab if one exists, or
+  // std::nullopt if there is none.
+  std::optional<SidePanelUIBase::UniqueKey> GetTabScopedEntry(
       const tabs::TabHandle& tab_handle) const;
 
   // Clears the deferred state for the given entry `key`.
   void ClearEntry(const SidePanelUIBase::UniqueKey& key);
 
   // Clears any deferred tab-scoped entry associated with `tab_handle`.
-  void ClearEntryForTab(const tabs::TabHandle& tab_handle);
+  void ClearTabScopedEntry(const tabs::TabHandle& tab_handle);
 
  private:
   const raw_ptr<BrowserWindowInterface> browser_;

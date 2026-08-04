@@ -64,6 +64,14 @@ public interface SidePanelContainerCoordinator {
     void init(SidePanelCoordinatorAndroid sidePanelCoordinatorAndroid);
 
     /**
+     * Returns whether this side panel container <i>can</i> be shown, i.e., whether there is enough
+     * space for it.
+     *
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider#canShowSideUi
+     */
+    boolean canShow();
+
+    /**
      * Starts opening this side panel container with the given {@link SidePanelContent}.
      *
      * <p>This method is intended for a side panel feature and should only be called when the side
@@ -131,4 +139,25 @@ public interface SidePanelContainerCoordinator {
      * @param enable Whether deferred View replacement is enabled.
      */
     void configDeferredViewReplacementForTesting(boolean enable); // IN-TEST
+
+    /**
+     * Simulates the condition that will cause the side panel container to auto-close.
+     *
+     * <p>If the side panel is open when this method is called, we'll run the same code responding
+     * to a {@code Configuration} change or other events that force the side panel to auto-close.
+     *
+     * <p>If the side panel is closed when this method is called, subsequent attempts to show the
+     * side panel won't open the panel until {@link #simulateAutoRestoreConditionForTesting()} is
+     * called.
+     *
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#onWillAutoClose()
+     */
+    void simulateAutoCloseConditionForTesting(); // IN-TEST
+
+    /**
+     * Simulates the condition that will cause the side panel container to auto-restore.
+     *
+     * @see #simulateAutoCloseConditionForTesting()
+     */
+    void simulateAutoRestoreConditionForTesting(); // IN-TEST
 }
