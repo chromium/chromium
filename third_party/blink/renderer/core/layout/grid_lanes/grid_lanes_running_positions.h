@@ -182,12 +182,13 @@ class CORE_EXPORT GridLanesRunningPositions {
       const GridArea& resolved_position,
       const GridTrackSizingDirection grid_axis_direction);
 
-  // If we can find an eligible track opening to fit the item that is higher
-  // than `auto_placement_stacking_axis_offset`, set `grid_lanes_item` to have
-  // the updated span location, adjust the track opening as needed (either
-  // erasing it or reducing the size), and return the running position at which
-  // the item will be placed. `item_index` identifies the item's fragment in the
-  // container builder. During fragmentation collection, the start-lane index is
+  // If we can find an eligible track opening that is higher than
+  // `auto_placement_stacking_axis_offset`, or at the same running position but
+  // earlier in track-flow order, set `grid_lanes_item` to have the updated span
+  // location, adjust the track opening as needed (either erasing it or reducing
+  // the size), and return the running position at which the item will be
+  // placed. `item_index` identifies the item's fragment in the container
+  // builder. During fragmentation collection, the start-lane index is
   // determined from the selected openings instead. The index is used when
   // creating a stacking-axis alignment candidate above any new track openings.
   // This method is only used when dense-packing is set. In the case where a
@@ -196,8 +197,9 @@ class CORE_EXPORT GridLanesRunningPositions {
   // updated in this method. For an example, see the comment for
   // `AccumulateTrackOpeningsToAccommodateItem`. If provided,
   // `spanner_indices_below_opening` receives the index into each corresponding
-  // `GridLaneData::item_data` of the spanner below the selected opening.
-  LayoutUnit GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
+  // `GridLaneData::item_data` of the spanner below the selected opening. This
+  // method returns `std::nullopt` if no eligible track opening was found.
+  std::optional<LayoutUnit> GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       wtf_size_t start_offset,
       const LayoutUnit item_stacking_axis_contribution,
       const LayoutUnit auto_placement_stacking_axis_offset,
@@ -333,13 +335,22 @@ class CORE_EXPORT GridLanesRunningPositions {
   // element in `track_opening_indices` is the specific index within a track's
   // vector of openings. `start_position` refers to the highest possible
   // position that an item can be placed; this would be the lowest running
-  // position of all the openings in the path.
+  // position of all the openings in the path. `end_position` is the end of the
+  // intersection of all openings in the path.
   struct EligibleTrackOpeningPath {
     bool IsValid() const { return !track_opening_indices.empty(); }
+
+    // If the track opening consists only of unbounded openings at the end of
+    // the track, placing an item in this path would not actually densely-pack
+    // it.
+    bool ContainsTrackOpening() const {
+      return IsValid() && end_position != LayoutUnit::Max();
+    }
 
     wtf_size_t starting_track_index{0};
     Vector<wtf_size_t> track_opening_indices;
     LayoutUnit start_position{LayoutUnit::Max()};
+    LayoutUnit end_position{LayoutUnit::Max()};
   };
 
   // For testing only.
@@ -401,6 +412,17 @@ class CORE_EXPORT GridLanesRunningPositions {
       wtf_size_t num_tracks_remaining,
       wtf_size_t track_to_check_for_openings,
       EligibleTrackOpeningPath& eligible_track_opening_result);
+
+  // Chooses the first eligible track opening path in track-flow order within
+  // `tie_threshold_` of `minimum_track_opening_running_position` that is higher
+  // than auto-placement, or at the same running position but earlier in
+  // track-flow order. Returns `std::nullopt` when auto-placement should be
+  // retained.
+  std::optional<wtf_size_t> ChooseFirstEligibleTrackOpeningPath(
+      const Vector<EligibleTrackOpeningPath>& eligible_track_opening_results,
+      LayoutUnit minimum_track_opening_running_position,
+      LayoutUnit auto_placement_stacking_axis_offset,
+      wtf_size_t initial_span_start_line) const;
 
   // The current running position for a given track is the start position of the
   // final opening.

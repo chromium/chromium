@@ -1293,7 +1293,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     bool item_moved_to_earlier_opening = false;
     Vector<wtf_size_t> spanner_indices_below_opening;
     if (is_dense_packing) {
-      LayoutUnit updated_item_start_offset =
+      std::optional<LayoutUnit> updated_item_start_offset =
           running_positions.GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
               grid_axis_start_offset,
               /*item_stacking_axis_contribution=*/
@@ -1305,7 +1305,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
 
       // If we have a valid offset for the item in the stacking axis, it means
       // we found an earlier track opening for the item.
-      if (updated_item_start_offset != LayoutUnit::Max()) {
+      if (updated_item_start_offset) {
         // Because it's possible that we switched the item to a different span,
         // update the offset of where the item should be placed in the grid
         // axis.
@@ -1318,7 +1318,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
                              grid_lanes_item_start_offset;
 
         item_moved_to_earlier_opening = true;
-        start_offset_in_stacking_axis = updated_item_start_offset;
+        start_offset_in_stacking_axis = *updated_item_start_offset;
       }
     }
 
