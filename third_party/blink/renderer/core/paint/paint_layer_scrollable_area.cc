@@ -356,33 +356,6 @@ void PaintLayerScrollableArea::SetScrollCornerNeedsPaintInvalidation() {
   ScrollableArea::SetScrollCornerNeedsPaintInvalidation();
 }
 
-gfx::Rect
-PaintLayerScrollableArea::ConvertFromScrollbarToContainingEmbeddedContentView(
-    const Scrollbar& scrollbar,
-    const gfx::Rect& scrollbar_rect) const {
-  LayoutView* view = GetLayoutBox()->View();
-  if (!view)
-    return scrollbar_rect;
-
-  gfx::Rect rect = scrollbar_rect;
-  rect.Offset(ScrollbarOffset(scrollbar));
-  return ToPixelSnappedRect(
-      GetLayoutBox()->LocalToAbsoluteRect(PhysicalRect(rect)));
-}
-
-gfx::Point
-PaintLayerScrollableArea::ConvertFromScrollbarToContainingEmbeddedContentView(
-    const Scrollbar& scrollbar,
-    const gfx::Point& scrollbar_point) const {
-  LayoutView* view = GetLayoutBox()->View();
-  if (!view)
-    return scrollbar_point;
-
-  gfx::Point point = scrollbar_point + ScrollbarOffset(scrollbar);
-  return ToRoundedPoint(
-      GetLayoutBox()->LocalToAbsolutePoint(PhysicalOffset(point)));
-}
-
 gfx::Point
 PaintLayerScrollableArea::ConvertFromContainingEmbeddedContentViewToScrollbar(
     const Scrollbar& scrollbar,

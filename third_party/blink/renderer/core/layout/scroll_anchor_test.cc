@@ -112,11 +112,9 @@ class ScrollAnchorTest : public SimTest {
     DCHECK_EQ(true, scrollbar->GetTheme().AllowsHitTest());
     int thumb_center = scrollbar->GetTheme().ThumbPosition(*scrollbar) +
                        scrollbar->GetTheme().ThumbLength(*scrollbar) / 2;
-    scrollbar_drag_point_ =
-        gfx::PointF(scrollbar->GetLayoutBox()
-                        ->GetScrollableArea()
-                        ->ConvertFromScrollbarToContainingEmbeddedContentView(
-                            *scrollbar, gfx::Point(0, thumb_center)));
+    scrollbar_drag_point_ = scrollbar->GetLayoutBox()->LocalToAbsolutePoint(
+        gfx::PointF(0, thumb_center) +
+        scrollbar->FrameRect().OffsetFromOrigin());
     scrollbar->MouseDown(blink::WebMouseEvent(
         blink::WebInputEvent::Type::kMouseDown, *scrollbar_drag_point_,
         *scrollbar_drag_point_, blink::WebPointerProperties::Button::kLeft, 0,

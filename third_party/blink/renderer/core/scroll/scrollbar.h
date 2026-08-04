@@ -166,9 +166,6 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   ScrollbarTheme& GetTheme() const { return theme_; }
 
-  gfx::Rect ConvertToContainingEmbeddedContentView(const gfx::Rect&) const;
-  gfx::Point ConvertFromContainingEmbeddedContentView(const gfx::Point&) const;
-
   void MoveThumb(int pos, bool dragging_document = false);
 
   // Use SetNeedsPaintInvalidation to cause the scrollbar (or parts thereof)

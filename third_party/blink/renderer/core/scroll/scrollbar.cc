@@ -829,28 +829,6 @@ gfx::Point Scrollbar::ConvertFromRootFrame(
   return point_in_root_frame;
 }
 
-gfx::Rect Scrollbar::ConvertToContainingEmbeddedContentView(
-    const gfx::Rect& local_rect) const {
-  if (scrollable_area_) {
-    return scrollable_area_
-        ->ConvertFromScrollbarToContainingEmbeddedContentView(*this,
-                                                              local_rect);
-  }
-
-  return local_rect;
-}
-
-gfx::Point Scrollbar::ConvertFromContainingEmbeddedContentView(
-    const gfx::Point& parent_point) const {
-  if (scrollable_area_) {
-    return scrollable_area_
-        ->ConvertFromContainingEmbeddedContentViewToScrollbar(*this,
-                                                              parent_point);
-  }
-
-  return parent_point;
-}
-
 float Scrollbar::ScrollableAreaCurrentPos() const {
   if (!scrollable_area_)
     return 0;
