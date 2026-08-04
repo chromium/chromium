@@ -701,16 +701,29 @@ public class ToolbarControlContainerTest {
                 new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
 
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(true);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
+
         // Initially, tab strip is visible (height 80). Margin should be 0.
         mControlContainer.onHeightChanged(80, 20, false);
         assertEquals(
                 "Toolbar right margin should be 0 when tab strip is visible.", 0, lp.rightMargin);
 
-        // Suppress tab strip (height 0). Margin should be right padding (20).
+        // Vertical tabs active and tab strip hidden (height 0). Margin should be right padding
+        // (20).
         mControlContainer.onHeightChanged(0, 20, false);
         assertEquals(
-                "Toolbar right margin should be equal to right padding when tab strip is hidden.",
+                "Toolbar right margin should be equal to right padding when vertical tabs is"
+                        + " active.",
                 20,
+                lp.rightMargin);
+
+        // Disable vertical tabs while tab strip height is 0. Margin should be reset to 0.
+        isVerticalTabsActiveSupplier.set(false);
+        assertEquals(
+                "Toolbar right margin should be reset to 0 when vertical tabs is inactive.",
+                0,
                 lp.rightMargin);
 
         // Exit desktop window. Margin should be reset to 0.
@@ -725,8 +738,37 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    public void testToolbarRightOffset_StartupWithVerticalTabsOff() {
+        View tabletLayout = mock(View.class);
+        MarginLayoutParams lp = new MarginLayoutParams(100, 100);
+        when(tabletLayout.getLayoutParams()).thenReturn(lp);
+        when(mToolbarView.findViewById(R.id.toolbar_tablet_layout)).thenReturn(tabletLayout);
+
+        initControlContainer(R.layout.toolbar_tablet);
+
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(false);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
+
+        // On startup in desktop window, mTabStripHeight is still 0.
+        var appHeaderState =
+                new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        mControlContainer.onAppHeaderStateChanged(appHeaderState);
+
+        assertEquals(
+                "Toolbar right margin should remain 0 on startup when vertical tabs is off.",
+                0,
+                lp.rightMargin);
+    }
+
+    @Test
     public void testSystemGestureExclusionsInDesktopWindow() {
         initControlContainer(R.layout.toolbar_tablet);
+
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(true);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
 
         // Layout the control container to have a non-zero width.
         mControlContainer.layout(0, 0, 200, 100);
@@ -769,6 +811,10 @@ public class ToolbarControlContainerTest {
     @Test
     public void testSystemGestureExclusions_WithVerticalTabsWidth() {
         initControlContainer(R.layout.toolbar_tablet);
+
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(true);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
 
         // Layout the control container to have width = 500px, height = 100px.
         mControlContainer.layout(0, 0, 500, 100);

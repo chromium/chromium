@@ -124,6 +124,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final Callback<Resource> mOnResourceCaptureCallback = this::onToolbarCaptureUpdated;
     private final Callback<Integer> mVerticalTabsWidthObserver =
             width -> updateSystemGestureExclusions();
+    private final Callback<Boolean> mVerticalTabsActiveObserver =
+            active -> onVerticalTabsActiveChanged();
     private NonNullObservableSupplier<Integer> mVerticalTabsContainerWidthSupplier =
             ObservableSuppliers.createNonNull(0);
     private @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
@@ -355,6 +357,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
+        }
+
+        if (mIsVerticalTabsActiveSupplier != null) {
+            mIsVerticalTabsActiveSupplier.removeObserver(mVerticalTabsActiveObserver);
+            mIsVerticalTabsActiveSupplier = null;
         }
 
         mVerticalTabsContainerWidthSupplier.removeObserver(mVerticalTabsWidthObserver);
@@ -1333,13 +1340,21 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         updateTopLeftCornerOverlay();
     }
 
-    public void setIsVerticalTabsActiveSupplier(
-            @Nullable NonNullObservableSupplier<Boolean> supplier) {
+    public void setIsVerticalTabsActiveSupplier(NonNullObservableSupplier<Boolean> supplier) {
+        if (mIsVerticalTabsActiveSupplier != null) {
+            mIsVerticalTabsActiveSupplier.removeObserver(mVerticalTabsActiveObserver);
+        }
         mIsVerticalTabsActiveSupplier = supplier;
         if (mIsVerticalTabsActiveSupplier != null) {
-            mIsVerticalTabsActiveSupplier.addSyncObserver(active -> updateTopLeftCornerOverlay());
+            mIsVerticalTabsActiveSupplier.addSyncObserver(mVerticalTabsActiveObserver);
         }
+        onVerticalTabsActiveChanged();
+    }
+
+    private void onVerticalTabsActiveChanged() {
         updateTopLeftCornerOverlay();
+        updateToolbarRightOffset(mTabStripHeight);
+        updateSystemGestureExclusions();
     }
 
     private void updateTopLeftCornerOverlay() {
@@ -1369,8 +1384,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         int rightMargin = 0;
         AppHeaderState appHeaderState = getAppHeaderState();
+        boolean isVerticalTabsActive =
+                mIsVerticalTabsActiveSupplier != null && mIsVerticalTabsActiveSupplier.get();
         if (appHeaderState != null
                 && appHeaderState.isInDesktopWindow()
+                && isVerticalTabsActive
                 && currentTabStripHeight == 0) {
             rightMargin = appHeaderState.getRightPadding();
         }
@@ -1397,8 +1415,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     @Override
     public void setSystemGestureExclusionRects(List<Rect> rects) {
         AppHeaderState appHeaderState = getAppHeaderState();
+        boolean isVerticalTabsActive =
+                mIsVerticalTabsActiveSupplier != null && mIsVerticalTabsActiveSupplier.get();
         if (appHeaderState != null
                 && appHeaderState.isInDesktopWindow()
+                && isVerticalTabsActive
                 && mTabStripHeight == 0
                 && getWidth() > 0) {
             // The left edge of the exclusion rectangle dictates where the draggable desktop window
