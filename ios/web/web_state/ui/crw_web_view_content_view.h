@@ -40,6 +40,10 @@
 
 - (void)updateFullscreenState:(CrFullscreenState)fullscreenState;
 
+// Called when the minimum/maximum viewport insets change.
+- (void)viewportInsetsDidChangeWithMinInset:(UIEdgeInsets)minInset
+                                   maxInset:(UIEdgeInsets)maxInset;
+
 @end
 
 #endif  // IOS_WEB_WEB_STATE_UI_CRW_WEB_VIEW_CONTENT_VIEW_H_
