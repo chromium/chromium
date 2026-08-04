@@ -944,6 +944,20 @@ gfx::Transform LayerImpl::ScreenSpaceTransform() const {
   return draw_properties().screen_space_transform;
 }
 
+gfx::Rect LayerImpl::VisibleLayerRect() const {
+  if (!contributes_to_drawn_render_surface()) {
+    return draw_property_utils::LayerVisibleRect(this, GetPropertyTrees());
+  }
+
+#if DCHECK_IS_ON()
+  gfx::Rect computed_visible_layer_rect =
+      draw_property_utils::LayerVisibleRect(this, GetPropertyTrees());
+  DCHECK_EQ(visible_layer_rect(), computed_visible_layer_rect);
+#endif
+
+  return visible_layer_rect();
+}
+
 int LayerImpl::GetSortingContextId() const {
   return GetTransformTree().Node(transform_tree_index()).sorting_context_id;
 }

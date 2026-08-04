@@ -368,7 +368,7 @@ gfx::Rect CalculateVisibleBounds(
     int inner_scroll_id,
     int outer_scroll_id,
     base::flat_map<int, int>& sticky_or_viewport_scroll_cache) {
-  gfx::Rect visible_layer_rect = layer->draw_properties().visible_layer_rect;
+  gfx::Rect visible_layer_rect = layer->VisibleLayerRect();
   visible_layer_rect.Intersect(rect_data_in_layer_space.visible_bounds);
 
   // Map tracked element visible bounds to screen space first.
@@ -2393,9 +2393,6 @@ viz::TrackedElementRects LayerTreeHostImpl::CollectTrackedElementRects(
 
           viz::TrackedElementRect transformed_rect = rect_data;
 
-          // TODO(http://crbug.com/441532128): Elements that are being added to
-          // the compositor frame metadata should be transformed to the
-          // coordinate space of the compositor frame.
           transformed_rect.visible_bounds = CalculateVisibleBounds(
               layer, rect_data, front_occluders, transform_tree,
               inner_scroll_id, outer_scroll_id,

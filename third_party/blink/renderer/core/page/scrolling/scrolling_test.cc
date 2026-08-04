@@ -30,8 +30,10 @@
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/scrollbar_layer_base.h"
+#include "cc/layers/solid_color_layer.h"
 #include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/compositor_commit_data.h"
+#include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
@@ -55,6 +57,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -63,6 +66,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/testing/fake_remote_frame_host.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
@@ -1534,6 +1538,63 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
       ->ClearTrackedElementSubRect(feature_1);
   ForceFullCompositingUpdate();
   EXPECT_EQ(0, cc_layer->tracked_element_rects().size());
+}
+
+TEST_P(ScrollingTest, TrackedElementIframeWithoutPaintedContent) {
+  SetPreferCompositingToLCDText(false);
+
+  // Setting "border: none" and "opacity: 0.9" on the iframe (along with forcing
+  // the iframe's inner content to be in a foreign layer) will cause the owner
+  // iframe element to have no painted content.
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="composited" style="width: 200px; height: 200px; will-change: transform;">
+      <iframe id="tracked_element" style="width: 100px; height: 100px; border: none; opacity: 0.9;">
+      </iframe>
+    </div>
+  )HTML");
+
+  // Create a remote frame for the iframe's inner content to simulate an
+  // out-of-process iframe.
+  FakeRemoteFrameHost remote_frame_host;
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
+  frame_test_helpers::SwapRemoteFrame(
+      GetWebView()->MainFrameImpl()->FirstChild(), remote_frame,
+      remote_frame_host.BindNewAssociatedRemote());
+
+  // Add painted content to the remote frame.
+  auto remote_solid_layer = cc::SolidColorLayer::Create();
+  remote_solid_layer->SetBounds(gfx::Size(100, 100));
+  remote_solid_layer->SetIsDrawable(true);
+  remote_solid_layer->SetBackgroundColor(SkColors::kRed);
+  remote_frame->GetFrame()->SetCcLayerForTesting(remote_solid_layer, false);
+
+  ForceFullCompositingUpdate();
+  LayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), true,
+                                    base::OnceClosure());
+
+  // Update draw properties.
+  cc::LayerTreeHostImpl* host_impl =
+      static_cast<cc::SingleThreadProxy*>(LayerTreeHost()->proxy())
+          ->LayerTreeHostImplForTesting();
+  ASSERT_TRUE(host_impl);
+  host_impl->active_tree()->SetDeviceViewportRect(gfx::Rect(0, 0, 320, 240));
+  host_impl->active_tree()->set_needs_update_draw_properties();
+  host_impl->active_tree()->UpdateDrawProperties(
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true);
+
+  viz::TrackedElementRects rects = host_impl->CollectTrackedElementRects(
+      /*is_for_compositor_frame_metadata=*/true, /*need_occlusion=*/false);
+
+  EXPECT_EQ(rects.size(), 1u);
+  viz::TrackedElementFeature feature =
+      viz::TrackedElementFeature::kIframeTracking;
+  ASSERT_TRUE(rects.contains(feature));
+  ASSERT_EQ(rects.at(feature).size(), 1u);
+  EXPECT_FALSE(rects.at(feature)[0].visible_bounds.IsEmpty());
+  EXPECT_EQ(rects.at(feature)[0].visible_bounds, gfx::Rect(8, 8, 100, 100));
+
+  remote_frame->Detach();
 }
 
 TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithLayerSelection) {
