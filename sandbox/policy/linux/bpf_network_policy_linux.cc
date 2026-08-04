@@ -52,6 +52,13 @@ using sandbox::syscall_broker::BrokerProcess;
 #define F2FS_IOC_GET_FEATURES _IOR(0xf5, 12, uint32_t)
 #endif
 
+#ifndef SOL_UDP
+#define SOL_UDP 17
+#endif
+#ifndef UDP_GRO
+#define UDP_GRO 104
+#endif
+
 namespace sandbox::policy {
 
 namespace {
@@ -144,12 +151,15 @@ ResultExpr RestrictSetSockoptForNetworkService() {
       Switch(optname)
           .Cases({TCP_KEEPIDLE, TCP_KEEPINTVL, TCP_NODELAY}, Allow())
           .Default(CrashSIGSYSSockopt());
+  ResultExpr udp_optname_switch =
+      Switch(optname).Case(UDP_GRO, Allow()).Default(CrashSIGSYSSockopt());
 
   return Switch(level)
       .Case(SOL_SOCKET, socket_optname_switch)
       .Case(SOL_IP, ipv4_optname_switch)
       .Case(SOL_IPV6, ipv6_optname_switch)
       .Case(SOL_TCP, tcp_optname_switch)
+      .Case(SOL_UDP, udp_optname_switch)
       .Default(CrashSIGSYSSockopt());
 }
 

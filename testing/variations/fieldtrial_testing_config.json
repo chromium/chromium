@@ -10674,6 +10674,24 @@
             ]
         }
     ],
+    "EnableUdpGro": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableUdpGro"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableUserSessionActivityReporting": [
         {
             "platforms": [
