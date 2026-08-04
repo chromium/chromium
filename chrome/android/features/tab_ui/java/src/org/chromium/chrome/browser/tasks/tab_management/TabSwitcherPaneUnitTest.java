@@ -484,6 +484,12 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
+    public void testCreateNewTab() {
+        assertTrue(mTabSwitcherPane.createNewTab());
+        verify(mNewTabButtonClickListener).onClick(null);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_bottom_bar_on_gts/true")
     public void testNewTabButton_BottomBarEnabled() {
         assertNull(mTabSwitcherPane.getActionButtonDataSupplier().get());

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -45,6 +46,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -341,6 +343,42 @@ public class HubCoordinatorUnitTest {
 
         assertEquals(true, mHubCoordinator.handleEscPress());
         verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
+    }
+
+    @Test
+    public void testCloseButtonWithTab() {
+        UserActionTester userActionTester = new UserActionTester();
+        mTabSupplier.set(mTab);
+
+        View closeButton = mRootView.findViewById(R.id.toolbar_close_button);
+        if (mIsXrDevice) {
+            assertNull(closeButton);
+            return;
+        }
+        assertNotNull(closeButton);
+        closeButton.performClick();
+
+        verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
+        verify(mTabSwitcherPane, never()).createNewTab();
+        assertEquals(1, userActionTester.getActionCount("Hub.CloseButtonPressed"));
+    }
+
+    @Test
+    public void testCloseButtonWithNullTab() {
+        UserActionTester userActionTester = new UserActionTester();
+        mTabSupplier.set(null);
+
+        View closeButton = mRootView.findViewById(R.id.toolbar_close_button);
+        if (mIsXrDevice) {
+            assertNull(closeButton);
+            return;
+        }
+        assertNotNull(closeButton);
+        closeButton.performClick();
+
+        verify(mHubLayoutController, never()).selectTabAndHideHubLayout(anyInt());
+        verify(mTabSwitcherPane).createNewTab();
+        assertEquals(1, userActionTester.getActionCount("Hub.CloseButtonPressed"));
     }
 
     @Test

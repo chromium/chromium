@@ -40,6 +40,15 @@ public interface Pane extends BackPressHandler {
         return false;
     }
 
+    /**
+     * Attempts to create a new tab in this pane.
+     *
+     * @return true if a new tab was created, false otherwise.
+     */
+    default boolean createNewTab() {
+        return false;
+    }
+
     /** Returns the {@link MenuOrKeyboardActionHandler} for the Pane. */
     @Nullable MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler();
 
