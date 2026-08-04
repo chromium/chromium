@@ -15,9 +15,10 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
 #include "chrome/browser/ui/views/event_utils.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents.h"
@@ -106,7 +108,7 @@ END_METADATA
 BookmarkButton::BookmarkButton(PressedCallback callback,
                                const GURL& url,
                                std::u16string_view title,
-                               const raw_ptr<Browser> browser)
+                               const raw_ptr<BrowserWindowInterface> browser)
     : BookmarkButtonBase(base::BindRepeating(&BookmarkButton::OnButtonPressed,
                                              base::Unretained(this)),
                          title),

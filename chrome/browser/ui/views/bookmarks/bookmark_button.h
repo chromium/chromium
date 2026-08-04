@@ -19,7 +19,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 class BookmarkBarPreloadPipelineManager;
 
 // Base class for buttons used on the bookmark bar.
@@ -52,7 +52,7 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   BookmarkButton(PressedCallback callback,
                  const GURL& url,
                  std::u16string_view title,
-                 const raw_ptr<Browser> browser);
+                 const raw_ptr<BrowserWindowInterface> browser);
   BookmarkButton(const BookmarkButton&) = delete;
   BookmarkButton& operator=(const BookmarkButton&) = delete;
   ~BookmarkButton() override;
@@ -96,7 +96,7 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   bool tooltip_text_needs_update_ = true;
   PressedCallback callback_;
   const raw_ref<const GURL> url_;
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   base::RetainingOneShotTimer preconnect_timer_;
   base::RetainingOneShotTimer prefetch_timer_;
 
