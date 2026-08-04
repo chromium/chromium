@@ -391,6 +391,7 @@ source_set("ui_impl") {
     "//components/sessions",
     "//components/shared_highlighting/core/common",
     "//components/tabs:public",
+    "//components/zoom",
     "//content/public/browser",
     "//extensions/buildflags",
     "//google_apis",
@@ -438,7 +439,6 @@ source_set("ui_impl") {
       "//chrome/browser/ui/webui/webui_toolbar:impl",
       "//components/contextual_tasks/public:feature_list",
       "//components/embedder_support:user_agent",
-      "//components/zoom",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/blink/public/common:headers",
@@ -465,7 +465,6 @@ source_set("ui_impl") {
       "//components/guest_view/browser/slim_web_view",
     ]
   }
-
 }
 
 source_set("mojom_traits") {
