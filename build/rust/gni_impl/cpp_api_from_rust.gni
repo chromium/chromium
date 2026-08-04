@@ -169,6 +169,11 @@ template("cpp_api_from_rust") {
       "--rs-out",
       rebase_path(_rs_out, root_build_dir),
 
+      # TODO(https://crbug.com/539569491): Remove this flag once/when it no
+      # longer works.  (Crubit will remove this flag once its clients no longer
+      # depend on the old behavior.)
+      "--portable-abi-compatible",
+
       "--crubit-support-path-format",
       _crubit_support_path_format,
 
