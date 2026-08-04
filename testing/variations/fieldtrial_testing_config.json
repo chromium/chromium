@@ -14887,6 +14887,21 @@
             ]
         }
     ],
+    "IOSWebContextMenuNewTitle": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSWebContextMenuNewTitle"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSWebScriptMessageConversionLogging": [
         {
             "platforms": [
