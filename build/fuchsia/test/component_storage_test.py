@@ -61,7 +61,7 @@ def main() -> int:
 
 
 if __name__ == '__main__':
-    # Creates the isolate dir for daemon to ensure it can be shared across the
+    # Creates the isolate dir for ffx to ensure it can be shared across the
     # processes.
     with IsolateDaemon.IsolateDir():
         sys.exit(main())

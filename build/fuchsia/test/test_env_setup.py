@@ -4,7 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Provides a way to setup the test environment without running the tests. It
-   covers starting up daemon, starting up emulator or flashing physical device,
+   covers starting up emulator or flashing physical device,
    setting up fuchsia package repository, publishing the packages and resolving
    the packages on the target.
 

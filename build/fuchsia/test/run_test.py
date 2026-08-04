@@ -15,9 +15,9 @@ from typing import List
 
 import monitors
 
-from common import has_ffx_isolate_dir, is_daemon_running, \
-                   read_package_paths, register_common_args, \
-                   register_device_args, register_log_args, \
+from common import has_ffx_isolate_dir, read_package_paths, \
+                   register_common_args, register_device_args, \
+                   register_log_args, \
                    resolve_packages
 from compatible_utils import get_host_arch, running_unattended
 from ffx_integration import ScopedFfxConfig
@@ -130,16 +130,13 @@ def main():
                 runner_args.out_dir, packages, target_cmd,
                 runner_args.logs_dir)
         if running_unattended():
-            # Only restart the daemon if 1) daemon will be run in a new isolate
-            # dir, or 2) if there isn't a daemon running in the predefined
-            # isolate dir.
-            if not has_ffx_isolate_dir() or not is_daemon_running():
+            if not has_ffx_isolate_dir():
                 stack.enter_context(IsolateDaemon(runner_args.logs_dir))
 
             if runner_args.everlasting:
                 # Setting the emu.instance_dir to match the named cache, so
                 # we can keep these files across multiple runs.
-                # The configuration attaches to the daemon isolate-dir, so it
+                # The configuration attaches to the isolate-dir, so it
                 # needs to go after the IsolateDaemon.
                 # There isn't a point of enabling the feature on devbox, it
                 # won't use isolate-dir and the emu.instance_dir always goes to
@@ -150,11 +147,8 @@ def main():
                         os.path.join(os.environ['HOME'],
                                      '.fuchsia_emulator/')))
         elif runner_args.logs_dir:
-            # Never restart daemon if not in the unattended mode.
-            logging.warning('You are using a --logs-dir, ensure the ffx '
-                            'daemon is started with the logs.dir config '
-                            'updated. We won\'t restart the daemon randomly'
-                            ' anymore.')
+            logging.warning('You are using a --logs-dir, ensure ffx has '
+                            'the logs.dir config updated.')
         log_manager = LogManager(runner_args.logs_dir,
                                  runner_args.wait_for_log_pattern)
         stack.enter_context(log_manager)
@@ -174,8 +168,7 @@ def main():
         test_runner = _get_test_runner(runner_args, test_args)
         package_deps = test_runner.package_deps
 
-        # Start system logging, after all possible restarts of the ffx daemon
-        # so that logging will not be interrupted.
+        # Start system logging so that logging will not be interrupted.
         start_system_log(log_manager, False, package_deps.values(),
                          ('--since', 'now'), runner_args.target_id)
 

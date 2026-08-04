@@ -35,7 +35,7 @@ class ChromeDriverWrapper(AbstractContextManager):
         # The reference of the webdriver.Chrome instance.
         self._driver = None
 
-        # Creates the isolate dir for daemon to ensure it can be shared across
+        # Creates the isolate dir for ffx to ensure it can be shared across
         # the processes. Note, it has no effect if isolate_dir has already been
         # set.
         self._isolate_dir = IsolateDaemon.IsolateDir()
@@ -56,7 +56,7 @@ class ChromeDriverWrapper(AbstractContextManager):
         """Starts the run_test.py and the chromedriver connecting to it, must be
         executed before other commands."""
         self._isolate_dir.__enter__()
-        logging.warning('ffx daemon is running in %s', get_ffx_isolate_dir())
+        logging.warning('ffx is using isolate dir %s', get_ffx_isolate_dir())
 
         self._proc = subprocess.Popen([
             os.path.join(os.path.dirname(os.path.abspath(__file__)),
