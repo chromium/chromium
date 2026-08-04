@@ -3163,11 +3163,6 @@ void Document::ClearFocusedElementTimerFired(TimerBase*) {
     focused_element_->blur();
 }
 
-void Document::EnsurePaintLocationDataValidForNode(
-    const Node* node,
-    DocumentUpdateReason reason) {
-  UpdateStyleAndLayoutForNode(node, reason);
-}
 
 WebPrintPageDescription Document::GetPageDescription(uint32_t page_index) {
   View()->UpdateLifecycleToLayoutClean(DocumentUpdateReason::kUnknown);
@@ -5992,8 +5987,7 @@ bool Document::SetFocusedElement(Element* new_focused_element,
       return false;
     }
     SetShouldUpdateSelectionAfterLayout(false);
-    EnsurePaintLocationDataValidForNode(focused_element_,
-                                        DocumentUpdateReason::kFocus);
+    UpdateStyleAndLayoutForNode(focused_element_, DocumentUpdateReason::kFocus);
     focused_element_->UpdateSelectionOnFocus(params.selection_behavior,
                                              params.options);
 

@@ -3313,7 +3313,7 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
       AssertNode(node_id, backend_node_id, object_id, node);
   if (!response.IsSuccess())
     return response;
-  node->GetDocument().EnsurePaintLocationDataValidForNode(
+  node->GetDocument().UpdateStyleAndLayoutForNode(
       node, DocumentUpdateReason::kInspector);
   if (!node->isConnected())
     return protocol::Response::ServerError("Node is detached from document");

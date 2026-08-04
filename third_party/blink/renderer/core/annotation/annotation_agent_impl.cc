@@ -388,8 +388,8 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
   Node& first_node = *range.Nodes().begin();
 
   Document& document = *owning_container_->GetSupplementable();
-  document.EnsurePaintLocationDataValidForNode(
-      &first_node, DocumentUpdateReason::kFindInPage);
+  document.UpdateStyleAndLayoutForNode(&first_node,
+                                       DocumentUpdateReason::kFindInPage);
 
   Node* first_node_with_layout_object = nullptr;
   for (Node& node : range.Nodes()) {

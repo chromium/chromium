@@ -1429,8 +1429,8 @@ void FrameSelection::RevealSelection(
 
   // This function is needed to make sure that ComputeRectToScroll below has the
   // sticky offset info available before the computation.
-  GetDocument().EnsurePaintLocationDataValidForNode(
-      start.AnchorNode(), DocumentUpdateReason::kSelection);
+  GetDocument().UpdateStyleAndLayoutForNode(start.AnchorNode(),
+                                            DocumentUpdateReason::kSelection);
   PhysicalRect selection_rect(ComputeRectToScroll(reveal_extent_option));
   if (selection_rect == PhysicalRect()) {
     return;

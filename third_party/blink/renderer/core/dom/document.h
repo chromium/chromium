@@ -817,16 +817,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void UpdateStyleAndLayoutForNode(const Node*, DocumentUpdateReason);
   void UpdateStyleAndLayoutForRange(const Range*, DocumentUpdateReason);
 
-  // Ensures that location-based data will be valid for a given node.
-  //
-  // This will run style and layout if they are currently dirty, and it may also
-  // run compositing inputs if the node is in a sticky subtree (as the sticky
-  // offset may change the node's position).
-  //
-  // Due to this you should only call this if you definitely need valid location
-  // data, otherwise use one of the |UpdateStyleAndLayout...| methods above.
-  void EnsurePaintLocationDataValidForNode(const Node*,
-                                           DocumentUpdateReason reason);
 
   // Gets the description for the specified page. This includes preferred page
   // size and margins in pixels, assuming 96 pixels per inch. Updates layout as

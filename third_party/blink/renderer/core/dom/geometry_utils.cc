@@ -49,13 +49,13 @@ LayoutObject* GetLayoutObjectFromGeometryNode(
     case V8UnionCSSPseudoElementOrDocumentOrElementOrText::ContentType::
         kElement: {
       Element* element = node->GetAsElement();
-      element->GetDocument().EnsurePaintLocationDataValidForNode(
+      element->GetDocument().UpdateStyleAndLayoutForNode(
           element, DocumentUpdateReason::kJavaScript);
       return element->GetLayoutObject();
     }
     case V8UnionCSSPseudoElementOrDocumentOrElementOrText::ContentType::kText: {
       Text* text = node->GetAsText();
-      text->GetDocument().EnsurePaintLocationDataValidForNode(
+      text->GetDocument().UpdateStyleAndLayoutForNode(
           text, DocumentUpdateReason::kJavaScript);
       return text->GetLayoutObject();
     }
@@ -64,8 +64,8 @@ LayoutObject* GetLayoutObjectFromGeometryNode(
       Document* doc = node->GetAsDocument();
       Element* element = doc->documentElement();
       if (element) {
-        doc->EnsurePaintLocationDataValidForNode(
-            element, DocumentUpdateReason::kJavaScript);
+        doc->UpdateStyleAndLayoutForNode(element,
+                                         DocumentUpdateReason::kJavaScript);
         return element->GetLayoutObject();
       }
       return nullptr;

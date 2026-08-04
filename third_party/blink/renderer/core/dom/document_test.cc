@@ -514,58 +514,6 @@ TEST_F(DocumentTest, ValidationMessageCleanup) {
   GetPage().SetValidationMessageClientForTesting(original_client);
 }
 
-// Verifies that calling EnsurePaintLocationDataValidForNode cleans compositor
-// inputs only when necessary. We generally want to avoid cleaning the inputs,
-// as it is more expensive than just doing layout.
-TEST_F(DocumentTest,
-       EnsurePaintLocationDataValidForNodeCompositingInputsOnlyWhenNecessary) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <div id='ancestor'>
-      <div id='sticky' style='position:sticky;'>
-        <div id='stickyChild'></div>
-      </div>
-      <div id='nonSticky'></div>
-    </div>
-  )HTML");
-  GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_EQ(DocumentLifecycle::kStyleClean,
-            GetDocument().Lifecycle().GetState());
-
-  // Asking for any element that is not affected by a sticky element should only
-  // advance the lifecycle to layout clean.
-  GetDocument().EnsurePaintLocationDataValidForNode(
-      GetDocument().getElementById(AtomicString("ancestor")),
-      DocumentUpdateReason::kTest);
-  EXPECT_EQ(DocumentLifecycle::kLayoutClean,
-            GetDocument().Lifecycle().GetState());
-
-  GetDocument().EnsurePaintLocationDataValidForNode(
-      GetDocument().getElementById(AtomicString("nonSticky")),
-      DocumentUpdateReason::kTest);
-  EXPECT_EQ(DocumentLifecycle::kLayoutClean,
-            GetDocument().Lifecycle().GetState());
-
-  // However, asking for either the sticky element or it's descendents should
-  // clean compositing inputs as well.
-  GetDocument().EnsurePaintLocationDataValidForNode(
-      GetDocument().getElementById(AtomicString("sticky")),
-      DocumentUpdateReason::kTest);
-  EXPECT_EQ(DocumentLifecycle::kLayoutClean,
-            GetDocument().Lifecycle().GetState());
-
-  // Dirty layout.
-  GetDocument().body()->setAttribute(html_names::kStyleAttr,
-                                     AtomicString("background: red;"));
-  EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
-            GetDocument().Lifecycle().GetState());
-
-  GetDocument().EnsurePaintLocationDataValidForNode(
-      GetDocument().getElementById(AtomicString("stickyChild")),
-      DocumentUpdateReason::kTest);
-  EXPECT_EQ(DocumentLifecycle::kLayoutClean,
-            GetDocument().Lifecycle().GetState());
-}
-
 // Tests that the difference in computed style of direction on the html and body
 // elements does not trigger a style recalc for viewport style propagation when
 // the computed style for another element in the document is recalculated.

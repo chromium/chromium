@@ -268,7 +268,7 @@ PseudoElement* GetPseudoElementForCSSPseudoElement(
 LayoutObject* CSSPseudoElement::GetLayoutObject() const {
   CHECK(element_);
   // Ensure layout is up to date.
-  element_->GetDocument().EnsurePaintLocationDataValidForNode(
+  element_->GetDocument().UpdateStyleAndLayoutForNode(
       element_, DocumentUpdateReason::kJavaScript);
 
   PseudoElement* pseudo_element = GetPseudoElementForCSSPseudoElement(
