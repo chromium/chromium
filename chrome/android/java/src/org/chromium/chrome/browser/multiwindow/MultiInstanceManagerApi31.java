@@ -1073,10 +1073,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
         }
         if (mActivity.isFinishing()) {
-            if (!isSessionRelaunching() || MultiWindowUtils.hasNoNormalTabs(mInstanceId)) {
+            boolean isQuitInProgress = isAppQuitInProgress();
+            if (!isQuitInProgress || MultiWindowUtils.hasNoNormalTabs(mInstanceId)) {
                 ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
             }
-            if (!isSessionRelaunching()) {
+            if (!isQuitInProgress) {
                 // Notify Recent Tabs page that the instance is closing.
                 notifyInstancesClosed(Collections.singletonList(mInstanceId), isPermanentDeletion);
             }
@@ -1119,7 +1120,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // #onDestroy() is not called for a finishing activity.
         ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
         if (mActivity.isFinishing()
-                && (!isSessionRelaunching() || MultiWindowUtils.hasNoNormalTabs(mInstanceId))) {
+                && (!isAppQuitInProgress() || MultiWindowUtils.hasNoNormalTabs(mInstanceId))) {
             ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
         }
     }
@@ -1288,10 +1289,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         return Objects.requireNonNullElse(MultiWindowUtils.sMaxInstancesForTesting, mMaxInstances);
     }
 
-    private static boolean isSessionRelaunching() {
+    private static boolean isAppQuitInProgress() {
         return MultiWindowUtils.isNewStartupWindowPolicyEnabled()
                 && ChromeMultiInstancePersistentStore.readLastSessionExitType()
-                        == LastSessionExitType.RELAUNCH;
+                        == LastSessionExitType.QUIT;
     }
 
     @Override

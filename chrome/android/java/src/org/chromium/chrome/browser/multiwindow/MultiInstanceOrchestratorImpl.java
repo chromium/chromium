@@ -122,7 +122,7 @@ import java.util.Set;
                 // that relaunch restoration can consume the recoverable state before non-crash
                 // cleanup occurs.
                 TabbedStartupWindowPolicyDelegate.getInstance()
-                        .maybeRestoreWindowsAfterRelaunch(tabbedActivity);
+                        .maybeRestoreWindowsAfterLaunch(tabbedActivity);
                 TabbedCrashRecoveryDelegate.getInstance().initializeCrashRecoveryMetadata();
             }
         }

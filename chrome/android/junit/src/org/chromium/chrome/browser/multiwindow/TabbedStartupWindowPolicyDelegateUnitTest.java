@@ -76,12 +76,12 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void testMaybeRestoreWindowsAfterRelaunch_relaunch_restoresWindows() {
+    public void testMaybeRestoreWindowsAfterLaunch_quit_restoresWindows() {
         // Setup.
-        setupRecoverableInstances(LastSessionExitType.RELAUNCH);
+        setupRecoverableInstances(LastSessionExitType.QUIT);
 
         // Act.
-        mDelegate.maybeRestoreWindowsAfterRelaunch(mTabbedActivity);
+        mDelegate.maybeRestoreWindowsAfterLaunch(mTabbedActivity);
 
         // Verify.
         verify(mTabbedActivity).startActivity(any());
@@ -89,17 +89,17 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 LastSessionExitType.DEFAULT,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
         assertFalse(
-                "isRecoverable should be cleared when restoring window on relaunch.",
+                "isRecoverable should be cleared when restoring window on launch after quit.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
     }
 
     @Test
-    public void testMaybeRestoreWindowsAfterRelaunch_defaultExitType_doesNotRestoreWindows() {
+    public void testMaybeRestoreWindowsAfterLaunch_defaultExitType_doesNotRestoreWindows() {
         // Setup.
         setupRecoverableInstances(LastSessionExitType.DEFAULT);
 
         // Act.
-        mDelegate.maybeRestoreWindowsAfterRelaunch(mTabbedActivity);
+        mDelegate.maybeRestoreWindowsAfterLaunch(mTabbedActivity);
 
         // Verify.
         verify(mTabbedActivity, never()).startActivity(any());
@@ -110,30 +110,30 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testMaybeRestoreWindowsAfterRelaunch_featureDisabled_doesNotRestoreWindows() {
+    public void testMaybeRestoreWindowsAfterLaunch_featureDisabled_doesNotRestoreWindows() {
         // Setup.
-        setupRecoverableInstances(LastSessionExitType.RELAUNCH);
+        setupRecoverableInstances(LastSessionExitType.QUIT);
 
         // Act.
-        mDelegate.maybeRestoreWindowsAfterRelaunch(mTabbedActivity);
+        mDelegate.maybeRestoreWindowsAfterLaunch(mTabbedActivity);
 
         // Verify.
         verify(mTabbedActivity, never()).startActivity(any());
         assertEquals(
-                LastSessionExitType.RELAUNCH,
+                LastSessionExitType.QUIT,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
     }
 
     @Test
     public void
-            testMaybeRestoreWindowsAfterRelaunch_relaunch_aliveTaskNonMultiWindowMode_doesNotRestoreWindow() {
+            testMaybeRestoreWindowsAfterLaunch_quit_aliveTaskNonMultiWindowMode_doesNotRestoreWindow() {
         // Setup.
-        setupRecoverableInstances(LastSessionExitType.RELAUNCH);
+        setupRecoverableInstances(LastSessionExitType.QUIT);
         setupAppTasks(1);
         doReturn(false).when(mTabbedActivity).isInMultiWindowMode();
 
         // Act.
-        mDelegate.maybeRestoreWindowsAfterRelaunch(mTabbedActivity);
+        mDelegate.maybeRestoreWindowsAfterLaunch(mTabbedActivity);
 
         // Verify.
         verify(mTabbedActivity, never()).startActivity(any());
@@ -143,15 +143,14 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void
-            testMaybeRestoreWindowsAfterRelaunch_relaunch_aliveTaskMultiWindowMode_restoresWindow() {
+    public void testMaybeRestoreWindowsAfterLaunch_quit_aliveTaskMultiWindowMode_restoresWindow() {
         // Setup.
-        setupRecoverableInstances(LastSessionExitType.RELAUNCH);
+        setupRecoverableInstances(LastSessionExitType.QUIT);
         List<AppTask> appTasks = setupAppTasks(1);
         doReturn(true).when(mTabbedActivity).isInMultiWindowMode();
 
         // Act.
-        mDelegate.maybeRestoreWindowsAfterRelaunch(mTabbedActivity);
+        mDelegate.maybeRestoreWindowsAfterLaunch(mTabbedActivity);
 
         // Verify.
         verify(appTasks.get(0)).finishAndRemoveTask();
@@ -162,14 +161,14 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void testMaybeRestoreWindowsAfterRelaunch_relaunch_killedTask_restoresWindow() {
+    public void testMaybeRestoreWindowsAfterLaunch_quit_killedTask_restoresWindow() {
         // Setup.
-        setupRecoverableInstances(LastSessionExitType.RELAUNCH);
+        setupRecoverableInstances(LastSessionExitType.QUIT);
         // Do not add app task ID 1 so it is treated as killed/not alive.
         doReturn(false).when(mTabbedActivity).isInMultiWindowMode();
 
         // Act.
-        mDelegate.maybeRestoreWindowsAfterRelaunch(mTabbedActivity);
+        mDelegate.maybeRestoreWindowsAfterLaunch(mTabbedActivity);
 
         // Verify.
         verify(mTabbedActivity).startActivity(any());
@@ -179,19 +178,18 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void
-            testMaybeRestoreWindowsAfterRelaunch_relaunch_notRecoverable_doesNotRestoreWindow() {
+    public void testMaybeRestoreWindowsAfterLaunch_quit_notRecoverable_doesNotRestoreWindow() {
         // Setup.
         MultiWindowTestUtils.createInstance(
                 /* instanceId= */ 0, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 0);
         MultiWindowTestUtils.createInstance(
                 /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
         ChromeMultiInstancePersistentStore.writeIsRecoverable(1, false);
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.QUIT);
         doReturn(0).when(mTabbedActivity).getWindowId();
 
         // Act.
-        mDelegate.maybeRestoreWindowsAfterRelaunch(mTabbedActivity);
+        mDelegate.maybeRestoreWindowsAfterLaunch(mTabbedActivity);
 
         // Verify.
         verify(mTabbedActivity, never()).startActivity(any());
@@ -209,11 +207,11 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 /* instanceId= */ 2, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 2);
 
         // Act.
-        mDelegate.maybeSaveWindowStateOnSessionTermination(LastSessionExitType.RELAUNCH);
+        mDelegate.maybeSaveWindowStateOnSessionTermination(LastSessionExitType.QUIT);
 
         // Verify exit type is updated.
         assertEquals(
-                LastSessionExitType.RELAUNCH,
+                LastSessionExitType.QUIT,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
     }
 
@@ -225,7 +223,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
 
         // Act.
-        mDelegate.maybeSaveWindowStateOnSessionTermination(LastSessionExitType.RELAUNCH);
+        mDelegate.maybeSaveWindowStateOnSessionTermination(LastSessionExitType.QUIT);
 
         // Verify exit type is not updated.
         assertEquals(
@@ -260,7 +258,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 /* instanceId= */ 2, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 2);
 
         // Act.
-        mDelegate.maybeSaveWindowStateOnSessionTermination(LastSessionExitType.RELAUNCH);
+        mDelegate.maybeSaveWindowStateOnSessionTermination(LastSessionExitType.QUIT);
 
         // Verify exit type is not updated when feature is disabled.
         assertEquals(

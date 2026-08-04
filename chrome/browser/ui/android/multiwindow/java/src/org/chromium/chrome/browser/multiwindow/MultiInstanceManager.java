@@ -134,7 +134,7 @@ public abstract class MultiInstanceManager {
     @IntDef({
         LastSessionExitType.DEFAULT,
         LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP,
-        LastSessionExitType.RELAUNCH
+        LastSessionExitType.QUIT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LastSessionExitType {
@@ -147,8 +147,11 @@ public abstract class MultiInstanceManager {
          */
         int LAST_WINDOW_CLOSED_BY_APP = 1;
 
-        /** The session was terminated to perform an app relaunch. */
-        int RELAUNCH = 2;
+        /**
+         * The session was terminated by an app quit or restart action (e.g. chrome://quit,
+         * chrome://restart).
+         */
+        int QUIT = 2;
     }
 
     /** A class that holds information about an allocated instance ID. */

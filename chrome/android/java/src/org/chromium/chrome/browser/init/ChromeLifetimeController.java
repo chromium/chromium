@@ -73,10 +73,8 @@ class ChromeLifetimeController
     @Override
     public void onTerminate(boolean restart) {
         mRestartChromeOnDestroy = restart;
-        if (restart) {
-            TabbedStartupWindowPolicyDelegate.getInstance()
-                    .maybeSaveWindowStateOnSessionTermination(LastSessionExitType.RELAUNCH);
-        }
+        TabbedStartupWindowPolicyDelegate.getInstance()
+                .maybeSaveWindowStateOnSessionTermination(LastSessionExitType.QUIT);
 
         // Tell all Chrome Activities to finish themselves.
         for (Activity activity : ApplicationStatus.getRunningActivities()) {

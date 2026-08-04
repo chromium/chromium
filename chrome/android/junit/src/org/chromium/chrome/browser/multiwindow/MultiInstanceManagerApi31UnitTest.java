@@ -2595,7 +2595,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testOnDestroy_whenFinishing_relaunch_keepsInstanceRecoverable() {
+    public void testOnDestroy_whenFinishing_quit_keepsInstanceRecoverable() {
         // Setup.
         DeviceInfo.setIsDesktopForTesting(true);
         ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
@@ -2604,7 +2604,7 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
         ChromeMultiInstancePersistentStore.writeTabCount(
                 instanceId, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.QUIT);
 
         assertTrue(
                 "Instance should be recoverable initially.",
@@ -2618,7 +2618,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify.
         assertTrue(
-                "Instance should still be recoverable after onDestroy() when relaunching.",
+                "Instance should still be recoverable after onDestroy() when quitting.",
                 ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
                         .anyMatch(info -> info.windowId == instanceId));
 
@@ -2627,7 +2627,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testOnDestroy_whenFinishing_relaunch_noNormalTabs_makesInstanceNonRecoverable() {
+    public void testOnDestroy_whenFinishing_quit_noNormalTabs_makesInstanceNonRecoverable() {
         // Setup.
         DeviceInfo.setIsDesktopForTesting(true);
         ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
@@ -2636,7 +2636,7 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
         ChromeMultiInstancePersistentStore.writeTabCount(
                 instanceId, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.QUIT);
 
         assertTrue(
                 "Instance should be recoverable initially.",
@@ -2687,7 +2687,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testOnStopWithNative_whenFinishing_relaunch_keepsInstanceRecoverable() {
+    public void testOnStopWithNative_whenFinishing_quit_keepsInstanceRecoverable() {
         // Setup.
         DeviceInfo.setIsDesktopForTesting(true);
         ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
@@ -2696,7 +2696,7 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
         ChromeMultiInstancePersistentStore.writeTabCount(
                 instanceId, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.QUIT);
 
         assertTrue(
                 "Instance should be recoverable initially.",
@@ -2710,7 +2710,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify.
         assertTrue(
-                "Instance should still be recoverable after onStopWithNative() when relaunching.",
+                "Instance should still be recoverable after onStopWithNative() when quitting.",
                 ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
                         .anyMatch(info -> info.windowId == instanceId));
 
@@ -2719,8 +2719,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void
-            testOnStopWithNative_whenFinishing_relaunch_noNormalTabs_makesInstanceNonRecoverable() {
+    public void testOnStopWithNative_whenFinishing_quit_noNormalTabs_makesInstanceNonRecoverable() {
         // Setup.
         DeviceInfo.setIsDesktopForTesting(true);
         ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
@@ -2729,7 +2728,7 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
         ChromeMultiInstancePersistentStore.writeTabCount(
                 instanceId, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.QUIT);
 
         assertTrue(
                 "Instance should be recoverable initially.",

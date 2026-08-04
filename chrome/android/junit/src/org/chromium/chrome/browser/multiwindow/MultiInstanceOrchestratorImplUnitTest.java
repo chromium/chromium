@@ -1008,7 +1008,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testOnInitialize_relaunch_restoresWindows() {
+    public void testOnInitialize_quit_restoresWindows() {
         // Setup.
         ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
         DeviceInfo.setIsDesktopForTesting(true);
@@ -1017,7 +1017,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* instanceId= */ 0, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 0);
         MultiWindowTestUtils.createInstance(
                 /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.RELAUNCH);
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.QUIT);
 
         ActivityManager activityManager = mock(ActivityManager.class);
         doReturn(activityManager).when(mTabbedActivity1).getSystemService(Context.ACTIVITY_SERVICE);
@@ -1032,7 +1032,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 LastSessionExitType.DEFAULT,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
         assertFalse(
-                "isRecoverable should be cleared when restoring window on relaunch.",
+                "isRecoverable should be cleared when restoring window on launch after quit.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
     }
 

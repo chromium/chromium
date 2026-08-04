@@ -48,9 +48,9 @@ public class TabbedStartupWindowPolicyDelegate {
         }
 
         // If we are terminating the Chrome session with fewer than 2 active ChromeTabbedActivity
-        // windows, there is no need to persist the RELAUNCH session type that is used to restore
-        // all active windows upon relaunch.
-        if (exitType == LastSessionExitType.RELAUNCH
+        // windows, there is no need to persist the QUIT session type that is used to restore
+        // all active windows upon next launch.
+        if (exitType == LastSessionExitType.QUIT
                 && MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE) <= 1) {
             return;
         }
@@ -58,14 +58,14 @@ public class TabbedStartupWindowPolicyDelegate {
         ChromeMultiInstancePersistentStore.writeLastSessionExitType(exitType);
     }
 
-    /* package */ void maybeRestoreWindowsAfterRelaunch(ChromeTabbedActivity activity) {
+    /* package */ void maybeRestoreWindowsAfterLaunch(ChromeTabbedActivity activity) {
         if (!MultiWindowUtils.isNewStartupWindowPolicyEnabled()
                 || !MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return;
         }
 
         if (ChromeMultiInstancePersistentStore.readLastSessionExitType()
-                != LastSessionExitType.RELAUNCH) {
+                != LastSessionExitType.QUIT) {
             return;
         }
 
