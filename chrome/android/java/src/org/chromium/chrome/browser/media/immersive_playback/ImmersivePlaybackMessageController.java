@@ -214,6 +214,8 @@ public class ImmersivePlaybackMessageController {
             @ImmersiveStereoMode int stereoMode,
             @ImmersiveProjectionType int projectionType,
             boolean isRecommended) {
+        unregisterObservers();
+        mDialog = null;
         if (mCallback != null) {
             ImmersivePlaybackConfirmationCallback callback = mCallback;
             mCallback = null;
@@ -222,6 +224,10 @@ public class ImmersivePlaybackMessageController {
     }
 
     private void reportResultAndReset(@ImmersivePlaybackConfirmationStatus int status) {
-        reportResultAndReset(status, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD, false);
+        reportResultAndReset(
+                status,
+                ImmersiveStereoMode.MONO,
+                ImmersiveProjectionType.QUAD,
+                /* isRecommended= */ false);
     }
 }
