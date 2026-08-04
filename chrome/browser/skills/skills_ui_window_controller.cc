@@ -67,12 +67,29 @@ void SkillsUiWindowController::OnSkillDeleted(std::string_view skill_id) {
   ShowSkillToast(std::move(params));
 }
 
-void SkillsUiWindowController::ShowToast(ToastId toast_id) {
+void SkillsUiWindowController::ShowToast(
+    ToastId toast_id,
+    const std::string& skill_id,
+    base::OnceCallback<void(bool)> callback) {
+  action_clicked_ = false;
+
   ToastParams params(toast_id);
+  // Deleted toasts are only triggered here from skillsV2. Other paths follow
+  // OnSkillDeleted.
+  if (toast_id == ToastId::kSkillDeleted) {
+    if (callback) {
+      skills_v2_delete_callbacks_[skill_id] = std::move(callback);
+    }
+    // Add a closed callback for the deleted toast.
+    params.toast_close_callback = base::ScopedClosureRunner(
+        base::BindOnce(&SkillsUiWindowController::OnToastClosed,
+                       weak_factory_.GetWeakPtr(), skill_id));
+  }
   ShowSkillToast(std::move(params));
 }
 
 void SkillsUiWindowController::UndoLastSkillRemoval() {
+  action_clicked_ = true;
   if (last_deleted_skill_id_.empty()) {
     return;
   }
@@ -95,6 +112,14 @@ void SkillsUiWindowController::UndoLastSkillRemoval() {
 }
 
 void SkillsUiWindowController::OnToastClosed(const std::string& skill_id) {
+  auto it = skills_v2_delete_callbacks_.find(skill_id);
+  if (it != skills_v2_delete_callbacks_.end()) {
+    std::move(it->second).Run(action_clicked_);
+    skills_v2_delete_callbacks_.erase(it);
+    action_clicked_ = false;
+    return;
+  }
+
   // Only delete if the skill is still in the pending set
   if (pending_deletions_.contains(skill_id)) {
     skills::SkillsService* skills_service = SkillsServiceFactory::GetForProfile(

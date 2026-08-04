@@ -30,8 +30,6 @@ namespace skills {
 
 class SkillsDialogDelegate;
 
-using ToastType = ::skills::mojom::ToastType;
-
 class SkillsPageHandlerV2 : public ::skills::mojom::SkillsPageHandler {
  public:
   SkillsPageHandlerV2(
@@ -46,7 +44,9 @@ class SkillsPageHandlerV2 : public ::skills::mojom::SkillsPageHandler {
 
   // ::skills::mojom::SkillsPageHandler:
   void SyncCookies(SyncCookiesCallback callback) override;
-  void ShowToast(ToastType toast_type) override;
+  void ShowSaveToast() override;
+  void ShowDeleteToast(const std::string& skill_id,
+                       ShowDeleteToastCallback callback) override;
   void InvokeSkill(const std::string& skill_id,
                    const std::string& skill_name,
                    const std::string& skill_icon) override;

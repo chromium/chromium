@@ -16,6 +16,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace skills {
 
@@ -45,22 +46,39 @@ void SkillsPageHandlerV2::SyncCookies(SyncCookiesCallback callback) {
       std::move(callback));
 }
 
-void SkillsPageHandlerV2::ShowToast(ToastType toast_type) {
+void SkillsPageHandlerV2::ShowSaveToast() {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           &web_contents_.get());
-  if (browser) {
-    if (auto* window_controller = SkillsUiWindowController::From(browser)) {
-      switch (toast_type) {
-        case ToastType::kSave:
-          window_controller->ShowToast(ToastId::kSkillSavedWithoutInvokeButton);
-          break;
-        case ToastType::kDelete:
-          window_controller->ShowToast(ToastId::kSkillDeleted);
-          break;
-      }
-    }
+  if (!browser) {
+    return;
   }
+
+  auto* window_controller = SkillsUiWindowController::From(browser);
+  if (!window_controller) {
+    return;
+  }
+
+  window_controller->ShowToast(ToastId::kSkillSavedWithoutInvokeButton);
+}
+
+void SkillsPageHandlerV2::ShowDeleteToast(const std::string& skill_id,
+                                          ShowDeleteToastCallback callback) {
+  auto wrapped_callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          &web_contents_.get());
+  if (!browser) {
+    return;
+  }
+
+  auto* window_controller = SkillsUiWindowController::From(browser);
+  if (!window_controller) {
+    return;
+  }
+  window_controller->ShowToast(ToastId::kSkillDeleted, skill_id,
+                               std::move(wrapped_callback));
 }
 
 void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id,

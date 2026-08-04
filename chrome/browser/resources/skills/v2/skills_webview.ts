@@ -8,7 +8,6 @@ import {getRequiredElement} from '//resources/js/util.js';
 import {ErrorType} from '../error_page.js';
 import {SkillsDialogType} from '../skill.mojom-webui.js';
 import {SkillsPageHandler} from '../skills.mojom-webui.js';
-import type {ToastType} from '../skills.mojom-webui.js';
 
 import type {SkillsWebviewBridgeDelegate} from './skills_webview_bridge.js';
 import {SkillsWebviewBridge} from './skills_webview_bridge.js';
@@ -95,7 +94,9 @@ export class SkillsWebview {
 
     const delegate: SkillsWebviewBridgeDelegate = {
       onError: () => this.showError(ErrorType.REMOTE_AUTHORITY_UNREACHABLE),
-      onShowToast: (toastType: ToastType) => this.handler.showToast(toastType),
+      onShowSaveToast: () => this.handler.showSaveToast(),
+      onShowDeleteToast: (skillId: string) =>
+          this.handler.showDeleteToast(skillId),
       onInvokeSkill: (skillId: string, skillName: string, skillIcon: string) =>
           this.handler.invokeSkill(skillId, skillName, skillIcon),
       onUrlChanged: (url: URL) => this.handleUrlChanged(url),

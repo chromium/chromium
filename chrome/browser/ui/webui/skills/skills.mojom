@@ -131,21 +131,16 @@ interface DialogHandler {
 // V2 skills interfaces.
 // ----------------------------------------------------------------------------
 
-// Types of toasts after user actions on chrome://skills page.
-enum ToastType {
-  // Displays after save. No action button.
-  kSave,
-  // Displays after delete. Action button to undo.
-  kDelete,
-};
-
 // Called from TS side of chrome://skills (Renderer -> Browser).
 interface SkillsPageHandler {
   // Sync necessary cookies to the webview partition.
   SyncCookies() => (bool success);
 
-  // Shows a toast of `toast_type`.
-  ShowToast(ToastType toast_type);
+  // Shows a save toast.
+  ShowSaveToast();
+
+  // Shows a delete toast. Returns true if the undo button was clicked.
+  ShowDeleteToast(string skill_id) => (bool action_clicked);
 
   // Invokes a skill.
   // skill_name and skill_icon are only forwarded to the

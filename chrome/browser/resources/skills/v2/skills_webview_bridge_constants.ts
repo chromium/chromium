@@ -77,6 +77,12 @@ export function getSkillsRemoteUrl(): string {
 
 const REMOTE_PATH_PREFIX = '/chromeskills';
 
+/** Message type used by the host to notify guest that undo was clicked. */
+export const SKILLS_UNDO_TYPE = 'skills-undo';
+
+/** Message type used by the host to notify guest that the toast closed. */
+export const SKILLS_TOAST_CLOSED_TYPE = 'toast-closed';
+
 /**
  * Translates a Chrome WebUI path (e.g. '/yourSkills') to the corresponding
  * staging remote URL, including the localized 'hl' query parameter if present.

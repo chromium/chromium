@@ -81,6 +81,17 @@ TEST_F(SkillsPageHandlerV2Test, SyncCookies) {
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(SkillsPageHandlerV2Test, ShowSaveToast) {
+  remote_handler_->ShowSaveToast();
+  remote_handler_.FlushForTesting();
+}
+
+TEST_F(SkillsPageHandlerV2Test, ShowDeleteToast) {
+  base::test::TestFuture<bool> future;
+  remote_handler_->ShowDeleteToast("test_skill_id", future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
 TEST_F(SkillsPageHandlerV2Test, InvokeSkill) {
   tabs::MockTabInterface mock_tab;
   ::ui::UnownedUserDataHost user_data_host;
