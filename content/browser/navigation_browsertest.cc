@@ -10340,4 +10340,45 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
   EXPECT_FALSE(policy->CanReadFile(process_c, file_path));
 }
 
+// Verify that navigating an about:blank iframe (which sets
+// client_side_redirect_url to about:blank) succeeds.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       AboutBlankFrameClientSideRedirectUrl) {
+  GURL start_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+
+  // Create an iframe and navigate it to about:blank so that it is a committed,
+  // non-initial document.
+  EXPECT_TRUE(ExecJs(root->current_frame_host(),
+                     "var frame = document.createElement('iframe'); "
+                     "frame.id = 'child'; "
+                     "document.body.appendChild(frame);"));
+  EXPECT_TRUE(
+      NavigateIframeToURL(web_contents, "child", GURL(url::kAboutBlankURL)));
+
+  // Perform a client-side redirect (replacement navigation) from about:blank.
+  GURL target_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  TestNavigationObserver nav_observer(web_contents);
+  EXPECT_TRUE(ExecJs(root->current_frame_host(),
+                     JsReplace("document.getElementById('child').contentWindow."
+                               "location.replace($1);",
+                               target_url)));
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+
+  // Check that the client side redirect URL (about:blank) is pushed as the
+  // first URL onto the subframe's redirect chain.
+  NavigationEntryImpl* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  FrameNavigationEntry* frame_entry = entry->GetFrameEntry(root->child_at(0));
+  ASSERT_TRUE(frame_entry);
+  EXPECT_EQ(frame_entry->redirect_chain().size(), 2u);
+  EXPECT_EQ(frame_entry->redirect_chain()[0], GURL(url::kAboutBlankURL));
+  EXPECT_EQ(frame_entry->redirect_chain()[1], target_url);
+}
+
 }  // namespace content

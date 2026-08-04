@@ -11691,9 +11691,11 @@ void RenderFrameHostImpl::BeginNavigation(
     }
   }
 
-  // TODO(crbug.com/40066983): Consider converting these into renderer kills.
   GetProcess()->FilterURL(true, &begin_params->searchable_form_url);
-  GetProcess()->FilterURL(true, &begin_params->client_side_redirect_url);
+  if (!VerifyClientSideRedirectUrl(*this,
+                                   &begin_params->client_side_redirect_url)) {
+    return;
+  }
 
   // If the request was for a blob URL, but the validated URL is no longer a
   // blob URL, reset the blob_url_token to prevent hitting the ReportBadMessage
