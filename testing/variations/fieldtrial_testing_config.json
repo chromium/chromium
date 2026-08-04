@@ -20949,6 +20949,26 @@
             ]
         }
     ],
+    "ProtectedAudienceDeprecation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_20260803",
+                    "disable_features": [
+                        "AdInterestGroupAPI",
+                        "Fledge"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProvisionalNotificationAlert": [
         {
             "platforms": [

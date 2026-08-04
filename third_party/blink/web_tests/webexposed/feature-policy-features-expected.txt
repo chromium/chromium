@@ -55,7 +55,6 @@ hid
 identity-credentials-get
 idle-detection
 interest-cohort
-join-ad-interest-group
 keyboard-map
 language-detector
 language-model
@@ -72,14 +71,12 @@ on-device-speech-recognition
 otp-credentials
 payment
 picture-in-picture
-private-aggregation
 private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
 record-ad-auction-events
 rewriter
-run-ad-auction
 screen-wake-lock
 serial
 speaker-selection

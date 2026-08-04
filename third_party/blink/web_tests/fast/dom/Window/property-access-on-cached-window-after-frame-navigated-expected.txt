@@ -50,7 +50,6 @@ PASS oldChildWindow.navigator.connection.saveData is newChildWindow.navigator.co
 PASS oldChildWindow.navigator.connection.type is newChildWindow.navigator.connection.type
 PASS oldChildWindow.navigator.cookieEnabled is newChildWindow.navigator.cookieEnabled
 PASS oldChildWindow.navigator.cpuPerformance is newChildWindow.navigator.cpuPerformance
-PASS oldChildWindow.navigator.deprecatedRunAdAuctionEnforcesKAnonymity is newChildWindow.navigator.deprecatedRunAdAuctionEnforcesKAnonymity
 PASS oldChildWindow.navigator.deviceMemory is newChildWindow.navigator.deviceMemory
 PASS oldChildWindow.navigator.devicePosture.onchange is newChildWindow.navigator.devicePosture.onchange
 PASS oldChildWindow.navigator.devicePosture.type is newChildWindow.navigator.devicePosture.type
