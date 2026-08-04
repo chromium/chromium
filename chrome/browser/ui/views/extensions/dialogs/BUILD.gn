@@ -20,3 +20,17 @@ source_set("document_scanner_discovery_confirmation_dialog") {
     "//ui/gfx",
   ]
 }
+
+source_set("document_scanner_start_scan_confirmation_dialog") {
+  sources = [ "document_scanner_start_scan_confirmation_dialog.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/extensions",
+    "//extensions/common",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
