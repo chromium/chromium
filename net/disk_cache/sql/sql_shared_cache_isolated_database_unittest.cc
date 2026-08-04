@@ -45,6 +45,15 @@ class SqlSharedCacheIsolatedDatabaseTest : public testing::TestWithParam<bool> {
   }
 
  protected:
+  base::expected<sql::StreamingBlobHandle,
+                 SqlSharedCacheIsolatedDatabase::Error>
+  GetStreamingBlobHandle(SqlSharedCacheIsolatedDatabase& db,
+                         const CacheEntryKey& key,
+                         SqlSharedCacheRowId shared_cache_row_id,
+                         int body_size) {
+    return db.GetStreamingBlobHandle(key, shared_cache_row_id, body_size);
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList feature_list_;
@@ -356,6 +365,40 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadBeyondWrittenBody) {
                     read_buffer_overflow)
                 .error(),
             SqlSharedCacheIsolatedDatabase::Error::kInvalidReadRange);
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadSizeMismatch) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  ASSERT_TRUE(db.Init().has_value());
+
+  CacheEntryKey key("0/0/https://example.com/");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  auto body = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  body->span().copy_from(
+      base::span<const uint8_t>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+
+  auto row_id_or_error = db.Insert(key, headers, 10, body);
+  ASSERT_TRUE(row_id_or_error.has_value());
+
+  // Pass body_size=5 which doesn't match actual blob size (10).
+  // Read range is offset=0, buf_len=2, so offset + buf_len (2) <= body_size
+  // (5), which passes range check, but size check in GetStreamingBlobHandle
+  // fails.
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(2);
+  auto read_result = db.Read(key, *row_id_or_error, /*body_size=*/5,
+                             /*offset=*/0, read_buffer);
+  EXPECT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kBodySizeMismatch);
+
+  // Also test GetStreamingBlobHandle directly
+  auto blob_handle_result =
+      GetStreamingBlobHandle(db, key, *row_id_or_error, /*body_size=*/5);
+  EXPECT_FALSE(blob_handle_result.has_value());
+  EXPECT_EQ(blob_handle_result.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kBodySizeMismatch);
 }
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesSuccess) {

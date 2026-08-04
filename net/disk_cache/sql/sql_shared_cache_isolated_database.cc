@@ -354,6 +354,37 @@ SqlSharedCacheIsolatedDatabase::WriteBodyInternal(
   return base::ok();
 }
 
+base::expected<sql::StreamingBlobHandle, SqlSharedCacheIsolatedDatabase::Error>
+SqlSharedCacheIsolatedDatabase::GetStreamingBlobHandle(
+    const CacheEntryKey& entry_key,
+    SqlSharedCacheRowId shared_cache_row_id,
+    int body_size) {
+  if (!db_assets_ || !db_assets_->db().is_open()) {
+    return base::unexpected(Error::kDatabaseNotOpen);
+  }
+  {
+    sql::Statement statement(db_assets_->db().GetCachedStatement(
+        SQL_FROM_HERE,
+        GetSharedCacheIsolatedDatabaseQuery(
+            SharedCacheIsolatedDatabaseQuery::kSelectUrlAndReadyByRowId)));
+    statement.BindInt64(0, shared_cache_row_id.value());
+    if (!statement.Step() || !statement.ColumnBool(1) ||
+        statement.ColumnString(0) != entry_key.resource_url()) {
+      return base::unexpected(Error::kEntryNotFound);
+    }
+  }
+
+  ASSIGN_OR_RETURN(auto blob_handle,
+                   db_assets_->db().GetStreamingBlob(
+                       "resources", "body", shared_cache_row_id.value(),
+                       /*readonly=*/true),
+                   [] { return Error::kFailedToGetBlob; });
+  if (blob_handle.GetSize() != body_size) {
+    return base::unexpected(Error::kBodySizeMismatch);
+  }
+  return blob_handle;
+}
+
 SqlSharedCacheIsolatedDatabase::ReadResultOrError
 SqlSharedCacheIsolatedDatabase::Read(const CacheEntryKey& entry_key,
                                      SqlSharedCacheRowId shared_cache_row_id,
@@ -375,23 +406,9 @@ SqlSharedCacheIsolatedDatabase::Read(const CacheEntryKey& entry_key,
     return base::unexpected(Error::kInvalidReadRange);
   }
 
-  {
-    sql::Statement statement(db_assets_->db().GetCachedStatement(
-        SQL_FROM_HERE,
-        GetSharedCacheIsolatedDatabaseQuery(
-            SharedCacheIsolatedDatabaseQuery::kSelectUrlAndReadyByRowId)));
-    statement.BindInt64(0, shared_cache_row_id.value());
-    if (!statement.Step() || !statement.ColumnBool(1) ||
-        statement.ColumnString(0) != entry_key.resource_url()) {
-      return base::unexpected(Error::kEntryNotFound);
-    }
-  }
-
-  ASSIGN_OR_RETURN(auto blob_handle,
-                   db_assets_->db().GetStreamingBlob(
-                       "resources", "body", shared_cache_row_id.value(),
-                       /*readonly=*/true),
-                   [] { return Error::kFailedToGetBlob; });
+  ASSIGN_OR_RETURN(
+      auto blob_handle,
+      GetStreamingBlobHandle(entry_key, shared_cache_row_id, body_size));
 
   if (!blob_handle.Read(offset, buffer->span())) {
     return base::unexpected(Error::kFailedToReadBlob);
