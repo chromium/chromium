@@ -381,8 +381,8 @@ export class ScanningAppElement extends ScanningAppElementBase implements
   declare private scanButtonText: string;
   declare private showScanSettings: boolean;
   declare private showMultiPageScan: boolean;
-  private scanJobObserverReceiver: ScanJobObserverReceiver|null;
-  private multiPageScanController: MultiPageScanControllerRemote|null;
+  private scanJobObserverReceiver: ScanJobObserverReceiver|null = null;
+  private multiPageScanController: MultiPageScanControllerRemote|null = null;
   private scanService = getScanService();
   private browserProxy = ScanningBrowserProxyImpl.getInstance();
   declare private sourceTypeMap: Map<string, SourceType>;

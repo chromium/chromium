@@ -77,7 +77,7 @@ suite('acceleratorEditViewTest', function() {
 
     // Verify that no metrics were sent.
     assertFalse(provider.getLastRecordedIsAdd());
-    assertEquals(undefined, provider.getLastRecordedSubactions());
+    assertEquals(null, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
     getElementById('editButton').click();
@@ -114,7 +114,7 @@ suite('acceleratorEditViewTest', function() {
 
     // Verify that no metrics were sent.
     assertFalse(provider.getLastRecordedIsAdd());
-    assertEquals(undefined, provider.getLastRecordedSubactions());
+    assertEquals(null, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
     getElementById('editButton').click();
@@ -171,7 +171,7 @@ suite('acceleratorEditViewTest', function() {
     // Assert that no error has occurred.
     assertFalse(editViewElement!.hasError);
     assertFalse(provider.getLastRecordedIsAdd());
-    assertEquals(undefined, provider.getLastRecordedSubactions());
+    assertEquals(null, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
     getElementById('editButton').click();
@@ -241,7 +241,7 @@ suite('acceleratorEditViewTest', function() {
     // Assert that no error has occurred.
     assertFalse(editViewElement!.hasError);
     assertFalse(provider.getLastRecordedIsAdd());
-    assertEquals(undefined, provider.getLastRecordedSubactions());
+    assertEquals(null, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
     getElementById('editButton').click();

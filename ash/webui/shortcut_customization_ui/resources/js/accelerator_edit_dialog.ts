@@ -119,7 +119,7 @@ export class AcceleratorEditDialogElement extends
   declare protected shouldHideRestoreButton: boolean;
   declare protected observableDefaultAcceleratorsWithConflict: string[];
   declare private pendingNewAcceleratorState: number;
-  private shouldSnapshotConflictDefaults: boolean;
+  private shouldSnapshotConflictDefaults: boolean = false;
   private defaultAcceleratorsWithConflict: Set<string> = new Set<string>();
   private eventTracker: EventTracker = new EventTracker();
   // Represents bitwise actions done in the dialog.

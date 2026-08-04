@@ -137,7 +137,6 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   declare recordedError: boolean;
   declare action: number;
   declare source: AcceleratorSource;
-  restoreDefaultHasError: boolean;
   declare protected statusMessage: string;
   protected cancelButtonClicked = false;
   private shortcutProvider: ShortcutProviderInterface;

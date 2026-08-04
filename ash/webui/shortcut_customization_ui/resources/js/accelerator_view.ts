@@ -70,6 +70,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
       pendingKeyEvent: {
         type: Object,
+        value: null,
       },
 
       viewState: {
@@ -151,19 +152,16 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       },
 
       /** The meta key on the keyboard to display to the user. */
-      metaKey: Object,
+      metaKey: {
+        type: Number,
+        value: MetaKey.kSearch,
+      },
 
       hasFunctionKey: {
         type: Boolean,
         value: loadTimeData.getBoolean('hasFunctionKey'),
       },
     };
-  }
-
-  constructor() {
-    super();
-    this.metaKey = MetaKey.kSearch;
-    this.pendingKeyEvent = null;
   }
 
   declare acceleratorInfo: StandardAcceleratorInfo;
@@ -177,17 +175,18 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   declare source: AcceleratorSource;
   declare sourceIsLocked: boolean;
   declare showEditIcon: boolean;
-  subcategoryIsLocked: boolean;
+  subcategoryIsLocked = false;
   declare isFirstAccelerator: boolean;
   declare isDisabled: boolean;
   declare metaKey: MetaKey;
   declare pendingKeyEvent: KeyEvent|null;
-  shortcutInput: ShortcutInputElement|null;
-  defaultAccelerators: Accelerator[];
+  protected shortcutInput: ShortcutInputElement|null = null;
+  protected defaultAccelerators: Accelerator[] = [];
   declare hasFunctionKey: boolean;
   declare protected isCapturing: boolean;
-  protected lastAccelerator: Accelerator;
-  protected lastResult: AcceleratorConfigResult;
+  protected lastAccelerator: Accelerator|null = null;
+  protected lastResult: AcceleratorConfigResult =
+      AcceleratorConfigResult.kSuccess;
   protected lastPendingKeyEvent: KeyEvent|null = null;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private lookupManager: AcceleratorLookupManager =
@@ -319,7 +318,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       // last. If they match and a retry on the same accelerator
       // cannot bypass the error, exit early to prevent flickering error
       // messages.
-      if (areAcceleratorsEqual(pendingAccelerator, this.lastAccelerator) &&
+      if (this.lastAccelerator &&
+          areAcceleratorsEqual(pendingAccelerator, this.lastAccelerator) &&
           !canBypassErrorWithRetry(this.lastResult)) {
         return;
       }

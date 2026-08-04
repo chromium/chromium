@@ -99,7 +99,7 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   declare layoutStyle: LayoutStyle;
   declare action: number;
   declare source: AcceleratorSource;
-  protected subcategoryIsLocked: boolean;
+  protected subcategoryIsLocked: boolean = false;
   declare protected isLocked: boolean;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();

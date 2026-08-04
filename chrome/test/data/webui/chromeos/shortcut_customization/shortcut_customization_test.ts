@@ -260,7 +260,7 @@ suite('shortcutCustomizationAppTest', function() {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
-    assertEquals(undefined, provider.getLatestMainCategoryNavigated());
+    assertEquals(null, provider.getLatestMainCategoryNavigated());
 
     const navPanel =
         getPage().shadowRoot!.querySelector('navigation-view-panel');
@@ -574,7 +574,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Expect no subactions to be recorded.
     assertFalse(provider.getLastRecordedIsAdd());
-    assertEquals(undefined, provider.getLastRecordedSubactions());
+    assertEquals(null, provider.getLastRecordedSubactions());
 
     // Click on add button.
     editDialog.shadowRoot!
@@ -604,7 +604,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Expect no subactions to be recorded.
     assertFalse(provider.getLastRecordedIsAdd());
-    assertEquals(undefined, provider.getLastRecordedSubactions());
+    assertEquals(null, provider.getLastRecordedSubactions());
 
     // Click on add button.
     editDialog.shadowRoot!
@@ -651,7 +651,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Expect no subactions to be recorded.
     assertFalse(provider.getLastRecordedIsAdd());
-    assertEquals(undefined, provider.getLastRecordedSubactions());
+    assertEquals(null, provider.getLastRecordedSubactions());
 
     // Click on add button.
     editDialog.shadowRoot!
@@ -692,7 +692,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Expect no subactions to be recorded.
     assertFalse(provider.getLastRecordedIsAdd());
-    assertEquals(undefined, provider.getLastRecordedSubactions());
+    assertEquals(null, provider.getLastRecordedSubactions());
 
     // Click on add button.
     editDialog.shadowRoot!

@@ -87,34 +87,28 @@ export class OnboardingUpdatePageElement extends
   }
 
   declare allButtonsDisabled: boolean;
-  shimlessRmaService: ShimlessRmaServiceInterface;
-  isCompliant: boolean;
+  private shimlessRmaService: ShimlessRmaServiceInterface =
+      getShimlessRmaService();
+  // We assume it's compliant until updated in onHardwareVerificationResult().
+  protected isCompliant: boolean = true;
   declare protected currentVersionText: string;
   declare protected updateVersionButtonLabel: string;
   declare protected updateInProgress: boolean;
   declare protected verificationFailedMessage: TrustedHTML;
   declare protected unqualifiedComponentsText: string;
   declare protected osUpdateEncounteredError: boolean;
-  protected currentVersion: string;
-  protected osUpdateObserverReceiver: OsUpdateObserverReceiver|null;
-  protected hwVerificationObserverReceiver: HardwareVerificationStatusObserverReceiver|null;
+  protected currentVersion: string = '';
+  protected osUpdateObserverReceiver = new OsUpdateObserverReceiver(this);
+  protected hwVerificationObserverReceiver =
+      new HardwareVerificationStatusObserverReceiver(this);
 
   constructor() {
     super();
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
 
-    this.shimlessRmaService = getShimlessRmaService();
-    this.currentVersion = '';
-    this.osUpdateObserverReceiver = new OsUpdateObserverReceiver(this);
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
 
     this.shimlessRmaService.observeOsUpdateProgress(
         this.osUpdateObserverReceiver.$.bindNewPipeAndPassRemote());
-
-    // We assume it's compliant until updated in onHardwareVerificationResult().
-    this.isCompliant = true;
-    this.hwVerificationObserverReceiver = new HardwareVerificationStatusObserverReceiver(this);
 
     this.shimlessRmaService.observeHardwareVerificationStatus(
         this.hwVerificationObserverReceiver.$.bindNewPipeAndPassRemote());
@@ -122,9 +116,9 @@ export class OnboardingUpdatePageElement extends
 
   override ready() {
     super.ready();
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
+
     this.getCurrentVersionText();
     this.getUpdateVersionNumber();
     enableNextButton(this);
@@ -133,9 +127,7 @@ export class OnboardingUpdatePageElement extends
   }
 
   private getCurrentVersionText(): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
     this.shimlessRmaService.getCurrentOsVersion().then((res: {version: string|null}) => {
       if (res.version != null) {
         this.currentVersion = res.version;
@@ -148,9 +140,7 @@ export class OnboardingUpdatePageElement extends
   }
 
   private getUpdateVersionNumber(): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
     this.shimlessRmaService.checkForOsUpdates().then((res: {updateAvailable: boolean, version: string|null}) => {
       assert(res.updateAvailable);
       this.updateVersionButtonLabel =
@@ -168,17 +158,13 @@ export class OnboardingUpdatePageElement extends
   }
 
   protected onUpdateButtonClicked(): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
 
     this.updateOs();
   }
 
   protected onRetryUpdateButtonClicked(): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
 
     assert(this.osUpdateEncounteredError);
     this.osUpdateEncounteredError = false;
@@ -194,9 +180,8 @@ export class OnboardingUpdatePageElement extends
    * Implements OsUpdateObserver.onOsUpdateProgressUpdated()
    */
   onOsUpdateProgressUpdated(operation: OsUpdateOperation, _progress: number, error: UpdateErrorCode): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
+
     // Ignore progress when not updating, it is just the update available check.
     if (!this.updateInProgress) {
       return;
@@ -219,9 +204,8 @@ export class OnboardingUpdatePageElement extends
    * HardwareVerificationStatusObserver.onHardwareVerificationResult()
    */
   onHardwareVerificationResult(result: HardwareVerificationResult): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
+
     this.isCompliant = result.passResult !== undefined;
 
     if (!this.isCompliant) {
@@ -231,9 +215,8 @@ export class OnboardingUpdatePageElement extends
   }
 
   private setVerificationFailedMessage(): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
+
     this.verificationFailedMessage = this.i18nAdvanced(
         'osUpdateUnqualifiedComponentsTopText', {attrs: ['id']});
 
@@ -250,18 +233,16 @@ export class OnboardingUpdatePageElement extends
   }
 
   private closeDialog(): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
+
     const dialog: CrDialogElement|null = this.shadowRoot!.querySelector('#unqualifiedComponentsDialog');
     assert(dialog);
     dialog.close();
   }
 
   private onUpdateInProgressChange(): void {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+    assert(loadTimeData.getBoolean('osUpdateEnabled'));
+
     if (this.updateInProgress) {
       disableAllButtons(this, /*showBusyStateOverlay=*/ false);
     } else {

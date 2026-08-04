@@ -201,12 +201,12 @@ export class ScanPreviewElement extends ScanPreviewElementBase implements
   declare private multiPageScanning: boolean;
   declare private showSingleImageFocus: boolean;
   declare private forceActionToolbarVisible: boolean;
-  private actionToolbarHeight: number;
-  private actionToolbarWidth: number;
+  private actionToolbarHeight: number = 0;
+  private actionToolbarWidth: number = 0;
   private forceHiddenElementsVisibleObserverReceiver:
-      ForceHiddenElementsVisibleObserverReceiver;
-  private onDialogActionClick: EventListenerOrEventListenerObject;
-  private onWindowResized: EventListenerOrEventListenerObject;
+      ForceHiddenElementsVisibleObserverReceiver|null = null;
+  private onDialogActionClick: ((e: Event) => void)|null = null;
+  private onWindowResized: (e: Event) => void;
   private previewAreaResizeObserver: ResizeObserver;
   // ScanningBrowserProxy is initialized when scanning_app.js is created.
   private browserProxy = ScanningBrowserProxyImpl.getInstance();
@@ -648,8 +648,11 @@ export class ScanPreviewElement extends ScanPreviewElementBase implements
   private closeDialog(): void {
     this.shadowRoot!.querySelector<CrDialogElement>(
                         '#scanPreviewDialog')!.close();
-    this.shadowRoot!.querySelector<CrButtonElement>('#actionButton')!
-        .removeEventListener('click', this.onDialogActionClick);
+    if (this.onDialogActionClick) {
+      this.shadowRoot!.querySelector<CrButtonElement>('#actionButton')!
+          .removeEventListener('click', this.onDialogActionClick);
+      this.onDialogActionClick = null;
+    }
   }
 
   /**
