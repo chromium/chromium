@@ -121,7 +121,7 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
         mView.getContentView()
                 .measure(
                         MeasureSpec.makeMeasureSpec(
-                                mBottomSheetController.getContainerWidth(), MeasureSpec.EXACTLY),
+                                mBottomSheetController.getMaxSheetWidth(), MeasureSpec.EXACTLY),
                         MeasureSpec.makeMeasureSpec(
                                 mBottomSheetController.getContainerHeight(), MeasureSpec.AT_MOST));
         return mView.getContentView().getMeasuredHeight();

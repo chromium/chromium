@@ -373,6 +373,7 @@ public class AtMemoryBottomSheetViewTest {
     @Test
     public void testHeightRatiosWhenSearchHasFocus() {
         when(mBottomSheetController.getContainerHeight()).thenReturn(1000);
+        when(mBottomSheetController.getMaxSheetWidth()).thenReturn(500);
 
         AtMemoryBottomSheetContent content =
                 new AtMemoryBottomSheetContent(mView, mBottomSheetController);
@@ -391,6 +392,7 @@ public class AtMemoryBottomSheetViewTest {
     @Test
     public void testHeightRatiosOnFlyoutScreen() {
         when(mBottomSheetController.getContainerHeight()).thenReturn(1000);
+        when(mBottomSheetController.getMaxSheetWidth()).thenReturn(500);
 
         AtMemoryBottomSheetContent content =
                 new AtMemoryBottomSheetContent(mView, mBottomSheetController);
