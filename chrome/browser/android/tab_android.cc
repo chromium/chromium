@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
+#include "base/scoped_observation.h"
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
@@ -531,12 +533,19 @@ void WillRemoveWebContentsFromTab(content::WebContents* contents,
 }
 
 class TabWebContentsDestroyer : public content::WebContentsDelegate,
-                                public content::WebContentsObserver {
+                                public content::WebContentsObserver,
+                                public ProfileObserver {
  public:
   explicit TabWebContentsDestroyer(
       std::unique_ptr<content::WebContents> web_contents)
       : content::WebContentsObserver(web_contents.get()),
         web_contents_(std::move(web_contents)) {
+    if (web_contents_) {
+      if (Profile* profile =
+              Profile::FromBrowserContext(web_contents_->GetBrowserContext())) {
+        profile_observation_.Observe(profile);
+      }
+    }
     web_contents_->SetDelegate(this);
     // Cancel any pre-existing in-flight navigations before ClosePage() cancels
     // NavigationRequests.
@@ -624,8 +633,16 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate,
     Destroy();
   }
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    if (profile_observation_.GetSource() == profile) {
+      Destroy();
+    }
+  }
+
  private:
   void Destroy() {
+    profile_observation_.Reset();
     Observe(nullptr);
     if (web_contents_) {
       if (auto* dialog_manager =
@@ -639,6 +656,7 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate,
   }
 
   std::unique_ptr<content::WebContents> web_contents_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::WeakPtrFactory<TabWebContentsDestroyer> weak_ptr_factory_{this};
 };
 }  // namespace

@@ -118,6 +118,7 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabmodel/AccumulatingTabCreatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ArchivedTabCountTrackerUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/MultiTabMetadataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/OverridableTabCountUnitTest.java",

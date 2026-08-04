@@ -63,7 +63,7 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
 
     override fun hasIncognitoTabs(): Boolean {
       mAsyncTabParamsManager.forEachTab {
-        if (it.isIncognitoBranded) return true
+        if (it.isIncognitoBranded || it.isOffTheRecord) return true
       }
       return false
     }
@@ -74,7 +74,10 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
       // removeAt() does not invalidate indices so long as no read operations are made.
       val clone = params.clone()
       for (i in 0 until clone.size()) {
-        if (clone.valueAt(i).tabToReparent?.isIncognitoBranded ?: false) {
+        val param = clone.valueAt(i)
+        val tab = param.tabToReparent
+        if ((tab?.isIncognitoBranded ?: false) || (tab?.isOffTheRecord ?: false)) {
+          param.destroy()
           params.removeAt(i)
         }
       }

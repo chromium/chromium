@@ -340,6 +340,11 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             int assignedTabId = IntentHandler.getTabId(intent);
             boolean isReparenting = isReparenting(assignedTabId);
             AsyncTabParams asyncParams = mAsyncTabParamsManager.remove(assignedTabId);
+            if ((type == TabLaunchType.FROM_REPARENTING
+                            || type == TabLaunchType.FROM_REPARENTING_BACKGROUND)
+                    && asyncParams == null) {
+                return null;
+            }
 
             boolean openInForeground = mOrderController.willOpenInForeground(type, mIncognito);
             boolean disableRenderer =

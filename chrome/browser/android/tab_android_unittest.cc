@@ -43,6 +43,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -348,6 +349,39 @@ TEST_F(TabAndroidTest, DestroyWebContentsSlowShutdown_StopsNavigations) {
   EXPECT_FALSE(raw_web_contents->IsLoading());
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(TabAndroidTest,
+       DestroyWebContentsSlowShutdown_ImmediateDestructionOnProfileShutdown) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chrome::android::kTabAndroidGracefulShutdown);
+
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(otr_profile));
+  content::WebContents* raw_web_contents = web_contents.get();
+  content::WebContentsDestroyedWatcher watcher(raw_web_contents);
+
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      otr_profile, kTabId + 1, std::move(web_contents));
+
+  // Perform slow shutdown.
+  tab->DestroyWebContentsSlowShutdownForTesting();
+  EXPECT_FALSE(watcher.IsDestroyed());
+
+  // Release the tab before destroying the profile to avoid dangling pointer
+  // warnings.
+  tab.reset();
+  EXPECT_FALSE(watcher.IsDestroyed());
+
+  // Initiating OffTheRecord profile destruction during slow shutdown should
+  // immediately destroy the WebContents without advancing mock time.
+  profile_->DestroyOffTheRecordProfile(otr_profile);
+  EXPECT_TRUE(watcher.IsDestroyed());
 }
 
 DEFINE_JNI(TabAndroidTestHelper)
