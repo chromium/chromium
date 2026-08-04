@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
+#include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -108,6 +109,8 @@ EntityDataManager::EntityDataManager(
       GetAutofillAiOptInStatus(pref_service, identity_manager)
           ? AutofillAiOptInStatus::kOptedIn
           : AutofillAiOptInStatus::kOptedOut);
+
+  autofill_metrics::LogAutofillAiSettingsAtStartup(*pref_service);
 }
 
 EntityDataManager::~EntityDataManager() {

@@ -497,6 +497,84 @@ TEST_P(AutofillSettingsMetricsTest,
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
 }
 
+// Tests that IdentityDocs disabled by user setting is logged at startup.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillIdentityDocsDisabledByUserAtStartup) {
+  autofill_client().GetPrefs()->SetUserPref(
+      prefs::kAutofillAiIdentityEntitiesEnabled, base::Value(GetParam()));
+
+  LogAutofillAiSettingsAtStartup(*autofill_client().GetPrefs());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.IdentityDocs.DisabledReason.Startup",
+      AutofillPreferenceSetter::kUserSetting, !GetParam());
+}
+
+// Tests that IdentityDocs disabled by user setting is logged at page load.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillIdentityDocsDisabledByUserAtPageLoad) {
+  autofill_client().GetPrefs()->SetUserPref(
+      prefs::kAutofillAiIdentityEntitiesEnabled, base::Value(GetParam()));
+
+  LogAutofillAiSettingsAtPageLoad(autofill_client());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.IdentityDocs.DisabledReason.PageLoad",
+      AutofillPreferenceSetter::kUserSetting, !GetParam());
+}
+
+// Tests that Travel disabled by user setting is logged at startup.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillTravelDisabledByUserAtStartup) {
+  autofill_client().GetPrefs()->SetUserPref(
+      prefs::kAutofillAiTravelEntitiesEnabled, base::Value(GetParam()));
+
+  LogAutofillAiSettingsAtStartup(*autofill_client().GetPrefs());
+
+  histogram_tester_.ExpectUniqueSample("Autofill.Travel.DisabledReason.Startup",
+                                       AutofillPreferenceSetter::kUserSetting,
+                                       !GetParam());
+}
+
+// Tests that Travel disabled by user setting is logged at page load.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillTravelDisabledByUserAtPageLoad) {
+  autofill_client().GetPrefs()->SetUserPref(
+      prefs::kAutofillAiTravelEntitiesEnabled, base::Value(GetParam()));
+
+  LogAutofillAiSettingsAtPageLoad(autofill_client());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Travel.DisabledReason.PageLoad",
+      AutofillPreferenceSetter::kUserSetting, !GetParam());
+}
+
+// Tests that Shopping disabled by user setting is logged at startup.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillShoppingDisabledByUserAtStartup) {
+  autofill_client().GetPrefs()->SetUserPref(
+      prefs::kAutofillAiShoppingEntitiesEnabled, base::Value(GetParam()));
+
+  LogAutofillAiSettingsAtStartup(*autofill_client().GetPrefs());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Shopping.DisabledReason.Startup",
+      AutofillPreferenceSetter::kUserSetting, !GetParam());
+}
+
+// Tests that Shopping disabled by user setting is logged at page load.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillShoppingDisabledByUserAtPageLoad) {
+  autofill_client().GetPrefs()->SetUserPref(
+      prefs::kAutofillAiShoppingEntitiesEnabled, base::Value(GetParam()));
+
+  LogAutofillAiSettingsAtPageLoad(autofill_client());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Shopping.DisabledReason.PageLoad",
+      AutofillPreferenceSetter::kUserSetting, !GetParam());
+}
+
 // Tests that Autofill Profile disabled by the GPO wildcard blocklist policy is
 // logged as AdminPolicy at startup.
 TEST_P(AutofillSettingsMetricsEnterprisePolicyTest,

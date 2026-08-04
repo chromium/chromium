@@ -106,6 +106,32 @@ void LogIsAutofillEnabledAtStartup(bool enabled) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.IsEnabled.Startup", enabled);
 }
 
+void LogAutofillAiSettingsAtStartup(const PrefService& prefs) {
+  if (std::optional<AutofillPreferenceSetter> reason =
+          GetDisabledReasonAtStartup(
+              prefs, prefs::kAutofillAiIdentityEntitiesEnabled,
+              AutofillClient::AutofillPolicyDataCategory::kIdentityDocs)) {
+    base::UmaHistogramEnumeration(
+        "Autofill.IdentityDocs.DisabledReason.Startup", *reason);
+  }
+
+  if (std::optional<AutofillPreferenceSetter> reason =
+          GetDisabledReasonAtStartup(
+              prefs, prefs::kAutofillAiTravelEntitiesEnabled,
+              AutofillClient::AutofillPolicyDataCategory::kTravel)) {
+    base::UmaHistogramEnumeration("Autofill.Travel.DisabledReason.Startup",
+                                  *reason);
+  }
+
+  if (std::optional<AutofillPreferenceSetter> reason =
+          GetDisabledReasonAtStartup(
+              prefs, prefs::kAutofillAiShoppingEntitiesEnabled,
+              AutofillClient::AutofillPolicyDataCategory::kShopping)) {
+    base::UmaHistogramEnumeration("Autofill.Shopping.DisabledReason.Startup",
+                                  *reason);
+  }
+}
+
 void LogIsAutofillProfileEnabledAtStartup(bool enabled) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.Address.IsEnabled.Startup", enabled);
 }
@@ -186,6 +212,32 @@ void LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
       AutofillClient::AutofillPolicyDataCategory::kPayments);
   if (reason.has_value()) {
     base::UmaHistogramEnumeration("Autofill.CreditCard.DisabledReason.PageLoad",
+                                  *reason);
+  }
+}
+
+void LogAutofillAiSettingsAtPageLoad(const AutofillClient& client) {
+  if (std::optional<AutofillPreferenceSetter> reason =
+          GetDisabledReasonAtPageLoad(
+              client, prefs::kAutofillAiIdentityEntitiesEnabled,
+              AutofillClient::AutofillPolicyDataCategory::kIdentityDocs)) {
+    base::UmaHistogramEnumeration(
+        "Autofill.IdentityDocs.DisabledReason.PageLoad", *reason);
+  }
+
+  if (std::optional<AutofillPreferenceSetter> reason =
+          GetDisabledReasonAtPageLoad(
+              client, prefs::kAutofillAiTravelEntitiesEnabled,
+              AutofillClient::AutofillPolicyDataCategory::kTravel)) {
+    base::UmaHistogramEnumeration("Autofill.Travel.DisabledReason.PageLoad",
+                                  *reason);
+  }
+
+  if (std::optional<AutofillPreferenceSetter> reason =
+          GetDisabledReasonAtPageLoad(
+              client, prefs::kAutofillAiShoppingEntitiesEnabled,
+              AutofillClient::AutofillPolicyDataCategory::kShopping)) {
+    base::UmaHistogramEnumeration("Autofill.Shopping.DisabledReason.PageLoad",
                                   *reason);
   }
 }

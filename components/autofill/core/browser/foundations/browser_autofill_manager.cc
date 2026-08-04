@@ -914,35 +914,39 @@ bool BrowserAutofillManager::ShouldParseForms() {
   // need to parse the forms and query the server as the password manager
   // depends on server classifications.
   bool password_manager_enabled = client().IsPasswordManagerEnabled();
-  metrics_->signin_state_for_metrics = client()
-                                           .GetPersonalDataManager()
-                                           .payments_data_manager()
-                                           .GetPaymentsSigninStateForMetrics();
   if (!metrics_->has_logged_autofill_enabled) {
-    autofill_metrics::LogIsAutofillEnabledAtPageLoad(
-        autofill_enabled, metrics_->signin_state_for_metrics);
-    autofill_metrics::LogIsAutofillProfileEnabledAtPageLoad(
-        client().IsAutofillProfileEnabled(),
-        metrics_->signin_state_for_metrics);
-    if (!client().IsAutofillProfileEnabled()) {
-      autofill_metrics::LogAutofillProfileDisabledReasonAtPageLoad(client());
-    }
-    autofill_metrics::LogIsAutofillPaymentMethodsEnabledAtPageLoad(
-        client().GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled(),
-        metrics_->signin_state_for_metrics);
-    if (!client()
-             .GetPaymentsAutofillClient()
-             ->IsAutofillPaymentMethodsEnabled()) {
-      autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
-          client());
-    }
-    metrics_->has_logged_autofill_enabled = true;
+    LogPageLoadSettingsMetrics(autofill_enabled);
   }
 
   // Enable the parsing also for the password manager, so that we fetch server
   // classifications if the password manager is enabled but autofill is
   // disabled.
   return autofill_enabled || password_manager_enabled;
+}
+
+void BrowserAutofillManager::LogPageLoadSettingsMetrics(bool autofill_enabled) {
+  metrics_->signin_state_for_metrics = client()
+                                           .GetPersonalDataManager()
+                                           .payments_data_manager()
+                                           .GetPaymentsSigninStateForMetrics();
+  autofill_metrics::LogIsAutofillEnabledAtPageLoad(
+      autofill_enabled, metrics_->signin_state_for_metrics);
+  autofill_metrics::LogIsAutofillProfileEnabledAtPageLoad(
+      client().IsAutofillProfileEnabled(), metrics_->signin_state_for_metrics);
+  if (!client().IsAutofillProfileEnabled()) {
+    autofill_metrics::LogAutofillProfileDisabledReasonAtPageLoad(client());
+  }
+  autofill_metrics::LogIsAutofillPaymentMethodsEnabledAtPageLoad(
+      client().GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled(),
+      metrics_->signin_state_for_metrics);
+  if (!client()
+           .GetPaymentsAutofillClient()
+           ->IsAutofillPaymentMethodsEnabled()) {
+    autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
+        client());
+  }
+  autofill_metrics::LogAutofillAiSettingsAtPageLoad(client());
+  metrics_->has_logged_autofill_enabled = true;
 }
 
 void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,

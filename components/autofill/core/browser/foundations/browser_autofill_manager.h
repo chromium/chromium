@@ -589,6 +589,10 @@ class BrowserAutofillManager : public AutofillManager {
       bool show_suggestions,
       std::vector<Suggestion> suggestions);
 
+  // Logs various Autofill enabled/disabled metrics when forms are seen on a
+  // page for the first time.
+  void LogPageLoadSettingsMetrics(bool autofill_enabled);
+
   // Combines passkey suggestions and existing suggestions into a single list,
   // prioritizing existing suggestions first.
   void MergePasskeysAndExistingSuggestions(
