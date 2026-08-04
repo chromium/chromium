@@ -119,93 +119,41 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxSubmit) {
   RunTest("new_tab_page/composebox/composebox_submit_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteDropdownForkTrue) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteDropdown) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteDropdownTest "
-          "\\\\(useNtpComposeboxFork = true\\\\)')");
+          "runMochaSuite('NewTabPageComposeboxAutocompleteDropdownTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteDropdownForkFalse) {
+                       ComposeboxAutocompleteKeyboardNavigation) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteDropdownTest "
-          "\\\\(useNtpComposeboxFork = false\\\\)')");
+          "runMochaSuite('"
+          "NewTabPageComposeboxAutocompleteKeyboardNavigationTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteKeyboardNavigationForkTrue) {
-  RunTest(
-      "new_tab_page/composebox/composebox_autocomplete_test.js",
-      "runMochaSuite('NewTabPageComposeboxAutocompleteKeyboardNavigationTest "
-      "\\\\(useNtpComposeboxFork = true\\\\)')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteKeyboardNavigationForkFalse) {
-  RunTest(
-      "new_tab_page/composebox/composebox_autocomplete_test.js",
-      "runMochaSuite('NewTabPageComposeboxAutocompleteKeyboardNavigationTest "
-      "\\\\(useNtpComposeboxFork = false\\\\)')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteMatchRemovalForkTrue) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteMatchRemoval) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteMatchRemovalTest "
-          "\\\\(useNtpComposeboxFork = true\\\\)')");
+          "runMochaSuite('NewTabPageComposeboxAutocompleteMatchRemovalTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteMatchRemovalForkFalse) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteSmartCompose) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteMatchRemovalTest "
-          "\\\\(useNtpComposeboxFork = false\\\\)')");
+          "runMochaSuite('NewTabPageComposeboxAutocompleteSmartComposeTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteSmartComposeForkTrue) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteQuerying) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteSmartComposeTest "
-          "\\\\(useNtpComposeboxFork = true\\\\)')");
+          "runMochaSuite('NewTabPageComposeboxAutocompleteQueryingTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteSmartComposeForkFalse) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, CrComposeboxAutocompleteContextTest) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteSmartComposeTest "
-          "\\\\(useNtpComposeboxFork = false\\\\)')");
+          "runMochaSuite('CrComposeboxAutocompleteContextTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteQueryingForkTrue) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteVoiceSearch) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteQueryingTest "
-          "\\\\(useNtpComposeboxFork = true\\\\)')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteQueryingForkFalse) {
-  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteQueryingTest "
-          "\\\\(useNtpComposeboxFork = false\\\\)')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteContext) {
-  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteContextTest')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteVoiceSearchForkTrue) {
-  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteVoiceSearchTest "
-          "\\\\(useNtpComposeboxFork = true\\\\)')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest,
-                       ComposeboxAutocompleteVoiceSearchForkFalse) {
-  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "runMochaSuite('NewTabPageComposeboxAutocompleteVoiceSearchTest "
-          "\\\\(useNtpComposeboxFork = false\\\\)')");
+          "runMochaSuite('NewTabPageComposeboxAutocompleteVoiceSearchTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenu) {
