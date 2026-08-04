@@ -76,7 +76,7 @@ class TabStripCollectionControllerInteractiveUiTest
 
   TabStripView* GetTabStripView() {
     auto* base_region = views::AsViewClass<BaseTabStripRegionView>(
-        browser()->GetBrowserView().tab_strip_view());
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
     return base_region ? views::AsViewClass<TabStripView>(
                              base_region->GetTabStripView())
                        : nullptr;

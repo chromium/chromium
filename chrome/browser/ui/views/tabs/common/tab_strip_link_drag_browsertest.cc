@@ -46,9 +46,8 @@ class VerticalTabStripLinkDragTest
   }
 
   VerticalTabStripRegionView* region_view() {
-    return browser()
-        ->GetBrowserView()
-        .vertical_tab_strip_region_view_for_testing();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->vertical_tab_strip_region_view_for_testing();
   }
 
   UnpinnedTabContainerView* unpinned_container() {

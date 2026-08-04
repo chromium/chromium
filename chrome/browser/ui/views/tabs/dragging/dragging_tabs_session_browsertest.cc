@@ -28,7 +28,7 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     model_ = browser()->GetTabStripModel();
-    view_ = browser()->GetBrowserView().tab_strip_view();
+    view_ = BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
   }
 
   void TearDownOnMainThread() override {

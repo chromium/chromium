@@ -63,7 +63,7 @@ class TabCollectionNodeBrowserTest
  protected:
   RootTabCollectionNode* root_node() {
     auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
-        browser()->GetBrowserView().tab_strip_view());
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
     return base_region_view ? base_region_view->root_node_for_testing()
                             : nullptr;
   }

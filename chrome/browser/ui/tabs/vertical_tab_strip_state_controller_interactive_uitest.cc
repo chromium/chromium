@@ -119,8 +119,9 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   bool SystemMenuContainsStringId(int message_id) {
-    ui::MenuModel* menu_model =
-        browser()->GetBrowserView().browser_widget()->GetSystemMenuModel();
+    ui::MenuModel* menu_model = BrowserView::GetBrowserViewForBrowser(browser())
+                                    ->browser_widget()
+                                    ->GetSystemMenuModel();
     for (size_t i = 0; i < menu_model->GetItemCount(); i++) {
       if (l10n_util::GetStringUTF16(message_id) == menu_model->GetLabelAt(i)) {
         return true;

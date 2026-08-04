@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
@@ -47,9 +48,8 @@ class TabGroupViewTest
 
   RootTabCollectionNode* root_node() {
     VerticalTabStripRegionView* region_view =
-        browser()
-            ->GetBrowserView()
-            .vertical_tab_strip_region_view_for_testing();
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->vertical_tab_strip_region_view_for_testing();
     return region_view->root_node_for_testing();
   }
 

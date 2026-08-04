@@ -61,7 +61,7 @@ class VerticalTabsBrowserTestMixin : public T {
 
   TabStripCollectionController* vertical_tab_strip_controller() {
     auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
-        T::browser()->GetBrowserView().tab_strip_view());
+        BrowserView::GetBrowserViewForBrowser(T::browser())->tab_strip_view());
     return region_view ? region_view->GetTabStripCollectionController()
                        : nullptr;
   }
@@ -102,7 +102,7 @@ class VerticalTabsBrowserTestMixin : public T {
 
   RootTabCollectionNode* root_node() {
     auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
-        T::browser()->GetBrowserView().tab_strip_view());
+        BrowserView::GetBrowserViewForBrowser(T::browser())->tab_strip_view());
     return region_view ? region_view->root_node_for_testing() : nullptr;
   }
 

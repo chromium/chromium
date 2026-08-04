@@ -39,9 +39,8 @@ void ToolbarAccessibilityTest::ConfigureAccessibilityForWebUITest(
   std::optional<content::AccessibilityNotificationWaiter> load_waiter;
   if (use_webui) {
     content::WebContents* toolbar_webcontents =
-        browser()
-            ->GetBrowserView()
-            .toolbar_button_provider()
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider()
             ->GetWebUIToolbarViewForTesting()
             ->GetWebViewForTesting()
             ->GetWebContents();

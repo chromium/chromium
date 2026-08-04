@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonState) {
                             }))),
           Property(&views::View::GetEnabled, Eq(true))))));
 
-  browser()->GetBrowserView().SetCanFullscreen(false);
+  BrowserView::GetBrowserViewForBrowser(browser())->SetCanFullscreen(false);
 
   EXPECT_THAT(
       zoom_view.GetChildrenInZOrder(),
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonState) {
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonStateInFullscreen) {
   chrome::ToggleFullscreenMode(browser());
-  ASSERT_TRUE(browser()->GetBrowserView().IsFullscreen());
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->IsFullscreen());
 
   menu_button()->ShowMenu(views::MenuRunner::NO_FLAGS);
   views::View& zoom_view =
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonStateInFullscreen) {
           Property(&views::View::GetEnabled, Eq(true))))));
 
   // User should not be trapped in fullscreen mode so button is still enabled
-  browser()->GetBrowserView().SetCanFullscreen(false);
+  BrowserView::GetBrowserViewForBrowser(browser())->SetCanFullscreen(false);
 
   EXPECT_THAT(
       zoom_view.GetChildrenInZOrder(),

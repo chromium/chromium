@@ -793,9 +793,10 @@ IN_PROC_BROWSER_TEST_F(TabViewDataSharingEnabledTest, LogsTabSwitchMetrics) {
                    "TabGroups.Shared.SwitchGroupedTab"));
   ASSERT_EQ(0, user_action_tester.GetActionCount("SwitchTab_Click"));
 
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ui::test::EventGenerator event_generator(
-      views::GetRootWindow(browser()->GetBrowserView().GetWidget()),
-      browser()->GetBrowserView().GetNativeWindow());
+      views::GetRootWindow(browser_view->GetWidget()),
+      browser_view->GetNativeWindow());
   event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();
 
@@ -814,7 +815,8 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, AlertIndicatorDecorateOnCollapse) {
   // Wait for the collapse animation to finish and ensure the width reaches
   // kCollapsedWidth.
   VerticalTabStripRegionView* const region_view =
-      browser()->GetBrowserView().vertical_tab_strip_region_view_for_testing();
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->vertical_tab_strip_region_view_for_testing();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !BrowserAnimationController::From(browser())->IsAnimating(
                TabStripAnimations::kVerticalTabStrip) &&
