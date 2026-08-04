@@ -2799,6 +2799,14 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testShouldShowZoomButton_defaultZoom_popupShowing() {
+        mTabletMediator.onFinishNativeInitialization();
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(true);
+        when(mPageZoomIndicatorCoordinator.isPopupWindowShowing()).thenReturn(true);
+        assertTrue(mTabletMediator.shouldShowZoomButton());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testMicButtonToolbarWidthConsumer() {
         int buttonWidth =
