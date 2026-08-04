@@ -148,24 +148,30 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
+  sources = [ "media_toolbar_button_contextual_menu_browsertest.cc" ]
+  deps = [
+    ":global_media_controls",
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/app:command_ids",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+
   # The dump-accessibility-events browser test is not built on ChromeOS:
   # DumpAccessibilityEventsViewsTestBase::EventTestPasses() is empty there,
   # which would leave the parameterized suite uninstantiated and fail the
   # test launcher. This mirrors the original !is_chromeos guard the test
   # had in //chrome/test:browser_tests.
   if (!is_chromeos) {
-    sources = [ "media_item_ui_device_selector_view_dump_accessibility_events_browsertest.cc" ]
-    deps = [
-      ":global_media_controls",
-      "//base",
-      "//chrome/browser/ui",
+    sources += [ "media_item_ui_device_selector_view_dump_accessibility_events_browsertest.cc" ]
+    deps += [
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
-      "//chrome/test:test_support",
       "//components/global_media_controls",
       "//components/global_media_controls:test_support",
       "//components/media_message_center",
-      "//content/test:test_support",
       "//ui/accessibility",
       "//ui/views",
     ]
