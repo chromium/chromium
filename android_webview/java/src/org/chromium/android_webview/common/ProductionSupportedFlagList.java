@@ -1397,6 +1397,9 @@ public final class ProductionSupportedFlagList {
                 "PrefetchCancelUnrelatedPrefetch",
                 "Cancels unrelated prefetch when a navigation is started."),
         Flag.baseFeature(
+                "PrefetchMatchResolverUnblockAsync",
+                "Making PrefetchMatchResolver::UnblockInternal() async."),
+        Flag.baseFeature(
                 BlinkFeatures.ANDROID_SYSTEM_FONT_PREWARMING,
                 "Prewarms system fonts on Android to improve initial rendering latency."),
         Flag.baseFeature(
