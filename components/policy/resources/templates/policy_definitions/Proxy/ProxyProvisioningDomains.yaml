@@ -36,6 +36,7 @@ future_on:
 - chrome.*
 - chrome_os
 - android
+- ios
 
 owners:
 - seblalancette@chromium.org
