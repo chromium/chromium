@@ -80,6 +80,10 @@ class AutofillAgentTestApi {
     return agent_->javascript_autofill_tracker_;
   }
 
+  base::WeakPtr<AutofillAgent> GetWeakPtr() {
+    return agent_->weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   const raw_ref<AutofillAgent> agent_;
 };
