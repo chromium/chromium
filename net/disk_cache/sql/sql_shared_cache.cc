@@ -63,7 +63,7 @@ void SqlSharedCache::InitIsolatedDatabase(
   shared_cache_db_id_ = shared_cache_db_id;
   isolated_database_ = SqlTrackedSequenceBound<SqlSharedCacheIsolatedDatabase>(
       db_task_runner_, store_->GetAsyncTaskManager(), nik_string_, directory_,
-      shared_cache_db_id);
+      shared_cache_db_id, db_task_runner_);
   isolated_database_.AsyncCall(&SqlSharedCacheIsolatedDatabase::Init)
       .Then(base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
@@ -331,6 +331,23 @@ void SqlSharedCache::DeleteEntries(
   }
   isolated_database_.AsyncCall(&SqlSharedCacheIsolatedDatabase::DeleteEntries)
       .WithArgs(shared_cache_row_ids)
+      .Then(std::move(callback));
+}
+
+void SqlSharedCache::GetBlobHandle(
+    const CacheEntryKey& entry_key,
+    SqlSharedCacheRowId shared_cache_row_id,
+    int body_size,
+    base::OnceCallback<
+        void(base::expected<scoped_refptr<SqlSharedCacheBlobHandle>,
+                            SqlSharedCacheIsolatedDatabase::Error>)> callback) {
+  if (!isolated_database_) {
+    std::move(callback).Run(base::unexpected(
+        SqlSharedCacheIsolatedDatabase::Error::kIsolatedDatabaseNotAvailable));
+    return;
+  }
+  isolated_database_.AsyncCall(&SqlSharedCacheIsolatedDatabase::GetBlobHandle)
+      .WithArgs(entry_key, shared_cache_row_id, body_size)
       .Then(std::move(callback));
 }
 

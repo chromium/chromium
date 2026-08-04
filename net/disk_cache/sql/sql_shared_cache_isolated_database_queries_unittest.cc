@@ -32,7 +32,8 @@ class SqlSharedCacheIsolatedDatabaseQueriesTest : public testing::Test {
 
   void CreateDatabaseInTempDir() {
     disk_cache::SqlSharedCacheIsolatedDatabase db(
-        "test_nik", temp_dir_.GetPath(), disk_cache::SqlSharedCacheDbId(1));
+        "test_nik", temp_dir_.GetPath(), disk_cache::SqlSharedCacheDbId(1),
+        base::SequencedTaskRunner::GetCurrentDefault());
     EXPECT_TRUE(db.Init().has_value());
   }
 

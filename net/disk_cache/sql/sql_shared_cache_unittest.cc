@@ -982,4 +982,62 @@ TEST_P(SqlSharedCacheTest, DeleteEntriesWithoutIsolatedDatabase) {
       SqlSharedCacheIsolatedDatabase::Error::kIsolatedDatabaseNotAvailable);
 }
 
+TEST_P(SqlSharedCacheTest, GetBlobHandleSuccess) {
+  auto handle = CreateAndInitStoreAndCache();
+  auto* cache = handle->get();
+
+  const CacheEntryKey kKey(
+      "credential_key/post_key/https://example.com/blob_test");
+  auto response_info = CreateTestHttpResponseInfo();
+  std::string body_data = "Blob data test";
+  PopulateStoreEntry(kKey, response_info, body_data);
+
+  base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries;
+  entries.push(CreateEligibleEntry(kKey, GURL("https://example.com/blob_test"),
+                                   response_info));
+
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false);
+  base::test::TestFuture<
+      base::queue<SqlPersistentStore::SharedCacheEligibleEntry>>
+      copy_future;
+  cache->CopyEntries(std::move(entries), abort_flag, copy_future.GetCallback());
+
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  auto unprocessed = copy_future.Take();
+  EXPECT_TRUE(unprocessed.empty());
+
+  base::test::TestFuture<base::expected<scoped_refptr<SqlSharedCacheBlobHandle>,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      blob_future;
+  cache->GetBlobHandle(kKey, SqlSharedCacheRowId(1), body_data.size(),
+                       blob_future.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  auto result = blob_future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value());
+}
+
+TEST_P(SqlSharedCacheTest, GetBlobHandleWithoutIsolatedDatabase) {
+  auto cache = std::make_unique<SqlSharedCache>(
+      "test_nik", *store_, temp_dir_.GetPath(), base::DoNothing(),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      cleanup_tracker_);
+
+  const CacheEntryKey kKey("https://example.com/blob_test");
+  base::test::TestFuture<base::expected<scoped_refptr<SqlSharedCacheBlobHandle>,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      blob_future;
+  cache->GetBlobHandle(kKey, SqlSharedCacheRowId(1), 10,
+                       blob_future.GetCallback());
+  auto result = blob_future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error(),
+      SqlSharedCacheIsolatedDatabase::Error::kIsolatedDatabaseNotAvailable);
+}
+
 }  // namespace disk_cache

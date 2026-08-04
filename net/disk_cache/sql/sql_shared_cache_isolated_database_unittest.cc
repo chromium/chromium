@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -29,6 +30,7 @@ class SqlSharedCacheIsolatedDatabaseTest : public testing::TestWithParam<bool> {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
     if (GetParam()) {
       feature_list_.InitWithFeaturesAndParameters(
           {{net::features::kRendererAccessibleHttpCache,
@@ -54,8 +56,13 @@ class SqlSharedCacheIsolatedDatabaseTest : public testing::TestWithParam<bool> {
     return db.GetStreamingBlobHandle(key, shared_cache_row_id, body_size);
   }
 
+  bool IsBlobHandleHoldersEmpty(SqlSharedCacheIsolatedDatabase& db) {
+    return db.blob_handle_holders_.empty();
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -66,7 +73,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitSuccess) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   EXPECT_TRUE(db.Init().has_value());
 
   // Verify that the isolated database file is created successfully.
@@ -76,7 +84,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitSuccess) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitFailureForTesting) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   db.SetSimulateDbFailureCallbackForTesting(base::BindRepeating(
       [](SqlSharedCacheIsolatedDatabase::OperationForTesting op) {
         return true;
@@ -91,7 +100,7 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitFailedToOpenVfsFileSet) {
 
   {
     SqlSharedCacheIsolatedDatabase db(std::string(kNik), temp_dir_.GetPath(),
-                                      db_id);
+                                      db_id, task_runner_);
     EXPECT_TRUE(db.Init().has_value());
   }
 
@@ -100,7 +109,7 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitFailedToOpenVfsFileSet) {
 
   {
     SqlSharedCacheIsolatedDatabase db(std::string(kNik), temp_dir_.GetPath(),
-                                      db_id);
+                                      db_id, task_runner_);
     EXPECT_EQ(db.Init().error(),
               SqlSharedCacheIsolatedDatabase::Error::kFailedToOpenVfsFileSet);
   }
@@ -121,7 +130,7 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitializeAndNikMismatch) {
 
   {
     SqlSharedCacheIsolatedDatabase db(std::string(kNik1), temp_dir_.GetPath(),
-                                      db_id);
+                                      db_id, task_runner_);
     EXPECT_TRUE(db.Init().has_value());
 
     auto row_id_or_error = db.Insert(key, headers, 3, body);
@@ -132,7 +141,7 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitializeAndNikMismatch) {
   {
     // Initialize with the same nik. Data should persist.
     SqlSharedCacheIsolatedDatabase db(std::string(kNik1), temp_dir_.GetPath(),
-                                      db_id);
+                                      db_id, task_runner_);
     EXPECT_TRUE(db.Init().has_value());
 
     auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(3);
@@ -144,7 +153,7 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitializeAndNikMismatch) {
   {
     // Initialize with a different nik. It should wipe the database.
     SqlSharedCacheIsolatedDatabase db(std::string(kNik2), temp_dir_.GetPath(),
-                                      db_id);
+                                      db_id, task_runner_);
     EXPECT_TRUE(db.Init().has_value());
 
     auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(3);
@@ -158,7 +167,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitializeAndNikMismatch) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, InsertAndReadSuccess) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -180,7 +190,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InsertAndReadSuccess) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, WriteBodyAndRead) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -205,7 +216,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, WriteBodyAndRead) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadNotReady) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -224,7 +236,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadNotReady) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadKeyMismatch) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -244,7 +257,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadKeyMismatch) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, InsertBodyTooLarge) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -259,7 +273,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InsertBodyTooLarge) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, WriteBodyInvalidRange) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -285,7 +300,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, WriteBodyInvalidRange) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadInvalidRange) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -310,7 +326,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadInvalidRange) {
 TEST_P(SqlSharedCacheIsolatedDatabaseTest,
        WriteBodyMultipleChunksAndReadAcross) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -341,7 +358,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest,
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadBeyondWrittenBody) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -369,7 +387,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadBeyondWrittenBody) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadSizeMismatch) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key("0/0/https://example.com/");
@@ -401,9 +420,182 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadSizeMismatch) {
             SqlSharedCacheIsolatedDatabase::Error::kBodySizeMismatch);
 }
 
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, GetCachedBlobHandleHolderHit) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  EXPECT_TRUE(db.Init().has_value());
+
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  CacheEntryKey key("https://hit.example");
+
+  const std::string body_data = "Hit body";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+  auto insert_result = db.Insert(key, headers, body_data.size(), body);
+  EXPECT_TRUE(insert_result.has_value());
+  auto row_id = insert_result.value();
+
+  // First handle will create the holder
+  auto handle1 = db.GetBlobHandle(key, row_id, body_data.size());
+  ASSERT_TRUE(handle1.has_value());
+  EXPECT_FALSE(IsBlobHandleHoldersEmpty(db));
+
+  // Second handle should hit the cache
+  auto handle2 = db.GetBlobHandle(key, row_id, body_data.size());
+  ASSERT_TRUE(handle2.has_value());
+
+  handle1->reset();
+  handle2->reset();
+
+  base::RunLoop run_loop;
+  task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBlobHandleHoldersEmpty(db));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadUsesCachedBlobHandleHolder) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  EXPECT_TRUE(db.Init().has_value());
+
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  CacheEntryKey key("https://read-cached.example");
+
+  const std::string body_data = "Read cached body";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+  auto insert_result = db.Insert(key, headers, body_data.size(), body);
+  ASSERT_TRUE(insert_result.has_value());
+  auto row_id = insert_result.value();
+
+  // Obtain a blob handle to populate blob_handle_holders_.
+  auto handle = db.GetBlobHandle(key, row_id, body_data.size());
+  ASSERT_TRUE(handle.has_value());
+  EXPECT_FALSE(IsBlobHandleHoldersEmpty(db));
+
+  // Read should hit GetCachedBlobHandleHolder and reuse the cached handle.
+  auto read_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(body_data.size());
+  auto read_result = db.Read(key, row_id, body_data.size(), 0, read_buffer);
+  ASSERT_TRUE(read_result.has_value());
+  EXPECT_EQ(read_result->read_bytes, static_cast<int>(body_data.size()));
+  EXPECT_EQ(std::string_view(read_buffer->data(), body_data.size()), body_data);
+
+  handle->reset();
+
+  base::RunLoop run_loop;
+  task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBlobHandleHoldersEmpty(db));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest,
+       ReadUsesCachedBlobHandleHolderBodySizeMismatch) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  EXPECT_TRUE(db.Init().has_value());
+
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  CacheEntryKey key("https://read-mismatch.example");
+
+  const std::string body_data = "Body data 10 bytes";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+  auto insert_result = db.Insert(key, headers, body_data.size(), body);
+  ASSERT_TRUE(insert_result.has_value());
+  auto row_id = insert_result.value();
+
+  // Obtain a blob handle to populate blob_handle_holders_ with body_size = 18.
+  auto handle = db.GetBlobHandle(key, row_id, body_data.size());
+  ASSERT_TRUE(handle.has_value());
+  EXPECT_FALSE(IsBlobHandleHoldersEmpty(db));
+
+  // Read with a different body_size (e.g. 5) while holder is cached.
+  // GetCachedBlobHandleHolder will return Error::kBodySizeMismatch.
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(2);
+  auto read_result = db.Read(key, row_id, /*body_size=*/5, 0, read_buffer);
+  EXPECT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kBodySizeMismatch);
+
+  handle->reset();
+
+  base::RunLoop run_loop;
+  task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBlobHandleHoldersEmpty(db));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest,
+       GetCachedBlobHandleHolderMismatchDetected) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  EXPECT_TRUE(db.Init().has_value());
+
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  CacheEntryKey key("https://mismatch.example");
+
+  const std::string body_data = "Mismatch body";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+  auto insert_result = db.Insert(key, headers, body_data.size(), body);
+  EXPECT_TRUE(insert_result.has_value());
+  auto row_id = insert_result.value();
+
+  // First handle will create the holder
+  auto handle1 = db.GetBlobHandle(key, row_id, body_data.size());
+  ASSERT_TRUE(handle1.has_value());
+
+  // Requesting handle with different URL but same row_id
+  CacheEntryKey wrong_key("https://wrong.example");
+  auto handle_wrong_url = db.GetBlobHandle(wrong_key, row_id, body_data.size());
+  EXPECT_FALSE(handle_wrong_url.has_value());
+
+  // Requesting handle with different body size but same row_id
+  auto handle_wrong_size = db.GetBlobHandle(key, row_id, body_data.size() + 1);
+  EXPECT_FALSE(handle_wrong_size.has_value());
+
+  handle1->reset();
+
+  base::RunLoop run_loop;
+  task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBlobHandleHoldersEmpty(db));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, GetBlobHandleDatabaseFailure) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  EXPECT_TRUE(db.Init().has_value());
+
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  CacheEntryKey key("https://blob-fail.example");
+
+  const std::string body_data = "Blob body fail data.";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+  auto insert_result = db.Insert(key, headers, body_data.size(), body);
+  EXPECT_TRUE(insert_result.has_value());
+  auto row_id = insert_result.value();
+
+  // Simulate DB failure
+  db.SetSimulateDbFailureCallbackForTesting(base::BindRepeating(
+      [](SqlSharedCacheIsolatedDatabase::OperationForTesting op) {
+        return op == SqlSharedCacheIsolatedDatabase::OperationForTesting::kRead;
+      }));
+
+  auto blob_handle = db.GetBlobHandle(key, row_id, body_data.size());
+  EXPECT_FALSE(blob_handle.has_value());
+}
+
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesSuccess) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key1("0/0/https://example.com/1");
@@ -435,9 +627,88 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesSuccess) {
   EXPECT_TRUE(db.DeleteEntries({*row2}).has_value());
 }
 
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntryWhileBlobHandleHeld) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  ASSERT_TRUE(db.Init().has_value());
+
+  CacheEntryKey key("0/0/https://example.com/delete-blob");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  const std::string body_data = "body data to delete";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+
+  auto row_id_or_error = db.Insert(key, headers, body_data.size(), body);
+  ASSERT_TRUE(row_id_or_error.has_value());
+  auto row_id = *row_id_or_error;
+
+  // Obtain a blob handle to populate blob_handle_holders_.
+  auto handle = db.GetBlobHandle(key, row_id, body_data.size());
+  ASSERT_TRUE(handle.has_value());
+  EXPECT_FALSE(IsBlobHandleHoldersEmpty(db));
+
+  // Delete the entry while handle is held.
+  db.DeleteEntry(row_id);
+
+  // Reading via db.Read() should now fail because the row was deleted.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(body_data.size());
+  EXPECT_EQ(
+      db.Read(key, row_id, body_data.size(), /*offset=*/0, read_buf).error(),
+      SqlSharedCacheIsolatedDatabase::Error::kFailedToReadBlob);
+
+  handle->reset();
+
+  base::RunLoop run_loop;
+  task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBlobHandleHoldersEmpty(db));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesWhileBlobHandleHeld) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  ASSERT_TRUE(db.Init().has_value());
+
+  CacheEntryKey key("0/0/https://example.com/delete-entries-blob");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  const std::string body_data = "body data to delete entries";
+  auto body = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+
+  auto row_id_or_error = db.Insert(key, headers, body_data.size(), body);
+  ASSERT_TRUE(row_id_or_error.has_value());
+  auto row_id = *row_id_or_error;
+
+  // Obtain a blob handle to populate blob_handle_holders_.
+  auto handle = db.GetBlobHandle(key, row_id, body_data.size());
+  ASSERT_TRUE(handle.has_value());
+  EXPECT_FALSE(IsBlobHandleHoldersEmpty(db));
+
+  // Delete the entries while handle is held.
+  EXPECT_TRUE(db.DeleteEntries({row_id}).has_value());
+
+  // Reading via db.Read() should now fail because the row was deleted.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(body_data.size());
+  EXPECT_EQ(
+      db.Read(key, row_id, body_data.size(), /*offset=*/0, read_buf).error(),
+      SqlSharedCacheIsolatedDatabase::Error::kFailedToReadBlob);
+
+  handle->reset();
+
+  base::RunLoop run_loop;
+  task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBlobHandleHoldersEmpty(db));
+}
+
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesFailureForTesting) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   db.SetSimulateDbFailureCallbackForTesting(base::BindRepeating(
@@ -452,7 +723,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesFailureForTesting) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteMultipleEntriesAtOnce) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key1("0/0/https://example.com/1");
@@ -492,7 +764,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteMultipleEntriesAtOnce) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteNonExistentEntries) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   CacheEntryKey key1("0/0/https://example.com/1");
@@ -520,7 +793,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteNonExistentEntries) {
 
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesEmptyVectorDeath) {
   SqlSharedCacheDbId db_id(1);
-  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
   ASSERT_TRUE(db.Init().has_value());
 
   EXPECT_CHECK_DEATH(std::ignore = db.DeleteEntries({}));
@@ -531,7 +805,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, CleanupDeletesDatabaseFileIfEmpty) {
   base::FilePath db_file = temp_dir_.GetPath().AppendASCII("shared_1.db");
 
   {
-    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                      task_runner_);
     ASSERT_TRUE(db.Init().has_value());
     EXPECT_TRUE(base::PathExists(db_file));
     db.Cleanup();
@@ -546,7 +821,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest,
   base::FilePath db_file = temp_dir_.GetPath().AppendASCII("shared_1.db");
 
   {
-    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                      task_runner_);
     ASSERT_TRUE(db.Init().has_value());
 
     CacheEntryKey key("0/0/https://example.com/1");
@@ -571,7 +847,8 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest,
   base::FilePath db_file = temp_dir_.GetPath().AppendASCII("shared_1.db");
 
   {
-    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                      task_runner_);
     ASSERT_TRUE(db.Init().has_value());
 
     CacheEntryKey key("0/0/https://example.com/1");
