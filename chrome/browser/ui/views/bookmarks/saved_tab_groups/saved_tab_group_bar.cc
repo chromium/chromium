@@ -15,7 +15,6 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
@@ -386,7 +385,7 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
           base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                               weak_ptr_factory_.GetWeakPtr(),
                               group.saved_guid()),
-          browser_->GetBrowserForMigrationOnly(), animations_enabled_),
+          browser_, animations_enabled_),
       clamped_index);
   view->SetProperty(views::kMarginsKey, gfx::Insets::VH(kButtonPadding, 0));
   if (group.saved_tabs().size() == 0) {
@@ -408,8 +407,7 @@ void SavedTabGroupBar::ShowEverythingMenuInternal() {
   }
 
   everything_menu_ = std::make_unique<STGEverythingMenu>(
-      everything_menu_button_->button_controller(),
-      browser_->GetBrowserForMigrationOnly(),
+      everything_menu_button_->button_controller(), browser_,
       STGEverythingMenu::MenuContext::kSavedTabGroupBar);
 
   everything_menu_->RunMenu();
@@ -542,8 +540,7 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
     base::RecordAction(
         base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
     tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
-        browser_->GetBrowserForMigrationOnly(), group->saved_guid(),
-        OpeningSource::kOpenedFromRevisitUi);
+        browser_, group->saved_guid(), OpeningSource::kOpenedFromRevisitUi);
 
     if (will_open_shared_group) {
       saved_tab_groups::metrics::RecordSharedTabGroupRecallType(

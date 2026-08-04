@@ -12,6 +12,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -41,12 +42,12 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kTabsTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kTab);
 
-STGTabsMenuModel::STGTabsMenuModel(Browser* browser,
+STGTabsMenuModel::STGTabsMenuModel(BrowserWindowInterface* browser,
                                    TabGroupMenuContext context)
     : ui::SimpleMenuModel(this), browser_(browser), context_(context) {}
 
 STGTabsMenuModel::STGTabsMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                                   Browser* browser,
+                                   BrowserWindowInterface* browser,
                                    TabGroupMenuContext context)
     : ui::SimpleMenuModel(delegate), browser_(browser), context_(context) {}
 
@@ -237,8 +238,9 @@ void STGTabsMenuModel::ExecuteCommand(int command_id, int event_flags) {
   TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->GetProfile());
-  SavedTabGroupUtils::PerformTabGroupMenuAction(action, context_, browser_,
-                                                tab_group_service);
+  SavedTabGroupUtils::PerformTabGroupMenuAction(
+      action, context_, browser_->GetBrowserForMigrationOnly(),
+      tab_group_service);
 }
 
 void STGTabsMenuModel::OnFaviconDataAvailable(

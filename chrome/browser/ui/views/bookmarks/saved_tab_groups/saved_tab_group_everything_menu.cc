@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -103,7 +104,7 @@ class STGEverythingMenu::AppMenuSubMenuModelDelegate
 };
 
 STGEverythingMenu::STGEverythingMenu(views::MenuButtonController* controller,
-                                     Browser* browser,
+                                     BrowserWindowInterface* browser,
                                      MenuContext menu_context)
     : menu_button_controller_(controller),
       browser_(browser),
@@ -159,7 +160,8 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
           tab_group_service);
 
   const auto* const color_provider =
-      BrowserWindow::FromBrowser(browser_)->GetColorProvider();
+      BrowserWindow::FromBrowser(browser_->GetBrowserForMigrationOnly())
+          ->GetColorProvider();
   for (size_t i = 0; i < sorted_non_empty_tab_groups_.size(); ++i) {
     const std::optional<SavedTabGroup> tab_group =
         tab_group_service->GetGroup(sorted_non_empty_tab_groups_[i]);
@@ -291,7 +293,8 @@ void STGEverythingMenu::RunMenu() {
   auto root = std::make_unique<views::MenuItemView>(this);
   PopulateMenu(root.get());
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
+      browser_->GetBrowserForMigrationOnly());
   CHECK(browser_view);
   CHECK(browser_view->tab_strip_view());
   expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(
@@ -366,7 +369,7 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
         menu_context_ == MenuContext::kAppMenu
             ? TabGroupMenuContext::APP_MENU
             : TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU,
-        browser_,
+        browser_->GetBrowserForMigrationOnly(),
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
             browser_->GetProfile()));
   }

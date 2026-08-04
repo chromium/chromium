@@ -15,8 +15,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -76,7 +76,7 @@ constexpr float kSharedEmptyChipInsets = 2.0f;
 
 SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
                                          PressedCallback callback,
-                                         Browser* browser,
+                                         BrowserWindowInterface* browser,
                                          bool animations_enabled)
     : MenuButton(std::move(callback), group.title()),
       browser_(browser),

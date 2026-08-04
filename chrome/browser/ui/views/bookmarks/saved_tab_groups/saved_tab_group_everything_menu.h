@@ -21,7 +21,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ExpandOnHoverLock;
 
 namespace tab_groups {
@@ -42,7 +42,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   enum class MenuContext { kAppMenu, kSavedTabGroupBar, kVerticalTabStrip };
 
   STGEverythingMenu(views::MenuButtonController* menu_button_controller,
-                    Browser* browser,
+                    BrowserWindowInterface* browser,
                     MenuContext menu_context);
 
   STGEverythingMenu(const STGEverythingMenu&) = delete;
@@ -136,7 +136,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::unique_ptr<AppMenuSubMenuModelDelegate> submenu_delegate_;
   std::optional<base::Uuid> latest_group_id_;
 
-  raw_ptr<Browser> const browser_;
+  raw_ptr<BrowserWindowInterface> const browser_;
   raw_ptr<views::Widget> const widget_;
 
   MenuContext menu_context_;
