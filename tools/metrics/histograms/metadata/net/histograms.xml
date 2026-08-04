@@ -7044,8 +7044,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.PathValidationSuccess{ConnectionMigrationCause}"
-    enum="BooleanSuccess" expires_after="2026-08-09">
-  <owner>renjietang@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2027-08-09">
+  <owner>martinduke@google.com</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The result of path validation according to different migration causes.
