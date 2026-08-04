@@ -67,11 +67,11 @@ bool VirtualAuthenticator::AddRegistration(
     return false;
   }
 
+  device::VirtualFidoDevice::RegistrationData registration(
+      std::move(*fido_private_key), crypto::hash::Sha256(rp_id), counter);
+  registration.rp = device::PublicKeyCredentialRpEntity(rp_id);
   return state_->registrations
-      .emplace(std::move(key_handle),
-               device::VirtualFidoDevice::RegistrationData(
-                   std::move(*fido_private_key), crypto::hash::Sha256(rp_id),
-                   counter))
+      .emplace(std::move(key_handle), std::move(registration))
       .second;
 }
 
