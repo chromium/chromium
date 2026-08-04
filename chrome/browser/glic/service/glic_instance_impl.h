@@ -207,6 +207,8 @@ class GlicInstanceImpl : public GlicInstance,
               std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker =
                   nullptr);
 
+  bool IsActiveEmbedder(EmbedderKey key) const;
+
   // NOTE: This method may result in the deletion of `this`.
   void UnbindEmbedder(EmbedderKey key);
   void UnbindTab(tabs::TabInterface* tab);
@@ -392,7 +394,6 @@ class GlicInstanceImpl : public GlicInstance,
   void MaybeDeactivateEmbedder(EmbedderKey key);
   void MaybeWarmZeroStateSuggestions(mojom::InvocationSource invocation_source);
 
-  bool IsActiveEmbedder(EmbedderKey key) const;
   void UpdateLastActiveTime(EmbedderKey key);
   bool ShouldShowInactiveSidePanel(const SidePanelShowOptions& options) const;
 

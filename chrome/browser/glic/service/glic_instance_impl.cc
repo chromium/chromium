@@ -642,9 +642,9 @@ bool GlicInstanceImpl::Toggle(
     glic::mojom::InvocationSource source,
     std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker) {
   VLOG(1) << "Glic [InstanceImpl] Toggle, id=" << id_.value();
-  instance_metrics_.OnToggle(source, options, IsShowing(),
-                             std::move(invocation_tracker));
   EmbedderKey key = GetEmbedderKey(options);
+  instance_metrics_.OnToggle(source, key, IsShowing(),
+                             std::move(invocation_tracker));
   // Close instance on toggle when it has an active embedder.
   if (IsActiveEmbedder(key)) {
     if (!prevent_close) {

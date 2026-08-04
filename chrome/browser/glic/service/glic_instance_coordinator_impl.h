@@ -212,10 +212,11 @@ class GlicInstanceCoordinatorImpl
 
  private:
   void RemoveAllInstances();
-  base::WeakPtr<GlicInstance> InvokeInternal(
+  base::WeakPtr<GlicInstanceImpl> InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       GlicInvokeOptions options,
-      GlicInvokeWithAutoSubmitOptions auto_submit_options);
+      GlicInvokeWithAutoSubmitOptions auto_submit_options,
+      bool bypass_in_progress_check = false);
 
   void OnTabEvent(const GlicTabEvent& event);
   // Returns a pointer to an instance with the given conversation id or nullptr
@@ -251,6 +252,14 @@ class GlicInstanceCoordinatorImpl
       BrowserWindowInterface* browser,
       bool prevent_close,
       glic::mojom::InvocationSource source,
+      std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker);
+  // Helper method for toggling the UI open. This should ONLY be used by the
+  // toggle flow (ToggleSidePanel, ToggleFloaty) as it bypasses the in-progress
+  // invocation check and sets fre_completion_wait_mode to kNever.
+  void InvokeAndLogToggle(
+      glic::mojom::InvocationSource source,
+      Target::Surface surface,
+      const EmbedderKey& key,
       std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker);
 
   void CloseFloaty(const CloseOptions& options = {});

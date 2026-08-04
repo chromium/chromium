@@ -504,11 +504,11 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
                         std::move(auto_submit_options));
 }
 
-
-base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
+base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options,
-    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+    GlicInvokeWithAutoSubmitOptions auto_submit_options,
+    bool bypass_in_progress_check) {
   RecordInvokeSource(options.GetInvocationSource());
 
   if (!GlicEnabling::IsEnabledForProfile(profile_)) {
@@ -638,12 +638,25 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
     }
   }
 
+  if (bypass_in_progress_check) {
+    auto handler = std::make_unique<GlicInvokeHandler>(
+        *instance, resolved_target, std::move(options),
+        std::move(auto_submit_options), auto_submit_passkey, base::DoNothing());
+    GlicInvokeHandler* handler_ptr = handler.get();
+    handler_ptr->set_completion_callback(
+        base::BindOnce([](std::unique_ptr<GlicInvokeHandler> h, GlicInstance*,
+                          GlicInvokeHandler*) {},
+                       std::move(handler)));
+    handler_ptr->Invoke();
+    return instance->GetWeakPtr();
+  }
+
   if (auto it = invoke_handlers_.find(instance); it != invoke_handlers_.end()) {
     if (options.supersede_if_in_progress) {
       // If requested by `options.supersede_if_in_progress` (e.g. for a
       // continuation prompt from the server during actuation), cancel the
-      // previous handler so this invocation can proceed without being rejected
-      // with kInvokeInProgress.
+      // previous handler so this invocation can proceed without being
+      // rejected with kInvokeInProgress.
       std::unique_ptr<GlicInvokeHandler> old_handler = std::move(it->second);
       invoke_handlers_.erase(it);
       old_handler->Cancel(GlicInvokeError::kSuperseded);
@@ -977,9 +990,18 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(
     glic::mojom::InvocationSource source,
     std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker) {
   CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags());
-  GetOrCreateInstanceImplForFloaty()->Toggle(
-      ShowOptions::ForFloating(/*source_tab=*/tabs::TabHandle::Null()),
-      prevent_close, source, std::move(invocation_tracker));
+  EmbedderKey key = FloatingEmbedderKey();
+  if (GlicInstanceImpl* instance = GetInstanceWithFloaty()) {
+    instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true,
+                                          std::move(invocation_tracker));
+    if (!prevent_close) {
+      instance->Close(key);
+    }
+    return;
+  }
+
+  InvokeAndLogToggle(source, glic::Floating(), key,
+                     std::move(invocation_tracker));
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(
@@ -997,16 +1019,43 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     return;
   }
 
-  GlicInstanceImpl* instance = GetOrCreateGlicInstanceImplForTab(tab);
+  EmbedderKey key = SidePanelEmbedderKey(tab);
+  if (GlicInstanceImpl* instance = GetInstanceImplForTab(tab);
+      instance && instance->IsActiveEmbedder(key)) {
+    instance->instance_metrics().OnToggle(source, key, /*is_showing=*/true,
+                                          std::move(invocation_tracker));
+    if (!prevent_close) {
+      instance->Close(key);
+    }
+    return;
+  }
 
-  // If the tab is already bound, then it already has a pin trigger and this pin
-  // trigger will not be used. If it's not already bound, then we know it's a
-  // newly created instance, so we provide the instance creation trigger.
-  ShowOptions options = ShowOptions::ForSidePanel(
-      *tab, GlicPinTrigger::kInstanceCreation, source);
+  InvokeAndLogToggle(source, tab->GetHandle(), key,
+                     std::move(invocation_tracker));
+}
 
-  instance->Toggle(std::move(options), prevent_close, source,
-                   std::move(invocation_tracker));
+// Helper method for toggling the UI open. This should ONLY be used by the
+// toggle flow (ToggleSidePanel, ToggleFloaty) as it bypasses the in-progress
+// invocation check and sets fre_completion_wait_mode to kNever.
+void GlicInstanceCoordinatorImpl::InvokeAndLogToggle(
+    glic::mojom::InvocationSource source,
+    Target::Surface surface,
+    const EmbedderKey& key,
+    std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker) {
+  GlicInvokeOptions invoke_options(source);
+  invoke_options.target.surface = std::move(surface);
+  invoke_options.fre_completion_wait_mode = FreCompletionWaitMode::kNever;
+  if (!GlicEnabling::HasConsentedForProfile(profile_) &&
+      base::FeatureList::IsEnabled(features::kGlicMessageFirstFre)) {
+    invoke_options.fre_override = mojom::FreOverride::kTrustFirstInline;
+  }
+  auto weak_instance = InvokeInternal(std::nullopt, std::move(invoke_options),
+                                      GlicInvokeWithAutoSubmitOptions(),
+                                      /*bypass_in_progress_check=*/true);
+  if (weak_instance) {
+    weak_instance->instance_metrics().OnToggle(
+        source, key, /*is_showing=*/false, std::move(invocation_tracker));
+  }
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(InstanceId id) {

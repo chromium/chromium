@@ -155,7 +155,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Called when Toggle is called on the instance.
   void OnToggle(glic::mojom::InvocationSource source,
-                const ShowOptions& options,
+                const EmbedderKey& embedder_key,
                 bool is_showing,
                 std::unique_ptr<GlicWindowInvocationTracker>
                     invocation_tracker = nullptr);

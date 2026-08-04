@@ -73,6 +73,10 @@ class GlicInvokeHandler {
   // Cancels the invocation, generating an error callback.
   void Cancel(GlicInvokeError error);
 
+  void set_completion_callback(CompletionCallback completion_callback) {
+    completion_callback_ = std::move(completion_callback);
+  }
+
  private:
   bool IsFloatingTarget() const;
   bool IsTabTarget() const;
