@@ -2985,7 +2985,7 @@ suite('NewTabPageAppTest', () => {
           assertFalse(searchbox.isListening);
 
           voiceSearch.hasErrorTimer = true;
-          voiceSearch.detailedError_ = 5; // VoiceSearchError.NO_MATCH
+          voiceSearch.detailedError = 5; // VoiceSearchError.NO_MATCH
           voiceSearch.setErrorMessageForTesting('Didn\'t get that.');
           await microtasksFinished();
           const tryAgainLink =

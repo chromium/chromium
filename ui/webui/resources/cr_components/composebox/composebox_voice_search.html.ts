@@ -14,7 +14,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
         class="${this.shouldShowErrorScrim_() ? 'has-error' : ''}">
       <div id="error-container" ?hidden="${!this.shouldShowErrorScrim_()}">
         <span id="error-message">${this.errorMessage_}</span>
-        ${this.detailedError_ === VoiceSearchError.NO_MATCH ?
+        ${this.detailedError === VoiceSearchError.NO_MATCH ?
             html`<a id="tryAgainLink" href="#"
                 @click="${this.onTryAgainClick_}"
               >${this.i18n('tryAgain')}

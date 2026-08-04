@@ -545,7 +545,7 @@ suite('ComposeboxVoiceSearchRecognition', () => {
     const voiceSearchElement = getVoiceSearchElement(composeboxElement) as any;
     // Assert: The onEnd_ fallback routing works.
     assertEquals(
-        VoiceSearchError.AUDIO_CAPTURE, voiceSearchElement.detailedError_);
+        VoiceSearchError.AUDIO_CAPTURE, voiceSearchElement.detailedError);
   });
 
   test('ABORTED error is ignored and does not overwrite state', async () => {
@@ -562,7 +562,7 @@ suite('ComposeboxVoiceSearchRecognition', () => {
     const voiceSearchElement = getVoiceSearchElement(composeboxElement) as any;
     // Assert: The component should guard against ABORTED and not record it.
     assertNotEquals(
-        VoiceSearchError.ABORTED, voiceSearchElement.detailedError_);
+        VoiceSearchError.ABORTED, voiceSearchElement.detailedError);
   });
 
   test('audio wave is rendered when listening', async () => {
