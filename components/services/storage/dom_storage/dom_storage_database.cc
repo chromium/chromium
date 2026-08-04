@@ -361,7 +361,6 @@ void DomStorageDatabaseFactory::InitializeDatabase(
   OpenResult result;
   result.SetDatabase(base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(db));
-  result.database_path = std::move(database_path);
   result.metrics_type = metrics_type;
   result.is_sqlite = is_sqlite;
   result.open_status = std::move(open_status);

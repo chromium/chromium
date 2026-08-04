@@ -383,7 +383,6 @@ class DomStorageDatabaseFactory {
     // sequence. Must be called once, on the caller's sequence.
     base::SequenceBound<std::unique_ptr<DomStorageDatabase>> TakeDatabase();
 
-    base::FilePath database_path;
     DatabaseMetricsType metrics_type = DatabaseMetricsType::kOnDisk;
     bool is_sqlite = false;
     DbStatus open_status = DbStatus::IOError("uninitialized");
