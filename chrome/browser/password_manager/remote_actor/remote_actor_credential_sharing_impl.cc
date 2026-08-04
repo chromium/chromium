@@ -24,6 +24,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -159,6 +160,14 @@ void RemoteActorCredentialSharingImpl::OnGetPasswordStoreResultsOrErrorFrom(
         sync_util::IsSyncFeatureActiveIncludingPasswords(sync_service);
 
     for (StoredCredential& login : logins) {
+      password_manager_util::GetLoginMatchType match_type =
+          password_manager_util::GetMatchType(login);
+      if (match_type !=
+              password_manager_util::GetLoginMatchType::kExact &&
+          match_type !=
+              password_manager_util::GetLoginMatchType::kAffiliated) {
+        continue;
+      }
       PasswordForm form = ToPasswordForm(std::move(login));
       if (form.IsUsingAccountStore() ||
           (form.IsUsingProfileStore() && is_sync_active)) {

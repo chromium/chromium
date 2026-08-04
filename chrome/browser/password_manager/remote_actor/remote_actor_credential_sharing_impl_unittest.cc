@@ -29,8 +29,10 @@
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sync/protocol/password_specifics.pb.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -170,6 +172,10 @@ class RemoteActorCredentialSharingImplTest
             web_contents());
     ON_CALL(*mock_client_, IsReauthBeforeFillingRequired)
         .WillByDefault(testing::Return(false));
+    mock_match_helper_ = std::make_unique<
+        testing::NiceMock<password_manager::MockAffiliatedMatchHelper>>(
+        &fake_affiliation_service_);
+    profile_store_->SetAffiliatedMatchHelper(mock_match_helper_.get());
   }
 
   void TearDown() override {
@@ -183,6 +189,7 @@ class RemoteActorCredentialSharingImplTest
     mock_client_ = nullptr;
     mock_sync_service_ = nullptr;
     mock_sharing_service_ = nullptr;
+    mock_match_helper_.reset();
     identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -370,6 +377,14 @@ class RemoteActorCredentialSharingImplTest
     return remote;
   }
 
+  void SetAffiliatedAndGroupedRealms(
+      const password_manager::PasswordFormDigest& observed_form,
+      const std::vector<std::string>& affiliated_realms,
+      const std::vector<std::string>& grouped_realms = {}) {
+    mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+        observed_form, affiliated_realms, grouped_realms);
+  }
+
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   raw_ptr<syncer::MockSyncService> mock_sync_service_ = nullptr;
@@ -388,6 +403,10 @@ class RemoteActorCredentialSharingImplTest
   raw_ptr<StubRemoteActorSelectionDialogController> last_dialog_controller_ = nullptr;
 
   raw_ptr<MockChromePasswordManagerClient> mock_client_ = nullptr;
+  affiliations::FakeAffiliationService fake_affiliation_service_;
+  std::unique_ptr<
+      testing::NiceMock<password_manager::MockAffiliatedMatchHelper>>
+      mock_match_helper_;
 
  private:
   base::test::ScopedFeatureList feature_list_{
@@ -922,6 +941,69 @@ TEST_F(RemoteActorCredentialSharingImplTest,
                                      "google.com", "actor_id",
                                      result.GetCallback());
   EXPECT_FALSE(result.Get());
+}
+
+TEST_F(RemoteActorCredentialSharingImplTest,
+       ExactAndStrongAffiliationsAllowed_PSLAndWeakIgnored) {
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
+      SetUpAndBindFlow();
+
+  PasswordForm exact_form;
+  exact_form.signon_realm = "https://example.com/";
+  exact_form.url = GURL("https://example.com");
+  exact_form.username_value = u"exact_user";
+  exact_form.password_value = u"pass";
+  exact_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(exact_form));
+
+  PasswordForm affiliated_form;
+  affiliated_form.signon_realm = "https://affiliated.com/";
+  affiliated_form.url = GURL("https://affiliated.com");
+  affiliated_form.username_value = u"affiliated_user";
+  affiliated_form.password_value = u"pass";
+  affiliated_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(affiliated_form));
+
+  PasswordForm psl_form;
+  psl_form.signon_realm = "https://m.example.com/";
+  psl_form.url = GURL("https://m.example.com");
+  psl_form.username_value = u"psl_user";
+  psl_form.password_value = u"pass";
+  psl_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(psl_form));
+
+  PasswordForm grouped_form;
+  grouped_form.signon_realm = "https://grouped.com/";
+  grouped_form.url = GURL("https://grouped.com");
+  grouped_form.username_value = u"grouped_user";
+  grouped_form.password_value = u"pass";
+  grouped_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(grouped_form));
+
+  SetAffiliatedAndGroupedRealms(
+      PasswordFormDigest(PasswordForm::Scheme::kHtml, "https://example.com/",
+                         GURL("https://example.com/")),
+      /*affiliated_realms=*/{"https://affiliated.com/"},
+      /*grouped_realms=*/{"https://grouped.com/"});
+
+  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+  base::test::TestFuture<bool> result;
+  base::test::TestFuture<void> dialog_shown_future;
+  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
+  remote->RequestAgentAuthentication(
+      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*domain=*/"example.com", /*remote_actor_id=*/"actor_id",
+      result.GetCallback());
+
+  dialog_shown_future.Get();
+
+  // Only exact_user and affiliated_user should be included in the dialog;
+  // psl_user and grouped_user must be ignored.
+  ASSERT_EQ(last_dialog_credentials_.size(), 2u);
+  EXPECT_EQ(last_dialog_credentials_[0]->username_value, u"exact_user");
+  EXPECT_EQ(last_dialog_credentials_[1]->username_value, u"affiliated_user");
+
+  SimulateDialogSelection(std::nullopt);
 }
 
 }  // namespace password_manager
