@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
+#include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -415,8 +416,8 @@ class AudioContextTest : public PageTestBase {
   void ExpectContextRunning(AudioContext* audio_context) {
     EXPECT_EQ(audio_context->ContextState(),
               V8AudioContextState::Enum::kRunning);
-    EXPECT_TRUE(audio_context->GetRealtimeAudioDestinationNode()
-                    ->GetOwnHandler()
+    EXPECT_TRUE(audio_context->destinationNode()
+                    ->GetAudioDestinationHandler()
                     .get_platform_destination_is_playing_for_testing());
   }
 
@@ -432,16 +433,16 @@ class AudioContextTest : public PageTestBase {
   void ExpectContextSuspended(AudioContext* audio_context) {
     EXPECT_EQ(audio_context->ContextState(),
               V8AudioContextState::Enum::kSuspended);
-    EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
-                     ->GetOwnHandler()
+    EXPECT_FALSE(audio_context->destinationNode()
+                     ->GetAudioDestinationHandler()
                      .get_platform_destination_is_playing_for_testing());
   }
 
   void ExpectContextInterrupted(AudioContext* audio_context) {
     EXPECT_EQ(audio_context->ContextState(),
               V8AudioContextState::Enum::kInterrupted);
-    EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
-                     ->GetOwnHandler()
+    EXPECT_FALSE(audio_context->destinationNode()
+                     ->GetAudioDestinationHandler()
                      .get_platform_destination_is_playing_for_testing());
   }
 
@@ -1519,11 +1520,11 @@ TEST_F(AudioContextTest, ChannelCountRunning) {
 
   // Changing the channel count should should result in the same running and
   // playing state.
-  context->destination()->setChannelCount(
-      context->destination()->maxChannelCount(), ASSERT_NO_EXCEPTION);
+  context->destinationNode()->setChannelCount(
+      context->destinationNode()->maxChannelCount(), ASSERT_NO_EXCEPTION);
   EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
-  EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
-                  ->GetOwnHandler()
+  EXPECT_TRUE(context->destinationNode()
+                  ->GetAudioDestinationHandler()
                   .get_platform_destination_is_playing_for_testing());
 }
 
@@ -1559,8 +1560,8 @@ TEST_F(AudioContextTest, ChannelCountSuspended) {
 
   // Changing the channel count on a suspended context should not change the
   // suspended or playing states.
-  context->destination()->setChannelCount(
-      context->destination()->maxChannelCount(), ASSERT_NO_EXCEPTION);
+  context->destinationNode()->setChannelCount(
+      context->destinationNode()->maxChannelCount(), ASSERT_NO_EXCEPTION);
   ExpectContextSuspended(context);
 
   // Resuming the context should make everything start playing again.
@@ -1570,8 +1571,8 @@ TEST_F(AudioContextTest, ChannelCountSuspended) {
   renderer->Render(128, base::Milliseconds(0), {});
   platform()->RunUntilIdle();
   EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
-  EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
-                  ->GetOwnHandler()
+  EXPECT_TRUE(context->destinationNode()
+                  ->GetAudioDestinationHandler()
                   .get_platform_destination_is_playing_for_testing());
 }
 
@@ -1602,8 +1603,8 @@ TEST_F(AudioContextTest, SetSinkIdRunning) {
       ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
   EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
-  EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
-                  ->GetOwnHandler()
+  EXPECT_TRUE(context->destinationNode()
+                  ->GetAudioDestinationHandler()
                   .get_platform_destination_is_playing_for_testing());
 }
 
@@ -1650,8 +1651,8 @@ TEST_F(AudioContextTest, SetSinkIdSuspended) {
       ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
   EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
-  EXPECT_FALSE(context->GetRealtimeAudioDestinationNode()
-                   ->GetOwnHandler()
+  EXPECT_FALSE(context->destinationNode()
+                   ->GetAudioDestinationHandler()
                    .get_platform_destination_is_playing_for_testing());
 
   // Resuming the context should make everything start playing again.
@@ -1662,8 +1663,8 @@ TEST_F(AudioContextTest, SetSinkIdSuspended) {
   renderer->Render(128, base::Milliseconds(0), {});
   platform()->RunUntilIdle();
   EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
-  EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
-                  ->GetOwnHandler()
+  EXPECT_TRUE(context->destinationNode()
+                  ->GetAudioDestinationHandler()
                   .get_platform_destination_is_playing_for_testing());
 }
 
@@ -2044,8 +2045,8 @@ TEST_F(AudioContextTest, InitialStateSuspended) {
   // State is "suspended" after construction but playback starts immediately;
   EXPECT_EQ(audio_context->ContextState(),
             V8AudioContextState::Enum::kSuspended);
-  EXPECT_TRUE(audio_context->GetRealtimeAudioDestinationNode()
-                  ->GetOwnHandler()
+  EXPECT_TRUE(audio_context->destinationNode()
+                  ->GetAudioDestinationHandler()
                   .get_platform_destination_is_playing_for_testing());
 
   // The state transition to "running" happens asynchronously.
@@ -2065,8 +2066,8 @@ TEST_F(AudioContextTest, SuspendCancelsInitialTransition) {
   // State is "suspended" after construction but playback starts immediately.
   EXPECT_EQ(audio_context->ContextState(),
             V8AudioContextState::Enum::kSuspended);
-  EXPECT_TRUE(audio_context->GetRealtimeAudioDestinationNode()
-                  ->GetOwnHandler()
+  EXPECT_TRUE(audio_context->destinationNode()
+                  ->GetAudioDestinationHandler()
                   .get_platform_destination_is_playing_for_testing());
 
   // Now suspend before the async transition to "running" completes.
@@ -2076,8 +2077,8 @@ TEST_F(AudioContextTest, SuspendCancelsInitialTransition) {
   ExpectContextBecomesSuspendedAsync(audio_context);
 
   // Platform destination should have stopped.
-  EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
-                   ->GetOwnHandler()
+  EXPECT_FALSE(audio_context->destinationNode()
+                   ->GetAudioDestinationHandler()
                    .get_platform_destination_is_playing_for_testing());
 }
 
@@ -2102,8 +2103,8 @@ TEST_F(AudioContextTest, SuspendCancelsResumeTransition) {
   audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
 
   // Playback starts immediately.
-  EXPECT_TRUE(audio_context->GetRealtimeAudioDestinationNode()
-                  ->GetOwnHandler()
+  EXPECT_TRUE(audio_context->destinationNode()
+                  ->GetAudioDestinationHandler()
                   .get_platform_destination_is_playing_for_testing());
 
   // The state transition is scheduled to happen asynchronously.
@@ -2117,8 +2118,8 @@ TEST_F(AudioContextTest, SuspendCancelsResumeTransition) {
   ExpectContextBecomesSuspendedAsync(audio_context);
 
   // Platform destination should have stopped.
-  EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
-                   ->GetOwnHandler()
+  EXPECT_FALSE(audio_context->destinationNode()
+                   ->GetAudioDestinationHandler()
                    .get_platform_destination_is_playing_for_testing());
 }
 
@@ -2274,8 +2275,8 @@ TEST_F(AudioContextTest, AsyncStateUseCountersReadWhileInitialTransition) {
         WebFeature::kAudioContextAsyncTransitionToSuspendedStateRead));
     ClearAudioContextAsyncStateUseCounters();
 
-    EXPECT_TRUE(audio_context->GetRealtimeAudioDestinationNode()
-                    ->GetOwnHandler()
+    EXPECT_TRUE(audio_context->destinationNode()
+                    ->GetAudioDestinationHandler()
                     .get_platform_destination_is_playing_for_testing());
 
     // Wait until the state becomes "running".
@@ -2334,8 +2335,8 @@ TEST_F(AudioContextTest, AsyncStateUseCountersReadWhileSuspendTransition) {
                 feature_enabled ? V8AudioContextState::Enum::kSuspended
                                 : V8AudioContextState::Enum::kRunning);
 
-      EXPECT_TRUE(audio_context->GetRealtimeAudioDestinationNode()
-                      ->GetOwnHandler()
+      EXPECT_TRUE(audio_context->destinationNode()
+                      ->GetAudioDestinationHandler()
                       .get_platform_destination_is_playing_for_testing());
 
       ClearAudioContextAsyncStateUseCounters();
@@ -2431,8 +2432,8 @@ TEST_F(AudioContextTest, AsyncStateUseCountersReadWhileSuspendTransition) {
           WebFeature::kAudioContextAsyncTransitionToSuspendedStateRead));
       ClearAudioContextAsyncStateUseCounters();
 
-      EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
-                       ->GetOwnHandler()
+      EXPECT_FALSE(audio_context->destinationNode()
+                       ->GetAudioDestinationHandler()
                        .get_platform_destination_is_playing_for_testing());
     }
   }

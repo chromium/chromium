@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/modules/webaudio/oscillator_node.h"
 #include "third_party/blink/renderer/modules/webaudio/panner_node.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
+#include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/script_processor_node.h"
 #include "third_party/blink/renderer/modules/webaudio/stereo_panner_node.h"
@@ -238,14 +239,14 @@ void BaseAudioContext::ContextLifecycleStateChanged(
   }
 
   if (state == mojom::blink::FrameLifecycleState::kRunning) {
-    destination()->GetAudioDestinationHandler().Resume();
+    destinationNode()->GetAudioDestinationHandler().Resume();
   } else if (state == mojom::blink::FrameLifecycleState::kFrozen) {
-    destination()->GetAudioDestinationHandler().Pause();
+    destinationNode()->GetAudioDestinationHandler().Pause();
   }
 }
 
 void BaseAudioContext::ContextDestroyed() {
-  destination()->GetAudioDestinationHandler().ContextDestroyed();
+  destinationNode()->GetAudioDestinationHandler().ContextDestroyed();
   Uninitialize();
 }
 
@@ -260,7 +261,7 @@ bool BaseAudioContext::HasPendingActivity() const {
   return !is_cleared_;
 }
 
-AudioDestinationNode* BaseAudioContext::destination() const {
+AudioDestinationNode* BaseAudioContext::destinationNode() const {
   // Cannot be called from the audio thread because this method touches objects
   // managed by Oilpan, and the audio thread is not managed by Oilpan.
   DCHECK(!IsAudioThread());
@@ -852,7 +853,7 @@ void BaseAudioContext::StartRendering() {
   DCHECK(destination_node_);
 
   if (control_thread_state_ == V8AudioContextState::Enum::kSuspended) {
-    destination()->GetAudioDestinationHandler().StartRendering();
+    destinationNode()->GetAudioDestinationHandler().StartRendering();
   }
 }
 
@@ -901,7 +902,7 @@ void BaseAudioContext::NotifyWorkletIsReady() {
     case V8AudioContextState::Enum::kRunning:
       // If the context is running, restart the destination to switch the render
       // thread with the worklet thread right away.
-      destination()->GetAudioDestinationHandler().RestartRendering();
+      destinationNode()->GetAudioDestinationHandler().RestartRendering();
       break;
     case V8AudioContextState::Enum::kSuspended:
     case V8AudioContextState::Enum::kInterrupted:
@@ -910,7 +911,9 @@ void BaseAudioContext::NotifyWorkletIsReady() {
       // thread from touching worklet-related objects by blocking an invalid
       // transitory state where the context state is suspended or interrupted
       // and the destination state is running. See: crbug.com/1403515
-      destination()->GetAudioDestinationHandler().PrepareTaskRunnerForWorklet();
+      destinationNode()
+          ->GetAudioDestinationHandler()
+          .PrepareTaskRunnerForWorklet();
       break;
     case V8AudioContextState::Enum::kClosed:
       // When the context is closed, no preparation for the worklet operations
@@ -939,7 +942,7 @@ void BaseAudioContext::UpdateWorkletGlobalScopeOnRenderingThread() {
 int32_t BaseAudioContext::MaxChannelCount() {
   DCHECK(IsMainThread());
 
-  AudioDestinationNode* destination_node = destination();
+  AudioDestinationNode* destination_node = destinationNode();
   if (!destination_node ||
       !destination_node->GetAudioDestinationHandler().IsInitialized()) {
     return -1;
@@ -951,7 +954,7 @@ int32_t BaseAudioContext::MaxChannelCount() {
 int32_t BaseAudioContext::CallbackBufferSize() {
   DCHECK(IsMainThread());
 
-  AudioDestinationNode* destination_node = destination();
+  AudioDestinationNode* destination_node = destinationNode();
   if (!destination_node ||
       !destination_node->GetAudioDestinationHandler().IsInitialized() ||
       !HasRealtimeConstraint()) {

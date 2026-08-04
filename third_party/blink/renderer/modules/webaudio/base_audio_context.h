@@ -114,8 +114,13 @@ class MODULES_EXPORT BaseAudioContext
   void ReportWillBeDestroyed() final;
 
   // https://webaudio.github.io/web-audio-api/#BaseAudioContext
-  // Cannot be called from the audio thread.
-  AudioDestinationNode* destination() const;
+  //
+  // Cannot be called from the audio thread. This method returns a
+  // GarbageCollected object, which must not be accessed on the real-time audio
+  // thread. For audio thread access, use the corresponding
+  // AudioDestinationHandler instead.
+  virtual AudioDestinationNode* destinationNode() const;
+
   float sampleRate() const { return destination_handler_->SampleRate(); }
   double currentTime() const { return destination_handler_->CurrentTime(); }
   AudioListener* listener() { return listener_.Get(); }
@@ -184,7 +189,7 @@ class MODULES_EXPORT BaseAudioContext
 
   // Is the destination node initialized and ready to handle audio?
   bool IsDestinationInitialized() const {
-    AudioDestinationNode* dest = destination();
+    AudioDestinationNode* dest = destinationNode();
     return dest ? dest->GetAudioDestinationHandler().IsInitialized() : false;
   }
 

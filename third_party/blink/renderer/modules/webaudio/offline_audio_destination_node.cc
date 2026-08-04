@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
+#include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
@@ -60,6 +61,11 @@ OfflineAudioDestinationNode* OfflineAudioDestinationNode::Create(
     float sample_rate) {
   return MakeGarbageCollected<OfflineAudioDestinationNode>(
       *context, number_of_channels, frames_to_process, sample_rate);
+}
+
+OfflineAudioDestinationHandler&
+OfflineAudioDestinationNode::GetAudioDestinationHandler() const {
+  return static_cast<OfflineAudioDestinationHandler&>(Handler());
 }
 
 void OfflineAudioDestinationNode::Trace(Visitor* visitor) const {

@@ -87,10 +87,6 @@ void OfflineAudioDestinationHandler::Uninitialize() {
   AudioHandler::Uninitialize();
 }
 
-OfflineAudioContext* OfflineAudioDestinationHandler::Context() const {
-  return static_cast<OfflineAudioContext*>(AudioDestinationHandler::Context());
-}
-
 uint32_t OfflineAudioDestinationHandler::MaxChannelCount() const {
   return channel_count_;
 }
@@ -242,7 +238,8 @@ void OfflineAudioDestinationHandler::NotifySuspend(size_t frame) {
   DCHECK(IsMainThread());
 
   if (!IsExecutionContextDestroyed() && Context()) {
-    Context()->ResolveSuspendOnMainThread(frame);
+    auto* offline_context = static_cast<OfflineAudioContext*>(Context());
+    offline_context->ResolveSuspendOnMainThread(frame);
   }
 }
 
@@ -259,7 +256,8 @@ void OfflineAudioDestinationHandler::NotifyComplete() {
 
   // The OfflineAudioContext might be gone.
   if (Context() && Context()->GetExecutionContext()) {
-    Context()->FireCompletionEvent();
+    auto* offline_context = static_cast<OfflineAudioContext*>(Context());
+    offline_context->FireCompletionEvent();
   }
 }
 

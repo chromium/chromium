@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
+#include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
@@ -38,7 +39,9 @@ void InternalsWebAudio::emulateDeviceFailureOnAudioContext(
 
 bool InternalsWebAudio::isSilenceDetectionActive(Internals& internals,
                                                   AudioContext* context) {
-  return context->GetRealtimeAudioDestinationNode()->GetOwnHandler().is_silence_detection_active_for_testing();
+  return context->destinationNode()
+      ->GetAudioDestinationHandler()
+      .is_silence_detection_active_for_testing();
 }
 
 }  // namespace blink

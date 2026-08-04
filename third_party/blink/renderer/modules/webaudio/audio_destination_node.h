@@ -47,9 +47,7 @@ class MODULES_EXPORT AudioDestinationNode : public AudioNode {
  public:
   uint32_t maxChannelCount() const;
 
-  // Returns its own handler object instead of a generic one from
-  // AudioNode::Handler().
-  AudioDestinationHandler& GetAudioDestinationHandler() const;
+  virtual AudioDestinationHandler& GetAudioDestinationHandler() const;
 
   // InspectorHelperMixin: Note that this node belongs to BaseAudioContext,
   // so these methods are invoked by the parent context.

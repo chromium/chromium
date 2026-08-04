@@ -30,6 +30,7 @@
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
+#include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
@@ -67,8 +68,8 @@ RealtimeAudioDestinationNode* RealtimeAudioDestinationNode::Create(
       update_echo_cancellation_on_first_start);
 }
 
-RealtimeAudioDestinationHandler& RealtimeAudioDestinationNode::GetOwnHandler()
-    const {
+RealtimeAudioDestinationHandler&
+RealtimeAudioDestinationNode::GetAudioDestinationHandler() const {
   return static_cast<RealtimeAudioDestinationHandler&>(Handler());
 }
 

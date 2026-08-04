@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
-#include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 
 namespace blink {
@@ -38,8 +37,6 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // AudioNode
   double TailTime() const override { return 0; }
   double LatencyTime() const override { return 0; }
-
-  OfflineAudioContext* Context() const final;
 
   // AudioDestinationHandler
   void StartRendering() override;

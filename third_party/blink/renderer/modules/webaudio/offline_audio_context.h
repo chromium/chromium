@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
+#include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -65,6 +66,8 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   ~OfflineAudioContext() override;
 
   void Trace(Visitor*) const override;
+
+  OfflineAudioDestinationNode* destinationNode() const override;
 
   uint32_t length() const { return total_render_frames_; }
 

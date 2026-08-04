@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 #include "third_party/blink/renderer/modules/webaudio/deferred_task_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_completion_event.h"
+#include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -201,6 +202,11 @@ void OfflineAudioContext::Trace(Visitor* visitor) const {
   BaseAudioContext::Trace(visitor);
 }
 
+OfflineAudioDestinationNode* OfflineAudioContext::destinationNode() const {
+  return static_cast<OfflineAudioDestinationNode*>(
+      BaseAudioContext::destinationNode());
+}
+
 ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     ScriptState* script_state,
     ExceptionState& exception_state) {
@@ -270,7 +276,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
   // Start rendering and return the promise.
   is_rendering_started_ = true;
   SetContextState(V8AudioContextState::Enum::kRunning);
-  static_cast<OfflineAudioDestinationNode*>(destination())
+  destinationNode()
       ->SetDestinationBuffer(render_target);
   DestinationHandler().StartRendering();
   return complete_resolver_->Promise();
@@ -424,7 +430,7 @@ void OfflineAudioContext::FireCompletionEvent() {
   // Avoid firing the event if the document has already gone away.
   if (GetExecutionContext()) {
     AudioBuffer* rendered_buffer =
-        static_cast<OfflineAudioDestinationNode*>(destination())
+        destinationNode()
             ->DestinationBuffer();
     DCHECK(rendered_buffer);
     if (!rendered_buffer) {
@@ -486,8 +492,7 @@ void OfflineAudioContext::HandlePostRenderTasks() {
 }
 
 OfflineAudioDestinationHandler& OfflineAudioContext::DestinationHandler() {
-  return static_cast<OfflineAudioDestinationHandler&>(
-      destination()->GetAudioDestinationHandler());
+  return destinationNode()->GetAudioDestinationHandler();
 }
 
 void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
