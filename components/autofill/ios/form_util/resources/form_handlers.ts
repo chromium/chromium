@@ -159,7 +159,8 @@ function isAutofillTrackFormMutationsOptimizationEnabled(): boolean {
  * Returns true if the password fields tracking feature is enabled.
  */
 function isTrackPasswordFieldsEnabled(): boolean {
-  return (window as any).gCrWebPlaceholderAutofillTrackPasswordFieldsIos;
+  return autofillFormFeaturesApi.getFunction(
+      'isAutofillTrackPasswordFieldsEnabled')();
 }
 
 /**
@@ -382,17 +383,6 @@ function attachListeners(): void {
   window.addEventListener('message', processInboundMessage);
 }
 
-/**
- * Scan the page for password fields and set the HAS_BEEN_PASSWORD_SYMBOL on
- * them.
- */
-function markPasswordFields(): void {
-  const passwordFields = document.querySelectorAll('input[type="password"]');
-  for (const passwordField of passwordFields) {
-    (passwordField as PasswordTrackedElement)[HAS_BEEN_PASSWORD_SYMBOL] = true;
-  }
-}
-
 // Attach the listeners immediately to try to catch early actions of the user.
 attachListeners();
 
@@ -484,18 +474,6 @@ function processFormMutationsStandard(
     // Process mutations to the tree of nodes.
     if (mutation.type === 'childList') {
       const addedFormElements = findAllFormElementsInNodes(mutation.addedNodes);
-
-      // For all password field in the added nodes, set
-      // HAS_BEEN_PASSWORD_SYMBOL.
-      if (isTrackPasswordFieldsEnabled()) {
-        for (const element of addedFormElements) {
-          if (element.tagName === 'INPUT' &&
-              (element as HTMLInputElement).type === 'password') {
-            (element as PasswordTrackedElement)[HAS_BEEN_PASSWORD_SYMBOL] =
-                true;
-          }
-        }
-      }
 
       // Handle added nodes.
       const formWasAdded = addedFormElements.length > 0;
@@ -720,9 +698,6 @@ function processFormMutationsOptimized(): void {
   if (addedFormControlCount > 0 ||
       removedFormControlCount >
           (removedFormIDs.length + removedFieldIDs.length)) {
-    if (addedFormControlCount > 0 && isTrackPasswordFieldsEnabled()) {
-      markPasswordFields();
-    }
     addedFormMessage = {
       'command': 'form.activity',
       'frameID': gCrWeb.getFrameId(),
@@ -824,7 +799,6 @@ function trackFormMutations(delay: number): void {
 
   // Track password field mutations.
   if (isTrackPasswordFieldsEnabled()) {
-    markPasswordFields();
     initializePasswordFieldTypeObserver();
   }
 

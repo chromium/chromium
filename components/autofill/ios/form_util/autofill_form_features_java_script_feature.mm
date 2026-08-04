@@ -68,6 +68,10 @@ GetReplacements() {
                 ::kAutofillCountFormSubmissionInRenderer)
         ? @"true"
         : @"false",
+    @"gCrWebPlaceholderAutofillTrackPasswordFieldsIos" :
+            base::FeatureList::IsEnabled(::kAutofillTrackPasswordFieldsIos)
+        ? @"true"
+        : @"false",
   };
 }
 }  // namespace

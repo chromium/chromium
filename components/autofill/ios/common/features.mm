@@ -74,7 +74,9 @@ extern const base::FeatureParam<int> kAutofillDocumentFormScanPeriodMs = {
 BASE_FEATURE(kAutofillThrottleDocumentFormScanForceFirstScanIos,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// LINT.IfChange(autofill_track_password_fields_ios)
 BASE_FEATURE(kAutofillTrackPasswordFieldsIos, base::FEATURE_ENABLED_BY_DEFAULT);
+// LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_track_password_fields_ios)
 
 BASE_FEATURE(kAutofillThrottleFilteredDocumentFormScanIos,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -203,6 +203,9 @@ TEST_F(FormActivityTabHelperTest, TestPasswordSymbolSetOnNewElement) {
   // will set the attribute correctly.
   ExecuteJavaScript(
       @"document.body.innerHTML = '<input type=\"password\" id=\"pw\"/>';");
+  ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('autofill').getFunction('extractForms')("
+      @"false);");
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [GetHasBeenPasswordForElement(@"pw") isEqual:@YES];
@@ -226,6 +229,9 @@ TEST_F(FormActivityTabHelperTest, TestPasswordSymbolSetOnTypeChange) {
 
   FormHandlersJavaScriptFeature::GetInstance()->TrackFormMutations(
       main_frame, /*mutation_tracking_delay=*/200);
+  ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('autofill').getFunction('extractForms')("
+      @"false);");
 
   // Loading the page should have set the attribute since the input is a
   // password.
@@ -259,6 +265,9 @@ TEST_F(FormActivityTabHelperTest, TestPasswordSymbolFeatureDisabled) {
 
   FormHandlersJavaScriptFeature::GetInstance()->TrackFormMutations(
       main_frame, /*mutation_tracking_delay=*/200);
+  ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('autofill').getFunction('extractForms')("
+      @"false);");
 
   // The Has Been Password symbol is not set since the feature is disabled
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
