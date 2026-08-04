@@ -308,14 +308,14 @@ class TabStripComboButtonHorizontalInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonHorizontalInteractiveUiTest,
                        OnlyTabSearchIsPresent) {
   RunTestSequence(
-      // Pin both tab search and organizer panel.
+      // Pin both tab search and everything menu.
       SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
-      SetPinned(prefs::kOrganizerPanelPinnedToTabstrip, true),
+      SetPinned(prefs::kEverythingMenuPinnedToTabstrip, true),
       // Tab search should be visible.
       WaitForShow(kTabSearchButtonElementId),
-      // Organizer panel should NOT be present in the view hierarchy of the
-      // combo button.
-      EnsureNotPresent(kVerticalTabStripOrganizerButtonElementId));
+      // Saved tab group button should NOT be present in the view hierarchy of
+      // the combo button.
+      EnsureNotPresent(kSavedTabGroupButtonElementId));
 }
 
 }  // namespace
