@@ -430,6 +430,13 @@ UmaPageLoadMetricsObserver::OnCommit(
       navigation_handle_timing_.navigation_commit_sent_time,
       navigation_handle_timing_.before_unload_dialog_duration);
 
+  auto track = GetTracingTrack("PageLoad: Timelines",
+                               "CommitSentToFirstSubresourceLoadStart");
+  TRACE_EVENT_BEGIN("loading", "CommitSentToFirstSubresourceLoadStart", track,
+                    navigation_handle_timing_.navigation_commit_sent_time,
+                    perfetto::protos::pbzero::ChromeTrackEvent::kPageLoad,
+                    *this);
+
   EmitPageLoadTimelineTraceEventBegin(
       "NavigationCommitSentToParseStart",
       navigation_handle_timing_.navigation_commit_sent_time);
@@ -818,13 +825,13 @@ void UmaPageLoadMetricsObserver::OnParseStart(
       "navigation", "ParseStartToDOMContentLoaded", track1, parse_start,
       perfetto::protos::pbzero::ChromeTrackEvent::kPageLoad, *this);
 
-  auto track2 = GetTracingTrack("PageLoad: Timelines", "ParseStartToFCP");
-  TRACE_EVENT_BEGIN("navigation", "ParseStartToFCP", track2, parse_start,
+  auto track2 = GetTracingTrack("PageLoad: Timelines", "ParseStartToLCP");
+  TRACE_EVENT_BEGIN("navigation", "ParseStartToLCP", track2, parse_start,
                     perfetto::protos::pbzero::ChromeTrackEvent::kPageLoad,
                     *this);
 
-  auto track3 = GetTracingTrack("PageLoad: Timelines", "ParseStartToLCP");
-  TRACE_EVENT_BEGIN("navigation", "ParseStartToLCP", track3, parse_start,
+  auto track3 = GetTracingTrack("PageLoad: Timelines", "ParseStartToFCP");
+  TRACE_EVENT_BEGIN("navigation", "ParseStartToFCP", track3, parse_start,
                     perfetto::protos::pbzero::ChromeTrackEvent::kPageLoad,
                     *this);
 
@@ -964,10 +971,6 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
 
     auto track = GetTracingTrack("PageLoad: Timelines",
                                  "CommitSentToFirstSubresourceLoadStart");
-    TRACE_EVENT_BEGIN("loading", "CommitSentToFirstSubresourceLoadStart", track,
-                      commit_sent_time,
-                      perfetto::protos::pbzero::ChromeTrackEvent::kPageLoad,
-                      *this);
     TRACE_EVENT_END("loading", track, timing_info.request_start);
   }
 }
@@ -1473,6 +1476,12 @@ void UmaPageLoadMetricsObserver::CloseIncompleteTimelineTraceEvents(
   if (!main_frame_timing.paint_timing->first_contentful_paint.has_value()) {
     auto track = GetTracingTrack("PageLoad: Timelines", "ParseStartToFCP");
     TRACE_EVENT_END("navigation", track, navigation_end);
+  }
+
+  if (!received_first_subresource_load_) {
+    auto track = GetTracingTrack("PageLoad: Timelines",
+                                 "CommitSentToFirstSubresourceLoadStart");
+    TRACE_EVENT_END("loading", track, navigation_end);
   }
 
   if (!lcp_trace_ended_) {
