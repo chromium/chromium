@@ -35,16 +35,28 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.listmenu.ListItemType;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -89,6 +101,9 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     private final @Nullable OnLayoutChangeListener mAnchorViewLayoutChangeListener;
     private final Supplier<@Nullable Tab> mCurrentTabSupplier;
     private final HistoryDelegate mHistoryDelegate;
+    private final ModelList mListItems = new ModelList();
+
+    private @Nullable ListMenuHost mListMenuHost;
 
     private DefaultFaviconHelper mDefaultFaviconHelper;
 
@@ -203,6 +218,14 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     /** Shows the popup attached to the specified anchor view. */
     public void show(View anchorView) {
         if (!mInitialized) initialize();
+        if (mType != Type.ANDROID_SYSTEM_BACK && ToolbarFeatures.isNavigationListMenuEnabled()) {
+            showListMenu(anchorView);
+            return;
+        }
+        showListPopupWindow(anchorView);
+    }
+
+    private void showListPopupWindow(View anchorView) {
         if (!mPopup.isShowing()) RecordUserAction.record(buildComputedAction("Popup"));
         if (mPopup.getAnchorView() != null && mAnchorViewLayoutChangeListener != null) {
             mPopup.getAnchorView().removeOnLayoutChangeListener(mAnchorViewLayoutChangeListener);
@@ -249,6 +272,10 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
 
     /** Dismisses the popup. */
     public void dismiss() {
+        if (mListMenuHost != null) {
+            mListMenuHost.dismiss();
+            return;
+        }
         mPopup.dismiss();
     }
 
@@ -258,6 +285,87 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
      */
     public void setOnDismissCallback(Runnable onDismiss) {
         mOnDismissCallback = onDismiss;
+    }
+
+    private void showListMenu(View anchorView) {
+        if (mListMenuHost != null && mListMenuHost.isMenuShowing()) {
+            return;
+        }
+
+        RecordUserAction.record(buildComputedAction("Popup"));
+        mListItems.clear();
+
+        for (int i = 0; i < mHistory.getEntryCount(); i++) {
+            NavigationEntry entry = mHistory.getEntryAtIndex(i);
+            PropertyModel model =
+                    new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                            .with(ListMenuItemProperties.TITLE, getTitleForNavEntry(entry))
+                            .with(ListMenuItemProperties.ENABLED, true)
+                            .with(ListMenuItemProperties.MENU_ITEM_ID, entry.getIndex())
+                            .with(ListMenuItemProperties.ORDER, i)
+                            .with(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN, true)
+                            .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
+                            .build();
+            updateIconForModel(model, entry.getFavicon(), entry.getIndex());
+            mListItems.add(new ListItem(ListItemType.MENU_ITEM, model));
+        }
+        initListMenuHost(anchorView);
+        assumeNonNull(mListMenuHost).showMenu();
+    }
+
+    private String getTitleForNavEntry(NavigationEntry entry) {
+        String title = entry.getTitle();
+        if (!TextUtils.isEmpty(title)) return title;
+        String virtualUrl = entry.getVirtualUrl().getSpec();
+        return !TextUtils.isEmpty(virtualUrl) ? virtualUrl : entry.getUrl().getSpec();
+    }
+
+    private void updateIconForModel(PropertyModel model, @Nullable Bitmap favicon, int index) {
+        if (index == FULL_HISTORY_ENTRY_INDEX) {
+            model.set(ListMenuItemProperties.START_ICON_ID, R.drawable.ic_history_24dp);
+            model.set(
+                    ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                    R.color.default_icon_color_accent1_tint_list);
+        } else if (favicon != null) {
+            model.set(ListMenuItemProperties.START_ICON_BITMAP, favicon);
+        }
+    }
+
+    private void initListMenuHost(View anchorView) {
+        mListMenuHost = new ListMenuHost(anchorView, null);
+        mListMenuHost.setDelegate(createListMenuDelegate(), false);
+        mListMenuHost.addPopupListener(
+                new ListMenuHost.PopupMenuShownListener() {
+                    @Override
+                    public void onPopupMenuShown() {}
+
+                    @Override
+                    public void onPopupMenuDismissed() {
+                        onDismiss();
+                    }
+                });
+    }
+
+    private ListMenuDelegate createListMenuDelegate() {
+        return new ListMenuDelegate() {
+            @Override
+            public ListMenu getListMenu() {
+                return BrowserUiListMenuUtils.getBasicListMenu(
+                        mContext,
+                        mListItems,
+                        (item, view) -> {
+                            int index = item.get(ListMenuItemProperties.MENU_ITEM_ID);
+                            int position = item.get(ListMenuItemProperties.ORDER);
+                            handleItemClick(index, position);
+                            dismiss();
+                        });
+            }
+
+            @Override
+            public RectProvider getRectProvider(View view) {
+                return new ViewRectProvider(view);
+            }
+        };
     }
 
     private void centerPopupOverAnchorViewAndShow() {
@@ -322,27 +430,39 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         }
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
             NavigationEntry entry = mHistory.getEntryAtIndex(i);
-            if (pageUrl.equals(entry.getUrl())) entry.updateFavicon(favicon);
+            if (pageUrl.equals(entry.getUrl())) {
+                entry.updateFavicon(favicon);
+
+                if (!mListItems.isEmpty() && i < mListItems.size()) {
+                    PropertyModel model = mListItems.get(i).model;
+                    updateIconForModel(model, favicon, entry.getIndex());
+                }
+            }
         }
-        mAdapter.notifyDataSetChanged();
+
+        if (mListItems.isEmpty()) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         NavigationEntry entry = (NavigationEntry) parent.getItemAtPosition(position);
-        if (entry.getIndex() == FULL_HISTORY_ENTRY_INDEX) {
+        handleItemClick(entry.getIndex(), position);
+        mPopup.dismiss();
+    }
+
+    private void handleItemClick(int index, int position) {
+        if (index == FULL_HISTORY_ENTRY_INDEX) {
             RecordUserAction.record(buildComputedAction("ShowFullHistory"));
             Tab currentTab = mCurrentTabSupplier.get();
             assert currentTab != null;
             mHistoryDelegate.show(currentTab);
-        } else {
-            // 1-based index to keep in line with Desktop implementation.
-            RecordUserAction.record(buildComputedAction("HistoryClick" + (position + 1)));
-            int index = entry.getIndex();
-            mNavigationController.goToNavigationIndex(index);
+            return;
         }
-
-        mPopup.dismiss();
+        // 1-based index to keep in line with Desktop implementation.
+        RecordUserAction.record(buildComputedAction("HistoryClick" + (position + 1)));
+        mNavigationController.goToNavigationIndex(index);
     }
 
     private class NavigationAdapter extends BaseAdapter {
@@ -410,14 +530,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         }
 
         private void setViewText(NavigationEntry entry, TextView view) {
-            String entryText = entry.getTitle();
-            if (TextUtils.isEmpty(entryText)) {
-                entryText = entry.getVirtualUrl().getSpec();
-            }
-            if (TextUtils.isEmpty(entryText)) {
-                entryText = entry.getUrl().getSpec();
-            }
-            view.setText(entryText);
+            view.setText(getTitleForNavEntry(entry));
         }
     }
 
