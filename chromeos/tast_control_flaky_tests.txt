@@ -23,3 +23,7 @@ tast.inputs.VirtualKeyboardChangeInput.tablet
 # b/537159924
 tast.wmp.DesksTemplatesBasic
 tast.wmp.DesksTemplatesLaunch
+
+# b/542361822
+tast.shimlessrma.CancelFlow.select_components_none_next_cancel_critical@octopus
+
