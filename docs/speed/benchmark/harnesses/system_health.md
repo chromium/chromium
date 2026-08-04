@@ -62,8 +62,7 @@ There are few groups of stories:
 3. [Browsing stories](../../../../tools/perf/page_sets/system_health/browsing_stories.py)
 4. [Chrome stories](../../../../tools/perf/page_sets/system_health/chrome_stories.py)
 5. [Loading stories](../../../../tools/perf/page_sets/system_health/loading_stories.py)
-6. [Multi-tab stories](../../../../tools/perf/page_sets/system_health/multi_tab_stories.py)
-7. [Media stories](../../../../tools/perf/page_sets/system_health/media_stories.py)
+6. [Media stories](../../../../tools/perf/page_sets/system_health/media_stories.py)
 
 ## What is the structure of a System Health story?
 A System Health story is a subclass of
