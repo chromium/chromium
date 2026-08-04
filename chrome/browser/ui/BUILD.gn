@@ -2274,12 +2274,6 @@ static_library("ui") {
           [ "//chrome/browser/ui/webui/signin:inline_login_impl" ]
     }
 
-    if (is_mac) {
-      # TODO(358538886): find_bar/find_bar_platform_helper_mac.mm includes
-      # //c/b/ui/browser.h which causes a circular dependency with //c/b/ui.
-      allow_circular_includes_from += [ "//chrome/browser/ui/find_bar:impl" ]
-    }
-
     if (use_ozone && !is_chromeos) {
       deps += [
         "//ui/base:features",
