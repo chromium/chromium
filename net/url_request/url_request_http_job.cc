@@ -1628,38 +1628,24 @@ bool URLRequestHttpJob::NeedsAuth() {
 }
 
 bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
-  // We use the Origin header's value directly, rather than
+  // The request is retryable if the Origin header was provided and matches the
+  // `Activate-Storage-Access` response header, the request may include cookies,
+  // and the prior request had the appropriate status without any of the
+  // storage-access-related overrides.
+  //
+  // Note: we use the Origin header's value directly, rather than
   // `request_.initiator()`, because the header may be "null" in some cases.
-  if (!request_->response_headers() ||
-      !request_->response_headers()->HasStorageAccessRetryHeader(
-          base::OptionalToPtr(request_info_.extra_headers.GetHeader(
-              HttpRequestHeaders::kOrigin)))) {
-    return false;
-  }
-
-  auto determine_storage_access_retry_outcome =
-      [&]() -> cookie_util::ActivateStorageAccessRetryOutcome {
-    using enum cookie_util::ActivateStorageAccessRetryOutcome;
-    if (!ShouldAddCookieHeader() ||
-        request_->storage_access_status() !=
-            cookie_util::StorageAccessStatus::kInactive ||
-        request_->cookie_setting_overrides().Has(
-            CookieSettingOverride::kStorageAccessGrantEligible) ||
-        request_->cookie_setting_overrides().Has(
-            CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-      // We're not allowed to read cookies for this request, or this request
-      // already had all the relevant settings overrides, so retrying it
-      // wouldn't change anything.
-      return kFailureIneffectiveRetry;
-    }
-    return kSuccess;
-  };
-
-  auto outcome = determine_storage_access_retry_outcome();
-
-  base::UmaHistogramEnumeration(
-      "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome", outcome);
-  return outcome == cookie_util::ActivateStorageAccessRetryOutcome::kSuccess;
+  return request_->response_headers() &&
+         request_->response_headers()->HasStorageAccessRetryHeader(
+             base::OptionalToPtr(request_info_.extra_headers.GetHeader(
+                 HttpRequestHeaders::kOrigin))) &&
+         ShouldAddCookieHeader() &&
+         request_->storage_access_status() ==
+             cookie_util::StorageAccessStatus::kInactive &&
+         !request_->cookie_setting_overrides().Has(
+             CookieSettingOverride::kStorageAccessGrantEligible) &&
+         !request_->cookie_setting_overrides().Has(
+             CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
 }
 
 void URLRequestHttpJob::SetSharedDictionaryGetter(

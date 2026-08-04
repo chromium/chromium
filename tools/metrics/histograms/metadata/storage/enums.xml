@@ -36,17 +36,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessLoadOutcome) -->
 
-<!-- LINT.IfChange(ActivateStorageAccessRetryOutcome) -->
-
-<enum name="ActivateStorageAccessRetryOutcome">
-  <int value="0" label="Failure: header disabled"/>
-  <int value="1"
-      label="Failure: ineffective retry, would not change cookie access"/>
-  <int value="2" label="Success"/>
-</enum>
-
-<!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessRetryOutcome) -->
-
 <!-- LINT.IfChange(AdProtoDecompressionOutcome) -->
 
 <enum name="AdProtoDecompressionOutcome">

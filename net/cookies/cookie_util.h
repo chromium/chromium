@@ -124,28 +124,6 @@ enum class ActivateStorageAccessLoadOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:ActivateStorageAccessLoadOutcome)
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// The values of this enum correspond to the possible outcomes of a call to
-// URLRequestHttpJob::NeedsRetryWithStorageAccess().
-//
-// LINT.IfChange(ActivateStorageAccessRetryOutcome)
-enum class ActivateStorageAccessRetryOutcome {
-  // Applies when the `Activate-Storage-Access` header behavior is not enabled
-  // under the existing feature flags or content settings.
-  // kFailureHeaderDisabled = 0, // Deprecated (feature is always enabled).
-  // Applies when a response includes a well-formed
-  // `Activate-Storage-Access: retry; ..." header, but the corresponding
-  // request's `Sec-Fetch-Storage-Access` header is not `inactive`.
-  kFailureIneffectiveRetry = 1,
-  // Applies when a response includes a well-formed
-  // "Activate-Storage-Access: retry; ..." header, and that header is honored
-  // by the browser.
-  kSuccess = 2,
-  kMaxValue = kSuccess
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:ActivateStorageAccessRetryOutcome)
-
 // Helper to fire telemetry indicating if a given request for storage was
 // allowed or not by the provided |result|.
 NET_EXPORT void FireStorageAccessHistogram(StorageAccessResult result);

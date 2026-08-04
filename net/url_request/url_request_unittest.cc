@@ -13607,7 +13607,6 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, Retry) {
   }
   auto context = context_builder->Build();
   TestDelegate d;
-  base::HistogramTester histogram_tester;
 
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
@@ -13636,20 +13635,6 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, Retry) {
             CookieSettingOverrides(
                 {CookieSettingOverride::
                      kStorageAccessGrantEligibleViaHeader})));
-    histogram_tester.ExpectBucketCount(
-        "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome",
-        /*sample=*/
-        net::cookie_util::ActivateStorageAccessRetryOutcome::kSuccess,
-        /*expected_count=*/1);
-    // We expect this record since the retried response still includes the
-    // header, but it doesn't result in a successful retry the second time
-    // around.
-    histogram_tester.ExpectBucketCount(
-        "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome",
-        /*sample=*/
-        net::cookie_util::ActivateStorageAccessRetryOutcome::
-            kFailureIneffectiveRetry,
-        /*expected_count=*/1);
   } else {
     // Expect 2 records for 1 request, since the request is not retried.
     EXPECT_THAT(
