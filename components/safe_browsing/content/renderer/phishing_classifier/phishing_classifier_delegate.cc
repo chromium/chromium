@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
@@ -20,13 +19,10 @@
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-
-using content::RenderThread;
 
 namespace safe_browsing {
 

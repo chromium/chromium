@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -17,10 +16,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_utils.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/visual_utils.h"

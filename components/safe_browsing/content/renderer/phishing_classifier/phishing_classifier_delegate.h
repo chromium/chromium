@@ -8,7 +8,6 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -22,8 +21,6 @@
 
 namespace safe_browsing {
 class ClientPhishingRequest;
-class PhishingClassifier;
-class Scorer;
 
 enum class SBPhishingClassifierEvent {
   kPhishingDetectionRequested = 0,

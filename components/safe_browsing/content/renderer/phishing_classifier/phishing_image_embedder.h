@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {
@@ -20,6 +19,7 @@ class RenderFrame;
 namespace safe_browsing {
 class ImageFeatureEmbedding;
 class PhishingVisualFeatureExtractor;
+class VisualFeatures;
 
 // This class handles the process of extracting visual features from a page and
 // using that to compute a feature vector provided by third party TfLite library

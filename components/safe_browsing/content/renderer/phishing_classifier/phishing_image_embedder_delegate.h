@@ -10,13 +10,12 @@
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder.h"
+#include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
-class PhishingImageEmbedder;
-class Scorer;
 
 enum class SBPhishingImageEmbedderEvent {
   kPhishingImageEmbeddingRequested = 0,

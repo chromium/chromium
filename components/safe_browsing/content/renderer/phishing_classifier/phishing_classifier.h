@@ -11,17 +11,12 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_H_
 
-#include <stdint.h>
-
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -100,9 +95,6 @@ class PhishingClassifier {
           request_type);
 
  private:
-  // Any score equal to or above this value is considered phishy.
-  static const float kPhishyThreshold;
-
   // Called to extract the visual features of the current page.
   void ExtractVisualFeatures();
 
@@ -150,9 +142,6 @@ class PhishingClassifier {
   std::unique_ptr<SkBitmap> bitmap_;
   std::unique_ptr<VisualFeatures> visual_features_;
   DoneCallback done_callback_;
-
-  // Used to record the duration of visual feature scoring.
-  base::TimeTicks visual_matching_start_;
 
   // Trigger request type forwarded from the PhishingClassifierDelegate.
   // Used to determine if the image embedder should be applied after the visual

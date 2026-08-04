@@ -14,13 +14,10 @@
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-
-using content::RenderThread;
 
 namespace safe_browsing {
 
