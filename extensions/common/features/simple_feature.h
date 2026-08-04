@@ -45,8 +45,7 @@ class StaticSpan {
   template <size_t N>
   explicit consteval StaticSpan(const T (&arr)[N]) : span_(arr) {}
   template <size_t N>
-  explicit consteval StaticSpan(const std::array<T, N>& arr)
-      : span_(arr) {}
+  explicit consteval StaticSpan(const std::array<T, N>& arr) : span_(arr) {}
   consteval StaticSpan() = default;
 
   constexpr base::span<const T> span() const { return span_; }
@@ -155,14 +154,19 @@ class SimpleFeature : public Feature {
   void set_component_extensions_auto_granted(bool granted) {
     component_extensions_auto_granted_ = granted;
   }
-  void set_contexts(std::initializer_list<mojom::ContextType> contexts);
+  void set_contexts(StaticSpan<mojom::ContextType> contexts);
+  void set_contexts(std::initializer_list<mojom::ContextType> contexts) =
+      delete;
   void set_dependencies(StaticSpan<std::string_view> dependencies);
   void set_dependencies(std::initializer_list<std::string_view> dependencies) =
       delete;
-  void set_extension_types(std::initializer_list<Manifest::Type> types);
+  void set_extension_types(StaticSpan<Manifest::Type> types);
+  void set_extension_types(std::initializer_list<Manifest::Type> types) =
+      delete;
   void set_feature_flag(std::string_view feature_flag);
+  void set_session_types(StaticSpan<mojom::FeatureSessionType> types);
   void set_session_types(
-      std::initializer_list<mojom::FeatureSessionType> types);
+      std::initializer_list<mojom::FeatureSessionType> types) = delete;
   void set_internal(bool is_internal) { is_internal_ = is_internal; }
   void set_requires_delegated_availability_check(
       bool requires_delegated_availability_check) {
@@ -185,7 +189,8 @@ class SimpleFeature : public Feature {
     min_manifest_version_ = min_manifest_version;
   }
   void set_noparent(bool no_parent) { no_parent_ = no_parent; }
-  void set_platforms(std::initializer_list<Platform> platforms);
+  void set_platforms(StaticSpan<Platform> platforms);
+  void set_platforms(std::initializer_list<Platform> platforms) = delete;
   void set_allowlist(StaticSpan<std::string_view> allowlist);
   void set_allowlist(std::initializer_list<std::string_view> allowlist) =
       delete;
@@ -194,11 +199,11 @@ class SimpleFeature : public Feature {
   // Accessors used by subclasses in feature verification.
   base::span<const std::string_view> blocklist() const { return blocklist_; }
   base::span<const std::string_view> allowlist() const { return allowlist_; }
-  const std::vector<Manifest::Type>& extension_types() const {
+  base::span<const Manifest::Type> extension_types() const {
     return extension_types_;
   }
-  const std::vector<Platform>& platforms() const { return platforms_; }
-  const std::optional<std::vector<mojom::ContextType>>& contexts() const {
+  base::span<const Platform> platforms() const { return platforms_; }
+  std::optional<base::span<const mojom::ContextType>> contexts() const {
     return contexts_;
   }
   base::span<const std::string_view> dependencies() const {
@@ -331,10 +336,10 @@ class SimpleFeature : public Feature {
   base::raw_span<const std::string_view> blocklist_;
   base::raw_span<const std::string_view> allowlist_;
   base::raw_span<const std::string_view> dependencies_;
-  std::vector<Manifest::Type> extension_types_;
-  std::vector<mojom::FeatureSessionType> session_types_;
-  std::optional<std::vector<mojom::ContextType>> contexts_;
-  std::vector<Platform> platforms_;
+  base::raw_span<const Manifest::Type> extension_types_;
+  base::raw_span<const mojom::FeatureSessionType> session_types_;
+  std::optional<base::raw_span<const mojom::ContextType>> contexts_;
+  base::raw_span<const Platform> platforms_;
   // The feature's URL match patterns, parsed into a transient URLPattern on
   // demand. Generated features provide statically allocated strings.
   base::raw_span<const std::string_view> match_patterns_;

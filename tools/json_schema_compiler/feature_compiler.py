@@ -6,6 +6,7 @@ import argparse
 import copy
 from datetime import datetime
 from functools import partial
+from typing import NamedTuple
 import json
 import os
 import posixpath
@@ -55,6 +56,7 @@ CC_FILE_BEGIN = """
 #include <array>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "extensions/common/features/complex_feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/manifest_feature.h"
@@ -543,12 +545,38 @@ FINAL_VALIDATION = ({
 # These keys can not be set on a feature and are hence ignored.
 IGNORED_KEYS = ['default_parent', 'required_buildflags']
 
-# List-valued keys emitted as static arrays for StaticSpan setters.
-STATIC_STRING_LIST_KEYS = {
-    'matches': 'kMatches',
-    'blocklist': 'kBlocklist',
-    'allowlist': 'kAllowlist',
-    'dependencies': 'kDependencies',
+
+class StaticSpanListSpec(NamedTuple):
+  array_name: str
+  element_type: str
+  emit_empty_setter: bool = False
+
+
+STATIC_SPAN_LIST_KEYS = {
+    'matches':
+    StaticSpanListSpec(array_name='kMatches', element_type='std::string_view'),
+    'blocklist':
+    StaticSpanListSpec(array_name='kBlocklist',
+                       element_type='std::string_view'),
+    'allowlist':
+    StaticSpanListSpec(array_name='kAllowlist',
+                       element_type='std::string_view'),
+    'dependencies':
+    StaticSpanListSpec(array_name='kDependencies',
+                       element_type='std::string_view'),
+    'extension_types':
+    StaticSpanListSpec(array_name='kExtensionTypes',
+                       element_type='Manifest::Type'),
+    'session_types':
+    StaticSpanListSpec(array_name='kSessionTypes',
+                       element_type='mojom::FeatureSessionType'),
+    'platforms':
+    StaticSpanListSpec(array_name='kPlatforms',
+                       element_type='Feature::Platform'),
+    'contexts':
+    StaticSpanListSpec(array_name='kContexts',
+                       element_type='mojom::ContextType',
+                       emit_empty_setter=True),
 }
 
 # By default, if an error is encountered, assert to stop the compilation. This
@@ -563,15 +591,18 @@ def GetCodeForFeatureValues(feature_values):
     if key in IGNORED_KEYS:
       continue
 
-    if key in STATIC_STRING_LIST_KEYS:
+    if key in STATIC_SPAN_LIST_KEYS:
+      spec = STATIC_SPAN_LIST_KEYS[key]
       values = feature_values[key]
-      # Empty lists match the member default and cannot form C++ arrays.
       if values.strip() == '{}':
+        if spec.emit_empty_setter:
+          c.Append('feature->set_%s(StaticSpan<%s>());' %
+                   (key, spec.element_type))
         continue
-      array_name = STATIC_STRING_LIST_KEYS[key]
-      c.Append('static constexpr auto %s = '
-               'std::to_array<std::string_view>(%s);' % (array_name, values))
-      c.Append('feature->set_%s(StaticSpan(%s));' % (key, array_name))
+      c.Append('static constexpr auto %s =' % spec.array_name)
+      c.Append('    std::to_array<%s>(' % spec.element_type)
+      c.Append('        %s);' % values)
+      c.Append('feature->set_%s(StaticSpan(%s));' % (key, spec.array_name))
     else:
       c.Append('feature->set_%s(%s);' % (key, feature_values[key]))
   return c

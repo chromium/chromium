@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/test/bind.h"
@@ -24,32 +26,25 @@ namespace extensions {
 
 namespace {
 
-template <typename T>
-void ExpectVectorsEqual(std::vector<T> expected,
-                        std::vector<T> actual,
-                        const std::string& name) {
-  std::sort(expected.begin(), expected.end());
-  std::sort(actual.begin(), actual.end());
-  EXPECT_EQ(expected, actual) << name;
+template <typename ExpectedT, typename ActualT>
+void ExpectSpanEqual(base::span<ExpectedT> expected,
+                     base::span<const ActualT> actual,
+                     std::string_view name) {
+  EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected)) << name;
 }
 
 template <typename T>
-void ExpectOptionalVectorsEqual(const std::optional<std::vector<T>>& expected,
-                                const std::optional<std::vector<T>>& actual,
-                                const std::string& name) {
+void ExpectOptionalSpanEqual(const std::optional<std::vector<T>>& expected,
+                             const std::optional<base::span<const T>>& actual,
+                             std::string_view name) {
   if (expected.has_value() != actual.has_value()) {
-    ADD_FAILURE() << "Mismatched optional vectors for " << name << ": "
+    ADD_FAILURE() << "Mismatched optional lists for " << name << ": "
                   << expected.has_value() << " vs " << actual.has_value();
     return;
   }
-  if (expected.has_value())
-    ExpectVectorsEqual(*expected, *actual, name);
-}
-
-void ExpectStringSpanEqual(base::span<const std::string> expected,
-                           base::span<const std::string_view> actual,
-                           std::string_view name) {
-  EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected)) << name;
+  if (expected) {
+    ExpectSpanEqual(base::span(*expected), *actual, name);
+  }
 }
 
 const bool kDefaultAutoGrant = true;
@@ -61,7 +56,7 @@ const bool kDefaultRequiresDelegatedAvailabilityCheck = false;
 // A utility object for comparing a feature with its expected value.
 struct FeatureComparator {
  public:
-  explicit FeatureComparator(const std::string& name);
+  explicit FeatureComparator(std::string_view name);
   ~FeatureComparator();
 
   void CompareFeature(const SimpleFeature* feature);
@@ -90,7 +85,7 @@ struct FeatureComparator {
   bool requires_delegated_availability_check;
 };
 
-FeatureComparator::FeatureComparator(const std::string& name)
+FeatureComparator::FeatureComparator(std::string_view name)
     : name(name),
       component_extensions_auto_granted(kDefaultAutoGrant),
       internal(kDefaultInternal),
@@ -102,13 +97,14 @@ FeatureComparator::~FeatureComparator() = default;
 void FeatureComparator::CompareFeature(const SimpleFeature* feature) {
   ASSERT_TRUE(feature);
   EXPECT_EQ(name, feature->name());
-  ExpectStringSpanEqual(blocklist, feature->blocklist(), name);
-  ExpectStringSpanEqual(allowlist, feature->allowlist(), name);
-  ExpectStringSpanEqual(dependencies, feature->dependencies(), name);
-  ExpectVectorsEqual(extension_types, feature->extension_types(), name);
-  ExpectOptionalVectorsEqual(contexts, feature->contexts(), name);
-  ExpectVectorsEqual(platforms, feature->platforms(), name);
-  ExpectStringSpanEqual(match_patterns, feature->match_patterns(), name);
+  ExpectSpanEqual(base::span(blocklist), feature->blocklist(), name);
+  ExpectSpanEqual(base::span(allowlist), feature->allowlist(), name);
+  ExpectSpanEqual(base::span(dependencies), feature->dependencies(), name);
+  ExpectSpanEqual(base::span(extension_types), feature->extension_types(),
+                  name);
+  ExpectOptionalSpanEqual(contexts, feature->contexts(), name);
+  ExpectSpanEqual(base::span(platforms), feature->platforms(), name);
+  ExpectSpanEqual(base::span(match_patterns), feature->match_patterns(), name);
   EXPECT_EQ(location, feature->location()) << name;
   EXPECT_EQ(min_manifest_version, feature->min_manifest_version()) << name;
   EXPECT_EQ(max_manifest_version, feature->max_manifest_version()) << name;

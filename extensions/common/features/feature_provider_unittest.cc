@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
@@ -33,7 +34,7 @@ TEST(FeatureProviderTest, ManifestFeatureTypes) {
   const SimpleFeature* feature = static_cast<const SimpleFeature*>(
       FeatureProvider::GetManifestFeature("description"));
   ASSERT_TRUE(feature);
-  const std::vector<Manifest::Type>& extension_types =
+  const base::span<const Manifest::Type> extension_types =
       feature->extension_types();
   EXPECT_EQ(8u, extension_types.size());
   EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::Type::kExtension));
@@ -96,7 +97,7 @@ TEST(FeatureProviderTest, PermissionFeatureTypes) {
   const SimpleFeature* feature = static_cast<const SimpleFeature*>(
       FeatureProvider::GetPermissionFeature("alarms"));
   ASSERT_TRUE(feature);
-  const std::vector<Manifest::Type>& extension_types =
+  const base::span<const Manifest::Type> extension_types =
       feature->extension_types();
   EXPECT_EQ(3u, extension_types.size());
   EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::Type::kExtension));

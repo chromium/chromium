@@ -545,9 +545,17 @@ class FeatureCompilerTest(unittest.TestCase):
     SimpleFeature* feature = new SimpleFeature();
     feature->set_name("feature_cups");
     feature->set_channel(version_info::Channel::BETA);
-    feature->set_contexts({mojom::ContextType::kPrivilegedExtension});
-    feature->set_extension_types({Manifest::Type::kExtension});
-    static constexpr auto kMatches = std::to_array<std::string_view>({"https://example.com/*"});
+    static constexpr auto kContexts =
+        std::to_array<mojom::ContextType>(
+            {mojom::ContextType::kPrivilegedExtension});
+    feature->set_contexts(StaticSpan(kContexts));
+    static constexpr auto kExtensionTypes =
+        std::to_array<Manifest::Type>(
+            {Manifest::Type::kExtension});
+    feature->set_extension_types(StaticSpan(kExtensionTypes));
+    static constexpr auto kMatches =
+        std::to_array<std::string_view>(
+            {"https://example.com/*"});
     feature->set_matches(StaticSpan(kMatches));
     provider->AddFeature("feature_cups", feature);
     #endif
@@ -586,6 +594,70 @@ class FeatureCompilerTest(unittest.TestCase):
     # empty span, and a zero-length array cannot form a span.
     self.assertNotIn('set_dependencies', cc_code)
     self.assertNotIn('kDependencies', cc_code)
+
+  def testEmptyContextsStillCallsSetter(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+
+    compiler._json = {'empty_contexts': {'channel': 'beta', 'contexts': []}}
+    compiler.Compile()
+    cc_code = compiler.Render().Render()
+
+    # Empty contexts means unavailable in every context, not unrestricted.
+    self.assertIn('feature->set_contexts(StaticSpan<mojom::ContextType>());',
+                  cc_code)
+    self.assertNotIn('kContexts', cc_code)
+
+  def testEnumListEmitsStaticArray(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+
+    compiler._json = {
+        'enum_lists': {
+            'channel': 'beta',
+            'contexts': ['privileged_extension'],
+            'extension_types': ['extension'],
+            'platforms': ['chromeos'],
+            'session_types': ['regular']
+        }
+    }
+    compiler.Compile()
+
+    # The code below is formatted correctly!
+    self.assertEqual(
+        compiler.Render().Render(), '''  {
+    SimpleFeature* feature = new SimpleFeature();
+    feature->set_name("enum_lists");
+    feature->set_channel(version_info::Channel::BETA);
+    static constexpr auto kContexts =
+        std::to_array<mojom::ContextType>(
+            {mojom::ContextType::kPrivilegedExtension});
+    feature->set_contexts(StaticSpan(kContexts));
+    static constexpr auto kExtensionTypes =
+        std::to_array<Manifest::Type>(
+            {Manifest::Type::kExtension});
+    feature->set_extension_types(StaticSpan(kExtensionTypes));
+    static constexpr auto kPlatforms =
+        std::to_array<Feature::Platform>(
+            {Feature::CHROMEOS_PLATFORM});
+    feature->set_platforms(StaticSpan(kPlatforms));
+    static constexpr auto kSessionTypes =
+        std::to_array<mojom::FeatureSessionType>(
+            {mojom::FeatureSessionType::kRegular});
+    feature->set_session_types(StaticSpan(kSessionTypes));
+    provider->AddFeature("enum_lists", feature);
+  }''')
+
+  def testEmptyNonContextEnumListsSkipSetters(self):
+    # Call the emitter directly because the grammar rejects empty lists for
+    # these keys before code generation.
+    cc_code = feature_compiler.GetCodeForFeatureValues({
+        'extension_types': '{}',
+        'platforms': '{}',
+        'session_types': '{}'
+    }).Render()
+
+    self.assertNotIn('set_extension_types', cc_code)
+    self.assertNotIn('set_platforms', cc_code)
+    self.assertNotIn('set_session_types', cc_code)
 
   def testOverrideFeature(self):
     current_directory = os.path.dirname(os.path.abspath(__file__))

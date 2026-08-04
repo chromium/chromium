@@ -59,6 +59,15 @@ constexpr std::string_view kHashedMonkeyId =
 static_assert(kHashedBazId.size() == 40);
 static_assert(kHashedMonkeyId.size() == 40);
 
+// Single-element backing arrays for the StaticSpan setters, which bind only to
+// static storage.
+constexpr auto kPrivilegedExtensionOnly = std::to_array<mojom::ContextType>(
+    {mojom::ContextType::kPrivilegedExtension});
+constexpr auto kExtensionOnly =
+    std::to_array<Manifest::Type>({Manifest::Type::kExtension});
+constexpr auto kLegacyPackagedAppOnly =
+    std::to_array<Manifest::Type>({Manifest::Type::kLegacyPackagedApp});
+
 struct IsAvailableTestData {
   ExtensionId extension_id;
   Manifest::Type extension_type;
@@ -73,8 +82,19 @@ struct FeatureSessionTypeTestData {
   std::string desc;
   Feature::AvailabilityResult expected_availability;
   mojom::FeatureSessionType current_session_type;
-  std::initializer_list<mojom::FeatureSessionType> feature_session_types;
+  StaticSpan<mojom::FeatureSessionType> feature_session_types;
 };
+
+constexpr mojom::FeatureSessionType kKioskSessionType[] = {
+    mojom::FeatureSessionType::kKiosk};
+constexpr mojom::FeatureSessionType kRegularSessionType[] = {
+    mojom::FeatureSessionType::kRegular};
+constexpr mojom::FeatureSessionType kRegularAndKioskSessionTypes[] = {
+    mojom::FeatureSessionType::kRegular, mojom::FeatureSessionType::kKiosk};
+constexpr mojom::FeatureSessionType kAutolaunchedKioskSessionType[] = {
+    mojom::FeatureSessionType::kAutolaunchedKiosk};
+constexpr mojom::ContextType kWebPageContext[] = {mojom::ContextType::kWebPage};
+constexpr Feature::Platform kChromeOsPlatform[] = {Feature::CHROMEOS_PLATFORM};
 
 Feature::AvailabilityResult IsAvailableInChannel(
     std::optional<Channel> channel_for_feature,
@@ -196,7 +216,7 @@ TEST_F(SimpleFeatureTest, Allowlist) {
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
 
-  feature.set_extension_types({Manifest::Type::kLegacyPackagedApp});
+  feature.set_extension_types(StaticSpan(kLegacyPackagedAppOnly));
   EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToManifest(
@@ -436,8 +456,10 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
 
 TEST_F(SimpleFeatureTest, PackageType) {
   SimpleFeature feature;
-  feature.set_extension_types(
-      {Manifest::Type::kExtension, Manifest::Type::kLegacyPackagedApp});
+  static constexpr auto kExtensionAndLegacyPackagedAppTypes =
+      std::to_array<Manifest::Type>(
+          {Manifest::Type::kExtension, Manifest::Type::kLegacyPackagedApp});
+  feature.set_extension_types(StaticSpan(kExtensionAndLegacyPackagedAppTypes));
 
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
@@ -473,9 +495,9 @@ TEST_F(SimpleFeatureTest, PackageType) {
 TEST_F(SimpleFeatureTest, Context) {
   SimpleFeature feature;
   feature.set_name("somefeature");
-  feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
-  feature.set_extension_types({Manifest::Type::kLegacyPackagedApp});
-  feature.set_platforms({Feature::CHROMEOS_PLATFORM});
+  feature.set_contexts(StaticSpan(kPrivilegedExtensionOnly));
+  feature.set_extension_types(StaticSpan(kLegacyPackagedAppOnly));
+  feature.set_platforms(StaticSpan(kChromeOsPlatform));
   feature.set_min_manifest_version(21);
   feature.set_max_manifest_version(25);
 
@@ -504,7 +526,9 @@ TEST_F(SimpleFeatureTest, Context) {
                 .result());
   feature.set_allowlist(StaticSpan<std::string_view>());
 
-  feature.set_extension_types({Manifest::Type::kTheme});
+  static constexpr auto kThemeType =
+      std::to_array<Manifest::Type>({Manifest::Type::kTheme});
+  feature.set_extension_types(StaticSpan(kThemeType));
   {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), mojom::ContextType::kPrivilegedExtension,
@@ -515,9 +539,12 @@ TEST_F(SimpleFeatureTest, Context) {
               availability.message());
   }
 
-  feature.set_extension_types({Manifest::Type::kLegacyPackagedApp});
-  feature.set_contexts({mojom::ContextType::kUnprivilegedExtension,
-                        mojom::ContextType::kContentScript});
+  static constexpr auto kUnprivilegedContentContexts =
+      std::to_array<mojom::ContextType>(
+          {mojom::ContextType::kUnprivilegedExtension,
+           mojom::ContextType::kContentScript});
+  feature.set_extension_types(StaticSpan(kLegacyPackagedAppOnly));
+  feature.set_contexts(StaticSpan(kUnprivilegedContentContexts));
   {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), mojom::ContextType::kPrivilegedExtension,
@@ -529,9 +556,11 @@ TEST_F(SimpleFeatureTest, Context) {
               availability.message());
   }
 
-  feature.set_contexts({mojom::ContextType::kUnprivilegedExtension,
-                        mojom::ContextType::kContentScript,
-                        mojom::ContextType::kWebPage});
+  static constexpr auto kUnprivilegedContentWebContexts =
+      std::to_array<mojom::ContextType>(
+          {mojom::ContextType::kUnprivilegedExtension,
+           mojom::ContextType::kContentScript, mojom::ContextType::kWebPage});
+  feature.set_contexts(StaticSpan(kUnprivilegedContentWebContexts));
   {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), mojom::ContextType::kPrivilegedExtension,
@@ -555,7 +584,7 @@ TEST_F(SimpleFeatureTest, Context) {
                   .result());
   }
 
-  feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
+  feature.set_contexts(StaticSpan(kPrivilegedExtensionOnly));
   EXPECT_EQ(Feature::AvailabilityResult::kInvalidPlatform,
             feature
                 .IsAvailableToContext(extension.get(),
@@ -602,36 +631,28 @@ TEST_F(SimpleFeatureTest, SessionType) {
   const auto kTestData = std::to_array<FeatureSessionTypeTestData>({
       {"kiosk_feature in kiosk session",
        Feature::AvailabilityResult::kIsAvailable,
-       mojom::FeatureSessionType::kKiosk,
-       {mojom::FeatureSessionType::kKiosk}},
+       mojom::FeatureSessionType::kKiosk, StaticSpan(kKioskSessionType)},
       {"kiosk feature in regular session",
        Feature::AvailabilityResult::kInvalidSessionType,
-       mojom::FeatureSessionType::kRegular,
-       {mojom::FeatureSessionType::kKiosk}},
+       mojom::FeatureSessionType::kRegular, StaticSpan(kKioskSessionType)},
       {"kiosk feature in unknown session",
        Feature::AvailabilityResult::kInvalidSessionType,
-       mojom::FeatureSessionType::kUnknown,
-       {mojom::FeatureSessionType::kKiosk}},
+       mojom::FeatureSessionType::kUnknown, StaticSpan(kKioskSessionType)},
       {"kiosk feature in initial session",
        Feature::AvailabilityResult::kInvalidSessionType,
-       mojom::FeatureSessionType::kInitial,
-       {mojom::FeatureSessionType::kKiosk}},
+       mojom::FeatureSessionType::kInitial, StaticSpan(kKioskSessionType)},
       {"non kiosk feature in kiosk session",
        Feature::AvailabilityResult::kInvalidSessionType,
-       mojom::FeatureSessionType::kKiosk,
-       {mojom::FeatureSessionType::kRegular}},
+       mojom::FeatureSessionType::kKiosk, StaticSpan(kRegularSessionType)},
       {"non kiosk feature in regular session",
        Feature::AvailabilityResult::kIsAvailable,
-       mojom::FeatureSessionType::kRegular,
-       {mojom::FeatureSessionType::kRegular}},
+       mojom::FeatureSessionType::kRegular, StaticSpan(kRegularSessionType)},
       {"non kiosk feature in unknown session",
        Feature::AvailabilityResult::kInvalidSessionType,
-       mojom::FeatureSessionType::kUnknown,
-       {mojom::FeatureSessionType::kRegular}},
+       mojom::FeatureSessionType::kUnknown, StaticSpan(kRegularSessionType)},
       {"non kiosk feature in initial session",
        Feature::AvailabilityResult::kInvalidSessionType,
-       mojom::FeatureSessionType::kInitial,
-       {mojom::FeatureSessionType::kRegular}},
+       mojom::FeatureSessionType::kInitial, StaticSpan(kRegularSessionType)},
       {"session agnostic feature in kiosk session",
        Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kKiosk,
@@ -651,30 +672,27 @@ TEST_F(SimpleFeatureTest, SessionType) {
       {"feature with multiple session types",
        Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kRegular,
-       {mojom::FeatureSessionType::kRegular,
-        mojom::FeatureSessionType::kKiosk}},
+       StaticSpan(kRegularAndKioskSessionTypes)},
       {"feature with multiple session types in unknown session",
        Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kUnknown,
-       {mojom::FeatureSessionType::kRegular,
-        mojom::FeatureSessionType::kKiosk}},
+       StaticSpan(kRegularAndKioskSessionTypes)},
       {"feature with multiple session types in initial session",
        Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kInitial,
-       {mojom::FeatureSessionType::kRegular,
-        mojom::FeatureSessionType::kKiosk}},
+       StaticSpan(kRegularAndKioskSessionTypes)},
       {"feature with auto-launched kiosk session type in regular session",
        Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
-       {mojom::FeatureSessionType::kRegular}},
+       StaticSpan(kRegularSessionType)},
       {"feature with auto-launched kiosk session type in auto-launched kiosk",
        Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
-       {mojom::FeatureSessionType::kAutolaunchedKiosk}},
+       StaticSpan(kAutolaunchedKioskSessionType)},
       {"feature with kiosk session type in auto-launched kiosk session",
        Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
-       {mojom::FeatureSessionType::kKiosk}},
+       StaticSpan(kKioskSessionType)},
   });
 
   for (const auto& entry : kTestData) {
@@ -762,7 +780,7 @@ TEST_F(SimpleFeatureTest, Location) {
 
 TEST_F(SimpleFeatureTest, Platform) {
   SimpleFeature feature;
-  feature.set_platforms({Feature::CHROMEOS_PLATFORM});
+  feature.set_platforms(StaticSpan(kChromeOsPlatform));
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
@@ -1013,10 +1031,10 @@ TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
   {
     auto feature1 = std::make_unique<SimpleFeature>();
     feature1->set_channel(Channel::BETA);
-    feature1->set_extension_types({Manifest::Type::kExtension});
+    feature1->set_extension_types(StaticSpan(kExtensionOnly));
     auto feature2 = std::make_unique<SimpleFeature>();
     feature2->set_channel(Channel::BETA);
-    feature2->set_extension_types({Manifest::Type::kLegacyPackagedApp});
+    feature2->set_extension_types(StaticSpan(kLegacyPackagedAppOnly));
     std::vector<Feature*> list;
     list.push_back(feature1.release());
     list.push_back(feature2.release());
@@ -1071,11 +1089,11 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
     // Rule: "extension", channel trunk.
     auto feature1 = std::make_unique<SimpleFeature>();
     feature1->set_channel(Channel::UNKNOWN);
-    feature1->set_extension_types({Manifest::Type::kExtension});
+    feature1->set_extension_types(StaticSpan(kExtensionOnly));
     auto feature2 = std::make_unique<SimpleFeature>();
     // Rule: "legacy_packaged_app", channel stable.
     feature2->set_channel(Channel::STABLE);
-    feature2->set_extension_types({Manifest::Type::kLegacyPackagedApp});
+    feature2->set_extension_types(StaticSpan(kLegacyPackagedAppOnly));
     std::vector<Feature*> list;
     list.push_back(feature1.release());
     list.push_back(feature2.release());
@@ -1134,7 +1152,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
 
   SimpleFeature feature;
   feature.set_requires_delegated_availability_check(true);
-  feature.set_contexts({mojom::ContextType::kWebPage});
+  feature.set_contexts(StaticSpan(kWebPageContext));
 
   const GURL kTestPage = GURL("https://www.example.com");
   static constexpr auto kMatches =
@@ -1225,7 +1243,9 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
 
 TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
   SimpleFeature feature;
-  feature.set_contexts({mojom::ContextType::kWebUi});
+  static constexpr auto kWebUiContext =
+      std::to_array<mojom::ContextType>({mojom::ContextType::kWebUi});
+  feature.set_contexts(StaticSpan(kWebUiContext));
   static constexpr auto kMatches =
       std::to_array<std::string_view>({"chrome://settings/*"});
   feature.set_matches(StaticSpan(kMatches));
@@ -1260,7 +1280,7 @@ TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
 // same feature are stable (patterns are parsed transiently per check).
 TEST(SimpleFeatureUnitTest, MatchesEvaluation) {
   SimpleFeature feature;
-  feature.set_contexts({mojom::ContextType::kWebPage});
+  feature.set_contexts(StaticSpan(kWebPageContext));
   static constexpr auto kMatches =
       std::to_array<std::string_view>({"https://example.com/*"});
   feature.set_matches(StaticSpan(kMatches));
@@ -1291,7 +1311,7 @@ TEST(SimpleFeatureUnitTest, MatchesEvaluation) {
 TEST(SimpleFeatureUnitTest, MatchesEmptyDenies) {
   for (bool call_empty : {false, true}) {
     SimpleFeature feature;
-    feature.set_contexts({mojom::ContextType::kWebPage});
+    feature.set_contexts(StaticSpan(kWebPageContext));
     if (call_empty) {
       feature.set_matches(StaticSpan<std::string_view>());
     }
@@ -1308,7 +1328,7 @@ TEST(SimpleFeatureUnitTest, MatchesEmptyDenies) {
 // The last set_matches() call wins (a later call replaces earlier patterns).
 TEST(SimpleFeatureUnitTest, MatchesOverride) {
   SimpleFeature feature;
-  feature.set_contexts({mojom::ContextType::kWebPage});
+  feature.set_contexts(StaticSpan(kWebPageContext));
   static constexpr auto kFirstMatches =
       std::to_array<std::string_view>({"https://first.example/*"});
   static constexpr auto kSecondMatches =
@@ -1330,14 +1350,59 @@ TEST(SimpleFeatureUnitTest, MatchesOverride) {
                 .result());
 }
 
+TEST(SimpleFeatureUnitTest, EmptyContextsRestrictsAllContexts) {
+  static constexpr auto kAllContexts = std::to_array<mojom::ContextType>({
+      mojom::ContextType::kPrivilegedExtension,
+      mojom::ContextType::kUnprivilegedExtension,
+      mojom::ContextType::kContentScript,
+      mojom::ContextType::kPrivilegedWebPage,
+      mojom::ContextType::kWebPage,
+      mojom::ContextType::kWebUi,
+      mojom::ContextType::kUntrustedWebUi,
+      mojom::ContextType::kOffscreenExtension,
+      mojom::ContextType::kUserScript,
+      mojom::ContextType::kUnspecified,
+  });
+  static_assert(kAllContexts.size() ==
+                static_cast<size_t>(mojom::ContextType::kMaxValue) + 1);
+
+  SimpleFeature feature;
+  feature.set_contexts(StaticSpan<mojom::ContextType>());
+  for (mojom::ContextType context : kAllContexts) {
+    EXPECT_EQ(
+        Feature::AvailabilityResult::kInvalidContext,
+        feature
+            .IsAvailableToContext(nullptr, context, GURL(),
+                                  kUnspecifiedContextId, TestContextData())
+            .result())
+        << "context " << static_cast<int>(context);
+  }
+}
+
+TEST(SimpleFeatureUnitTest, UnsetContextsHasNoContextRestriction) {
+  // URL-matching contexts are gated separately by `matches`.
+  SimpleFeature feature;
+  for (mojom::ContextType context : {mojom::ContextType::kPrivilegedExtension,
+                                     mojom::ContextType::kUnprivilegedExtension,
+                                     mojom::ContextType::kContentScript}) {
+    EXPECT_EQ(
+        Feature::AvailabilityResult::kIsAvailable,
+        feature
+            .IsAvailableToContext(nullptr, context, GURL(),
+                                  kUnspecifiedContextId, TestContextData())
+            .result())
+        << "context " << static_cast<int>(context);
+  }
+}
+
 TEST(SimpleFeatureUnitTest, TestAvailableToEnvironment) {
   {
     // Test with no environment restrictions, but with other restrictions. The
     // result should always be available.
     SimpleFeature feature;
     feature.set_min_manifest_version(2);
-    feature.set_extension_types({Manifest::Type::kExtension});
-    feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
+    feature.set_extension_types(StaticSpan(kExtensionOnly));
+    feature.set_contexts(StaticSpan(kPrivilegedExtensionOnly));
     EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
@@ -1405,8 +1470,8 @@ TEST(SimpleFeatureUnitTest, TestExperimentalExtensionApisSwitch) {
 }
 
 TEST_F(SimpleFeatureTest, RestrictDeveloperModeAPIs) {
-  constexpr int kContextId1 = 1;
-  constexpr int kContextId2 = 2;
+  static constexpr int kContextId1 = 1;
+  static constexpr int kContextId2 = 2;
   SimpleFeature dev_mode_only_feature;
   dev_mode_only_feature.set_developer_mode_only(true);
   SimpleFeature other_feature;
@@ -1445,8 +1510,8 @@ TEST_F(SimpleFeatureTest, RestrictDeveloperModeAPIs) {
 TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
   SimpleFeature feature;
   feature.set_name("somefeature");
-  feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
-  feature.set_extension_types({Manifest::Type::kExtension});
+  feature.set_contexts(StaticSpan(kPrivilegedExtensionOnly));
+  feature.set_extension_types(StaticSpan(kExtensionOnly));
 
   auto extension = ExtensionBuilder("test")
                        .SetBackgroundContext(

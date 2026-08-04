@@ -23,6 +23,19 @@ using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
+namespace {
+
+// Single-element backing arrays for the StaticSpan setters, which bind only to
+// static storage.
+constexpr auto kPrivilegedExtensionOnly = std::to_array<mojom::ContextType>(
+    {mojom::ContextType::kPrivilegedExtension});
+constexpr auto kExtensionOnly =
+    std::to_array<Manifest::Type>({Manifest::Type::kExtension});
+constexpr auto kLegacyPackagedAppOnly =
+    std::to_array<Manifest::Type>({Manifest::Type::kLegacyPackagedApp});
+
+}  // namespace
+
 TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
   const HashedExtensionId kIdFoo{ExtensionId(kFooId)};
   const HashedExtensionId kIdBar{ExtensionId(kBarId)};
@@ -36,7 +49,7 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
     // Rule: "extension", allowlist "foo".
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
     simple_feature->set_allowlist(StaticSpan(kFooAllowlist));
-    simple_feature->set_extension_types({Manifest::Type::kExtension});
+    simple_feature->set_extension_types(StaticSpan(kExtensionOnly));
     features.push_back(simple_feature.release());
   }
 
@@ -44,7 +57,7 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
     // Rule: "legacy_packaged_app", allowlist "bar".
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
     simple_feature->set_allowlist(StaticSpan(kBarAllowlist));
-    simple_feature->set_extension_types({Manifest::Type::kLegacyPackagedApp});
+    simple_feature->set_extension_types(StaticSpan(kLegacyPackagedAppOnly));
     features.push_back(simple_feature.release());
   }
 
@@ -190,7 +203,7 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
     {
       // Feature which doesn't set |requires_delegated_availability_check|.
       auto simple_feature = std::make_unique<SimpleFeature>();
-      simple_feature->set_contexts({mojom::ContextType::kPrivilegedExtension});
+      simple_feature->set_contexts(StaticSpan(kPrivilegedExtensionOnly));
       features.push_back(simple_feature.release());
     }
     // Two features which set |requires_delegated_availability_check| to true.
