@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers_helper.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
 #include "chrome/browser/profiles/profile.h"

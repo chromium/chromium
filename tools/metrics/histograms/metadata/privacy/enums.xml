@@ -254,29 +254,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Downloaded"/>
 </enum>
 
-<!-- LINT.IfChange(PrivacySandboxNoticeActionBehavior) -->
-
-<enum name="PrivacySandboxNoticeActionBehavior">
-  <int value="0" label="Success"/>
-  <int value="1" label="ActionBeforeShown"/>
-  <int value="2" label="DuplicateActionTaken"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/notice/notice_storage.h:NoticeActionBehavior) -->
-
-<!-- LINT.IfChange(PrivacySandboxNoticeEvent) -->
-
-<enum name="PrivacySandboxNoticeEvent">
-  <int value="0" label="Ack"/>
-  <int value="1" label="Closed"/>
-  <int value="2" label="OptIn"/>
-  <int value="3" label="OptOut"/>
-  <int value="4" label="Settings"/>
-  <int value="5" label="Shown"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/notice/notice.mojom:PrivacySandboxNoticeEvent) -->
-
 <enum name="QuickDeleteAction">
   <int value="0" label="Entry from menu item clicked"/>
   <int value="1" label="Delete button on dialog clicked"/>

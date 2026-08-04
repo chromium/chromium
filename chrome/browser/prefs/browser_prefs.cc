@@ -67,7 +67,6 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -939,6 +938,9 @@ constexpr char kMetricsReportingMigrationDone[] =
 constexpr char kMetricsConsentRestructureFeatureState[] =
     "user_experience_metrics.consent_restructure_feature_state";
 
+// Deprecated 08/2026.
+constexpr char kPrivacySandboxNotices[] = "privacy_sandbox.notices";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1264,6 +1266,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(prefs::kProjectsPanelEntrypointEnabled, true);
   registry->RegisterBooleanPref(prefs::kProjectsPanelPinnedToTabstrip, true);
 #endif
+
+  // Deprecated 08/2026.
+  registry->RegisterDictionaryPref(kPrivacySandboxNotices);
 }
 
 }  // namespace
@@ -1686,7 +1691,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   PrefsTabHelper::RegisterProfilePrefs(registry, locale);
   personal_context::prefs::RegisterProfilePrefs(registry);
   privacy_sandbox::RegisterProfilePrefs(registry);
-  privacy_sandbox::PrivacySandboxNoticeStorage::RegisterProfilePrefs(registry);
   Profile::RegisterProfilePrefs(registry);
   ProfileImpl::RegisterProfilePrefs(registry);
   ProfileNetworkContextService::RegisterProfilePrefs(registry);
@@ -2547,6 +2551,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(prefs::kProjectsPanelEntrypointEnabled);
   profile_prefs->ClearPref(prefs::kProjectsPanelPinnedToTabstrip);
 #endif
+
+  // Added 08/2026.
+  profile_prefs->ClearPref(kPrivacySandboxNotices);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

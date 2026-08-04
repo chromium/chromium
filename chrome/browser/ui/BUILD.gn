@@ -1698,8 +1698,6 @@ static_library("ui") {
       "//chrome/browser/password_manager/actor_login:factories",
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/privacy_sandbox:countries",
-      "//chrome/browser/privacy_sandbox/notice:desktop_entrypoint_handlers_helper",
-      "//chrome/browser/privacy_sandbox/notice:notice_mojom",
       "//chrome/browser/record_replay",
       "//chrome/browser/record_replay:impl",
       "//chrome/browser/renderer_context_menu:bubble_models",

@@ -86,53 +86,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/settings/histograms.xml:Profile) -->
 
-<variants name="PSNotice">
-  <variant name="MeasurementNoticeModal"
-      summary="Restricted notice on Desktop."/>
-  <variant name="MeasurementNoticeModalClankBrApp"
-      summary="Restricted notice on Clank Browser App."/>
-  <variant name="MeasurementNoticeModalClankCCT"
-      summary="Restricted notice on Clank CCT."/>
-  <variant name="ProtectedAudienceMeasurementNoticeModal"
-      summary="Notice with info about PA and Measurement APIs on Desktop."/>
-  <variant name="ProtectedAudienceMeasurementNoticeModalClankBrApp"
-      summary="Notice with info about PA and Measurement APIs on Clank
-               Browser App."/>
-  <variant name="ProtectedAudienceMeasurementNoticeModalClankCCT"
-      summary="Notice with info about PA and Measurement APIs on Clank CCT."/>
-  <variant name="ThreeAdsAPIsNoticeModal"
-      summary="Notice with three APIs on Desktop."/>
-  <variant name="ThreeAdsAPIsNoticeModalClankBrApp"
-      summary="Notice with three APIs on Clank Browser App."/>
-  <variant name="ThreeAdsAPIsNoticeModalClankCCT"
-      summary="Notice with three APIs on Clank CCT."/>
-  <variant name="TopicsConsentDesktopModal"
-      summary="Consent notice with Topics API on Desktop."/>
-  <variant name="TopicsConsentModalClankBrApp"
-      summary="Consent notice with Topics API on Clank Browser App."/>
-  <variant name="TopicsConsentModalClankCCT"
-      summary="Consent notice with Topics API on Clank CCT."/>
-</variants>
-
-<variants name="PSNoticeAction">
-  <variant name="Ack"
-      summary="Got it or any other ack action on a privacy sandbox notice."/>
-  <variant name="Closed"
-      summary="Closed (x) action on a privacy sandbox notice"/>
-  <variant name="OptIn"
-      summary="Turn it on or any other opt in action on a privacy sandbox
-               notice."/>
-  <variant name="OptOut"
-      summary="No Thanks action or any other opt out action on a privacy
-               sandbox notice."/>
-  <variant name="Other"
-      summary="Any other action on a privacy sandbox notice."/>
-  <variant name="Settings"
-      summary="Settings action on a privacy sandbox notice."/>
-  <variant name="TimedOut"
-      summary="No action taken instead a privacy sandbox notice timed out."/>
-</variants>
-
 <histogram name="Privacy.3PCD.RollbackNotice.Action"
     enum="RollBack3pcdNoticeAction" expires_after="2026-12-27">
   <owner>fmacintosh@google.com</owner>
@@ -1093,75 +1046,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     For a given client, the metric will not be recorded again so long as the set
     eligibility is available from the pref service local state.
   </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
-    units="ms" expires_after="2026-12-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration from when a notice {PSNotice} was first shown to a
-    profile to when a action {PSNoticeAction} was taken on the notice.
-  </summary>
-  <token key="PSNotice" variants="PSNotice"/>
-  <token key="PSNoticeAction" variants="PSNoticeAction"/>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.Notice.LastShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
-    units="ms" expires_after="2026-12-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration from when a notice {PSNotice} was last shown to a
-    profile to when a action {PSNoticeAction} was taken on the notice.
-  </summary>
-  <token key="PSNotice" variants="PSNotice"/>
-  <token key="PSNoticeAction" variants="PSNoticeAction"/>
-</histogram>
-
-<histogram name="PrivacySandbox.Notice.NoticeActionTakenBehavior.{PSNotice}"
-    enum="PrivacySandboxNoticeActionBehavior" expires_after="2026-12-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records if the action taken on a notice {PSNotice} was taken successfully or
-    failed.
-  </summary>
-  <token key="PSNotice" variants="PSNotice"/>
-</histogram>
-
-<histogram name="PrivacySandbox.Notice.NoticeEvent.{PSNotice}"
-    enum="PrivacySandboxNoticeEvent" expires_after="2026-12-12">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the event performed on a notice {PSNotice} for a profile.
-  </summary>
-  <token key="PSNotice" variants="PSNotice"/>
-</histogram>
-
-<histogram name="PrivacySandbox.Notice.NoticeShownForFirstTime.{PSNotice}"
-    enum="Boolean" expires_after="2026-12-12">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records true if a notice {PSNotice} was shown for the first time, false if a
-    notice has been shown before.
-  </summary>
-  <token key="PSNotice" variants="PSNotice"/>
-</histogram>
-
-<histogram name="PrivacySandbox.Notice.Startup.LastRecordedEvent.{PSNotice}"
-    enum="PrivacySandboxNoticeEvent" expires_after="2026-12-12">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records last recorded event of a notice {PSNotice} at the time of profile
-    start up.
-  </summary>
-  <token key="PSNotice" variants="PSNotice"/>
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"

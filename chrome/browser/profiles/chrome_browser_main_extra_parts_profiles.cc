@@ -196,7 +196,6 @@
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
 #include "chrome/browser/privacy/privacy_metrics_service_factory.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
@@ -1375,7 +1374,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   prerender::NoStatePrefetchLinkManagerFactory::GetInstance();
   prerender::NoStatePrefetchManagerFactory::GetInstance();
   PrivacyMetricsServiceFactory::GetInstance();
-  PrivacySandboxNoticeServiceFactory::GetInstance();
   PrivacySandboxServiceFactory::GetInstance();
   PrivacySandboxSettingsFactory::GetInstance();
   PrivateVerificationTokensServiceFactory::GetInstance();
