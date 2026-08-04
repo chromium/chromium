@@ -276,9 +276,6 @@ public class SendTabToSelfAndroidBridge {
      * @return All {@link TargetDeviceInfo} for the user, or an empty list if the model isn't ready.
      */
     public static List<TargetDeviceInfo> getAllTargetDeviceInfos(Profile profile) {
-        // TODO(crbug.com/40618597): Add this assertion back in once the
-        // code to load is in place.
-        // assert mIsNativeSendTabToSelfModelLoaded;
         return SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(profile);
     }
 
