@@ -61,6 +61,7 @@ const UChar kReverseSolidus = 0x005C;
 const UChar kLowLine = 0x005F;
 const UChar kVerticalLine = 0x7C;
 const UChar kDelete = 0x007F;
+const UChar kNextLine = 0x0085;
 const UChar kNoBreakSpace = 0x00A0;
 const UChar kYenSign = 0x00A5;
 const UChar kSectionSign = 0x00A7;

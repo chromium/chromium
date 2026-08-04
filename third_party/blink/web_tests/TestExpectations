@@ -1438,6 +1438,9 @@ crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-lr-
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-lr-rtl-001.html [ Failure ]
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-rl-001.html [ Failure ]
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-rl-rtl-001.html [ Failure ]
+crbug.com/487634228 external/wpt/css/css-ui/text-overflow-string-024.tentative.html [ Failure ]
+crbug.com/487634228 external/wpt/css/css-ui/text-overflow-string-025.tentative.html [ Failure ]
+crbug.com/487634228 external/wpt/css/css-ui/text-overflow-string-026.tentative.html [ Failure ]
 
 
 

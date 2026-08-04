@@ -31,6 +31,51 @@ bool IsRightMostOffset(const ShapeResult& shape_result, unsigned offset) {
   return offset == shape_result.NumCharacters();
 }
 
+// Forced line breaks per CSS Text 3: a preserved segment break (line feed) or
+// any character in the UAX#14 BK/NL line-breaking class.
+// https://drafts.csswg.org/css-text-3/#forced-line-break
+bool IsForcedLineBreak(UChar c) {
+  return c == uchar::kLineFeed || c == uchar::kLineTabulation ||
+         c == uchar::kFormFeed || c == uchar::kNextLine ||
+         c == uchar::kLineSeparator || c == uchar::kParagraphSeparator;
+}
+
+String SuppressLineBreaks(const String& text) {
+  const wtf_size_t first_break = text.Find(IsForcedLineBreak);
+  if (first_break == kNotFound) {
+    return text;
+  }
+
+  StringBuilder builder;
+  builder.ReserveCapacity(text.length());
+  if (first_break > 0) {
+    builder.Append(StringView(text, 0, first_break));
+  }
+  wtf_size_t i = first_break;
+  while (i < text.length()) {
+    UChar c = text[i++];
+    if (!IsForcedLineBreak(c)) {
+      builder.Append(c);
+      continue;
+    }
+    // Collapse forced line breaks.
+    for (; i < text.length(); ++i) {
+      if (!IsForcedLineBreak(text[i])) {
+        break;
+      }
+    }
+    // TODO(crbug.com/487634228): Implement the segment break transformation for
+    // east asian width until CSSWG resolves the spec, which is deferred the
+    // behavior of Discarding Line Breaks Adjacent to Ambiguous Characters to
+    // Level 4 of css-text.
+    // https://github.com/w3c/csswg-drafts/issues/5017
+    // https://drafts.csswg.org/css-text-3/#line-break-transform
+    builder.Append(uchar::kSpace);
+  }
+
+  return builder.ToString();
+}
+
 }  // namespace
 
 LineTruncator::LineTruncator(const LineInfo& line_info,
@@ -52,7 +97,7 @@ String LineTruncator::ComputeEllipsisText() const {
   const ComputedStyle& style = EllipsisStyle();
   const TextOverflowData& text_overflow = style.TextOverflow();
   if (text_overflow.IsString() && !is_ellipsis_caused_by_line_clamp_) {
-    return text_overflow.StringValue();
+    return SuppressLineBreaks(text_overflow.StringValue());
   }
   return ellipsis_font_data_ && ellipsis_font_data_->GlyphForCharacter(
                                     uchar::kHorizontalEllipsis)
