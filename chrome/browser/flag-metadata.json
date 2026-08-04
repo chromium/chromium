@@ -8197,11 +8197,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "persist-tab-context-rich-extraction",
-    "owners": [ "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 153
-  },
-  {
     "name": "picture-in-picture-mute-control",
     "owners": [ "tibeekeocha@microsoft.com", "bkeen@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 165

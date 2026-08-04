@@ -585,11 +585,8 @@ void PersistTabContextBrowserAgent::ExtractAndStoreContext(
     page_context_wrapper_ = nil;
   }
 
-  bool is_rich_extraction = IsPersistTabContextRichExtractionEnabled();
   PageContextWrapperConfig config =
-      PageContextWrapperConfigBuilder()
-          .SetDefaultRichExtraction(is_rich_extraction)
-          .Build();
+      PageContextWrapperConfigBuilder().SetDefaultRichExtraction(true).Build();
 
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state

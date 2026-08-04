@@ -1706,11 +1706,6 @@ inline constexpr char kPersistTabContextDescription[] =
     "Enables persisting tab APC and inner text in storage for fast access to "
     "multi-tab context.";
 
-inline constexpr char kPersistTabContextRichExtractionName[] =
-    "PersistTabContextRichExtraction";
-inline constexpr char kPersistTabContextRichExtractionDescription[] =
-    "Enables the PersistTabContextRichExtraction feature.";
-
 inline constexpr char kPhoneNumberName[] = "Phone number experience enable";
 inline constexpr char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "
