@@ -1425,7 +1425,7 @@ bool VariationsService::SetUpFieldTrials(
   return field_trial_creator_.SetUpFieldTrials(
       variation_ids, extra_overrides, std::move(feature_list), state_manager_,
       platform_field_trials, &safe_seed_manager_,
-      /*add_entropy_source_to_variations_ids=*/true, *entropy_providers_);
+      /*add_entropy_source_to_variations_ids=*/false, *entropy_providers_);
 }
 
 void VariationsService::GetStudiesAvailableToForce(

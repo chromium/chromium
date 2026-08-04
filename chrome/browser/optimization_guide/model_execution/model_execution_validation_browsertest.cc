@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -56,6 +58,9 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
         model_execution_server_
             ->GetURL(switches::GetModelExecutionServiceURL().GetHost(), "/")
             .spec());
+    // Add a dummy variation ID so that the X-Client-Data header is appended to
+    // eligible requests to select Google servers.
+    cmd->AppendSwitchASCII(variations::switches::kForceVariationIds, "5678");
   }
 
   void SetUpBrowserContextKeyedServices(

@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -42,6 +43,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/common/api_error_codes.h"
 #include "net/base/net_errors.h"
@@ -87,6 +89,13 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         {/* disabled_features */});
 
     RegisterGeminiSettingsPrefs(pref_service_.registry());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Add a dummy variation ID so that the X-Client-Data header is appended to
+    // eligible requests to select Google servers.
+    command_line->AppendSwitchASCII(variations::switches::kForceVariationIds,
+                                    "224466");
   }
 
   void SetUpBrowserContextKeyedServices(

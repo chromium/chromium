@@ -48,6 +48,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -159,6 +160,9 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         model_quality_logs_server_
             ->GetURL(GetModelQualityLogsUploaderServiceURL().GetHost(), "/")
             .spec());
+    // Add a dummy variation ID so that the X-Client-Data header is appended to
+    // eligible requests to select Google servers.
+    cmd->AppendSwitchASCII(variations::switches::kForceVariationIds, "113355");
   }
 
   void SetUpBrowserContextKeyedServices(
