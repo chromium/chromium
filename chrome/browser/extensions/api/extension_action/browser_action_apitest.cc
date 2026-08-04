@@ -131,7 +131,9 @@ class BrowserActionApiTest : public ExtensionApiTest {
   }
 
   ExtensionsToolbarDesktop* extensions_container() {
-    return browser()->GetBrowserView().toolbar()->extensions_container();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->extensions_container();
   }
 };
 
@@ -693,7 +695,9 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // default.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
   ExtensionsToolbarDesktop* extensions_container_incognito =
-      incognito_browser->GetBrowserView().toolbar()->extensions_container();
+      BrowserView::GetBrowserViewForBrowser(incognito_browser)
+          ->toolbar()
+          ->extensions_container();
   ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
 
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -748,7 +752,9 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // default.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
   ExtensionsToolbarDesktop* extensions_container_incognito =
-      incognito_browser->GetBrowserView().toolbar()->extensions_container();
+      BrowserView::GetBrowserViewForBrowser(incognito_browser)
+          ->toolbar()
+          ->extensions_container();
   ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
 
   // Set up a listener so we can reply for the extension to do the update.

@@ -99,7 +99,8 @@ class TestBrowserHiddenWaiter : public views::WidgetObserver {
  public:
   explicit TestBrowserHiddenWaiter(Browser* browser) {
     EXPECT_TRUE(browser->GetWindow()->IsVisible());
-    widget_observation_.Observe(browser->GetBrowserView().GetWidget());
+    widget_observation_.Observe(
+        BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
   }
 
   ~TestBrowserHiddenWaiter() override { widget_observation_.Reset(); }

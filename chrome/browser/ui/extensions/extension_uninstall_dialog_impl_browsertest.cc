@@ -383,7 +383,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   // Extensions container should be visible since there are enabled
   // extensions.
   ExtensionsToolbarDesktop* const container =
-      browser()->GetBrowserView().toolbar()->extensions_container();
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar()
+          ->extensions_container();
   ASSERT_TRUE(container->GetVisible());
   ASSERT_TRUE(container->GetViewForId(extensionA->id()));
 

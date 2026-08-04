@@ -423,8 +423,9 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorRoundedCornersTest,
   coordinator().Show();
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
 
-  views::View* content_parent =
-      browser()->GetBrowserView().side_panel()->GetContentParentView();
+  views::View* content_parent = BrowserView::GetBrowserViewForBrowser(browser())
+                                    ->side_panel()
+                                    ->GetContentParentView();
   ASSERT_TRUE(content_parent);
 
   // 2. Perform in-place view swap. This tests that the corners are applied

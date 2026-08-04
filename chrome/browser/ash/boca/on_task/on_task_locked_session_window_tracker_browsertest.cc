@@ -1467,12 +1467,15 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   ASSERT_TRUE(
       OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
 
-  auto* boca_app_window = boca_app_browser->GetBrowserView().GetNativeWindow();
+  auto* boca_app_window =
+      BrowserView::GetBrowserViewForBrowser(boca_app_browser)
+          ->GetNativeWindow();
   EXPECT_TRUE(
       boca_app_window->GetProperty(chromeos::kUseImmersiveInTrustedPinned));
 
   auto* web_app_frame_toolbar =
-      boca_app_browser->GetBrowserView().web_app_frame_toolbar_for_testing();
+      BrowserView::GetBrowserViewForBrowser(boca_app_browser)
+          ->web_app_frame_toolbar_for_testing();
   EXPECT_FALSE(web_app_frame_toolbar->bounds().IsEmpty());
 
   // Set up window tracker to track the app window.

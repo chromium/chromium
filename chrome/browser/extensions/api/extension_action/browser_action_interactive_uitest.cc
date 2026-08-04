@@ -290,7 +290,9 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   }
 
   ExtensionsToolbarDesktop* extensions_container() {
-    return browser()->GetBrowserView().toolbar()->extensions_container();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->extensions_container();
   }
 
   int num_popup_hosts_created() const { return host_watcher_->created(); }

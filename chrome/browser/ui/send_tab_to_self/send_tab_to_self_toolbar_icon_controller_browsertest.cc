@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
                                                        std::move(web_app_info));
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
-  app_browser->GetBrowserView().Activate();
+  BrowserView::GetBrowserViewForBrowser(app_browser)->Activate();
   WaitUntilBrowserBecomeActiveOrLastActive(app_browser);
 
   SendTabToSelfEntry entry("a", GURL("https://www.example-a.com"), "a site",

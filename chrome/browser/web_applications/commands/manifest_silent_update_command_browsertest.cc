@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest, SilentUpdate) {
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kToolbarAppMenuButtonElementId,
           views::ElementTrackerViews::GetContextForView(
-              &app_browser->GetBrowserView())));
+              BrowserView::GetBrowserViewForBrowser(app_browser))));
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 
   EXPECT_EQ(
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest, PendingUpdate) {
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kToolbarAppMenuButtonElementId,
           views::ElementTrackerViews::GetContextForView(
-              &app_browser->GetBrowserView())));
+              BrowserView::GetBrowserViewForBrowser(app_browser))));
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 
   EXPECT_EQ(
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kToolbarAppMenuButtonElementId,
           views::ElementTrackerViews::GetContextForView(
-              &app_browser->GetBrowserView())));
+              BrowserView::GetBrowserViewForBrowser(app_browser))));
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
   EXPECT_EQ(app_url, provider().registrar_unsafe().GetAppStartUrl(app_id));
 
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kToolbarAppMenuButtonElementId,
           views::ElementTrackerViews::GetContextForView(
-              &app_browser->GetBrowserView())));
+              BrowserView::GetBrowserViewForBrowser(app_browser))));
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 }
 

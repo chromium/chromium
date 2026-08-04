@@ -101,7 +101,7 @@ class BrowserAnimationControllerBrowsertest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    browser()->GetBrowserView().AddChildView(
+    BrowserView::GetBrowserViewForBrowser(browser())->AddChildView(
         std::make_unique<TestAnimationView>(controller()));
     subscription_ = controller()->Subscribe(
         kTestGroup,

@@ -573,9 +573,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   // Switch to the split view which should hide the dialog and show tab
   // attention indicator.
   tab_strip_model()->ActivateTabAt(0);
-  ASSERT_TRUE(browser()
-                  ->GetBrowserView()
-                  .horizontal_tab_strip_for_testing()
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                  ->horizontal_tab_strip_for_testing()
                   ->tab_at(2)
                   ->GetTabIconForTesting()
                   ->GetShowingAttentionIndicator());

@@ -42,8 +42,8 @@ using actor::mojom::ActionResultPtr;
 using base::test::TestFuture;
 
 ActorOverlayWebView* GetActorOverlayWebView(Browser* browser) {
-  return browser->GetBrowserView()
-      .GetActiveContentsContainerView()
+  return BrowserView::GetBrowserViewForBrowser(browser)
+      ->GetActiveContentsContainerView()
       ->actor_overlay_web_view();
 }
 
@@ -436,10 +436,10 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayIsIgnoredByAccessibility) {
-  views::WebView* overlay_web_view = browser()
-                                         ->GetBrowserView()
-                                         .GetActiveContentsContainerView()
-                                         ->actor_overlay_web_view();
+  views::WebView* overlay_web_view =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetActiveContentsContainerView()
+          ->actor_overlay_web_view();
   ASSERT_NE(overlay_web_view, nullptr);
   EXPECT_EQ(overlay_web_view->GetFocusBehavior(),
             views::View::FocusBehavior::NEVER);

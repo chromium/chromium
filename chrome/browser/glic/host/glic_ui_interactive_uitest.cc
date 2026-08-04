@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -327,10 +328,12 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, CanAttachWithBrowserWindow) {
 // TODO(crbug.com/454087646): Not reliable yet.
 IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
                        CanNotAttachWithMinimizedBrowser) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents), Detach(),
-                  WaitForMockElementChecked({"#canAttachCheckbox"}, true),
-                  Do([&]() { browser()->GetBrowserView().Minimize(); }),
-                  WaitForMockElementChecked({"#canAttachCheckbox"}, false));
+  RunTestSequence(
+      OpenGlic(GlicInstrumentMode::kHostAndContents), Detach(),
+      WaitForMockElementChecked({"#canAttachCheckbox"}, true), Do([&]() {
+        BrowserView::GetBrowserViewForBrowser(browser())->Minimize();
+      }),
+      WaitForMockElementChecked({"#canAttachCheckbox"}, false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,

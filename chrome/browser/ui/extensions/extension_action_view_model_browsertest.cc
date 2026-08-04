@@ -436,7 +436,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   // We skip this test on Android because popping out an extension via the
   // direct container access is not supported.
   ExtensionsToolbarDesktop* toolbar =
-      browser()->GetBrowserView().toolbar()->extensions_container();
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar()
+          ->extensions_container();
   toolbar_model()->SetActionVisibility(id, false);
   EXPECT_FALSE(toolbar->IsActionVisibleOnToolbar(id));
   base::RunLoop run_loop;

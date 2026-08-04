@@ -904,7 +904,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
   // Hold a reference to an accessibility node so that there's one live node.
   Microsoft::WRL::ComPtr<IAccessible> root(
-      browser()->GetBrowserView().GetNativeViewAccessible());
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetNativeViewAccessible());
   ASSERT_TRUE(root);
 
   // Check for a live node.

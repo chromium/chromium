@@ -194,14 +194,15 @@ IN_PROC_BROWSER_TEST_P(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {
   ASSERT_FALSE(DidKioskCloseNewWindow());
   EXPECT_EQ(VisibleBrowserCount(), 2u);
 
-  EXPECT_FALSE(initial_browser.GetBrowserView()
-                   .GetExclusiveAccessContext()
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(&initial_browser)
+                   ->GetExclusiveAccessContext()
                    ->CanUserEnterFullscreen());
-  EXPECT_FALSE(popup.GetBrowserView()
-                   .GetExclusiveAccessContext()
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(&popup)
+                   ->GetExclusiveAccessContext()
                    ->CanUserEnterFullscreen());
-  EXPECT_TRUE(initial_browser.GetBrowserView().IsFullscreen());
-  EXPECT_TRUE(popup.GetBrowserView().IsFullscreen());
+  EXPECT_TRUE(
+      BrowserView::GetBrowserViewForBrowser(&initial_browser)->IsFullscreen());
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(&popup)->IsFullscreen());
 }
 
 IN_PROC_BROWSER_TEST_P(NewWindowsInKioskAllowedTest,

@@ -1356,7 +1356,8 @@ class JavascriptOptimizerOmnibarIconBrowserTest
   bool IsBubbleVisible() {
     if (ui::ElementTracker::GetElementTracker()->GetUniqueElement(
             JsOptimizationsPageActionController::kBubbleBodyElementId,
-            browser()->GetBrowserView().GetElementContext()) == nullptr) {
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetElementContext()) == nullptr) {
       return false;
     }
 
@@ -1373,7 +1374,8 @@ class JavascriptOptimizerOmnibarIconBrowserTest
     }
     return ui::ElementTracker::GetElementTracker()->GetUniqueElement(
                JsOptimizationsPageActionController::kBubbleButtonElementId,
-               browser()->GetBrowserView().GetElementContext()) != nullptr;
+               BrowserView::GetBrowserViewForBrowser(browser())
+                   ->GetElementContext()) != nullptr;
   }
 
   using PageActionInteractiveTestMixin::WaitForPageActionButtonVisible;
