@@ -71,6 +71,12 @@
 
   // Completion block to be called when the FRE flow finishes.
   void (^_completion)(BOOL success);
+
+  // The outcome of the Gemini Live FRE flow, if applicable.
+  IOSGeminiLiveFREOutcome _liveFREOutcome;
+
+  // Whether the Live FRE outcome has already been logged.
+  BOOL _outcomeLogged;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -134,13 +140,24 @@
   _viewController.sheetPresentationController.delegate = self;
   _viewController.mutator = _mediator;
 
-  [self.baseViewController presentViewController:_viewController
-                                        animated:YES
-                                      completion:^{
-                                        // Record the First Run was shown.
-                                        RecordFirstRunShown();
-                                      }];
-
+  if (_firstRunType == GeminiFirstRunType::kLive) {
+    _liveFREOutcome = IOSGeminiLiveFREOutcome::kDismissedOnConsent;
+    _outcomeLogged = NO;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [self.baseViewController
+      presentViewController:_viewController
+                   animated:YES
+                 completion:^{
+                   __strong __typeof(weakSelf) strongSelf = weakSelf;
+                   if (!strongSelf) {
+                     return;
+                   }
+                   if (strongSelf->_firstRunType != GeminiFirstRunType::kLive) {
+                     // Record the First Run was shown.
+                     RecordFirstRunShown();
+                   }
+                 }];
   [super start];
 }
 
@@ -151,6 +168,7 @@
 #pragma mark - Public
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
+  [self logLiveFREOutcome];
   // Retain self to survive synchronous teardown from the completion block.
   __strong __typeof(self) strongSelf =
       IsGeminiCoordinatorTeardownFixEnabled() ? self : nil;
@@ -191,12 +209,16 @@
 
 - (void)dismissGeminiConsentUIWithCompletion:(void (^)())completion {
   BOOL hasConsented = _prefService->GetBoolean(prefs::kIOSGeminiLiveConsent);
-  if (_firstRunType == GeminiFirstRunType::kLive && hasConsented) {
-    if (completion) {
-      _consentCompletion = completion;
+  if (_firstRunType == GeminiFirstRunType::kLive) {
+    if (hasConsented) {
+      if (completion) {
+        _consentCompletion = completion;
+      }
+      [self handleLiveMicPermission];
+      return;
+    } else {
+      [self logLiveFREOutcome];
     }
-    [self handleLiveMicPermission];
-    return;
   }
 
   [self dismissPresentedViewWithCompletion:^{
@@ -217,6 +239,7 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   if (_firstRunType == GeminiFirstRunType::kLive) {
+    [self logLiveFREOutcome];
     [_mediator disconnect];
     if (_completion) {
       void (^completion)(BOOL) = _completion;
@@ -254,7 +277,8 @@
 // Handles the result of the microphone permission request.
 - (void)handleLiveMicPermissionResult:(BOOL)granted {
   if (granted) {
-    // TODO(crbug.com/462400054): Start the Live session.
+    _liveFREOutcome = IOSGeminiLiveFREOutcome::kSuccess;
+    [self logLiveFREOutcome];
     __weak __typeof(self) weakSelf = self;
     [self dismissPresentedViewWithCompletion:^{
       __strong __typeof(weakSelf) strongSelf = weakSelf;
@@ -268,6 +292,14 @@
     }];
     _viewController = nil;
   } else {
+    AVAuthorizationStatus status =
+        [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+    if (status == AVAuthorizationStatusAuthorized) {
+      _liveFREOutcome = IOSGeminiLiveFREOutcome::kDeniedChromeMicPermission;
+    } else {
+      _liveFREOutcome = IOSGeminiLiveFREOutcome::kDeniedOSMicPermission;
+    }
+    [self logLiveFREOutcome];
     _consentCompletion = nil;
     __weak __typeof(self) weakSelf = self;
     [self dismissPresentedViewWithCompletion:^{
@@ -328,6 +360,14 @@
     // Hub In-Product Help (IPH) bubble will be misaligned from using anchor
     // points relative to a partially expanded toolbar.
     FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
+  }
+}
+
+// Logs the final outcome of the Live FRE flow.
+- (void)logLiveFREOutcome {
+  if (_firstRunType == GeminiFirstRunType::kLive && !_outcomeLogged) {
+    RecordLiveFREOutcome(_liveFREOutcome);
+    _outcomeLogged = YES;
   }
 }
 

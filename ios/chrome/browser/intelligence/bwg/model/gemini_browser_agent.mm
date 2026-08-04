@@ -176,6 +176,7 @@ NotificationCenterBlock ClosureToNotificationCenterBlock(
 // once the bottom sheet migration is complete.
 void ShowMicrophoneSettingsAlert(UIViewController* base_view_controller,
                                  void (^completion)(BOOL granted)) {
+  RecordLiveSettingsRedirectShown();
   UIAlertController* alert = [UIAlertController
       alertControllerWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_TITLE)
@@ -191,6 +192,7 @@ void ShowMicrophoneSettingsAlert(UIViewController* base_view_controller,
                       IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_GO_TO_SETTINGS)
                         style:UIAlertActionStyleDefault
                       handler:^(UIAlertAction* action) {
+                        RecordLiveSettingsRedirectOpenSettings();
                         NSURL* settingsURL = [NSURL
                             URLWithString:UIApplicationOpenSettingsURLString];
                         [[UIApplication sharedApplication] openURL:settingsURL
@@ -207,6 +209,7 @@ void ShowMicrophoneSettingsAlert(UIViewController* base_view_controller,
                                IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_NO_THANKS)
                                  style:UIAlertActionStyleCancel
                                handler:^(UIAlertAction* action) {
+                                 RecordLiveSettingsRedirectCancel();
                                  if (completion) {
                                    completion(NO);
                                  }
@@ -220,6 +223,7 @@ void ShowMicrophoneSettingsAlert(UIViewController* base_view_controller,
 void ShowGeminiMicrophonePermissionAlert(UIViewController* base_view_controller,
                                          base::WeakPtr<ProfileIOS> weak_profile,
                                          void (^completion)(BOOL granted)) {
+  RecordLiveChromeMicPromptShown();
   UIAlertController* alert = [UIAlertController
       alertControllerWithTitle:
           l10n_util::GetNSString(
@@ -234,6 +238,7 @@ void ShowGeminiMicrophonePermissionAlert(UIViewController* base_view_controller,
                           IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT)
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action) {
+                RecordLiveChromeMicPromptAllowed();
                 if (weak_profile) {
                   weak_profile->GetPrefs()->SetBoolean(
                       prefs::kIOSGeminiLiveMicrophoneSetting, true);
@@ -248,6 +253,7 @@ void ShowGeminiMicrophonePermissionAlert(UIViewController* base_view_controller,
                           IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY)
                 style:UIAlertActionStyleCancel
               handler:^(UIAlertAction* action) {
+                RecordLiveChromeMicPromptDenied();
                 if (completion) {
                   completion(NO);
                 }
@@ -882,10 +888,12 @@ void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
       [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
   switch (status) {
     case AVAuthorizationStatusNotDetermined: {
+      RecordLiveOSMicPromptShown();
       [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio
                                completionHandler:^(BOOL granted) {
                                  dispatch_async(dispatch_get_main_queue(), ^{
                                    if (granted) {
+                                     RecordLiveOSMicPromptAllowed();
                                      if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
                                              prefs::kIOSGeminiLiveMicrophoneSetting)) {
                                        ShowGeminiMicrophonePermissionAlert(
@@ -898,6 +906,7 @@ void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
                                        }
                                      }
                                    } else {
+                                     RecordLiveOSMicPromptDenied();
                                      // If user reject mic permission on the
                                      // native iOS alert, we call completion to
                                      // reset state.
@@ -1358,6 +1367,7 @@ void GeminiBrowserAgent::SetLastShownViewState(
 }
 
 void GeminiBrowserAgent::OnLiveButtonTapped() {
+  RecordLiveButtonTapped();
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());
   if (tracker) {
@@ -1372,6 +1382,7 @@ void GeminiBrowserAgent::OnGeminiLiveUserDidPressStopButton() {
 
 void GeminiBrowserAgent::OnModeChanged(ios::provider::GeminiViewMode mode) {
   if (mode == ios::provider::GeminiViewMode::kLive) {
+    RecordLiveSessionStarted();
     if (live_session_start_time_.is_null()) {
       live_session_start_time_ = base::TimeTicks::Now();
       live_turn_count_ = 0;
