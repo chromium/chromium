@@ -126,4 +126,31 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenFeedbackUi) {
   page_handler_->OpenFeedbackUi();
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenMyActivityUi) {
+  auto* tab_strip = browser()->tab_strip_model();
+  int start_count = tab_strip->count();
+  page_handler_->OpenMyActivityUi();
+  EXPECT_EQ(tab_strip->count(), start_count + 1);
+  content::WebContents* active_contents = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(active_contents->GetURL().spec(), "https://myactivity.google.com/myactivity");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenOnboardingHelpUi) {
+  auto* tab_strip = browser()->tab_strip_model();
+  int start_count = tab_strip->count();
+  page_handler_->OpenOnboardingHelpUi();
+  EXPECT_EQ(tab_strip->count(), start_count + 1);
+  content::WebContents* active_contents = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(active_contents->GetURL().spec(), "https://support.google.com/chrome?p=AI_tab_share");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenOverflowMenuHelpUi) {
+  auto* tab_strip = browser()->tab_strip_model();
+  int start_count = tab_strip->count();
+  page_handler_->OpenOverflowMenuHelpUi();
+  EXPECT_EQ(tab_strip->count(), start_count + 1);
+  content::WebContents* active_contents = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(active_contents->GetURL().spec(), "https://support.google.com/chrome/answer/17025061");
+}
+
 }  // namespace contextual_tasks

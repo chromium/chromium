@@ -138,6 +138,9 @@ interface PageHandler {
   // Opens the onboarding help page in a new tab.
   OpenOnboardingHelpUi();
 
+  // Opens the overflow menu help page in a new tab.
+  OpenOverflowMenuHelpUi();
+
   // Open the URL with window open disposition.
   // Used for handling newwindow event inside <webview>.
   OpenUrl(url.mojom.Url url, ui.mojom.WindowOpenDisposition disposition);

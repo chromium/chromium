@@ -919,6 +919,12 @@ TEST_F(ContextualTasksPageHandlerTest, OpenOnboardingHelpUi) {
   page_handler_->OpenOnboardingHelpUi();
 }
 
+TEST_F(ContextualTasksPageHandlerTest, OpenOverflowMenuHelpUi) {
+  // Navigation smoke test.
+  EXPECT_CALL(*contextual_tasks_ui_, GetBrowser()).WillOnce(Return(nullptr));
+  page_handler_->OpenOverflowMenuHelpUi();
+}
+
 TEST_F(ContextualTasksPageHandlerTest, OnboardingTooltipDismissed) {
   PrefService* prefs = profile()->GetPrefs();
   EXPECT_EQ(prefs->GetInteger(

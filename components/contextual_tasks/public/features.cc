@@ -468,6 +468,11 @@ const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     "ContextualTasksHelpUrl",
     "https://support.google.com/websearch/");
 
+const base::FeatureParam<std::string> kContextualTasksOverflowMenuHelpUrl(
+    &kContextualTasks,
+    "ContextualTasksOverflowMenuHelpUrl",
+    "https://support.google.com/chrome/answer/17025061");
+
 const base::FeatureParam<bool> kEnableProtectedPageError(
     &kContextualTasks,
     "ContextualTasksEnableProtectedPageError",
@@ -745,6 +750,10 @@ std::string GetContextualTasksOnboardingTooltipHelpUrl() {
 
 std::string GetContextualTasksHelpUrl() {
   return kContextualTasksHelpUrl.Get();
+}
+
+std::string GetContextualTasksOverflowMenuHelpUrl() {
+  return kContextualTasksOverflowMenuHelpUrl.Get();
 }
 
 bool GetEnableContextualTasksSmartCompose() {

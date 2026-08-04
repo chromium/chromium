@@ -299,6 +299,10 @@ extern const base::FeatureParam<std::string> kContextualTasksHelpUrl;
 extern const base::FeatureParam<std::string>
     kContextualTasksOnboardingTooltipHelpUrl;
 
+// The URL for the help center article linked from the overflow menu.
+extern const base::FeatureParam<std::string>
+    kContextualTasksOverflowMenuHelpUrl;
+
 // Enables suggestions rendered on contextual tasks side, instead of from AIM
 // webpage.
 extern const base::FeatureParam<bool>
@@ -410,6 +414,9 @@ extern std::string GetContextualTasksOnboardingTooltipHelpUrl();
 
 // Returns the help URL for the help center article from the toolbar.
 extern std::string GetContextualTasksHelpUrl();
+
+// Returns the help URL for the overflow menu help center article.
+extern std::string GetContextualTasksOverflowMenuHelpUrl();
 
 // Returns whether smart compose is enabled for Contextual Tasks.
 extern bool GetEnableContextualTasksSmartCompose();
