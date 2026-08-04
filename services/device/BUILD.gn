@@ -234,12 +234,12 @@ source_set("tests") {
   }
 
   if (is_linux && use_dbus) {
-    sources += [
-      "battery/battery_status_manager_linux_unittest.cc",
-      "geolocation/location_provider_linux_portal_unittest.cc",
-      "geolocation/wifi_data_provider_linux_unittest.cc",
-    ]
+    sources += [ "battery/battery_status_manager_linux_unittest.cc" ]
     deps += [ "//dbus:test_support" ]
+
+    if (is_linux) {
+      sources += [ "geolocation/wifi_data_provider_linux_unittest.cc" ]
+    }
   }
 
   if (is_chromeos) {
