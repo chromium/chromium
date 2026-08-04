@@ -35,14 +35,14 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/lens/region_search",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/views/frame:test_with_browser_view",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/tab_contents",
     "//chrome/test:test_support",
     "//components/lens",
     "//components/lens:features",
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:test_support",
+    "//url",
   ]
 }

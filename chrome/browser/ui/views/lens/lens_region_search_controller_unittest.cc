@@ -3,31 +3,43 @@
 // found in the LICENSE file.
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 
-#include "base/feature_list.h"
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
+#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "url/gurl.h"
 
 namespace lens {
 
-class LensRegionSearchControllerTest : public TestWithBrowserView {
+class LensRegionSearchControllerTest : public ChromeRenderViewHostTestHarness {
  public:
-  void SetUp() override {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures({features::kLensStandalone}, {});
-    TestWithBrowserView::SetUp();
+  LensRegionSearchControllerTest() {
+    scoped_feature_list_.InitAndEnableFeature(lens::features::kLensStandalone);
+  }
 
-    // Create an active web contents.
-    AddTab(browser_view()->browser(), GURL("about:blank"));
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        TemplateURLServiceFactory::GetInstance(),
+        TemplateURLServiceTestUtil::GetTemplateURLServiceTestingFactory()}};
+  }
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL("about:blank"));
+
+    CoreTabHelper::CreateForWebContents(web_contents());
     controller_ = std::make_unique<LensRegionSearchController>();
-    controller_->SetWebContentsForTesting(
-        browser_view()->GetActiveWebContents());
+    controller_->SetWebContentsForTesting(web_contents());
     controller_->SetEntryPointForTesting(
         lens::AmbientSearchEntryPoint::
             CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS);
@@ -35,10 +47,11 @@ class LensRegionSearchControllerTest : public TestWithBrowserView {
 
   void TearDown() override {
     controller_.reset();
-    TestWithBrowserView::TearDown();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<LensRegionSearchController> controller_;
 };
 
