@@ -198,19 +198,11 @@ INSTANTIATE_TEST_SUITE_P(
             // Standard loop (>= 1 frame, delta = 20 frames) at 48 kHz
             AudioBufferSourceTestParams{48000.0f, 1.5, 10.0 / 48000.0,
                                         30.0 / 48000.0, 0.0, true},
-            // TODO(crbug.com/540961964): These two boundary test parameter
-            // combinations correctly expose a known bug in
-            // ProcessInterpolatedPath() where it breaks out of the loop early
-            // on bounds checks and leaves the remainder of the output bus
-            // uninitialized (or filled with NaN). They are disabled in this
-            // test coverage CL to pass CQ, and will be re-enabled in CL part 2
-            // alongside the logic fix.
-            //
             // Non-looping play-through reaching buffer end boundary
             // (read_index2 >= buffer_length)
-            // AudioBufferSourceTestParams{44100.0f, 1.5, 0.0, 0.0, 0.0, false},
+            AudioBufferSourceTestParams{44100.0f, 1.5, 0.0, 0.0, 0.0, false},
             // Start out of bounds non-looping at 96 kHz
-            // AudioBufferSourceTestParams{96000.0f, 1.5, 0.0, 0.0, 2.0, false},
+            AudioBufferSourceTestParams{96000.0f, 1.5, 0.0, 0.0, 2.0, false},
             // Zero-length grain start at 48 kHz
             AudioBufferSourceTestParams{48000.0f, 1.0, 0.0, 0.0, 0.0, false}),
         testing::Values(1.0, -1.0)));

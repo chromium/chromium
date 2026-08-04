@@ -198,6 +198,7 @@ AudioBufferSourceHandler::ProcessFastPath(double virtual_delta_frames,
         // We're not looping and we've reached the end of the sample data.
         // Generate silence for any remaining samples and stop playing.
         RenderSilenceAndFinish(write_index, frames_to_process);
+        read_index = std::min(read_index, buffer_length);
         break;
       }
 
@@ -225,9 +226,12 @@ AudioBufferSourceHandler::ProcessInterpolatedPath(double virtual_start_frame,
                                                   int frames_to_process,
                                                   unsigned write_index,
                                                   double virtual_read_index) {
+  DCHECK_GT(buffer_length, 0u);
+  const unsigned max_index = buffer_length - 1;
+
   for (int i = 0; i < frames_to_process; ++i) {
     const uint32_t frames_remaining = frames_to_process - i - 1;
-    const unsigned read_index = static_cast<unsigned>(virtual_read_index);
+    unsigned read_index = static_cast<unsigned>(virtual_read_index);
     const double interpolation_factor = virtual_read_index - read_index;
 
     // For linear interpolation we need the next sample-frame too.
@@ -242,19 +246,26 @@ AudioBufferSourceHandler::ProcessInterpolatedPath(double virtual_start_frame,
       // If we hit the end of the loop, the next sample for interpolation is
       // the start of the loop. We calculate this instead of directly setting to
       // virtual_start_frame to preserve fractional loop bounds, and defensively
-      // clamp to 0 to protect against floating point rounding issues.
-      const double next_index = virtual_read_index + 1.0 - virtual_delta_frames;
-      read_index2 = next_index >= 0 ? static_cast<unsigned>(next_index) : 0;
+      // clamp to protect against floating point rounding issues.
+      double wrapped_index;
+      if (virtual_delta_frames >= 1.0) {
+        wrapped_index = virtual_read_index + 1.0 - virtual_delta_frames;
+      } else if (virtual_delta_frames > 0) {
+        wrapped_index =
+            virtual_start_frame +
+            std::fmod(virtual_read_index + 1.0 - virtual_start_frame,
+                      virtual_delta_frames);
+      } else {
+        wrapped_index = virtual_start_frame;
+      }
+      read_index2 =
+          wrapped_index >= 0 ? static_cast<unsigned>(wrapped_index) : 0;
     } else if (read_index2 >= buffer_length) {
       read_index2 = read_index;
     }
 
-    // Final sanity check on buffer access.
-    // TODO(crbug.com/436880897): as an optimization, try to get rid of this
-    // inner-loop check and put assertions and guards before the loop.
-    if (read_index >= buffer_length || read_index2 >= buffer_length) {
-      break;
-    }
+    read_index = std::min(read_index, max_index);
+    read_index2 = std::min(read_index2, max_index);
 
     // Linear interpolation.
     for (unsigned channel = 0; channel < number_of_channels; ++channel) {
@@ -299,6 +310,8 @@ AudioBufferSourceHandler::ProcessInterpolatedPath(double virtual_start_frame,
         // We're not looping and we've reached the end of the sample data.
         // Generate silence for any remaining samples and stop playing.
         RenderSilenceAndFinish(write_index, frames_remaining);
+        virtual_read_index =
+            std::min(virtual_read_index, static_cast<double>(buffer_length));
         break;
       }
 
@@ -313,6 +326,7 @@ AudioBufferSourceHandler::ProcessInterpolatedPath(double virtual_start_frame,
         // We're not looping and we've reached the end of the sample data.
         // Generate silence for any remaining samples and stop playing.
         RenderSilenceAndFinish(write_index, frames_remaining);
+        virtual_read_index = std::max(0.0, virtual_read_index);
         break;
       }
 
@@ -442,6 +456,15 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
         is_stopping_this_quantum = true;
       }
     }
+  }
+
+  if (!is_looping_ &&
+      ((computed_playback_rate >= 0 && virtual_read_index >= buffer_length) ||
+       (computed_playback_rate < 0 && virtual_read_index < 0))) {
+    virtual_read_index =
+        std::clamp(virtual_read_index, 0.0, static_cast<double>(buffer_length));
+    frames_to_process = 0;
+    is_stopping_this_quantum = true;
   }
 
   DCHECK_GE(virtual_read_index, 0);
