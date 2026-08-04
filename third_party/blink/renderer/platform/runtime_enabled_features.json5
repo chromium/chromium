@@ -3809,7 +3809,7 @@
       // https://www.w3.org/TR/media-capabilities/#keysystemtrackconfiguration.
       // See https://crbug.com/498284510 for more details.
       name: "KeySystemTrackConfigurationEncryptionScheme",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Checks interactive content using EventPath captured at
