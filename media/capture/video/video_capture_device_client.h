@@ -12,6 +12,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -160,8 +161,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
 
   // A branch of OnIncomingCapturedData for Y16 frame_format.pixel_format.
   void OnIncomingCapturedY16Data(
-      const uint8_t* data,
-      int length,
+      base::span<const uint8_t> data,
       const VideoCaptureFormat& frame_format,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
