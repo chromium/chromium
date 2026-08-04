@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 @Config(manifest = Config.NONE)
 public class NativeMessagingManagerTest {
     private static final String TARGET_PACKAGE = "com.example.extensionreceiver";
+    private static final String EXTENSION_ID = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -94,7 +95,7 @@ public class NativeMessagingManagerTest {
 
     @Test
     public void testConnectAndDisconnectService() {
-        String error = mManager.connect(TARGET_PACKAGE);
+        String error = mManager.connect(TARGET_PACKAGE, EXTENSION_ID);
         Assert.assertNull(error);
 
         NativeMessagingConnection connection = mManager.getConnectionForTesting(TARGET_PACKAGE);
@@ -102,7 +103,14 @@ public class NativeMessagingManagerTest {
         Assert.assertTrue(connection.isBound());
         Assert.assertNull(connection.getServiceForTesting());
 
-        IBrowserNativeMessageService fakeService = new IBrowserNativeMessageService.Stub() {};
+        IBrowserNativeMessageService fakeService =
+                new IBrowserNativeMessageService.Stub() {
+                    @Override
+                    public IExtensionNativeMessageService connectExtension(
+                            String extensionId, android.os.Bundle info) {
+                        return null;
+                    }
+                };
         mTestContext.triggerServiceConnected(fakeService.asBinder());
 
         IBrowserNativeMessageService service = connection.getServiceForTesting();
@@ -118,7 +126,7 @@ public class NativeMessagingManagerTest {
 
     @Test
     public void testConnectNullBinding() {
-        String error = mManager.connect(TARGET_PACKAGE);
+        String error = mManager.connect(TARGET_PACKAGE, EXTENSION_ID);
         Assert.assertNull(error);
 
         NativeMessagingConnection connection = mManager.getConnectionForTesting(TARGET_PACKAGE);
@@ -135,7 +143,7 @@ public class NativeMessagingManagerTest {
     public void testConnectAppDoesNotExist() {
         mTestContext.setBindServiceResult(false);
 
-        String error = mManager.connect("com.nonexistent.app");
+        String error = mManager.connect("com.nonexistent.app", EXTENSION_ID);
         Assert.assertNotNull(error);
         Assert.assertEquals("Error: Unable to connect to com.nonexistent.app", error);
         Assert.assertNull(mManager.getConnectionForTesting("com.nonexistent.app"));

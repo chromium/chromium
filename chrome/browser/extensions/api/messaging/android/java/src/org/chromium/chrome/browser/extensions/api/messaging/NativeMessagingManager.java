@@ -54,8 +54,8 @@ public class NativeMessagingManager implements Destroyable, NativeMessagingConne
         mConnections.remove(packageName);
     }
 
-    // Connects to an Android app.
-    public @Nullable String connect(String packageName) {
+    // Connects an extension to a native Android app.
+    public @Nullable String connect(String packageName, String extensionId) {
         ThreadUtils.assertOnUiThread();
         NativeMessagingConnection connection = mConnections.get(packageName);
         if (connection == null) {

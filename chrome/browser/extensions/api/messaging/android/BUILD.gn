@@ -27,7 +27,10 @@ source_set("android") {
 
 android_aidl("aidl") {
   import_include = [ "java/src" ]
-  sources = [ "java/src/org/chromium/chrome/browser/extensions/api/messaging/IBrowserNativeMessageService.aidl" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/extensions/api/messaging/IBrowserNativeMessageService.aidl",
+    "java/src/org/chromium/chrome/browser/extensions/api/messaging/IExtensionNativeMessageService.aidl",
+  ]
 }
 
 android_library("java") {
@@ -50,7 +53,10 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "junit/src/org/chromium/chrome/browser/extensions/api/messaging/NativeMessagingManagerTest.java" ]
+  sources = [
+    "junit/src/org/chromium/chrome/browser/extensions/api/messaging/NativeMessagingConnectionTest.java",
+    "junit/src/org/chromium/chrome/browser/extensions/api/messaging/NativeMessagingManagerTest.java",
+  ]
 
   deps = [
     ":java",
