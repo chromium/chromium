@@ -144,6 +144,7 @@ class CORE_EXPORT BodyStreamBuffer final
 
   BytesConsumer* ReleaseHandle(ExceptionState&);
   void Abort();
+  void AbortLoader(FetchDataLoader::Client*);
   void Close(ExceptionState&);
   void GetError();
   void RaiseOOMError();

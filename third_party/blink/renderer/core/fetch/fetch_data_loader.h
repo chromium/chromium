@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
@@ -65,7 +66,7 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
     virtual void DidFetchDataLoadFailed() = 0;
 
     // This function is called when an abort has been signalled.
-    virtual void Abort() = 0;
+    virtual void Abort(ScriptValue reason) = 0;
 
     void Trace(Visitor* visitor) const override {}
   };

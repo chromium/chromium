@@ -708,7 +708,7 @@ TEST_F(BodyStreamBufferTest,
   EXPECT_CALL(*src, Cancel());
 
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*client, Abort());
+  EXPECT_CALL(*client, Abort(_));
 
   EXPECT_CALL(checkpoint, Call(3));
 
@@ -743,7 +743,7 @@ TEST_F(BodyStreamBufferTest, AbortAfterStartLoadingCallsDataLoaderClientAbort) {
   EXPECT_CALL(*loader, Start(_, _));
 
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*client, Abort());
+  EXPECT_CALL(*client, Abort(_));
 
   EXPECT_CALL(checkpoint, Call(3));
 
@@ -779,7 +779,7 @@ TEST_F(BodyStreamBufferTest,
   EXPECT_CALL(*loader, Start(_, _));
 
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*client, Abort());
+  EXPECT_CALL(*client, Abort(_));
 
   EXPECT_CALL(checkpoint, Call(3));
 
