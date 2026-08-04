@@ -3284,6 +3284,17 @@ LocalFrameToken LocalFrame::GetLocalFrameToken() const {
   return GetFrameToken().GetAs<LocalFrameToken>();
 }
 
+const base::UnguessableToken& LocalFrame::GetInitiatorStateToken() const {
+  // A frame's LocalDOMWindow should always have a valid
+  // `initiator_state_token`.
+  CHECK(!DomWindow()->GetInitiatorStateToken().is_empty());
+  return DomWindow()->GetInitiatorStateToken();
+}
+
+DocumentToken LocalFrame::GetDocumentToken() const {
+  return GetDocument()->Token();
+}
+
 LoaderFreezeMode LocalFrame::GetLoaderFreezeMode() {
   if (paused_ || frozen_) {
     if (GetPage()->GetPageScheduler()->IsInBackForwardCache() &&

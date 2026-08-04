@@ -395,6 +395,7 @@ enum BadMessageReason {
   PMM_UNSUBSCRIBE_IN_FENCED_FRAME = 367,
   PMM_GET_SUBSCRIPTION_IN_FENCED_FRAME = 368,
   BIBI_BIND_VIBRATION_MANAGER_FOR_FENCED_FRAME = 369,
+  RFH_BEGIN_NAVIGATION_NO_INITIATOR_TOKENS = 370,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

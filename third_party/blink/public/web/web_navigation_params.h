@@ -134,7 +134,10 @@ struct BLINK_EXPORT WebNavigationInfo {
   // navigation with the tool that caused it.
   std::optional<base::UnguessableToken> script_tool_invocation_id;
 
+  // Used to retrieve data related to the initiator of the navigation stored in
+  // the browser process.
   base::UnguessableToken initiator_state_token;
+  blink::DocumentToken initiator_document_token;
 
   // Whether the navigation initiator frame has the
   // |network::mojom::blink::WebSandboxFlags::kDownloads| bit set in its sandbox

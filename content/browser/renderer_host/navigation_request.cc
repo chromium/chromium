@@ -1215,9 +1215,13 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
   common_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
+  // Note: we pass std::nullopt as `initiator_state_token` and
+  // `initiator_document_token` below as all initiator relevant data has already
+  // been retrieved and is in the `initiator_navigation_state`.
   auto navigation_params = blink::mojom::BeginNavigationParams::New(
-      initiator_frame_token, extra_headers, net::LOAD_NORMAL,
-      false /* skip_service_worker */,
+      initiator_frame_token, std::nullopt /* initiator_state_token */,
+      std::nullopt /* initiator_document_token*/, extra_headers,
+      net::LOAD_NORMAL, false /* skip_service_worker */,
       blink::mojom::RequestContextType::LOCATION,
       blink::mojom::MixedContentContextType::kBlockable, is_form_submission,
       false /* was_initiated_by_link_click */,

@@ -5671,6 +5671,9 @@ void RenderFrameImpl::BeginNavigation(
   // to |this|.
   CHECK(in_frame_tree_);
 
+  // We should always have a valid `initiator_state_token`.
+  CHECK(!info->initiator_state_token.is_empty());
+
   // This might be the first navigation in this RenderFrame.
   const bool first_navigation_in_render_frame = !had_started_any_navigation_;
   had_started_any_navigation_ = true;
@@ -6449,9 +6452,13 @@ void RenderFrameImpl::BeginNavigationInternal(
     }
   }
 
+  // We must not send an empty `initiator_state_token` ot the browser process.
+  CHECK(!info->initiator_state_token.is_empty());
+
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(
-          info->initiator_frame_token,
+          info->initiator_frame_token, info->initiator_state_token,
+          info->initiator_document_token,
           blink::GetWebURLRequestHeadersAsString(info->url_request).Latin1(),
           load_flags, info->url_request.GetSkipServiceWorker(),
           blink::GetRequestContextTypeForWebURLRequest(info->url_request),

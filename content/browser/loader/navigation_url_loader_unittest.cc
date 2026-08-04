@@ -83,6 +83,8 @@ class NavigationURLLoaderTest : public testing::Test {
     blink::mojom::BeginNavigationParamsPtr begin_params =
         blink::mojom::BeginNavigationParams::New(
             std::nullopt /* initiator_frame_token */,
+            std::nullopt /* initiator_state_token */,
+            std::nullopt /* initiator_document_token */,
             std::string() /* headers */, net::LOAD_NORMAL,
             false /* skip_service_worker */,
             blink::mojom::RequestContextType::LOCATION,

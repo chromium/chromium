@@ -113,6 +113,14 @@ struct BeginNavigationParams {
   // the browser process.
   blink.mojom.LocalFrameToken? initiator_frame_token;
 
+  // A token identifying the state of the document that initiated the
+  // navigation. This must be set on renderer-initiated navigations.
+  mojo_base.mojom.UnguessableToken? initiator_state_token;
+
+  // A token identifying the document that initiated the navigation. This must
+  // be set on renderer-initiated navigations.
+  blink.mojom.DocumentToken? initiator_document_token;
+
   // Additional HTTP request headers.
   string headers;
 

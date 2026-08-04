@@ -178,6 +178,8 @@ inline FormSubmission::FormSubmission(
     WebFrameLoadType load_type,
     LocalDOMWindow* origin_window,
     const LocalFrameToken& initiator_frame_token,
+    const base::UnguessableToken& initiator_state_token,
+    const DocumentToken& initiator_document_token,
     bool has_rel_opener,
     SourceLocation* source_location,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
@@ -196,6 +198,8 @@ inline FormSubmission::FormSubmission(
       load_type_(load_type),
       origin_window_(origin_window),
       initiator_frame_token_(initiator_frame_token),
+      initiator_state_token_(initiator_state_token),
+      initiator_document_token_(initiator_document_token),
       has_rel_opener_(has_rel_opener),
       input_start_time_(CurrentInputEvent::Get()
                             ? CurrentInputEvent::Get()->TimeStamp()
@@ -417,6 +421,8 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       event, frame_request.GetNavigationPolicy(), triggering_event_info, reason,
       std::move(resource_request), target_frame, load_type,
       form->GetDocument().domWindow(), form_local_frame->GetLocalFrameToken(),
+      form_local_frame->GetInitiatorStateToken(),
+      form_local_frame->GetDocumentToken(),
       frame_request.GetWindowFeatures().explicit_opener,
       CaptureSourceLocation(form->GetDocument().domWindow()),
       form_local_frame->IssueKeepAliveHandle());
@@ -462,6 +468,8 @@ void FormSubmission::Navigate() {
   frame_request.SetSourceElement(submitter_);
   frame_request.SetTriggeringEventInfo(triggering_event_info_);
   frame_request.SetInitiatorFrameToken(initiator_frame_token_);
+  frame_request.SetInitiatorStateToken(initiator_state_token_);
+  frame_request.SetInitiatorDocumentToken(initiator_document_token_);
   frame_request.SetInitiatorNavigationStateKeepAliveHandle(
       std::move(initiator_navigation_state_keep_alive_handle_));
   frame_request.SetSourceLocation(source_location_);

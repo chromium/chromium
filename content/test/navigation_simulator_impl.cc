@@ -1419,12 +1419,24 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
     return true;
   }
 
+  base::UnguessableToken initiator_state_token =
+      initiator_frame_host_
+          ? static_cast<RenderFrameHostImpl*>(initiator_frame_host_)
+                ->current_initiator_state_token()
+          : render_frame_host_->current_initiator_state_token();
+  blink::DocumentToken initiator_document_token =
+      initiator_frame_host_
+          ? static_cast<RenderFrameHostImpl*>(initiator_frame_host_)
+                ->GetDocumentToken()
+          : render_frame_host_->GetDocumentToken();
+
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(
           initiator_frame_host_
               ? std::make_optional(initiator_frame_host_->GetFrameToken())
               : std::nullopt,
-          headers_, load_flags_, skip_service_worker_, request_context_type_,
+          initiator_state_token, initiator_document_token, headers_,
+          load_flags_, skip_service_worker_, request_context_type_,
           mixed_content_context_type_, is_form_submission_,
           false /* was_initiated_by_link_click */,
           blink::mojom::ForceHistoryPush::kNo, searchable_form_url_,

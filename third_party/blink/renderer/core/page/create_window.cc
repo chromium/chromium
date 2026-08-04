@@ -280,6 +280,8 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   }
 
   request.SetInitiatorFrameToken(opener_frame.GetLocalFrameToken());
+  request.SetInitiatorStateToken(opener_frame.GetInitiatorStateToken());
+  request.SetInitiatorDocumentToken(opener_frame.GetDocumentToken());
   request.SetInitiatorNavigationStateKeepAliveHandle(
       opener_frame.IssueKeepAliveHandle());
 

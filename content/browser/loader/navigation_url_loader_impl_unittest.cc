@@ -147,8 +147,9 @@ class NavigationURLLoaderImplTest : public testing::Test {
 
     blink::mojom::BeginNavigationParamsPtr begin_params =
         blink::mojom::BeginNavigationParams::New(
-            initiator_frame_token, headers, net::LOAD_NORMAL,
-            false /* skip_service_worker */,
+            initiator_frame_token, std::nullopt /* initiator_state_token */,
+            std::nullopt /* initiator_document_token */, headers,
+            net::LOAD_NORMAL, false /* skip_service_worker */,
             blink::mojom::RequestContextType::LOCATION,
             blink::mojom::MixedContentContextType::kBlockable,
             false /* is_form_submission */,

@@ -11557,6 +11557,20 @@ void RenderFrameHostImpl::BeginNavigation(
     return;
   }
 
+  // The renderer process must provide an `initiator_state_token` and an
+  // `initiator_document_token` in `begin_params`. Terminate a renderer process
+  // that sends empty values.
+  if (!begin_params->initiator_state_token.has_value() ||
+      !begin_params->initiator_document_token.has_value()) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_BEGIN_NAVIGATION_NO_INITIATOR_TOKENS);
+    return;
+  }
+
+  // TODO(crbug.com/510258191): Use the `initiator_state_token` to retrieve a
+  // matching InitiatorNavigationState. Validate that it matches the
+  // `initiator_document_token` and the RFH's ProcessID.
+
   // See `owner_` invariants about `lifecycle_state_`.
   // `IsInactiveAndDisallowActivation()` check cause both pending deletion and
   // bfcached states to return early.

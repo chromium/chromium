@@ -126,6 +126,8 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
       WebFrameLoadType load_type,
       LocalDOMWindow* origin_window,
       const LocalFrameToken& initiator_frame_token,
+      const base::UnguessableToken& initiator_state_token,
+      const DocumentToken& initiator_document_token,
       bool has_rel_opener,
       SourceLocation* source_location,
       mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
@@ -165,6 +167,8 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   WebFrameLoadType load_type_;
   Member<LocalDOMWindow> origin_window_;
   LocalFrameToken initiator_frame_token_;
+  base::UnguessableToken initiator_state_token_;
+  DocumentToken initiator_document_token_;
   bool has_rel_opener_ = false;
   base::TimeTicks input_start_time_;
   std::optional<base::UnguessableToken> script_tool_invocation_id_;

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_context.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -97,6 +98,13 @@ FrameLoadRequest::FrameLoadRequest(LocalDOMWindow* origin_window,
 
     DCHECK(!resource_request_.RequestorOrigin());
     resource_request_.SetRequestorOrigin(origin_window->GetSecurityOrigin());
+    const base::UnguessableToken& initiator_state_token =
+        origin_window->GetInitiatorStateToken();
+    CHECK(!initiator_state_token.is_empty());
+    SetInitiatorStateToken(initiator_state_token);
+    if (origin_window->document()) {
+      SetInitiatorDocumentToken(origin_window->document()->Token());
+    }
     // Note: `resource_request_` is owned by this FrameLoadRequest instance, and
     // its url doesn't change after this point, so it's ok to check for
     // about:blank and about:srcdoc here.

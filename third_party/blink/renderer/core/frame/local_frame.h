@@ -820,6 +820,13 @@ class CORE_EXPORT LocalFrame final
 
   LocalFrameToken GetLocalFrameToken() const;
 
+  // A helper that returns the initiator state token from the LocalFrame's
+  // LocalDomWindow.
+  const base::UnguessableToken& GetInitiatorStateToken() const;
+
+  // A helper that returns the document token from the LocalFrame's Document.
+  DocumentToken GetDocumentToken() const;
+
   LoaderFreezeMode GetLoaderFreezeMode();
 
   // Swaps `this` LocalFrame in to replace the current frame  (e.g. in the case
