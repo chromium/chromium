@@ -1004,6 +1004,22 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableBackendCleanupTrackerOnHttpCache);
 NET_EXPORT BASE_DECLARE_FEATURE(
     kPartitionWebSocketEndpointLocksByNetworkAnonymizationKey);
 
+// Controls initial delay for broken alternative services.
+NET_EXPORT BASE_DECLARE_FEATURE(kInitialDelayForBrokenAlternativeService);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kInitialDelayForBrokenAlternativeServiceParam);
+
+// Controls whether broken alternative services should be persisted to disk
+// cache.
+NET_EXPORT BASE_DECLARE_FEATURE(kPersistBrokenAlternativeServices);
+
+// Controls maximum delay for broken alternative services.
+NET_EXPORT BASE_DECLARE_FEATURE(kMaxDelayForBrokenAlternativeService);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kMaxDelayForBrokenAlternativeServiceParam);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

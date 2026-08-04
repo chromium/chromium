@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1171,6 +1173,44 @@ TEST_F(BrokenAlternativeServicesTest, Clear) {
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service2));
+}
+
+TEST_F(BrokenAlternativeServicesTest, InitialDelayFinchFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kInitialDelayForBrokenAlternativeService,
+      {{features::kInitialDelayForBrokenAlternativeServiceParam.name, "10s"}});
+
+  BrokenAlternativeServices broken_services(50, this, broken_services_clock_);
+  const BrokenAlternativeService alternative_service(
+      AlternativeService(NextProto::kProtoHTTP2, "foo", 443),
+      network_anonymization_key1_, true);
+
+  broken_services.MarkBroken(alternative_service);
+  base::TimeTicks expiration;
+  EXPECT_TRUE(broken_services.IsBroken(alternative_service, &expiration));
+  EXPECT_EQ(broken_services_clock_->NowTicks() + base::Seconds(10), expiration);
+}
+
+TEST_F(BrokenAlternativeServicesTest, MaxDelayFinchFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kMaxDelayForBrokenAlternativeService,
+      {{features::kMaxDelayForBrokenAlternativeServiceParam.name, "100s"}});
+
+  BrokenAlternativeServices broken_services(50, this, broken_services_clock_);
+  const BrokenAlternativeService alternative_service(
+      AlternativeService(NextProto::kProtoHTTP2, "foo", 443),
+      network_anonymization_key1_, true);
+
+  broken_services.MarkBroken(alternative_service);
+  test_task_runner_->FastForwardBy(base::Seconds(300));
+  broken_services.MarkBroken(alternative_service);
+
+  base::TimeTicks expiration;
+  EXPECT_TRUE(broken_services.IsBroken(alternative_service, &expiration));
+  EXPECT_EQ(broken_services_clock_->NowTicks() + base::Seconds(100),
+            expiration);
 }
 
 }  // namespace

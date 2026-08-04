@@ -982,4 +982,21 @@ BASE_FEATURE(kEnableBackendCleanupTrackerOnHttpCache,
 BASE_FEATURE(kPartitionWebSocketEndpointLocksByNetworkAnonymizationKey,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInitialDelayForBrokenAlternativeService,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kInitialDelayForBrokenAlternativeServiceParam,
+                   &kInitialDelayForBrokenAlternativeService,
+                   base::Seconds(300));
+
+BASE_FEATURE(kPersistBrokenAlternativeServices,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMaxDelayForBrokenAlternativeService,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kMaxDelayForBrokenAlternativeServiceParam,
+                   &kMaxDelayForBrokenAlternativeService,
+                   base::Days(2));
+
 }  // namespace net::features

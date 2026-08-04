@@ -3338,4 +3338,28 @@ TEST_F(HttpServerPropertiesManagerTest, PrivacyMode) {
                 NetworkAnonymizationKey()));
 }
 
+TEST_F(HttpServerPropertiesManagerTest,
+       PersistBrokenAlternativeServicesDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPersistBrokenAlternativeServices);
+
+  InitializePrefs();
+
+  const AlternativeService broken_alternative_service(NextProto::kProtoHTTP2,
+                                                      "broken.com", 443);
+
+  http_server_props_->MarkAlternativeServiceBroken(broken_alternative_service,
+                                                   NetworkAnonymizationKey());
+
+  EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
+      broken_alternative_service, NetworkAnonymizationKey()));
+
+  // Advance time so prefs are written.
+  FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
+
+  const base::DictValue& server_dict = pref_delegate_->GetServerProperties();
+  EXPECT_FALSE(server_dict.FindList("broken_alternative_services"));
+}
+
 }  // namespace net
