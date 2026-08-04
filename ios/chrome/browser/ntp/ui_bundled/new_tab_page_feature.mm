@@ -31,6 +31,8 @@ BASE_FEATURE(kConsistentLogoDoodleHeight, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNewTabPagePaddingUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 // Feature parameters for `kOverrideFeedSettings`.
@@ -52,6 +54,15 @@ BASE_FEATURE_PARAM(int,
                    &kFeedSwipeInProductHelp,
                    kFeedSwipeInProductHelpArmParam,
                    static_cast<int>(FeedSwipeIPHVariation::kStaticAfterFRE));
+
+const char kNewTabPagePaddingUpdateArmParam[] =
+    "new-tab-page-padding-update-arm";
+
+BASE_FEATURE_PARAM(int,
+                   kNewTabPagePaddingUpdateArmParamFeature,
+                   &kNewTabPagePaddingUpdate,
+                   kNewTabPagePaddingUpdateArmParam,
+                   static_cast<int>(NTPPaddingUpdateVariation::kTightPadding));
 
 #pragma mark - Helpers
 
@@ -105,4 +116,12 @@ bool IsNTPHeaderTransformsForAnimationsEnabled() {
 bool IsNTPRedesignEnabled() {
   return base::FeatureList::IsEnabled(kNewTabPageRedesign) &&
          ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+}
+
+NTPPaddingUpdateVariation GetNTPPaddingUpdateVariation() {
+  if (base::FeatureList::IsEnabled(kNewTabPagePaddingUpdate)) {
+    return static_cast<NTPPaddingUpdateVariation>(
+        kNewTabPagePaddingUpdateArmParamFeature.Get());
+  }
+  return NTPPaddingUpdateVariation::kDisabled;
 }

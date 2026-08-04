@@ -1336,6 +1336,19 @@ const FeatureEntry::FeatureVariation kCrossDeviceSigninVariations[] = {
      kCrossDeviceSigninDefaultUrl, nullptr},
 };
 
+const FeatureEntry::FeatureParam kNewTabPagePaddingUpdateTightPadding[] = {
+    {kNewTabPagePaddingUpdateArmParam, "1"}};
+const FeatureEntry::FeatureParam kNewTabPagePaddingUpdateMediumPadding[] = {
+    {kNewTabPagePaddingUpdateArmParam, "2"}};
+const FeatureEntry::FeatureParam kNewTabPagePaddingUpdatePreferredPadding[] = {
+    {kNewTabPagePaddingUpdateArmParam, "3"}};
+
+const FeatureEntry::FeatureVariation kNewTabPagePaddingUpdateVariations[] = {
+    {" - Tight Padding", kNewTabPagePaddingUpdateTightPadding, nullptr},
+    {" - Medium Padding", kNewTabPagePaddingUpdateMediumPadding, nullptr},
+    {" - Preferred Padding", kNewTabPagePaddingUpdatePreferredPadding, nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2878,6 +2891,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"next-old-design", flag_descriptions::kNextOldDesignName,
      flag_descriptions::kNextOldDesignDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNextOldDesign)},
+    {"new-tab-page-padding-update",
+     flag_descriptions::kNewTabPagePaddingUpdateName,
+     flag_descriptions::kNewTabPagePaddingUpdateDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kNewTabPagePaddingUpdate,
+                                    kNewTabPagePaddingUpdateVariations,
+                                    "NewTabPagePaddingUpdate")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

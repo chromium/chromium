@@ -1451,6 +1451,12 @@ inline constexpr char kNewTabPageFieldTrialDescription[] =
     "Enables new tab page features that are available on first run for new "
     "Chrome iOS users.";
 
+inline constexpr char kNewTabPagePaddingUpdateName[] =
+    "New Tab Page padding updates";
+inline constexpr char kNewTabPagePaddingUpdateDescription[] =
+    "Enables padding updates and fake omnibox styling on the New Tab Page. "
+    "Padding is dependent on the enabled feature parameter.";
+
 inline constexpr char kNewTabPageRedesignName[] = "New Tab Page Redesign";
 inline constexpr char kNewTabPageRedesignDescription[] =
     "Enables the redesigned New Tab Page on iOS (iPhone only).";

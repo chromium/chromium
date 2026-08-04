@@ -17,6 +17,14 @@ enum class FeedSwipeIPHVariation {
   kAnimated,
 };
 
+// Enum to represent arms of feature kNewTabPagePaddingUpdate.
+enum class NTPPaddingUpdateVariation {
+  kDisabled,
+  kTightPadding,
+  kMediumPadding,
+  kPreferredPadding,
+};
+
 #pragma mark - Feature declarations
 
 // Flag to modify the feed header through the server. Enabling this feature on
@@ -46,6 +54,9 @@ BASE_DECLARE_FEATURE(kEnableNTPBackgroundImageCache);
 // Feature flag to make the height of the NTP Logo and Doodle consistent.
 BASE_DECLARE_FEATURE(kConsistentLogoDoodleHeight);
 
+// Feature flag to enable the New Tab Page padding updates.
+BASE_DECLARE_FEATURE(kNewTabPagePaddingUpdate);
+
 #pragma mark - Feature parameters
 
 // A parameter value for the feed's refresh threshold when the feed has already
@@ -68,6 +79,10 @@ extern const char kFeedSettingDiscoverReferrerParameter[];
 // Parameter to indicate which arm of feature kFeedSwipeInProductHelp is
 // enabled.
 extern const char kFeedSwipeInProductHelpArmParam[];
+
+// Parameter to indicate which arm of the feature kNewTabPagePaddingUpdate is
+// enabled.
+extern const char kNewTabPagePaddingUpdateArmParam[];
 
 #pragma mark - Helpers
 
@@ -98,5 +113,8 @@ BASE_DECLARE_FEATURE(kNewTabPageRedesign);
 
 // Whether the New Tab Page Redesign is enabled.
 bool IsNTPRedesignEnabled();
+
+// Returns the enabled variation of feature kNewTabPagePaddingUpdate.
+NTPPaddingUpdateVariation GetNTPPaddingUpdateVariation();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_
