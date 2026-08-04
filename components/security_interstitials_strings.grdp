@@ -595,5 +595,8 @@
   <message name="IDS_SUSPICIOUS_SITE_PROCEED_BUTTON" desc="The text for the secondary button that proceeds to the site">
     Mark as safe
   </message>
+  <message name="IDS_SUSPICIOUS_SITE_HATS_CUSTOM_INVITATION" desc="The custom invitation string shown in the Happiness Tracking Survey (HaTS) prompt banner for suspicious site warnings on Android">
+    Chrome just flagged a website you were trying to visit. Help us improve these warnings by taking a 1-minute survey.
+  </message>
 
 </grit-part>

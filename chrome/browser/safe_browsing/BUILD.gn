@@ -629,6 +629,8 @@ static_library("safe_browsing") {
         "//chrome/android:chrome_jni_headers",
         "//chrome/app/vector_icons",
         "//chrome/browser/safe_browsing/android",
+        "//chrome/browser/ui/android/hats",
+        "//chrome/browser/ui/hats",
         "//components/messages/android",
         "//components/safe_browsing:buildflags",
         "//components/safe_browsing/android:remote_database_manager",
@@ -992,7 +994,9 @@ source_set("unit_tests") {
       "telemetry/android/android_telemetry_service_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/ui/android/hats",
       "//chrome/browser/ui/android/tab_model:test_support",
+      "//components/history/core/test",
       "//components/messages/android:test_support",
       "//components/safe_browsing/android:real_time_url_checks_allowlist",
       "//components/safe_browsing/android:safe_browsing_api_handler",

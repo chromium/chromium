@@ -10,6 +10,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -36,6 +39,14 @@ class SuspiciousSiteControllerAndroid
       public AsyncCheckTracker::Observer {
  public:
   using WarningOutcome = safe_browsing::SuspiciousSiteWarningOutcome;
+
+  // Represents user interaction choices for the suspicious site warning HaTS.
+  enum class UserChoice {
+    kMarkAsSafe,
+    kBackToSafety,
+    kDismiss,
+    kManualNavigation,
+  };
 
   SuspiciousSiteControllerAndroid(const SuspiciousSiteControllerAndroid&) =
       delete;
@@ -81,12 +92,46 @@ class SuspiciousSiteControllerAndroid
 
  private:
   friend class content::WebContentsUserData<SuspiciousSiteControllerAndroid>;
+  friend class SuspiciousSiteControllerAndroidTest;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   explicit SuspiciousSiteControllerAndroid(content::WebContents* web_contents);
 
   // Validates all preconditions and triggers ShowDialog if all gates pass.
   void MaybeShowDialog();
+
+  // Triggers HaTS survey for suspicious site warnings if feature enabled.
+  void MaybeTriggerHatsSurvey(UserChoice user_choice);
+
+  // Queries HistoryService to check if user has visited the host before.
+  void FetchRepeatVisitCount();
+  void OnGetVisibleVisitCount(history::VisibleVisitCountToHostResult result);
+
+  // Timestamp when the warning dialog was shown.
+  base::TimeTicks dialog_shown_time_;
+
+  // Encapsulates user interaction state and metadata specific to a single
+  // warning dialog presentation. This state is naturally cleared when the
+  // controller is destroyed (e.g., when the user navigates away or bypasses).
+  struct DialogState {
+    // Tracks if the user clicked the "Learn More" help center link.
+    bool learn_more_clicked = false;
+
+    // Tracks if user has visited the suspicious site host previously.
+    bool repeat_visit = false;
+
+    // Tracks if a history query has already been dispatched for this
+    // navigation.
+    bool has_fetched_history = false;
+
+    // Tracks accumulated prompt visible time across tab switches.
+    base::TimeDelta accumulated_visible_time;
+  };
+
+  DialogState dialog_state_;
+
+  // Tracker for async history queries.
+  base::CancelableTaskTracker history_task_tracker_;
 
   // Navigation ID of the main frame navigation that triggered the suspicious
   // site warning. This is std::nullopt when the controller is first created,
@@ -99,6 +144,10 @@ class SuspiciousSiteControllerAndroid
   // Whether the dialog display is currently suspended or waiting for checks to
   // finish.
   bool is_suspended_ = false;
+
+  // Tracks whether the dialog is in the process of closing to prevent
+  // re-entrancy.
+  bool is_closing_ = false;
 
   // Tracks whether the dialog has been shown on screen.
   bool has_shown_ = false;

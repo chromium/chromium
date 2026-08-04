@@ -105,6 +105,7 @@ extern const char kHatsSurveyTriggerSigninNtpSigninButton[];
 extern const char kHatsSurveyTriggerSigninNtpAccountAvatarTap[];
 extern const char kHatsSurveyTriggerSigninNtpPromo[];
 extern const char kHatsSurveyTriggerSigninBookmarkPromo[];
+extern const char kHatsSurveyTriggerSuspiciousSiteWarning[];
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 extern const char kHatsSurveyTriggerAutofillAiFilling[];

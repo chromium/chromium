@@ -23,6 +23,7 @@
 #include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "extensions/common/extension_features.h"
@@ -36,7 +37,6 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"  // nogncheck
 #include "components/performance_manager/public/features.h"  // nogncheck
 #include "components/permissions/constants.h"                // nogncheck
-#include "components/safe_browsing/core/common/features.h"   // nogncheck
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"  // nogncheck
 #else
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -189,6 +189,8 @@ constexpr char kHatsSurveyTriggerSigninNtpAccountAvatarTap[] =
 constexpr char kHatsSurveyTriggerSigninNtpPromo[] = "signin-ntp-promo";
 constexpr char kHatsSurveyTriggerSigninBookmarkPromo[] =
     "signin-bookmark-promo";
+constexpr char kHatsSurveyTriggerSuspiciousSiteWarning[] =
+    "suspicious-site-warning";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -879,6 +881,16 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerSigninBookmarkPromo, "o2YBX3ZJc0tK1KeaPYj0UveLWhmf",
       std::vector<std::string>{}, signin_string_psd_fields);
 
+  // Suspicious Site Warning surveys.
+  survey_configs.emplace_back(
+      &safe_browsing::kSuspiciousSiteWarningSurvey,
+      kHatsSurveyTriggerSuspiciousSiteWarning,
+      safe_browsing::kSuspiciousSiteWarningSurveyTriggerId.Get(),
+      std::vector<std::string>{"did_proceed", "learn_more_clicked",
+                               "repeat_visit"},
+      std::vector<std::string>{"site_origin", "user_choice",
+                               "time_prompt_visible", "referrer_origin",
+                               "referring_app"});
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
   survey_configs.emplace_back(

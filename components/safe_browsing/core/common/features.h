@@ -473,6 +473,15 @@ BASE_DECLARE_FEATURE(kSkipImageClassificationScoringForNonPageLoadTriggers);
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 
+// Enables HaTS surveys for users encountering suspicious site warnings.
+BASE_DECLARE_FEATURE(kSuspiciousSiteWarningSurvey);
+extern const base::FeatureParam<std::string>
+    kSuspiciousSiteWarningSurveyTriggerId;
+extern const base::FeatureParam<std::string>
+    kSuspiciousSiteWarningSurveyProceedTriggerId;
+extern const base::FeatureParam<std::string>
+    kSuspiciousSiteWarningSurveyHeedTriggerId;
+
 // Enables warnings on sites that Safe Browsing deems suspicious.
 BASE_DECLARE_FEATURE(kSuspiciousSiteWarnings);
 
