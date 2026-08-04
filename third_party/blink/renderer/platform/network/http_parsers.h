@@ -188,9 +188,9 @@ Vector<network::mojom::blink::ContentSecurityPolicyPtr>
 ParseContentSecurityPolicyHeaders(
     const ContentSecurityPolicyResponseHeaders& headers);
 
-// Parses an allowed-origins expression into a CSPSourceList using blink types.
+// Parses an alloworigins expression into a CSPSourceList using blink types.
 PLATFORM_EXPORT
-network::mojom::blink::CSPSourceListPtr ParseAllowedOrigins(
+network::mojom::blink::CSPSourceListPtr ParseAllowOrigins(
     const String& raw_value);
 
 // Parses SRI-relevant HTTP Message Signature headers. This wraps

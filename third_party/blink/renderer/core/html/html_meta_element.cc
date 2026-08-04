@@ -693,7 +693,7 @@ void HTMLMetaElement::ProcessContent() {
 
   if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
       EqualIgnoringAsciiCase(name_value, keywords::kResponsiveEmbeddedSizing) &&
-      !GetDocument().body() && IsAllowedOrigins()) {
+      !GetDocument().body() && IsAllowOrigins()) {
     GetDocument().SetResponsiveEmbeddedSizing();
   }
 
@@ -768,10 +768,10 @@ void HTMLMetaElement::ProcessContent() {
   }
 }
 
-bool HTMLMetaElement::IsAllowedOrigins() const {
-  const AtomicString& allowed_origins =
-      FastGetAttribute(html_names::kAllowedOriginsAttr);
-  if (allowed_origins.IsNull()) {
+bool HTMLMetaElement::IsAllowOrigins() const {
+  const AtomicString& allow_origins =
+      FastGetAttribute(html_names::kAlloworiginsAttr);
+  if (allow_origins.IsNull()) {
     return false;
   }
   const Document& document = GetDocument();
@@ -794,7 +794,7 @@ bool HTMLMetaElement::IsAllowedOrigins() const {
   }
 
   const network::mojom::blink::CSPSourceListPtr source_list =
-      ParseAllowedOrigins(allowed_origins);
+      ParseAllowOrigins(allow_origins);
   if (!source_list) {
     return false;
   }
