@@ -185,13 +185,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
             // it will cause a crash in {@link FrameLayout#layoutChildren()}.
             assumeNonNull(mContainerView);
             assumeNonNull(mContainerView.getHandler())
-                    .post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    closePanel(StateChangeReason.UNKNOWN, false);
-                                }
-                            });
+                    .post(() -> closePanel(StateChangeReason.UNKNOWN, false));
         }
     }
 
