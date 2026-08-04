@@ -117,6 +117,12 @@ void LogSaveCardPromptOfferMetric(
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".WithMultipleLegalLines", metric);
   }
+  if (options.legal_lines_mention_personalization) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show +
+            ".LegalMessageLinesMentionPersonalization",
+        metric);
+  }
   if (options.has_same_last_four_as_server_card_but_different_expiration_date) {
     base::UmaHistogramEnumeration(metric_with_destination_and_show +
                                       ".WithSameLastFourButDifferentExpiration",
@@ -169,6 +175,12 @@ void LogSaveCardPromptResultMetric(
   if (options.has_multiple_legal_lines) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".WithMultipleLegalLines", metric);
+  }
+  if (options.legal_lines_mention_personalization) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show +
+            ".LegalMessageLinesMentionPersonalization",
+        metric);
   }
   if (options.has_same_last_four_as_server_card_but_different_expiration_date) {
     base::UmaHistogramEnumeration(metric_with_destination_and_show +

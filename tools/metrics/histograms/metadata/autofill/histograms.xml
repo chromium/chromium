@@ -799,6 +799,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </variants>
 
 <variants name="AutofillServerSaveCardSituation">
+  <variant name="LegalMessageLinesMentionPersonalization"
+      summary="has a legal message that mentions personalization"/>
   <variant name="WithMultipleLegalLines"
       summary="has a legal message with multiple lines"/>
   <variant name="WithSameLastFourButDifferentExpiration"

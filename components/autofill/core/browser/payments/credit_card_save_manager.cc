@@ -19,6 +19,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/string_search.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -1024,6 +1025,8 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
   payments::PaymentsAutofillClient::SaveCreditCardOptions options =
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_has_multiple_legal_lines(legal_message_lines_.size() > 1)
+          .with_legal_lines_mention_personalization(
+              DoLegalMessageLinesMentionPersonalization())
           .with_should_request_name_from_user(should_request_name_from_user_)
           .with_should_request_expiration_date_from_user(
               should_request_expiration_date_from_user_)
@@ -1792,6 +1795,23 @@ bool CreditCardSaveManager::ShouldRequestCvcInclusiveLegalMessage() const {
 bool CreditCardSaveManager::IsCvcSaveFlowAllowed() const {
   return client_->IsCvcSavingSupported() &&
          payments_data_manager().IsPaymentCvcStorageEnabled();
+}
+
+bool CreditCardSaveManager::DoLegalMessageLinesMentionPersonalization() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillParseLegalMessageLines)) {
+    return false;
+  }
+
+  base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents searcher(
+      u"personalization");
+  for (LegalMessageLine line : legal_message_lines_) {
+    if (searcher.Search(line.text(), /*match_index=*/nullptr,
+                        /*match_length=*/nullptr)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 PaymentsDataManager& CreditCardSaveManager::payments_data_manager() {

@@ -369,6 +369,12 @@ class CreditCardSaveManager {
   // storage is enabled and the client supports saving CVC.
   bool IsCvcSaveFlowAllowed() const;
 
+  // Returns true if upload save's legal message lines contain the word
+  // "personalization" at any point. This is a temporary, best-effort metric for
+  // feature launch verification.
+  // TODO(crbug.com/542654292): Clean up once the project launches.
+  bool DoLegalMessageLinesMentionPersonalization() const;
+
   PaymentsDataManager& payments_data_manager();
   const PaymentsDataManager& payments_data_manager() const;
 

@@ -147,6 +147,21 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.FormEvents.Address"/>
 </histogram_suffixes>
 
+<histogram_suffixes
+    name="AutofillSaveCreditCardPromptLegalMessageLinesMentionPersonalization"
+    separator=".">
+  <suffix name="LegalMessageLinesMentionPersonalization"
+      label="When legal message mentions personalization"/>
+  <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
+  <affected-histogram
+      name="Autofill.SaveCreditCardPromptOffer.Upload.FirstShow"/>
+  <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload.Reshows"/>
+  <affected-histogram
+      name="Autofill.SaveCreditCardPromptResult.Upload.FirstShow"/>
+  <affected-histogram
+      name="Autofill.SaveCreditCardPromptResult.Upload.Reshows"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="AutofillSaveCreditCardPromptWithMultipleLegalLines"
     separator=".">
   <suffix name="WithMultipleLegalLines"

@@ -149,7 +149,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
 
 TEST_P(AutofillSaveCardBottomSheetBridgeTest,
        LogsPromptShown_WithMultipleLegalLines) {
-  if (!GetParam()) {
+  if (!IsUploadSave()) {
     GTEST_SKIP() << "Not applicable for local save, as legal lines are "
                     "present only in server save scenarios";
   }
@@ -165,6 +165,30 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({GetBaseHistogramName(), ".WithMultipleLegalLines"}),
+      autofill_metrics::SaveCardPromptOffer::kShown, 1);
+}
+
+TEST_P(AutofillSaveCardBottomSheetBridgeTest,
+       LogsPromptShown_ForPromptWithLegalLinesMentioningPersonalization) {
+  if (!IsUploadSave()) {
+    GTEST_SKIP() << "Not applicable for local save, as legal lines are "
+                    "present only in server save scenarios";
+  }
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillParseLegalMessageLines};
+
+  base::HistogramTester histogram_tester;
+  autofill_save_card_bottom_sheet_bridge_->SetSaveCardDelegateForTesting(
+      GetDelegate(SaveCreditCardOptions()
+                      .with_legal_lines_mention_personalization(true)
+                      .with_show_prompt(true)
+                      .with_card_save_type(CardSaveType::kCardSaveOnly)));
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  histogram_tester.ExpectUniqueSample(
+      GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {GetBaseHistogramName(), ".LegalMessageLinesMentionPersonalization"}),
       autofill_metrics::SaveCardPromptOffer::kShown, 1);
 }
 

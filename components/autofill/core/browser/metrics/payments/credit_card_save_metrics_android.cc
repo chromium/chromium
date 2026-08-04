@@ -46,6 +46,13 @@ void LogSaveCreditCardPromptOfferMetricAndroid(
     base::UmaHistogramEnumeration(
         base::StrCat({base_histogram_name, ".WithMultipleLegalLines"}), metric);
   }
+  if (save_credit_card_options.legal_lines_mention_personalization) {
+    CHECK(is_upload_save);
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {base_histogram_name, ".LegalMessageLinesMentionPersonalization"}),
+        metric);
+  }
   if (save_credit_card_options
           .has_same_last_four_as_server_card_but_different_expiration_date) {
     CHECK(is_upload_save);
