@@ -827,6 +827,29 @@ TEST_F(OmniboxEditModelPopupTest,
   }
 }
 
+TEST_F(OmniboxEditModelPopupTest,
+       GetPopupAccessibilityLabelForCurrentSelection_NullResultMessage) {
+  ACMatches matches;
+  AutocompleteMatch match(nullptr, 1000, false,
+                          AutocompleteMatchType::NULL_RESULT_MESSAGE);
+  match.contents = u"Disclaimer Text";
+  matches.push_back(match);
+
+  auto* result = &AutocompleteControllerPublishedResult();
+  result->AppendMatches(matches);
+
+  model()->SetPopupSelection(OmniboxPopupSelection(0));
+
+  int label_prefix_length = 0;
+  std::u16string label = model()->GetPopupAccessibilityLabelForCurrentSelection(
+      u"user input", true, &label_prefix_length);
+
+  // The label should contain the match contents "Disclaimer Text"
+  // rather than the user input "user input".
+  EXPECT_NE(label.find(u"Disclaimer Text"), std::u16string::npos);
+  EXPECT_EQ(label.find(u"user input"), std::u16string::npos);
+}
+
 TEST_F(OmniboxEditModelPopupTest, SetSelectedLineWithNoDefaultMatches) {
   // Creates a set of matches with NO matches allowed to be default.
   ACMatches matches;
@@ -1833,6 +1856,61 @@ TEST_F(OmniboxEditModelPopupTest,
   ASSERT_TRUE(match_with_bitmap_bitmap);
   gfx::test::CheckColors(expected_bitmap.getColor(0, 0),
                          match_with_bitmap_bitmap->getColor(0, 0));
+}
+
+TEST_F(OmniboxEditModelPopupTest,
+       MaybeGetPopupAccessibilityLabelForIPHSuggestion) {
+  ACMatches matches;
+  // Match 0: regular search match.
+  matches.push_back(AutocompleteMatch(nullptr, 1000, false,
+                                      AutocompleteMatchType::SEARCH_SUGGEST));
+  // Match 1: regular IPH tip.
+  AutocompleteMatch regular_iph(nullptr, 900, false,
+                                AutocompleteMatchType::NULL_RESULT_MESSAGE);
+  regular_iph.iph_type = IphType::kGemini;
+  regular_iph.contents = u"Chrome Tip";
+  matches.push_back(regular_iph);
+  // Match 2: regular search match.
+  matches.push_back(AutocompleteMatch(nullptr, 800, false,
+                                      AutocompleteMatchType::SEARCH_SUGGEST));
+  // Match 3: IPH disclaimer.
+  AutocompleteMatch disclaimer_iph(nullptr, 700, false,
+                                   AutocompleteMatchType::NULL_RESULT_MESSAGE);
+  disclaimer_iph.iph_type = IphType::kHistoryEmbeddingsDisclaimer;
+  disclaimer_iph.iph_link_url = GURL("chrome://settings");
+  disclaimer_iph.contents = u"Disclaimer Text";
+  matches.push_back(disclaimer_iph);
+  // Match 4: regular search match.
+  matches.push_back(AutocompleteMatch(nullptr, 600, false,
+                                      AutocompleteMatchType::SEARCH_SUGGEST));
+  // Match 5: IPH settings promo.
+  AutocompleteMatch settings_promo_iph(
+      nullptr, 500, false, AutocompleteMatchType::NULL_RESULT_MESSAGE);
+  settings_promo_iph.iph_type = IphType::kHistoryEmbeddingsSettingsPromo;
+  settings_promo_iph.iph_link_url = GURL("chrome://settings");
+  settings_promo_iph.contents = u"Settings Promo Text";
+  matches.push_back(settings_promo_iph);
+
+  auto* result = &AutocompleteControllerPublishedResult();
+  result->AppendMatches(matches);
+
+  // When selection is on match 0 (preceding regular IPH tip), it should append
+  // the IPH accessibility label.
+  model()->SetPopupSelection(OmniboxPopupSelection(0));
+  EXPECT_FALSE(
+      model()->MaybeGetPopupAccessibilityLabelForIPHSuggestion().empty());
+
+  // When selection is on match 2 (preceding IPH disclaimer), it should return
+  // empty string so the disclaimer is not appended.
+  model()->SetPopupSelection(OmniboxPopupSelection(2));
+  EXPECT_TRUE(
+      model()->MaybeGetPopupAccessibilityLabelForIPHSuggestion().empty());
+
+  // When selection is on match 4 (preceding IPH settings promo), it should
+  // return empty string so the promo is not appended.
+  model()->SetPopupSelection(OmniboxPopupSelection(4));
+  EXPECT_TRUE(
+      model()->MaybeGetPopupAccessibilityLabelForIPHSuggestion().empty());
 }
 
 TEST_F(OmniboxEditModelPopupTest, AimPopupDisabled) {
