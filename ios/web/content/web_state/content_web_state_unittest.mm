@@ -103,6 +103,18 @@ TEST_F(ContentWebStateTest, SetHasOpener) {
   EXPECT_TRUE(content_web_state()->HasOpener());
 }
 
+// Tests that GetCreationTime()/GetLastActiveTime() start out equal, and that
+// WasShown() advances only the last active time.
+TEST_F(ContentWebStateTest, CreationAndLastActiveTime) {
+  base::Time creation_time = content_web_state()->GetCreationTime();
+  EXPECT_EQ(creation_time, content_web_state()->GetLastActiveTime());
+
+  content_web_state()->WasShown();
+
+  EXPECT_EQ(creation_time, content_web_state()->GetCreationTime());
+  EXPECT_GE(content_web_state()->GetLastActiveTime(), creation_time);
+}
+
 // Tests that setting and getting the favicon status works.
 //
 // The visible NavigationItem's own favicon status starts out invalid (no
