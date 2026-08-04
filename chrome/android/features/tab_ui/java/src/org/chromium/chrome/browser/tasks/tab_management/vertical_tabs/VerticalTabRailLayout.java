@@ -71,6 +71,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
 
         mCollapseButton = findViewById(R.id.collapse_button);
         assert mCollapseButton != null;
+        TooltipCompat.setTooltipText(mCollapseButton, mCollapseButton.getContentDescription());
 
         mGridButton = findViewById(R.id.grid_button);
         assert mGridButton != null;
