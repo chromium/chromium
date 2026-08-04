@@ -24,7 +24,8 @@ bool PathContainsString(const std::string& path, const std::string& s) {
   return path.contains(s);
 }
 
-device::XrEye GetEyeForIndex(uint32_t index, uint32_t num_views) {
+[[maybe_unused]] device::XrEye GetEyeForIndex(uint32_t index,
+                                              uint32_t num_views) {
   DCHECK_LE(num_views, 2u);
 
   if (num_views == 1) {
@@ -72,6 +73,9 @@ const std::vector<const char*>& OpenXrTestHelper::GetSupportedExtensions() {
       XR_KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME,
       XR_KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME,
       XR_KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME,
+#elif BUILDFLAG(IS_LINUX)
+      // Vulkan graphics binding for Linux sessions.
+      XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME,
 #endif
   });
   return *kExtensions;
@@ -901,6 +905,7 @@ void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
 
     textures_arr_.push_back(texture);
   }
+}
 #elif BUILDFLAG(IS_ANDROID)
 void OpenXrTestHelper::CreateTextures(XrSwapchain swapchain) {
   DCHECK(swapchains_.contains(swapchain));
@@ -939,8 +944,8 @@ void OpenXrTestHelper::CreateTextures(XrSwapchain swapchain) {
   } else {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
-#endif
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 void OpenXrTestHelper::SetD3DDevice(ID3D11Device* d3d_device) {
@@ -960,6 +965,26 @@ void OpenXrTestHelper::SetOpenGLESInfo(EGLDisplay display, EGLContext context) {
   // a valid display/context.
   DCHECK_NE(display, EGL_NO_DISPLAY);
   DCHECK_NE(context, EGL_NO_CONTEXT);
+}
+#elif BUILDFLAG(IS_LINUX)
+void OpenXrTestHelper::SetVulkanGetInstanceProcAddr(
+    PFN_vkGetInstanceProcAddr proc_addr) {
+  DCHECK(proc_addr);
+  vulkan_get_instance_proc_addr_ = proc_addr;
+}
+
+void OpenXrTestHelper::SetVulkanInstance(VkInstance vk_instance) {
+  DCHECK_NE(vk_instance, VK_NULL_HANDLE);
+  vulkan_instance_ = vk_instance;
+}
+
+PFN_vkGetInstanceProcAddr OpenXrTestHelper::GetVulkanGetInstanceProcAddr()
+    const {
+  return vulkan_get_instance_proc_addr_;
+}
+
+VkInstance OpenXrTestHelper::GetVulkanInstance() const {
+  return vulkan_instance_;
 }
 #endif
 
@@ -1182,11 +1207,14 @@ uint32_t OpenXrTestHelper::NextSwapchainImageIndex(XrSwapchain swapchain) {
   acquired_swapchain_texture_ =
       (acquired_swapchain_texture_ + 1) % textures_arr_.size();
   return acquired_swapchain_texture_;
-#else
+#elif BUILDFLAG(IS_ANDROID)
   acquired_swapchain_textures_[swapchain] =
       (acquired_swapchain_textures_[swapchain] + 1) %
       opengl_es_textures_arrays_[swapchain].size();
   return acquired_swapchain_textures_[swapchain];
+#else
+  // Linux: swapchain image management is not yet implemented.
+  return 0;
 #endif
 }
 

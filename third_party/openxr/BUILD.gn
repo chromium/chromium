@@ -219,6 +219,12 @@ if (enable_openxr) {
         "XR_USE_PLATFORM_WIN32",
         "XR_USE_GRAPHICS_API_D3D11",
       ]
+    } else if (is_linux) {
+      defines = [
+        "XRLOADER_DISABLE_EXCEPTION_HANDLING",
+        "XR_OS_LINUX",
+        "XR_USE_GRAPHICS_API_VULKAN",
+      ]
     } else {
       defines = [
         "XRLOADER_DISABLE_EXCEPTION_HANDLING",

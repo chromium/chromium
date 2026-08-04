@@ -125,6 +125,14 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   void SetOpenGLESInfo(EGLDisplay display, EGLContext context);
   const std::vector<uint32_t>& GetSwapchainTextureIDs(XrSwapchain swapchain);
 #endif
+#if BUILDFLAG(IS_LINUX)
+  // Stashed from xrCreateVulkanInstanceKHR so the later Vulkan device calls
+  // can resolve functions without the caller passing them back in.
+  void SetVulkanGetInstanceProcAddr(PFN_vkGetInstanceProcAddr proc_addr);
+  void SetVulkanInstance(VkInstance vk_instance);
+  PFN_vkGetInstanceProcAddr GetVulkanGetInstanceProcAddr() const;
+  VkInstance GetVulkanInstance() const;
+#endif
 
   uint32_t NextSwapchainImageIndex(XrSwapchain swapchain);
   XrTime NextPredictedDisplayTime();
@@ -269,6 +277,9 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   absl::flat_hash_map<XrSwapchain, uint32_t> acquired_swapchain_textures_;
   absl::flat_hash_map<XrSwapchain, std::vector<uint32_t>>
       opengl_es_textures_arrays_;
+#elif BUILDFLAG(IS_LINUX)
+  PFN_vkGetInstanceProcAddr vulkan_get_instance_proc_addr_ = nullptr;
+  VkInstance vulkan_instance_ = VK_NULL_HANDLE;
 #endif
 
   // paths_ is used to keep tracked of strings that already has a corresponding

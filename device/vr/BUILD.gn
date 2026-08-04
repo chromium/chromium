@@ -313,6 +313,22 @@ if (enable_vr) {
         ]
       }
 
+      if (is_linux) {
+        sources += [
+          "openxr/linux/openxr_graphics_binding_vulkan.cc",
+          "openxr/linux/openxr_graphics_binding_vulkan.h",
+          "openxr/linux/openxr_platform_helper_linux.cc",
+          "openxr/linux/openxr_platform_helper_linux.h",
+          "openxr/linux/openxr_vulkan_context.cc",
+          "openxr/linux/openxr_vulkan_context.h",
+        ]
+        deps += [
+          "//gpu/vulkan",
+          "//gpu/vulkan/init",
+          "//third_party/vulkan-headers/src:vulkan_headers",
+        ]
+      }
+
       deps += [
         ":openxr_data",
         "//components/version_info",
@@ -410,12 +426,52 @@ if (enable_openxr) {
       sources += [ "openxr/test/openxr_win.json" ]
     } else if (is_android) {
       sources += [ "openxr/test/openxr_android.json" ]
+    } else if (is_linux) {
+      sources += [ "openxr/test/openxr_linux.json" ]
     }
 
     outputs = [ "$root_out_dir/mock_vr_clients/bin/openxr/openxr.json" ]
   }
 
-  if (is_win || is_android) {
+  if (is_linux) {
+    # Dedicated target for the Linux OpenXR binding/platform-helper unittests.
+    # They link the OpenXR loader (//third_party/openxr, visible only to
+    # //device/vr/*) and run against the mock runtime, so they live here rather
+    # than directly in //device:device_unittests, which depends on this target.
+    source_set("openxr_linux_unittests") {
+      testonly = true
+      visibility = [ "//device:device_unittests" ]
+
+      sources = [
+        "openxr/linux/openxr_graphics_binding_vulkan_unittest.cc",
+        "openxr/linux/openxr_platform_helper_linux_unittest.cc",
+      ]
+
+      deps = [
+        ":openxr_test_helper",
+        ":vr",
+        "//base",
+        "//base/test:test_support",
+        "//gpu/command_buffer/common",
+        "//testing/gtest",
+        "//third_party/openxr",
+        "//third_party/vulkan-headers/src:vulkan_headers",
+        "//ui/gfx",
+        "//ui/gfx/geometry",
+      ]
+
+      # The binding creates a real VkDevice, so the tests need a Vulkan driver.
+      # Ship SwiftShader alongside them and point the loader at it (see
+      # UseSwiftShaderVulkan) so they don't depend on the host's driver.
+      data_deps = [
+        ":openxr_mock",
+        "//third_party/swiftshader/src/Vulkan:icd_file",
+        "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+      ]
+    }
+  }
+
+  if (is_win || is_android || is_linux) {
     source_set("openxr_test_helper") {
       testonly = true
 
@@ -451,6 +507,9 @@ if (enable_openxr) {
           "d3d11.lib",
           "dxgi.lib",
         ]
+      } else if (is_linux) {
+        # The mock's Linux session path speaks XrGraphicsBindingVulkan2KHR.
+        deps += [ "//third_party/vulkan-headers/src:vulkan_headers" ]
       }
     }
 
@@ -462,6 +521,15 @@ if (enable_openxr) {
       # in the output_name path, then symbolization on the bots is broken.
       if (is_win) {
         output_name = "mock_vr_clients/bin/openxr/openxrruntime"
+      } else if (is_linux) {
+        # Co-locate the mock runtime with its manifest (copied to the same
+        # mock_vr_clients/bin/openxr/ directory by :json_mock) so the manifest
+        # can reference it by name, the same as Windows above. The `lib` prefix
+        # is prepended to output_name, so the directory has to go through
+        # output_dir rather than being embedded in output_name. The Android
+        # symbolization caveat noted above does not apply to Linux.
+        output_name = "libmockopenxrruntime"
+        output_dir = "$root_out_dir/mock_vr_clients/bin/openxr"
       } else if (is_android) {
         output_name = "libmockopenxrruntime"
       }
@@ -479,7 +547,7 @@ if (enable_openxr) {
 
       if (is_win) {
         sources += [ "openxr/test/openxr.def" ]
-      } else if (is_android) {
+      } else if (is_android || is_linux) {
         configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
         configs += [ "//build/config/gcc:symbol_visibility_default" ]
         ldflags = [ "-Wl,--version-script=" +
