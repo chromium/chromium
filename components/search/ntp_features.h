@@ -43,6 +43,7 @@ BASE_DECLARE_FEATURE(kNtpDriveModuleSegmentation);
 BASE_DECLARE_FEATURE(kNtpDummyModules);
 #endif
 BASE_DECLARE_FEATURE(kNtpComprehensiveTheming);
+BASE_DECLARE_FEATURE(kNtpGoogleLogo26);
 BASE_DECLARE_FEATURE(kNtpLogo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromoDismissal);

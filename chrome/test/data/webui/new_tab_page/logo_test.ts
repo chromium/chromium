@@ -284,37 +284,55 @@ suite('NewTabPageLogoTest', () => {
     assertEquals($$(logo, '#doodle'), null);
   });
 
-  test('not setting-single colored shows multi-colored logo', async () => {
-    // Act.
-    const logo = await createLogo();
+  [true, false].forEach(useGoogleLogo26 => {
+    const logoName = useGoogleLogo26 ? '2026' : 'legacy';
 
-    // Assert.
-    assertNotStyle($$(logo, '#logo')!, 'background-image', '');
-    assertStyle($$(logo, '#logo')!, '-webkit-mask-image', 'none');
-    assertStyle($$(logo, '#logo')!, 'background-color', 'rgba(0, 0, 0, 0)');
-  });
+    test(`${logoName} Google logo multi-colored render path`, async () => {
+      // Arrange.
+      loadTimeData.overrideValues({useGoogleLogo26});
 
-  test('setting single-colored shows single-colored logo', async () => {
-    // Act.
-    const logo = await createLogo();
-    logo.singleColored = true;
-    logo.style.setProperty('--ntp-logo-color', 'red');
-    await microtasksFinished();
+      // Act.
+      const logo = await createLogo();
 
-    // Assert.
-    assertNotStyle($$(logo, '#logo')!, '-webkit-mask-image', 'none');
-    assertStyle($$(logo, '#logo')!, 'background-color', 'rgb(255, 0, 0)');
-    assertStyle($$(logo, '#logo')!, 'background-image', 'none');
-  });
+      // Assert.
+      assertNotStyle($$(logo, '#logo')!, 'background-image', '');
+      assertStyle($$(logo, '#logo')!, '-webkit-mask-image', 'none');
+      assertStyle($$(logo, '#logo')!, 'background-color', 'rgba(0, 0, 0, 0)');
+    });
 
-  test('logo aligned correctly', async () => {
-    // Act.
-    const logo = await createLogo();
+    test(`${logoName} Google logo single-colored render path`, async () => {
+      // Arrange.
+      loadTimeData.overrideValues({useGoogleLogo26});
 
-    // Assert.
-    const pos = getRelativePosition($$(logo, '#logo')!, logo);
-    assertEquals(0, pos.bottom);
-    assertEquals(92, $$<HTMLElement>(logo, '#logo')!.offsetHeight);
+      // Act.
+      const logo = await createLogo();
+      logo.singleColored = true;
+      logo.style.setProperty('--ntp-logo-color', 'red');
+      await microtasksFinished();
+
+      // Assert.
+      assertNotStyle($$(logo, '#logo')!, '-webkit-mask-image', 'none');
+      assertStyle($$(logo, '#logo')!, 'background-color', 'rgb(255, 0, 0)');
+      assertStyle($$(logo, '#logo')!, 'background-image', 'none');
+    });
+
+    test(`${logoName} Google logo aligned correctly`, async () => {
+      // Arrange.
+      loadTimeData.overrideValues({useGoogleLogo26});
+
+      // Act.
+      const logo = await createLogo();
+
+      // Assert.
+      const pos = getRelativePosition($$(logo, '#logo')!, logo);
+      assertEquals(0, pos.bottom);
+      assertEquals(
+          useGoogleLogo26 ? 82 : 92,
+          $$<HTMLElement>(logo, '#logo')!.offsetHeight);
+      assertEquals(
+          useGoogleLogo26 ? 270 : 272,
+          $$<HTMLElement>(logo, '#logo')!.offsetWidth);
+    });
   });
 
   test('doodle aligned correctly', async () => {

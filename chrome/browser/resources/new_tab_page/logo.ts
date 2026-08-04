@@ -67,6 +67,11 @@ export class LogoElement extends CrLitElement {
         type: Boolean,
       },
 
+      useGoogleLogo26_: {
+        reflect: true,
+        type: Boolean,
+      },
+
       imageUrl_: {type: String},
       showAnimation_: {type: Boolean},
       showShareDialog_: {type: Boolean},
@@ -84,6 +89,8 @@ export class LogoElement extends CrLitElement {
   private accessor doodleBoxed_: boolean = false;
   protected accessor showTightDoodleBoxing_: boolean =
       loadTimeData.getBoolean('animatedDoodlesEnabled');
+  protected accessor useGoogleLogo26_: boolean =
+      loadTimeData.getBoolean('useGoogleLogo26');
   protected accessor imageUrl_: string = '';
   protected accessor showAnimation_: boolean = false;
   protected accessor showShareDialog_: boolean = false;

@@ -286,6 +286,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean(
       "doodleMuralsEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpDoodleMurals));
+  bool use_google_logo_26 = false;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  use_google_logo_26 =
+      base::FeatureList::IsEnabled(ntp_features::kNtpGoogleLogo26);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  source->AddBoolean("useGoogleLogo26", use_google_logo_26);
   source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
@@ -805,6 +811,15 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePaths(kNewTabSharedResources);
 #endif  // BUILDFLAG(OPTIMIZE_WEBUI)
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Overrides the mapping installed by SetupWebUIDataSource() above, so the
+  // stable logo path serves the 2026 version of the Google logo.
+  if (use_google_logo_26) {
+    source->AddResourcePath("icons/google_logo.svg",
+                            IDR_NEW_TAB_PAGE_BRANDED_GOOGLE_LOGO_SVG);
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Allow embedding of iframes for the doodle and
   // chrome-untrusted://new-tab-page for other external content and resources.

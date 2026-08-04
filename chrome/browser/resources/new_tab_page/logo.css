@@ -36,6 +36,11 @@
   width: 272px;
 }
 
+:host([use-google-logo26_]) #logo {
+  height: 82px;
+  width: 270px;
+}
+
 :host([single-colored]) #logo {
   -webkit-mask-image: url(./icons/google_logo.svg);
   -webkit-mask-repeat: no-repeat;
@@ -45,6 +50,8 @@
 
 :host(:not([single-colored])) #logo {
   background-image: url(./icons/google_logo.svg);
+  background-repeat: no-repeat;
+  background-size: 100%;
 }
 
 #imageDoodle {
