@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -495,6 +496,65 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Check presentation state.
   EXPECT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kInImmersiveOverlay);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OverlayExists_IsHidden) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* contents_container =
+      browser_view->GetActiveContentsContainerView();
+  ASSERT_NE(contents_container, nullptr);
+
+  views::View* overlay_view = nullptr;
+  int overlay_count = 0;
+
+  for (views::View* child : contents_container->children()) {
+    if (child->GetID() == VIEW_ID_READ_ANYTHING_OVERLAY) {
+      overlay_view = child;
+      overlay_count++;
+    }
+  }
+
+  ASSERT_NE(overlay_view, nullptr) << "Overlay should exist by default.";
+  EXPECT_EQ(1, overlay_count);
+  EXPECT_FALSE(overlay_view->GetVisible()) << "Overlay should be hidden.";
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OverlayExistsOnSplitViews) {
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  std::vector<int> other_tab_indices = {1};
+  split_tabs::SplitTabVisualData visual_data;
+  split_tabs::SplitTabCreatedSource source =
+      split_tabs::SplitTabCreatedSource::kToolbarButton;
+  browser()->tab_strip_model()->AddToNewSplit(other_tab_indices, visual_data,
+                                              source);
+
+  const auto ContainsReadAnythingOverlay = [](views::View* container) {
+    if (!container) {
+      return false;
+    }
+
+    for (views::View* child : container->children()) {
+      if (child->GetID() == VIEW_ID_READ_ANYTHING_OVERLAY) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* container_0 = browser_view->GetActiveContentsContainerView();
+  ASSERT_NE(container_0, nullptr);
+  ASSERT_TRUE(ContainsReadAnythingOverlay(container_0));
+
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  views::View* container_1 = browser_view->GetActiveContentsContainerView();
+  ASSERT_NE(container_1, nullptr);
+  ASSERT_NE(container_0, container_1);
+  ASSERT_TRUE(ContainsReadAnythingOverlay(container_1));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,

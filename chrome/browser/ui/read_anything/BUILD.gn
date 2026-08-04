@@ -104,7 +104,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "immersive_read_anything_browsertest.cc",
     "read_anything_controller_browsertest.cc",
     "read_anything_entry_point_controller_browsertest.cc",
     "read_anything_omnibox_controller_browsertest.cc",
