@@ -272,6 +272,19 @@ bool WriteToStartupSentinel();
 void DeleteStartupSentinel();
 void DeleteStartupSentinelForVersion(const std::wstring& version);
 
+// Returns the root GCPW ProgramData directory
+// ("C:\ProgramData\Google\Credential Provider"), ensuring it is created and
+// secured with restrictive DACLs. Returns an empty path on failure.
+base::FilePath GetDataDirectory();
+
+// Creates a directory with restrictive DACLs that limit access exclusively to
+// NT AUTHORITY\SYSTEM and BUILTIN\Administrators, preventing inheritance from
+// parent folders (such as ProgramData). If the directory already exists, its
+// DACL is updated to be secure. Parent directories of `path` are created
+// as-needed. Returns false if the directory could not be created or the DACL
+// could not be applied.
+bool SecureCreateDirectory(const base::FilePath& path);
+
 // Gets a string resource from the DLL with the given id.
 std::wstring GetStringResource(UINT base_message_id);
 
