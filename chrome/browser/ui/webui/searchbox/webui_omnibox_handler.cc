@@ -359,13 +359,6 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
       keyword_model->chip_hint = base::UTF16ToUTF8(names.full_name);
       keyword_model->chip_a11y =
           l10n_util::GetStringFUTF8(IDS_ACC_KEYWORD_MODE, names.short_name);
-
-      // Legacy keyword fields.
-      mojom_match.value()->has_instant_keyword =
-          keyword_type == searchbox::mojom::KeywordType::kInstant;
-      mojom_match.value()->keyword_chip_hint = keyword_model->chip_hint;
-      mojom_match.value()->keyword_chip_a11y = keyword_model->chip_a11y;
-
       mojom_match.value()->keyword_model = std::move(keyword_model);
     }
   }

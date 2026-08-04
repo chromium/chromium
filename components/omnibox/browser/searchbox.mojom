@@ -103,14 +103,6 @@ struct AutocompleteMatch {
   // holes for sale in" is "hobbit holes for sale" and the match contents
   // would be the text following "sale".
   mojo_base.mojom.String16? tail_suggest_common_prefix;
-  // Used to determine if keyword visual treatment should be applied.
-  bool has_instant_keyword;
-  // Derived from `AutocompleteMatch::associated_keyword` and a few other
-  // fields. Determines the text shown in the keyword chip, which is shown if
-  // this is non-empty.
-  string keyword_chip_hint;
-  // Similar to `keyword_chip_text`, but the a11y label for the chip.
-  string keyword_chip_a11y;
   // Keyword UI state for this match. Empty if not a keyword suggestion.
   KeywordModel? keyword_model;
 };
