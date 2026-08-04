@@ -148,9 +148,9 @@ namespace {
 // This list should be kept in sync with chrome/common/webui_url_constants.h.
 // Only include useful sub-pages, confirmation alerts are not useful.
 constexpr auto kChromeSettingsSubPages = std::to_array<base::cstring_view>({
-    chrome::kAddressesSubPage,
     chrome::kAutofillSubPage,
     chrome::kClearBrowserDataSubPage,
+    chrome::kContactInfoSubPage,
     chrome::kContentSettingsSubPage,
     chrome::kLanguageOptionsSubPage,
     chrome::kPasswordManagerSubPage,
