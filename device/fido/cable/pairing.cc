@@ -117,9 +117,7 @@ bool Pairing::CompareByLeastStableChannelFirst(
 // static
 bool Pairing::CompareByPublicKey(const std::unique_ptr<Pairing>& a,
                                  const std::unique_ptr<Pairing>& b) {
-  return UNSAFE_TODO(memcmp(a->peer_public_key_x962.data(),
-                            b->peer_public_key_x962.data(),
-                            sizeof(a->peer_public_key_x962))) < 0;
+  return a->peer_public_key_x962 < b->peer_public_key_x962;
 }
 
 // static

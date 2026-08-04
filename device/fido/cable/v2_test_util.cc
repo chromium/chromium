@@ -350,12 +350,8 @@ class TestNetworkContext : public network::TestNetworkContext {
           peer_->buffer_.clear();
           peer_->buffer_i_ = 0;
         } else {
-          const size_t new_length =
-              peer_->buffer_.size() - actually_written_bytes;
-          UNSAFE_TODO(memmove(peer_->buffer_.data(),
-                              &peer_->buffer_.data()[actually_written_bytes],
-                              new_length));
-          peer_->buffer_.resize(new_length);
+          peer_->buffer_.erase(peer_->buffer_.begin(),
+                               peer_->buffer_.begin() + actually_written_bytes);
           peer_->buffer_i_ -= actually_written_bytes;
         }
 
@@ -417,8 +413,7 @@ class TestPlatform : public authenticator::Platform {
         std::move(params->user),
         PublicKeyCredentialParams(std::move(params->public_key_parameters)));
     CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
-    UNSAFE_TODO(memcpy(request.client_data_hash.data(),
-                       params->challenge.data(), params->challenge.size()));
+    base::span(request.client_data_hash).copy_from(params->challenge);
     request.resident_key_required =
         !params->authenticator_selection
             ? false
@@ -443,8 +438,7 @@ class TestPlatform : public authenticator::Platform {
     request.user_verification = params->user_verification;
 
     CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
-    UNSAFE_TODO(memcpy(request.client_data_hash.data(),
-                       params->challenge.data(), params->challenge.size()));
+    base::span(request.client_data_hash).copy_from(params->challenge);
     if (params->extensions) {
       for (const auto& prf_input_from_request :
            params->extensions->prf_inputs) {
