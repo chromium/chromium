@@ -2047,6 +2047,7 @@ source_set("net_public_deps") {
 
 grit("net_resources") {
   source = "base/net_resources.grd"
+  inputs = [ "base/dir_header.html" ]
   outputs = [
     "grit/net_resources.h",
     "net_resources.pak",
