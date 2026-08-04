@@ -5,11 +5,11 @@
 #include "ash/system/time/calendar_utils.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "ash/test/ash_test_base.h"
-#include "base/compiler_specific.h"
 #include "base/i18n/rtl.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
@@ -19,7 +19,7 @@ namespace ash {
 
 namespace {
 
-void SetDefaultLocale(const std::string& lang) {
+void SetDefaultLocale(std::string_view lang) {
   base::i18n::SetICUDefaultLocale(lang);
   ash::DateHelper::GetInstance()->ResetForTesting();
 }
@@ -153,9 +153,9 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
   base::Time midnight;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 00:00 GMT", &midnight));
 
-  for (auto* locale : kLocales) {
+  for (auto locale : kLocales) {
     // Skip locales that are tested in "LocalesWithUniqueNumerals".
-    if (kLocalesWithUniqueNumerals.count(locale)) {
+    if (kLocalesWithUniqueNumerals.contains(locale)) {
       continue;
     }
 
@@ -173,7 +173,7 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
               calendar_utils::GetTwelveHourClockHours(am_time));
     EXPECT_EQ(u"11", calendar_utils::GetTwelveHourClockHours(pm_time));
     // Locale 'ja'uses  'K' format (0~11) for its 12-hour clock.
-    EXPECT_EQ((UNSAFE_TODO(strcmp(locale, "ja")) == 0) ? u"0" : u"12",
+    EXPECT_EQ(locale == "ja" ? u"0" : u"12",
               calendar_utils::GetTwelveHourClockHours(midnight));
 
     // Return hours in twenty four hour format.

@@ -4,6 +4,8 @@
 
 #include "ash/system/time/date_helper.h"
 
+#include <string_view>
+
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
@@ -18,7 +20,7 @@ class DateHelperUnittest : public AshTestBase {
   DateHelperUnittest& operator=(const DateHelperUnittest& other) = delete;
   ~DateHelperUnittest() override = default;
 
-  void SetDefaultLocale(const std::string& lang) {
+  void SetDefaultLocale(std::string_view lang) {
     base::i18n::SetICUDefaultLocale(lang);
     DateHelper::GetInstance()->ResetFormatters();
     DateHelper::GetInstance()->CalculateLocalWeekTitles();
@@ -85,7 +87,7 @@ TEST_F(DateHelperUnittest, GetWeekTitle) {
 
 // Tests getting the calendar week titles in all languages.
 TEST_F(DateHelperUnittest, GetWeekTitleForAllLocales) {
-  for (auto* locale : kLocales) {
+  for (auto locale : kLocales) {
     SetDefaultLocale(locale);
     EXPECT_EQ(7U, DateHelper::GetInstance()->week_titles().size());
   }

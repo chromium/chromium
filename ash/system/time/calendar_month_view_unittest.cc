@@ -220,7 +220,7 @@ TEST_F(CalendarMonthViewTest, AllTimeZone) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("6 Mar 2022 10:00 GMT", &date));
 
-  for (auto* timezone : kAllTimeZones) {
+  for (auto timezone : kAllTimeZones) {
     // Creates a month view based on the current timezone.
     ash::system::ScopedTimezoneSettings timezone_settings(
         base::UTF8ToUTF16(timezone));

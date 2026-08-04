@@ -17,7 +17,6 @@
 #include "ash/system/session/shutdown_confirmation_dialog.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -129,6 +128,10 @@ class UpdateNotificationControllerTest : public AshTestBase {
     return GetNotification()->vector_small_image();
   }
 
+  void ExpectNotificationIcon(const gfx::VectorIcon& expected_icon) {
+    EXPECT_EQ(&expected_icon, &GetNotificationIcon());
+  }
+
   bool GetNotificationNeverTimeout() {
     return GetNotification()->never_timeout();
   }
@@ -177,8 +180,7 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdate) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuUpdateIcon);
   EXPECT_EQ("Update device", GetNotificationTitle());
   EXPECT_EQ("Learn more about the latest " +
                 base::UTF16ToUTF8(system_app_name_) + " update",
@@ -214,8 +216,7 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdateWithSlowReboot) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuUpdateIcon);
   EXPECT_EQ("Update device", GetNotificationTitle());
   EXPECT_EQ("Learn more about the latest " +
                 base::UTF16ToUTF8(system_app_name_) +
@@ -261,8 +262,7 @@ TEST_F(UpdateNotificationControllerTest,
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuUpdateIcon);
   EXPECT_EQ("Update device", GetNotificationTitle());
   EXPECT_EQ("Learn more about the latest " +
                 base::UTF16ToUTF8(system_app_name_) + " update",
@@ -301,8 +301,7 @@ TEST_F(UpdateNotificationControllerTest,
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuUpdateIcon);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_TITLE),
             GetNotificationTitle());
   EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_UPDATE_NOTIFICATION_MESSAGE_POWERWASH,
@@ -335,8 +334,7 @@ TEST_F(UpdateNotificationControllerTest, RollbackNotification) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuRollbackIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuRollbackIcon);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ROLLBACK_NOTIFICATION_TITLE),
             GetNotificationTitle());
   EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_UPDATE_NOTIFICATION_MESSAGE_ROLLBACK,
@@ -367,8 +365,7 @@ TEST_F(UpdateNotificationControllerTest, RollbackRecommendedNotification) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuRollbackIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuRollbackIcon);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ROLLBACK_NOTIFICATION_TITLE),
             GetNotificationTitle());
   EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_UPDATE_NOTIFICATION_MESSAGE_ROLLBACK,
@@ -399,8 +396,7 @@ TEST_F(UpdateNotificationControllerTest,
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorCriticalWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysError);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuRollbackIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuRollbackIcon);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ROLLBACK_OVERDUE_NOTIFICATION_TITLE),
             GetNotificationTitle());
   EXPECT_EQ(l10n_util::GetStringFUTF8(
@@ -434,8 +430,7 @@ TEST_F(UpdateNotificationControllerTest, RollbackRequiredNotification) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorCriticalWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysError);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuRollbackIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuRollbackIcon);
   EXPECT_EQ(
       l10n_util::GetPluralStringFUTF8(IDS_ROLLBACK_REQUIRED_TITLE_SECONDS, 3),
       GetNotificationTitle());
@@ -464,10 +459,9 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRecommended) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(::features::IsRoundedIconsEnabled()
-                                     ? vector_icons::kDomainIcon.name
-                                     : vector_icons::kBusinessOldIcon.name,
-                                 GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(::features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainIcon
+                             : vector_icons::kBusinessOldIcon);
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
@@ -492,10 +486,9 @@ TEST_F(UpdateNotificationControllerTest,
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(::features::IsRoundedIconsEnabled()
-                                     ? vector_icons::kDomainIcon.name
-                                     : vector_icons::kBusinessOldIcon.name,
-                                 GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(::features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainIcon
+                             : vector_icons::kBusinessOldIcon);
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
@@ -523,10 +516,9 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredDays) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(::features::IsRoundedIconsEnabled()
-                                     ? vector_icons::kDomainIcon.name
-                                     : vector_icons::kBusinessOldIcon.name,
-                                 GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(::features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainIcon
+                             : vector_icons::kBusinessOldIcon);
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, GetNotificationPriority());
   EXPECT_EQ(true, GetNotificationNeverTimeout());
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
@@ -596,10 +588,9 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredHours) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(::features::IsRoundedIconsEnabled()
-                                     ? vector_icons::kDomainIcon.name
-                                     : vector_icons::kBusinessOldIcon.name,
-                                 GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(::features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainIcon
+                             : vector_icons::kBusinessOldIcon);
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, GetNotificationPriority());
   EXPECT_EQ(true, GetNotificationNeverTimeout());
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
@@ -629,10 +620,9 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredMinutes) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(::features::IsRoundedIconsEnabled()
-                                     ? vector_icons::kDomainIcon.name
-                                     : vector_icons::kBusinessOldIcon.name,
-                                 GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(::features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainIcon
+                             : vector_icons::kBusinessOldIcon);
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, GetNotificationPriority());
   EXPECT_EQ(true, GetNotificationNeverTimeout());
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
@@ -662,10 +652,9 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredSeconds) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorWarning,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysWarning);
-  UNSAFE_TODO(EXPECT_TRUE(strcmp(::features::IsRoundedIconsEnabled()
-                                     ? vector_icons::kDomainIcon.name
-                                     : vector_icons::kBusinessOldIcon.name,
-                                 GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(::features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainIcon
+                             : vector_icons::kBusinessOldIcon);
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, GetNotificationPriority());
   EXPECT_EQ(true, GetNotificationNeverTimeout());
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
@@ -693,8 +682,7 @@ TEST_F(UpdateNotificationControllerTest, SetBackToDefault) {
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuUpdateIcon);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_TITLE),
             GetNotificationTitle());
   EXPECT_EQ(l10n_util::GetStringFUTF8(
@@ -721,8 +709,7 @@ TEST_F(UpdateNotificationControllerTest,
   CompareNotificationColor(
       /*expected_color=*/kSystemNotificationColorNormal,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
-  UNSAFE_TODO(EXPECT_TRUE(
-      strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) == 0));
+  ExpectNotificationIcon(kSystemMenuUpdateIcon);
   EXPECT_EQ("Update device", GetNotificationTitle());
   EXPECT_EQ(
       "Get the latest features and security improvements. Updates happen in "
