@@ -132,59 +132,6 @@ void FormTracker::AjaxSucceeded() {
   FireSubmissionIfFormDisappear(SubmissionSource::XHR_SUCCEEDED);
 }
 
-void FormTracker::TextFieldValueChanged(const WebFormControlElement& element) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  DCHECK(element.DynamicTo<WebInputElement>() ||
-         form_util::IsTextAreaElement(element));
-  // If the element isn't focused then the changes don't matter. This check is
-  // required to properly handle IME interactions.
-  if (!element.Focused()) {
-    return;
-  }
-
-  if (!unsafe_render_frame()) {
-    return;
-  }
-  // Disregard text changes that aren't caused by user gestures or pastes. Note
-  // that pastes aren't necessarily user gestures because Blink's conception of
-  // user gestures is centered around creating new windows/tabs.
-  if (user_gesture_required_ &&
-      !unsafe_render_frame()->GetWebFrame()->HasTransientUserActivation() &&
-      !unsafe_render_frame()->IsPasting()) {
-    return;
-  }
-  // We post a task for doing the Autofill as the caret position is not set
-  // properly at this point (http://bugs.webkit.org/show_bug.cgi?id=16976) and
-  // it is needed to trigger autofill.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  unsafe_render_frame()
-      ->GetWebFrame()
-      ->GetTaskRunner(blink::TaskType::kInternalAutofill)
-      ->PostTask(FROM_HERE,
-                 base::BindRepeating(&FormTracker::FormControlDidChangeImpl,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     form_util::GetFieldRendererId(element),
-                                     SaveFormReason::kTextFieldChanged));
-}
-
-void FormTracker::SelectControlSelectionChanged(
-    const WebFormControlElement& element) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  if (!unsafe_render_frame()) {
-    return;
-  }
-  // Post a task to avoid processing select control change while it is changing.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  unsafe_render_frame()
-      ->GetWebFrame()
-      ->GetTaskRunner(blink::TaskType::kInternalAutofill)
-      ->PostTask(FROM_HERE,
-                 base::BindRepeating(&FormTracker::FormControlDidChangeImpl,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     form_util::GetFieldRendererId(element),
-                                     SaveFormReason::kSelectChanged));
-}
-
 void FormTracker::ElementDisappeared(const blink::WebElement& element) {
   // Signal is discarded altogether when the feature is disabled.
   if (!base::FeatureList::IsEnabled(
@@ -317,8 +264,24 @@ void FormTracker::OnJavaScriptChangedValue(
   }
 }
 
+void FormTracker::FormControlDidChange(const WebFormControlElement& element,
+                                       ElementDidChangeCallback callback) {
+  if (!unsafe_render_frame()) {
+    return;
+  }
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  unsafe_render_frame()
+      ->GetWebFrame()
+      ->GetTaskRunner(blink::TaskType::kInternalAutofill)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&FormTracker::FormControlDidChangeImpl,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                form_util::GetFieldRendererId(element),
+                                std::move(callback)));
+}
+
 void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
-                                           SaveFormReason change_source) {
+                                           ElementDidChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
@@ -333,18 +296,9 @@ void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
   } else {
     UpdateLastInteractedElement(element);
   }
-  switch (change_source) {
-    case SaveFormReason::kTextFieldChanged:
-      autofill_agent_->OnTextFieldValueChanged(
-          element, SynchronousFormCache(form_util::GetFormRendererId(form),
-                                        provisionally_saved_form()));
-      break;
-    case SaveFormReason::kSelectChanged:
-      autofill_agent_->OnSelectControlSelectionChanged(
-          element, SynchronousFormCache(form_util::GetFormRendererId(form),
-                                        provisionally_saved_form()));
-      break;
-  }
+  std::move(callback).Run(
+      element, SynchronousFormCache(form_util::GetFormRendererId(form),
+                                    provisionally_saved_form()));
 }
 
 void FormTracker::DidCommitProvisionalLoad(ui::PageTransition transition) {
@@ -737,11 +691,6 @@ void FormTracker::ResetLastInteractedElements() {
     form_element_observer_->Disconnect();
     form_element_observer_ = nullptr;
   }
-}
-
-void FormTracker::SetUserGestureRequired(
-    UserGestureRequired user_gesture_required) {
-  user_gesture_required_ = user_gesture_required;
 }
 
 bool FormTracker::IsTracking() const {

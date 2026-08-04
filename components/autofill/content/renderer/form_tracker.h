@@ -8,6 +8,7 @@
 #include <optional>
 #include <variant>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -30,20 +31,18 @@ namespace autofill {
 
 class AutofillAgent;
 class PasswordAutofillAgent;
+class SynchronousFormCache;
 
 // TODO(crbug.com/40550175): Track the select and checkbox change.
 // This class is used to track user's change of form or WebFormControlElement,
 // notifies observers of form's change and submission.
 class FormTracker : public content::RenderFrameObserver,
                     public blink::WebLocalFrameObserver {
-  enum class SaveFormReason {
-    kTextFieldChanged,
-    kSelectChanged,
-  };
-
  public:
-  using UserGestureRequired =
-      base::StrongAlias<class UserGestureRequiredTag, bool>;
+  using ElementDidChangeCallback =
+      base::OnceCallback<void(const blink::WebFormControlElement&,
+                              const SynchronousFormCache&)>;
+
   explicit FormTracker(content::RenderFrame* render_frame,
                        AutofillAgent& autofill_agent,
                        PasswordAutofillAgent* password_autofill_agent);
@@ -56,10 +55,14 @@ class FormTracker : public content::RenderFrameObserver,
   // Same methods as those in blink::WebAutofillClient, but invoked by
   // AutofillAgent.
   void AjaxSucceeded();
-  void TextFieldValueChanged(const blink::WebFormControlElement& element);
-  void SelectControlSelectionChanged(
-      const blink::WebFormControlElement& element);
   virtual void ElementDisappeared(const blink::WebElement& element);
+
+  // Posts a task to `FormControlDidChangeImpl` to handle form control change
+  // asynchronously, as we also don't want to process element while it is
+  // changing, and also to work-around a WebKit
+  // bug http://bugs.webkit.org/show_bug.cgi?id=16976 ,
+  void FormControlDidChange(const blink::WebFormControlElement& element,
+                            ElementDidChangeCallback callback);
 
   // Tells the tracker to track the autofilled `element`. Since autofilling a
   // form or field won't trigger the regular *DidChange events, the tracker
@@ -89,11 +92,6 @@ class FormTracker : public content::RenderFrameObserver,
           element);
   void ResetLastInteractedElements();
 
-  // Set whether a user gesture is required to accept text changes. If
-  // `user_gesture_required` is false, text changes without user gestures are
-  // discarded.
-  void SetUserGestureRequired(UserGestureRequired user_gesture_required);
-
   bool IsTracking() const;
 
   // Called when current form is no longer submittable, submitted_forms_ is
@@ -102,6 +100,10 @@ class FormTracker : public content::RenderFrameObserver,
 
  private:
   friend class FormTrackerTestApi;
+
+  // Synchronous task posted by `FormTracker::FormControlDidChange()`.
+  void FormControlDidChangeImpl(FieldRendererId element_id,
+                                ElementDidChangeCallback callback);
 
   // content::RenderFrameObserver:
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
@@ -140,12 +142,6 @@ class FormTracker : public content::RenderFrameObserver,
   std::optional<FormData>& provisionally_saved_form() {
     return last_interacted_.saved_state;
   }
-
-  // Called in a posted task by textFieldDidChange() to work-around a WebKit bug
-  // http://bugs.webkit.org/show_bug.cgi?id=16976 , we also don't want to
-  // process element while it is changing.
-  void FormControlDidChangeImpl(FieldRendererId element_id,
-                                SaveFormReason change_source);
 
   // Notifies agents of the submission of `form_data`.
   void FireHostSubmitEvents(const FormData& form_data,
@@ -187,9 +183,6 @@ class FormTracker : public content::RenderFrameObserver,
   void ElementWasHiddenOrRemoved(mojom::SubmissionSource source);
 
   blink::WebDocument GetDocument() const;
-
-  // Whether a user gesture is required to pass on text field change events.
-  UserGestureRequired user_gesture_required_ = UserGestureRequired(true);
 
   struct {
     FormRendererId form_id;

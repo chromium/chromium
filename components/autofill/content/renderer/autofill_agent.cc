@@ -578,7 +578,6 @@ AutofillAgent::AutofillAgent(
   }
   form_tracker_ = std::make_unique<FormTracker>(unsafe_render_frame(), *this,
                                                 password_autofill_agent_.get());
-  form_tracker_->SetUserGestureRequired(config_.user_gesture_required);
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(
       &AutofillAgent::BindPendingReceiver, base::Unretained(this)));
   ResetTokenBucket();
@@ -982,7 +981,27 @@ void AutofillAgent::TextFieldValueChanged(
   field_data_manager_->UpdateFieldDataMap(
       form_util::GetFieldRendererId(element), element.Value().Utf16(),
       FieldPropertiesFlags::kUserTyped);
-  form_tracker_->TextFieldValueChanged(element);
+
+  DCHECK(element.DynamicTo<WebInputElement>() ||
+         form_util::IsTextAreaElement(element));
+
+  // This check is required to properly handle IME interactions.
+  if (!element.Focused()) {
+    return;
+  }
+
+  // Disregard text changes that aren't caused by user gestures or pastes. Note
+  // that pastes aren't necessarily user gestures because Blink's conception of
+  // user gestures is centered around creating new windows/tabs.
+  if (config_.user_gesture_required &&
+      !unsafe_render_frame()->GetWebFrame()->HasTransientUserActivation() &&
+      !unsafe_render_frame()->IsPasting()) {
+    return;
+  }
+
+  form_tracker_->FormControlDidChange(
+      element, base::BindOnce(&AutofillAgent::OnTextFieldValueChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
@@ -2395,7 +2414,10 @@ void AutofillAgent::SelectControlSelectionChanged(
     // element.
     return;
   }
-  form_tracker_->SelectControlSelectionChanged(element);
+
+  form_tracker_->FormControlDidChange(
+      element, base::BindOnce(&AutofillAgent::OnSelectControlSelectionChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Notifies the AutofillDriver about changes in the <select>

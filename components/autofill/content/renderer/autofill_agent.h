@@ -102,7 +102,8 @@ class AutofillAgent : public content::RenderFrameObserver,
       base::StrongAlias<class QueryPasswordSuggestionsTag, bool>;
   using SecureContextRequired =
       base::StrongAlias<class SecureContextRequiredTag, bool>;
-  using UserGestureRequired = FormTracker::UserGestureRequired;
+  using UserGestureRequired =
+      base::StrongAlias<class UserGestureRequiredTag, bool>;
   using UsesKeyboardAccessoryForSuggestions =
       base::StrongAlias<class UsesKeyboardAccessoryForSuggestionsTag, bool>;
 

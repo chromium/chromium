@@ -105,7 +105,6 @@ class FormTrackerTest : public test::AutofillRendererTest,
     test::AutofillRendererTest::SetUp();
     auto tracker = std::make_unique<MockFormTracker>(
         GetMainRenderFrame(), autofill_agent(), password_autofill_agent());
-    tracker->SetUserGestureRequired(FormTracker::UserGestureRequired(true));
     test_api(autofill_agent()).set_form_tracker(std::move(tracker));
   }
 
@@ -156,7 +155,7 @@ TEST_P(FormTrackerTest, FormlessXHRThenHide) {
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kTest);
   ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
-  form_tracker().TextFieldValueChanged(input1);
+  test_api(autofill_agent()).TextFieldValueChanged(input1);
 
   task_environment_.RunUntilIdle();
 
@@ -187,7 +186,7 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kTest);
   ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
-  form_tracker().TextFieldValueChanged(input1);
+  test_api(autofill_agent()).TextFieldValueChanged(input1);
   task_environment_.RunUntilIdle();
 
   ExecuteJavaScriptForTests(
@@ -243,7 +242,7 @@ TEST_P(FormTrackerTest, ProbablyFormSubmitted) {
   ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
   ExecuteJavaScriptForTests("document.getElementById('input1').value = '1';");
   blink::WebFormControlElement input1 = GetFormControlById("input1");
-  form_tracker().TextFieldValueChanged(input1);
+  test_api(autofill_agent()).TextFieldValueChanged(input1);
   task_environment_.RunUntilIdle();
 
   EXPECT_CALL(
@@ -276,7 +275,7 @@ TEST_P(FormTrackerTest, ProbablyFormSubmitted_IgnoreUninterestingNavigations) {
   ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
   ExecuteJavaScriptForTests("document.getElementById('input1').value = '1';");
   blink::WebFormControlElement input1 = GetFormControlById("input1");
-  form_tracker().TextFieldValueChanged(input1);
+  test_api(autofill_agent()).TextFieldValueChanged(input1);
   task_environment_.RunUntilIdle();
 
   EXPECT_CALL(form_tracker(), FireFormSubmission).Times(0);
