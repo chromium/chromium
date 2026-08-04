@@ -197,7 +197,7 @@ const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
     /*default_value=*/true};
 
 // Whether Network panel should use Durable Messages to preserve network bodies.
-BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, allows starting remote debugging in a running Chrome instance.
 BASE_FEATURE(kDevToolsAcceptDebuggingConnections,
