@@ -31,6 +31,12 @@ message AtmemQueryAnalyzerLoggingData {
 // Input data for the AtMemory query analyzer feature.
 message AtmemQueryAnalyzerRequest {
   string user_query = 1 [features = { field_presence: IMPLICIT }];
+
+  // The URL of the main frame the user was on when they entered the query.
+  string url = 2 [features = { field_presence: IMPLICIT }];
+
+  // The title of the main frame the user was on when they entered the query.
+  string title = 3 [features = { field_presence: IMPLICIT }];
 }
 
 // Output data for the AtMemory query analyzer feature.
@@ -38,6 +44,10 @@ message AtmemQueryAnalyzerResponse {
   QueryType query_type = 1 [features = { field_presence: IMPLICIT }];
 
   AutofillFetchPlan autofill_fetch_plan = 2 [features = { field_presence: EXPLICIT }];
+
+  // The rewritten query that should be used. If empty, the original
+  // query should be used.
+  string rewritten_query = 3 [features = { field_presence: IMPLICIT }];
 }
 
 message AutofillFetchPlan {
