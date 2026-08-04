@@ -17,7 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.PersistableBundle;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -89,8 +88,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
     /** The type of drag target from the view this object tracks. */
     private @DragTargetType int mDragTargetType;
-
-    private long mDragStartSystemElapsedTime;
 
     private @Nullable DragAndDropBrowserDelegate mDragAndDropBrowserDelegate;
 
@@ -166,7 +163,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             return false;
         }
         mIsDragStarted = true;
-        mDragStartSystemElapsedTime = SystemClock.elapsedRealtime();
         mDragTargetType = getDragTargetType(dropData);
 
         Object myLocalState = null;
@@ -440,9 +436,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
     private void onDrop() {
         mIsDropOnView = true;
-        long dropDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Android.DragDrop.FromWebContent.DropInWebContent.Duration", dropDuration);
     }
 
     private void onDropFromOutside(DragEvent dropEvent) {
@@ -463,7 +456,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
         // Only record metrics when drop does not happen for ContentView.
         if (!mIsDropOnView) {
-            assert mDragStartSystemElapsedTime > 0;
             recordDragTargetType(mDragTargetType);
         }
         // Allow drop into ContentView when files are supported by clank.
@@ -503,7 +495,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         mDragTargetType = DragTargetType.INVALID;
         mIsDragStarted = false;
         mIsDropOnView = false;
-        mDragStartSystemElapsedTime = -1;
         mImageView = null;
     }
 

@@ -2111,17 +2111,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DragDrop.FromWebContent.DropInWebContent.Duration"
-    units="ms" expires_after="2026-08-02">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the duration in ms of drag process when drop happend inside
-    ContentView containing web contents, regardless DragEvent#getResult. Does
-    not capture drag events that end outside the ContentView. Android only.
-  </summary>
-</histogram>
-
 <histogram name="Android.DragDrop.FromWebContent.TargetType"
     enum="AndroidDragTargetType" expires_after="2026-09-06">
   <owner>wenyufu@chromium.org</owner>
