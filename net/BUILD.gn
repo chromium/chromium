@@ -1904,7 +1904,6 @@ component("net") {
       "disk_cache/sql/sql_read_cache_memory_monitor.h",
       "disk_cache/sql/sql_shared_cache.cc",
       "disk_cache/sql/sql_shared_cache.h",
-      "disk_cache/sql/sql_shared_cache_blob_handle.h",
       "disk_cache/sql/sql_shared_cache_handle.cc",
       "disk_cache/sql/sql_shared_cache_handle.h",
       "disk_cache/sql/sql_shared_cache_index_database.cc",

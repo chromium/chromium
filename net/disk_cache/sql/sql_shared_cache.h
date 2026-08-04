@@ -18,7 +18,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
-#include "net/disk_cache/sql/sql_shared_cache_blob_handle.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database.h"
 #include "net/disk_cache/sql/sql_tracked_sequence_bound.h"
 
@@ -105,16 +104,6 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
       base::OnceCallback<
           void(base::expected<void, SqlSharedCacheIsolatedDatabase::Error>)>
           callback);
-
-  // Asynchronously retrieves a `SqlSharedCacheBlobHandle` for a shared cache
-  // entry.
-  void GetBlobHandle(
-      const CacheEntryKey& entry_key,
-      SqlSharedCacheRowId shared_cache_row_id,
-      int body_size,
-      base::OnceCallback<void(
-          base::expected<scoped_refptr<SqlSharedCacheBlobHandle>,
-                         SqlSharedCacheIsolatedDatabase::Error>)> callback);
 
  private:
   // Entry Copying Call Flow Overview:

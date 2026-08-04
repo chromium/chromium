@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "components/sqlite_vfs/client.h"
 #include "components/sqlite_vfs/sqlite_sandboxed_vfs.h"
@@ -116,13 +115,9 @@ void SqlSharedCacheIsolatedDatabase::DatabaseAssets::AbandonAndDeleteFiles() {
 SqlSharedCacheIsolatedDatabase::SqlSharedCacheIsolatedDatabase(
     std::string nik_string,
     const base::FilePath& directory,
-    SqlSharedCacheDbId shared_cache_db_id,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    SqlSharedCacheDbId shared_cache_db_id)
     : nik_string_(std::move(nik_string)),
-      db_assets_(DatabaseAssets::MaybeCreate(directory, shared_cache_db_id)),
-      task_runner_(std::move(task_runner)) {
-  CHECK(task_runner_);
-}
+      db_assets_(DatabaseAssets::MaybeCreate(directory, shared_cache_db_id)) {}
 
 SqlSharedCacheIsolatedDatabase::~SqlSharedCacheIsolatedDatabase() = default;
 
@@ -359,86 +354,6 @@ SqlSharedCacheIsolatedDatabase::WriteBodyInternal(
   return base::ok();
 }
 
-SqlSharedCacheIsolatedDatabase::SqlSharedCacheBlobHandleImpl::
-    SqlSharedCacheBlobHandleImpl(
-        base::OnceClosure decrement_closure,
-        scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : decrement_closure_(std::move(decrement_closure)),
-      task_runner_(std::move(task_runner)) {}
-
-SqlSharedCacheIsolatedDatabase::SqlSharedCacheBlobHandleImpl::
-    ~SqlSharedCacheBlobHandleImpl() {
-  task_runner_->PostTask(FROM_HERE, std::move(decrement_closure_));
-}
-
-SqlSharedCacheIsolatedDatabase::BlobHandleHolder::BlobHandleHolder(
-    sql::StreamingBlobHandle blob_handle,
-    const CacheEntryKey& entry_key,
-    int body_size)
-    : blob_handle_(std::move(blob_handle)),
-      entry_key_(entry_key),
-      body_size_(body_size) {}
-
-SqlSharedCacheIsolatedDatabase::BlobHandleHolder::~BlobHandleHolder() = default;
-
-base::expected<scoped_refptr<SqlSharedCacheBlobHandle>,
-               SqlSharedCacheIsolatedDatabase::Error>
-SqlSharedCacheIsolatedDatabase::GetBlobHandle(
-    const CacheEntryKey& entry_key,
-    SqlSharedCacheRowId shared_cache_row_id,
-    int body_size) {
-  if (ShouldSimulateFailure(OperationForTesting::kRead)) {
-    return base::unexpected(Error::kFailedForTesting);
-  }
-  if (!db_assets_ || !db_assets_->db().is_open()) {
-    return base::unexpected(Error::kDatabaseNotOpen);
-  }
-  ASSIGN_OR_RETURN(
-      auto* blob_handle_holder,
-      GetCachedBlobHandleHolder(entry_key, shared_cache_row_id, body_size));
-  if (blob_handle_holder) {
-    blob_handle_holder->IncrementRefCount();
-    return base::MakeRefCounted<SqlSharedCacheBlobHandleImpl>(
-        base::BindOnce(
-            &SqlSharedCacheIsolatedDatabase::DecrementBlobHandleRefCount,
-            weak_factory_.GetWeakPtr(), shared_cache_row_id),
-        task_runner_);
-  }
-
-  ASSIGN_OR_RETURN(
-      auto streaming_blob_handle,
-      GetStreamingBlobHandle(entry_key, shared_cache_row_id, body_size));
-  blob_handle_holders_.try_emplace(
-      shared_cache_row_id,
-      std::make_unique<BlobHandleHolder>(std::move(streaming_blob_handle),
-                                         entry_key, body_size));
-
-  return base::MakeRefCounted<SqlSharedCacheBlobHandleImpl>(
-      base::BindOnce(
-          &SqlSharedCacheIsolatedDatabase::DecrementBlobHandleRefCount,
-          weak_factory_.GetWeakPtr(), shared_cache_row_id),
-      task_runner_);
-}
-
-base::expected<SqlSharedCacheIsolatedDatabase::BlobHandleHolder*,
-               SqlSharedCacheIsolatedDatabase::Error>
-SqlSharedCacheIsolatedDatabase::GetCachedBlobHandleHolder(
-    const CacheEntryKey& entry_key,
-    SqlSharedCacheRowId shared_cache_row_id,
-    int body_size) {
-  auto it = blob_handle_holders_.find(shared_cache_row_id);
-  if (it == blob_handle_holders_.end()) {
-    return nullptr;
-  }
-  if (it->second->resource_url() != entry_key.resource_url()) {
-    return base::unexpected(Error::kEntryNotFound);
-  }
-  if (it->second->body_size() != body_size) {
-    return base::unexpected(Error::kBodySizeMismatch);
-  }
-  return it->second.get();
-}
-
 base::expected<sql::StreamingBlobHandle, SqlSharedCacheIsolatedDatabase::Error>
 SqlSharedCacheIsolatedDatabase::GetStreamingBlobHandle(
     const CacheEntryKey& entry_key,
@@ -470,19 +385,6 @@ SqlSharedCacheIsolatedDatabase::GetStreamingBlobHandle(
   return blob_handle;
 }
 
-void SqlSharedCacheIsolatedDatabase::DecrementBlobHandleRefCount(
-    SqlSharedCacheRowId shared_cache_row_id) {
-  auto it = blob_handle_holders_.find(shared_cache_row_id);
-  if (it == blob_handle_holders_.end()) {
-    return;
-  }
-  CHECK(it->second);
-  it->second->DecrementRefCount();
-  if (it->second->ref_count() == 0) {
-    blob_handle_holders_.erase(it);
-  }
-}
-
 SqlSharedCacheIsolatedDatabase::ReadResultOrError
 SqlSharedCacheIsolatedDatabase::Read(const CacheEntryKey& entry_key,
                                      SqlSharedCacheRowId shared_cache_row_id,
@@ -504,29 +406,11 @@ SqlSharedCacheIsolatedDatabase::Read(const CacheEntryKey& entry_key,
     return base::unexpected(Error::kInvalidReadRange);
   }
 
-  std::optional<sql::StreamingBlobHandle> new_blob_handle;
-  sql::StreamingBlobHandle* blob_handle_ptr = nullptr;
-
   ASSIGN_OR_RETURN(
-      auto* blob_handle_holder,
-      GetCachedBlobHandleHolder(entry_key, shared_cache_row_id, body_size));
-  if (blob_handle_holder) {
-    blob_handle_ptr = &blob_handle_holder->blob_handle();
-  }
+      auto blob_handle,
+      GetStreamingBlobHandle(entry_key, shared_cache_row_id, body_size));
 
-  if (!blob_handle_ptr) {
-    ASSIGN_OR_RETURN(
-        new_blob_handle,
-        GetStreamingBlobHandle(entry_key, shared_cache_row_id, body_size));
-    if (new_blob_handle.has_value()) {
-      blob_handle_ptr = &new_blob_handle.value();
-    }
-  }
-  if (!blob_handle_ptr) {
-    return base::unexpected(Error::kFailedToGetBlob);
-  }
-
-  if (!blob_handle_ptr->Read(offset, buffer->span())) {
+  if (!blob_handle.Read(offset, buffer->span())) {
     return base::unexpected(Error::kFailedToReadBlob);
   }
 
