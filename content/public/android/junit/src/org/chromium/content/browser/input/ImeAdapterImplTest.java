@@ -46,6 +46,7 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink.mojom.InputCursorAnchorInfo;
 import org.chromium.blink_public.web.WebInputEventModifier;
@@ -293,6 +294,11 @@ public class ImeAdapterImplTest {
     @Test
     public void testCommitContent() {
         when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), any(), any())).thenReturn(true);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Input.CommitContent.Success", ImeMetricsUtils.ExtensionFormat.PNG)
+                        .build();
 
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
@@ -302,16 +308,24 @@ public class ImeAdapterImplTest {
 
         verify(mImeAdapterImplJni)
                 .insertMediaFromBytes(anyLong(), eq(new byte[] {1, 2, 3}), eq("png"));
+        watcher.assertExpected();
     }
 
     @Test
     public void testCommitContent_Failure() {
         when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), any(), any())).thenReturn(false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Input.CommitContent.Failure",
+                                ImeMetricsUtils.ExtensionFormat.OTHER)
+                        .build();
 
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
 
-        Assert.assertFalse(adapter.commitContent(new byte[] {1, 2, 3}, "png"));
+        Assert.assertFalse(adapter.commitContent(new byte[] {1, 2, 3}, "unknown_ext"));
+        watcher.assertExpected();
     }
 
     @Test

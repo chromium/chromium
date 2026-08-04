@@ -5761,6 +5761,16 @@ shown properly on the user-facing crash UI.
   <int value="12" label="FAST_EXIT_FIELD"/>
 </enum>
 
+<enum name="ImeCommitContentExtension">
+  <int value="0" label="GIF"/>
+  <int value="1" label="JPEG"/>
+  <int value="2" label="JPG"/>
+  <int value="3" label="PNG"/>
+  <int value="4" label="SVG"/>
+  <int value="5" label="WebP"/>
+  <int value="6" label="Other"/>
+</enum>
+
 <enum name="IMEEditorCriticalStates">
   <int value="0" label="SHOW_UI"/>
   <int value="1" label="REQUEST_TRIGGERED"/>

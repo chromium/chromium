@@ -1731,9 +1731,12 @@ public class ImeAdapterImpl
      */
     boolean commitContent(byte[] bytes, String extension) {
         onImeEvent();
-        return isValid()
-                && ImeAdapterImplJni.get()
-                        .insertMediaFromBytes(mNativeImeAdapterAndroid, bytes, extension);
+        boolean result =
+                isValid()
+                        && ImeAdapterImplJni.get()
+                                .insertMediaFromBytes(mNativeImeAdapterAndroid, bytes, extension);
+        ImeMetricsUtils.recordCommitContentSuccess(extension, result);
+        return result;
     }
 
     /** Lazily creates/returns a StylusWritingImeCallback object. */
