@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -592,6 +593,37 @@ GetOrderAttributesFromSpecifics(const sync_pb::Order& order,
   return attributes;
 }
 
+sync_pb::AutofillValuableSpecifics GetOrderSpecifics(
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  CHECK_EQ(entity.type().name(), EntityTypeName::kOrder);
+
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
+  specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
+
+  sync_pb::Order& order = *specifics.mutable_order();
+  SET_OR_CLEAR_STRING_FIELD(entity, kOrderId, id, order);
+  SET_OR_CLEAR_STRING_FIELD(entity, kOrderAccount, account, order);
+  SetDateInSpecifics(entity, kOrderDate, order.mutable_order_date());
+  SET_OR_CLEAR_STRING_FIELD(entity, kOrderMerchantName, merchant_name, order);
+  SET_OR_CLEAR_STRING_FIELD(entity, kOrderMerchantDomain, merchant_domain,
+                            order);
+  // Best-effort reversal of `GetOrderAttributesFromSpecifics()`'s JoinString().
+  if (base::optional_ref<const AttributeInstance> attr =
+          entity.attribute(AttributeType(kOrderProductNames))) {
+    for (std::string_view name : base::SplitStringPiece(
+             base::UTF16ToUTF8(attr->GetCompleteRawInfo()), ", ",
+             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      order.add_product_names(std::string(name));
+    }
+  }
+
+  *specifics.mutable_serialized_chrome_valuables_metadata() =
+      AnyWrapProto(SerializeChromeValuablesMetadata(entity));
+  return specifics;
+}
+
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetShipmentAttributesFromSpecifics(const sync_pb::Shipment& shipment,
                                    const sync_pb::Any& serialized_metadata) {
@@ -610,6 +642,42 @@ GetShipmentAttributesFromSpecifics(const sync_pb::Shipment& shipment,
   FinalizeEntityAttributes(EntityType(EntityTypeName::kShipment),
                            serialized_metadata, attributes);
   return attributes;
+}
+
+sync_pb::AutofillValuableSpecifics GetShipmentSpecifics(
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  CHECK_EQ(entity.type().name(), EntityTypeName::kShipment);
+
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
+  specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
+
+  sync_pb::Shipment& shipment = *specifics.mutable_shipment();
+  SET_OR_CLEAR_STRING_FIELD(entity, kShipmentTrackingNumber, tracking_number,
+                            shipment);
+  SET_OR_CLEAR_STRING_FIELD(entity, kShipmentDeliveryZipCode, delivery_zip_code,
+                            shipment);
+  SetDateInSpecifics(entity, kShipmentShippedDate,
+                     shipment.mutable_shipping_date());
+  SET_OR_CLEAR_STRING_FIELD(entity, kShipmentCarrierName, carrier_name,
+                            shipment);
+  SET_OR_CLEAR_STRING_FIELD(entity, kShipmentCarrierDomain, carrier_domain,
+                            shipment);
+  // Best-effort reversal of `GetShipmentAttributesFromSpecifics()`'s
+  // JoinString().
+  if (base::optional_ref<const AttributeInstance> attr =
+          entity.attribute(AttributeType(kShipmentOrderIds))) {
+    for (std::string_view name : base::SplitStringPiece(
+             base::UTF16ToUTF8(attr->GetCompleteRawInfo()), ", ",
+             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      shipment.add_associated_order_ids(std::string(name));
+    }
+  }
+
+  *specifics.mutable_serialized_chrome_valuables_metadata() =
+      AnyWrapProto(SerializeChromeValuablesMetadata(entity));
+  return specifics;
 }
 
 #undef SET_OR_CLEAR_STRING_FIELD
@@ -685,11 +753,9 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     case EntityTypeName::kKnownTravelerNumber:
       return GetKnownTravelerNumberSpecifics(entity, base_specifics);
     case EntityTypeName::kOrder:
+      return GetOrderSpecifics(entity, base_specifics);
     case EntityTypeName::kShipment:
-      // Order and Shipment entities are not saved on the sync server
-      // (only on kPersonalContext) and therefore this method should not
-      // be called for them.
-      NOTREACHED();
+      return GetShipmentSpecifics(entity, base_specifics);
   }
   NOTREACHED();
 }
