@@ -88,7 +88,6 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.impl.CoreImpl;
-import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.ime.TextInputAction;
@@ -270,14 +269,6 @@ public class ImeAdapterImpl
         public void close() {
             mHandle.close();
         }
-    }
-
-    public static boolean isAccessibilityMagnificationFollowsFocusEnabled() {
-        if (DeviceInput.supportsKeyboard(ContextUtils.getApplicationContext())) {
-            return ContentFeatureList.sAccessibilityMagnificationFollowsFocusKeyboardAttached
-                    .isEnabled();
-        }
-        return ContentFeatureList.sAccessibilityMagnificationFollowsFocusNoKeyboard.isEnabled();
     }
 
     /**
@@ -1631,7 +1622,7 @@ public class ImeAdapterImpl
         // Note: `SDK_INT_FULL` added in `BAKLAVA`, hence two checks.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
                 && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1
-                && isAccessibilityMagnificationFollowsFocusEnabled()) {
+                && ContentFeatureList.isAccessibilityMagnificationFollowsFocusEnabled()) {
             Rect nodePix =
                     fromViewportDipToViewContentPix(
                             nodeLeftDip, nodeTopDip, nodeRightDip, nodeBottomDip, containerView);
@@ -1879,7 +1870,7 @@ public class ImeAdapterImpl
         // Request view system keep caret on screen when moved.
         if (isSelectionMove
                 && cursorAnchorInfo.insertionMarker != null
-                && isAccessibilityMagnificationFollowsFocusEnabled()) {
+                && ContentFeatureList.isAccessibilityMagnificationFollowsFocusEnabled()) {
             // Convert caret bounds from CSS pixels to device pixels relative to root view.
             var caretCss = cursorAnchorInfo.insertionMarker;
             Rect caretPix =

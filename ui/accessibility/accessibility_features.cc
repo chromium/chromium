@@ -345,7 +345,7 @@ BASE_FEATURE(kAccessibilityMagnificationFollowsFocusKeyboardAttached,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAccessibilityMagnificationFollowsFocusNoKeyboard,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAccessibilityAndroidMath, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityAndroidMathEnabled() {
