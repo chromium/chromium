@@ -3221,7 +3221,9 @@ void RenderProcessHostImpl::RemoveRoute(int32_t routing_id) {
                                   ->set_render_process_host_listener_changed();
                 proto->set_routing_id(routing_id);
               });
-  CHECK(listeners_.Lookup(routing_id) != nullptr, base::NotFatalUntil::M152);
+  // TODO(crbug.com/541475235): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(listeners_.Lookup(routing_id) != nullptr);
   listeners_.Remove(routing_id);
   Cleanup();
 }
