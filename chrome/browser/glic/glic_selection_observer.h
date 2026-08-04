@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "components/skills/public/skill.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -46,6 +47,8 @@ enum class GlicNudgeActivity;
 class ExplainSelectionTrigger;
 class GlicSelectionWidgetDelegate;
 class GlicKeyedService;
+
+using GlicSkillOption = skills::Skill;
 
 class GlicSelectionObserver
     : public content::WebContentsObserver,
@@ -114,11 +117,16 @@ class GlicSelectionObserver
       bool is_widget,
       base::WeakPtr<content::WebContents> web_contents,
       GlicNudgeActivity activity,
-      std::u16string prompt_override = u"");
+      std::u16string prompt_override = u"",
+      const GlicSkillOption& skill = {},
+      const std::string& skill_prompt = "");
 
 
   bool ShouldShowSelectionWidget();
   void OnAskGemini();
+  void OnAskGeminiWithSkill(const GlicSkillOption& skill);
+  std::vector<GlicSkillOption> GetContextualSkills();
+  std::vector<GlicSkillOption> GetUserSkills();
   void OnAskGeminiForQuery(const std::u16string& query);
   void OnAskGeminiMoreAboutThis(
       const std::u16string& selected_text,

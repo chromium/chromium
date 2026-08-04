@@ -6,12 +6,17 @@
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SELECTION_WIDGET_H_
 
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "components/skills/public/skill.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace ui {
+class SimpleMenuModel;
+}  // namespace ui
 
 namespace views {
 class Widget;
@@ -21,10 +26,15 @@ namespace glic {
 
 class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
  public:
+  static constexpr int kMinSkillCommandId = 100;
+
+  using SkillOption = skills::Skill;
+
   // Pure virtual interface implemented by the bridge to receive UI events.
   class ActionDelegate {
    public:
     virtual void OnAskGemini() = 0;
+    virtual void OnAskGeminiWithSkill(const SkillOption& skill) = 0;
     virtual void OnAskGeminiForQuery(const std::u16string& query) = 0;
     virtual void OnAskGeminiMoreAboutThis(
         const std::u16string& selected_text,
@@ -36,6 +46,8 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
     virtual void OnOpenInSidePanel() = 0;
     virtual void OnWidgetClose() = 0;
     virtual bool IsInlineFulfillmentSupported() = 0;
+    virtual std::vector<SkillOption> GetContextualSkills() = 0;
+    virtual std::vector<SkillOption> GetUserSkills() = 0;
 
    protected:
     virtual ~ActionDelegate() = default;
@@ -64,6 +76,10 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   void ShowInlineExplanation(const std::string& markdown_output,
                              bool is_complete,
                              const std::string& error_message);
+
+  views::View* GetAskGeminiButtonForTesting();
+  bool IsContextMenuShowingForTesting();
+  ui::SimpleMenuModel* GetContextMenuModelForTesting();
 
  private:
   friend class GlicSelectionWidgetTest;

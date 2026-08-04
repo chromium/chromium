@@ -45,6 +45,7 @@ inline constexpr char kGlicSelectionPromptCtaExplain[] = "explain";
 extern const base::FeatureParam<bool> kGlicSelectionPromptInlineFulfillment;
 extern const base::FeatureParam<std::string>
     kGlicSelectionPromptInlinePromptTemplate;
+extern const base::FeatureParam<bool> kGlicSelectionPromptSkills;
 
 BASE_DECLARE_FEATURE(kGlicCreateTabAdjacent);
 

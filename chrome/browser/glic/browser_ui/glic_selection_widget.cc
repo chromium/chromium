@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -49,6 +50,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -205,7 +207,18 @@ std::u16string GetCtaLabel() {
   return l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL);
 }
 
-class GlicSelectionContentsView : public views::View {
+std::u16string GetSkillMenuLabel(
+    const GlicSelectionWidgetDelegate::SkillOption& skill) {
+  std::u16string name_utf16 = base::UTF8ToUTF16(skill.name);
+  if (skill.icon.empty()) {
+    return name_utf16;
+  }
+  return base::UTF8ToUTF16(skill.icon) + u" " + name_utf16;
+}
+
+class GlicSelectionContentsView : public views::View,
+                                  public views::ContextMenuController,
+                                  public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
 
  public:
@@ -276,6 +289,7 @@ class GlicSelectionContentsView : public views::View {
     ask_gemini_btn->SetInstallFocusRingOnFocus(false);
 
     ask_gemini_btn_ = ask_gemini_btn;
+    ask_gemini_btn_->set_context_menu_controller(this);
 
     gfx::ImageSkia* icon_skia =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -773,6 +787,101 @@ class GlicSelectionContentsView : public views::View {
     UpdateWidgetBounds(is_first_show, is_complete, !markdown_output.empty());
   }
 
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
+    if (!widget_delegate_ || !features::kGlicSelectionPromptSkills.Get()) {
+      return;
+    }
+    command_id_to_skill_.clear();
+    menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+    more_skills_submenu_model_.reset();
+
+    std::vector<GlicSelectionWidgetDelegate::SkillOption> contextual_skills =
+        widget_delegate_->action_delegate().GetContextualSkills();
+    std::vector<GlicSelectionWidgetDelegate::SkillOption> user_skills =
+        widget_delegate_->action_delegate().GetUserSkills();
+
+    if (contextual_skills.empty() && user_skills.empty()) {
+      return;
+    }
+
+    int next_command_id = GlicSelectionWidgetDelegate::kMinSkillCommandId;
+
+    if (!user_skills.empty()) {
+      menu_model_->AddTitle(
+          l10n_util::GetStringUTF16(IDS_GLIC_SELECTION_YOUR_SKILLS));
+      constexpr size_t kMaxTopLevelUserSkills = 2;
+      for (size_t i = 0; i < user_skills.size() && i < kMaxTopLevelUserSkills;
+           ++i) {
+        int command_id = next_command_id++;
+        command_id_to_skill_.push_back(user_skills[i]);
+        menu_model_->AddItem(command_id, GetSkillMenuLabel(user_skills[i]));
+      }
+
+      if (user_skills.size() > kMaxTopLevelUserSkills) {
+        more_skills_submenu_model_ =
+            std::make_unique<ui::SimpleMenuModel>(this);
+        for (size_t i = kMaxTopLevelUserSkills; i < user_skills.size(); ++i) {
+          int command_id = next_command_id++;
+          command_id_to_skill_.push_back(user_skills[i]);
+          more_skills_submenu_model_->AddItem(
+              command_id, GetSkillMenuLabel(user_skills[i]));
+        }
+        int submenu_command_id = next_command_id++;
+        command_id_to_skill_.emplace_back(skills::Skill());
+        menu_model_->AddSubMenu(
+            submenu_command_id,
+            l10n_util::GetStringUTF16(IDS_GLIC_SELECTION_MORE_SKILLS),
+            more_skills_submenu_model_.get());
+      }
+    }
+
+    if (!user_skills.empty() && !contextual_skills.empty()) {
+      menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+    }
+
+    if (!contextual_skills.empty()) {
+      menu_model_->AddTitle(
+          l10n_util::GetStringUTF16(IDS_GLIC_SELECTION_FOR_THIS_PAGE));
+      for (const auto& skill : contextual_skills) {
+        int command_id = next_command_id++;
+        command_id_to_skill_.push_back(skill);
+        menu_model_->AddItem(command_id, GetSkillMenuLabel(skill));
+      }
+    }
+
+    int run_flags =
+        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
+    menu_runner_ =
+        std::make_unique<views::MenuRunner>(menu_model_.get(), run_flags);
+    menu_runner_->RunMenuAt(widget_delegate_->GetWidget(), nullptr,
+                            ask_gemini_btn_->GetBoundsInScreen(),
+                            views::MenuAnchorPosition::kTopLeft, source_type);
+  }
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override {
+    int index = command_id - GlicSelectionWidgetDelegate::kMinSkillCommandId;
+    if (index >= 0 &&
+        index < static_cast<int>(command_id_to_skill_.size())) {
+      const auto& skill = command_id_to_skill_[index];
+      if (!skill.id.empty() && widget_delegate_) {
+        widget_delegate_->action_delegate().OnAskGeminiWithSkill(skill);
+      }
+    }
+  }
+
+  views::View* GetAskGeminiButtonForTesting() const { return ask_gemini_btn_; }
+  bool IsContextMenuShowingForTesting() const {
+    return menu_runner_ && menu_runner_->IsRunning();
+  }
+  ui::SimpleMenuModel* GetContextMenuModelForTesting() const {
+    return menu_model_.get();
+  }
+
  private:
   const re2::RE2 query_button_regex_{kQueryButtonPattern};
   const re2::RE2 inline_query_regex_{kInlineQueryPattern};
@@ -789,6 +898,10 @@ class GlicSelectionContentsView : public views::View {
   raw_ptr<views::BoxLayoutView> close_pill_ = nullptr;
   base::CallbackListSubscription close_btn_subscription_;
   raw_ptr<views::BoxLayoutView> explanation_container_ = nullptr;
+  std::vector<GlicSelectionWidgetDelegate::SkillOption> command_id_to_skill_;
+  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  std::unique_ptr<ui::SimpleMenuModel> more_skills_submenu_model_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
 };
 
 BEGIN_METADATA(GlicSelectionContentsView)
@@ -925,4 +1038,30 @@ void GlicSelectionWidgetDelegate::ShowInlineExplanation(
                                          error_message);
   }
 }
+
+views::View* GlicSelectionWidgetDelegate::GetAskGeminiButtonForTesting() {
+  if (auto* contents =
+          views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
+    return contents->GetAskGeminiButtonForTesting();
+  }
+  return nullptr;
+}
+
+bool GlicSelectionWidgetDelegate::IsContextMenuShowingForTesting() {
+  if (auto* contents =
+          views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
+    return contents->IsContextMenuShowingForTesting();
+  }
+  return false;
+}
+
+ui::SimpleMenuModel*
+GlicSelectionWidgetDelegate::GetContextMenuModelForTesting() {
+  if (auto* contents =
+          views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
+    return contents->GetContextMenuModelForTesting();
+  }
+  return nullptr;
+}
+
 }  // namespace glic

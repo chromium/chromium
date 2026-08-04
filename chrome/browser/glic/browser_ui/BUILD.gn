@@ -24,6 +24,7 @@ source_set("browser_ui") {
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/tab_list",
     "//components/keyed_service/core",
+    "//components/skills/public",
   ]
   deps = [
     "//base",

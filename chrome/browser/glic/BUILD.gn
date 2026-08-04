@@ -105,6 +105,7 @@ source_set("glic") {
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/skills/public",
     "//components/tabs:public",
     "//components/variations",
     "//content/public/browser",
