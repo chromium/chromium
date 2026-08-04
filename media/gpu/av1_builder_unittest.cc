@@ -89,6 +89,21 @@ class AV1BuilderTest : public ::testing::Test {
     return seq_hdr;
   }
 
+  // A 10 bit BT.2020 sequence header, i.e. what HDR encoding requires, with
+  // the given transfer function.
+  AV1BitstreamBuilder::SequenceHeader MakeHDRSequenceHeader(
+      Libgav1TransferCharacteristics transfer_characteristics) {
+    AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeDefaultSequenceHeader();
+    seq_hdr.bit_depth = 10;
+    seq_hdr.color_description_present_flag = true;
+    seq_hdr.color_primaries = kLibgav1ColorPrimaryBt2020;
+    seq_hdr.transfer_characteristics = transfer_characteristics;
+    seq_hdr.matrix_coefficients = kLibgav1MatrixCoefficientsBt2020Ncl;
+    seq_hdr.color_range = kLibgav1ColorRangeStudio;
+    seq_hdr.chroma_sample_position = kLibgav1ChromaSamplePositionColocated;
+    return seq_hdr;
+  }
+
   AV1BitstreamBuilder::FrameHeader MakeFrameHeader(uint32_t frame_id) {
     AV1BitstreamBuilder::FrameHeader pic_hdr{};
     pic_hdr.frame_type = frame_id == 0 ? libgav1::FrameType::kFrameKey
@@ -127,6 +142,47 @@ class AV1BuilderTest : public ::testing::Test {
     pic_hdr.allow_intrabc = false;
 
     return pic_hdr;
+  }
+
+  // Packs a temporal unit made of a temporal delimiter, a sequence header OBU,
+  // `metadata_obus` and a frame OBU followed by a dummy tile group.
+  std::vector<uint8_t> PackTemporalUnit(
+      const AV1BitstreamBuilder::SequenceHeader& seq_hdr,
+      const AV1BitstreamBuilder::FrameHeader& pic_hdr,
+      std::vector<AV1BitstreamBuilder> metadata_obus = {}) {
+    AV1BitstreamBuilder packed_frame;
+    packed_frame.WriteOBUHeader(/*type=*/libgav1::kObuTemporalDelimiter,
+                                /*has_size=*/true);
+    packed_frame.WriteValueInLeb128(0);
+
+    packed_frame.WriteOBUHeader(libgav1::kObuSequenceHeader, /*has_size=*/true);
+    AV1BitstreamBuilder seq_header_obu =
+        AV1BitstreamBuilder::BuildSequenceHeaderOBU(seq_hdr);
+    EXPECT_EQ(seq_header_obu.OutstandingBits() % 8, 0ull);
+    packed_frame.WriteValueInLeb128(seq_header_obu.OutstandingBits() / 8);
+    packed_frame.AppendBitstreamBuffer(std::move(seq_header_obu));
+
+    // Metadata OBUs precede the frame OBU they apply to.
+    for (AV1BitstreamBuilder& metadata_obu : metadata_obus) {
+      packed_frame.WriteOBUHeader(libgav1::kObuMetadata, /*has_size=*/true);
+      EXPECT_EQ(metadata_obu.OutstandingBits() % 8, 0ull);
+      packed_frame.WriteValueInLeb128(metadata_obu.OutstandingBits() / 8);
+      packed_frame.AppendBitstreamBuffer(std::move(metadata_obu));
+    }
+
+    packed_frame.WriteOBUHeader(libgav1::kObuFrame, /*has_size=*/true);
+    AV1BitstreamBuilder frame_obu =
+        AV1BitstreamBuilder::BuildFrameHeaderOBU(seq_hdr, pic_hdr);
+    EXPECT_EQ(frame_obu.OutstandingBits() % 8, 0ull);
+    // Fake tile_group_obu with only dummy data.
+    static const uint8_t tile_group_obu[] = {0x00, 0x80};
+    packed_frame.WriteValueInLeb128(frame_obu.OutstandingBits() / 8 +
+                                    std::size(tile_group_obu));
+    packed_frame.AppendBitstreamBuffer(std::move(frame_obu));
+    for (const uint8_t byte : tile_group_obu) {
+      packed_frame.Write(byte, 8);
+    }
+    return std::move(packed_frame).Flush();
   }
 
   std::unique_ptr<libgav1::BufferPool> buffer_pool_;
@@ -417,6 +473,122 @@ TEST_F(AV1BuilderTest, BuildSeqHeaderWithColorConfigProfile1) {
   EXPECT_EQ(sequence_header.color_config.color_range, kLibgav1ColorRangeStudio);
   EXPECT_EQ(sequence_header.color_config.chroma_sample_position,
             kLibgav1ChromaSamplePositionUnknown);
+}
+
+TEST_F(AV1BuilderTest, BuildSeqHeaderWithHDR10ColorConfig) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr =
+      MakeHDRSequenceHeader(kLibgav1TransferCharacteristicsSmpte2084);
+  std::vector<uint8_t> chunk = PackTemporalUnit(seq_hdr, MakeFrameHeader(0));
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+
+  libgav1::RefCountedBufferPtr current_frame;
+  EXPECT_EQ(parser->ParseOneFrame(&current_frame), libgav1::kStatusOk);
+  const libgav1::ColorConfig& color_config =
+      parser->sequence_header().color_config;
+  EXPECT_EQ(color_config.bitdepth, 10);
+  EXPECT_EQ(color_config.color_primary, kLibgav1ColorPrimaryBt2020);
+  EXPECT_EQ(color_config.transfer_characteristics,
+            kLibgav1TransferCharacteristicsSmpte2084);
+  EXPECT_EQ(color_config.matrix_coefficients,
+            kLibgav1MatrixCoefficientsBt2020Ncl);
+  EXPECT_EQ(color_config.color_range, kLibgav1ColorRangeStudio);
+  // Profile 0 is always 4:2:0, so the chroma sample position is signalled.
+  EXPECT_EQ(color_config.subsampling_x, 1);
+  EXPECT_EQ(color_config.subsampling_y, 1);
+  EXPECT_EQ(color_config.chroma_sample_position,
+            kLibgav1ChromaSamplePositionColocated);
+}
+
+// HLG needs no metadata OBU: the sequence header carries all the signalling.
+TEST_F(AV1BuilderTest, BuildSeqHeaderWithHLGColorConfig) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr =
+      MakeHDRSequenceHeader(kLibgav1TransferCharacteristicsHlg);
+  std::vector<uint8_t> chunk = PackTemporalUnit(seq_hdr, MakeFrameHeader(0));
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+
+  libgav1::RefCountedBufferPtr current_frame;
+  EXPECT_EQ(parser->ParseOneFrame(&current_frame), libgav1::kStatusOk);
+  const libgav1::ColorConfig& color_config =
+      parser->sequence_header().color_config;
+  EXPECT_EQ(color_config.bitdepth, 10);
+  EXPECT_EQ(color_config.color_primary, kLibgav1ColorPrimaryBt2020);
+  EXPECT_EQ(color_config.transfer_characteristics,
+            kLibgav1TransferCharacteristicsHlg);
+  EXPECT_EQ(color_config.matrix_coefficients,
+            kLibgav1MatrixCoefficientsBt2020Ncl);
+}
+
+// Profile 2 below 12 bit is 4:2:2, for which the chroma sample position must
+// not be written.
+TEST_F(AV1BuilderTest, BuildSeqHeaderWithColorConfigProfile2) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr =
+      MakeHDRSequenceHeader(kLibgav1TransferCharacteristicsSmpte2084);
+  seq_hdr.profile = libgav1::kProfile2;
+  std::vector<uint8_t> chunk = PackTemporalUnit(seq_hdr, MakeFrameHeader(0));
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+
+  libgav1::RefCountedBufferPtr current_frame;
+  EXPECT_EQ(parser->ParseOneFrame(&current_frame), libgav1::kStatusOk);
+  EXPECT_EQ(parser->sequence_header().profile, libgav1::kProfile2);
+  const libgav1::ColorConfig& color_config =
+      parser->sequence_header().color_config;
+  EXPECT_EQ(color_config.bitdepth, 10);
+  EXPECT_EQ(color_config.subsampling_x, 1);
+  EXPECT_EQ(color_config.subsampling_y, 0);
+  EXPECT_EQ(color_config.chroma_sample_position,
+            kLibgav1ChromaSamplePositionUnknown);
+}
+
+TEST_F(AV1BuilderTest, BuildHDRMetadataOBUs) {
+  const Libgav1ObuMetadataHdrCll hdr_cll = {.max_cll = 1000, .max_fall = 400};
+  // BT.2020 primaries and the D65 white point as 0.16 fixed-point CIE 1931
+  // chromaticity coordinates, in R, G, B order.
+  const Libgav1ObuMetadataHdrMdcv hdr_mdcv = {
+      .primary_chromaticity_x = {46400, 11141, 8585},
+      .primary_chromaticity_y = {19137, 52233, 3014},
+      .white_point_chromaticity_x = 20493,
+      .white_point_chromaticity_y = 21561,
+      .luminance_max = 1000 << 8,  // 24.8 fixed point, 1000 cd/m^2.
+      .luminance_min = 82,         // 18.14 fixed point, ~0.005 cd/m^2.
+  };
+
+  std::vector<AV1BitstreamBuilder> metadata_obus;
+  metadata_obus.push_back(AV1BitstreamBuilder::BuildHDRCLLMetadataOBU(hdr_cll));
+  metadata_obus.push_back(
+      AV1BitstreamBuilder::BuildHDRMDCVMetadataOBU(hdr_mdcv));
+  std::vector<uint8_t> chunk = PackTemporalUnit(
+      MakeHDRSequenceHeader(kLibgav1TransferCharacteristicsSmpte2084),
+      MakeFrameHeader(0), std::move(metadata_obus));
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+
+  libgav1::RefCountedBufferPtr current_frame;
+  ASSERT_EQ(parser->ParseOneFrame(&current_frame), libgav1::kStatusOk);
+  ASSERT_NE(current_frame, nullptr);
+
+  ASSERT_TRUE(current_frame->hdr_cll_set());
+  EXPECT_EQ(current_frame->hdr_cll().max_cll, hdr_cll.max_cll);
+  EXPECT_EQ(current_frame->hdr_cll().max_fall, hdr_cll.max_fall);
+
+  ASSERT_TRUE(current_frame->hdr_mdcv_set());
+  const libgav1::ObuMetadataHdrMdcv parsed_mdcv = current_frame->hdr_mdcv();
+  EXPECT_THAT(parsed_mdcv.primary_chromaticity_x,
+              ElementsAreArray(hdr_mdcv.primary_chromaticity_x));
+  EXPECT_THAT(parsed_mdcv.primary_chromaticity_y,
+              ElementsAreArray(hdr_mdcv.primary_chromaticity_y));
+  EXPECT_EQ(parsed_mdcv.white_point_chromaticity_x,
+            hdr_mdcv.white_point_chromaticity_x);
+  EXPECT_EQ(parsed_mdcv.white_point_chromaticity_y,
+            hdr_mdcv.white_point_chromaticity_y);
+  EXPECT_EQ(parsed_mdcv.luminance_max, hdr_mdcv.luminance_max);
+  EXPECT_EQ(parsed_mdcv.luminance_min, hdr_mdcv.luminance_min);
 }
 
 TEST_F(AV1BuilderTest, BuildFrameOBUWithQuantizationParams) {
