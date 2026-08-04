@@ -650,6 +650,34 @@ TEST_F(ContextualTasksUiTest, PendingTaskNoNewTaskCreatedOnNav) {
   observer.reset();
 }
 
+TEST_F(ContextualTasksUiTest, PendingTaskWithEmptyTitleNoNewTaskCreatedOnNav) {
+  MockTaskInfoDelegate delegate;
+
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  SetupMockDelegate(&delegate, task_id, std::nullopt, "");
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", "test");
+  url = net::AppendQueryParameter(url, "mtid", "5678");
+  url = net::AppendQueryParameter(url, "mstk", "1234");
+
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _, _)).Times(0);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
+
+  observer.reset();
+}
+
 TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
   MockTaskInfoDelegate delegate;
 

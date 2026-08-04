@@ -1780,7 +1780,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     // threads while we were in a bad state,  so we must create a NEW task to
     // avoid leaking context.
     bool pending_task_title_mismatch =
-        is_pending_task && current_title.has_value() && !query_value.empty() &&
+        is_pending_task && current_title.has_value() &&
+        !current_title.value().empty() && !query_value.empty() &&
         current_title.value() != query_value;
 
     // We have no thread ID and no pending task, so this is a fresh start.
