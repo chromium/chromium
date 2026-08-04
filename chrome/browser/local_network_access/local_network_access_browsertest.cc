@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
@@ -375,6 +377,112 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 // These tests verify the behavior of LNA when resources are loaded from cache.
 // The remote IP address of the resource is stored in cache, causing LNA checks
 // to trigger when network state changes.
+//
+// These tests need to change IP address spaces using command line overrides,
+// which require a browser restart. Port numbers are kept the same across
+// the restarts because the cache is partitioned by top-level origin.
+
+class LocalNetworkAccessCachedResourceBrowserTest
+    : public LocalNetworkAccessBrowserTestBase {
+ public:
+  LocalNetworkAccessCachedResourceBrowserTest() = default;
+  ~LocalNetworkAccessCachedResourceBrowserTest() override = default;
+
+  void SetUp() override {
+    cached_resource_public_server_.SetCertHostnames({"a.com"});
+    cached_resource_public_server_.AddDefaultHandlers(GetChromeTestDataDir());
+
+    cached_resource_loopback_server_.SetCertHostnames({"b.com"});
+    cached_resource_loopback_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    cached_resource_loopback_server_.RegisterRequestHandler(base::BindRepeating(
+        &LocalNetworkAccessCachedResourceBrowserTest::HandleCacheableRequest,
+        base::Unretained(this)));
+
+    LocalNetworkAccessBrowserTestBase::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LocalNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
+
+    base::FilePath user_data_dir =
+        command_line->GetSwitchValuePath("user-data-dir");
+    ASSERT_FALSE(user_data_dir.empty());
+    base::FilePath public_port_file =
+        user_data_dir.AppendASCII("cached_resource_public_server_port.txt");
+    base::FilePath loopback_port_file =
+        user_data_dir.AppendASCII("cached_resource_loopback_server_port.txt");
+
+    int public_port = 0;
+    int loopback_port = 0;
+    const ::testing::TestInfo* const test_info =
+        ::testing::UnitTest::GetInstance()->current_test_info();
+    bool is_pre_test = base::StartsWith(test_info->name(), "PRE_");
+
+    if (!is_pre_test) {
+      std::string port_str;
+      if (base::ReadFileToString(public_port_file, &port_str)) {
+        base::StringToInt(port_str, &public_port);
+      }
+      if (base::ReadFileToString(loopback_port_file, &port_str)) {
+        base::StringToInt(port_str, &loopback_port);
+      }
+    }
+
+    ASSERT_TRUE(
+        cached_resource_public_server_.InitializeAndListen(public_port));
+    ASSERT_TRUE(
+        cached_resource_loopback_server_.InitializeAndListen(loopback_port));
+
+    if (is_pre_test) {
+      std::string public_port_str =
+          base::NumberToString(cached_resource_public_server_.port());
+      ASSERT_TRUE(base::WriteFile(public_port_file, public_port_str));
+
+      std::string loopback_port_str =
+          base::NumberToString(cached_resource_loopback_server_.port());
+      ASSERT_TRUE(base::WriteFile(loopback_port_file, loopback_port_str));
+    }
+
+    if (!is_pre_test) {
+      network::AddPublicIpAddressSpaceOverrideToCommandLine(
+          cached_resource_public_server_, *command_line);
+    }
+
+    cached_resource_public_server_.StartAcceptingConnections();
+    cached_resource_loopback_server_.StartAcceptingConnections();
+  }
+
+  int request_count() const { return request_count_; }
+  net::EmbeddedTestServer& cached_resource_public_server() {
+    return cached_resource_public_server_;
+  }
+  net::EmbeddedTestServer& cached_resource_loopback_server() {
+    return cached_resource_loopback_server_;
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleCacheableRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().GetPath() == "/cacheable") {
+      request_count_++;
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+      http_response->set_content_type("text/plain");
+      http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+      http_response->AddCustomHeader("Cache-Control", "max-age=3600");
+      http_response->set_content("hello");
+      return std::move(http_response);
+    }
+    return nullptr;
+  }
+
+  net::EmbeddedTestServer cached_resource_public_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer cached_resource_loopback_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  int request_count_ = 0;
+};
 
 // Tests that resources:
 //   - which were cached from loopback addresses,
@@ -383,63 +491,35 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 // get retried over the network.
 //
 // See also the test `CachedResourceIsLoadedFromCache` below.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       CachedResourceIsLoadedFromNetwork) {
-  auto https_server = net::test_server::EmbeddedTestServer(
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetCertHostnames({"a.com", "b.com"});
-  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCachedResourceBrowserTest,
+                       PRE_CachedResourceIsLoadedFromNetwork) {
+  GURL target_url =
+      cached_resource_loopback_server().GetURL("b.com", "/cacheable");
 
-  int request_count = 0;
-  https_server.RegisterRequestHandler(base::BindLambdaForTesting(
-      [&](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().GetPath() == "/cacheable") {
-          request_count++;
-          auto http_response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          http_response->set_code(net::HTTP_OK);
-          http_response->set_content_type("text/plain");
-          http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-          http_response->AddCustomHeader("Cache-Control", "max-age=3600");
-          http_response->set_content("hello");
-          return std::move(http_response);
-        }
-        return nullptr;
-      }));
-
-  ASSERT_TRUE(https_server.Start());
-
-  GURL target_url = https_server.GetURL("b.com", "/cacheable");
-
-  // First, navigate to a local page on a.com and fetch resource from b.com to
-  // get it in the cache.
+  // First, navigate to a loopback page on a.com and fetch loopback resource
+  // from b.com to get it in the cache.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
-      https_server.GetURL("a.com", "/local_network_access/no-favicon.html")));
+      cached_resource_loopback_server().GetURL("a.com", kNoFaviconPath)));
 
   ASSERT_EQ(true, content::EvalJs(web_contents(), FetchScript(target_url)));
 
   // No permission prompt should be shown as this was a loopback -> loopback
   // connection.
-  EXPECT_EQ(1, request_count);
+  EXPECT_EQ(1, request_count());
   EXPECT_EQ(0, bubble_factory()->show_count());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCachedResourceBrowserTest,
+                       CachedResourceIsLoadedFromNetwork) {
+  GURL target_url =
+      cached_resource_loopback_server().GetURL("b.com", "/cacheable");
 
   // Now, navigate to the same page but it's now considered public and try to
-  // fetch the same resource. The subresource will still be in the `loopback`
-  // address space (as dynamically configuring this for subresources is
-  // challenging in tests), but we can at least check that it wasn't loaded from
-  // cache.
-  //
-  // TODO(crbug.com/40820219): Once we support enterprise policies modifying
-  // the IP address space mappings, we may be able to change this test to
-  // dynamically modify the mappings to make 127.0.0.1 be "public", instead of
-  // relying on the CSP header, giving us a more complete test.
+  // fetch the same resource.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
-      https_server.GetURL(
-          "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+      cached_resource_public_server().GetURL("a.com", kNoFaviconPath)));
 
   bubble_factory()->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
@@ -447,9 +527,9 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   ASSERT_EQ(true, content::EvalJs(web_contents(), FetchScript(target_url)));
 
   // The resource should have been re-fetched, rather than loaded from cache.
-  // The prompt will trigger because the subresource is still in the `loopback`
-  // address space.
-  EXPECT_EQ(2, request_count);
+  // The prompt will trigger because the subresource is in the `loopback`
+  // address space and the top-level page is now in `public`.
+  EXPECT_EQ(1, request_count());
   EXPECT_EQ(1, bubble_factory()->request_count());
 }
 
@@ -460,74 +540,53 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 // *don't* get retried over the network and are loaded from cache.
 //
 // This is a counterpart to the test `CachedResourceIsLoadedFromNetwork` above.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       CachedResourceIsLoadedFromCache) {
-  auto https_server = net::test_server::EmbeddedTestServer(
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetCertHostnames({"a.com", "b.com"});
-  https_server.AddDefaultHandlers(GetChromeTestDataDir());
-
-  int request_count = 0;
-  https_server.RegisterRequestHandler(base::BindLambdaForTesting(
-      [&](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().GetPath() == "/cacheable") {
-          request_count++;
-          auto http_response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          http_response->set_code(net::HTTP_OK);
-          http_response->set_content_type("text/plain");
-          http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-          http_response->AddCustomHeader("Cache-Control", "max-age=3600");
-          http_response->set_content("hello");
-          return std::move(http_response);
-        }
-        return nullptr;
-      }));
-
-  ASSERT_TRUE(https_server.Start());
-
-  GURL target_url = https_server.GetURL("b.com", "/cacheable");
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCachedResourceBrowserTest,
+                       PRE_CachedResourceIsLoadedFromCache) {
+  GURL target_url =
+      cached_resource_loopback_server().GetURL("b.com", "/cacheable");
 
   // Set the LNA permission for a.com to "Allowed".
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(
           chrome_test_utils::GetProfile(this));
   host_content_settings_map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURL(https_server.GetURL("a.com", "/")),
+      ContentSettingsPattern::FromURL(
+          cached_resource_public_server().GetURL("a.com", "/")),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::LOOPBACK_NETWORK,
       CONTENT_SETTING_ALLOW);
 
-  // First, navigate to a local page on a.com and fetch resource from b.com to
-  // get it in the cache.
+  // First, navigate to a loopback page on a.com and fetch resource from b.com
+  // to get it in the cache.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
-      https_server.GetURL("a.com", "/local_network_access/no-favicon.html")));
+      cached_resource_loopback_server().GetURL("a.com", kNoFaviconPath)));
 
   ASSERT_EQ(true, content::EvalJs(web_contents(), FetchScript(target_url)));
 
   // No permission prompt should be shown as this was a loopback -> loopback
   // connection.
-  EXPECT_EQ(1, request_count);
+  EXPECT_EQ(1, request_count());
   EXPECT_EQ(0, bubble_factory()->show_count());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCachedResourceBrowserTest,
+                       CachedResourceIsLoadedFromCache) {
+  GURL target_url =
+      cached_resource_loopback_server().GetURL("b.com", "/cacheable");
 
   // Now, navigate to the same page but it's now considered public and try to
-  // fetch the same resource. The subresource will still be in the `loopback`
-  // address space (as dynamically configuring this for subresources is
-  // challenging in tests), but we can check that the resource was loaded from
-  // cache because a.com has been granted the LNA permission.
+  // fetch the same resource. Check that the resource was loaded from cache
+  // because a.com has been granted the LNA permission.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
-      https_server.GetURL(
-          "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+      cached_resource_public_server().GetURL("a.com", kNoFaviconPath)));
 
   ASSERT_EQ(true, content::EvalJs(web_contents(), FetchScript(target_url)));
 
   // The resource should have been loaded from cache, and no request should be
   // seen by the test server. No prompt will trigger because a.com is already
   // granted the LNA permission.
-  EXPECT_EQ(1, request_count);
+  EXPECT_EQ(0, request_count());
   EXPECT_EQ(0, bubble_factory()->request_count());
 }
 
