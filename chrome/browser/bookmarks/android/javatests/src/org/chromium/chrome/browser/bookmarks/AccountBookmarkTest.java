@@ -32,8 +32,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
@@ -49,6 +51,7 @@ import org.chromium.url.GURL;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/40743432): Once SyncTestRule supports batching, investigate batching this suite.
 @DoNotBatch(reason = "SyncTestRule doesn't support batching.")
+@DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
 public class AccountBookmarkTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
     @Rule public BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();

@@ -54,10 +54,10 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         mModelList = modelList;
         mBookmarkDelegate = bookmarkDelegate;
 
+        refreshNavigationList();
+
         mBookmarkDelegate.addUiObserver(this);
         mBookmarkModel.addObserver(this);
-
-        refreshNavigationList();
     }
 
     /** Destroys the mediator and removes observers. */
@@ -116,6 +116,10 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         }
 
         updateSelectionHighlight();
+
+        if (Objects.equals(mCurrentFolderId, mBookmarkModel.getRootFolderId())) {
+            openFirstFolder();
+        }
     }
 
     private boolean isAccountFolder(BookmarkId id) {
@@ -223,6 +227,10 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
     public void onFolderStateSet(@Nullable BookmarkId folder) {
         mCurrentFolderId = folder;
         updateSelectionHighlight();
+
+        if (Objects.equals(folder, mBookmarkModel.getRootFolderId())) {
+            openFirstFolder();
+        }
     }
 
     @Override
@@ -237,5 +245,15 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
     @Override
     public void bookmarkModelChanged() {
         refreshNavigationList();
+    }
+
+    private void openFirstFolder() {
+        for (ListItem item : mModelList) {
+            if (item.type == BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_FOLDER) {
+                BookmarkId id = item.model.get(BookmarkDesktopNavigationProperties.BOOKMARK_ID);
+                mBookmarkDelegate.replaceFolder(id);
+                break;
+            }
+        }
     }
 }

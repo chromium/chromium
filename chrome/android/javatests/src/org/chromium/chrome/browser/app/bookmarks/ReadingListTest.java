@@ -55,6 +55,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -69,6 +70,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -96,6 +98,7 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
+@DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
 public class ReadingListTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -142,14 +145,18 @@ public class ReadingListTest {
 
         if (mActivityTestRule.getActivity().isTablet()) {
             mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
-            mItemsContainer =
-                    mActivityTestRule
-                            .getActivity()
-                            .findViewById(R.id.selectable_list_recycler_view);
-            mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-            mBookmarkManagerCoordinator =
-                    ((BookmarkPage) mActivityTestRule.getActivityTab().getNativePage())
-                            .getManagerForTesting();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mItemsContainer =
+                                mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.selectable_list_recycler_view);
+                        mItemsContainer.setItemAnimator(
+                                null); // Disable animation to reduce flakiness.
+                        mBookmarkManagerCoordinator =
+                                ((BookmarkPage) mActivityTestRule.getActivityTab().getNativePage())
+                                        .getManagerForTesting();
+                    });
         } else {
             // phone
             mBookmarkActivity =
@@ -160,9 +167,14 @@ public class ReadingListTest {
                                     InstrumentationRegistry.getInstrumentation(),
                                     mActivityTestRule.getActivity(),
                                     R.id.all_bookmarks_menu_id));
-            mItemsContainer = mBookmarkActivity.findViewById(R.id.selectable_list_recycler_view);
-            mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-            mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mItemsContainer =
+                                mBookmarkActivity.findViewById(R.id.selectable_list_recycler_view);
+                        mItemsContainer.setItemAnimator(
+                                null); // Disable animation to reduce flakiness.
+                        mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();
+                    });
         }
 
         ThreadUtils.runOnUiThreadBlocking(

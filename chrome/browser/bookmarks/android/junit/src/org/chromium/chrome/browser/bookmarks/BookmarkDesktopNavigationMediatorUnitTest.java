@@ -7,7 +7,11 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -244,6 +248,54 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
         assertFalse(mModelList.get(1).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
         assertFalse(mModelList.get(2).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
         assertFalse(mModelList.get(3).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testInit_redirectsFromRoot() {
+        // Configure mock delegate for this test
+        when(mBookmarkDelegate.getCurrentUiMode()).thenReturn(BookmarkUiMode.FOLDER);
+        doAnswer(
+                        invocation -> {
+                            BookmarkUiObserver observer = invocation.getArgument(0);
+                            observer.onFolderStateSet(mBookmarkModel.getRootFolderId());
+                            return null;
+                        })
+                .when(mBookmarkDelegate)
+                .addUiObserver(any());
+
+        // Create a new mediator instance, which will trigger the init redirection.
+        new BookmarkDesktopNavigationMediator(
+                mContext, mBookmarkModel, mModelList, mBookmarkDelegate);
+
+        // Verify that replaceFolder was called with the first folder (DesktopFolderId).
+        verify(mBookmarkDelegate).replaceFolder(mBookmarkModel.getDesktopFolderId());
+    }
+
+    @Test
+    public void testInit_noRedirectFromNonRoot() {
+        // Configure mock delegate for this test to start at non-root folder.
+        when(mBookmarkDelegate.getCurrentUiMode()).thenReturn(BookmarkUiMode.FOLDER);
+        doAnswer(
+                        invocation -> {
+                            BookmarkUiObserver observer = invocation.getArgument(0);
+                            observer.onFolderStateSet(mBookmarkModel.getOtherFolderId());
+                            return null;
+                        })
+                .when(mBookmarkDelegate)
+                .addUiObserver(any());
+
+        new BookmarkDesktopNavigationMediator(
+                mContext, mBookmarkModel, mModelList, mBookmarkDelegate);
+
+        verify(mBookmarkDelegate, never()).replaceFolder(any());
+    }
+
+    @Test
+    public void testOnFolderStateSet_redirectsFromRoot() {
+        // Mediator created in setUp() didn't redirect because mock delegate didn't trigger it.
+        // Verify that setting folder state to root now triggers redirection.
+        mMediator.onFolderStateSet(mBookmarkModel.getRootFolderId());
+        verify(mBookmarkDelegate).replaceFolder(mBookmarkModel.getDesktopFolderId());
     }
 
     private void assertFolderItem(

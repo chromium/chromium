@@ -770,6 +770,14 @@ class BookmarkManagerMediator
     }
 
     @Override
+    public void replaceFolder(BookmarkId folder) {
+        if (!mStateStack.isEmpty()) {
+            mStateStack.removeLast();
+        }
+        setState(BookmarkUiState.createFolderState(folder, mBookmarkModel));
+    }
+
+    @Override
     public SelectionDelegate<BookmarkId> getSelectionDelegate() {
         return mSelectionDelegate;
     }
@@ -1843,7 +1851,8 @@ class BookmarkManagerMediator
         return mStateStack.peekLast();
     }
 
-    private @Nullable BookmarkId getCurrentFolderId() {
+    @Override
+    public @Nullable BookmarkId getCurrentFolderId() {
         BookmarkUiState state = mStateStack.peekLast();
         return state == null ? null : state.mFolder;
     }

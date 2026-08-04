@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
@@ -32,6 +33,13 @@ public interface BookmarkDelegate {
      * @param folder Parent folder that contains bookmarks to show as its children.
      */
     void openFolder(BookmarkId folder);
+
+    /**
+     * Replaces the current folder with the specified folder in the navigation stack.
+     *
+     * @param folder Parent folder that contains bookmarks to show as its children.
+     */
+    void replaceFolder(BookmarkId folder);
 
     /**
      * @return The {@link SelectionDelegate} responsible for tracking selected bookmarks.
@@ -84,6 +92,11 @@ public interface BookmarkDelegate {
      */
     @BookmarkUiMode
     int getCurrentUiMode();
+
+    /**
+     * @return The BookmarkId of the currently open folder, or null if not in folder mode.
+     */
+    @Nullable BookmarkId getCurrentFolderId();
 
     /**
      * @return The drag state delegate that is associated with this list of bookmarks.

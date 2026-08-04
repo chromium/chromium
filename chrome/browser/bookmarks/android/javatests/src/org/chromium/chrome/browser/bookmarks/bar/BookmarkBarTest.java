@@ -132,7 +132,7 @@ public class BookmarkBarTest {
     @MediumTest
     public void testOnAllBookmarksButtonClick() {
         onViewDisplayed(bookmarkBarItemWithText("All bookmarks")).perform(click());
-        onViewDisplayed(bookmarkManagerToolbarWithText("Bookmarks"));
+        onViewDisplayed(withClassName(endsWith("BookmarkToolbar")));
     }
 
     @Test

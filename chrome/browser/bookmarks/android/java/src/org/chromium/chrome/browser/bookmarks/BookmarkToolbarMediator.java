@@ -343,8 +343,17 @@ class BookmarkToolbarMediator
         String title;
         @NavigationButton int navigationButton;
         Resources res = mContext.getResources();
-        if (mCurrentFolder.equals(mBookmarkModel.getRootFolderId())) {
-            title = res.getString(R.string.bookmarks);
+        boolean isDesktopLayout = BookmarkUtils.isDesktopBookmarksLayoutEnabled();
+        boolean isRootFolder = mCurrentFolder.equals(mBookmarkModel.getRootFolderId());
+        boolean isTopLevelFolder =
+                (folderItem.getParentId() != null
+                                && folderItem
+                                        .getParentId()
+                                        .equals(mBookmarkModel.getRootFolderId()))
+                        || mBookmarkModel.isReadingListFolder(mCurrentFolder);
+
+        if (isRootFolder || (isDesktopLayout && isTopLevelFolder)) {
+            title = isRootFolder ? res.getString(R.string.bookmarks) : folderItem.getTitle();
             navigationButton = NavigationButton.NONE;
         } else if (mBookmarkModel.getTopLevelFolderIds().contains(folderItem.getParentId())
                 && TextUtils.isEmpty(folderItem.getTitle())) {

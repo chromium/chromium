@@ -36,11 +36,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -62,6 +64,7 @@ import org.chromium.ui.base.DeviceInput;
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 // TODO(crbug.com/40899175): Investigate batching.
 @DoNotBatch(reason = "Test has side-effects (bookmarks, pageloads) and thus can't be batched.")
+@DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
 public class BookmarkTabletTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -85,15 +88,18 @@ public class BookmarkTabletTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
         mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
-        mItemsContainer =
-                mActivityTestRule.getActivity().findViewById(R.id.selectable_list_recycler_view);
-        mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-        mBookmarkManagerCoordinator =
-                ((BookmarkPage) mActivityTestRule.getActivityTab().getNativePage())
-                        .getManagerForTesting();
-
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false));
+                () -> {
+                    mItemsContainer =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.selectable_list_recycler_view);
+                    mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
+                    mBookmarkManagerCoordinator =
+                            ((BookmarkPage) mActivityTestRule.getActivityTab().getNativePage())
+                                    .getManagerForTesting();
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
+                });
     }
 
     /**
