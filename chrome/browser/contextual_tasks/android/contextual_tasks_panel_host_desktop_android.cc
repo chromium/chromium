@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using base::android::AttachCurrentThread;
 
@@ -229,6 +230,9 @@ void ContextualTasksPanelHostDesktopAndroid::MaybeRegisterEntry() {
       base::BindRepeating([]() { return kSidePanelMinWidth; }));
   entry->set_should_show_header(false);
   entry->set_should_show_ephemerally_in_toolbar(false);
+  entry->SetProperty(
+      kSidePanelTitleKey,
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE));
   side_panel_entry_observation_.Observe(entry.get());
   registry->Register(std::move(entry));
 }
