@@ -139,12 +139,9 @@ public class TabGridDialogToolbarView extends FrameLayout {
             // show the keyboard.
             KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
             postDelayed(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            assert hasWindowFocus();
-                            delegate.showKeyboard(mTitleTextView);
-                        }
+                    () -> {
+                        assert hasWindowFocus();
+                        delegate.showKeyboard(mTitleTextView);
                     },
                     showKeyboardDelay);
         } else {

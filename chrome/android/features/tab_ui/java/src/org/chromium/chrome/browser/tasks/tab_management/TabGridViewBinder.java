@@ -542,12 +542,6 @@ public class TabGridViewBinder {
 
     static void setThumbnailFetcherForTesting(ThumbnailFetcher fetcher) {
         sThumbnailFetcherForTesting = fetcher;
-        ResettersForTesting.register(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        sThumbnailFetcherForTesting = null;
-                    }
-                });
+        ResettersForTesting.register(() -> sThumbnailFetcherForTesting = null);
     }
 }

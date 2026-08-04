@@ -95,12 +95,9 @@ class TabListEditorMediator
     private boolean mHasSnackbarOverride;
 
     private final View.OnClickListener mNavigationClickListener =
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    assumeNonNull(mNavigationProvider);
-                    mNavigationProvider.goBack();
-                }
+            v -> {
+                assumeNonNull(mNavigationProvider);
+                mNavigationProvider.goBack();
             };
 
     private final View.OnClickListener mDoneButtonClickHandler =
