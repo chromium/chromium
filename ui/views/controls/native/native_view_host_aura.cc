@@ -72,6 +72,9 @@ void NativeViewHostAura::AttachNativeView() {
                              host_->GetWidget()->GetNativeView());
   if (host_->layer_managed_by_views()) {
     host_->native_view()->SetLayerManagedByParent(false);
+    // Native views in views should be above independent native views
+    host_->GetWidget()->GetNativeView()->StackChildAtBottom(
+        host_->native_view());
     if (host_->create_layer()) {
       host_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     } else {
@@ -146,6 +149,12 @@ void NativeViewHostAura::AddedToWidget() {
   if (host_->GetWidget()->GetNativeView()) {
     Widget::ReparentNativeView(host_->native_view(),
                                host_->GetWidget()->GetNativeView());
+    if (host_->layer_managed_by_views()) {
+      // Native views in views should be above independent native views, which
+      // should be above views.
+      host_->GetWidget()->GetNativeView()->StackChildAtBottom(
+          host_->native_view());
+    }
   }
   if (host_->IsDrawn()) {
     host_->native_view()->Show();

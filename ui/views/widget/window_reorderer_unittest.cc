@@ -309,7 +309,6 @@ TEST_F(WindowReordererTest, Basic) {
 //   u2         <-- Unassociated
 //   u1         <-- Unassociated
 //   w_assoc1   <-- Associated
-//   u0         <-- Unassociated
 //  [bottom]
 //
 // Reorder: Swap host1 and host2 (visual order: host2, host1)
@@ -320,7 +319,6 @@ TEST_F(WindowReordererTest, Basic) {
 //   u2
 //   u1
 //   w_assoc2   <-- Swapped
-//   u0
 //  [bottom]
 TEST_F(WindowReordererTest, UnassociatedWindows) {
   std::unique_ptr<Widget> parent = CreateControlWidget(root_window());
@@ -330,25 +328,24 @@ TEST_F(WindowReordererTest, UnassociatedWindows) {
   View* contents_view = parent->SetContentsView(std::make_unique<View>());
 
   TreeBuilder builder(this, parent.get());
-  builder.AddUnassociatedWindow("u0");
   auto* host1 = builder.AddNativeViewHost("w_assoc1");
   builder.AddUnassociatedWindow("u1");
   builder.AddUnassociatedWindow("u2");
   auto* host2 = builder.AddNativeViewHost("w_assoc2");
   builder.AddUnassociatedWindow("u3");
 
-  ASSERT_EQ("u0 w_assoc1 u1 u2 w_assoc2 u3",
+  ASSERT_EQ("w_assoc1 u1 u2 w_assoc2 u3",
             ChildWindowNamesAsString(*parent_window));
 
   // Reorder: swap host1 and host2. Visual: host2, host1.
-  // Expected: u0, w_assoc2, u1, u2, w_assoc1, u3
+  // Expected: w_assoc2, u1, u2, w_assoc1, u3
   contents_view->ReorderChildView(host2, 0);
-  EXPECT_EQ("u0 w_assoc2 u1 u2 w_assoc1 u3",
+  EXPECT_EQ("w_assoc2 u1 u2 w_assoc1 u3",
             ChildWindowNamesAsString(*parent_window));
 
   // Swap back.
   contents_view->ReorderChildView(host1, 0);
-  EXPECT_EQ("u0 w_assoc1 u1 u2 w_assoc2 u3",
+  EXPECT_EQ("w_assoc1 u1 u2 w_assoc2 u3",
             ChildWindowNamesAsString(*parent_window));
 }
 
@@ -364,28 +361,27 @@ TEST_F(WindowReordererTest, UnassociatedWindows) {
 //   w_assoc2   <-- Associated
 //   u1         <-- Unassociated
 //   w_assoc1   <-- Associated
-//   u0         <-- Unassociated (below range)
 //  [bottom]
 //
 // Permutations and expected window stacks:
 //
 // 1) w_assoc1, w_assoc2, w_assoc3 (No change)
-//  [top] u3, w_assoc3, u2, w_assoc2, u1, w_assoc1, u0 [bottom]
+//  [top] u3, w_assoc3, u2, w_assoc2, u1, w_assoc1 [bottom]
 //
 // 2) w_assoc1, w_assoc3, w_assoc2
-//  [top] u3, w_assoc2, w_assoc3, u2, u1, w_assoc1, u0 [bottom]
+//  [top] u3, w_assoc2, w_assoc3, u2, u1, w_assoc1 [bottom]
 //
 // 3) w_assoc2, w_assoc1, w_assoc3
-//  [top] u3, w_assoc3, u2, u1, w_assoc1, w_assoc2, u0 [bottom]
+//  [top] u3, w_assoc3, u2, u1, w_assoc1, w_assoc2 [bottom]
 //
 // 4) w_assoc2, w_assoc3, w_assoc1
-//  [top] u3, w_assoc1, w_assoc3, u2, u1, w_assoc2, u0 [bottom]
+//  [top] u3, w_assoc1, w_assoc3, u2, u1, w_assoc2 [bottom]
 //
 // 5) w_assoc3, w_assoc1, w_assoc2
-//  [top] u3, w_assoc2, u2, u1, w_assoc1, w_assoc3, u0 [bottom]
+//  [top] u3, w_assoc2, u2, u1, w_assoc1, w_assoc3 [bottom]
 //
 // 6) w_assoc3, w_assoc2, w_assoc1
-//  [top] u3, w_assoc1, u2, u1, w_assoc2, w_assoc3, u0 [bottom]
+//  [top] u3, w_assoc1, u2, u1, w_assoc2, w_assoc3 [bottom]
 TEST_F(WindowReordererTest, ThreeAssociatedWithUnassociated) {
   std::unique_ptr<Widget> parent = CreateControlWidget(root_window());
   parent->Show();
@@ -394,7 +390,6 @@ TEST_F(WindowReordererTest, ThreeAssociatedWithUnassociated) {
   View* contents_view = parent->SetContentsView(std::make_unique<View>());
 
   TreeBuilder builder(this, parent.get());
-  aura::Window* u0 = builder.AddUnassociatedWindow("u0");
   auto* host1 = builder.AddNativeViewHost("w_assoc1");
   aura::Window* u1 = builder.AddUnassociatedWindow("u1");
   auto* host2 = builder.AddNativeViewHost("w_assoc2");
@@ -402,13 +397,12 @@ TEST_F(WindowReordererTest, ThreeAssociatedWithUnassociated) {
   auto* host3 = builder.AddNativeViewHost("w_assoc3");
   aura::Window* u3 = builder.AddUnassociatedWindow("u3");
 
-  // Helper to reset tree to: u0, w_assoc1, u1, w_assoc2, u2, w_assoc3, u3
+  // Helper to reset tree to: w_assoc1, u1, w_assoc2, u2, w_assoc3, u3
   auto reset_tree = [&]() {
     StackViews(contents_view, {host1, host2, host3});
-    StackWindows(parent_window,
-                 {u0, host1->native_view(), u1, host2->native_view(), u2,
-                  host3->native_view(), u3});
-    ASSERT_EQ("u0 w_assoc1 u1 w_assoc2 u2 w_assoc3 u3",
+    StackWindows(parent_window, {host1->native_view(), u1, host2->native_view(),
+                                 u2, host3->native_view(), u3});
+    ASSERT_EQ("w_assoc1 u1 w_assoc2 u2 w_assoc3 u3",
               ChildWindowNamesAsString(*parent_window));
   };
 
@@ -416,42 +410,42 @@ TEST_F(WindowReordererTest, ThreeAssociatedWithUnassociated) {
   reset_tree();
   // Visual order: host1, host2, host3. Already in this order.
   StackViews(contents_view, {host1, host2, host3});
-  EXPECT_EQ("u0 w_assoc1 u1 w_assoc2 u2 w_assoc3 u3",
+  EXPECT_EQ("w_assoc1 u1 w_assoc2 u2 w_assoc3 u3",
             ChildWindowNamesAsString(*parent_window));
 
   // Permutation 2: w_assoc1, w_assoc3, w_assoc2
   reset_tree();
   // Visual: host1, host3, host2
   StackViews(contents_view, {host1, host3, host2});
-  EXPECT_EQ("u0 w_assoc1 u1 u2 w_assoc3 w_assoc2 u3",
+  EXPECT_EQ("w_assoc1 u1 u2 w_assoc3 w_assoc2 u3",
             ChildWindowNamesAsString(*parent_window));
 
   // Permutation 3: w_assoc2, w_assoc1, w_assoc3
   reset_tree();
   // Visual: host2, host1, host3
   StackViews(contents_view, {host2, host1, host3});
-  EXPECT_EQ("u0 w_assoc2 w_assoc1 u1 u2 w_assoc3 u3",
+  EXPECT_EQ("w_assoc2 w_assoc1 u1 u2 w_assoc3 u3",
             ChildWindowNamesAsString(*parent_window));
 
   // Permutation 4: w_assoc2, w_assoc3, w_assoc1
   reset_tree();
   // Visual: host2, host3, host1
   StackViews(contents_view, {host2, host3, host1});
-  EXPECT_EQ("u0 w_assoc2 u1 u2 w_assoc3 w_assoc1 u3",
+  EXPECT_EQ("w_assoc2 u1 u2 w_assoc3 w_assoc1 u3",
             ChildWindowNamesAsString(*parent_window));
 
   // Permutation 5: w_assoc3, w_assoc1, w_assoc2
   reset_tree();
   // Visual: host3, host1, host2
   StackViews(contents_view, {host3, host1, host2});
-  EXPECT_EQ("u0 w_assoc3 w_assoc1 u1 u2 w_assoc2 u3",
+  EXPECT_EQ("w_assoc3 w_assoc1 u1 u2 w_assoc2 u3",
             ChildWindowNamesAsString(*parent_window));
 
   // Permutation 6: w_assoc3, w_assoc2, w_assoc1
   reset_tree();
   // Visual: host3, host2, host1
   StackViews(contents_view, {host3, host2, host1});
-  EXPECT_EQ("u0 w_assoc3 u1 u2 w_assoc2 w_assoc1 u3",
+  EXPECT_EQ("w_assoc3 u1 u2 w_assoc2 w_assoc1 u3",
             ChildWindowNamesAsString(*parent_window));
 }
 
@@ -468,7 +462,6 @@ TEST_F(WindowReordererTest, ThreeAssociatedWithUnassociated) {
 //   w2         <-- Associated
 //   u1         <-- Unassociated
 //   w1         <-- Associated
-//   u0         <-- Unassociated
 //  [bottom]
 //
 // View order: host1, host2, host3, host4
@@ -481,7 +474,6 @@ TEST_F(WindowReordererTest, FourAssociatedWithUnassociated) {
   View* contents_view = parent->SetContentsView(std::make_unique<View>());
 
   TreeBuilder builder(this, parent.get());
-  aura::Window* u0 = builder.AddUnassociatedWindow("u0");
   auto* host1 = builder.AddNativeViewHost("w1");
   aura::Window* u1 = builder.AddUnassociatedWindow("u1");
   auto* host2 = builder.AddNativeViewHost("w2");
@@ -495,11 +487,11 @@ TEST_F(WindowReordererTest, FourAssociatedWithUnassociated) {
     // Start with view order: w1, w2, w3, w4
     StackViews(contents_view, {host1, host2, host3, host4});
 
-    // Stack windows to match view order: u0, w1, u1, w2, u2, w3, u3, w4, u4
+    // Stack windows to match view order: w1, u1, w2, u2, w3, u3, w4, u4
     StackWindows(parent_window,
-                 {u0, host1->native_view(), u1, host2->native_view(), u2,
+                 {host1->native_view(), u1, host2->native_view(), u2,
                   host3->native_view(), u3, host4->native_view(), u4});
-    ASSERT_EQ("u0 w1 u1 w2 u2 w3 u3 w4 u4",
+    ASSERT_EQ("w1 u1 w2 u2 w3 u3 w4 u4",
               ChildWindowNamesAsString(*parent_window));
   };
 
@@ -510,36 +502,81 @@ TEST_F(WindowReordererTest, FourAssociatedWithUnassociated) {
   // View order becomes: w1, w3, w2, w4.
   contents_view->ReorderChildView(host3, 1);
 
-  EXPECT_EQ("u0 w1 u1 w3 w2 u2 u3 w4 u4",
+  EXPECT_EQ("w1 u1 w3 w2 u2 u3 w4 u4",
             ChildWindowNamesAsString(*parent_window));
 
   // Swap w1 and w4
   reset_tree();
   // Visual: host4, host2, host3, host1
   StackViews(contents_view, {host4, host2, host3, host1});
-  EXPECT_EQ("u0 w4 w2 u1 u2 u3 w3 w1 u4",
+  EXPECT_EQ("w4 w2 u1 u2 u3 w3 w1 u4",
             ChildWindowNamesAsString(*parent_window));
   // Remove w3
   reset_tree();
 
   // host3 is deleted after this call.
   contents_view->RemoveChildViewT(host3);
-  EXPECT_EQ("u0 w1 u1 w2 u2 u3 w4 u4",
-            ChildWindowNamesAsString(*parent_window));
+  EXPECT_EQ("w1 u1 w2 u2 u3 w4 u4", ChildWindowNamesAsString(*parent_window));
 
   // then remove w1 (without reset)
   // Remove w1
   // host1 is deleted after this call.
   contents_view->RemoveChildViewT(host1);
-  EXPECT_EQ("u0 u1 w2 u2 u3 w4 u4", ChildWindowNamesAsString(*parent_window));
+  EXPECT_EQ("u1 w2 u2 u3 w4 u4", ChildWindowNamesAsString(*parent_window));
 
   // Delete u2 (which also removes it from parent)
   delete u2;
-  EXPECT_EQ("u0 u1 w2 u3 w4 u4", ChildWindowNamesAsString(*parent_window));
+  EXPECT_EQ("u1 w2 u3 w4 u4", ChildWindowNamesAsString(*parent_window));
 
   // Delete u1
   delete u1;
-  EXPECT_EQ("u0 w2 u3 w4 u4", ChildWindowNamesAsString(*parent_window));
+  EXPECT_EQ("w2 u3 w4 u4", ChildWindowNamesAsString(*parent_window));
+}
+
+// Test that detaching all native views and re-attaching them restores the
+// correct order when there are no unassociated windows between them.
+TEST_F(WindowReordererTest, DetachReattach) {
+  std::unique_ptr<Widget> parent = CreateControlWidget(root_window());
+  parent->Show();
+  aura::Window* parent_window = parent->GetNativeWindow();
+
+  parent->SetContentsView(std::make_unique<View>());
+
+  TreeBuilder builder(this, parent.get());
+  auto* host1 = builder.AddNativeViewHost("w_assoc1");
+  auto* host2 = builder.AddNativeViewHost("w_assoc2");
+  builder.AddUnassociatedWindow("u1");
+
+  ASSERT_EQ("w_assoc1 w_assoc2 u1", ChildWindowNamesAsString(*parent_window));
+
+  aura::Window* w1 = host1->native_view();
+  aura::Window* w2 = host2->native_view();
+
+  // Detach both.
+  host1->Detach();
+  host2->Detach();
+  EXPECT_EQ("u1", ChildWindowNamesAsString(*parent_window));
+
+  // Re-attach w1 first.
+  host1->Attach(w1);
+  EXPECT_EQ("w_assoc1 u1", ChildWindowNamesAsString(*parent_window));
+
+  // Re-attach w2.
+  host2->Attach(w2);
+  EXPECT_EQ("w_assoc1 w_assoc2 u1", ChildWindowNamesAsString(*parent_window));
+
+  // Detach both again.
+  host1->Detach();
+  host2->Detach();
+  EXPECT_EQ("u1", ChildWindowNamesAsString(*parent_window));
+
+  // Re-attach w2 first (reverse order).
+  host2->Attach(w2);
+  EXPECT_EQ("w_assoc2 u1", ChildWindowNamesAsString(*parent_window));
+
+  // Re-attach w1.
+  host1->Attach(w1);
+  EXPECT_EQ("w_assoc1 w_assoc2 u1", ChildWindowNamesAsString(*parent_window));
 }
 
 }  // namespace views
