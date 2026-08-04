@@ -79,6 +79,7 @@ config("skia_config") {
     "SK_CODEC_ENCODES_PNG_WITH_RUST",
 
     "SK_CODEC_DECODES_BMP_WITH_RUST",
+    "SK_CODEC_DECODES_ICO_WITH_RUST",
     "SK_CODEC_COLOR_PROFILE_PARSE_WITH_RUST",
     "SK_EXIF_PARSE_WITH_RUST",
   ]
@@ -505,6 +506,7 @@ component("skia") {
     ":rust_bmp_ffi",
     ":rust_exif_ffi",
     ":rust_icc_ffi",
+    ":rust_ico_ffi",
     ":skia_core_and_effects",
     ":skia_core_public_headers",
   ]
@@ -732,6 +734,56 @@ source_set("rust_bmp_ffi_cpp") {
     "//build/rust:cxx_cppdeps",
   ]
   deps = [ ":rust_bmp_ffi_cxx_generated_gen" ]
+  check_includes =
+      false  # Logically part of skia, but split out for build reasons
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    ":skia_library_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
+
+rust_static_library("rust_ico_ffi") {
+  visibility = [ ":*" ]
+  allow_unsafe = true  # For FFI
+  crate_root = skia_codec_rust_ico_ffi_crate_root
+  sources = skia_codec_rust_ico_ffi_rs_srcs
+  cxx_bindings = skia_codec_rust_ico_ffi_cxx_bridge_srcs
+  public_deps = [ ":rust_ico_ffi_cpp" ]
+  deps = [
+    ":rust_common_ffi",
+    "//third_party/rust/image/v0_25:lib",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+  no_clippy = true  # TODO(https://crbug.com/472355480)
+}
+
+source_set("rust_ico_ffi_cpp") {
+  visibility = [
+    ":*",
+    "//third_party/blink/renderer/platform/image-decoders:*",
+  ]
+  public = skia_codec_rust_ico_public
+  sources = skia_codec_rust_ico
+  public_deps = [
+    ":rust_common_ffi_cpp",
+    ":skia_core_public_headers",
+    "//build/rust:cxx_cppdeps",
+  ]
+
+  # The ICO codec reuses the Rust-based BMP and PNG codecs to decode the
+  # embedded images, so it needs their generated cxx bridge headers and
+  # C++ glue code.
+  deps = [
+    ":rust_bmp_ffi",
+    ":rust_ico_ffi_cxx_generated_gen",
+    ":rust_png_ffi",
+  ]
   check_includes =
       false  # Logically part of skia, but split out for build reasons
   configs -= [ "//build/config/compiler:chromium_code" ]

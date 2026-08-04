@@ -1544,6 +1544,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // Enables the Rust-based BMP image decoder.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRustyBmpFeature);
 
+// Enables the Rust-based ICO image decoder.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRustyIcoFeature);
+
 // When enabled, it adds Payto URI Scheme to the safe list for
 // registerProtocolHandler. This feature is disabled by default
 // Payto URI Scheme explanation https://datatracker.ietf.org/doc/html/rfc8905
