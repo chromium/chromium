@@ -51,6 +51,13 @@ export class SignalsDisclaimerElement extends SignalsDisclaimerElementBase {
   protected onLearnMoreClick() {
     ManagedUserProfileNoticeBrowserProxyImpl.getInstance().learnMoreClicked();
   }
+
+  protected onLearnMoreKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.onLearnMoreClick();
+    }
+  }
 }
 
 declare global {

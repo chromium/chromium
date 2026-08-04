@@ -63,6 +63,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
@@ -4378,7 +4379,7 @@ class ProfilePickerDeviceSignalsDisclaimerBrowserTest
         const interval = setInterval(() => {
           const link = document.querySelector('managed-user-profile-notice-app')
                            ?.shadowRoot?.querySelector('signals-disclaimer')
-                           ?.shadowRoot?.querySelector('.subtitle a');
+                           ?.shadowRoot?.querySelector('#learnMoreLink');
           if (link && !link.hidden) {
             clearInterval(interval);
             link.click();
@@ -4666,4 +4667,64 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   histogram_tester().ExpectBucketCount(
       kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, true, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+                       OpenProfileFromPickerLearnMoreDoesNotRestoreSession) {
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  Profile* managed_profile =
+      g_browser_process->profile_manager()->GetProfile(managed_profile_path());
+  ASSERT_TRUE(managed_profile);
+
+  // Set the profile startup setting to "Continue where you left off".
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(managed_profile, pref);
+
+  // Temporarily grant consent so the modal dialog does not block opening
+  // chrome://policy.
+  managed_profile->GetPrefs()->SetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
+
+  // Open a browser for the managed profile and navigate to chrome://policy so
+  // there is a session to restore.
+  Browser* profile_browser = CreateBrowser(managed_profile);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(profile_browser, GURL("chrome://policy")));
+
+  // Reset consent back to false so the disclaimer flow can be tested.
+  managed_profile->GetPrefs()->SetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived, false);
+
+  ScopedProfileKeepAlive profile_keep_alive(
+      managed_profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(profile_browser);
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Wait for popup browser to open when Learn More is clicked.
+  ui_test_utils::BrowserCreatedObserver browser_creation_observer;
+
+  OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
+  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+
+  ASSERT_TRUE(ClickLearnMoreLink());
+
+  Browser* const popup_browser = browser_creation_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+
+  // Verify that the managed profile is not restoring a session.
+  EXPECT_FALSE(SessionRestore::IsRestoring(managed_profile));
+  EXPECT_FALSE(SessionRestore::IsAnySessionRestored());
+
+  // Verify that only the Learn More popup browser window and the default test
+  // browser exist (no restored normal browser).
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_TRUE(popup_browser->is_type_popup());
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, true, 1);
 }
