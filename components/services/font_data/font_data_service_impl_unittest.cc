@@ -214,11 +214,19 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyName) {
   EXPECT_TRUE(
       out_result->typeface_data->get_font_file()->file_handle.IsValid());
 #else
-  // For now, on Linux/ChromeOS we always hit the memory region fallback, and
-  // therefore also adds to the cache.
-  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 1u);
-  EXPECT_TRUE(out_result->typeface_data->is_region());
-  EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
+  // During the Skia transition, Linux/ChromeOS may return either a font file
+  // (if getResourceName() is supported) or hit the memory region fallback.
+  // TODO(crbug.com/463411679): Remove the memory fallback check once Skia
+  // change has rolled into Chromium.
+  if (out_result->typeface_data->is_font_file()) {
+    EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+    EXPECT_TRUE(
+        out_result->typeface_data->get_font_file()->file_handle.IsValid());
+  } else {
+    EXPECT_EQ(impl_.GetCacheSizeForTesting(), 1u);
+    EXPECT_TRUE(out_result->typeface_data->is_region());
+    EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
+  }
 #endif
 }
 
@@ -344,9 +352,15 @@ TEST_F(FontDataServiceImplUnitTest, LegacyMakeTypefaceNullFamilyName) {
   EXPECT_TRUE(
       out_result->typeface_data->get_font_file()->file_handle.IsValid());
 #else
-  // For now, on Linux/ChromeOS we always hit the memory region fallback.
-  EXPECT_TRUE(out_result->typeface_data->is_region());
-  EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
+  // During the Skia transition, Linux/ChromeOS may return either a font file
+  // or hit the memory region fallback.
+  if (out_result->typeface_data->is_font_file()) {
+    EXPECT_TRUE(
+        out_result->typeface_data->get_font_file()->file_handle.IsValid());
+  } else {
+    EXPECT_TRUE(out_result->typeface_data->is_region());
+    EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
+  }
 #endif
 }
 
