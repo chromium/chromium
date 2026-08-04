@@ -2193,6 +2193,18 @@ LayerNinePatch::~LayerNinePatch() {
   Destroy();
 }
 
+const gfx::Rect& LayerNinePatch::border() const {
+  return nine_patch_layer_->border();
+}
+
+const gfx::Rect& LayerNinePatch::aperture() const {
+  return nine_patch_layer_->aperture();
+}
+
+const gfx::Rect& LayerNinePatch::occlusion() const {
+  return nine_patch_layer_->occlusion();
+}
+
 bool LayerNinePatch::ShouldSchedulePaint() const {
   // LayerNinePatch draws a pre-defined image rather than requesting painted
   // content.

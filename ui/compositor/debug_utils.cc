@@ -122,6 +122,13 @@ void PrintLayerHierarchyImp(const Layer* layer,
          << ui::SkColorName(solid_layer->background_color().toSkColor());
   }
 
+  if (auto* nine_patch_layer = layer->AsNinePatch()) {
+    *out << "\n" << property_indent_str;
+    *out << "aperture: " << nine_patch_layer->aperture().ToString()
+         << " border: " << nine_patch_layer->border().ToString()
+         << " occlusion: " << nine_patch_layer->occlusion().ToString();
+  }
+
   const ui::Layer* mask = const_cast<ui::Layer*>(layer)->layer_mask_layer();
 
   if (mask) {

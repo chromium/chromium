@@ -1048,6 +1048,12 @@ class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
 
   ~LayerNinePatch() override;
 
+  const gfx::Rect& border() const;
+
+  const gfx::Rect& aperture() const;
+
+  const gfx::Rect& occlusion() const;
+
   // Layer:
   bool ShouldSchedulePaint() const override;
 
