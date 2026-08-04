@@ -2033,17 +2033,8 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
       1);
 }
 
-// TODO(crbug.com/503556973): Re-enable after fixing flakiness on Windows,
-// ChromeOS and Linux.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_TestShouldTriggerProactiveNudgeEnabled \
-  DISABLED_TestShouldTriggerProactiveNudgeEnabled
-#else
-#define MAYBE_TestShouldTriggerProactiveNudgeEnabled \
-  TestShouldTriggerProactiveNudgeEnabled
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
-                       MAYBE_TestShouldTriggerProactiveNudgeEnabled) {
+                       TestShouldTriggerProactiveNudgeEnabled) {
   base::HistogramTester histograms;
 
   // Enable proactive nudge.
@@ -2051,9 +2042,6 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   config.proactive_nudge_enabled = true;
   config.proactive_nudge_focus_delay = base::Microseconds(4);
   config.proactive_nudge_segmentation = false;
-
-  // Focus the field in the DOM to make it the active element.
-  FocusField();
 
   autofill::FormFieldData field = field_data();
   field.set_origin(
@@ -2070,9 +2058,16 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
 
-  // Should trigger after delay (using RunUntil to wait for timer/tasks).
+  // Initial call returns false because of focus delay.
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, field, trigger_source));
+
+  // Wait for focus delay timer to complete and trigger popup with delayed
+  // source to log UKM metrics.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return client().ShouldTriggerPopup(form_data, field, trigger_source);
+    return client().ShouldTriggerPopup(
+        form_data, field,
+        autofill::AutofillSuggestionTriggerSource::
+            kComposeDelayedProactiveNudge);
   }));
 
   // Commit metrics on page navigation.
