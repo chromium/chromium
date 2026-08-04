@@ -128,6 +128,11 @@ void GlicSidePanelCoordinatorAndroid::SuppressBottomSheetForTesting(  // IN-TEST
   tab_bottom_sheet_bridge_->SuppressBottomSheetForTesting(suppress);  // IN-TEST
 }
 
+std::optional<GlicSidePanelCoordinator::ShowOptions::InitialState>
+GlicSidePanelCoordinatorAndroid::GetInitialStateOverrideForTesting() const {
+  return initial_state_override_for_activity_recreation_;
+}
+
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {
   return state_ == State::kShown;
 }
