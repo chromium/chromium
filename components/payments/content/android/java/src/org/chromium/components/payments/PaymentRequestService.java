@@ -986,7 +986,8 @@ public class PaymentRequestService
             if (mBrowserPaymentRequest.showNoMatchingPaymentCredential()) {
                 if (sNativeObserverForTest != null) {
                     sNativeObserverForTest.onAppListReady(
-                            mBrowserPaymentRequest.getPaymentApps(), mSpec.getRawTotal());
+                            mBrowserPaymentRequest.getPaymentApps(),
+                            mBrowserPaymentRequest.getPaymentApps().get(0).getTotalForSpc());
                 }
                 return null;
             }

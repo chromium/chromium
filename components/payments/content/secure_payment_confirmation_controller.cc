@@ -323,8 +323,7 @@ void SecurePaymentConfirmationController::
   model_.set_instrument_details_value(app->GetSublabel());
   model_.set_instrument_icon(app->icon_bitmap());
 
-  const mojom::PaymentItemPtr& total = request_->spec()->GetTotal(app);
-  std::u16string total_value = base::UTF8ToUTF16(total->amount->currency);
+  const mojom::PaymentItemPtr& total = app->GetTotalForSpc();
   model_.set_total_value(
       base::StrCat({base::UTF8ToUTF16(total->amount->currency), u" ",
                     CurrencyFormatter(total->amount->currency,

@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,10 +47,12 @@ namespace payments {
 namespace {
 
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceClosure;
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Matcher;
@@ -101,6 +104,7 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
 
     mock_authenticator_ = CreateMockInternalAuthenticator();
     mock_service_ = base::MakeRefCounted<MockWebPaymentsWebDataService>();
+    done_creating_apps_loop_ = std::make_unique<base::RunLoop>();
   }
 
   std::unique_ptr<MockPaymentAppFactoryDelegate> CreateMockDelegate(
@@ -116,6 +120,9 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
         .WillByDefault(testing::Return(
             mock_content_payment_request_delegate_.GetContentWeakPtr()));
 #endif
+    ON_CALL(*mock_delegate, OnDoneCreatingPaymentApps())
+        .WillByDefault(Invoke(this, &SecurePaymentConfirmationAppFactoryTest::
+                                        OnDoneCreatingPaymentApps));
 
     return mock_delegate;
   }
@@ -130,6 +137,13 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
             options.is_user_verifying_platform_authenticator_available));
     return mock_authenticator;
   }
+
+  void WaitForDoneCreatingApps() {
+    done_creating_apps_loop_->Run();
+    done_creating_apps_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+  void OnDoneCreatingPaymentApps() { done_creating_apps_loop_->Quit(); }
 
   // Creates and returns a minimal SecurePaymentConfirmationRequest object with
   // only required fields filled in to pass parsing.
@@ -187,6 +201,7 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
       mock_credential_finder_;
   scoped_refptr<FakeBrowserBoundKeyStore> browser_bound_key_store_ =
       base::MakeRefCounted<FakeBrowserBoundKeyStore>();
+  std::unique_ptr<base::RunLoop> done_creating_apps_loop_;
 
  private:
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
@@ -241,7 +256,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   static_cast<content::TestWebContents*>(web_contents_.get())
       ->TestDidDownloadImage(icon, /*http_status_code=*/200,
                              std::move(icon_bitmaps), std::move(icon_sizes));
-
+  WaitForDoneCreatingApps();
   histogram_tester.ExpectUniqueSample(
       "PaymentRequest.SecurePaymentConfirmation."
       "UserVerifyingPlatformAuthenticatorAvailable",
@@ -314,6 +329,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       ->TestDidDownloadImage(icon, /*http_status_code=*/200,
                              std::move(icon_bitmaps), std::move(icon_sizes));
 
+  WaitForDoneCreatingApps();
+
   ASSERT_TRUE(secure_payment_confirmation_app);
   EXPECT_EQ(secure_payment_confirmation_app->GetSublabel(),
             u"instrument details");
@@ -355,6 +372,8 @@ TEST_F(
   static_cast<content::TestWebContents*>(web_contents_.get())
       ->TestDidDownloadImage(icon, /*http_status_code=*/200,
                              std::move(icon_bitmaps), std::move(icon_sizes));
+
+  WaitForDoneCreatingApps();
 }
 
 // Test that SecurePaymentConfirmationAppFactory passes the input credentials,
@@ -427,6 +446,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       ->TestDidDownloadImage(icon, /*http_status_code=*/200,
                              std::move(icon_bitmaps), std::move(icon_sizes));
 
+  WaitForDoneCreatingApps();
   ASSERT_TRUE(secure_payment_confirmation_app);
   PasskeyBrowserBinder* passkey_browser_binder =
       static_cast<SecurePaymentConfirmationApp*>(
@@ -453,22 +473,15 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       CreateSecurePaymentConfirmationRequest();
   GURL icon = method_data->secure_payment_confirmation->instrument->icon;
 
-  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
-      CreateMockInternalAuthenticator(
-          {.is_user_verifying_platform_authenticator_available = false});
+  mock_authenticator_ = CreateMockInternalAuthenticator(
+      {.is_user_verifying_platform_authenticator_available = false});
 
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
   EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
       .WillRepeatedly(ReturnRef(caller_origin));
 
-  scoped_refptr<MockWebPaymentsWebDataService> mock_service =
-      base::MakeRefCounted<MockWebPaymentsWebDataService>();
-  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
-      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-  EXPECT_CALL(*mock_delegate, GetWebPaymentsWebDataService())
-      .WillRepeatedly(Return(mock_service));
   std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
       .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
@@ -482,6 +495,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   static_cast<content::TestWebContents*>(web_contents_.get())
       ->TestDidDownloadImage(icon, /*http_status_code=*/200,
                              std::move(icon_bitmaps), std::move(icon_sizes));
+
+  WaitForDoneCreatingApps();
 
   ASSERT_TRUE(secure_payment_confirmation_app);
   EXPECT_FALSE(secure_payment_confirmation_app->HasEnrolledInstrument());
@@ -530,7 +545,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest, Fallback_NoCredentials) {
   static_cast<content::TestWebContents*>(web_contents_.get())
       ->TestDidDownloadImage(icon, /*http_status_code=*/200,
                              std::move(icon_bitmaps), std::move(icon_sizes));
-
+  WaitForDoneCreatingApps();
   ASSERT_TRUE(secure_payment_confirmation_app);
   EXPECT_FALSE(secure_payment_confirmation_app->HasEnrolledInstrument());
 
@@ -584,6 +599,7 @@ TEST_F(
   static_cast<content::TestWebContents*>(web_contents_.get())
       ->TestDidDownloadImage(icon, /*http_status_code=*/200,
                              std::move(icon_bitmaps), std::move(icon_sizes));
+  WaitForDoneCreatingApps();
 }
 
 // Class wrapping tests relating to payment entity logos support in
@@ -674,6 +690,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
                       /*height=*/50);
   FakeImageDownloaded(kPaymentEntity2LogoUrl, /*succeeded=*/true,
                       /*height=*/60);
+
+  WaitForDoneCreatingApps();
 
   // Even though the third and fourth entity logos were not downloaded (and were
   // not attempted to be downloaded), the first two should be sufficient and the

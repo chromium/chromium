@@ -373,12 +373,12 @@ public class ChromePaymentRequestService
                     }
                     mSpcController = null;
                 };
-        PaymentItem rawTotal = mSpec.getRawTotal();
-        assert rawTotal != null;
         PaymentApp selectedPaymentApp = getSelectedPaymentApp();
         assert selectedPaymentApp != null;
         assert selectedPaymentApp.getLabel() != null;
         assert selectedPaymentApp.getDrawableIcon() != null;
+
+        PaymentItem total = selectedPaymentApp.getTotalForSpc();
 
         mSpcController =
                 new SecurePaymentConfirmationController(
@@ -388,7 +388,7 @@ public class ChromePaymentRequestService
                         getPayeeOrigin(spcMethodData.securePaymentConfirmation),
                         selectedPaymentApp.getLabel(),
                         selectedPaymentApp.getSublabel(),
-                        rawTotal,
+                        total,
                         selectedPaymentApp.getDrawableIcon(),
                         spcMethodData.securePaymentConfirmation.rpId,
                         spcMethodData.securePaymentConfirmation.showOptOut,
@@ -471,6 +471,8 @@ public class ChromePaymentRequestService
                         }
                         mSpcController = null;
                     };
+            PaymentItem total = selectedPaymentApp.getTotalForSpc();
+
             mSpcController =
                     new SecurePaymentConfirmationController(
                             windowAndroid,
@@ -479,7 +481,7 @@ public class ChromePaymentRequestService
                             getPayeeOrigin(spcMethodData.securePaymentConfirmation),
                             selectedPaymentApp.getLabel(),
                             selectedPaymentApp.getSublabel(),
-                            mSpec.getRawTotal(),
+                            total,
                             selectedPaymentApp.getDrawableIcon(),
                             spcMethodData.securePaymentConfirmation.rpId,
                             spcMethodData.securePaymentConfirmation.showOptOut,

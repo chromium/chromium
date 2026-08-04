@@ -21,6 +21,10 @@ void MockPaymentAppFactoryDelegate::SetRequestedPaymentMethod(
     mojom::PaymentMethodDataPtr method_data) {
   auto details = mojom::PaymentDetails::New();
   details->id = "id";
+  details->total = mojom::PaymentItem::New();
+  details->total->amount = mojom::PaymentCurrencyAmount::New();
+  details->total->amount->currency = "USD";
+  details->total->amount->value = "1.25";
 
   std::vector<mojom::PaymentMethodDataPtr> methods;
   methods.emplace_back(std::move(method_data));

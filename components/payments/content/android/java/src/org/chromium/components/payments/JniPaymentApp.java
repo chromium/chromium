@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /** Wrapper around a C++ payment app. */
@@ -196,6 +197,13 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
+    public PaymentItem getTotalForSpc() {
+        byte[] byteResult = JniPaymentAppJni.get().getTotalForSpc(mNativeObject);
+        Objects.requireNonNull(byteResult, "The secure payment app must provide the total.");
+        return PaymentItem.deserialize(ByteBuffer.wrap(byteResult));
+    }
+
+    @Override
     public void invokePaymentApp(
             String id,
             String merchantName,
@@ -308,6 +316,8 @@ public class JniPaymentApp extends PaymentApp {
         boolean hasEnrolledInstrument(long nativeJniPaymentApp);
 
         boolean canPreselect(long nativeJniPaymentApp);
+
+        byte[] getTotalForSpc(long nativeJniPaymentApp);
 
         void invokePaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
 

@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/payment_app.h"
@@ -82,6 +83,55 @@ void DidDownloadIcon(IconInfo* icon_info,
   std::move(done_closure).Run();
 }
 
+// A helper that waits for the PaymentRequestSpec to be initialized and then
+// runs a callback.
+class SpecWaiter : public InitializationTask::Observer {
+ public:
+  SpecWaiter(base::WeakPtr<PaymentRequestSpec> spec, base::OnceClosure callback)
+      : spec_(spec), callback_(std::move(callback)) {
+    if (!spec_) {
+      return;
+    }
+    if (spec_->IsInitialized()) {
+      // We use PostTask here to ensure that the callback always runs
+      // asynchronously and after the spec has finished its internal state
+      // transition if it was just initialized.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback_));
+      spec_ = nullptr;
+    } else {
+      spec_->AddInitializationObserver(this);
+    }
+  }
+
+  ~SpecWaiter() override {
+    if (spec_) {
+      spec_->RemoveInitializationObserver(this);
+    }
+  }
+
+  SpecWaiter(const SpecWaiter&) = delete;
+  SpecWaiter& operator=(const SpecWaiter&) = delete;
+
+  // InitializationTask::Observer:
+  void OnInitialized(InitializationTask* initialization_task) override {
+    if (spec_) {
+      DCHECK_EQ(spec_.get(), initialization_task);
+      spec_->RemoveInitializationObserver(this);
+      spec_ = nullptr;
+    }
+
+    // The callback will be run once the spec has finished its transition to
+    // the initialized state.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback_));
+  }
+
+ private:
+  base::WeakPtr<PaymentRequestSpec> spec_;
+  base::OnceClosure callback_;
+};
+
 }  // namespace
 
 // Holds information pertaining to a specific request to create an SPC payment
@@ -119,6 +169,10 @@ struct SecurePaymentConfirmationAppFactory::Request
   IconInfo payment_instrument_icon_info;
   std::vector<IconInfo> payment_entities_logos_infos;
   std::unique_ptr<SecurePaymentConfirmationCredential> credential;
+
+  // If set, the factory will wait for the spec to be initialized before
+  // finalizing the app creation.
+  std::unique_ptr<SpecWaiter> spec_waiter;
 };
 
 void SecurePaymentConfirmationAppFactory::
@@ -286,11 +340,24 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
     request_ptr->payment_entities_logos_infos.push_back({.url = logo->url});
   }
 
+  base::WeakPtr<PaymentRequestSpec> spec = request_ptr->delegate->GetSpec();
+  if (!spec) {
+    request->delegate->OnDoneCreatingPaymentApps();
+    return;
+  }
+
+  // The tasks are
+  // * one payment instrument icon download, and
+  // * one waiting for spec initialization, plus
+  // * some number of payment entity logos.
+  const size_t num_tasks = 2 + request_ptr->payment_entities_logos_infos.size();
   auto barrier_closure = base::BarrierClosure(
-      // The payment instrument icon download, plus any payment entity logos.
-      1 + request_ptr->payment_entities_logos_infos.size(),
+      num_tasks,
       base::BindOnce(&SecurePaymentConfirmationAppFactory::DidDownloadAllIcons,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request)));
+
+  request_ptr->spec_waiter =
+      std::make_unique<SpecWaiter>(spec, barrier_closure);
 
   gfx::Size preferred_size(kSecurePaymentConfirmationIconMaximumWidthPx,
                            kSecurePaymentConfirmationIconHeightPx);
@@ -350,10 +417,15 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     request->mojo_request->instrument->icon = GURL();
   }
 
-  if (!request->delegate->GetSpec()) {
+  base::WeakPtr<PaymentRequestSpec> spec = request->delegate->GetSpec();
+  if (!spec) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
+
+  // The BarrierClosure in OnRetrievedCredentials ensures that this method only
+  // runs when spec->IsInitialized() is true (if the spec was ever waiting).
+  CHECK(spec->IsInitialized());
 
   std::u16string payment_instrument_label =
       base::UTF8ToUTF16(request->mojo_request->instrument->display_name);
@@ -381,20 +453,20 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     // In the case of no authenticator or credentials, we still create the
     // SecurePaymentConfirmationApp, which holds the information to be shown
     // in the fallback UX.
-    request->delegate->OnPaymentAppCreated(
-        std::make_unique<SecurePaymentConfirmationApp>(
-            request->web_contents(),
-            /*effective_relying_party_identity=*/std::string(),
-            payment_instrument_label, payment_instrument_details,
-            std::make_unique<SkBitmap>(payment_instrument_icon),
-            /*credential_id=*/std::vector<uint8_t>(),
-            /*passkey_browser_binder=*/nullptr,
-            /*device_supports_browser_bound_keys_in_hardware=*/false,
-            url::Origin::Create(request->delegate->GetTopOrigin()),
-            request->delegate->GetSpec()->AsWeakPtr(),
-            std::move(request->mojo_request), /*authenticator=*/nullptr,
-            std::move(payment_entities_logos),
-            /*is_error_dialog=*/true));
+    auto app = std::make_unique<SecurePaymentConfirmationApp>(
+        request->web_contents(),
+        /*effective_relying_party_identity=*/std::string(),
+        payment_instrument_label, payment_instrument_details,
+        std::make_unique<SkBitmap>(payment_instrument_icon),
+        /*credential_id=*/std::vector<uint8_t>(),
+        /*passkey_browser_binder=*/nullptr,
+        /*device_supports_browser_bound_keys_in_hardware=*/false,
+        url::Origin::Create(request->delegate->GetTopOrigin()),
+        std::move(request->mojo_request), /*authenticator=*/nullptr,
+        std::move(payment_entities_logos),
+        /*is_error_dialog=*/true);
+    app->SetTotal(spec->GetTotal(app.get()).Clone());
+    request->delegate->OnPaymentAppCreated(std::move(app));
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -418,19 +490,19 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
       std::move(key_store), request->web_data_service);
 #endif  // !BUILDFLAG(IS_IOS)
 
-  request->delegate->OnPaymentAppCreated(
-      std::make_unique<SecurePaymentConfirmationApp>(
-          request->web_contents(), request->credential->relying_party_id,
-          payment_instrument_label, payment_instrument_details,
-          std::make_unique<SkBitmap>(payment_instrument_icon),
-          std::move(request->credential->credential_id),
-          std::move(passkey_browser_binder),
-          device_supports_browser_bound_keys_in_hardware,
-          url::Origin::Create(request->delegate->GetTopOrigin()),
-          request->delegate->GetSpec()->AsWeakPtr(),
-          std::move(request->mojo_request), std::move(request->authenticator),
-          std::move(payment_entities_logos),
-          /*is_error_dialog=*/false));
+  auto app = std::make_unique<SecurePaymentConfirmationApp>(
+      request->web_contents(), request->credential->relying_party_id,
+      payment_instrument_label, payment_instrument_details,
+      std::make_unique<SkBitmap>(payment_instrument_icon),
+      std::move(request->credential->credential_id),
+      std::move(passkey_browser_binder),
+      device_supports_browser_bound_keys_in_hardware,
+      url::Origin::Create(request->delegate->GetTopOrigin()),
+      std::move(request->mojo_request), std::move(request->authenticator),
+      std::move(payment_entities_logos),
+      /*is_error_dialog=*/false);
+  app->SetTotal(spec->GetTotal(app.get()).Clone());
+  request->delegate->OnPaymentAppCreated(std::move(app));
 
   request->delegate->OnDoneCreatingPaymentApps();
 }

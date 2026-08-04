@@ -204,25 +204,24 @@ public abstract class PaymentApp extends EditableOption {
     /**
      * Invoke the payment app to retrieve the payment details.
      *
-     * The callback will be invoked with the resulting payment details or error.
+     * <p>The callback will be invoked with the resulting payment details or error.
      *
-     * @param id               The unique identifier of the PaymentRequest.
-     * @param merchantName     The name of the merchant.
-     * @param origin           The origin of this merchant.
-     * @param iframeOrigin     The origin of the iframe that invoked PaymentRequest.
+     * @param id The unique identifier of the PaymentRequest.
+     * @param merchantName The name of the merchant.
+     * @param origin The origin of this merchant.
+     * @param iframeOrigin The origin of the iframe that invoked PaymentRequest.
      * @param certificateChain The site certificate chain of the merchant. Can be null when
-     *                         ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for
-     *                         localhost or local file, which are secure contexts without SSL. Each
-     *                         byte array cannot be null.
-     * @param methodDataMap    The payment-method specific data for all applicable payment methods,
-     *                         e.g., whether the app should be invoked in test or production, a
-     *                         merchant identifier, or a public key.
-     * @param total            The total amount.
-     * @param displayItems     The shopping cart items.
-     * @param modifiers        The relevant payment details modifiers.
-     * @param paymentOptions   The payment options of the PaymentRequest.
-     * @param shippingOptions  The shipping options of the PaymentRequest.
-     * @param callback         The object that will receive the payment details.
+     *     ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for localhost or local
+     *     file, which are secure contexts without SSL. Each byte array cannot be null.
+     * @param methodDataMap The payment-method specific data for all applicable payment methods,
+     *     e.g., whether the app should be invoked in test or production, a merchant identifier, or
+     *     a public key.
+     * @param total The total amount.
+     * @param displayItems The shopping cart items.
+     * @param modifiers The relevant payment details modifiers.
+     * @param paymentOptions The payment options of the PaymentRequest.
+     * @param shippingOptions The shipping options of the PaymentRequest.
+     * @param callback The object that will receive the payment details.
      */
     public void invokePaymentApp(
             String id,
@@ -330,6 +329,14 @@ public abstract class PaymentApp extends EditableOption {
      */
     public PaymentResponse setAppSpecificResponseFields(PaymentResponse response) {
         return response;
+    }
+
+    /**
+     * @return The total amount for this payment app. Must only be called for the SPC payment app.
+     */
+    public PaymentItem getTotalForSpc() {
+        throw new IllegalStateException(
+                "getTotalForSpc() must only be called for secure payment app.");
     }
 
     /**

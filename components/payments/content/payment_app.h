@@ -121,6 +121,9 @@ class PaymentApp {
   // Returns the payment entities logos to be displayed to the user.
   virtual std::vector<PaymentEntityLogo*> GetPaymentEntitiesLogos();
 
+  // Returns the total amount for this payment app, if any.
+  virtual const mojom::PaymentItemPtr& GetTotalForSpc() const;
+
   // Returns the identifier for another payment app that should be hidden when
   // this payment app is present.
   virtual std::string GetApplicationIdentifierToHide() const;

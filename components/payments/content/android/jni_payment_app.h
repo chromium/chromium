@@ -44,6 +44,8 @@ class JniPaymentApp : public PaymentApp::Delegate {
 
   bool CanPreselect(JNIEnv* env);
 
+  base::android::ScopedJavaLocalRef<jbyteArray> GetTotalForSpc(JNIEnv* env);
+
   void InvokePaymentApp(JNIEnv* env,
                         const base::android::JavaRef<jobject>& jcallback);
 
