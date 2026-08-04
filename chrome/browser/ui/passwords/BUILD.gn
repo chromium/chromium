@@ -154,6 +154,7 @@ source_set("impl") {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views/passwords:password_bubble_view_base",
+      "//chrome/browser/ui/views/passwords/password_change:password_change_toast",
       "//chrome/browser/web_applications",
       "//components/browsing_data/content",
       "//components/constrained_window",

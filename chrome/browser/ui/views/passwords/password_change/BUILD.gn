@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("password_change_toast") {
+  public = [ "password_change_toast.h" ]
+  sources = [ "password_change_toast.cc" ]
+
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+  ]
+}

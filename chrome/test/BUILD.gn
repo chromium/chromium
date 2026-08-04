@@ -2824,7 +2824,10 @@ if (!is_android) {
     # TODO(crbug.com/437811373): Remove this dependency when
     # c/b/ui/passwords/password_change_ui_controller.h gets built from
     # `//c/b/ui/passwords:passwords`.
-    deps += [ "//chrome/browser/ui/passwords:impl" ]
+    deps += [
+      "//chrome/browser/ui/passwords:impl",
+      "//chrome/browser/ui/views/passwords/password_change:password_change_toast",
+    ]
 
     deps += [ "//chrome/browser/indigo/onboarding" ]
 
@@ -6552,7 +6555,10 @@ test("unit_tests") {
     # TODO(crbug.com/437811373): Remove this dependency when
     # c/b/ui/passwords/password_change_ui_controller.h gets built from
     # `//c/b/ui/passwords:passwords`.
-    deps += [ "//chrome/browser/ui/passwords:impl" ]
+    deps += [
+      "//chrome/browser/ui/passwords:impl",
+      "//chrome/browser/ui/views/passwords/password_change:password_change_toast",
+    ]
 
     if (enable_dice_support || is_chromeos) {
       deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]

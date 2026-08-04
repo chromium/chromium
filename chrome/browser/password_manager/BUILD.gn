@@ -573,6 +573,7 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/test:dialog",
       "//chrome/browser/ui/views/passwords:password_bubble_view_base",
+      "//chrome/browser/ui/views/passwords/password_change:password_change_toast",
       "//chrome/common",
       "//chrome/common:constants",
       "//chrome/test:test_support",
