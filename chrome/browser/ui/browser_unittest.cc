@@ -27,11 +27,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_names.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 using content::SiteInstance;
@@ -55,6 +54,14 @@ class BrowserUnitTest : public BrowserWithTestWindowTest {
   std::unique_ptr<WebContents> CreateTestWebContents() {
     return WebContentsTester::CreateTestWebContents(
         profile(), SiteInstance::Create(profile()));
+  }
+};
+
+class BrowserNoProfileUnitTest : public BrowserUnitTest {
+ public:
+  std::optional<std::string> GetDefaultProfileName() override {
+    // Disable creating Profile in the SetUp() of the parent fixture.
+    return std::nullopt;
   }
 };
 
@@ -190,7 +197,8 @@ TEST_F(BrowserUnitTest, DisableZoomOnCrashedTab) {
   EXPECT_FALSE(chrome::CanZoomOut(raw_contents));
 }
 
-TEST_F(BrowserUnitTest, CreateBrowserFailsIfProfileDisallowsBrowserWindows) {
+TEST_F(BrowserNoProfileUnitTest,
+       CreateBrowserFailsIfProfileDisallowsBrowserWindows) {
   TestingProfile::Builder profile_builder;
   profile_builder.DisallowBrowserWindows();
   std::unique_ptr<TestingProfile> test_profile = profile_builder.Build();
@@ -270,25 +278,28 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
+TEST_F(BrowserNoProfileUnitTest, CreateBrowserDuringKioskSplashScreen) {
   // Setting up user manager state to be in kiosk mode:
   // Creating a new user manager.
-  auto* user_manager = new ash::FakeChromeUserManager();
-  user_manager::ScopedUserManager manager{
-      std::unique_ptr<user_manager::UserManager>(user_manager)};
-  const user_manager::User* user = user_manager->AddKioskChromeAppUser(
-      AccountId::FromUserEmail("fake_user@test"));
-  user_manager->LoginUser(user->GetAccountId());
-
-  TestingProfile profile;
+  constexpr char kAccountName[] = "fake_user@kiosk-apps.device-local.localhost";
+  const user_manager::User* user =
+      user_manager::TestHelper(user_manager::UserManager::Get())
+          .AddKioskChromeAppUser(kAccountName);
+  ASSERT_TRUE(user);
+  session_manager::SessionManager::Get()->CreateSession(
+      user->GetAccountId(),
+      /*username_hash*/ "fake_username_hash",
+      /*new_user=*/false,
+      /*has_active_session=*/false);
+  TestingProfile* profile = CreateProfile(kAccountName);
 
   session_manager::SessionManager::Get()->SetSessionState(
       SessionState::LOGIN_PRIMARY);
   // Browser should not be created during login session state.
   EXPECT_EQ(Browser::CreationStatus::kErrorLoadingKiosk,
-            GetBrowserWindowCreationStatusForProfile(profile));
+            GetBrowserWindowCreationStatusForProfile(*profile));
 
-  Browser::CreateParams create_params = Browser::CreateParams(&profile, false);
+  Browser::CreateParams create_params = Browser::CreateParams(profile, false);
   std::unique_ptr<BrowserWindow> window = CreateBrowserWindow();
   create_params.window = window.release();
   session_manager::SessionManager::Get()->SetSessionState(SessionState::ACTIVE);
