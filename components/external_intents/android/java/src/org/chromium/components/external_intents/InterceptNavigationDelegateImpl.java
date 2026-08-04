@@ -34,6 +34,7 @@ import org.chromium.components.navigation_interception.InterceptNavigationDelega
 import org.chromium.content_public.browser.ContentWebFeatureUsageUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -641,7 +642,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     private boolean isInitialNavigation() {
         if (mClient.getWebContents() == null) return true;
-        return mClient.getWebContents().getNavigationController().isInitialNavigation();
+        NavigationController controller = mClient.getWebContents().getNavigationController();
+        if (controller.isInitialNavigation()) return true;
+
+        NavigationEntry lastCommittedEntry =
+                controller.getEntryAtIndex(controller.getLastCommittedEntryIndex());
+        return lastCommittedEntry != null && lastCommittedEntry.isInitialEntry();
     }
 
     private boolean isTabOnInitialNavigationChain() {
