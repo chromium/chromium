@@ -16,8 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -326,9 +326,8 @@ std::optional<AtMemoryAction> MapCategoryToAtMemoryAction(
 
 std::optional<AtMemoryAction> ToAtMemoryRetrieveForFillingAction(
     MemoryDataType type) {
-  return ToAtMemoryDataType(type)
-      .and_then(&ToAutofillPolicyDataCategory)
-      .and_then(&MapCategoryToAtMemoryAction);
+  return ToAutofillPolicyDataCategory(type).and_then(
+      &MapCategoryToAtMemoryAction);
 }
 
 bool MayPerformAtMemoryAction(

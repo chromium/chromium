@@ -24,7 +24,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -176,18 +175,9 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
     return false;
   }
 
-  std::optional<AtMemoryDataType> at_memory_type = ToAtMemoryDataType(a.type);
   std::optional<EntityType> entity_type;
-  if (at_memory_type) {
-    std::visit(
-        absl::Overload([&](const EntityType& e_type) { entity_type = e_type; },
-                       [&](const AttributeType& a_type) {
-                         // Extract the parent entity type to use its merge
-                         // constraints for deduplication.
-                         entity_type = a_type.entity_type();
-                       },
-                       [](const auto&) {}),
-        *at_memory_type);
+  if (std::optional<AttributeType> attribute_type = ToAttributeType(a.type)) {
+    entity_type = attribute_type->entity_type();
   }
 
   if (entity_type) {
@@ -500,18 +490,14 @@ std::vector<MemoryDataType> RationalizeFetchPlanDataTypes(
       continue;
     }
 
-    if (std::optional<AtMemoryDataType> internal_type =
-            ToAtMemoryDataType(type)) {
-      if (const auto* attribute_type =
-              std::get_if<AttributeType>(&*internal_type)) {
-        AttributeType primary_type =
-            GetPrimaryAttributeType(attribute_type->entity_type());
-        if (*attribute_type != primary_type) {
-          MemoryDataType primary_memory_type =
-              AttributeTypeToMemoryDataType(primary_type);
-          if (present_types.contains(primary_memory_type)) {
-            continue;
-          }
+    if (std::optional<AttributeType> attribute_type = ToAttributeType(type)) {
+      AttributeType primary_type =
+          GetPrimaryAttributeType(attribute_type->entity_type());
+      if (attribute_type != primary_type) {
+        MemoryDataType primary_memory_type =
+            AttributeTypeToMemoryDataType(primary_type);
+        if (present_types.contains(primary_memory_type)) {
+          continue;
         }
       }
     }

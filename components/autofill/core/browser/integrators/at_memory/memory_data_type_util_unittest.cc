@@ -8,6 +8,8 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
@@ -130,6 +132,52 @@ TEST(MemoryDataTypeUtilTest, ToMemoryDataTypeMapping) {
   EXPECT_EQ(
       ToMemoryDataType(personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_FULL),
       MemoryDataType::kPassportNumber);
+}
+
+TEST(MemoryDataTypeUtilTest, ToFieldType) {
+  EXPECT_EQ(ToFieldType(MemoryDataType::kNameFull), NAME_FULL);
+  EXPECT_EQ(ToFieldType(MemoryDataType::kIban), IBAN_VALUE);
+  EXPECT_EQ(ToFieldType(MemoryDataType::kPassportNumber), std::nullopt);
+}
+
+TEST(MemoryDataTypeUtilTest, ToAttributeType) {
+  EXPECT_EQ(ToAttributeType(MemoryDataType::kPassportNumber),
+            AttributeType(AttributeTypeName::kPassportNumber));
+  EXPECT_EQ(ToAttributeType(MemoryDataType::kIban), std::nullopt);
+}
+
+TEST(MemoryDataTypeUtilTest, GetMemoryDataTypeCategory) {
+  EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kNameFull),
+            MemoryDataTypeCategory::kContactInfo);
+  EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kCreditCardNumber),
+            MemoryDataTypeCategory::kCreditCard);
+  EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kIban),
+            MemoryDataTypeCategory::kIban);
+  EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kPassportNumber),
+            MemoryDataTypeCategory::kPassport);
+  EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kVehicleMake),
+            MemoryDataTypeCategory::kVehicle);
+  EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kOrderId),
+            MemoryDataTypeCategory::kOrder);
+  EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kUnknown),
+            MemoryDataTypeCategory::kUnknown);
+}
+
+TEST(MemoryDataTypeUtilTest, ToAutofillPolicyDataCategory) {
+  EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kNameFull),
+            AutofillClient::AutofillPolicyDataCategory::kContactInfo);
+  EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kCreditCardNumber),
+            AutofillClient::AutofillPolicyDataCategory::kPayments);
+  EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kIban),
+            AutofillClient::AutofillPolicyDataCategory::kPayments);
+  EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kPassportNumber),
+            AutofillClient::AutofillPolicyDataCategory::kIdentityDocs);
+  EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kVehicleMake),
+            AutofillClient::AutofillPolicyDataCategory::kTravel);
+  EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kOrderId),
+            AutofillClient::AutofillPolicyDataCategory::kShopping);
+  EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kUnknown),
+            std::nullopt);
 }
 
 // Tests extraction of source references (Gmail, Photos) into MemoryEntrySource

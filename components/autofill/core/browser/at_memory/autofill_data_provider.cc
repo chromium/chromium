@@ -21,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
-#include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -57,17 +56,12 @@ void AddMetadataToResult(MemorySearchResult& entry,
                          MemoryDataType metadata_entry_type,
                          FieldType primary_field_type,
                          const std::string& app_locale) {
-  std::optional<AtMemoryDataType> data_type =
-      ToAtMemoryDataType(metadata_entry_type);
-  if (!data_type || !std::holds_alternative<FieldType>(*data_type)) {
-    return;
-  }
-  FieldType other_field_type = std::get<FieldType>(*data_type);
-  if (other_field_type == primary_field_type) {
+  std::optional<FieldType> other_field_type = ToFieldType(metadata_entry_type);
+  if (!other_field_type || other_field_type == primary_field_type) {
     return;
   }
   std::u16string metadata_value =
-      form_group.GetInfo(other_field_type, app_locale);
+      form_group.GetInfo(*other_field_type, app_locale);
   if (!metadata_value.empty()) {
     entry.metadata_list.emplace_back(
         metadata_entry_type, GetMemoryDataTypeNameForI18n(metadata_entry_type),
@@ -290,48 +284,65 @@ void AutofillDataProvider::RetrieveAll(
     base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {
   std::vector<MemorySearchResult> combined_results;
   for (MemoryDataType memory_data_type : types) {
-    std::optional<AtMemoryDataType> at_memory_type =
-        ToAtMemoryDataType(memory_data_type);
-    if (!at_memory_type) {
+    if (memory_data_type == MemoryDataType::kUnknown) {
       continue;
     }
-    base::Extend(combined_results,
-                 GetAutofillData(memory_data_type, *at_memory_type));
+    base::Extend(combined_results, GetAutofillData(memory_data_type));
   }
   std::move(callback).Run(std::move(combined_results));
 }
 
 std::vector<MemorySearchResult> AutofillDataProvider::GetAutofillData(
-    MemoryDataType memory_data_type,
-    AtMemoryDataType at_memory_type) {
+    MemoryDataType memory_data_type) {
   if (!personal_data_manager_) {
     return {};
   }
-  std::vector<MemorySearchResult> entries = std::visit(
-      absl::Overload{
-          [this, memory_data_type](
-              FieldType field_type) -> std::vector<MemorySearchResult> {
-            if (field_type == IBAN_VALUE) {
-              return FetchIbanData();
-            }
-            if (field_type == ADDRESS_HOME_ADDRESS) {
-              return FetchFullAddressData(*personal_data_manager_);
-            }
-            if (GroupTypeOfFieldType(field_type) ==
-                FieldTypeGroup::kCreditCard) {
-              return FetchCreditCardData(field_type, memory_data_type);
-            }
-            return FetchDataFromAddressProfiles(*personal_data_manager_,
-                                                field_type, memory_data_type);
-          },
-          [this](
-              AttributeType attribute_type) -> std::vector<MemorySearchResult> {
-            return FetchAutofillAiAttributeData(
-                entity_data_manager_, attribute_type,
-                personal_data_manager_->address_data_manager().app_locale());
-          },
-      },
-      at_memory_type);
+  std::vector<MemorySearchResult> entries;
+  switch (GetMemoryDataTypeCategory(memory_data_type)) {
+    case MemoryDataTypeCategory::kContactInfo: {
+      if (memory_data_type == MemoryDataType::kAddressFull) {
+        entries = FetchFullAddressData(*personal_data_manager_);
+      } else {
+        std::optional<FieldType> field_type = ToFieldType(memory_data_type);
+        if (field_type) {
+          entries = FetchDataFromAddressProfiles(*personal_data_manager_,
+                                                 *field_type, memory_data_type);
+        }
+      }
+      break;
+    }
+    case MemoryDataTypeCategory::kCreditCard: {
+      std::optional<FieldType> field_type = ToFieldType(memory_data_type);
+      if (field_type) {
+        entries = FetchCreditCardData(*field_type, memory_data_type);
+      }
+      break;
+    }
+    case MemoryDataTypeCategory::kIban: {
+      entries = FetchIbanData();
+      break;
+    }
+    case MemoryDataTypeCategory::kPassport:
+    case MemoryDataTypeCategory::kDriversLicense:
+    case MemoryDataTypeCategory::kNationalIdCard:
+    case MemoryDataTypeCategory::kFlightReservation:
+    case MemoryDataTypeCategory::kKnownTravelerNumber:
+    case MemoryDataTypeCategory::kRedressNumber:
+    case MemoryDataTypeCategory::kVehicle:
+    case MemoryDataTypeCategory::kOrder:
+    case MemoryDataTypeCategory::kShipment: {
+      std::optional<AttributeType> attribute_type =
+          ToAttributeType(memory_data_type);
+      if (attribute_type) {
+        entries = FetchAutofillAiAttributeData(
+            entity_data_manager_, *attribute_type,
+            personal_data_manager_->address_data_manager().app_locale());
+      }
+      break;
+    }
+    case MemoryDataTypeCategory::kUnknown:
+      break;
+  }
 
   std::ranges::stable_sort(
       entries, [](const MemorySearchResult& a, const MemorySearchResult& b) {

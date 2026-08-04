@@ -132,8 +132,6 @@ static_library("browser") {
   configs = []
   configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
   sources = [
-    "at_memory/at_memory_data_type.cc",
-    "at_memory/at_memory_data_type.h",
     "at_memory/at_memory_enablement_utils.cc",
     "at_memory/at_memory_enablement_utils.h",
     "at_memory/at_memory_manager.cc",
@@ -1580,7 +1578,6 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "at_memory/at_memory_data_type_unittest.cc",
     "at_memory/at_memory_enablement_utils_unittest.cc",
     "at_memory/at_memory_manager_unittest.cc",
     "at_memory/at_memory_metrics_recorder_unittest.cc",

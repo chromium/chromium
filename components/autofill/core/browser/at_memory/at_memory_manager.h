@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
-#include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -214,7 +213,7 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       const Suggestion& suggestion,
-      const AtMemoryDataType& data_type,
+      AttributeType data_type,
       std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
   // Callback handler when the unmasked AutofillAI entity has been fetched.
@@ -222,7 +221,7 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       const Suggestion& suggestion,
-      const AtMemoryDataType& data_type,
+      AttributeType data_type,
       std::unique_ptr<AtMemoryMetricsRecorder> metrics,
       base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
           result,

@@ -17,8 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
@@ -660,9 +658,7 @@ std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type) {
     case MemoryDataType::kShipmentCarrierDomain:
     case MemoryDataType::kShipmentEstimatedDeliveryDate:
     case MemoryDataType::kShipmentShippedDate: {
-      std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(type);
-      const auto* attribute_type =
-          data_type ? std::get_if<AttributeType>(&*data_type) : nullptr;
+      std::optional<AttributeType> attribute_type = ToAttributeType(type);
       return attribute_type ? attribute_type->GetNameForI18n() : u"";
     }
   }
@@ -1036,4 +1032,356 @@ std::u16string FormatMemoryDataTypeLabelValue(
   NOTREACHED();
 }
 
+std::optional<FieldType> ToFieldType(MemoryDataType type) {
+  switch (type) {
+    case MemoryDataType::kNameFull:
+      return NAME_FULL;
+    case MemoryDataType::kAddressFull:
+      return ADDRESS_HOME_ADDRESS;
+    case MemoryDataType::kAddressStreetAddress:
+      return ADDRESS_HOME_STREET_ADDRESS;
+    case MemoryDataType::kAddressCity:
+      return ADDRESS_HOME_CITY;
+    case MemoryDataType::kAddressState:
+      return ADDRESS_HOME_STATE;
+    case MemoryDataType::kAddressZip:
+      return ADDRESS_HOME_ZIP;
+    case MemoryDataType::kAddressCountry:
+      return ADDRESS_HOME_COUNTRY;
+    case MemoryDataType::kPhone:
+      return PHONE_HOME_WHOLE_NUMBER;
+    case MemoryDataType::kEmail:
+      return EMAIL_ADDRESS;
+    case MemoryDataType::kCompanyName:
+      return COMPANY_NAME;
+    case MemoryDataType::kIban:
+      return IBAN_VALUE;
+    case MemoryDataType::kCreditCardNumber:
+      return CREDIT_CARD_NUMBER;
+    case MemoryDataType::kCreditCardExpirationDate:
+      return CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
+    case MemoryDataType::kCreditCardSecurityCode:
+      return CREDIT_CARD_VERIFICATION_CODE;
+    case MemoryDataType::kCreditCardNameOnCard:
+      return CREDIT_CARD_NAME_FULL;
+    case MemoryDataType::kUnknown:
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kRedressNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseNumber:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kCreditCardNickname:
+      return std::nullopt;
+  }
+  NOTREACHED();
+}
+
+std::optional<AttributeType> ToAttributeType(MemoryDataType type) {
+#define MAP_ATTR(intent_and_attribute_type)       \
+  case MemoryDataType::intent_and_attribute_type: \
+    return AttributeType(AttributeTypeName::intent_and_attribute_type)
+
+  switch (type) {
+    MAP_ATTR(kVehicleMake);
+    MAP_ATTR(kVehicleModel);
+    MAP_ATTR(kVehicleYear);
+    MAP_ATTR(kVehicleOwner);
+    MAP_ATTR(kVehiclePlateNumber);
+    MAP_ATTR(kVehiclePlateState);
+    MAP_ATTR(kVehicleVin);
+    MAP_ATTR(kPassportName);
+    MAP_ATTR(kPassportCountry);
+    MAP_ATTR(kPassportNumber);
+    MAP_ATTR(kPassportIssueDate);
+    MAP_ATTR(kPassportExpirationDate);
+    MAP_ATTR(kFlightReservationFlightNumber);
+    MAP_ATTR(kFlightReservationTicketNumber);
+    MAP_ATTR(kFlightReservationConfirmationCode);
+    MAP_ATTR(kFlightReservationPassengerName);
+    MAP_ATTR(kFlightReservationDepartureAirport);
+    MAP_ATTR(kFlightReservationArrivalAirport);
+    MAP_ATTR(kFlightReservationDepartureDate);
+    MAP_ATTR(kNationalIdCardName);
+    MAP_ATTR(kNationalIdCardCountry);
+    MAP_ATTR(kNationalIdCardNumber);
+    MAP_ATTR(kNationalIdCardIssueDate);
+    MAP_ATTR(kNationalIdCardExpirationDate);
+    MAP_ATTR(kRedressNumberName);
+    MAP_ATTR(kRedressNumberNumber);
+    MAP_ATTR(kKnownTravelerNumberName);
+    MAP_ATTR(kKnownTravelerNumberNumber);
+    MAP_ATTR(kKnownTravelerNumberExpirationDate);
+    MAP_ATTR(kDriversLicenseName);
+    MAP_ATTR(kDriversLicenseState);
+    MAP_ATTR(kDriversLicenseNumber);
+    MAP_ATTR(kDriversLicenseIssueDate);
+    MAP_ATTR(kDriversLicenseExpirationDate);
+    MAP_ATTR(kOrderId);
+    MAP_ATTR(kOrderAccount);
+    MAP_ATTR(kOrderDate);
+    MAP_ATTR(kOrderMerchantName);
+    MAP_ATTR(kOrderMerchantDomain);
+    MAP_ATTR(kOrderProductNames);
+    MAP_ATTR(kShipmentTrackingNumber);
+    MAP_ATTR(kShipmentCarrierName);
+    MAP_ATTR(kShipmentCarrierDomain);
+    MAP_ATTR(kShipmentShippedDate);
+    MAP_ATTR(kShipmentDeliveryZipCode);
+    case MemoryDataType::kShipmentAssociatedOrderId:
+      return AttributeType(AttributeTypeName::kShipmentOrderIds);
+    case MemoryDataType::kUnknown:
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName:
+    case MemoryDataType::kIban:
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+      return std::nullopt;
+  }
+  NOTREACHED();
+#undef MAP_ATTR
+}
+
+MemoryDataTypeCategory GetMemoryDataTypeCategory(MemoryDataType type) {
+  switch (type) {
+    case MemoryDataType::kUnknown:
+      return MemoryDataTypeCategory::kUnknown;
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName:
+      return MemoryDataTypeCategory::kContactInfo;
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+      return MemoryDataTypeCategory::kCreditCard;
+    case MemoryDataType::kIban:
+    case MemoryDataType::kIbanNickname:
+      return MemoryDataTypeCategory::kIban;
+
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+      return MemoryDataTypeCategory::kVehicle;
+
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+      return MemoryDataTypeCategory::kPassport;
+
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseNumber:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+      return MemoryDataTypeCategory::kDriversLicense;
+
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+      return MemoryDataTypeCategory::kNationalIdCard;
+
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+      return MemoryDataTypeCategory::kFlightReservation;
+
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+      return MemoryDataTypeCategory::kKnownTravelerNumber;
+
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kRedressNumberNumber:
+      return MemoryDataTypeCategory::kRedressNumber;
+
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+      return MemoryDataTypeCategory::kOrder;
+
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+      return MemoryDataTypeCategory::kShipment;
+  }
+  NOTREACHED();
+}
+
+std::optional<AutofillClient::AutofillPolicyDataCategory>
+ToAutofillPolicyDataCategory(MemoryDataType type) {
+  switch (type) {
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName:
+      return AutofillClient::AutofillPolicyDataCategory::kContactInfo;
+
+    case MemoryDataType::kIban:
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+      return AutofillClient::AutofillPolicyDataCategory::kPayments;
+
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseNumber:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+      return AutofillClient::AutofillPolicyDataCategory::kIdentityDocs;
+
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kRedressNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+      return AutofillClient::AutofillPolicyDataCategory::kTravel;
+
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+      return AutofillClient::AutofillPolicyDataCategory::kShopping;
+
+    case MemoryDataType::kUnknown:
+      return std::nullopt;
+  }
+  NOTREACHED();
+}
 }  // namespace autofill

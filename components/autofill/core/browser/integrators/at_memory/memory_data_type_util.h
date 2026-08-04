@@ -11,6 +11,8 @@
 
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 
@@ -22,6 +24,36 @@ enum MemoryDataType : int;
 }  // namespace personal_context::proto
 
 namespace autofill {
+
+// Groups MemoryDataType values into semantic categories.
+enum class MemoryDataTypeCategory {
+  kUnknown,
+  kContactInfo,  // Name, Address, Phone, Email, Company
+  kCreditCard,
+  kIban,
+  kPassport,
+  kDriversLicense,
+  kNationalIdCard,
+  kFlightReservation,
+  kKnownTravelerNumber,
+  kRedressNumber,
+  kVehicle,
+  kOrder,
+  kShipment,
+};
+
+// Returns the semantic category for a given `type`.
+MemoryDataTypeCategory GetMemoryDataTypeCategory(MemoryDataType type);
+
+// Translates a MemoryDataType to a FieldType, if applicable.
+std::optional<FieldType> ToFieldType(MemoryDataType type);
+
+// Translates a MemoryDataType to an AttributeType, if applicable.
+std::optional<AttributeType> ToAttributeType(MemoryDataType type);
+
+// Maps MemoryDataType to AutofillPolicyDataCategory directly.
+std::optional<AutofillClient::AutofillPolicyDataCategory>
+ToAutofillPolicyDataCategory(MemoryDataType type);
 
 // Returns true if the given `type` is considered sensitive personal
 // information.
