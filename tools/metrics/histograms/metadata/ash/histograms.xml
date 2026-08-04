@@ -5202,7 +5202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MantaService.{MantaMetricType}.TimeCost" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2027-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>cros-manta-team@google.com</owner>
   <summary>
