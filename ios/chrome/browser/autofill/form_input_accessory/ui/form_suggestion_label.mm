@@ -19,7 +19,6 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/webauthn/ios/features.h"
-#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -425,6 +424,9 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
 
   // The accessory trailing view of the FormSuggestionView parent view.
   UIView* _accessoryTrailingView;
+
+  // Whether long pressing to trigger context menu is enabled.
+  BOOL _isContextMenuEnabled;
 }
 
 #pragma mark - Public
@@ -433,6 +435,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
                     index:(NSUInteger)index
       numberOfSuggestions:(NSUInteger)numberOfSuggestions
     accessoryTrailingView:(UIView*)accessoryTrailingView
+     isContextMenuEnabled:(BOOL)isContextMenuEnabled
                  delegate:(id<FormSuggestionLabelDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
@@ -440,6 +443,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     _suggestionIndex = index;
     _numberOfSuggestions = numberOfSuggestions;
     _accessoryTrailingView = accessoryTrailingView;
+    _isContextMenuEnabled = isContextMenuEnabled;
     _delegate = delegate;
 
     [self updateSubviews];
@@ -454,7 +458,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     [self setIsAccessibilityElement:YES];
 
     if (ShouldShowContextMenu(suggestion)) {
-      if (autofill::IsAmbientAutofillEnabled()) {
+      if (_isContextMenuEnabled) {
         [self addInteraction:[[UIContextMenuInteraction alloc]
                                  initWithDelegate:self]];
       }

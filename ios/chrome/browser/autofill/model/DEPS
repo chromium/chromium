@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/autofill/atmemory/public",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/intelligence/bwg/utils",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/personal_context/model",
   "+ios/chrome/browser/signin/model",

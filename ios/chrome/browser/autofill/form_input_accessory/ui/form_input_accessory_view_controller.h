@@ -23,6 +23,10 @@ inline constexpr NSUInteger kKeyboardAccessorySuggestionsLimit = 30;
 @interface FormInputAccessoryViewController
     : UIViewController <FormInputAccessoryConsumer>
 
+// Whether context menu interaction is enabled for suggestions. Defaults to NO,
+// which disables the long-press context menu on suggestions.
+@property(nonatomic, assign) BOOL isContextMenuEnabled;
+
 // Client in charge of handling actions in suggestions.
 @property(nonatomic, weak) id<FormSuggestionClient> formSuggestionClient;
 

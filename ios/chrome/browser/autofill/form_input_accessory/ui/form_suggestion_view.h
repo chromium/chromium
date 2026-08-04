@@ -36,6 +36,10 @@
 // A scrollable view for displaying user-selectable autofill form suggestions.
 @interface FormSuggestionView : UIScrollView <UIInputViewAudioFeedback>
 
+// Whether context menu interaction is enabled for suggestions. Defaults to NO,
+// which disables the long-press context menu on suggestions.
+@property(nonatomic, assign) BOOL isContextMenuEnabled;
+
 // The delegate for FormSuggestionView events.
 @property(nonatomic, weak) id<FormSuggestionViewDelegate>
     formSuggestionViewDelegate;

@@ -180,12 +180,9 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
     return;
   }
 
-  for (UIView* view in [self.stackView.arrangedSubviews copy]) {
-    [self.stackView removeArrangedSubview:view];
-    [view removeFromSuperview];
-  }
   self.contentInset = UIEdgeInsetsZero;
   self.accessoryTrailingView = accessoryTrailingView;
+  [self removeArrangedSubviews];
   [self createAndInsertArrangedSubviews];
   [self setContentOffset:CGPointZero];
   if (showScrollHint) {
@@ -205,6 +202,16 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
   if (self.window) {
     [self layoutIfNeeded];
   }
+}
+
+- (void)setIsContextMenuEnabled:(BOOL)isContextMenuEnabled {
+  if (_isContextMenuEnabled == isContextMenuEnabled) {
+    return;
+  }
+
+  _isContextMenuEnabled = isContextMenuEnabled;
+  [self removeArrangedSubviews];
+  [self createAndInsertArrangedSubviews];
 }
 
 - (void)resetContentInsetAndDelegateAnimated:(BOOL)animated {
@@ -374,6 +381,7 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
                         index:idx
           numberOfSuggestions:[self.suggestions count]
         accessoryTrailingView:self.accessoryTrailingView
+         isContextMenuEnabled:self.isContextMenuEnabled
                      delegate:self];
     [self addFormSuggestionLabel:label atIndex:idx];
     if (idx == 0 &&
@@ -386,6 +394,18 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
   [self.suggestions enumerateObjectsUsingBlock:setupBlock];
   if (self.trailingView) {
     [self.stackView addArrangedSubview:self.trailingView];
+  }
+}
+
+// Removes all arranged subviews from `stackView`.
+- (void)removeArrangedSubviews {
+  if (!self.stackView) {
+    return;
+  }
+
+  for (UIView* view in [self.stackView.arrangedSubviews copy]) {
+    [self.stackView removeArrangedSubview:view];
+    [view removeFromSuperview];
   }
 }
 

@@ -360,6 +360,11 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
       self.formAccessoryVisible;
 }
 
+- (void)setIsContextMenuEnabled:(BOOL)isContextMenuEnabled {
+  _isContextMenuEnabled = isContextMenuEnabled;
+  _formSuggestionView.isContextMenuEnabled = isContextMenuEnabled;
+}
+
 #pragma mark - Actions
 
 - (void)tapInsideRecognized:(id)sender {
@@ -535,6 +540,7 @@ UIImage* GetManualFillSymbol() {
 - (void)createFormSuggestionViewIfNeeded {
   if (!self.formSuggestionView) {
     self.formSuggestionView = [[FormSuggestionView alloc] init];
+    self.formSuggestionView.isContextMenuEnabled = _isContextMenuEnabled;
     self.formSuggestionView.formSuggestionViewDelegate = self;
     self.formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
     self.formSuggestionView.translatesAutoresizingMaskIntoConstraints = NO;

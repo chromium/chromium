@@ -50,11 +50,16 @@ IOSAutofillEntityDataManagerFactory::~IOSAutofillEntityDataManagerFactory() =
 std::unique_ptr<KeyedService>
 IOSAutofillEntityDataManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  scoped_refptr<autofill::AutofillWebDataService> local_storage =
+      ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
+  if (!local_storage) {
+    // This happens in tests because WebDataService is null while testing.
+    return nullptr;
+  }
   return std::make_unique<autofill::EntityDataManager>(
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile),
-      ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      SyncServiceFactory::GetForProfile(profile), std::move(local_storage),
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       IOSAutofillAiPersonalContextAccessManagerFactory::GetForProfile(profile),
