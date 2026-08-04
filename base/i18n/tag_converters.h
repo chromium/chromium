@@ -20,9 +20,9 @@ template <typename T>
 class NoDestructor;
 }
 
-namespace base::i18n_internal {
-struct Icu4xLocale;
-}  // namespace base::i18n_internal
+namespace icu4x {
+class Locale;
+}
 
 namespace base::i18n {
 
@@ -60,8 +60,7 @@ class BASE_I18N_EXPORT LanguageTagConverter {
   //  - Normalize separator (e.g. "en_US" -> "en-US").
   std::optional<LanguageTag> FromString(std::string_view tag) const;
   // Internal usage.
-  LanguageTag FromIcu4xLocale(
-      const i18n_internal::Icu4xLocale& icu_locale) const;
+  LanguageTag FromIcu4xCapiLocale(const icu4x::Locale& locale) const;
   LanguageTag FromIcuLocale(const icu::Locale& icu_locale) const;
 
  private:

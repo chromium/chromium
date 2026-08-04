@@ -22,6 +22,10 @@ source_set("language_tag") {
 
   defines = [ "BASE_I18N_IMPLEMENTATION" ]
 
+  include_dirs = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp",
+  ]
+
   public_deps = [
     ":base_i18n_export",
     "//base/i18n/internal",
@@ -30,7 +34,7 @@ source_set("language_tag") {
   deps = [
     "//base",
     "//base/i18n/internal:canonical_language_tags",
-    "//base/i18n/internal:i18n_icu_bridge_ffi",
+    "//third_party/rust/icu_capi/v2:lib",
   ]
   visibility = [
     ":*",

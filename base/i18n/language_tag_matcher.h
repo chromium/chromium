@@ -11,10 +11,10 @@
 #include "base/containers/span.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/language_tag.h"
-#include "third_party/rust/cxx/v1/cxx.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
-namespace base::i18n_internal {
-struct IcuFallbacker;
+namespace icu4x {
+class LocaleFallbacker;
 }
 
 namespace base::i18n {
@@ -85,10 +85,10 @@ class BASE_I18N_EXPORT LanguageTagMatcher {
  private:
   explicit LanguageTagMatcher(
       base::flat_map<LanguageTag, LanguageTag> closest_supported_tag,
-      rust::Box<i18n_internal::IcuFallbacker> icu_fallbacker);
+      std::unique_ptr<icu4x::LocaleFallbacker> icu_fallbacker);
 
   base::flat_map<LanguageTag, LanguageTag> closest_supported_tag_;
-  rust::Box<i18n_internal::IcuFallbacker> icu_fallbacker_;
+  std::unique_ptr<icu4x::LocaleFallbacker> icu_fallbacker_;
 };
 
 // This class provides the same methods as `LanguageTagMatcher` with an

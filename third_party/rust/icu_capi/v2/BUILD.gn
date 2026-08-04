@@ -95,7 +95,8 @@ cargo_crate("lib") {
     "locale",
   ]
 
-  testonly = true
+  visibility = []
+  visibility += [ "//base/i18n:*" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

@@ -32,18 +32,17 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp/icu4x/Locale.hpp"
+#include "third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp/icu4x/LocaleFallbackIterator.hpp"
+#include "third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp/icu4x/LocaleFallbacker.hpp"
+#include "third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp/icu4x/LocaleFallbackerWithConfig.hpp"
 
 namespace base::i18n {
 namespace {
-
-using ::base::i18n_internal::create_icu_fallbacker;
-using ::base::i18n_internal::Icu4xLocale;
-using ::base::i18n_internal::IcuFallbacker;
 
 // Returns the sequence of fallback locales using ICU4X logic, excluding the
 // original locale and the root locale ("und").
@@ -52,32 +51,43 @@ using ::base::i18n_internal::IcuFallbacker;
 // - "en-US" -> ["en"]
 // - "es-AR" -> ["es-419", "es"]
 // - "zh-TW" -> ["zh-Hant"]
-std::vector<LanguageTag> GetFallbackLocales(const IcuFallbacker& icu_fallbacker,
-                                            const LanguageTag& locale) {
-  rust::Vec<Icu4xLocale> fallback_locales =
-      icu_fallbacker.fallback_to_vec(rust::Slice<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(locale.tag_string().data()),
-          locale.tag_string().size()));
+std::vector<LanguageTag> GetFallbackLocales(
+    const icu4x::LocaleFallbacker* icu_fallbacker,
+    const LanguageTag& locale) {
+  auto parse_res = icu4x::Locale::from_string(locale.tag_string());
+  if (!parse_res.is_ok()) {
+    return {};
+  }
+  std::unique_ptr<icu4x::Locale> locale_ptr = std::move(parse_res).ok().value();
+
+  icu4x::LocaleFallbackConfig config = {
+      icu4x::LocaleFallbackPriority::Language};
+  std::unique_ptr<icu4x::LocaleFallbackerWithConfig> fallbacker_with_config =
+      icu_fallbacker->for_config(config);
+  std::unique_ptr<icu4x::LocaleFallbackIterator> iter =
+      fallbacker_with_config->fallback_for_locale(*locale_ptr);
+
+  std::vector<LanguageTag> fallback_locales;
+  const auto& ltag_builder = LanguageTagConverter::GetInstance();
+
+  while (std::unique_ptr<icu4x::Locale> fallback_locale = iter->next()) {
+    fallback_locales.push_back(
+        ltag_builder.FromIcu4xCapiLocale(*fallback_locale));
+  }
+
   if (fallback_locales.empty()) {
     return {};
   }
 
-  const auto& ltag_builder = LanguageTagConverter::GetInstance();
-
-  // ICU4X's fallbacker normalizes the locale striping away default scripts for
-  // languages when they are present, this could make the original locale not
-  // appear in the output.
-  LanguageTag first_fallback_locale =
-      ltag_builder.FromIcu4xLocale(fallback_locales.front());
+  LanguageTag first_fallback_locale = fallback_locales.front();
   std::vector<LanguageTag> result;
   result.reserve(fallback_locales.size());
   if (first_fallback_locale != locale) {
     result.push_back(first_fallback_locale);
   }
 
-  // Skip the first locale in the fallback chain as it is the original locale.
   for (size_t i = 1; i < fallback_locales.size(); ++i) {
-    result.push_back(ltag_builder.FromIcu4xLocale(fallback_locales[i]));
+    result.push_back(fallback_locales[i]);
   }
 
   return result;
@@ -134,7 +144,7 @@ float GetEdgeWeight(const LanguageTag& source, const LanguageTag& target) {
 // (e.g., "en") to a child locale (e.g., "en-US").
 class LanguageTagPreferenceGraph {
  public:
-  LanguageTagPreferenceGraph(const IcuFallbacker& icu_fallbacker,
+  LanguageTagPreferenceGraph(const icu4x::LocaleFallbacker* icu_fallbacker,
                              base::span<const LanguageTag> supported_tags) {
     for (const LanguageTag& supported_tag : supported_tags) {
       // Build the graph by tracing the fallback chain of each supported locale.
@@ -252,8 +262,9 @@ class LanguageTagPreferenceGraph {
 // static
 LanguageTagMatcher LanguageTagMatcher::Create(
     base::span<const LanguageTag> supported_tags) {
-  rust::Box<IcuFallbacker> fallbacker = create_icu_fallbacker();
-  LanguageTagPreferenceGraph graph(*fallbacker, supported_tags);
+  std::unique_ptr<icu4x::LocaleFallbacker> fallbacker =
+      icu4x::LocaleFallbacker::create();
+  LanguageTagPreferenceGraph graph(fallbacker.get(), supported_tags);
 
   return LanguageTagMatcher(std::move(graph).ComputeClosestSupportedTag(),
                             std::move(fallbacker));
@@ -278,7 +289,7 @@ std::optional<LanguageTag> LanguageTagMatcher::Match(
   // Step 2: Traverse the fallback chain to look for a supported locale. The
   // first supported locale found is returned.
   for (const LanguageTag& fallback :
-       GetFallbackLocales(*icu_fallbacker_, preferred_locale)) {
+       GetFallbackLocales(icu_fallbacker_.get(), preferred_locale)) {
     auto it_fallback = closest_supported_tag_.find(fallback);
     if (it_fallback != closest_supported_tag_.end()) {
       return it_fallback->second;
@@ -290,13 +301,15 @@ std::optional<LanguageTag> LanguageTagMatcher::Match(
 
 LanguageTagMatcher::LanguageTagMatcher(
     base::flat_map<LanguageTag, LanguageTag> closest_supported_tag,
-    rust::Box<i18n_internal::IcuFallbacker> icu_fallbacker)
+    std::unique_ptr<icu4x::LocaleFallbacker> icu_fallbacker)
     : closest_supported_tag_(std::move(closest_supported_tag)),
       icu_fallbacker_(std::move(icu_fallbacker)) {}
 
-LanguageTagMatcher::LanguageTagMatcher(LanguageTagMatcher&&) noexcept = default;
+LanguageTagMatcher::LanguageTagMatcher(LanguageTagMatcher&& other) noexcept =
+    default;
+
 LanguageTagMatcher& LanguageTagMatcher::operator=(
-    LanguageTagMatcher&&) noexcept = default;
+    LanguageTagMatcher&& other) noexcept = default;
 
 LanguageTagMatcher::~LanguageTagMatcher() = default;
 

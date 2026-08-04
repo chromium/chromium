@@ -441,7 +441,13 @@ extra_kv = { allow_unsafe = false }
 [crate.icu_capi]
 group = 'safe'
 allow_first_party_usage = true
-extra_kv = { allow_unsafe = true }
+
+[crate.icu_capi.extra_kv]
+allow_unsafe = true
+testonly = false
+visibility = [
+  "//base/i18n:*",
+]
 
 [crate.icu_casemap.extra_kv]
 allow_unsafe = true
