@@ -22,6 +22,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_EXPAND;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_DOWN;
@@ -1547,7 +1548,7 @@ public class WebContentsAccessibilityTest {
         mTestData.setReceivedAccessibilityFocusEvent(false);
 
         // Perform a click on the node.
-        performActionOnUiThread(disabledNodeId, ACTION_CLICK, null);
+        Assert.assertFalse(performActionOnUiThread(disabledNodeId, ACTION_CLICK, null));
 
         // Signal end of test
         mActivityTestRule.sendEndOfTestSignal();
@@ -2154,7 +2155,9 @@ public class WebContentsAccessibilityTest {
         // Perform a series of slider increments and check results.
         for (int i = 1; i <= 10; i++) {
             // Increment our slider using action, and poll until we receive the scroll event.
-            performActionOnUiThread(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD, new Bundle());
+            Assert.assertTrue(
+                    performActionOnUiThread(
+                            inputNodeVirtualViewId, ACTION_SCROLL_FORWARD, new Bundle()));
             CriteriaHelper.pollUiThread(
                     () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
 
@@ -2175,7 +2178,9 @@ public class WebContentsAccessibilityTest {
         // Perform a series of slider decrements and check results.
         for (int i = 1; i <= 20; i++) {
             // Decrement our slider using action, and poll until we receive the scroll event.
-            performActionOnUiThread(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD, new Bundle());
+            Assert.assertTrue(
+                    performActionOnUiThread(
+                            inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD, new Bundle()));
             CriteriaHelper.pollUiThread(
                     () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
 
@@ -4449,6 +4454,23 @@ public class WebContentsAccessibilityTest {
         nodeInfo2 = createAccessibilityNodeInfo(vvid2);
         Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo1.isFocused());
         Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo2.isFocused());
+    }
+
+    /** Test that the performAction for ACTION_LONG_CLICK works properly with accessibility. */
+    @Test
+    @SmallTest
+    public void testPerformAction_showContextMenu() throws Throwable {
+        setupTestWithHTML("<button id='btn'>Click Me</button>");
+
+        int btnId = waitForNodeMatching(sViewIdResourceNameMatcher, "btn");
+        mNodeInfo = createAccessibilityNodeInfo(btnId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // Send a proper action and verify it returns true.
+        Assert.assertTrue(performActionOnUiThread(btnId, ACTION_LONG_CLICK, null));
+
+        // Verify that invalid ID returns false.
+        Assert.assertFalse(performActionOnUiThread(-999, ACTION_LONG_CLICK, null));
     }
 
     /** Test that the performAction for ACTION_SHOW_ON_SCREEN works properly with accessibility. */
