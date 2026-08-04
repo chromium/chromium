@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>Tests a large number of abpos elements anchored to each other, originating from different levels in the DOM tree.</title>
+<style>
+.abspos {
+  anchor-name: --a;
+  position: absolute;
+  top: anchor(--a bottom);
+  left: 0px;
+  margin: 2px;
+  border: solid 2px;
+  width: 10px;
+  height: 10px;
+  background: hotpink;
+}
+
+#wrapper {
+  position: relative;
+}
+</style>
+<div id="wrapper"></div>
+<pre id="log" style="position: absolute; top: 0px; left: 50vw; right: 0px;"></pre>
+<script src="../resources/runner.js"></script>
+<script>
+const DEPTH = 100;
+const ITEMS = 10;
+
+const wrapper = document.getElementById('wrapper');
+let last = wrapper;
+for (let i = 0; i < DEPTH; i++) {
+  for (let j = 0; j < ITEMS; j++) {
+    let abspos = document.createElement('div');
+    abspos.className = 'abspos';
+    last.appendChild(abspos);
+  }
+
+  const next = document.createElement('div');
+  last.appendChild(next);
+  last = next;
+}
+
+PerfTestRunner.measureTime({
+  setup: function() {
+    wrapper.style.display = "none";
+    PerfTestRunner.forceLayout();
+  },
+  run: function() {
+    wrapper.style.display = "block";
+    PerfTestRunner.forceLayout();
+  }
+});
+</script>
