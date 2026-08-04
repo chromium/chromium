@@ -1920,6 +1920,20 @@ public class ManualFillingControllerTest {
         inOrder.verify(mMockKeyboardAccessory).setTabs(any());
     }
 
+    @Test
+    public void testUpdateAtMemoryEnablement_HidesBottomSheetWhenDisabled() {
+        when(mManualFillingComponentBridgeJniMock.isAtMemoryEnabled(any())).thenReturn(true);
+        Tab tab = addBrowserTab(mMediator, 1111, null);
+        reset(mManualFillingComponentBridgeJniMock);
+
+        when(mManualFillingComponentBridgeJniMock.isAtMemoryEnabled(any())).thenReturn(false);
+        mMediator.getTabModelObserverForTesting().didSelectTab(tab, FROM_NEW, INVALID_TAB_ID);
+        ShadowLooper.idleMainLooper();
+
+        verify(mManualFillingComponentBridgeJniMock)
+                .hideAtMemoryBottomSheet(eq(mLastMockWebContents));
+    }
+
     private Tab addBrowserTab(ManualFillingMediator mediator, int id, @Nullable Tab lastTab) {
         int lastId = INVALID_TAB_ID;
         if (lastTab != null) {

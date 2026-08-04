@@ -509,6 +509,10 @@ class ManualFillingMediator
         boolean enabled = false;
         if (webContents != null && !webContents.isDestroyed()) {
             enabled = ManualFillingComponentBridge.isAtMemoryEnabled(webContents);
+            if (!enabled) {
+                // Hide the @memory bottom sheet if not enabled.
+                ManualFillingComponentBridge.hideAtMemoryBottomSheet(webContents);
+            }
         }
         mKeyboardAccessory.setAtMemoryEnabled(enabled);
     }

@@ -431,5 +431,20 @@ static bool JNI_ManualFillingComponentBridge_IsAtMemoryEnabled(
       autofill::AtMemoryAction::kTriggerSearchUI, *autofill_client, page_url);
 }
 
+static void JNI_ManualFillingComponentBridge_HideAtMemoryBottomSheet(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents);
+  if (autofill_client) {
+    autofill_client->HideSuggestions(
+        autofill::SuggestionHidingReason::kHiddenByCaller,
+        autofill::FillingProduct::kAtMemory);
+  }
+}
+
 DEFINE_JNI(ManualFillingComponentBridge)
 DEFINE_JNI(UserInfoField)

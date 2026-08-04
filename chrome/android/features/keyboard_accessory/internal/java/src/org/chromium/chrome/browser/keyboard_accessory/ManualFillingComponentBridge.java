@@ -455,6 +455,10 @@ class ManualFillingComponentBridge {
                 .onOptionSelectedForWebContents(webContents, accessoryAction);
     }
 
+    static void hideAtMemoryBottomSheet(WebContents webContents) {
+        ManualFillingComponentBridgeJni.get().hideAtMemoryBottomSheet(webContents);
+    }
+
     @NativeMethods
     interface Natives {
         void onFillingTriggered(
@@ -490,5 +494,7 @@ class ManualFillingComponentBridge {
         void disableServerPredictionsForTesting();
 
         boolean isAtMemoryEnabled(WebContents webContents);
+
+        void hideAtMemoryBottomSheet(WebContents webContents);
     }
 }
