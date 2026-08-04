@@ -648,14 +648,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
     // frame, ensure that any pending visual properties such as size are sent
     // to the target frame before the postMessage, as sites might implicitly
     // be relying on this ordering.
-    bool target_is_descendant_of_source = false;
-    for (RenderFrameHost* rfh = target_rfh; rfh; rfh = rfh->GetParent()) {
-      if (rfh == source_rfh) {
-        target_is_descendant_of_source = true;
-        break;
-      }
-    }
-    if (target_is_descendant_of_source) {
+    if (target_rfh->IsDescendantOfWithinFrameTree(source_rfh)) {
       target_rfh->GetRenderWidgetHost()
           ->SynchronizeVisualPropertiesIgnoringPendingAck();
     }
