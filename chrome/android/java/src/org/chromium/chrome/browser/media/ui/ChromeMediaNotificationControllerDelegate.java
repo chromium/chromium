@@ -109,12 +109,6 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
         }
 
         @Override
-        public void onTaskRemoved(Intent rootIntent) {
-            super.onTaskRemoved(rootIntent);
-            MediaNotificationManager.hideForAllTabs(mMediaTypeId);
-        }
-
-        @Override
         public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
             if (!processIntent(intent)) {
                 // The service has been started with startForegroundService() but the
