@@ -1710,11 +1710,19 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: "
            "FrameNavObserver::DidFinishNavigation zero state logic";
-    // Create a new task for zero state, since there's no thread to associate
-    // this with yet.
-    contextual_tasks::ContextualTask task =
-        contextual_tasks_service_->CreateTask();
-    base::Uuid new_task_id = task.GetTaskId();
+    base::Uuid new_task_id;
+    if (old_task_id && old_task_id->is_valid() &&
+        !task_info_delegate_->GetThreadId().has_value()) {
+      // Reuse the existing task ID if it is valid and has no thread ID yet
+      // (it represents an unassociated zero-state task).
+      new_task_id = *old_task_id;
+    } else {
+      // Create a new task for zero state, since there's no thread to associate
+      // this with yet (or the existing task already has a thread ID).
+      contextual_tasks::ContextualTask task =
+          contextual_tasks_service_->CreateTask();
+      new_task_id = task.GetTaskId();
+    }
     task_info_delegate_->SetTaskId(new_task_id);
     task_info_delegate_->SetThreadId(std::nullopt);
     // Replace state if last committed URL was empty (i.e. the page is
@@ -1725,12 +1733,16 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
             !has_zero_state_changed);
     task_info_delegate_->SetThreadTitle(std::nullopt);
 
-    task_info_delegate_->PrepareForTaskChange();
-    ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
-                               task_info_delegate_->GetWebUIWebContents(),
-                               old_task_id, new_task_id,
-                               task_info_delegate_->IsShownInTab());
-    task_info_delegate_->OnTaskChanged();
+    // If the task ID changed, notify the UI service and delegate of the task
+    // update.
+    if (old_task_id != new_task_id) {
+      task_info_delegate_->PrepareForTaskChange();
+      ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
+                                 task_info_delegate_->GetWebUIWebContents(),
+                                 old_task_id, new_task_id,
+                                 task_info_delegate_->IsShownInTab());
+      task_info_delegate_->OnTaskChanged();
+    }
     return;
   }
 

@@ -96,7 +96,11 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   ContextualTasksSidePanelCoordinatorInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(kContextualTasks);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kContextualTasks, {}},
+         {kContextualTasksEphemeralBrandedEntryPoint,
+          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+        {});
   }
   ~ContextualTasksSidePanelCoordinatorInteractiveUiTest() override = default;
 
@@ -126,12 +130,20 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
         task1.GetTaskId(),
         sessions::SessionTabHelper::IdForTab(
             TabListInterface::From(browser())->GetTab(0)->GetContents()));
+    contextual_tasks_service->UpdateThreadForTask(
+        task1.GetTaskId(), ThreadType::kAiMode, "thread1", std::nullopt,
+        "Title 1");
+
     ContextualTask task2 = contextual_tasks_service->CreateTask();
     task_id2_ = task2.GetTaskId();
     contextual_tasks_service->AssociateTabWithTask(
         task2.GetTaskId(),
         sessions::SessionTabHelper::IdForTab(
             TabListInterface::From(browser())->GetTab(1)->GetContents()));
+    contextual_tasks_service->UpdateThreadForTask(
+        task2.GetTaskId(), ThreadType::kAiMode, "thread2", std::nullopt,
+        "Title 2");
+
     contextual_tasks_service->AssociateTabWithTask(
         task1.GetTaskId(),
         sessions::SessionTabHelper::IdForTab(
