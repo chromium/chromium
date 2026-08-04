@@ -51,6 +51,7 @@ source_set("geolocation") {
 
   deps = [
     "//base",
+    "//build/config/linux/dbus:buildflags",
     "//components/content_settings/core/common:features",
     "//components/device_event_log",
     "//mojo/public/cpp/bindings",
@@ -108,6 +109,8 @@ source_set("geolocation") {
     deps += [ "//chromeos/ash/components/network" ]
   } else if (is_linux && use_dbus) {
     sources += [
+      "location_provider_linux_portal.cc",
+      "location_provider_linux_portal.h",
       "wifi_data_provider_linux.cc",
       "wifi_data_provider_linux.h",
     ]
