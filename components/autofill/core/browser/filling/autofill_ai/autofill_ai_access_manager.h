@@ -85,6 +85,7 @@ class AutofillAiAccessManager {
   // fails.
   void MaybeUnmaskServerEntity(
       OnEntityInstanceFetchedCallback callback,
+      bool should_fetch,
       base::expected<EntityInstance, FailureReason> result,
       bool reauth_attempted);
 

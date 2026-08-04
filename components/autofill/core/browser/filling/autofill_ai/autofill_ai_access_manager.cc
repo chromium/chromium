@@ -61,11 +61,9 @@ bool AutofillAiAccessManager::FetchEntityInstance(
       will_fill_sensitive_info && prefs::IsAutofillAiReauthBeforeFillingEnabled(
                                       manager_->client().GetPrefs());
 
-  if (should_fetch) {
-    callback =
-        base::BindOnce(&AutofillAiAccessManager::MaybeUnmaskServerEntity,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  }
+  callback = base::BindOnce(&AutofillAiAccessManager::MaybeUnmaskServerEntity,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                            should_fetch);
 
   MaybeAuthenticate(std::move(entity), should_reauth, std::move(callback));
   return should_fetch || should_reauth;
@@ -149,9 +147,10 @@ void AutofillAiAccessManager::Authenticate(
 
 void AutofillAiAccessManager::MaybeUnmaskServerEntity(
     OnEntityInstanceFetchedCallback callback,
+    bool should_fetch,
     base::expected<EntityInstance, FailureReason> result,
     bool reauth_attempted) {
-  if (!result.has_value()) {
+  if (!should_fetch || !result.has_value()) {
     std::move(callback).Run(std::move(result), reauth_attempted);
     return;
   }
