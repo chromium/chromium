@@ -10,6 +10,8 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,73 +20,66 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/language/core/common/language_util.h"
 #include "components/language_detection/core/chinese_script_classifier.h"
 #include "components/language_detection/core/constants.h"
+#include "components/translate/core/common/translate_language_matcher.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
 
+namespace translate {
 namespace {
 
-// Similar language code list. Some languages are very similar and difficult
-// for CLD to distinguish.
-struct SimilarLanguageCode {
-  const char* const code;
-  int group;
-};
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagConverter;
 
-constexpr auto kSimilarLanguageCodes = std::to_array<SimilarLanguageCode>({
-    {"bs", 1},
-    {"hr", 1},
-    {"hi", 2},
-    {"ne", 2},
-});
+constexpr auto kBosnianCroatian = base::MakeFixedFlatSet<LanguageTag>(
+    {GetKnownLanguageTag("bs"), GetKnownLanguageTag("hr")});
+constexpr auto kHindiNepali = base::MakeFixedFlatSet<LanguageTag>(
+    {GetKnownLanguageTag("hi"), GetKnownLanguageTag("ne")});
 
-// Checks |kSimilarLanguageCodes| and returns group code.
-int GetSimilarLanguageGroupCode(std::string_view language) {
-  for (size_t i = 0; i < std::size(kSimilarLanguageCodes); ++i) {
-    if (language.find(kSimilarLanguageCodes[i].code) != 0)
-      continue;
-    return kSimilarLanguageCodes[i].group;
+bool IsSameOrSimilarLanguages(std::string_view lhs, std::string_view rhs) {
+  std::optional<LanguageTag> first_lang =
+      LanguageTagConverter::GetInstance().FromString(lhs);
+  std::optional<LanguageTag> second_lang =
+      LanguageTagConverter::GetInstance().FromString(rhs);
+  if (!first_lang || !second_lang) {
+    return false;
   }
-  return 0;
+  LanguageTag first_language_subtag_only = first_lang->WithLanguageSubtagOnly();
+  LanguageTag second_language_subtag_only =
+      second_lang->WithLanguageSubtagOnly();
+
+  return first_language_subtag_only == second_language_subtag_only ||
+         (kBosnianCroatian.contains(first_language_subtag_only) &&
+          kBosnianCroatian.contains(second_language_subtag_only)) ||
+         (kHindiNepali.contains(first_language_subtag_only) &&
+          kHindiNepali.contains(second_language_subtag_only));
 }
 
-// Applies a series of language code modification in proper order.
-void ApplyLanguageCodeCorrection(std::string* code) {
-  if (!code || code->empty()) {
-    return;
+std::optional<LanguageTag> GetTranslateLanguage(
+    std::optional<LanguageTag> tag) {
+  if (!tag) {
+    return std::nullopt;
   }
-  // Correct well-known format errors.
-  translate::CorrectLanguageCodeTypo(code);
-
-  if (!translate::IsValidLanguageCode(*code)) {
-    *code = std::string();
-    return;
-  }
-
-  language::ToTranslateLanguageSynonym(code);
+  return GetTranslateLanguageMatcher().Match(*tag);
 }
 
 // Get page language from html language code if it is not empty, otherwise get
-// page language from Content-Language code. Returns an empty string when
-// Content-Language code is empty.
-std::string GetHTMLOrHTTPContentLanguage(std::string_view content_lang,
-                                         std::string_view html_lang) {
+// page language from Content-Language code. It returns nullopt when none are
+// valid.
+std::optional<LanguageTag> GetHTMLOrHTTPContentLanguage(
+    std::string_view content_lang,
+    std::string_view html_lang) {
   // Check if html lang attribute is valid.
-  std::string modified_lang(html_lang);
-  ApplyLanguageCodeCorrection(&modified_lang);
-  if (!modified_lang.empty()) {
-    // Found a valid html lang.
-    return modified_lang;
-  }
-  // Check if Content-Language is valid.
-  if (!content_lang.empty()) {
-    modified_lang = std::string(content_lang);
-    ApplyLanguageCodeCorrection(&modified_lang);
+  std::optional<LanguageTag> html_lang_tag = GetTranslateLanguage(
+      LanguageTagConverter::GetInstance().FromString(html_lang));
+  if (html_lang_tag) {
+    return *html_lang_tag;
   }
 
-  return modified_lang;
+  return GetTranslateLanguage(
+      LanguageTagConverter::GetInstance().FromString(content_lang));
 }
 
 // Checks if the model can complement a sub code when the page language doesn't
@@ -102,22 +97,21 @@ bool CanModelComplementSubCode(std::string_view page_language,
 
 }  // namespace
 
-namespace translate {
-
-std::string FilterDetectedLanguage(const std::string& utf8_text,
-                                   const std::string& detected_language,
-                                   bool is_detection_reliable) {
+std::optional<LanguageTag> FilterDetectedLanguage(
+    const std::string& utf8_text,
+    const std::string& detected_language,
+    bool is_detection_reliable) {
   // Ignore unreliable, "unknown", and xx-Latn predictions that are currently
   // not supported.
   if (!is_detection_reliable)
-    return language_detection::kUnknownLanguageCode;
+    return std::nullopt;
   // TODO(crbug.com/40169055): Determine if ar-Latn and hi-Latn need to be added
   // for the TFLite-based detection model.
   if (detected_language == "bg-Latn" || detected_language == "el-Latn" ||
       detected_language == "ja-Latn" || detected_language == "ru-Latn" ||
       detected_language == "zh-Latn" ||
       detected_language == chrome_lang_id::NNetLanguageIdentifier::kUnknown) {
-    return language_detection::kUnknownLanguageCode;
+    return std::nullopt;
   }
 
   if (detected_language == "zh") {
@@ -129,23 +123,24 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
     // Convert to the old-style language codes used by the Translate API.
     const std::string zh_classification = zh_classifier.Classify(utf8_text);
     if (zh_classification == "zh-Hant")
-      return "zh-TW";
+      return GetKnownLanguageTag("zh-TW");
     if (zh_classification == "zh-Hans")
-      return "zh-CN";
-    return language_detection::kUnknownLanguageCode;
+      return GetKnownLanguageTag("zh-CN");
+    return std::nullopt;
   }
   // The detection is reliable and none of the cases that are not handled by the
   // language detection model.
-  return detected_language;
+  return LanguageTagConverter::GetInstance().FromString(detected_language);
 }
 
 // Returns the ISO 639 language code of the specified |utf8_text|, or 'unknown'
 // if it failed. |is_model_reliable| will be set as true if CLD says the
 // detection is reliable and |model_reliability_score| will provide the model's
 // confidence in that prediction.
-std::string DetermineTextLanguage(const std::string& utf8_text,
-                                  bool* is_model_reliable,
-                                  float& model_reliability_score) {
+std::optional<LanguageTag> DetermineTextLanguage(
+    const std::string& utf8_text,
+    bool* is_model_reliable,
+    float& model_reliability_score) {
   // Make a prediction.
   chrome_lang_id::NNetLanguageIdentifier lang_id;
   const chrome_lang_id::NNetLanguageIdentifier::Result lang_id_result =
@@ -182,16 +177,22 @@ std::string DeterminePageLanguage(std::string_view code,
   bool is_reliable;
   float model_score = 0.0;
   const std::string utf8_text(base::UTF16ToUTF8(contents));
-  std::string detected_language =
-      DetermineTextLanguage(utf8_text, &is_reliable, model_score);
-  if (model_detected_language != nullptr)
-    *model_detected_language = detected_language;
+  LanguageTag detected_language_tag =
+      DetermineTextLanguage(utf8_text, &is_reliable, model_score)
+          .value_or(GetKnownLanguageTag("und"));
+  if (model_detected_language != nullptr) {
+    *model_detected_language = std::string(detected_language_tag.tag_string());
+  }
   if (is_model_reliable != nullptr)
     *is_model_reliable = is_reliable;
   model_reliability_score = model_score;
-  language::ToTranslateLanguageSynonym(&detected_language);
+  LanguageTag translate_detected_tag =
+      GetTranslateLanguageMatcher()
+          .Match(detected_language_tag)
+          .value_or(GetKnownLanguageTag("und"));
 
-  return DeterminePageLanguage(code, html_lang, detected_language, is_reliable);
+  return DeterminePageLanguage(
+      code, html_lang, translate_detected_tag.tag_string(), is_reliable);
 }
 
 std::string DeterminePageLanguageNoModel(
@@ -199,8 +200,10 @@ std::string DeterminePageLanguageNoModel(
     std::string_view html_lang,
     LanguageVerificationType language_verification_type) {
   translate::ReportLanguageVerification(language_verification_type);
-  std::string language = GetHTMLOrHTTPContentLanguage(code, html_lang);
-  return language.empty() ? language_detection::kUnknownLanguageCode : language;
+  std::optional<LanguageTag> language =
+      GetHTMLOrHTTPContentLanguage(code, html_lang);
+  return !language.has_value() ? language_detection::kUnknownLanguageCode
+                               : std::string(language->tag_string());
 }
 
 // Now consider the web page language details along with the contents language.
@@ -208,10 +211,11 @@ std::string DeterminePageLanguage(std::string_view code,
                                   std::string_view html_lang,
                                   std::string_view model_detected_language,
                                   bool is_model_reliable) {
-  std::string language = GetHTMLOrHTTPContentLanguage(code, html_lang);
-  // If |language| is empty, just use model result even though it might be
+  std::optional<LanguageTag> language =
+      GetHTMLOrHTTPContentLanguage(code, html_lang);
+  // If |language| is nullopt, just use model result even though it might be
   // language_detection::kUnknownLanguageCode.
-  if (language.empty()) {
+  if (!language.has_value()) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelOnly);
     return std::string(model_detected_language);
@@ -222,22 +226,25 @@ std::string DeterminePageLanguage(std::string_view code,
       model_detected_language == language_detection::kUnknownLanguageCode) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelUnknown);
-    return language;
+    return std::string(language->tag_string());
   }
 
-  if (CanModelComplementSubCode(language, model_detected_language)) {
+  if (CanModelComplementSubCode(language->tag_string(),
+                                model_detected_language)) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelComplementsCountry);
     return std::string(model_detected_language);
   }
 
-  if (IsSameOrSimilarLanguages(language, model_detected_language)) {
+  if (IsSameOrSimilarLanguages(language->tag_string(),
+                               model_detected_language)) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelAgrees);
-    return language;
+    return std::string(language->tag_string());
   }
 
-  if (MaybeServerWrongConfiguration(language, model_detected_language)) {
+  if (MaybeServerWrongConfiguration(language->tag_string(),
+                                    model_detected_language)) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelOverrides);
     return std::string(model_detected_language);
@@ -309,36 +316,6 @@ bool IsValidLanguageCode(std::string_view code) {
   }
 
   return true;
-}
-
-bool IsSameOrSimilarLanguages(std::string_view page_language,
-                              std::string_view model_detected_language) {
-  std::vector<std::string> chunks = base::SplitString(
-      page_language, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (chunks.size() == 0)
-    return false;
-  std::string page_language_main_part = chunks[0];  // Need copy.
-
-  chunks = base::SplitString(model_detected_language, "-",
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (chunks.size() == 0)
-    return false;
-  const std::string& model_detected_language_main_part = chunks[0];
-
-  // Language code part of |page_language| is matched to one of
-  // |model_detected_language|. Country code is ignored here.
-  if (page_language_main_part == model_detected_language_main_part) {
-    // Languages are matched strictly - return true.
-    return true;
-  }
-
-  // Check if |page_language| and |model_detected_language| are in the similar
-  // language list and belong to the same language group.
-  int page_code = GetSimilarLanguageGroupCode(page_language);
-  bool match = page_code != 0 && page_code == GetSimilarLanguageGroupCode(
-                                                  model_detected_language);
-
-  return match;
 }
 
 bool IsServerWrongConfigurationLanguage(std::string_view language_code) {

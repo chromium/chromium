@@ -62,7 +62,6 @@ static_library("browser") {
     "//components/prefs",
     "//components/resources:components_resources",
     "//components/strings",
-    "//components/translate/core/common",
     "//components/variations",
     "//components/variations/net",
     "//google_apis",
@@ -76,7 +75,10 @@ static_library("browser") {
     "//url",
   ]
 
-  public_deps = [ ":translate_pref_names" ]
+  public_deps = [
+    ":translate_pref_names",
+    "//components/translate/core/common",
+  ]
 
   if (is_ios) {
     sources += [

@@ -11,7 +11,6 @@
 
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
-#include "components/language/core/common/language_util.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 
 namespace translate {
@@ -139,15 +138,11 @@ class LanguageState {
   const std::string& GetPredefinedTargetLanguage() const {
     return predefined_target_language_;
   }
-  void SetPredefinedTargetLanguage(std::string_view language,
-                                   bool should_auto_translate) {
-    predefined_target_language_ = std::string(language);
-    language::ToTranslateLanguageSynonym(&predefined_target_language_);
-    should_auto_translate_to_predefined_target_language_ =
-        should_auto_translate;
-  }
+  void SetPredefinedTargetLanguage(const base::i18n::LanguageTag& language,
+                                   bool should_auto_translate);
 
-  bool should_auto_translate_to_predefined_target_language() const {
+  const std::optional<base::i18n::LanguageTag>&
+  should_auto_translate_to_predefined_target_language() const {
     return should_auto_translate_to_predefined_target_language_;
   }
 
@@ -237,7 +232,8 @@ class LanguageState {
 
   // Indicates that the page should be automatically translated to
   // |predefined_target_language_| if possible.
-  bool should_auto_translate_to_predefined_target_language_ = false;
+  std::optional<base::i18n::LanguageTag>
+      should_auto_translate_to_predefined_target_language_;
 
   PdfTranslatabilityStatus pdf_translatability_status_ =
       PdfTranslatabilityStatus::kNotChecked;

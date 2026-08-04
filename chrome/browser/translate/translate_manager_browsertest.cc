@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1144,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   manager->SetIgnoreMissingKeyForTesting(true);
 
   // Set target language manually
-  manager->SetPredefinedTargetLanguage("ru");
+  manager->SetPredefinedTargetLanguage(base::i18n::GetKnownLanguageTag("ru"));
   EXPECT_EQ("ru", chrome_translate_client->GetLanguageState()
                       .GetPredefinedTargetLanguage());
 

@@ -9,6 +9,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -141,8 +143,10 @@ static void JNI_TranslateBridge_SetPredefinedTargetLanguage(
   ChromeTranslateClient* client =
       ChromeTranslateClient::FromWebContents(web_contents);
   CHECK(client);
-  client->SetPredefinedTargetLanguage(translate_language,
-                                      j_should_auto_translate);
+  client->SetPredefinedTargetLanguage(
+      base::i18n::GetLanguageTagFromString(translate_language)
+          .value_or(base::i18n::GetKnownLanguageTag("und")),
+      j_should_auto_translate);
 }
 
 // Returns the preferred target language to translate into for this user.

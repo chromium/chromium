@@ -13,6 +13,8 @@
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
@@ -23,7 +25,6 @@
 #include "build/build_config.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/common/language_experiments.h"
-#include "components/language/core/common/language_util.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_service.h"
@@ -44,6 +45,7 @@
 #include "components/translate/core/browser/translate_trigger_decision.h"
 #include "components/translate/core/browser/translate_url_util.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_language_matcher.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_associated_data.h"
@@ -55,8 +57,12 @@
 #include "third_party/metrics_proto/translate_event.pb.h"
 
 namespace translate {
-
 namespace {
+
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagConverter;
 
 // Callbacks for translate errors.
 TranslateManager::TranslateErrorCallbackList* g_error_callback_list_ = nullptr;
@@ -71,6 +77,24 @@ TranslateManager::LanguageDetectedCallbackList* g_detection_callback_list_ =
 std::string GetForcedTranslateLanguage() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
       switches::kForcedTranslateLanguage);
+}
+
+LanguageTag GetTranslateLanguage(std::string_view tag) {
+  std::optional<LanguageTag> parsed = GetLanguageTagFromString(tag);
+  if (!parsed) {
+    return GetKnownLanguageTag("und");
+  }
+  return GetTranslateLanguageMatcher().Match(*parsed).value_or(
+      GetKnownLanguageTag("und"));
+}
+
+std::optional<LanguageTag> GetTranslateLanguageIfValid(std::string_view tag) {
+  std::optional<LanguageTag> parsed_tag = GetLanguageTagFromString(tag);
+  if (!parsed_tag) {
+    return std::nullopt;
+  }
+
+  return GetTranslateLanguageMatcher().Match(*parsed_tag);
 }
 
 }  // namespace
@@ -304,19 +328,19 @@ void TranslateManager::ShowTranslateUI(std::optional<std::string> source_code,
       translate_client_->GetTranslatePrefs());
 
   // Get language codes.
-  std::string converted_source_code =
+  const LanguageTag translate_source_language_tag = GetTranslateLanguage(
       source_code.has_value() ? source_code.value()
                               : TranslateDownloadManager::GetLanguageCode(
-                                    language_state_.source_language());
-  language::ToTranslateLanguageSynonym(&converted_source_code);
-  const std::string converted_target_code =
-      target_code.has_value()
-          ? target_code.value()
-          : GetTargetLanguageForDisplay(translate_prefs.get(), language_model_);
+                                    language_state_.source_language()));
 
-  bool is_translated =
-      language_state_.IsPageTranslated() &&
-      converted_target_code == language_state_.current_language();
+  const LanguageTag translate_target_language_tag = GetTranslateLanguage(
+      target_code.has_value() ? target_code.value()
+                              : GetTargetLanguageForDisplay(
+                                    translate_prefs.get(), language_model_));
+
+  bool is_translated = language_state_.IsPageTranslated() &&
+                       translate_target_language_tag.tag_string() ==
+                           language_state_.current_language();
 
   language_state_.SetTranslateEnabled(true);
   const TranslateStep step = is_translated ? TRANSLATE_STEP_AFTER_TRANSLATE
@@ -325,14 +349,16 @@ void TranslateManager::ShowTranslateUI(std::optional<std::string> source_code,
   // should trigger translation automatically. Otherwise, only show the infobar.
   if (auto_translate && !is_translated) {
     TranslatePage(
-        converted_source_code, converted_target_code, triggered_from_menu,
+        translate_source_language_tag.tag_string(),
+        translate_target_language_tag.tag_string(), triggered_from_menu,
         GetActiveTranslateMetricsLogger()->GetNextManualTranslationType(
             triggered_from_menu));
     return;
   }
   translate_client_->ShowTranslateUI(
-      step, converted_source_code, converted_target_code, TranslateErrors::NONE,
-      triggered_from_menu);
+      step, std::string(translate_source_language_tag.tag_string()),
+      std::string(translate_target_language_tag.tag_string()),
+      TranslateErrors::NONE, triggered_from_menu);
 }
 
 void TranslateManager::ShowTranslateUI(bool auto_translate,
@@ -609,11 +635,15 @@ std::string TranslateManager::GetTargetLanguage(
   if (language_model) {
     std::vector<std::string> language_codes;
     for (const auto& lang : language_model->GetLanguages()) {
-      std::string lang_code =
-          TranslateDownloadManager::GetLanguageCode(lang.lang_code);
-      language::ToTranslateLanguageSynonym(&lang_code);
-      if (TranslateDownloadManager::IsSupportedLanguage(lang_code))
-        language_codes.push_back(lang_code);
+      std::optional<LanguageTag> parsed_tag = GetTranslateLanguageIfValid(
+          TranslateDownloadManager::GetLanguageCode(lang.lang_code));
+      if (!parsed_tag) {
+        continue;
+      }
+      if (TranslateDownloadManager::IsSupportedLanguage(
+              parsed_tag->tag_string())) {
+        language_codes.emplace_back(parsed_tag->tag_string());
+      }
     }
 
     // If forcing triggering on English, skip English as the target language if
@@ -634,14 +664,14 @@ std::string TranslateManager::GetTargetLanguage(
   }
 
   // Get the browser's user interface language.
-  std::string ui_language = TranslateDownloadManager::GetLanguageCode(
-      TranslateDownloadManager::GetInstance()->application_locale());
-  // Map 'he', 'nb', 'fil' back to 'iw', 'no', 'tl'
-  language::ToTranslateLanguageSynonym(&ui_language);
-  if (TranslateDownloadManager::IsSupportedLanguage(ui_language)) {
+  LanguageTag parsed_ui_language_tag =
+      GetTranslateLanguage(TranslateDownloadManager::GetLanguageCode(
+          TranslateDownloadManager::GetInstance()->application_locale()));
+  if (TranslateDownloadManager::IsSupportedLanguage(
+          parsed_ui_language_tag.tag_string())) {
     target_language_origin =
         TranslateBrowserMetrics::TargetLanguageOrigin::kApplicationUI;
-    return ui_language;
+    return std::string(parsed_ui_language_tag.tag_string());
   }
 
   // Get the first supported language on the Accept Languages list.
@@ -1075,7 +1105,9 @@ void TranslateManager::FilterForPredefinedTarget(
   decision->predefined_translate_target =
       language_state_.GetPredefinedTargetLanguage();
 
-  if (!language_state_.should_auto_translate_to_predefined_target_language() || decision->will_force_auto_translate()) {
+  if (!language_state_.should_auto_translate_to_predefined_target_language()
+           .has_value() ||
+      decision->will_force_auto_translate()) {
     decision->PreventPredefinedLanguageAutoTranslate();
   }
 
@@ -1255,10 +1287,9 @@ void TranslateManager::RecordDecisionRankerEvent(
 }
 
 void TranslateManager::SetPredefinedTargetLanguage(
-    std::string_view language_code,
+    base::i18n::LanguageTag language,
     bool should_auto_translate) {
-  language_state_.SetPredefinedTargetLanguage(language_code,
-                                              should_auto_translate);
+  language_state_.SetPredefinedTargetLanguage(language, should_auto_translate);
 }
 
 void TranslateManager::SetEnableAutoTranslate(bool enable_auto_translate) {

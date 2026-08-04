@@ -222,7 +222,7 @@ class TranslateManager {
   // |should_auto_translate| to true specifies both (1) that translation should
   // be initiated automatically and (2) that translation should occur even when
   // it would otherwise be prevented by user prefs.
-  void SetPredefinedTargetLanguage(std::string_view language_code,
+  void SetPredefinedTargetLanguage(base::i18n::LanguageTag language,
                                    bool should_auto_translate = false);
 
   // Sets whether page auto translation is enabled for the translate manager.

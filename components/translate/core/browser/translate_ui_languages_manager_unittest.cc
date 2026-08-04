@@ -95,6 +95,13 @@ TEST_F(TranslateUILanguagesManagerTest, LanguageCodes) {
   EXPECT_EQ("fr", languages_manager_->GetTargetLanguageCode());
 }
 
+TEST_F(TranslateUILanguagesManagerTest, UnknownSourceLanguage) {
+  std::vector<std::string> languages = {"ar", "de", "en", "es", "fr"};
+  auto unknown_manager =
+      std::make_unique<TranslateUILanguagesManager>(languages, "und", "fr");
+  EXPECT_EQ("und", unknown_manager->GetSourceLanguageCode());
+}
+
 }  // namespace
 
 }  // namespace translate

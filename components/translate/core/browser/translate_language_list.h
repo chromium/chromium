@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/i18n/language_tag.h"
 #include "base/time/time.h"

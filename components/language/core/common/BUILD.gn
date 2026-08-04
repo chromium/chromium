@@ -21,10 +21,7 @@ static_library("common") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "language_util_unittest.cc",
-    "locale_util_unittest.cc",
-  ]
+  sources = [ "locale_util_unittest.cc" ]
   deps = [
     ":common",
     "//base",

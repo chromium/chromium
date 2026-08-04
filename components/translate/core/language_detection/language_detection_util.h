@@ -5,8 +5,13 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_LANGUAGE_DETECTION_UTIL_H_
 #define COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_LANGUAGE_DETECTION_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
+
+namespace base::i18n {
+class LanguageTag;
+}
 
 namespace translate {
 enum class LanguageVerificationType;
@@ -16,18 +21,20 @@ enum class LanguageVerificationType;
 // |language_detection::kUnknownLanguageCode|
 //  for unreliable, "unknown", and xx-Latn predictions that are currently not
 // supported.
-std::string FilterDetectedLanguage(const std::string& utf8_text,
-                                   const std::string& detected_language,
-                                   bool is_detection_reliable);
+std::optional<base::i18n::LanguageTag> FilterDetectedLanguage(
+    const std::string& utf8_text,
+    const std::string& detected_language,
+    bool is_detection_reliable);
 
 // Returns the ISO 639 language code of the specified |utf8_text|, or
 // |language_detection::kUnknownLanguageCode| if it failed. |is_model_reliable|
 // will be set as true if CLD says the detection is reliable and
 // |model_reliability_score| will contain the model's confidence in that
 // detection.
-std::string DetermineTextLanguage(const std::string& utf8_text,
-                                  bool* is_model_reliable,
-                                  float& model_reliability_score);
+std::optional<base::i18n::LanguageTag> DetermineTextLanguage(
+    const std::string& utf8_text,
+    bool* is_model_reliable,
+    float& model_reliability_score);
 
 // Determines page language from content header and html lang when no model is
 // available.
@@ -61,13 +68,6 @@ void CorrectLanguageCodeTypo(std::string* code);
 // Checks if the language code's format is valid.
 // Called only by tests.
 bool IsValidLanguageCode(std::string_view code);
-
-// Checks if languages are matched, or similar. This function returns true
-// against a language pair containing a language which is difficult for CLD to
-// distinguish.
-// Called only by tests.
-bool IsSameOrSimilarLanguages(std::string_view page_language,
-                              std::string_view model_detected_language);
 
 // Checks if languages pair is one of well-known pairs of wrong server
 // configuration.

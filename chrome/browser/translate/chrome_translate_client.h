@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/language/core/browser/accept_languages_service.h"
@@ -110,7 +111,7 @@ class ChromeTranslateClient
   // language) is ready.
   void ManualTranslateWhenReady();
 #endif
-  void SetPredefinedTargetLanguage(const std::string& translate_language_code,
+  void SetPredefinedTargetLanguage(const base::i18n::LanguageTag& language,
                                    bool should_auto_translate);
 
   bool ShowTranslateUI(translate::TranslateStep step,

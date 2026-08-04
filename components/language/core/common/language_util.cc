@@ -4,51 +4,11 @@
 
 #include "components/language/core/common/language_util.h"
 
-#include <stddef.h>
-
-#include <algorithm>
-#include <string_view>
-
 #include "base/feature_list.h"
-#include "base/strings/strcat.h"
 #include "components/country_codes/country_codes.h"
 #include "components/language/core/common/language_experiments.h"
-#include "components/language/core/common/locale_util.h"
 
 namespace language {
-
-namespace {
-
-struct LanguageCodePair {
-  // Code used in supporting list of Translate.
-  const char* const translate_language;
-
-  // Code used in Chrome internal.
-  const char* const chrome_language;
-};
-
-// Some languages are treated as same languages in Translate even though they
-// are different to be exact.
-//
-// If this table is updated, please sync this with the synonym table in
-// chrome/browser/resources/settings/languages_page/languages.ts.
-const LanguageCodePair kTranslateOnlySynonyms[] = {
-    {"no", "nb"},
-    {"id", "in"},
-};
-
-// Some Chinese language codes are compatible with zh-TW or zh-CN in terms of
-// Translate.
-//
-// If this table is updated, please sync this with the synonym table in
-// chrome/browser/resources/settings/languages_page/languages.ts.
-const LanguageCodePair kLanguageCodeChineseCompatiblePairs[] = {
-    {"zh-TW", "zh-HK"},
-    {"zh-TW", "zh-MO"},
-    {"zh-CN", "zh-SG"},
-};
-
-}  // namespace
 
 bool OverrideTranslateTriggerInIndia() {
 #if BUILDFLAG(IS_ANDROID)
@@ -70,64 +30,6 @@ OverrideLanguageModel GetOverrideLanguageModel() {
   }
 
   return OverrideLanguageModel::DEFAULT;
-}
-
-void ToTranslateLanguageSynonym(std::string* language) {
-  // Get the base language (e.g. "es" for "es-MX")
-  auto [main_part, tail_part] = language::SplitIntoMainAndTail(*language);
-
-  if (main_part.empty()) {
-    return;
-  }
-
-  if (main_part == "mni") {
-    // "mni-Mtei" does not have any mapping and as such we leave it as is.
-    return;
-  }
-
-  if (main_part == "zh") {
-    // Chinese is a special case, there can be two base languages: traditional
-    // and simplified. The kLanguageCodeChineseCompatiblePairs list contains the
-    // relation between various Chinese locales. We need to return the code from
-    // that mapping - if it exists.
-    for (const auto& language_pair : kLanguageCodeChineseCompatiblePairs) {
-      if (*language == language_pair.chrome_language) {
-        *language = language_pair.translate_language;
-        return;
-      }
-    }
-    // Note that "zh" does not have any mapping and as such we leave it as is.
-    // See https://crbug/798512 for more info.
-    return;
-  }
-
-  if (main_part == "cmn") {
-    // The Speech On-Device API (SODA) uses the Mandarin Chinese (cmn) language
-    // codes.
-    if (tail_part.rfind("-hant", 0) == 0) {
-      *language = "zh-TW";
-      return;
-    }
-
-    if (tail_part.rfind("-hans", 0) == 0) {
-      *language = "zh-CN";
-      return;
-    }
-
-    // If there is no matching script tag for cmn return zh.
-    *language = "zh";
-    return;
-  }
-
-  for (const auto& language_pair : kTranslateOnlySynonyms) {
-    if (main_part == language_pair.chrome_language) {
-      *language = language_pair.translate_language;
-      return;
-    }
-  }
-
-  // By default use the base language as the translate synonym.
-  *language = std::string(main_part);
 }
 
 }  // namespace language

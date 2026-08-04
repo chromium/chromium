@@ -9,18 +9,21 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/language/core/browser/language_model_manager.h"
 #import "components/language/core/browser/pref_names.h"
-#import "components/language/core/common/language_util.h"
+#import "components/language/core/common/locale_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "components/translate/core/common/translate_language_matcher.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/cells/language_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_histograms.h"
@@ -149,10 +152,14 @@
 
     // Language codes used in the language settings have the Chrome internal
     // format while the Translate target language has the Translate server
-    // format. To convert the former to the latter the utilily function
-    // ToTranslateLanguageSynonym() must be used.
-    std::string canonicalLanguageCode = languageItem.languageCode;
-    language::ToTranslateLanguageSynonym(&canonicalLanguageCode);
+    // format. To convert the former to the latter,
+    // `GetTranslateLanguageMatcher()` is used.
+    std::string canonicalLanguageCode = std::string(
+        translate::GetTranslateLanguageMatcher()
+            .MatchOrDefault(
+                base::i18n::GetLanguageTagFromString(languageItem.languageCode)
+                    .value_or(base::i18n::GetKnownLanguageTag("und")))
+            .tag_string());
     std::string targetLanguageCode = TranslateServiceIOS::GetTargetLanguage(
         self.prefService, self.languageModelManager->GetPrimaryModel());
     languageItem.targetLanguage = targetLanguageCode == canonicalLanguageCode;

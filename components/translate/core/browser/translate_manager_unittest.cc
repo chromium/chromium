@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
@@ -1021,7 +1022,8 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {
 
   network_notifier_.SimulateOnline();
 
-  translate_manager_->SetPredefinedTargetLanguage("ru");
+  translate_manager_->SetPredefinedTargetLanguage(
+      base::i18n::GetKnownLanguageTag("ru"));
   EXPECT_EQ(
       "ru",
       translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
@@ -1070,7 +1072,8 @@ TEST_F(TranslateManagerTest,
   translate_prefs_.AddLanguagePairToAlwaysTranslateList("fr", "de");
   network_notifier_.SimulateOnline();
 
-  translate_manager_->SetPredefinedTargetLanguage("ru", true);
+  translate_manager_->SetPredefinedTargetLanguage(
+      base::i18n::GetKnownLanguageTag("ru"), true);
   EXPECT_EQ(
       "ru",
       translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
@@ -1103,7 +1106,8 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_BlockedLanguage) {
   ASSERT_FALSE(translate_prefs_.CanTranslateLanguage("de"));
   network_notifier_.SimulateOnline();
 
-  translate_manager_->SetPredefinedTargetLanguage("ru");
+  translate_manager_->SetPredefinedTargetLanguage(
+      base::i18n::GetKnownLanguageTag("ru"));
   EXPECT_EQ(
       "ru",
       translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
@@ -1130,12 +1134,13 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_OverrideBlockedLanguage) {
   network_notifier_.SimulateOnline();
 
   translate_manager_->SetPredefinedTargetLanguage(
-      "ru", /*should_auto_translate=*/true);
+      base::i18n::GetKnownLanguageTag("ru"), /*should_auto_translate=*/true);
   EXPECT_EQ(
       "ru",
       translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
   EXPECT_TRUE(translate_manager_->GetLanguageState()
-                  ->should_auto_translate_to_predefined_target_language());
+                  ->should_auto_translate_to_predefined_target_language()
+                  .has_value());
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
 
@@ -1179,7 +1184,8 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_BlockedSite) {
 
   network_notifier_.SimulateOnline();
 
-  translate_manager_->SetPredefinedTargetLanguage("ru");
+  translate_manager_->SetPredefinedTargetLanguage(
+      base::i18n::GetKnownLanguageTag("ru"));
   EXPECT_EQ(
       "ru",
       translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
@@ -1205,12 +1211,13 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_AutoTranslate) {
   network_notifier_.SimulateOnline();
 
   translate_manager_->SetPredefinedTargetLanguage(
-      "ru", /*should_auto_translate=*/true);
+      base::i18n::GetKnownLanguageTag("ru"), /*should_auto_translate=*/true);
   EXPECT_EQ(
       "ru",
       translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
   EXPECT_TRUE(translate_manager_->GetLanguageState()
-                  ->should_auto_translate_to_predefined_target_language());
+                  ->should_auto_translate_to_predefined_target_language()
+                  .has_value());
 
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
 

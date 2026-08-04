@@ -17,6 +17,8 @@ static_library("common") {
     "translate_errors.h",
     "translate_features.cc",
     "translate_features.h",
+    "translate_language_matcher.cc",
+    "translate_language_matcher.h",
     "translate_metrics.cc",
     "translate_metrics.h",
     "translate_switches.cc",
@@ -24,6 +26,8 @@ static_library("common") {
     "translate_util.cc",
     "translate_util.h",
   ]
+
+  public_deps = [ "//base:i18n" ]
 
   deps = [
     "//base",
@@ -37,12 +41,14 @@ static_library("common") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "translate_language_matcher_unittest.cc",
     "translate_metrics_unittest.cc",
     "translate_util_unittest.cc",
   ]
   deps = [
     ":common",
     "//base",
+    "//base:i18n",
     "//base/test:test_support",
     "//testing/gtest",
     "//third_party/fuzztest",
