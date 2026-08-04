@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_types_null
+  webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: timeout can not be null
+Harness: the test ran to completion.
+

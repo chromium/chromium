@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_value_null[implicit]
+  AssertionError: invalid argument (400): invalid argument: timeout can not be null
+[FAIL] test_value_null[pageLoad]
+  AssertionError: invalid argument (400): invalid argument: timeout can not be null
+Harness: the test ran to completion.
+
