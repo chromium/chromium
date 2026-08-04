@@ -136,7 +136,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
 #endif
       "chrome://password-manager",
       "chrome://password-manager-internals",
-      "chrome://personal-context-internals",
       "chrome://policy",
       "chrome://predictors",
 

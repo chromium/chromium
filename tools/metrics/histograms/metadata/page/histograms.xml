@@ -529,7 +529,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".password-change"/>
   <variant name=".password-manager"/>
   <variant name=".password-manager-internals"/>
-  <variant name=".personal-context-internals"/>
   <variant name=".personalization"/>
   <variant name=".policy"/>
   <variant name=".power"/>

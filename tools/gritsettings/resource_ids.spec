@@ -681,10 +681,6 @@
     "META": {"sizes": {"includes": [200]}},
     "includes": [4540],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/personal_context_internals/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [4555],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/predictors/resources.grd": {
     "META": {"sizes": {"includes": [5],}},
     "includes": [4560],

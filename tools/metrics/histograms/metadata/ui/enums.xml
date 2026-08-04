@@ -943,7 +943,8 @@ chromium-metrics-reviews@google.com.
   <int value="483244151" label="chrome://notebooks-internals/"/>
   <int value="502364118" label="chrome://default-browser/"/>
   <int value="507734656" label="chrome://profile-customization/"/>
-  <int value="519565566" label="chrome://personal-context-internals/"/>
+  <int value="519565566"
+      label="(Obsolete) chrome://personal-context-internals/"/>
   <int value="520299179" label="chrome://media-engagement/"/>
   <int value="543723090" label="chrome://traces-internals/"/>
   <int value="554090510" label="chrome://first-run/"/>

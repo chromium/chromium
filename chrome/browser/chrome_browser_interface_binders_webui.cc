@@ -27,8 +27,6 @@
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
-#include "chrome/browser/ui/webui/personal_context_internals/personal_context_internals.mojom.h"
-#include "chrome/browser/ui/webui/personal_context_internals/personal_context_internals_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/subresource_filter/subresource_filter_internals_ui.h"
@@ -263,9 +261,6 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   RegisterWebUIControllerInterfaceBinder<
       browser::context_hub::mojom::PageHandlerFactory, ContextHubUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<
-      browser::personal_context_internals::mojom::PageHandlerFactory,
-      PersonalContextInternalsUI>(map);
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   content::RegisterWebUIControllerInterfaceBinder<
