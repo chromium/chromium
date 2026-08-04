@@ -811,6 +811,9 @@ void SharedDictionaryManagerOnDisk::MaybeStartSerializedTask() {
 void SharedDictionaryManagerOnDisk::OnDictionaryDeleted(
     const std::set<base::UnguessableToken>& disk_cache_key_tokens,
     bool need_to_doom_disk_cache_entries) {
+  if (disk_cache_key_tokens.empty()) {
+    return;
+  }
   if (need_to_doom_disk_cache_entries) {
     for (const base::UnguessableToken& token : disk_cache_key_tokens) {
       disk_cache().DoomEntry(token.ToString(), base::DoNothing());
@@ -820,9 +823,8 @@ void SharedDictionaryManagerOnDisk::OnDictionaryDeleted(
     reinterpret_cast<SharedDictionaryStorageOnDisk*>(it.second.get())
         ->OnDictionaryDeleted(disk_cache_key_tokens);
   }
-  if (GetPervasiveStorage()) {
-    reinterpret_cast<SharedDictionaryStorageOnDisk*>(
-        GetPervasiveStorage().get())
+  if (pervasive_storage()) {
+    reinterpret_cast<SharedDictionaryStorageOnDisk*>(pervasive_storage())
         ->OnDictionaryDeleted(disk_cache_key_tokens);
   }
 }

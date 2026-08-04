@@ -131,9 +131,8 @@ void SharedDictionaryManagerInMemory::ClearData(
   }
   // Pervasive dictionaries are unpartitioned global resources, so they are
   // only cleared during full bulk wipes (when url_matcher is null).
-  if (!url_matcher && GetPervasiveStorage()) {
-    reinterpret_cast<SharedDictionaryStorageInMemory*>(
-        GetPervasiveStorage().get())
+  if (!url_matcher && pervasive_storage()) {
+    reinterpret_cast<SharedDictionaryStorageInMemory*>(pervasive_storage())
         ->ClearData(start_time, end_time, url_matcher);
   }
   std::move(callback).Run();

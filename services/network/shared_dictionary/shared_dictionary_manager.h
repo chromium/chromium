@@ -154,6 +154,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
     return storages_;
   }
 
+  SharedDictionaryStorage* pervasive_storage() const {
+    return pervasive_storage_.get();
+  }
+
  private:
   friend class cors::CorsURLLoaderSharedDictionaryTest;
   class PreloadedDictionaries;
