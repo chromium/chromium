@@ -15,10 +15,13 @@ class FormPredictionsTrackerTestApi {
   explicit FormPredictionsTrackerTestApi(FormPredictionsTracker* tracker)
       : tracker_(CHECK_DEREF(tracker)) {}
 
-  const absl::flat_hash_map<FormGlobalId,
-                            FormPredictionsTracker::FormParsingStatus>&
-  form_parsing_status() const {
-    return tracker_->form_parsing_status_;
+  const absl::flat_hash_map<FormGlobalId, int>& forms_in_parsing_state() const {
+    return tracker_->forms_in_parsing_state_;
+  }
+
+  const absl::flat_hash_map<FormGlobalId, int>& forms_awaiting_server_response()
+      const {
+    return tracker_->forms_awaiting_server_response_;
   }
 
   size_t num_callbacks() const { return tracker_->callbacks_.size(); }

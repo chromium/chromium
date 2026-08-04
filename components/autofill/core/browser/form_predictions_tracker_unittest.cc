@@ -48,40 +48,60 @@ class FormPredictionsTrackerTest
   std::unique_ptr<FormPredictionsTracker> tracker_;
 };
 
-// Tests that when a new form is discovered (`OnBeforeFormsSeen`), it is added
-// to the internal tracking map with both parsing bits initialized to false.
-TEST_F(FormPredictionsTrackerTest, FormAddedOnSeen) {
-  std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
-  const FormGlobalId& form_id = forms[0];
+// Tests that when forms are seen (`OnBeforeFormsSeen`), they are added to the
+// parsing state set, and when `OnAfterFormsSeen` runs, both updated and removed
+// forms are purged from the set.
+TEST_F(FormPredictionsTrackerTest, FormsSeenState) {
+  std::vector<FormGlobalId> updated_forms = {test::MakeFormGlobalId()};
+  std::vector<FormGlobalId> removed_forms = {test::MakeFormGlobalId()};
 
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeFormsSeen, forms,
-      base::span<FormGlobalId>());
+      &AutofillManager::Observer::OnBeforeFormsSeen, updated_forms,
+      removed_forms);
+  EXPECT_TRUE(
+      test_api(tracker()).forms_in_parsing_state().contains(updated_forms[0]));
 
-  const absl::flat_hash_map<
-      FormGlobalId, FormPredictionsTracker::FormParsingStatus>& status_map =
-      test_api(tracker()).form_parsing_status();
-  ASSERT_TRUE(status_map.contains(form_id));
-  EXPECT_FALSE(status_map.at(form_id).heuristic_parsed_in_actor_mode);
-  EXPECT_FALSE(status_map.at(form_id).server_predicted_in_actor_mode);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterFormsSeen, updated_forms,
+      removed_forms);
+  EXPECT_TRUE(test_api(tracker()).forms_in_parsing_state().empty());
 }
 
-// Tests that when a form is removed from the DOM (`OnBeforeFormsSeen` with
-// removed_forms), it is successfully purged from the internal tracking map.
-TEST_F(FormPredictionsTrackerTest, FormRemoved) {
+// Tests that when server predictions are queried
+// (`OnBeforeLoadedServerPredictions`), forms are added to the awaiting response
+// set, and when `OnAfterLoadedServerPredictions` runs, they are purged.
+TEST_F(FormPredictionsTrackerTest, ServerPredictionsState) {
   std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
 
-  // Add the form first.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeFormsSeen, forms,
-      base::span<FormGlobalId>());
-  ASSERT_EQ(test_api(tracker()).form_parsing_status().size(), 1u);
+      &AutofillManager::Observer::OnBeforeLoadedServerPredictions, forms);
+  EXPECT_TRUE(
+      test_api(tracker()).forms_awaiting_server_response().contains(forms[0]));
 
-  // Notify that the form was removed.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeFormsSeen, base::span<FormGlobalId>(),
-      forms);
-  EXPECT_TRUE(test_api(tracker()).form_parsing_status().empty());
+      &AutofillManager::Observer::OnAfterLoadedServerPredictions, forms);
+  EXPECT_TRUE(test_api(tracker()).forms_awaiting_server_response().empty());
+}
+
+// Tests that when `OnAfterFormsSeen` runs with removed forms, those forms are
+// purged from `forms_awaiting_server_response` as well.
+TEST_F(FormPredictionsTrackerTest, RemovedFormsPurgedFromServerResponseSet) {
+  std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
+
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeLoadedServerPredictions, forms);
+  EXPECT_TRUE(
+      test_api(tracker()).forms_awaiting_server_response().contains(forms[0]));
+
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      /*updated_forms=*/base::span<FormGlobalId>(),
+      /*removed_forms=*/forms);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      /*updated_forms=*/base::span<FormGlobalId>(),
+      /*removed_forms=*/forms);
+  EXPECT_TRUE(test_api(tracker()).forms_awaiting_server_response().empty());
 }
 
 // Tests that when the AutofillManager's lifecycle state changes from active to
@@ -98,8 +118,12 @@ TEST_F(FormPredictionsTrackerTest, CleanupOnLifecycleChange) {
       &AutofillManager::Observer::OnBeforeFormsSeen,
       std::vector<FormGlobalId>{form_in_frame, form_in_other_frame},
       base::span<FormGlobalId>());
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeLoadedServerPredictions,
+      std::vector<FormGlobalId>{form_in_frame, form_in_other_frame});
 
-  ASSERT_EQ(test_api(tracker()).form_parsing_status().size(), 2u);
+  ASSERT_EQ(test_api(tracker()).forms_in_parsing_state().size(), 2u);
+  ASSERT_EQ(test_api(tracker()).forms_awaiting_server_response().size(), 2u);
 
   // Simulate the manager's frame becoming inactive.
   autofill_manager().NotifyObservers(
@@ -108,11 +132,16 @@ TEST_F(FormPredictionsTrackerTest, CleanupOnLifecycleChange) {
       /*new_state=*/AutofillDriver::LifecycleState::kPendingReset);
 
   // Verify only the form associated with the inactive frame was removed.
-  const auto& status_map = test_api(tracker()).form_parsing_status();
-  EXPECT_FALSE(status_map.contains(form_in_frame))
+  const auto& parsing_set = test_api(tracker()).forms_in_parsing_state();
+  EXPECT_FALSE(parsing_set.contains(form_in_frame))
       << "Form in the deactivated frame should have been erased.";
-  EXPECT_TRUE(status_map.contains(form_in_other_frame))
+  EXPECT_TRUE(parsing_set.contains(form_in_other_frame))
       << "Form in a different frame should still be tracked.";
+
+  const auto& response_set =
+      test_api(tracker()).forms_awaiting_server_response();
+  EXPECT_FALSE(response_set.contains(form_in_frame));
+  EXPECT_TRUE(response_set.contains(form_in_other_frame));
 }
 
 // Tests that `OnAutofillManagerStateChanged`'s cleanup logic is NOT triggered
@@ -132,90 +161,7 @@ TEST_F(FormPredictionsTrackerTest, NoCleanupOnActivation) {
       /*old_state=*/AutofillDriver::LifecycleState::kInactive,
       /*new_state=*/AutofillDriver::LifecycleState::kActive);
 
-  EXPECT_TRUE(test_api(tracker()).form_parsing_status().contains(form_id));
-}
-
-// Tests the state transitions of a form. It verifies that heuristic and
-// server parsing statuses are updated independently based on the source
-// provided in `OnFieldTypesDetermined`.
-TEST_F(FormPredictionsTrackerTest, StateTransitions) {
-  std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
-  const FormGlobalId& form_id = forms[0];
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeFormsSeen, forms,
-      base::span<FormGlobalId>());
-
-  // Simulate local heuristic parsing completion.
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      /*small_forms_were_parsed=*/true);
-  EXPECT_TRUE(test_api(tracker())
-                  .form_parsing_status()
-                  .at(form_id)
-                  .heuristic_parsed_in_actor_mode);
-  EXPECT_FALSE(test_api(tracker())
-                   .form_parsing_status()
-                   .at(form_id)
-                   .server_predicted_in_actor_mode);
-
-  // Simulate server-side parsing completion.
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer,
-      /*small_forms_were_parsed=*/true);
-  EXPECT_TRUE(test_api(tracker())
-                  .form_parsing_status()
-                  .at(form_id)
-                  .server_predicted_in_actor_mode);
-}
-
-// Tests that if a form is seen again (e.g., the DOM was modified and
-// re-triggered `OnBeforeFormsSeen`), its parsing status is reset to false
-// because the previous parsing results may no longer be valid.
-TEST_F(FormPredictionsTrackerTest, ResetOnReSeen) {
-  std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
-  const FormGlobalId& form_id = forms[0];
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeFormsSeen, forms,
-      base::span<FormGlobalId>());
-
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      /*small_forms_were_parsed=*/true);
-
-  // Simulate the same form being updated/re-processed by the manager.
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeFormsSeen, forms,
-      base::span<FormGlobalId>());
-
-  // The status should be cleared (reset to default).
-  EXPECT_FALSE(test_api(tracker())
-                   .form_parsing_status()
-                   .at(form_id)
-                   .heuristic_parsed_in_actor_mode);
-}
-
-// Tests that the detector respects the `small_forms_were_parsed` flag. If the
-// manager determines types but small forms were NOT parsed, the detector
-// should not mark the form as parsed.
-TEST_F(FormPredictionsTrackerTest, IgnoreSmallForms) {
-  std::vector<FormGlobalId> forms = {test::MakeFormGlobalId()};
-  const FormGlobalId& form_id = forms[0];
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeFormsSeen, forms,
-      base::span<FormGlobalId>());
-
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      /*small_forms_were_parsed=*/false);
-
-  EXPECT_FALSE(test_api(tracker())
-                   .form_parsing_status()
-                   .at(form_id)
-                   .heuristic_parsed_in_actor_mode);
+  EXPECT_TRUE(test_api(tracker()).forms_in_parsing_state().contains(form_id));
 }
 
 // Tests that if no forms are currently tracked, calling Wait() executes the
@@ -236,21 +182,17 @@ TEST_F(FormPredictionsTrackerTest, Wait_ExecutesImmediatelyIfAlreadyParsed) {
 
   // Fully parse the form before calling Wait.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      true);
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
 
   base::test::TestFuture<void> future;
   tracker().Wait(future.GetCallback(), base::Milliseconds(1000));
   EXPECT_TRUE(future.Wait());
 }
 
-// Tests that if a form is tracked but not fully parsed, Wait() defers the
-// callback until parsing is complete.
-TEST_F(FormPredictionsTrackerTest, Wait_DefersUntilFormFullyParsed) {
+// Tests that if a form is seen (`OnBeforeFormsSeen`) but never triggers a
+// server query, calling `OnAfterFormsSeen` is sufficient to execute `Wait()`.
+TEST_F(FormPredictionsTrackerTest, Wait_NoServerQuery) {
   FormGlobalId form_id = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
@@ -258,55 +200,95 @@ TEST_F(FormPredictionsTrackerTest, Wait_DefersUntilFormFullyParsed) {
 
   base::test::TestFuture<void> future;
   tracker().Wait(future.GetCallback(), base::Milliseconds(1000));
-
-  // Finish heuristic parsing.
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      /*small_forms_were_parsed=*/true);
   EXPECT_FALSE(future.IsReady());
 
-  // Finish server parsing, callback should be executed.
+  // Form completes local parsing without initiating a server query.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer,
-      /*small_forms_were_parsed=*/true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+  EXPECT_TRUE(future.Wait());
+}
+
+// Tests that if a form is tracked for both local parsing and server
+// predictions, Wait() defers the callback until both have completed.
+TEST_F(FormPredictionsTrackerTest, Wait_DefersUntilFormFullyParsed) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeLoadedServerPredictions,
+      std::vector<FormGlobalId>{form_id});
+
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback(), base::Milliseconds(1000));
+
+  // Local form parsing finishes first.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+  EXPECT_FALSE(future.IsReady());
+
+  // Server predictions loading finishes second, callback should be executed.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterLoadedServerPredictions,
+      std::vector<FormGlobalId>{form_id});
+  EXPECT_TRUE(future.Wait());
+}
+
+// Tests that if server predictions complete before local parsing, Wait() defers
+// the callback until local parsing finishes.
+TEST_F(FormPredictionsTrackerTest,
+       Wait_DefersUntilFormFullyParsed_ServerFirst) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeLoadedServerPredictions,
+      std::vector<FormGlobalId>{form_id});
+
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback(), base::Milliseconds(1000));
+
+  // Server predictions loading finishes first.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterLoadedServerPredictions,
+      std::vector<FormGlobalId>{form_id});
+  EXPECT_FALSE(future.IsReady());
+
+  // Local form parsing finishes second, callback should be executed.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
   EXPECT_TRUE(future.Wait());
 }
 
 // Tests that if multiple forms are tracked, Wait() waits for the last remaining
-// parsing bit across all forms.
+// parsing state across all forms.
 TEST_F(FormPredictionsTrackerTest, Wait_UntilMultipleFormsParsed) {
   FormGlobalId form1 = test::MakeFormGlobalId();
   FormGlobalId form2 = test::MakeFormGlobalId();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
-      std::vector<FormGlobalId>{form1, form2}, base::span<FormGlobalId>());
+      std::vector<FormGlobalId>{form1}, base::span<FormGlobalId>());
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form2}, base::span<FormGlobalId>());
 
   base::test::TestFuture<void> future;
   tracker().Wait(future.GetCallback(), base::Milliseconds(1000));
 
   // Fully parse form 1.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form1,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      true);
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form1,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form1}, base::span<FormGlobalId>());
   EXPECT_FALSE(future.IsReady());
 
-  // Form 2 heuristics done.
+  // Fully parse form 2, callback should be executed.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form2,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      true);
-  EXPECT_FALSE(future.IsReady());
-
-  // Form 2 fully done, callback should be executed.
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form2,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form2}, base::span<FormGlobalId>());
   EXPECT_TRUE(future.Wait());
 }
 
@@ -317,6 +299,9 @@ TEST_F(FormPredictionsTrackerTest, Wait_MultipleCallbacksPending) {
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFormsSeen,
       std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeLoadedServerPredictions,
+      std::vector<FormGlobalId>{form_id});
 
   base::test::TestFuture<void> future1;
   base::test::TestFuture<void> future2;
@@ -326,16 +311,15 @@ TEST_F(FormPredictionsTrackerTest, Wait_MultipleCallbacksPending) {
   EXPECT_EQ(2UL, test_api(tracker()).num_callbacks());
 
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
   EXPECT_FALSE(future1.IsReady());
   EXPECT_FALSE(future2.IsReady());
 
   // Both callbacks should be executed when requirements are met.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+      &AutofillManager::Observer::OnAfterLoadedServerPredictions,
+      std::vector<FormGlobalId>{form_id});
 
   EXPECT_TRUE(future1.Wait());
   EXPECT_TRUE(future2.Wait());
@@ -356,12 +340,8 @@ TEST_F(FormPredictionsTrackerTest, Wait_ReschedulesAfterExecution) {
 
   // Fully parse form 1 to fire the first callback.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form1,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      true);
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form1,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form1}, base::span<FormGlobalId>());
   EXPECT_TRUE(future1.Wait());
 
   // The second form is added, the tracker should now be in an "unparsed" state
@@ -376,14 +356,10 @@ TEST_F(FormPredictionsTrackerTest, Wait_ReschedulesAfterExecution) {
   tracker().Wait(future2.GetCallback(), base::Milliseconds(1000));
   EXPECT_FALSE(future2.IsReady());
 
-  // Form 2 gets fully parsed, the future2 should be ready.
+  // Form 2 gets fully parsed, future2 should be ready.
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form2,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      true);
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form2,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form2}, base::span<FormGlobalId>());
   EXPECT_TRUE(future2.Wait());
 }
 
@@ -423,12 +399,8 @@ TEST_F(FormPredictionsTrackerTest,
   EXPECT_TRUE(future.Wait());
 
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      true);
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form}, base::span<FormGlobalId>());
 }
 
 // Verifies that timeouts are handled correctly even if multiple callbacks are
@@ -483,12 +455,8 @@ TEST_F(FormPredictionsTrackerTest,
   EXPECT_FALSE(future3.IsReady());
 
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form,
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-      true);
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined, form,
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      std::vector<FormGlobalId>{form}, base::span<FormGlobalId>());
   EXPECT_TRUE(future1.Wait());
   EXPECT_TRUE(future3.Wait());
 }
@@ -522,37 +490,6 @@ TEST_F(FormPredictionsTrackerTest, Wait_NoActiveActor) {
   base::test::TestFuture<void> future;
   tracker().Wait(future.GetCallback(), base::Milliseconds(1000));
   EXPECT_TRUE(future.Wait());
-}
-
-// Tests that if a form is reported in `OnAfterFormsSeen` but has no fields,
-// it is removed from the tracking map.
-TEST_F(FormPredictionsTrackerTest, EmptyFormRemovedAfterSeen) {
-  FormData form_data;
-  form_data.set_renderer_id(test::MakeFormRendererId());
-  // No fields added to form_data.
-
-  autofill_manager().OnFormsSeen({form_data}, {},
-                                 AutofillManagerTestApi::pass_key());
-  FormGlobalId form_id = form_data.global_id();
-
-  // The manager should now have a FormStructure with 0 fields.
-  // FormPredictionsTracker::OnAfterFormsSeen is triggered by OnFormsSeen.
-  // Since the form has 0 fields, it should be erased.
-  EXPECT_FALSE(test_api(tracker()).form_parsing_status().contains(form_id));
-}
-
-// Tests that OnFieldTypesDetermined does nothing if the form is no longer
-// being tracked (e.g., it was removed from the DOM).
-TEST_F(FormPredictionsTrackerTest, OnFieldTypesDetermined_NoOpsIfFormMissing) {
-  FormGlobalId form_id = test::MakeFormGlobalId();
-  ASSERT_FALSE(autofill_manager().FindCachedFormById(form_id));
-
-  // This should not crash and should not add the form to the map.
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFieldTypesDetermined,
-      test::MakeFormGlobalId(),
-      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
-  EXPECT_FALSE(test_api(tracker()).form_parsing_status().contains(form_id));
 }
 
 }  // namespace

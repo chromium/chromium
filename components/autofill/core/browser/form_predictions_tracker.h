@@ -20,29 +20,22 @@
 namespace autofill {
 
 // Detects if all forms on the given tab were parsed by the local heuristics and
-// the server in the actor mode.
-// TODO(crbug.com/485547157): Make this class more generic and wait for
-// non-actor mode predictions too.
+// the server.
 class FormPredictionsTracker : public AutofillManager::Observer {
  public:
   explicit FormPredictionsTracker(AutofillClient* client);
   ~FormPredictionsTracker() override;
 
-  struct FormParsingStatus {
-    bool server_predicted_in_actor_mode = false;
-    bool heuristic_parsed_in_actor_mode = false;
-  };
-
-  // Inserts `callback` to `callbacks_`. It will be executed once all forms on
-  // the current tab are parsed in the actor mode, or more than `timeout` passed
-  // since starting to wait.
+  // Inserts `callback` into `callbacks_`. The callbacks are executed once all
+  // forms on the current tab have been parsed by the local heuristics and the
+  // server, or when more than `timeout` time has passed since starting to wait.
   virtual void Wait(base::OnceClosure callback, base::TimeDelta timeout);
 
  private:
   friend class FormPredictionsTrackerTestApi;
 
-  // Verifies that all forms got predictions in actor mode and executes all
-  // callbacks in `callbacks_`, then clears `callbacks_`.
+  // Verifies that all forms got predictions and executes all callbacks in
+  // `callbacks_`, then clears `callbacks_`.
   void MaybeNotifyWaitingCallbacks();
 
   // AutofillManager::Observer:
@@ -56,14 +49,23 @@ class FormPredictionsTracker : public AutofillManager::Observer {
   void OnAfterFormsSeen(AutofillManager& manager,
                         base::span<const FormGlobalId> updated_forms,
                         base::span<const FormGlobalId> removed_forms) override;
-  void OnFieldTypesDetermined(AutofillManager& manager,
-                              FormGlobalId form_id,
-                              FieldTypeSource source,
-                              bool small_forms_were_parsed) override;
+  void OnBeforeLoadedServerPredictions(
+      AutofillManager& manager,
+      base::span<const FormGlobalId> forms) override;
+  void OnAfterLoadedServerPredictions(
+      AutofillManager& manager,
+      base::span<const FormGlobalId> forms) override;
 
-  // Keeps track of all of the forms in the current tab and their parsing
-  // status.
-  absl::flat_hash_map<FormGlobalId, FormParsingStatus> form_parsing_status_;
+  // Maps a form identifier to the number of started but not completed
+  // operations. This enables support for interleaved parsing operations.
+  // E.g.
+  // OnBeforeFormsSeen({f}, {});  // with `!small_forms_were_parsed`
+  // OnBeforeFormsSeen({f}, {});  // with `small_forms_were_parsed`
+  // OnAfterFormsSeen({f}, {});  // with `!small_forms_were_parsed`
+  // Now forms_in_parsing_state_ would contain (f, 1) as one more
+  // OnAfterFormsSeen call is pending.
+  absl::flat_hash_map<FormGlobalId, int> forms_in_parsing_state_;
+  absl::flat_hash_map<FormGlobalId, int> forms_awaiting_server_response_;
 
   // Callbacks that inform callers that form parsing is complete or that the
   // timeout has been reached.

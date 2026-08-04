@@ -51,6 +51,37 @@ base::OnceClosure WrapAsTimeoutCallback(base::OnceClosure cb,
   return base::BindOnce(&TimeoutHelper::Run, std::move(helper));
 }
 
+void EraseAll(absl::flat_hash_map<FormGlobalId, int>& map,
+              base::span<const FormGlobalId> forms_to_erase) {
+  for (const FormGlobalId& form_id : forms_to_erase) {
+    map.erase(form_id);
+  }
+}
+
+// Increments the number of times `RegisterCompletedWork` needs to be
+// called for `forms` such that all work is considered completed.
+void RegisterPendingWork(absl::flat_hash_map<FormGlobalId, int>& map,
+                         base::span<const FormGlobalId> forms) {
+  for (const FormGlobalId& form_id : forms) {
+    map[form_id]++;
+  }
+}
+
+// Decrements the number of times `RegisterCompletedWork` needs to be
+// called for `forms` such that all work is considered completed and
+// clears entries without pending work.
+void RegisterCompletedWork(absl::flat_hash_map<FormGlobalId, int>& map,
+                           base::span<const FormGlobalId> forms) {
+  for (const FormGlobalId& form_id : forms) {
+    if (auto iter = map.find(form_id); iter != map.end()) {
+      iter->second--;
+      if (iter->second == 0) {
+        map.erase(iter);
+      }
+    }
+  }
+}
+
 }  // namespace
 
 FormPredictionsTracker::FormPredictionsTracker(AutofillClient* client)
@@ -77,17 +108,8 @@ void FormPredictionsTracker::Wait(base::OnceClosure callback,
 }
 
 void FormPredictionsTracker::MaybeNotifyWaitingCallbacks() {
-  if (callbacks_.empty()) {
-    return;
-  }
-
-  // TODO(crbug.com/479794574): Do not wait for empty forms when notifing
-  // `ObservationDelayController`
-  bool all_forms_parsed =
-      std::ranges::all_of(form_parsing_status_, [](const auto& pair) {
-        return pair.second.server_predicted_in_actor_mode &&
-               pair.second.heuristic_parsed_in_actor_mode;
-      });
+  bool all_forms_parsed = forms_in_parsing_state_.empty() &&
+                          forms_awaiting_server_response_.empty();
   if (all_forms_parsed) {
     for (base::OnceClosure& callback : std::exchange(callbacks_, {})) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -103,9 +125,11 @@ void FormPredictionsTracker::OnAutofillManagerStateChanged(
   if (new_state == AutofillDriver::LifecycleState::kPendingReset ||
       new_state == AutofillDriver::LifecycleState::kPendingDeletion) {
     LocalFrameToken local_frame_token = manager.driver().GetFrameToken();
-    absl::erase_if(form_parsing_status_, [local_frame_token](const auto& pair) {
-      return pair.first.frame_token == local_frame_token;
-    });
+    auto matcher = [local_frame_token](const auto& item) {
+      return item.first.frame_token == local_frame_token;
+    };
+    absl::erase_if(forms_in_parsing_state_, matcher);
+    absl::erase_if(forms_awaiting_server_response_, matcher);
 
     MaybeNotifyWaitingCallbacks();
   }
@@ -115,60 +139,35 @@ void FormPredictionsTracker::OnBeforeFormsSeen(
     AutofillManager& manager,
     base::span<const FormGlobalId> updated_forms,
     base::span<const FormGlobalId> removed_forms) {
-  // Insert new forms or invalidate the parsing state of modified forms.
-  for (FormGlobalId form_global_id : updated_forms) {
-    form_parsing_status_[form_global_id] = FormParsingStatus();
-  }
-  for (const FormGlobalId& form_global_id : removed_forms) {
-    form_parsing_status_.erase(form_global_id);
-  }
-
-  MaybeNotifyWaitingCallbacks();
+  // These are deleted in OnAfterFormsSeen instead of here to deal with the
+  // following order of events.
+  // OnBeforeFormsSeen({f}, {});
+  // OnBeforeFormsSeen({}, {f});
+  // OnAfterFormsSeen({f}, {});
+  // OnAfterFormsSeen({}, {f});
+  RegisterPendingWork(forms_in_parsing_state_, updated_forms);
 }
 
 void FormPredictionsTracker::OnAfterFormsSeen(
     AutofillManager& manager,
     base::span<const FormGlobalId> updated_forms,
     base::span<const FormGlobalId> removed_forms) {
-  // If a form was seen as updated in `OnBeforeFormsSeen()`, but `manager` does
-  // not own it here, it means that it didn't satisfy the requirements for
-  // parsing it (e.g. had 0 fields). In that case, this class should not wait
-  // for it.
-  for (const FormGlobalId form_id : updated_forms) {
-    if (!manager.FindCachedFormById(form_id)) {
-      // Form was not actually parsed.
-      form_parsing_status_.erase(form_id);
-    }
-  }
-
+  EraseAll(forms_in_parsing_state_, removed_forms);
+  EraseAll(forms_awaiting_server_response_, removed_forms);
+  RegisterCompletedWork(forms_in_parsing_state_, updated_forms);
   MaybeNotifyWaitingCallbacks();
 }
 
-void FormPredictionsTracker::OnFieldTypesDetermined(
+void FormPredictionsTracker::OnBeforeLoadedServerPredictions(
     AutofillManager& manager,
-    FormGlobalId form_id,
-    FieldTypeSource source,
-    bool small_forms_were_parsed) {
-  if (!small_forms_were_parsed) {
-    return;
-  }
-  // Parsing might finish after the form got removed from the DOM.
-  if (!form_parsing_status_.contains(form_id)) {
-    return;
-  }
+    base::span<const FormGlobalId> forms) {
+  RegisterPendingWork(forms_awaiting_server_response_, forms);
+}
 
-  switch (source) {
-    case FieldTypeSource::kHeuristicsOrAutocomplete:
-      form_parsing_status_[form_id].heuristic_parsed_in_actor_mode = true;
-      break;
-    case FieldTypeSource::kAutofillServer:
-      form_parsing_status_[form_id].server_predicted_in_actor_mode = true;
-      break;
-    case FieldTypeSource::kAutofillAiModel:
-      // Not supported by GLIC.
-      break;
-  }
-
+void FormPredictionsTracker::OnAfterLoadedServerPredictions(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> forms) {
+  RegisterCompletedWork(forms_awaiting_server_response_, forms);
   MaybeNotifyWaitingCallbacks();
 }
 
