@@ -1,0 +1,39 @@
+description: >-
+  Verify experimental-code-coverage-local-debugger skill triggers local UTR
+  or coverage helper scripts when local code coverage debugging is requested.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-local-debugger
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-local-debugger/setup_triage_state.patch
+      mocks:
+        - command: vpython3
+          rules:
+            - args: ["tools/utr/run.py", "*"]
+              stdout: "UTR run completed successfully.\n"
+              exit_code: 0
+            - args: ["tools/code_coverage/run_local_coverage.py", "*"]
+              stdout: "Local coverage generated.\n"
+              exit_code: 0
+
+tests:
+  - description: >-
+      Trigger: Implicit query to run local code coverage debugging
+    vars:
+      query: >-
+        Run local code coverage debugging for builder linux-rel and test suite
+        net_unittests using vpython3 tools/utr/run.py or
+        run_local_coverage.py.
+    assert:
+      - type: icontains-any
+        value:
+          - "tools/utr/run.py"
+          - "tools/code_coverage/run_local_coverage.py"

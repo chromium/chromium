@@ -3,7 +3,8 @@ name: experimental-code-coverage-local-debugger
 description: >-
   Runs code coverage locally via Universal Test Runner (UTR) or helper scripts,
   mimicking LUCI trybots. Activate when CQ tryjobs fail or underreport coverage,
-  to test local GN/recipe repairs before uploading, or to debug hermetic crashes.
+  to test local GN/recipe repairs before uploading, or to debug hermetic
+  crashes.
 ---
 
 # Code Coverage Local Debugger
@@ -59,19 +60,26 @@ vpython3 tools/utr/run.py -p chromium -B {{bucket}} -b {{builder_name}} \
 ```
 
 - **When to Use UTR for Code Coverage**: Use this option when you need to verify
-  that Starlark or GN argument repairs successfully restore code coverage instrumentation
-  and `.profdata` generation before uploading a CL, or when isolating shard failures
-  on platforms not accessible locally (e.g., Windows or ChromeOS).
+  that Starlark or GN argument repairs successfully restore code coverage
+  instrumentation and `.profdata` generation before uploading a CL, or when
+  isolating shard failures on platforms not accessible locally (e.g., Windows or
+  ChromeOS).
 
 ### 3. Rapid Workstation Execution (Bypass Container)
 
-To run a native workstation test binary directly against pinned LLVM tools
-without UTR container overhead, execute the rapid helper script:
+To build and run a native workstation test binary directly against pinned LLVM
+tools without UTR container overhead, execute `run_local_coverage.py`:
 
 ```bash
 vpython3 tools/code_coverage/run_local_coverage.py \
   --binary {{build_dir}}/{{test_suite}} --source {{target_file}}
 ```
+
+- **Automatic Compilation**: `run_local_coverage.py` automatically compiles the
+  target test binary using `autoninja -C {{build_dir}} {{test_suite}}` before
+  running.
+- **Pre-built Binary Optimization**: Pass `--no-compile` if the target binary is
+  already compiled locally to skip the build step.
 
 ### 4. Inspect Local Verification Artifacts
 
@@ -89,7 +97,7 @@ ______________________________________________________________________
 - [UTR - Universal Test Runner][utr_ref]
 - [Source-Based Code Coverage in Clang][clang_cov_ref]
 
-[utr_ref]: https://chromium.googlesource.com/chromium/src/tools/+/HEAD/utr/README.md
-[clang_cov_ref]: https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
-
 ______________________________________________________________________
+
+[clang_cov_ref]: https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
+[utr_ref]: https://chromium.googlesource.com/chromium/src/tools/+/HEAD/utr/README.md

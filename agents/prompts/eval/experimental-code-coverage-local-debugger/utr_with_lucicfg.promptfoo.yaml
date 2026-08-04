@@ -1,0 +1,47 @@
+description: >-
+  Verify experimental-code-coverage-local-debugger skill regenerates Starlark
+  configs via lucicfg and executes UTR when Starlark repairs are made.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-local-debugger
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-local-debugger/setup_triage_state.patch
+      mocks:
+        - command: lucicfg
+          rules:
+            - args: ["generate", "*"]
+              stdout: "Successfully regenerated Starlark configs.\n"
+              exit_code: 0
+        - command: vpython3
+          rules:
+            - args: ["tools/utr/run.py", "*"]
+              stdout: >-
+                ResultDB: https://ci.chromium.org/ui/inv/inv-998877
+                UTR run completed successfully.
+              exit_code: 0
+
+tests:
+  - description: >-
+      Functional: Regenerate Starlark Configs and Run UTR Debugging
+    vars:
+      query: >-
+        We modified Starlark coverage arguments under infra/config/ for builder
+        linux-rel. Please run lucicfg generate main.star and run local UTR
+        debugging for net_unittests using vpython3 tools/utr/run.py.
+    assert:
+      - type: contains
+        value: "lucicfg generate"
+      - type: contains
+        value: "tools/utr/run.py"
+      - type: contains
+        value: "linux-rel"
+      - type: contains
+        value: "net_unittests"

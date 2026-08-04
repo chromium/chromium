@@ -122,6 +122,23 @@ def export_coverage(
   return res.stdout
 
 
+def compile_binary(binary_path: pathlib.Path) -> bool:
+  """Compiles target test binary locally using autoninja.
+
+  Args:
+      binary_path: Path to executable test binary.
+
+  Returns:
+      True if compilation succeeded, False otherwise.
+  """
+  build_dir = binary_path.parent
+  target_name = binary_path.name
+  print(f'Compiling target {target_name} in {build_dir}...', file=sys.stderr)
+  cmd = ['autoninja', '-C', str(build_dir), target_name]
+  res = subprocess.run(cmd, check=False)
+  return res.returncode == 0
+
+
 def main() -> None:
   """Parses CLI args and executes rapid local coverage generation."""
   parser = argparse.ArgumentParser(description=__doc__)
@@ -134,10 +151,20 @@ def main() -> None:
                       default=pathlib.Path('scratch/local_prof'),
                       help='Scratch directory for profiles')
   parser.add_argument('--source', help='Optional source file filter')
+  parser.add_argument(
+      '--no-compile',
+      action='store_true',
+      help='Skip autoninja target compilation step if binary is pre-built',
+  )
   parser.add_argument('test_args',
                       nargs=argparse.REMAINDER,
                       help='Arguments passed to test binary')
   args = parser.parse_args()
+
+  if not args.no_compile:
+    if not compile_binary(args.binary):
+      print(f'Failed to compile target {args.binary.name}', file=sys.stderr)
+      sys.exit(1)
 
   args.scratch.mkdir(parents=True, exist_ok=True)
   code = run_test_binary(args.binary, args.scratch, args.test_args)

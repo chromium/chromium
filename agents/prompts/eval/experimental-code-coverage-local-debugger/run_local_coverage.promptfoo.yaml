@@ -1,0 +1,43 @@
+description: >-
+  Verify experimental-code-coverage-local-debugger skill compiles target test
+  binary and runs rapid local coverage via run_local_coverage.py.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-local-debugger
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-local-debugger/setup_triage_state.patch
+      mocks:
+        - command: vpython3
+          rules:
+            - args: ["tools/code_coverage/run_local_coverage.py", "*"]
+              stdout: >-
+                Compiling target net_unittests in out/Coverage...
+                Filename: net/ssl/client_cert_matcher.cc
+                Executions: 42
+                Lines: 100%
+              exit_code: 0
+
+tests:
+  - description: >-
+      Functional: Rapid Workstation Binary Coverage Execution
+    vars:
+      query: >-
+        Run rapid local code coverage for target net_unittests (binary
+        out/Coverage/net_unittests) filtered to source file
+        net/ssl/client_cert_matcher.cc using vpython3
+        tools/code_coverage/run_local_coverage.py.
+    assert:
+      - type: contains
+        value: "run_local_coverage.py"
+      - type: contains
+        value: "--binary"
+      - type: contains
+        value: "--source"
