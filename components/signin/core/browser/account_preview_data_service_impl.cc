@@ -218,6 +218,8 @@ void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
   CHECK_EQ(identity_manager_, identity_manager);
   identity_manager_observation_.Reset();
   identity_manager_ = nullptr;
+  repeating_timer_.reset();
+  ClearMemoryData();
 }
 
 void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
@@ -497,15 +499,9 @@ void AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged() {
     return;
   }
 
-  // Clears the saved pref since the user is no longer able to sign in.
-  WritePreferredAccountToPrefs(std::nullopt);
   identity_manager_observation_.Reset();
   repeating_timer_.reset();
-  deferred_fetch_on_loaded_tokens_callback_.Reset();
-  all_accounts_fetched_barrier_.Reset();
-  cached_data_.clear();
-  active_fetchers_.clear();
-  account_id_to_gaia_id_.clear();
+  ClearAllDataAndResults();
 }
 
 void AccountPreviewDataServiceImpl::CreateAndStartRepeatingTimer() {
@@ -519,11 +515,22 @@ void AccountPreviewDataServiceImpl::CreateAndStartRepeatingTimer() {
   repeating_timer_->Start();
 }
 
-void AccountPreviewDataServiceImpl::ClearAllDataAndResults() {
+void AccountPreviewDataServiceImpl::ClearMemoryData() {
   cached_data_.clear();
+  active_fetchers_.clear();
   account_id_to_gaia_id_.clear();
+  all_accounts_fetched_barrier_.Reset();
+  deferred_fetch_on_loaded_tokens_callback_.Reset();
+}
+
+void AccountPreviewDataServiceImpl::ClearStoredResults() {
   pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
   WritePreferredAccountToPrefs(std::nullopt);
+}
+
+void AccountPreviewDataServiceImpl::ClearAllDataAndResults() {
+  ClearMemoryData();
+  ClearStoredResults();
 }
 
 }  // namespace signin

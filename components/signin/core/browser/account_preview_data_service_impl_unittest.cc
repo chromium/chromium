@@ -1293,4 +1293,42 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
 }
 
+TEST_F(AccountPreviewDataServiceTest,
+       OnIdentityManagerShutdownClearsCacheAndFetchers) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  // Fetcher is active.
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(account.gaia));
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_TRUE(service_->GetAccountPreviewData(account.gaia).has_value());
+
+  // Set a preferred account preference to simulate stored results.
+  base::DictValue dict;
+  dict.Set("gaia_id", account.gaia.ToString());
+  prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+  ASSERT_TRUE(service_->GetPreferredAccountForPromo().has_value());
+
+  // Start fetching data for a second account, but without completing it.
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("user2@gmail.com");
+  // Fetcher for account2 is active.
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(account2.gaia));
+
+  // Trigger IdentityManager shutdown.
+  service_->OnIdentityManagerShutdown(identity_test_env_.identity_manager());
+
+  // Cached data and active fetchers should be cleared.
+  EXPECT_FALSE(service_->GetAccountPreviewData(account.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
+
+  // Stored results in prefs should remain intact.
+  EXPECT_TRUE(service_->GetPreferredAccountForPromo().has_value());
+}
+
 }  // namespace signin

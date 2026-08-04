@@ -105,6 +105,9 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void CreateAndStartRepeatingTimer();
   void ResetTimer();
   std::optional<AccountPreviewPreference> ComputePreferredAccount() const;
+
+  void ClearMemoryData();
+  void ClearStoredResults();
   void ClearAllDataAndResults();
 
   std::optional<AccountPreviewPreference> ReadPreferredAccountFromPrefs() const;
