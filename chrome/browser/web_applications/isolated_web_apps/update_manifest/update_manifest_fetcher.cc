@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -36,6 +37,18 @@ namespace {
 constexpr size_t kMaxUpdateManifestLength = 5 * 1024 * 1024;
 
 }  // namespace
+
+// static
+std::string_view UpdateManifestFetcher::ErrorToString(Error error) {
+  switch (error) {
+    case Error::kDownloadFailed:
+      return "Failed to download update manifest";
+    case Error::kInvalidJson:
+      return "Update manifest contains invalid JSON";
+    case Error::kInvalidManifest:
+      return "Invalid update manifest format";
+  }
+}
 
 UpdateManifestFetcher::UpdateManifestFetcher(
     GURL url,
@@ -210,15 +223,10 @@ void UpdateManifestFetcher::ParseUpdateManifest(
 
   std::move(fetch_callback_)
       .Run(update_manifest.transform_error(
-          [](UpdateManifest::JsonFormatError error) -> Error {
-            switch (error) {
-              case UpdateManifest::JsonFormatError::kRootNotADictionary:
-              case UpdateManifest::JsonFormatError::kChannelsNotADictionary:
-              case UpdateManifest::JsonFormatError::kChannelNotADictionary:
-              case UpdateManifest::JsonFormatError::kVersionsNotAnArray:
-              case UpdateManifest::JsonFormatError::kVersionEntryNotADictionary:
-                return Error::kInvalidManifest;
-            }
+          [this](UpdateManifest::JsonFormatError error) -> Error {
+            DVLOG(1) << "Unable to parse IWA Update Manifest format for URL "
+                     << url_ << ": " << UpdateManifest::ErrorToString(error);
+            return Error::kInvalidManifest;
           }));
 }
 

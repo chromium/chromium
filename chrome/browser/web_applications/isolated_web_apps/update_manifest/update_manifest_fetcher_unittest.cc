@@ -322,5 +322,17 @@ TEST_F(UpdateManifestFetcherTest,
             network::mojom::IPAddressSpace::kLocal);
 }
 
+TEST_F(UpdateManifestFetcherTest, ErrorToString) {
+  EXPECT_EQ(UpdateManifestFetcher::ErrorToString(
+                UpdateManifestFetcher::Error::kDownloadFailed),
+            "Failed to download update manifest");
+  EXPECT_EQ(UpdateManifestFetcher::ErrorToString(
+                UpdateManifestFetcher::Error::kInvalidJson),
+            "Update manifest contains invalid JSON");
+  EXPECT_EQ(UpdateManifestFetcher::ErrorToString(
+                UpdateManifestFetcher::Error::kInvalidManifest),
+            "Invalid update manifest format");
+}
+
 }  // namespace
 }  // namespace web_app

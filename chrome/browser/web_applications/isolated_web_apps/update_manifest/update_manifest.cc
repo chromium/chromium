@@ -184,6 +184,22 @@ ParseAndValidateChannels(base::optional_ref<const base::Value> channels_value) {
 }  // namespace
 
 // static
+std::string_view UpdateManifest::ErrorToString(JsonFormatError error) {
+  switch (error) {
+    case JsonFormatError::kRootNotADictionary:
+      return "Root is not a dictionary";
+    case JsonFormatError::kChannelsNotADictionary:
+      return "'channels' field is not a dictionary";
+    case JsonFormatError::kChannelNotADictionary:
+      return "Channel entry is not a dictionary";
+    case JsonFormatError::kVersionsNotAnArray:
+      return "'versions' field is not an array";
+    case JsonFormatError::kVersionEntryNotADictionary:
+      return "Version entry is not a dictionary";
+  }
+}
+
+// static
 base::expected<UpdateManifest, UpdateManifest::JsonFormatError>
 UpdateManifest::CreateFromJson(const base::Value& json,
                                const GURL& update_manifest_url) {

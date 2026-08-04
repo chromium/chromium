@@ -74,6 +74,24 @@ INSTANTIATE_TEST_SUITE_P(
                     "a channel name can even have emoji 🚂",
                     "日本"));
 
+TEST(UpdateManifestTest, ErrorToString) {
+  EXPECT_EQ(UpdateManifest::ErrorToString(
+                UpdateManifest::JsonFormatError::kRootNotADictionary),
+            "Root is not a dictionary");
+  EXPECT_EQ(UpdateManifest::ErrorToString(
+                UpdateManifest::JsonFormatError::kChannelsNotADictionary),
+            "'channels' field is not a dictionary");
+  EXPECT_EQ(UpdateManifest::ErrorToString(
+                UpdateManifest::JsonFormatError::kChannelNotADictionary),
+            "Channel entry is not a dictionary");
+  EXPECT_EQ(UpdateManifest::ErrorToString(
+                UpdateManifest::JsonFormatError::kVersionsNotAnArray),
+            "'versions' field is not an array");
+  EXPECT_EQ(UpdateManifest::ErrorToString(
+                UpdateManifest::JsonFormatError::kVersionEntryNotADictionary),
+            "Version entry is not a dictionary");
+}
+
 TEST(UpdateManifestTest, FailsToParseManifestWithoutKeys) {
   auto update_manifest = UpdateManifest::CreateFromJson(
       base::Value(base::DictValue()), GURL("https://c.de/um.json"));

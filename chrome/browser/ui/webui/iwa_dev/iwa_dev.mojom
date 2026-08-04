@@ -29,6 +29,25 @@ struct IwaDevModeAppInfo {
   string installed_version;
 };
 
+// Mimics web_app::UpdateManifest::VersionEntry.
+struct VersionEntry {
+  string version;
+  url.mojom.Url src;
+  array<string> channels;
+};
+
+// Mimics web_app::UpdateManifest::ChannelMetadata.
+struct ChannelMetadata {
+  string channel;
+  string display_name;
+};
+
+// Mimics web_app::UpdateManifest.
+struct UpdateManifest {
+  array<VersionEntry> versions;
+  array<ChannelMetadata> channels;
+};
+
 // Interface for the WebUI page to communicate with the browser.
 interface PageHandler {
   // Returns information about installed dev mode IWAs.
@@ -37,6 +56,16 @@ interface PageHandler {
   // Installs an IWA from a local proxy server.
   // Returns an error message if installation failed, or null on success.
   InstallAppFromDevProxy(url.mojom.Url url) => (string? error);
+
+  // Installs an IWA from an update manifest URL.
+  // Returns an error message if installation failed, or null on success.
+  InstallAppFromUpdateManifest(url.mojom.Url web_bundle_url,
+                               UpdateInfo update_info)
+      => (string? error);
+
+  // Attempts to fetch and parse an IWA update manifest from the provided url.
+  ParseUpdateManifestFromUrl(url.mojom.Url update_manifest_url)
+    => result<UpdateManifest, string>;
 
   // Opens a file picker for the user to select a Web Bundle and installs it.
   SelectAndInstallAppFromLocalWebBundle() => (string? error);

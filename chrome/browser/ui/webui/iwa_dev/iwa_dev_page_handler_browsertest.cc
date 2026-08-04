@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev_ui.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -206,7 +208,7 @@ class IwaDevHandlerBrowserTest
     std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetName(name).SetVersion(version))
-            .BuildBundle();
+            .BuildBundle(web_package::test::Ed25519KeyPair::CreateRandom());
     auto result = app->InstallWithSource(
         profile(), &web_app::IsolatedWebAppInstallSource::FromDevUi);
     CHECK(result.has_value()) << result.error();
@@ -285,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
       web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
                                          .SetName(kLocalBundleName)
                                          .SetVersion(kAppBaseVersion))
-          .BuildBundle();
+          .BuildBundle(web_package::test::Ed25519KeyPair::CreateRandom());
 
   auto error = CallSelectAndInstallAppFromLocalWebBundle(app->path());
   EXPECT_FALSE(error.has_value());
@@ -335,6 +337,270 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
   const auto& update_info = app_info->source->get_update_info();
   EXPECT_EQ(update_info->update_manifest_url, GURL(kUpdateManifestUrl));
   EXPECT_EQ(update_info->update_channel, "default");
+}
+
+class IwaDevHandlerUpdateManifestBrowserTest : public IwaDevHandlerBrowserTest {
+ public:
+  // Builds a BasicHttpResponse with the given status code, content, and content
+  // type.
+  static std::unique_ptr<net::test_server::HttpResponse> BuildResponse(
+      net::HttpStatusCode status,
+      std::optional<std::string> content = std::nullopt,
+      std::optional<std::string> content_type = std::nullopt) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(status);
+    if (content_type) {
+      response->set_content_type(*content_type);
+    }
+    if (content) {
+      response->set_content(*content);
+    }
+    return response;
+  }
+
+  // Starts an EmbeddedTestServer that responds to requests matching `path`
+  // using `response_builder`.
+  std::unique_ptr<net::EmbeddedTestServer> StartServerForPath(
+      std::string_view path,
+      base::RepeatingCallback<std::unique_ptr<net::test_server::HttpResponse>()>
+          response_builder) {
+    auto server = std::make_unique<net::EmbeddedTestServer>();
+    server->RegisterRequestHandler(base::BindRepeating(
+        [](std::string target_path,
+           base::RepeatingCallback<
+               std::unique_ptr<net::test_server::HttpResponse>()> builder,
+           const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.GetURL().path() == target_path) {
+            return builder.Run();
+          }
+          return nullptr;
+        },
+        std::string(path), response_builder));
+    EXPECT_TRUE(server->Start());
+    return server;
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> ServeData(
+      std::string_view path,
+      std::string_view content,
+      std::optional<std::string> content_type = std::nullopt) {
+    return StartServerForPath(
+        path, base::BindRepeating(&BuildResponse, net::HTTP_OK,
+                                  std::make_optional<std::string>(content),
+                                  content_type));
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> ServeJson(
+      std::string_view path,
+      std::string_view json_content) {
+    return ServeData(path, json_content, "application/json");
+  }
+
+  std::optional<std::string> CallInstallAppFromUpdateManifest(
+      const GURL& web_bundle_url,
+      iwa_dev::mojom::UpdateInfoPtr update_info) {
+    base::test::TestFuture<const std::optional<std::string>&> future;
+    GetHandler()->InstallAppFromUpdateManifest(
+        web_bundle_url, std::move(update_info), future.GetCallback());
+    return future.Take();
+  }
+
+  base::expected<iwa_dev::mojom::UpdateManifestPtr, std::string>
+  CallParseUpdateManifestFromUrl(const GURL& url) {
+    base::test::TestFuture<
+        base::expected<iwa_dev::mojom::UpdateManifestPtr, std::string>>
+        future;
+    GetHandler()->ParseUpdateManifestFromUrl(url, future.GetCallback());
+    return future.Take();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       ParseUpdateManifestFromUrlWithoutChannels_Success) {
+  auto server = ServeJson("/update_manifest.json", R"({
+    "versions": [
+      {
+        "version": "1.0.0",
+        "src": "https://example.com/app.swbn"
+      }
+    ]
+  })");
+
+  auto result =
+      CallParseUpdateManifestFromUrl(server->GetURL("/update_manifest.json"));
+  ASSERT_TRUE(result.has_value());
+  const auto& manifest = *result;
+  ASSERT_EQ(manifest->versions.size(), 1u);
+  EXPECT_EQ(manifest->versions[0]->version, "1.0.0");
+  EXPECT_EQ(manifest->versions[0]->src, GURL("https://example.com/app.swbn"));
+  EXPECT_THAT(manifest->versions[0]->channels, testing::ElementsAre("default"));
+
+  ASSERT_EQ(manifest->channels.size(), 1u);
+  EXPECT_EQ(manifest->channels[0]->channel, "default");
+  EXPECT_EQ(manifest->channels[0]->display_name, "default");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       ParseUpdateManifestFromUrlWithChannels_Success) {
+  auto server = ServeJson("/update_manifest.json", R"({
+    "channels": {
+      "beta": { "name": "Beta Channel" }
+    },
+    "versions": [
+      {
+        "version": "1.0.0",
+        "src": "https://example.com/app.swbn",
+        "channels": ["beta"]
+      }
+    ]
+  })");
+
+  auto result =
+      CallParseUpdateManifestFromUrl(server->GetURL("/update_manifest.json"));
+  ASSERT_TRUE(result.has_value());
+  const auto& manifest = *result;
+
+  ASSERT_EQ(manifest->versions.size(), 1u);
+  EXPECT_THAT(manifest->versions[0]->channels, testing::ElementsAre("beta"));
+
+  ASSERT_EQ(manifest->channels.size(), 1u);
+  EXPECT_EQ(manifest->channels[0]->channel, "beta");
+  EXPECT_EQ(manifest->channels[0]->display_name, "Beta Channel");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       ParseUpdateManifestFromUrl_Error_DownloadFailed) {
+  auto result =
+      CallParseUpdateManifestFromUrl(GURL("https://127.0.0.1:0/missing.json"));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(),
+              testing::HasSubstr(web_app::UpdateManifestFetcher::ErrorToString(
+                  web_app::UpdateManifestFetcher::Error::kDownloadFailed)));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       ParseUpdateManifestFromUrl_Error_InvalidJson) {
+  auto server = ServeJson("/invalid.json", "invalid json content {{{");
+
+  auto result = CallParseUpdateManifestFromUrl(server->GetURL("/invalid.json"));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(),
+              testing::HasSubstr(web_app::UpdateManifestFetcher::ErrorToString(
+                  web_app::UpdateManifestFetcher::Error::kInvalidJson)));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       ParseUpdateManifestFromUrl_Error_InvalidManifestSchema) {
+  auto server = ServeJson("/invalid_manifest.json", R"({ "invalid": true })");
+
+  auto result =
+      CallParseUpdateManifestFromUrl(server->GetURL("/invalid_manifest.json"));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(),
+              testing::HasSubstr(web_app::UpdateManifestFetcher::ErrorToString(
+                  web_app::UpdateManifestFetcher::Error::kInvalidManifest)));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       InstallAppFromUpdateManifest_Success) {
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
+                                         .SetName(kManifestAppName)
+                                         .SetVersion(kAppBaseVersion))
+          .BuildBundle(web_package::test::Ed25519KeyPair::CreateRandom());
+  auto server = ServeData("/app.swbn", bundle->GetBundleData());
+
+  auto update_info =
+      iwa_dev::mojom::UpdateInfo::New(GURL(kUpdateManifestUrl), "default");
+  auto error = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
+                                                std::move(update_info));
+  EXPECT_FALSE(error.has_value()) << *error;
+
+  auto apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  EXPECT_EQ(apps[0]->name, kManifestAppName);
+  ASSERT_TRUE(apps[0]->source->is_update_info());
+  const auto& installed_update_info = apps[0]->source->get_update_info();
+  EXPECT_EQ(installed_update_info->update_manifest_url,
+            GURL(kUpdateManifestUrl));
+  EXPECT_EQ(installed_update_info->update_channel, "default");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       InstallAppFromUpdateManifestCustomChannel_Success) {
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
+                                         .SetName(kManifestAppName)
+                                         .SetVersion(kAppBaseVersion))
+          .BuildBundle(web_package::test::Ed25519KeyPair::CreateRandom());
+  auto server = ServeData("/app.swbn", bundle->GetBundleData());
+
+  auto update_info =
+      iwa_dev::mojom::UpdateInfo::New(GURL(kUpdateManifestUrl), "beta");
+  auto error = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
+                                                std::move(update_info));
+  EXPECT_FALSE(error.has_value()) << *error;
+
+  auto apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  EXPECT_EQ(apps[0]->name, kManifestAppName);
+  ASSERT_TRUE(apps[0]->source->is_update_info());
+  const auto& installed_update_info = apps[0]->source->get_update_info();
+  EXPECT_EQ(installed_update_info->update_manifest_url,
+            GURL(kUpdateManifestUrl));
+  EXPECT_EQ(installed_update_info->update_channel, "beta");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       InstallAppFromUpdateManifest_NonHttpUrlScheme) {
+  // Non-HTTP/HTTPS bundle URL
+  auto update_info1 = iwa_dev::mojom::UpdateInfo::New(
+      GURL("https://example.com/update.json"), "default");
+  auto error1 = CallInstallAppFromUpdateManifest(GURL("chrome://settings"),
+                                                 std::move(update_info1));
+  ASSERT_TRUE(error1.has_value());
+  EXPECT_EQ(*error1, "Invalid Web Bundle URL provided.");
+  EXPECT_TRUE(GetInstalledAppsInfo().empty());
+
+  // Non-HTTP/HTTPS manifest URL
+  auto update_info2 =
+      iwa_dev::mojom::UpdateInfo::New(GURL("chrome://settings"), "default");
+  auto error2 = CallInstallAppFromUpdateManifest(
+      GURL("https://example.com/app.swbn"), std::move(update_info2));
+  ASSERT_TRUE(error2.has_value());
+  EXPECT_EQ(*error2, "Invalid Update Manifest URL provided.");
+  EXPECT_TRUE(GetInstalledAppsInfo().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       InstallAppFromUpdateManifest_InvalidUpdateChannel) {
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
+                                         .SetName(kManifestAppName)
+                                         .SetVersion(kAppBaseVersion))
+          .BuildBundle(web_package::test::Ed25519KeyPair::CreateRandom());
+  auto server = ServeData("/app.swbn", bundle->GetBundleData());
+
+  auto update_info =
+      iwa_dev::mojom::UpdateInfo::New(GURL(kUpdateManifestUrl), "");
+  auto error = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
+                                                std::move(update_info));
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(*error, "Invalid update channel provided.");
+  EXPECT_TRUE(GetInstalledAppsInfo().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
+                       InstallAppFromUpdateManifest_BundleDownloadError) {
+  auto update_info =
+      iwa_dev::mojom::UpdateInfo::New(GURL(kUpdateManifestUrl), "default");
+  auto error = CallInstallAppFromUpdateManifest(
+      GURL("https://127.0.0.1:0/missing.swbn"), std::move(update_info));
+  ASSERT_TRUE(error.has_value());
+  EXPECT_THAT(*error, testing::HasSubstr(
+                          "Network error while downloading bundle file"));
+  EXPECT_TRUE(GetInstalledAppsInfo().empty());
 }
 
 class IwaDevHandlerObserverBrowserTest : public IwaDevHandlerBrowserTest {
