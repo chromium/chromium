@@ -55,6 +55,25 @@ const CSSValue* StyleRuleCounterStyle::GetSpeakAs() const {
   return properties_->GetPropertyCSSValue(CSSPropertyID::kSpeakAs);
 }
 
+bool StyleRuleCounterStyle::operator==(
+    const StyleRuleCounterStyle& other) const {
+  if (this == &other) {
+    return true;
+  }
+  return name_ == other.name_ &&
+         base::ValuesEquivalent(GetSystem(), other.GetSystem()) &&
+         base::ValuesEquivalent(GetNegative(), other.GetNegative()) &&
+         base::ValuesEquivalent(GetPrefix(), other.GetPrefix()) &&
+         base::ValuesEquivalent(GetSuffix(), other.GetSuffix()) &&
+         base::ValuesEquivalent(GetRange(), other.GetRange()) &&
+         base::ValuesEquivalent(GetPad(), other.GetPad()) &&
+         base::ValuesEquivalent(GetFallback(), other.GetFallback()) &&
+         base::ValuesEquivalent(GetSymbols(), other.GetSymbols()) &&
+         base::ValuesEquivalent(GetAdditiveSymbols(),
+                                other.GetAdditiveSymbols()) &&
+         base::ValuesEquivalent(GetSpeakAs(), other.GetSpeakAs());
+}
+
 MutableCSSPropertyValueSet& StyleRuleCounterStyle::MutableStyleForInspector() {
   version_++;
   return Properties();

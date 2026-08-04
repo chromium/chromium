@@ -2182,7 +2182,10 @@ InspectorCSSAgent::CounterAtRulesForElement(Element* element) {
   }
 
   const ListStyleTypeData* list_style_type_data = style->ListStyleType();
-  if (!list_style_type_data || !list_style_type_data->IsCounterStyle()) {
+  if (!list_style_type_data || !list_style_type_data->IsCounterStyle() ||
+      list_style_type_data->IsSymbolsFunction()) {
+    // A symbols() counter style is anonymous, so it has no @counter-style
+    // at-rule to report.
     return nullptr;
   }
 

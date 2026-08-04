@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_symbols_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -6562,6 +6563,12 @@ const CSSValue* ListStyleType::ParseSingleValue(
     return none;
   }
 
+  if (auto* symbols =
+          css_parsing_utils::ConsumeCounterStyleSymbolsFunction(stream)) {
+    context.Count(WebDXFeature::kDRAFT_Symbols);
+    return symbols;
+  }
+
   if (auto* counter_style_name =
           css_parsing_utils::ConsumeCounterStyleName(stream, context)) {
     return counter_style_name;
@@ -6583,6 +6590,10 @@ const CSSValue* ListStyleType::CSSValueFromComputedStyleInternal(
     return MakeGarbageCollected<CSSStringValue>(
         list_style_type.GetStringValue());
   }
+  if (list_style_type.IsSymbolsFunction()) {
+    return ComputedStyleUtils::ValueForSymbolsFunction(
+        list_style_type.GetSymbolsCounterStyle());
+  }
   return &MakeGarbageCollected<CSSCustomIdentValue>(
               list_style_type.GetCounterStyleName())
               ->PopulateWithTreeScope(list_style_type.GetTreeScope());
@@ -6602,6 +6613,12 @@ void ListStyleType::ApplyValue(StyleResolverState& state,
   if (const auto* string_value = DynamicTo<CSSStringValue>(value)) {
     builder.SetListStyleType(
         ListStyleTypeData::CreateString(AtomicString(string_value->Value())));
+    return;
+  }
+
+  if (const auto* symbols_value = DynamicTo<cssvalue::CSSSymbolsValue>(value)) {
+    builder.SetListStyleType(
+        ListStyleTypeData::CreateSymbolsFunction(*symbols_value));
     return;
   }
 

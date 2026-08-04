@@ -25,6 +25,7 @@
 namespace blink {
 
 class ComputedStyle;
+class CounterStyle;
 class CSSNumericLiteralValue;
 class CSSStyleValue;
 class CSSValue;
@@ -306,6 +307,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForCounterDirectives(
       const ComputedStyle&,
       CountersAttachmentContext::Type type);
+  static const CSSValue* ValueForSymbolsFunction(const CounterStyle&);
   static CSSValue* ValueForShape(const ComputedStyle&,
                                  bool allow_visited_style,
                                  ShapeValue*,

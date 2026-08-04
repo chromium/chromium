@@ -196,6 +196,43 @@ TEST_F(AXLayoutObjectTest, GetListStyleOverriddenDecimalLeadingZero) {
   EXPECT_EQ(expected, GetAXObjectByElementId("target")->GetListStyle());
 }
 
+TEST_F(AXLayoutObjectTest, GetListStyleSymbolsFunction) {
+  ScopedCSSCounterStyleSymbolsFunctionForTest scoped_feature(true);
+  ScopedCSSAtRuleCounterStyleSpeakAsDescriptorForTest speak_as(false);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <ul>
+    <li id="target" style="list-style-type: symbols('*' '+')"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kOther,
+            GetAXObjectByElementId("target")->GetListStyle());
+}
+
+TEST_F(AXLayoutObjectTest, GetListStyleSymbolsFunctionWithSpeakAs) {
+  ScopedCSSCounterStyleSymbolsFunctionForTest scoped_feature(true);
+  ScopedCSSAtRuleCounterStyleSpeakAsDescriptorForTest speak_as(true);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <ul>
+    <li id="cyclic" style="list-style-type: symbols(cyclic '*')"></li>
+    <li id="numeric" style="list-style-type: symbols(numeric '0' '1')"></li>
+  </ul>
+  )HTML");
+
+  // With 'speak-as' enabled, a symbols() function behaves like any other
+  // non-predefined counter style: 'cyclic' speaks as bullets, 'numeric' as
+  // numbers.
+  EXPECT_EQ(ListStyle::kDisc, GetAXObjectByElementId("cyclic")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("numeric")->GetListStyle());
+}
+
 TEST_F(AXLayoutObjectTest, GetPredefinedListStyleWithSpeakAs) {
   ScopedCSSAtRuleCounterStyleSpeakAsDescriptorForTest enabled(true);
 

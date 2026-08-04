@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -750,6 +751,24 @@ TEST_F(InspectorCSSAgentTest, GetCounterStyleRuleBuiltInFallback) {
   EXPECT_TRUE(rules);
   EXPECT_EQ(1u, rules->size());
   EXPECT_EQ(rules->at(0)->getName()->getText(), "--my-style");
+}
+
+TEST_F(InspectorCSSAgentTest, GetCounterStyleRuleSymbolsFunctionHasNoAtRule) {
+  ScopedCSSCounterStyleSymbolsFunctionForTest scoped_feature(true);
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      #e {
+        display: list-item;
+        list-style-type: symbols('a' 'b' 'c');
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // An anonymous symbols() counter style has no name, so there is no
+  // corresponding @counter-style at-rule to report to DevTools.
+  AtRules rules = CollectCounterAtRules("#e");
+  EXPECT_FALSE(rules);
 }
 
 TEST_F(InspectorCSSAgentTest, GetFontPaletteValuesRuleNoMatchPalette) {

@@ -78,6 +78,11 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   AtomicString GetName() const;
   CounterStyleSystem GetSystem() const { return system_; }
 
+  // Compares the declared descriptors and the resolved `extends`, `fallback`
+  // and `speak-as` targets by identity, so two styles that resolve differently
+  // are not equal.
+  bool operator==(const CounterStyle& other) const;
+
   bool IsPredefined() const { return is_predefined_; }
   void SetIsPredefined() { is_predefined_ = true; }
 

@@ -18,6 +18,10 @@ class CounterStyle;
 class Document;
 class TreeScope;
 
+namespace cssvalue {
+class CSSSymbolsValue;
+}  // namespace cssvalue
+
 class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
  public:
   ~ListStyleTypeData() = default;
@@ -27,32 +31,42 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
 
   ListStyleTypeData(Type type,
                     AtomicString name_or_string_value,
-                    const TreeScope* tree_scope)
+                    const TreeScope* tree_scope,
+                    const CounterStyle* symbols_counter_style = nullptr)
       : type_(type),
         name_or_string_value_(std::move(name_or_string_value)),
-        tree_scope_(tree_scope) {}
+        tree_scope_(tree_scope),
+        counter_style_(symbols_counter_style) {}
 
   static ListStyleTypeData* CreateString(const AtomicString&);
   static ListStyleTypeData* CreateCounterStyle(const AtomicString&,
                                                const TreeScope*);
+  static ListStyleTypeData* CreateSymbolsFunction(
+      const cssvalue::CSSSymbolsValue&);
 
-  bool operator==(const ListStyleTypeData& other) const {
-    return type_ == other.type_ &&
-           name_or_string_value_ == other.name_or_string_value_ &&
-           tree_scope_ == other.tree_scope_;
-  }
+  bool operator==(const ListStyleTypeData& other) const;
 
   bool IsCounterStyle() const { return type_ == Type::kCounterStyle; }
   bool IsString() const { return type_ == Type::kString; }
+  bool IsSymbolsFunction() const {
+    return type_ == Type::kCounterStyle && name_or_string_value_.empty();
+  }
 
+  // Empty for a symbols() function, which builds an anonymous counter style.
   const AtomicString& GetCounterStyleName() const {
-    DCHECK_EQ(Type::kCounterStyle, type_);
+    CHECK_EQ(Type::kCounterStyle, type_);
     return name_or_string_value_;
   }
 
   const AtomicString& GetStringValue() const {
-    DCHECK_EQ(Type::kString, type_);
+    CHECK_EQ(Type::kString, type_);
     return name_or_string_value_;
+  }
+
+  const CounterStyle& GetSymbolsCounterStyle() const {
+    CHECK(IsSymbolsFunction());
+    CHECK(counter_style_);
+    return *counter_style_;
   }
 
   const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
@@ -71,8 +85,9 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
   // Document --> ComputedStyle --> ListStyleTypeData --> TreeScope(Document)
   WeakMember<const TreeScope> tree_scope_;
 
-  // The CounterStyle that we are using. The reference is updated on demand.
-  // Note: this is NOT part of the computed value of 'list-style-type'.
+  // The `CounterStyle` we resolve to. For a symbols() function it is built
+  // eagerly and the computed value is reconstructed from it; for a named
+  // <counter-style> it is resolved lazily.
   mutable Member<const CounterStyle> counter_style_;
 };
 

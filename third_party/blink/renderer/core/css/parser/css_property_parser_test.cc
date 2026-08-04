@@ -263,6 +263,25 @@ TEST(CSSPropertyParserTest, ClipPathEllipse) {
   EXPECT_TRUE(doc->IsUseCounted(WebFeature::kBasicShapeEllipseNoRadius));
 }
 
+TEST(CSSPropertyParserTest, ListStyleTypeSymbolsFunctionUseCounter) {
+  ScopedCSSCounterStyleSymbolsFunctionForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
+  Document* doc = &dummy_holder->GetDocument();
+  Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kSecureContext, doc);
+
+  // A non-symbols() list-style-type value does not trigger the use counter.
+  CSSParser::ParseSingleValue(CSSPropertyID::kListStyleType, "disc", context);
+  EXPECT_FALSE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
+
+  // Parsing a symbols() value triggers the use counter.
+  CSSParser::ParseSingleValue(CSSPropertyID::kListStyleType, "symbols(\"a\")",
+                              context);
+  EXPECT_TRUE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
+}
+
 TEST(CSSPropertyParserTest, GradientUseCount) {
   test::TaskEnvironment task_environment;
   auto dummy_page_holder =

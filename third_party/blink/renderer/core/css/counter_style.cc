@@ -749,6 +749,13 @@ CounterStyle* CounterStyle::CreateAnonymousCounterStyle(
   return counter_style;
 }
 
+bool CounterStyle::operator==(const CounterStyle& other) const {
+  return *style_rule_ == *other.style_rule_ &&
+         extended_style_ == other.extended_style_ &&
+         fallback_style_ == other.fallback_style_ &&
+         speak_as_style_ == other.speak_as_style_;
+}
+
 CounterStyle::CounterStyle(
     const CascadeLayered<const StyleRuleCounterStyle>& rule)
     : style_rule_(rule.value),
