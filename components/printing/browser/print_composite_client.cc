@@ -271,6 +271,7 @@ void PrintCompositeClient::CompositeDocument(
     int document_cookie,
     content::RenderFrameHost& render_frame_host,
     const mojom::DidPrintContentParams& content,
+    bool is_pdf,
     const ui::AXTreeUpdate& accessibility_tree,
     mojom::GenerateDocumentOutline generate_document_outline,
     mojom::PrintCompositor::CompositeDocumentCallback callback) {
@@ -300,7 +301,7 @@ void PrintCompositeClient::CompositeDocument(
   // is destructed. Mojo won't call its callback in that case so it is safe to
   // use unretained |this| pointer here.
   compositor->CompositeDocument(
-      GenerateFrameGuid(&render_frame_host), std::move(region),
+      GenerateFrameGuid(&render_frame_host), std::move(region), is_pdf,
       ConvertContentInfoMap(&render_frame_host, content.subframe_content_info),
       base::BindOnce(&PrintCompositeClient::OnDidCompositeDocument,
                      base::Unretained(this), document_cookie,

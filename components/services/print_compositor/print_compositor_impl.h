@@ -80,6 +80,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   void CompositeDocument(
       uint64_t frame_guid,
       base::ReadOnlySharedMemoryRegion serialized_content,
+      bool is_pdf,
       const ContentToFrameMap& subframe_content_map,
       mojom::PrintCompositor::CompositeDocumentCallback callback) override;
   void PrepareToCompositeDocument(
@@ -246,6 +247,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       uint64_t frame_guid,
       base::ReadOnlySharedMemoryRegion serialized_content,
       const ContentToFrameMap& subframe_content_ids,
+      bool is_pdf,
       CompositePagesCallback callback);
   void HandleDocumentCompletionRequest();
 

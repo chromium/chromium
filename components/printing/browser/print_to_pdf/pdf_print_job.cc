@@ -97,7 +97,7 @@ void PdfPrintJob::OnDidPrintWithParams(
   // Otherwise assume this is a composite document and invoke compositor.
   printing::PrintCompositeClient::FromWebContents(web_contents())
       ->CompositeDocument(
-          params->document_cookie, *printing_rfh_, content,
+          params->document_cookie, *printing_rfh_, content, /*is_pdf=*/false,
           result.value()->accessibility_tree,
           result.value()->generate_document_outline,
           base::BindOnce(&PdfPrintJob::OnCompositeDocumentToPdfDone,

@@ -81,6 +81,7 @@ class PrintCompositeClient
       int cookie,
       content::RenderFrameHost& render_frame_host,
       const mojom::DidPrintContentParams& content,
+      bool is_pdf,
       const ui::AXTreeUpdate& accessibility_tree,
       mojom::GenerateDocumentOutline generate_document_outline,
       mojom::PrintCompositor::CompositeDocumentCallback callback);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -55,6 +56,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -65,7 +67,9 @@
 #include "printing/nup_parameters.h"
 #include "printing/print_job_constants.h"
 #include "printing/printing_features.h"
+#include "printing/printing_utils.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -94,6 +98,12 @@ using content::WebContents;
 namespace printing {
 
 namespace {
+
+// TODO(crbug.com/518763216): Remove flag once it is fully rolled out.
+// Enables sending non-modifiable (PDF) documents to the print compositor.
+BASE_FEATURE(kPdfWatermarkPrintCompositor,
+             "PdfWatermarkPrintCompositor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 const char16_t kBasicPrintShortcut[] = u"(⌥⌘P)";
@@ -397,6 +407,32 @@ PrintPreviewHandler* CreatePrintPreviewHandlers(content::WebUI* web_ui) {
   return handler_ptr;
 }
 
+// Checks if the print source is modifiable (HTML) or not (PDF).
+bool IsSourceModifiable(content::WebUI* web_ui) {
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
+  std::optional<bool> maybe_is_pdf =
+      dialog_controller->IsPrintingPdf(web_ui->GetWebContents());
+  CHECK(maybe_is_pdf.has_value());
+  return !maybe_is_pdf.value();
+}
+
+// Validates the metafile configuration.
+// If the compositor is active:
+// - Modifiable (HTML) content must NOT have a valid metafile parameter during
+//   the MetafileReadyForPrinting IPC because the document is composed
+//   page-by-page in prior IPCs.
+// - Non-modifiable (PDF) content MUST have a valid metafile because it is
+//   composed all at once before sending to the printer preview.
+bool IsValidMetafile(bool compositor_active,
+                     bool is_modifiable,
+                     bool has_valid_metafile) {
+  if (compositor_active) {
+    return has_valid_metafile != is_modifiable;
+  }
+  return has_valid_metafile;
+}
+
 }  // namespace
 
 PrintPreviewUIConfig::PrintPreviewUIConfig()
@@ -582,12 +618,11 @@ bool PrintPreviewUI::ShouldUseCompositor() const {
     return false;
   }
 
-  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
-  CHECK(dialog_controller);
-  std::optional<bool> maybe_is_pdf =
-      dialog_controller->IsPrintingPdf(web_ui()->GetWebContents());
-  CHECK(maybe_is_pdf.has_value());
-  return !maybe_is_pdf.value();
+  if (base::FeatureList::IsEnabled(kPdfWatermarkPrintCompositor)) {
+    return true;
+  }
+
+  return IsSourceModifiable(web_ui());
 }
 
 void PrintPreviewUI::OnCompositePdfPageDone(
@@ -1074,15 +1109,13 @@ void PrintPreviewUI::MetafileReadyForPrinting(
   // Always try to stop the worker.
   StopWorker(params->document_cookie);
 
-  const bool composite_document_using_individual_pages = ShouldUseCompositor();
+  const bool use_compositor = ShouldUseCompositor();
+  const bool is_modifiable = IsSourceModifiable(web_ui());
   const base::ReadOnlySharedMemoryRegion& metafile =
       params->content->metafile_data_region;
 
-  // When the Print Compositor is active, the print document is composed from
-  // the individual pages, so |metafile| should be invalid.
-  // When it is inactive, the print document is composed from |metafile|.
-  // So if this comparison succeeds, that means the renderer sent bad data.
-  if (composite_document_using_individual_pages == metafile.IsValid()) {
+  // Validate that the metafile state matches expectations.
+  if (!IsValidMetafile(use_compositor, is_modifiable, metafile.IsValid())) {
     return;
   }
 
@@ -1091,7 +1124,7 @@ void PrintPreviewUI::MetafileReadyForPrinting(
     return;
   }
 
-  if (composite_document_using_individual_pages) {
+  if (use_compositor) {
     // Don't bother compositing if this request has been cancelled already.
     if (ShouldCancelRequest(id_, request_id)) {
       return;
@@ -1106,16 +1139,36 @@ void PrintPreviewUI::MetafileReadyForPrinting(
       return;
     }
 
-    // Page metafile is used to composite into the document at same time.
-    // Need to provide particulars of how many pages are required before
-    // document will be completed.
     auto* client = PrintCompositeClient::FromWebContents(web_contents);
-    client->FinishDocumentComposition(
-        params->document_cookie, params->expected_pages_count,
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            std::move(callback),
-            mojom::PrintCompositor::Status::kCompositingFailure,
-            base::ReadOnlySharedMemoryRegion()));
+    auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        std::move(callback),
+        mojom::PrintCompositor::Status::kCompositingFailure,
+        base::ReadOnlySharedMemoryRegion());
+
+    if (is_modifiable) {
+      // Page metafile is used to composite into the document at same time.
+      // Need to provide particulars of how many pages are required before
+      // document will be completed.
+      client->FinishDocumentComposition(
+          params->document_cookie, params->expected_pages_count,
+          std::move(wrapped_callback));
+    } else {
+      content::RenderFrameHost* render_frame_host =
+          PrintViewManager::FromWebContents(web_contents)->print_preview_rfh();
+      if (!render_frame_host) {
+        return;
+      }
+      if (!LooksLikePdf(
+              metafile
+                  .MapAt(0, std::min<size_t>(1024, metafile.GetSize()))
+                  .GetMemoryAsSpan<const uint8_t>())) {
+        return;
+      }
+      client->CompositeDocument(
+          params->document_cookie, *render_frame_host, *params->content,
+          /*is_pdf=*/true, ui::AXTreeUpdate(),
+          mojom::GenerateDocumentOutline::kNone, std::move(wrapped_callback));
+    }
   } else {
     NotifyUIPreviewDocumentReady(
         request_id,

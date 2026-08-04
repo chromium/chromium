@@ -211,18 +211,20 @@ void PrintCompositorImpl::CompositePage(
   TRACE_EVENT0("print", "PrintCompositorImpl::CompositePage");
   // This function is always called to composite a page to PDF.
   HandleCompositionRequest(frame_guid, std::move(serialized_content),
-                           subframe_content_map, std::move(callback));
+                           subframe_content_map, /*is_pdf=*/false,
+                           std::move(callback));
 }
 
 void PrintCompositorImpl::CompositeDocument(
     uint64_t frame_guid,
     base::ReadOnlySharedMemoryRegion serialized_content,
+    bool is_pdf,
     const ContentToFrameMap& subframe_content_map,
     mojom::PrintCompositor::CompositeDocumentCallback callback) {
   TRACE_EVENT0("print", "PrintCompositorImpl::CompositeDocument");
   CHECK(!doc_info_);
   HandleCompositionRequest(frame_guid, std::move(serialized_content),
-                           subframe_content_map, std::move(callback));
+                           subframe_content_map, is_pdf, std::move(callback));
 }
 
 void PrintCompositorImpl::PrepareToCompositeDocument(
@@ -336,7 +338,16 @@ void PrintCompositorImpl::HandleCompositionRequest(
     uint64_t frame_guid,
     base::ReadOnlySharedMemoryRegion serialized_content,
     const ContentToFrameMap& subframe_content_map,
+    bool is_pdf,
     CompositePagesCallback callback) {
+  if (is_pdf) {
+    // TODO(crbug.com/518763216): Handle PDF documents in PrintCompositorImpl.
+    // For now, pass the PDF document through to the callback.
+    std::move(callback).Run(mojom::PrintCompositor::Status::kSuccess,
+                            std::move(serialized_content));
+    return;
+  }
+
   base::ReadOnlySharedMemoryMapping mapping = serialized_content.Map();
   if (!mapping.IsValid()) {
     LOG(ERROR) << "HandleCompositionRequest: Cannot map input.";

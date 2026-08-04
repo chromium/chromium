@@ -65,13 +65,21 @@ interface PrintCompositor {
           mojo_base.mojom.ReadOnlySharedMemoryRegion? document_region);
 
   // Requests to composite the entire document and convert it into a print
-  // document file.  All the arguments carry the same meaning as
-  // `CompositePage()` above, except this call doesn't have `page_num`.  Cannot
-  // be used in conjunction with `PrepareToCompositeDocument()` /
-  // `FinishDocumentComposition()`.
-  CompositeDocument(uint64 frame_guid,
-                    mojo_base.mojom.ReadOnlySharedMemoryRegion sk_region,
-                    map<uint32, uint64> subframe_content_info)
+  // document file. Cannot be used in conjunction with
+  // `PrepareToCompositeDocument()` / `FinishDocumentComposition()` (doing so
+  // causes a fatal CHECK failure in the compositor process).
+  // `serialized_content` is a buffer containing a Skia MultiPictureDocument to
+  //                      be composited, or a complete PDF document when
+  //                      `is_pdf` is true.
+  // `is_pdf` indicates whether `serialized_content` contains an
+  //          already-rendered PDF document that should be passed through
+  //          instead of composited from Skia pictures.
+  // All other arguments carry the same meaning as `CompositePage()` above.
+  CompositeDocument(
+      uint64 frame_guid,
+      mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_content,
+      bool is_pdf,
+      map<uint32, uint64> subframe_content_info)
       => (Status status,
           mojo_base.mojom.ReadOnlySharedMemoryRegion? document_region);
 
