@@ -844,10 +844,10 @@ public class ToolbarControlContainerTest {
                 ObservableSuppliers.createNonNull(150);
         mControlContainer.setVerticalTabsContainerWidthSupplier(widthSupplier);
 
-        // Left edge should now match the vertical tabs width 150px.
-        List<Rect> expectedWithRail = List.of(new Rect(150, 0, 480, 100));
+        // Left edge should still be 0 so toolbar buttons at top left receive clicks.
+        List<Rect> expectedWithRail = List.of(new Rect(0, 0, 480, 100));
         assertEquals(
-                "Exclusion left edge should match vertical tabs container width.",
+                "Exclusion left edge should remain 0 when vertical tabs are active.",
                 expectedWithRail,
                 mControlContainer.getSystemGestureExclusionRects());
     }
