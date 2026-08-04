@@ -23,6 +23,13 @@
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/utility/bookmark_parser.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+namespace user_data_importer::mojom {
+class BookmarkHtmlParser;
+}  // namespace user_data_importer::mojom
 
 class GURL;
 
@@ -45,6 +52,10 @@ class FirefoxImporter : public Importer {
                    uint16_t items,
                    ImporterBridge* bridge) override;
 
+  void SetBookmarkHtmlParser(
+      mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser> parser)
+      override;
+
  private:
   // Location of favicons in Firefox profile. It may vary depending on Firefox
   // version.
@@ -63,6 +74,7 @@ class FirefoxImporter : public Importer {
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
 
   void ImportBookmarks();
+  void ImportRemainingItems();
 
 #if !BUILDFLAG(IS_MAC)
   void ImportPasswords();
@@ -116,14 +128,30 @@ class FirefoxImporter : public Importer {
   // profile. |base_file_name| must be ASCII. Returns empty path on I/O failure.
   base::FilePath GetCopiedSourcePath(std::string_view base_file_name);
 
+  void OnDefaultBookmarksParsed(
+      std::unique_ptr<sql::Database> db,
+      int toolbar_folder_id,
+      int menu_folder_id,
+      int unsorted_folder_id,
+      std::unique_ptr<std::set<int>> livemark_id,
+      FaviconsLocation favicons_location,
+      std::unique_ptr<
+          mojo::Remote<user_data_importer::mojom::BookmarkHtmlParser>>
+          html_parser,
+      user_data_importer::BookmarkParser::ParsedBookmarks default_bookmarks);
+
   base::FilePath source_path_;
   base::FilePath app_path_;
   base::ScopedTempDir source_path_copy_;
+  uint16_t items_ = 0;
 
 #if BUILDFLAG(IS_POSIX)
   // Stored because we can only access it from the UI thread.
   std::string locale_;
 #endif
+
+  mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
+      html_parser_remote_;
 
   base::WeakPtrFactory<FirefoxImporter> weak_ptr_factory_{this};
 };

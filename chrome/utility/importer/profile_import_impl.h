@@ -12,6 +12,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/common/importer/profile_import.mojom.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -43,8 +44,9 @@ class ProfileImportImpl : public chrome::mojom::ProfileImport {
       const user_data_importer::SourceProfile& source_profile,
       uint16_t items,
       const base::flat_map<uint32_t, std::string>& localized_strings,
-      mojo::PendingRemote<chrome::mojom::ProfileImportObserver> observer)
-      override;
+      mojo::PendingRemote<chrome::mojom::ProfileImportObserver> observer,
+      mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
+          bookmark_html_parser) override;
   void CancelImport() override;
   void ReportImportItemFinished(user_data_importer::ImportItem item) override;
 

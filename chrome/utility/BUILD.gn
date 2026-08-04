@@ -292,6 +292,7 @@ if (!is_android) {
       "//chrome/common/importer:test_support",
       "//components/favicon_base",
       "//components/user_data_importer/common",
+      "//components/user_data_importer/content:test_support",
       "//components/user_data_importer/utility:safari_data_importer",
       "//content/test:test_support",
       "//sql",

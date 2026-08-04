@@ -4,6 +4,7 @@
 
 module chrome.mojom;
 
+import "components/user_data_importer/mojom/bookmark_html_parser.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
@@ -93,7 +94,9 @@ interface ProfileImport {
       SourceProfile source_profile,
       uint16 items,
       map<uint32, string> localized_strings,
-      pending_remote<ProfileImportObserver> observer);
+      pending_remote<ProfileImportObserver> observer,
+      pending_remote<user_data_importer.mojom.BookmarkHtmlParser>?
+          bookmark_html_parser);
 
   // Stop the importer.
   CancelImport();

@@ -8,12 +8,16 @@
 #include <stdint.h>
 
 #include "base/memory/ref_counted.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 class ImporterBridge;
 
 namespace user_data_importer {
 struct SourceProfile;
-}
+namespace mojom {
+class BookmarkHtmlParser;
+}  // namespace mojom
+}  // namespace user_data_importer
 
 // The base class of all importers.
 class Importer : public base::RefCountedThreadSafe<Importer> {
@@ -29,6 +33,12 @@ class Importer : public base::RefCountedThreadSafe<Importer> {
       const user_data_importer::SourceProfile& source_profile,
       uint16_t items,
       ImporterBridge* bridge) = 0;
+
+  // Provides a remote to a BookmarkHtmlParser running in another process. Must
+  // be called before StartImport().
+  virtual void SetBookmarkHtmlParser(
+      mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
+          parser);
 
   // Cancels the import process.
   virtual void Cancel();

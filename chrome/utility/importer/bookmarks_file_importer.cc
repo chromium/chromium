@@ -21,8 +21,10 @@
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/content/content_bookmark_parser_utils.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace internal {
 
@@ -82,6 +84,11 @@ BookmarksFileImporter::BookmarksFileImporter() = default;
 
 BookmarksFileImporter::~BookmarksFileImporter() = default;
 
+void BookmarksFileImporter::SetBookmarkHtmlParser(
+    mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser> parser) {
+  html_parser_remote_ = std::move(parser);
+}
+
 void BookmarksFileImporter::StartImport(
     const user_data_importer::SourceProfile& source_profile,
     uint16_t items,
@@ -99,9 +106,24 @@ void BookmarksFileImporter::StartImport(
   // ReadFileToString can return false, but still populate something into
   // `raw_html`. In that case, try to recover as much data as possible.
   base::ReadFileToString(source_profile.source_path, &raw_html);
-  user_data_importer::BookmarkParser::ParsedBookmarks parsed_bookmarks =
-      user_data_importer::ParseBookmarksUnsafe(raw_html);
 
+  CHECK(html_parser_remote_.is_valid());
+  auto html_parser = std::make_unique<
+      mojo::Remote<user_data_importer::mojom::BookmarkHtmlParser>>(
+      std::move(html_parser_remote_));
+
+  auto* raw_parser = html_parser.get();
+  (*raw_parser)
+      ->Parse(
+          raw_html,
+          base::BindOnce(&BookmarksFileImporter::OnBookmarksParsed,
+                         base::WrapRefCounted(this), std::move(html_parser)));
+}
+
+void BookmarksFileImporter::OnBookmarksParsed(
+    std::unique_ptr<mojo::Remote<user_data_importer::mojom::BookmarkHtmlParser>>
+        html_parser,
+    user_data_importer::BookmarkParser::ParsedBookmarks parsed_bookmarks) {
   if (!parsed_bookmarks.bookmarks.empty()) {
     std::u16string first_folder_name =
         bridge_->GetLocalizedString(IDS_BOOKMARK_GROUP);
