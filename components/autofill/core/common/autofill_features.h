@@ -269,9 +269,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillExtractOnlyNonAdFrames);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillFilterPlaceholderValuesOnImport);
-
-// Prioritizes ADDRESS_HOME_STREET_ADDRESS over postal code in inferred labels.
-// See crbug.com/540151895.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillFixLabelGenerationForStreetAddress);
 
