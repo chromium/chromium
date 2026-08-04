@@ -37,18 +37,6 @@ static url::Origin TopFrameOrigin() {
 class MockPrivacySandboxServiceTestInterface
     : public PrivacySandboxServiceTestInterface {
  public:
-  MOCK_METHOD(void, TopicsToggleChanged, (bool), (override, const));
-  MOCK_METHOD(void,
-              SetTopicAllowed,
-              (privacy_sandbox::CanonicalTopic, bool),
-              (override));
-  MOCK_METHOD(bool, TopicsHasActiveConsent, (), (override, const));
-  MOCK_METHOD(privacy_sandbox::TopicsConsentUpdateSource,
-              TopicsConsentLastUpdateSource,
-              (),
-              (override, const));
-  MOCK_METHOD(base::Time, TopicsConsentLastUpdateTime, (), (override, const));
-  MOCK_METHOD(std::string, TopicsConsentLastUpdateText, (), (override, const));
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override, const));
 };
 
@@ -199,30 +187,6 @@ TEST_P(PrivacySandboxTestUtilBoolTest, VerifyIsRestrictedAccountStateKey) {
   EXPECT_EQ(mock_delegate()->IsPrivacySandboxRestricted(), state);
 }
 
-
-TEST_P(PrivacySandboxTestUtilBoolTest, VerifyHasBlockedTopicsStateKey) {
-  bool state = GetParam();
-  testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
-  EXPECT_CALL(*mock_privacy_sandbox_service(),
-              SetTopicAllowed(testing::_, false))
-      .Times(state ? 1 : 0);
-  ApplyTestState(StateKey::kHasBlockedTopics, state);
-}
-
-TEST_P(PrivacySandboxTestUtilBoolTest, VerifyActiveTopicsConsentStateKey) {
-  bool state = GetParam();
-  ApplyTestState(StateKey::kActiveTopicsConsent, state);
-  EXPECT_EQ(
-      prefs()->GetUserPref(prefs::kPrivacySandboxTopicsConsentGiven)->GetBool(),
-      state);
-}
-
-TEST_P(PrivacySandboxTestUtilBoolTest, VerifyTopicsToggleNewValueInputKey) {
-  bool state = GetParam();
-  testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
-  EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsToggleChanged(state));
-  ProvideInput(InputKey::kTopicsToggleNewValue, state);
-}
 
 class PrivacySandboxTestUtilCookieControlsModeTest
     : public PrivacySandboxTestUtilTest,
@@ -401,29 +365,6 @@ TEST_F(PrivacySandboxBaseTestUtilTest,
       {{InputKey::kAdMeasurementReportingOrigin, kAdMeasurementReportingOrigin},
        {InputKey::kTopFrameOrigin, TopFrameOrigin()}},
       {OutputKey::kIsPrivateAggregationAllowed, true});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest, VerifyTopicsConsentGivenOutputKey) {
-  EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsHasActiveConsent())
-      .WillOnce(testing::Return(true));
-  CheckOutput({}, {OutputKey::kTopicsConsentGiven, true});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest,
-       VerifyTopicsConsentLastUpdateReasonOutputKey) {
-  EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsConsentLastUpdateSource())
-      .WillOnce(testing::Return(
-          privacy_sandbox::TopicsConsentUpdateSource::kSettings));
-  CheckOutput({}, {OutputKey::kTopicsConsentLastUpdateReason,
-                   privacy_sandbox::TopicsConsentUpdateSource::kSettings});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest,
-       VerifyTopicsConsentLastUpdateTimeOutputKey) {
-  auto consent_time = base::Time::Now() - base::Hours(1);
-  EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsConsentLastUpdateTime())
-      .WillOnce(testing::Return(consent_time));
-  CheckOutput({}, {OutputKey::kTopicsConsentLastUpdateTime, consent_time});
 }
 
 TEST_F(PrivacySandboxBaseTestUtilTest,

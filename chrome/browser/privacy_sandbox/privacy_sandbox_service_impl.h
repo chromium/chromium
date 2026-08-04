@@ -10,14 +10,11 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 // clang-format on
 
-#include <set>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "net/base/schemeful_site.h"
@@ -69,24 +66,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       const override;
   void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
                                bool allowed) const override;
-  std::vector<privacy_sandbox::CanonicalTopic> GetCurrentTopTopics()
-      const override;
-  std::vector<privacy_sandbox::CanonicalTopic> GetBlockedTopics()
-      const override;
-  std::vector<privacy_sandbox::CanonicalTopic> GetFirstLevelTopics()
-      const override;
-  std::vector<privacy_sandbox::CanonicalTopic> GetChildTopicsCurrentlyAssigned(
-      const privacy_sandbox::CanonicalTopic& topic) const override;
-  void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
-                       bool allowed) override;
   bool ShouldUsePrivacyPolicyChinaDomain() override;
-  void TopicsToggleChanged(bool new_value) const override;
-  bool TopicsConsentRequired() override;
-  bool TopicsHasActiveConsent() const override;
-  privacy_sandbox::TopicsConsentUpdateSource TopicsConsentLastUpdateSource()
-      const override;
-  base::Time TopicsConsentLastUpdateTime() const override;
-  std::string TopicsConsentLastUpdateText() const override;
 
  protected:
   friend class PrivacySandboxServiceTest;
@@ -132,11 +112,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // so, sets the default value based on the user's current cookie settings.
   void MaybeInitializeRelatedWebsiteSetsPref();
 
-  // Updates the preferences which store the current Topics consent information.
-  void RecordUpdatedTopicsConsent(
-      privacy_sandbox::TopicsConsentUpdateSource source,
-      bool did_consent) const;
-
  private:
   // Determines whether Privacy Sandbox Ads consent is required.
   bool IsConsentRequired();
@@ -157,15 +132,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
 
   PrefChangeRegistrar user_prefs_registrar_;
-
-  // Fake implementation for current and blocked topics.
-  // TODO(crbug.com/409048902): Moved initialization to constructor to prevent
-  // potential initialization order issues.
-  std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_;
-  std::set<privacy_sandbox::CanonicalTopic> fake_blocked_topics_;
-
-  // Called when the Topics preference is changed.
-  void OnTopicsPrefChanged();
 
   // Called when the Fledge preference is changed.
   void OnFledgePrefChanged();

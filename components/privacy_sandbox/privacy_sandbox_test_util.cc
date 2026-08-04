@@ -31,8 +31,6 @@ namespace privacy_sandbox_test_util {
 
 namespace {
 
-constexpr int kTestTaxonomyVersion = 1;
-
 // Convenience function that unpacks a map keyed on both MultipleXKeys, and
 // single keys (e.g. keyed on the TestKey variant type), into a map key _only_
 // on single keys.
@@ -149,38 +147,9 @@ void ApplyTestState(
           GetItemValue<bool>(value));
       return;
     }
-    case (StateKey::kHasBlockedTopics): {
-      auto has_current_topics = GetItemValue<bool>(value);
-      if (!has_current_topics) {
-        // By default, there are no current topics.
-        return;
-      }
-      const auto kTopic = privacy_sandbox::CanonicalTopic(
-          browsing_topics::Topic(25),  // "Classical Music"
-          kTestTaxonomyVersion);
-      privacy_sandbox_service->SetTopicAllowed(kTopic, false);
-      return;
-    }
     case (StateKey::kAdvanceClockBy): {
       auto time_delta = GetItemValue<base::TimeDelta>(value);
       task_environment->AdvanceClock(time_delta);
-      return;
-    }
-    case (StateKey::kActiveTopicsConsent): {
-      bool active_consent = GetItemValue<bool>(value);
-      testing_pref_service->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven,
-                                       active_consent);
-
-      // For other values associated with consent, use values which are
-      // arbitrary, but won't be expected by any test, and don't affect whether
-      // the consent is considered active.
-      testing_pref_service->SetTime(
-          prefs::kPrivacySandboxTopicsConsentLastUpdateTime,
-          base::Time::Now() - base::Microseconds(12345));
-      testing_pref_service->SetInteger(
-          prefs::kPrivacySandboxTopicsConsentLastUpdateReason, 1234);
-      testing_pref_service->SetString(
-          prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "Foo Bar Baz");
       return;
     }
     case (StateKey::kTrialsConsentDecisionMade): {
@@ -293,11 +262,6 @@ void ProvideInput(const std::pair<InputKey, TestCaseItemValue>& input,
                   PrivacySandboxServiceTestInterface* privacy_sandbox_service) {
   auto [input_key, input_value] = input;
   switch (input_key) {
-    case (InputKey::kTopicsToggleNewValue): {
-      privacy_sandbox_service->TopicsToggleChanged(
-          GetItemValue<bool>(input_value));
-      return;
-    }
     case (InputKey::kPromptAction): {
       // OutputKey::kPromptAction is not used.
       // TODO(crbug.com/474716334): Remove this case when the enum is removed.
@@ -700,71 +664,6 @@ void CheckOutput(
           metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting()[0]->metrics,
           testing::UnorderedElementsAre(
               testing::Pair(base::HashMetricName("Status"), histogram_value)));
-      return;
-    }
-    case (OutputKey::kTopicsConsentGiven): {
-      SCOPED_TRACE("Check Output: Topics Consent Given");
-      auto consent_given = GetItemValue<bool>(output_value);
-      EXPECT_EQ(consent_given,
-                privacy_sandbox_service->TopicsHasActiveConsent());
-      return;
-    }
-    case (OutputKey::kTopicsConsentLastUpdateReason): {
-      SCOPED_TRACE("Check Output: Topics Consent Update Source");
-      auto consent_update_source =
-          GetItemValue<privacy_sandbox::TopicsConsentUpdateSource>(
-              output_value);
-      EXPECT_EQ(consent_update_source,
-                privacy_sandbox_service->TopicsConsentLastUpdateSource());
-      return;
-    }
-    case (OutputKey::kTopicsConsentLastUpdateTime): {
-      SCOPED_TRACE("Check Output: Topics Consent Last Update Time");
-      auto consent_last_update = GetItemValue<base::Time>(output_value);
-      EXPECT_EQ(consent_last_update,
-                privacy_sandbox_service->TopicsConsentLastUpdateTime());
-      return;
-    }
-    case (OutputKey::kTopicsConsentStringIdentifiers): {
-      SCOPED_TRACE("Check Output: Topics Consent String Identifiers");
-
-      auto string_ids = GetItemValue<std::vector<int>>(output_value);
-
-      std::string stored_text =
-          privacy_sandbox_service->TopicsConsentLastUpdateText();
-
-      // The stored text should contain all of the strings specified by
-      // `string_ids` in order, each separated by a single space. We can
-      // verify this by finding each string in `stored_text`, starting from
-      // the end of where the previous string was found.
-      auto stored_text_iterator = stored_text.begin();
-
-      for (auto string_id : string_ids) {
-        auto string = l10n_util::GetStringUTF8(string_id);
-        base::ReplaceSubstringsAfterOffset(&string, 0, "<b>", "");
-        base::ReplaceSubstringsAfterOffset(&string, 0, "</b>", "");
-        SCOPED_TRACE(
-            "Expecting to find: \"" + string + "\" at the start of \"" +
-            std::string(stored_text_iterator, stored_text.end()) + "\"");
-
-        auto mismatch_pair =
-            std::ranges::mismatch(string.begin(), string.end(),
-                                  stored_text_iterator, stored_text.end());
-
-        // The first mismatch should be at the end of the string, indicating
-        // that the entire string was matched.
-        EXPECT_EQ(string.end(), mismatch_pair.in1);
-
-        // Update text iterator to where the matches for this string stopped.
-        stored_text_iterator = mismatch_pair.in2;
-
-        // The iterator should now point to the whitespace character joining the
-        // strings, unless we're at the end of the string.
-        if (stored_text_iterator != stored_text.end()) {
-          EXPECT_EQ(' ', *stored_text_iterator);
-          stored_text_iterator++;
-        }
-      }
       return;
     }
     case (OutputKey::kPromptType): {

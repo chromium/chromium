@@ -60,36 +60,7 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               SetFledgeJoiningAllowed,
               ((const std::string&), bool),
               (const, override));
-  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
-              GetCurrentTopTopics,
-              (),
-              (const, override));
-  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
-              GetFirstLevelTopics,
-              (),
-              (const, override));
-  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
-              GetChildTopicsCurrentlyAssigned,
-              (const privacy_sandbox::CanonicalTopic& topic),
-              (const, override));
-  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
-              GetBlockedTopics,
-              (),
-              (const, override));
-  MOCK_METHOD(void,
-              SetTopicAllowed,
-              (privacy_sandbox::CanonicalTopic, bool),
-              (override));
   MOCK_METHOD(bool, ShouldUsePrivacyPolicyChinaDomain, (), (override));
-  MOCK_METHOD(void, TopicsToggleChanged, (bool), (const, override));
-  MOCK_METHOD(bool, TopicsConsentRequired, (), (override));
-  MOCK_METHOD(bool, TopicsHasActiveConsent, (), (const, override));
-  MOCK_METHOD(privacy_sandbox::TopicsConsentUpdateSource,
-              TopicsConsentLastUpdateSource,
-              (),
-              (const, override));
-  MOCK_METHOD(base::Time, TopicsConsentLastUpdateTime, (), (const, override));
-  MOCK_METHOD(std::string, TopicsConsentLastUpdateText, (), (const, override));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

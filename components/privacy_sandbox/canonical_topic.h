@@ -26,10 +26,6 @@ class CanonicalTopic {
   // version and may want to delete it
   int taxonomy_version() const { return taxonomy_version_; }
 
-  // Returns the localized string representation of the Canonical Topic, this
-  // is suitable for direct display to the user.
-  std::u16string GetLocalizedRepresentation() const;
-
   // Functions for converting to and from values for storage in preferences.
   base::Value ToValue() const;
   static std::optional<CanonicalTopic> FromValue(const base::Value& value);

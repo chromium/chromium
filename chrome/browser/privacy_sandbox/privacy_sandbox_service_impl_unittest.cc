@@ -95,8 +95,6 @@ const base::Version& GetRelatedWebsiteSetsVersion() {
   return *kVersion;
 }
 
-constexpr int kTestTaxonomyVersion = 1;
-
 class TestPrivacySandboxService
     : public privacy_sandbox_test_util::PrivacySandboxServiceTestInterface {
  public:
@@ -104,26 +102,6 @@ class TestPrivacySandboxService
       : service_(service) {}
 
   // PrivacySandboxServiceTestInterface
-  void TopicsToggleChanged(bool new_value) const override {
-    service_->TopicsToggleChanged(new_value);
-  }
-  void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
-                       bool allowed) override {
-    service_->SetTopicAllowed(topic, allowed);
-  }
-  bool TopicsHasActiveConsent() const override {
-    return service_->TopicsHasActiveConsent();
-  }
-  privacy_sandbox::TopicsConsentUpdateSource TopicsConsentLastUpdateSource()
-      const override {
-    return service_->TopicsConsentLastUpdateSource();
-  }
-  base::Time TopicsConsentLastUpdateTime() const override {
-    return service_->TopicsConsentLastUpdateTime();
-  }
-  std::string TopicsConsentLastUpdateText() const override {
-    return service_->TopicsConsentLastUpdateText();
-  }
   void ForceChromeBuildForTests(bool force_chrome_build) const override {
     service_->ForceChromeBuildForTests(force_chrome_build);
   }
@@ -600,101 +578,6 @@ TEST_F(PrivacySandboxServiceTest, DisablingAdMeasurementePrefClearsData) {
             content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
 }
 
-TEST_F(PrivacySandboxServiceTest, GetBlockedTopics) {
-  // Check that blocked topics are correctly alphabetically sorted and returned.
-  const privacy_sandbox::CanonicalTopic kFirstTopic =
-      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(24),  // "Blues"
-                                      kTestTaxonomyVersion);
-  const privacy_sandbox::CanonicalTopic kSecondTopic =
-      privacy_sandbox::CanonicalTopic(
-          browsing_topics::Topic(23),  // "Music & audio"
-          kTestTaxonomyVersion);
-
-  // The PrivacySandboxService assumes that the PrivacySandboxSettings service
-  // dedupes blocked topics. Check that assumption here.
-  privacy_sandbox_settings()->SetTopicAllowed(kSecondTopic, false);
-  privacy_sandbox_settings()->SetTopicAllowed(kSecondTopic, false);
-  privacy_sandbox_settings()->SetTopicAllowed(kFirstTopic, false);
-  privacy_sandbox_settings()->SetTopicAllowed(kFirstTopic, false);
-
-  auto blocked_topics = privacy_sandbox_service()->GetBlockedTopics();
-
-  ASSERT_EQ(blocked_topics.size(), 2u);
-  EXPECT_EQ(blocked_topics[0], kFirstTopic);
-  EXPECT_EQ(blocked_topics[1], kSecondTopic);
-}
-
-TEST_F(PrivacySandboxServiceTest, TestNoFakeTopics) {
-  auto* service = privacy_sandbox_service();
-  EXPECT_THAT(service->GetCurrentTopTopics(), testing::IsEmpty());
-  EXPECT_THAT(service->GetBlockedTopics(), testing::IsEmpty());
-}
-
-TEST_F(PrivacySandboxServiceTest, TestNoFakeTopicsPrefOff) {
-  // Sample data won't be returned for current topics when the pref is off, only
-  // the blocked list.
-  prefs()->SetUserPref(prefs::kPrivacySandboxM1TopicsEnabled,
-                       std::make_unique<base::Value>(false));
-
-  feature_list()->InitWithFeaturesAndParameters(
-      {{privacy_sandbox::kPrivacySandboxSettings4,
-        {{privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting
-              .name,
-          "true"}}}},
-      {});
-
-  CanonicalTopic topic3(Topic(3), kTestTaxonomyVersion);
-  CanonicalTopic topic4(Topic(4), kTestTaxonomyVersion);
-
-  auto* service = privacy_sandbox_service();
-  EXPECT_THAT(service->GetCurrentTopTopics(), testing::IsEmpty());
-  EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
-}
-
-TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
-  std::vector<base::test::FeatureRefAndParams> test_features = {
-      {privacy_sandbox::kPrivacySandboxSettings4,
-       {{privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.name,
-         "true"}}}};
-
-  // Sample data for current topics is only returned when the pref is on.
-  prefs()->SetUserPref(prefs::kPrivacySandboxM1TopicsEnabled,
-                       std::make_unique<base::Value>(true));
-
-  for (const auto& feature : test_features) {
-    feature_list()->Reset();
-    feature_list()->InitWithFeaturesAndParameters({feature}, {});
-    CanonicalTopic topic1(Topic(1), kTestTaxonomyVersion);
-    CanonicalTopic topic2(Topic(2), kTestTaxonomyVersion);
-    CanonicalTopic topic3(Topic(3), kTestTaxonomyVersion);
-    CanonicalTopic topic4(Topic(4), kTestTaxonomyVersion);
-    // Duplicate a topic to test that it doesn't appear in the results in
-    // addition to topic4.
-    CanonicalTopic topic4_duplicate(Topic(4), kTestTaxonomyVersion - 1);
-
-    auto* service = privacy_sandbox_service();
-    EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));
-    EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
-
-    service->SetTopicAllowed(topic1, false);
-    EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2));
-    EXPECT_THAT(service->GetBlockedTopics(),
-                ElementsAre(topic1, topic3, topic4));
-
-    service->SetTopicAllowed(topic4, true);
-    service->SetTopicAllowed(topic4_duplicate, true);
-    EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2, topic4));
-    EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic1, topic3));
-
-    service->SetTopicAllowed(topic1, true);
-    service->SetTopicAllowed(topic4, false);
-    service->SetTopicAllowed(topic4_duplicate, false);
-    EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));
-    EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
-  }
-}
-
-
 TEST_F(PrivacySandboxServiceTest,
        RelatedWebsiteSetsNotRelevantMetricAllowedCookies) {
   base::HistogramTester histogram_tester;
@@ -1094,16 +977,6 @@ TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
       net::SchemefulSite(GURL("https://googlesource.com"))));
   EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://google.de"))));
-}
-
-TEST_F(PrivacySandboxServiceTest, TopicsConsentDefault) {
-  RunTestCase(
-      TestState{}, TestInput{},
-      TestOutput{{kTopicsConsentGiven, false},
-                 {kTopicsConsentLastUpdateReason,
-                  privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue},
-                 {kTopicsConsentLastUpdateTime, base::Time()},
-                 {kTopicsConsentStringIdentifiers, std::vector<int>()}});
 }
 
 TEST_F(PrivacySandboxServiceTest, LogPrivacySandboxState_APIs) {

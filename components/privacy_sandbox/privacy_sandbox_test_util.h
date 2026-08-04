@@ -31,14 +31,6 @@ namespace privacy_sandbox_test_util {
 
 class PrivacySandboxServiceTestInterface {
  public:
-  virtual void TopicsToggleChanged(bool new_value) const = 0;
-  virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
-                               bool allowed) = 0;
-  virtual bool TopicsHasActiveConsent() const = 0;
-  virtual privacy_sandbox::TopicsConsentUpdateSource
-  TopicsConsentLastUpdateSource() const = 0;
-  virtual base::Time TopicsConsentLastUpdateTime() const = 0;
-  virtual std::string TopicsConsentLastUpdateText() const = 0;
   virtual void ForceChromeBuildForTests(bool force_chrome_build) const = 0;
 };
 
@@ -132,9 +124,7 @@ enum class StateKey {
   kIsIncognito = 7,
   kIsRestrictedAccount = 8,
   kHasCurrentTopics = 9,
-  kHasBlockedTopics = 10,
   kAdvanceClockBy = 11,
-  kActiveTopicsConsent = 12,
   kTrialsConsentDecisionMade = 14,
   kTrialsNoticeDisplayed = 15,
   kM1ConsentDecisionPreviouslyMade = 16,
@@ -158,7 +148,6 @@ enum class InputKey {
   kFledgeAuctionPartyOrigin = 3,
   kAdMeasurementReportingOrigin = 4,
   kAccessingOrigin = 7,
-  kTopicsToggleNewValue = 8,
   kForceChromeBuild = 9,
   // kPromptAction is Obsolete.
   // TODO(crbug.com/474716334): Remove this enum.
@@ -184,10 +173,6 @@ enum class OutputKey {
   kIsSharedStorageAllowedMetric = 14,
   kIsSharedStorageSelectURLAllowedMetric = 15,
   kIsPrivateAggregationAllowedMetric = 16,
-  kTopicsConsentGiven = 17,
-  kTopicsConsentLastUpdateReason = 18,
-  kTopicsConsentLastUpdateTime = 19,
-  kTopicsConsentStringIdentifiers = 20,
   // kPromptType and kM1PromptSuppressedReason are Obsolete.
   // TODO(crbug.com/474716334): Remove obsolete enums.
   kPromptType = 21,
