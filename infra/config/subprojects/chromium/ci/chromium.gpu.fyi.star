@@ -2799,6 +2799,7 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
