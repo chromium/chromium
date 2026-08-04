@@ -161,12 +161,10 @@ base::expected<viz::SharedImageFormat, String>
 OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
 // TODO(crbug.com/427252761): Support other data types in CoreML backend.
 #if BUILDFLAG(IS_MAC)
-  if (data_type != webnn::OperandDataType::kFloat16) {
-    return base::unexpected(UNSAFE_TODO(String::Format(
-        "Invalid operand data type: %s", ToBlinkDataType(data_type).AsCStr())));
-  }
   // The only format supported by CoreML `MLMultiArray::initWithPixelBuffer`.
-  return viz::SinglePlaneFormat::kR_F16;
+  if (data_type == webnn::OperandDataType::kFloat16) {
+    return viz::SinglePlaneFormat::kR_F16;
+  }
 #else
   // Maps data_type to equivalent element size.
   switch (data_type) {
@@ -187,11 +185,11 @@ OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
       return viz::SinglePlaneFormat::kRGBA_8888;
     // Default case is for new format types added to MLTensor.
     default:
-      return base::unexpected(
-          UNSAFE_TODO(String::Format("Invalid operand data type: %s",
-                                     ToBlinkDataType(data_type).AsCStr())));
+      break;
   }
 #endif  // BUILDFLAG(IS_MAC)
+  return base::unexpected(StrCat({"Invalid operand data type: ",
+                                  ToBlinkDataType(data_type).AsStringView()}));
 }
 
 gpu::SharedImageUsageSet OperandUsageToSharedImageUsageSet(

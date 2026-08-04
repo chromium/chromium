@@ -1573,9 +1573,9 @@ void XRSystem::FinishSessionCreation(
       return;
     }
 
-    String error_message = UNSAFE_TODO(
-        String::Format("Could not create a session because: %s",
-                       GetConsoleMessage(result->get_failure_reason())));
+    String error_message =
+        StrCat({"Could not create a session because: ",
+                GetConsoleMessage(result->get_failure_reason())});
     AddConsoleMessage(mojom::blink::ConsoleMessageLevel::kError, error_message);
     query->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                   kSessionNotSupported, nullptr);
