@@ -51,8 +51,11 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -69,6 +72,9 @@ import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -94,6 +100,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                 Preference.OnPreferenceClickListener,
                 Preference.OnPreferenceChangeListener,
                 SigninManager.SignInStateObserver,
+                TemplateUrlService.TemplateUrlServiceObserver,
                 CustomDividerFragment {
 
     static final String CLEAR_BROWSING_DATA_REFERRER = "ClearBrowsingDataReferrer";
@@ -199,6 +206,8 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
 
     static final String PREF_PASSWORD_MANAGER_LINK_OUT = "password_manager_link_out";
     static final String PREF_SEARCH_HISTORY_LINK_OUT = "search_history_link_out";
+    static final String PREF_SEARCH_HISTORY_LINK_OUT_OTHER_DSE =
+            "search_history_link_out_other_dse";
     static final String PREF_MY_ACTIVITY_LINK_OUT = "my_activity_link_out";
 
     /** The "Clear" button preference. */
@@ -250,6 +259,12 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     private @Nullable ProgressDialog mProgressDialog;
     private Item[] mItems;
     private ClearBrowsingDataFetcher mFetcher;
+
+    private @Nullable ClearBrowsingDataExpandablePreferenceCategory mManageOtherGoogleDataSection;
+    private @Nullable Preference mPasswordManagerLinkOut;
+    private @Nullable Preference mMyActivityLinkOut;
+    private @Nullable Preference mSearchHistoryLinkOut;
+    private @Nullable Preference mSearchHistoryLinkOutOtherDse;
 
     // This is the dialog we show to the user that lets them 'uncheck' (or exclude) the above
     // important domains from being cleared.
@@ -691,6 +706,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         updateSignOutOfChromeText();
 
         mSigninManager.addSignInStateObserver(this);
+        TemplateUrlServiceFactory.getForProfile(getProfile()).addObserver(this);
 
         setHasOptionsMenu(true);
 
@@ -703,30 +719,97 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     private void setUpManageOtherGoogleDataSection() {
-        ClearBrowsingDataExpandablePreferenceCategory manageOtherGoogleDataSection =
-                findPreference(PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE);
+        mManageOtherGoogleDataSection = findPreference(PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE);
+        mPasswordManagerLinkOut = findPreference(PREF_PASSWORD_MANAGER_LINK_OUT);
+        mMyActivityLinkOut = findPreference(PREF_MY_ACTIVITY_LINK_OUT);
+        mSearchHistoryLinkOut = findPreference(PREF_SEARCH_HISTORY_LINK_OUT);
+        mSearchHistoryLinkOutOtherDse = findPreference(PREF_SEARCH_HISTORY_LINK_OUT_OTHER_DSE);
 
-        manageOtherGoogleDataSection.setOnExpandedListener(
+        assert mManageOtherGoogleDataSection != null;
+        assert mPasswordManagerLinkOut != null;
+        assert mMyActivityLinkOut != null;
+        assert mSearchHistoryLinkOut != null;
+        assert mSearchHistoryLinkOutOtherDse != null;
+
+        mManageOtherGoogleDataSection.setOnExpandedListener(
                 () -> {
-                    updateManageOtherGoogleDataSectionContentVisibility();
+                    updateManageOtherGoogleDataSection();
                 });
 
-        manageOtherGoogleDataSection.setExpanded(false);
+        // Must be initially collapsed.
+        mManageOtherGoogleDataSection.setExpanded(false);
+
+        mPasswordManagerLinkOut.setOnPreferenceClickListener(
+                preference -> {
+                    PasswordManagerLauncher.showPasswordSettings(
+                            getContext(),
+                            getProfile(),
+                            ManagePasswordsReferrer.CHROME_SETTINGS,
+                            ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                            /* managePasskeys= */ true);
+                    return true;
+                });
+
+        mMyActivityLinkOut.setOnPreferenceClickListener(
+                preference -> {
+                    getCustomTabLauncher()
+                            .openUrlInCct(getContext(), UrlConstants.MY_ACTIVITY_URL_IN_CBD);
+                    return true;
+                });
+
+        mSearchHistoryLinkOut.setOnPreferenceClickListener(
+                preference -> {
+                    getCustomTabLauncher()
+                            .openUrlInCct(
+                                    getContext(), UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD);
+                    return true;
+                });
     }
 
-    private void updateManageOtherGoogleDataSectionContentVisibility() {
-        ClearBrowsingDataExpandablePreferenceCategory manageOtherGoogleDataSection =
-                findPreference(PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE);
-        assert manageOtherGoogleDataSection != null;
+    private void updateManageOtherGoogleDataSection() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)) return;
 
-        boolean isExpanded = manageOtherGoogleDataSection.isExpanded();
+        assert mManageOtherGoogleDataSection != null;
+        assert mPasswordManagerLinkOut != null;
+        assert mMyActivityLinkOut != null;
+        assert mSearchHistoryLinkOut != null;
+        assert mSearchHistoryLinkOutOtherDse != null;
+
+        TemplateUrl defaultSearchEngine = getSearchEngineTemplateUrlWhenOtherDse();
+
+        boolean isExpanded = mManageOtherGoogleDataSection.isExpanded();
         boolean isSignedIn = mSigninManager.getIdentityManager().hasPrimaryAccount();
 
-        findPreference(PREF_PASSWORD_MANAGER_LINK_OUT).setVisible(isExpanded);
-        findPreference(PREF_SEARCH_HISTORY_LINK_OUT).setVisible(isSignedIn && isExpanded);
-        findPreference(PREF_MY_ACTIVITY_LINK_OUT).setVisible(isSignedIn && isExpanded);
+        mPasswordManagerLinkOut.setVisible(isExpanded);
+        mMyActivityLinkOut.setVisible(isExpanded && isSignedIn);
+
+        if (defaultSearchEngine == null) {
+            mSearchHistoryLinkOut.setVisible(isExpanded && isSignedIn);
+            mSearchHistoryLinkOutOtherDse.setVisible(false);
+        } else {
+            mSearchHistoryLinkOut.setVisible(false);
+            mSearchHistoryLinkOutOtherDse.setVisible(isExpanded && isSignedIn);
+
+            mSearchHistoryLinkOutOtherDse.setSummary(
+                    getString(
+                            R.string.search_history_link_out_description_other_dse,
+                            defaultSearchEngine.getShortName()));
+        }
 
         notifyPreferencesUpdated();
+    }
+
+    private @Nullable TemplateUrl getSearchEngineTemplateUrlWhenOtherDse() {
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
+        if (templateUrlService == null || templateUrlService.isDefaultSearchEngineGoogle())
+            return null;
+        return templateUrlService.getDefaultSearchEngineTemplateUrl();
+    }
+
+    @Override
+    public void onTemplateURLServiceChanged() {
+        updateManageOtherGoogleDataSection();
     }
 
     @Override
@@ -783,6 +866,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         for (Item item : mItems) {
             item.destroy();
         }
+        TemplateUrlServiceFactory.getForProfile(getProfile()).removeObserver(this);
         mSigninManager.removeSignInStateObserver(this);
         if (mShouldShowPostDeleteFeedback) {
             triggerHapticFeedback();
@@ -926,17 +1010,13 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     /** {@link SigninManager.SignInStateObserver} implementation. */
     @Override
     public void onSignedIn() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)) {
-            updateManageOtherGoogleDataSectionContentVisibility();
-        }
+        updateManageOtherGoogleDataSection();
     }
 
     /** {@link SigninManager.SignInStateObserver} implementation. */
     @Override
     public void onSignedOut() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)) {
-            updateManageOtherGoogleDataSectionContentVisibility();
-        }
+        updateManageOtherGoogleDataSection();
     }
 
     @Override

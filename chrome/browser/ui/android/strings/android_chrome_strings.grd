@@ -1173,6 +1173,9 @@ Your Google account may have other forms of browsing history like searches and a
             <message name="IDS_SEARCH_HISTORY_LINK_OUT_TITLE" desc="Title for the link out button in Clear Browsing Data settings that redirects to the Google Search History page." translateable="false">
         Search history
       </message>
+      <message name="IDS_SEARCH_HISTORY_LINK_OUT_DESCRIPTION_OTHER_DSE" desc="Description for the button in Clear Browsing Data settings that instruct the user to manage their search history in their default search engine." translateable="false">
+        Your search engine is <ph name="DSE_NAME">%1$s<ex>Google</ex></ph>. See their instructions for deleting your search history, if applicable.
+      </message>
       <message name="IDS_MY_ACTIVITY_LINK_OUT_TITLE" desc="Title for the link out button in Clear Browsing Data settings that redirects to the Google My Activity page." translateable="false">
         My Activity
       </message>

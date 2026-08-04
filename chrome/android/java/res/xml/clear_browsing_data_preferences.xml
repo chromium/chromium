@@ -68,6 +68,12 @@ found in the LICENSE file.
             android:widgetLayout="@layout/preference_widget_open_in_new" />
 
         <org.chromium.components.browser_ui.settings.ChromeBasePreference
+            android:key="search_history_link_out_other_dse"
+            android:icon="@drawable/ic_search_24dp"
+            android:title="@string/search_history_link_out_title"
+            android:selectable="false" />
+
+        <org.chromium.components.browser_ui.settings.ChromeBasePreference
             android:key="search_history_link_out"
             android:icon="@drawable/ic_search_24dp"
             android:title="@string/search_history_link_out_title"
