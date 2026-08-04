@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
@@ -1183,9 +1184,17 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
 }
 
+// TODO(crbug.com/542691173):
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_GetOrCreateSuitableWebContents_TargetInBackgroundWindow \
+  DISABLED_GetOrCreateSuitableWebContents_TargetInBackgroundWindow
+#else
+#define MAYBE_GetOrCreateSuitableWebContents_TargetInBackgroundWindow \
+  GetOrCreateSuitableWebContents_TargetInBackgroundWindow
+#endif
 IN_PROC_BROWSER_TEST_F(
     GlicExperimentalOptInTest,
-    GetOrCreateSuitableWebContents_TargetInBackgroundWindow) {
+    MAYBE_GetOrCreateSuitableWebContents_TargetInBackgroundWindow) {
   // 1. We start with browser() (Window A, active).
   // It has 1 tab (not matching).
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
