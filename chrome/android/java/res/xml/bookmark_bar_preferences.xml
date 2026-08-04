@@ -5,12 +5,20 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+    <org.chromium.chrome.browser.appearance.settings.RadioButtonGroupBookmarkBarPreference
         android:key="bookmark_bar"
         android:order="0"
-        android:title="@string/bookmark_bar_setting"
-        android:summary="@string/bookmark_bar_setting_subtitle" />
+        android:title="@string/bookmark_bar_setting" />
+
+    <Preference
+        android:key="managed_disclaimer_text"
+        android:layout="@layout/managed_disclaimer_preference_for_radio_groups"
+        android:order="1"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        android:visibility="gone" />
 
 </PreferenceScreen>

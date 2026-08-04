@@ -33,6 +33,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -43,7 +44,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
@@ -120,7 +120,7 @@ public class BookmarkBarSettingsFragmentTest {
     @SmallTest
     public void testBookmarkBarPreferenceIsPresent() {
         launchSettings();
-        assertSwitchExists(PREF_BOOKMARK_BAR);
+        assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
     }
 
     @Test
@@ -130,15 +130,20 @@ public class BookmarkBarSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
         launchSettings();
 
-        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
-        Assert.assertTrue(bookmarkBarPref.isChecked());
+        final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
+        Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
+        Assert.assertFalse(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
 
-        ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
-        Assert.assertFalse(bookmarkBarPref.isChecked());
+        ThreadUtils.runOnUiThreadBlocking(
+                bookmarkBarPref.getAlwaysHideButtonForTesting()::performClick);
+        Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
+        Assert.assertFalse(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
         Assert.assertFalse(mBookmarkBarSettingSupplier.get());
 
-        ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
-        Assert.assertTrue(bookmarkBarPref.isChecked());
+        ThreadUtils.runOnUiThreadBlocking(
+                bookmarkBarPref.getAlwaysShowButtonForTesting()::performClick);
+        Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
+        Assert.assertFalse(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
         Assert.assertTrue(mBookmarkBarSettingSupplier.get());
     }
 
@@ -149,14 +154,14 @@ public class BookmarkBarSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
         launchSettings();
 
-        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
-        Assert.assertTrue(bookmarkBarPref.isChecked());
+        final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
+        Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(false));
-        Assert.assertFalse(bookmarkBarPref.isChecked());
+        Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
-        Assert.assertTrue(bookmarkBarPref.isChecked());
+        Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
     }
 
     @Test
@@ -170,16 +175,20 @@ public class BookmarkBarSettingsFragmentTest {
                 });
         launchSettings();
 
-        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
-        Assert.assertTrue(bookmarkBarPref.isChecked());
+        final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
+        CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysShowButtonForTesting() != null);
+        CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysHideButtonForTesting() != null);
+        Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
 
-        ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
-        Assert.assertFalse(bookmarkBarPref.isChecked());
+        ThreadUtils.runOnUiThreadBlocking(
+                bookmarkBarPref.getAlwaysHideButtonForTesting()::performClick);
+        Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
         Assert.assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
         Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
-        ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
-        Assert.assertTrue(bookmarkBarPref.isChecked());
+        ThreadUtils.runOnUiThreadBlocking(
+                bookmarkBarPref.getAlwaysShowButtonForTesting()::performClick);
+        Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
         Assert.assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
         Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
     }
@@ -195,20 +204,22 @@ public class BookmarkBarSettingsFragmentTest {
                 });
         launchSettings();
 
-        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
-        Assert.assertTrue(bookmarkBarPref.isChecked());
+        final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
+        CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysShowButtonForTesting() != null);
+        CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysHideButtonForTesting() != null);
+        Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
                                 mProfile, false, /* fromKeyboardShortcut= */ true));
-        Assert.assertFalse(bookmarkBarPref.isChecked());
+        Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
                                 mProfile, true, /* fromKeyboardShortcut= */ false));
-        Assert.assertTrue(bookmarkBarPref.isChecked());
+        Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
     }
 
     @Test
@@ -256,11 +267,11 @@ public class BookmarkBarSettingsFragmentTest {
         verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
     }
 
-    private ChromeSwitchPreference assertSwitchExists(String prefKey) {
+    private RadioButtonGroupBookmarkBarPreference assertRadioButtonGroupExists(String prefKey) {
         final Preference pref = mSettings.findPreference(prefKey);
         Assert.assertNotNull(pref);
-        Assert.assertTrue(pref instanceof ChromeSwitchPreference);
-        return (ChromeSwitchPreference) pref;
+        Assert.assertTrue(pref instanceof RadioButtonGroupBookmarkBarPreference);
+        return (RadioButtonGroupBookmarkBarPreference) pref;
     }
 
     private void launchSettings() {

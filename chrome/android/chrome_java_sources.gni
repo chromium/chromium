@@ -140,6 +140,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/xsurface_provider/ProcessScopeDependencyProviderFactoryImpl.java",
   "java/src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragment.java",
   "java/src/org/chromium/chrome/browser/appearance/settings/BookmarkBarSettingsFragment.java",
+  "java/src/org/chromium/chrome/browser/appearance/settings/RadioButtonGroupBookmarkBarPreference.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillDialogController.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowPrompt.java",

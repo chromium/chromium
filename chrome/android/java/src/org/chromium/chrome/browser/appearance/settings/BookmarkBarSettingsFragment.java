@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
 import org.chromium.base.ContextUtils;
@@ -24,8 +25,8 @@ import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
@@ -37,10 +38,12 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
         implements CustomDividerFragment {
 
     public static final String PREF_BOOKMARK_BAR = "bookmark_bar";
+    @VisibleForTesting static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
     private boolean mUseProfileUserPrefs;
+    private @Nullable RadioButtonGroupBookmarkBarPreference mBookmarkBarPref;
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable PrefObserver mPrefObserver;
@@ -92,28 +95,17 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     private void initBookmarkBarPref() {
-        if (!shouldShowBookmarkPref(getContext())) {
-            removePreference(PREF_BOOKMARK_BAR);
-            return;
+        mBookmarkBarPref = findPreference(PREF_BOOKMARK_BAR);
+        if (mBookmarkBarPref == null) return;
+
+        ManagedPreferenceDelegate managedPrefDelegate = createManagedPreferenceDelegate();
+        mBookmarkBarPref.setManagedPreferenceDelegate(managedPrefDelegate);
+
+        Preference disclaimerPref = findPreference(PREF_MANAGED_DISCLAIMER_TEXT);
+        if (disclaimerPref != null) {
+            disclaimerPref.setVisible(
+                    managedPrefDelegate.isPreferenceControlledByPolicy(mBookmarkBarPref));
         }
-
-        ChromeSwitchPreference bookmarkBarSwitch = findPreference(PREF_BOOKMARK_BAR);
-        assert bookmarkBarSwitch != null;
-        bookmarkBarSwitch.setManagedPreferenceDelegate(
-                new ChromeManagedPreferenceDelegate(getProfile()) {
-                    @Override
-                    public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return BookmarkBarUtils.isBookmarkBarManagedByPolicy(getProfile());
-                    }
-
-                    @Override
-                    public @Nullable Boolean isPreferenceRecommendation(Preference preference) {
-                        if (!BookmarkBarUtils.isBookmarkBarRecommended(getProfile())) {
-                            return null;
-                        }
-                        return BookmarkBarUtils.isFollowingBookmarkBarRecommendation(getProfile());
-                    }
-                });
 
         if (mUseProfileUserPrefs) {
             initBookmarkBarPrefForUserPrefs();
@@ -122,20 +114,38 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
         }
     }
 
+    private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
+        return new ChromeManagedPreferenceDelegate(getProfile()) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return BookmarkBarUtils.isBookmarkBarManagedByPolicy(getProfile());
+            }
+
+            @Override
+            public @Nullable Boolean isPreferenceRecommendation(Preference preference) {
+                if (!BookmarkBarUtils.isBookmarkBarRecommended(getProfile())) {
+                    return null;
+                }
+                return BookmarkBarUtils.isFollowingBookmarkBarRecommendation(getProfile());
+            }
+        };
+    }
+
     private void initBookmarkBarPrefForUserPrefs() {
         mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
         mPrefObserver = this::updateBookmarkBarPref;
 
         mPrefChangeRegistrar.addObserver(Pref.SHOW_BOOKMARK_BAR, mPrefObserver);
-        ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
-                .setOnPreferenceChangeListener(
-                        (pref, newValue) -> {
-                            BookmarkBarUtils.setUserPrefsShowBookmarksBar(
-                                    getProfile(),
-                                    (boolean) newValue,
-                                    /* fromKeyboardShortcut= */ false);
-                            return true;
-                        });
+        if (mBookmarkBarPref != null) {
+            mBookmarkBarPref.setOnPreferenceChangeListener(
+                    (pref, newValue) -> {
+                        BookmarkBarUtils.setUserPrefsShowBookmarksBar(
+                                getProfile(),
+                                (boolean) newValue,
+                                /* fromKeyboardShortcut= */ false);
+                        return true;
+                    });
+        }
     }
 
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
@@ -145,45 +155,35 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
                     if (key != null
                             && key.equals(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR)) {
                         updateBookmarkBarPref();
-                        Preference bookmarkBarSwitch = findPreference(PREF_BOOKMARK_BAR);
-                        if (bookmarkBarSwitch != null) {
-                            bookmarkBarSwitch.setSummary(bookmarkBarSwitch.getSummary());
-                        }
                     }
                 };
         ContextUtils.getAppSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(mDevicePrefsListener);
 
-        ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
-                .setOnPreferenceChangeListener(
-                        (pref, newValue) -> {
-                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                    getProfile(),
-                                    (boolean) newValue,
-                                    /* fromKeyboardShortcut= */ false);
-                            return true;
-                        });
+        if (mBookmarkBarPref != null) {
+            mBookmarkBarPref.setOnPreferenceChangeListener(
+                    (pref, newValue) -> {
+                        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                                getProfile(),
+                                (boolean) newValue,
+                                /* fromKeyboardShortcut= */ false);
+                        return true;
+                    });
+        }
     }
 
     private void updateBookmarkBarPref() {
-        if (!shouldShowBookmarkPref(getContext())) {
+        if (mBookmarkBarPref == null) {
             return;
         }
 
-        ChromeSwitchPreference bookmarkBarSwitch = findPreference(PREF_BOOKMARK_BAR);
-        if (bookmarkBarSwitch == null) return;
-
         if (mUseProfileUserPrefs) {
-            bookmarkBarSwitch.setChecked(
+            mBookmarkBarPref.setCheckedState(
                     BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(getProfile()));
         } else {
-            bookmarkBarSwitch.setChecked(
+            mBookmarkBarPref.setCheckedState(
                     BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(getProfile()));
         }
-    }
-
-    private void removePreference(String prefKey) {
-        getPreferenceScreen().removePreference(findPreference(prefKey));
     }
 
     @Override

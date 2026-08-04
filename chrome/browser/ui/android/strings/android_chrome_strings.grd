@@ -964,6 +964,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_BOOKMARK_BAR_SETTING" desc="Title for the bookmark bar setting.">
         Show bookmarks bar
       </message>
+      <message name="IDS_BOOKMARK_BAR_SETTING_ALWAYS_SHOW" desc="Title for option to always show the bookmark bar." translateable="false">
+        Always show
+      </message>
+      <message name="IDS_BOOKMARK_BAR_SETTING_ALWAYS_HIDE" desc="Title for option to always hide the bookmark bar." translateable="false">
+        Always hide
+      </message>
       <message name="IDS_BOOKMARK_BAR_SETTING_SUBTITLE" desc="Subtitle hint for the bookmark bar setting.">
         Hidden on narrow screens
       </message>
