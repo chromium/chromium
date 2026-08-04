@@ -39,6 +39,7 @@ class BoxModelObjectPainter : public BoxPainterBase {
   PhysicalRect AdjustRectForScrolledContent(GraphicsContext&,
                                             const PhysicalBoxStrut& borders,
                                             const PhysicalRect&) const override;
+  Node* ImageGeneratingNode() const override;
 
  private:
   const LayoutBoxModelObject& box_model_;

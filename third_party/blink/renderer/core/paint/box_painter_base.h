@@ -47,12 +47,8 @@ class BoxPainterBase {
  public:
   BoxPainterBase(const Document& document,
                  const ComputedStyle& style,
-                 Node* node,
-                 Node* generating_node)
-      : document_(document),
-        style_(style),
-        node_(node),
-        generating_node_(generating_node) {}
+                 Node* node)
+      : document_(document), style_(style), node_(node) {}
 
   void PaintFillLayers(const PaintInfo&,
                        const Color&,
@@ -191,6 +187,13 @@ class BoxPainterBase {
       BackgroundBleedAvoidance,
       bool is_painting_background_in_contents_space,
       PaintFlags paint_flags) const = 0;
+  // The node that the paint-timing path attributes a fill-layer image to,
+  // resolved by the subclass with LayoutObject::GeneratingNode(). Kept separate
+  // from `node_` so DevTools and image-animation paths continue to see the raw
+  // box node. Only called when a layer actually draws an image: resolving it
+  // walks the layout tree and dereferences the Node, and box painters are
+  // constructed for every box in every paint phase.
+  virtual Node* ImageGeneratingNode() const = 0;
   static void PaintInsetBoxShadow(
       const PaintInfo&,
       const ContouredRect&,
@@ -206,11 +209,6 @@ class BoxPainterBase {
   const Document& document_;
   const ComputedStyle& style_;
   Node* node_;
-  // The node the paint-timing path attributes background images to, resolved
-  // by the caller with LayoutObject::GeneratingNode(). Kept separate from
-  // `node_` so DevTools and image-animation paths continue to see the raw box
-  // node.
-  Node* generating_node_;
 };
 
 }  // namespace blink

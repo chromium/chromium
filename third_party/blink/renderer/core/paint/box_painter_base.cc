@@ -1443,6 +1443,11 @@ void BoxPainterBase::PaintFillLayer(
         bg_paint_context.ComputeBorderShapeReferenceRects(rect, *border_shape));
   }
 
+  // Resolved here rather than in the constructor: box painters are constructed
+  // for every box in every paint phase, and resolving the generating node walks
+  // the layout tree and dereferences the Node.
+  Node* const generating_node = image ? ImageGeneratingNode() : nullptr;
+
   const PhysicalBoxStrut border = ComputeSnappedBorders(bg_paint_context);
   const PhysicalBoxStrut padding = bg_paint_context.PaddingOutsets();
   const PhysicalBoxStrut border_padding_insets = -(border + padding);
@@ -1456,7 +1461,7 @@ void BoxPainterBase::PaintFillLayer(
   if (CanUseBottomLayerFastPath(fill_layer_info, bg_paint_context,
                                 bleed_avoidance, did_adjust_paint_rect) &&
       border_rect.HasRoundCurvature() && !border_shape &&
-      PaintFastBottomLayer(document_, node_, generating_node_, style_, context,
+      PaintFastBottomLayer(document_, node_, generating_node, style_, context,
                            fill_layer_info, rect, border_rect.AsRoundedRect(),
                            geometry, image.get(), composite_op)) {
     return;
@@ -1555,7 +1560,7 @@ void BoxPainterBase::PaintFillLayer(
   }
 
   PaintFillLayerBackground(document_, context, fill_layer_info, node_,
-                           generating_node_, style_, image.get(), composite_op,
+                           generating_node, style_, image.get(), composite_op,
                            geometry, scrolled_paint_rect);
 }
 
@@ -1575,6 +1580,10 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
 
   GraphicsContext& context = paint_info.context;
 
+  // Only resolved when a layer actually draws an image: resolving it walks
+  // the layout tree and dereferences the Node.
+  Node* const generating_node = image ? ImageGeneratingNode() : nullptr;
+
   // We draw the background into a separate layer, to be later masked with
   // yet another layer holding the text content.
   GraphicsContextStateSaver background_clip_state_saver(context, false);
@@ -1582,7 +1591,7 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
   context.Clip(mask_rect);
   context.BeginLayer(composite_op);
 
-  PaintFillLayerBackground(document_, context, info, node_, generating_node_,
+  PaintFillLayerBackground(document_, context, info, node_, generating_node,
                            style_, image, SkBlendMode::kSrcOver, geometry,
                            scrolled_paint_rect);
 
@@ -1637,6 +1646,10 @@ void BoxPainterBase::PaintFillLayerBorderAreaFillBox(
     bool object_has_multiple_boxes) {
   GraphicsContext& context = paint_info.context;
 
+  // Only resolved when a layer actually draws an image: resolving it walks
+  // the layout tree and dereferences the Node.
+  Node* const generating_node = image ? ImageGeneratingNode() : nullptr;
+
   // Expand the paint rect to include border-shape outer bounds if needed.
   PhysicalRect background_paint_rect = scrolled_paint_rect;
   if (geometry.BorderShapeOuterBounds()) {
@@ -1665,7 +1678,7 @@ void BoxPainterBase::PaintFillLayerBorderAreaFillBox(
     context.Clip(clip_rect);
     context.BeginLayer(composite_op);
 
-    PaintFillLayerBackground(document_, context, info, node_, generating_node_,
+    PaintFillLayerBackground(document_, context, info, node_, generating_node,
                              style_, image, SkBlendMode::kSrcOver, geometry,
                              background_paint_rect);
 
@@ -1699,7 +1712,7 @@ void BoxPainterBase::PaintFillLayerBorderAreaFillBox(
     context.ClipContouredRect(outer);
     context.ClipOutContouredRect(inner);
 
-    PaintFillLayerBackground(document_, context, info, node_, generating_node_,
+    PaintFillLayerBackground(document_, context, info, node_, generating_node,
                              style_, image, composite_op, geometry,
                              background_paint_rect);
     return;
@@ -1713,7 +1726,7 @@ void BoxPainterBase::PaintFillLayerBorderAreaFillBox(
   context.Clip(mask_rect);
   context.BeginLayer(composite_op);
 
-  PaintFillLayerBackground(document_, context, info, node_, generating_node_,
+  PaintFillLayerBackground(document_, context, info, node_, generating_node,
                            style_, image, SkBlendMode::kSrcOver, geometry,
                            background_paint_rect);
 
