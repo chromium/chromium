@@ -460,8 +460,7 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
                            width, dst_u_span.data(), width / 2,
                            dst_v_span.data(), width / 2, width, height);
 
-  SendIncomingDataToClient(i420_buffer_.data(), buffer_length, rotation,
-                           current_time, capture_time,
+  SendIncomingDataToClient(i420_buffer_, rotation, current_time, capture_time,
                            ColorSpaceFromADataSpace(data_space));
 }
 
@@ -899,8 +898,7 @@ bool VideoCaptureDeviceAndroid::ThrottleFrame(base::TimeTicks current_time) {
 }
 
 void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
-    const uint8_t* data,
-    int length,
+    base::span<const uint8_t> data,
     int rotation,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
@@ -908,10 +906,10 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
   base::AutoLock lock(lock_);
   if (!client_)
     return;
-  client_->OnIncomingCapturedData(
-      data, length, capture_format_, color_space, rotation, false /* flip_y */,
-      reference_time, timestamp,
-      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
+  client_->OnIncomingCapturedData(data, capture_format_, color_space, rotation,
+                                  false /* flip_y */, reference_time, timestamp,
+                                  /*capture_begin_timestamp=*/std::nullopt,
+                                  /*metadata=*/std::nullopt);
 }
 
 void VideoCaptureDeviceAndroid::OnInteractiveStateChanged(JNIEnv* env,

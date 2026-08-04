@@ -192,8 +192,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid
   // dropped. If not, advance the next frame expectation time and return false;
   bool ThrottleFrame(base::TimeTicks current_time);
 
-  void SendIncomingDataToClient(const uint8_t* data,
-                                int length,
+  void SendIncomingDataToClient(base::span<const uint8_t> data,
                                 int rotation,
                                 base::TimeTicks reference_time,
                                 base::TimeDelta timestamp,
