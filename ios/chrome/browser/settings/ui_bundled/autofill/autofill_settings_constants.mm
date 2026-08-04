@@ -33,6 +33,8 @@ NSString* const kAutofillSecurityCvcsTableViewId =
     @"kAutofillSecurityCvcsTableViewId";
 NSString* const kEnhancedAutofillSwitchViewId =
     @"kEnhancedAutofillSwitchViewId";
+NSString* const kSuggestionsFromGeminiSwitchViewId =
+    @"kSuggestionsFromGeminiSwitchViewId";
 
 NSString* const kAutofillCreditCardEditTableViewId =
     @"kAutofillCreditCardEditTableViewId";

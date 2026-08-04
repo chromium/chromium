@@ -12,7 +12,9 @@
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/personal_context/core/personal_context_debug_features.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -169,7 +171,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       [self isRunningTest:@selector(testAutoExitEditModeOnDeletion)] ||
       [self isRunningTest:@selector(
                               testDeleteLastEntityInSectionRemovesSection)] ||
-      [self isRunningTest:@selector(testSimultaneousRowAndSectionDeletion)]) {
+      [self isRunningTest:@selector(testSimultaneousRowAndSectionDeletion)] ||
+      [self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAiWithDataSchema);
   }
@@ -181,7 +184,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   }
 
   if ([self isRunningTest:@selector(testVerificationSwitchReauthFailure)] ||
-      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)]) {
+      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)] ||
+      [self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAiReauthRequired);
   }
@@ -190,6 +194,19 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       [self isRunningTest:@selector(testToggleToolbarAddButtonBySwitch)]) {
     config.features_disabled.push_back(
         autofill::features::kAutofillAiWithDataSchema);
+  }
+
+  if ([self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
+    config.features_enabled_and_params.push_back(
+        {autofill::features::kAutofillAmbientAutofill,
+         {{"ambient_autofill_eligible_tiers", "1"}}});
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAiAvailableByDefault);
+    config.features_enabled_and_params.push_back(
+        {personal_context::features::debug::
+             kPersonalContextForceEnablementState,
+         {{"state", "2"}}});
+    config.additional_args.push_back("--force-ai-subscription-tier=1");
   }
 
   return config;
@@ -1311,6 +1328,94 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               kEnhancedAutofillTableViewId),
                                           labelMatcher, valueOffMatcher, nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [self exitSettingsMenu];
+  [SigninEarlGrey signOut];
+}
+
+// Tests that toggling the Suggestions from Gemini switch in the subpage updates
+// the detail text on the main Autofill settings page.
+- (void)testToggleSuggestionsFromGeminiSwitch {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kCanUseModelExecutionFeaturesName) : @YES,
+                   @(kCanContextuallyUseGeminiInChromeCapabilityName) : @YES,
+                 }];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey setIntegerValue:1 forUserPref:"sync.ai_subscription_tier"];
+
+  [self openAutofillProfilesSettings];
+
+  // Verify initial detail text is "On".
+  id<GREYMatcher> labelMatcher = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE));
+  id<GREYMatcher> valueOnMatcher =
+      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_ON));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kSuggestionsFromGeminiTableViewId),
+                                   labelMatcher, valueOnMatcher, nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the Suggestions from Gemini item to open the sub-page.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSuggestionsFromGeminiTableViewId)]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> switchMatcher =
+      grey_accessibilityID(kSuggestionsFromGeminiSwitchViewId);
+  [[EarlGrey selectElementWithMatcher:switchMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify initially ON.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kSuggestionsFromGeminiSwitchViewId,
+                                   /*is_toggled_on=*/YES, /*is_enabled=*/YES)]
+      assertWithMatcher:grey_notNil()];
+
+  // Toggle OFF.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSuggestionsFromGeminiSwitchViewId)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Go back to the main settings page.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  // Verify that the detail text is now "Off".
+  id<GREYMatcher> valueOffMatcher =
+      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kSuggestionsFromGeminiTableViewId),
+                                   labelMatcher, valueOffMatcher, nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap again to enter sub-page.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSuggestionsFromGeminiTableViewId)]
+      performAction:grey_tap()];
+
+  // Toggle ON.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSuggestionsFromGeminiSwitchViewId)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+
+  // Go back.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  // Verify that the detail text is "On".
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kSuggestionsFromGeminiTableViewId),
+                                   labelMatcher, valueOnMatcher, nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [self exitSettingsMenu];

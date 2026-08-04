@@ -22,6 +22,7 @@
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/mock_personal_context_eligibility_service.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
@@ -521,6 +522,19 @@ TEST_F(AutofillProfileTableViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(1));
   CheckSectionFooterWithId(
       IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY, 1);
+
+  TableViewDetailIconItem* item =
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
+          GetTableViewItem(/*section=*/1, /*item=*/0));
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE),
+      item.text);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_ON), item.detailText);
+
+  profile_->GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF), item.detailText);
 }
 
 class AutofillProfileTableViewControllerYourSavedInfoEnabledTest

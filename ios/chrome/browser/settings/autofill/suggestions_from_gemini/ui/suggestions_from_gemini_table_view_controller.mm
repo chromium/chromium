@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -174,6 +175,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.on = _suggestionsFromGeminiSwitchOn;
   switchItem.target = self;
   switchItem.selector = @selector(personalContextSwitchChanged:);
+  switchItem.accessibilityIdentifier = kSuggestionsFromGeminiSwitchViewId;
   return switchItem;
 }
 

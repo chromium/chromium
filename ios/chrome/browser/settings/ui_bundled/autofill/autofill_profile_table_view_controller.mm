@@ -31,6 +31,7 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -352,6 +353,13 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     if (!IsYourSavedInfoSettingsPageIosEnabled()) {
       _prefObserverBridge->ObserveChangesForPreference(
           autofill::prefs::kAutofillAiOptInStatus, &_prefChangeRegistrar);
+      if (autofill::ShouldShowPersonalContextAutofillSetting(
+              _browser->GetProfile())) {
+        _prefObserverBridge->ObserveChangesForPreference(
+            personal_context::prefs::
+                kPersonalContextInAutofillSettingsToggleStatus,
+            &_prefChangeRegistrar);
+      }
     }
   }
   return self;
@@ -551,6 +559,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   return _enhancedAutofillItem;
 }
 
+// Returns the table view item for the Suggestions from Gemini section.
 - (TableViewItem*)suggestionsFromGeminiItem {
   _suggestionsFromGeminiItem = [[TableViewDetailIconItem alloc]
       initWithType:ItemTypeSuggestionsFromGemini];
@@ -561,9 +570,20 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   _suggestionsFromGeminiItem.accessibilityTraits |= UIAccessibilityTraitButton;
   _suggestionsFromGeminiItem.accessibilityIdentifier =
       kSuggestionsFromGeminiTableViewId;
+  [self configureSuggestionsFromGeminiItem];
   return _suggestionsFromGeminiItem;
 }
 
+// Configures `_suggestionsFromGeminiItem`'s detail text based on the current
+// state of the personal context preference.
+- (void)configureSuggestionsFromGeminiItem {
+  bool personalContextEnabled = _browser->GetProfile()->GetPrefs()->GetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus);
+  _suggestionsFromGeminiItem.detailText = l10n_util::GetNSString(
+      personalContextEnabled ? IDS_IOS_SETTING_ON : IDS_IOS_SETTING_OFF);
+}
+
+// Returns the footer for the Suggestions from Gemini section.
 - (TableViewHeaderFooterItem*)suggestionsFromGeminiFooter {
   TableViewLinkHeaderFooterItem* footer =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
@@ -1322,10 +1342,19 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   }
 
   if (preferenceName == autofill::prefs::kAutofillAiOptInStatus) {
-    [self configureEnhancedAutofillItem];
-    [self reconfigureCellsForItems:@[ _enhancedAutofillItem ]];
+    if (_enhancedAutofillItem) {
+      [self configureEnhancedAutofillItem];
+      [self reconfigureCellsForItems:@[ _enhancedAutofillItem ]];
 
-    [self updateAddButtonInToolbar];
+      [self updateAddButtonInToolbar];
+    }
+  } else if (preferenceName ==
+             personal_context::prefs::
+                 kPersonalContextInAutofillSettingsToggleStatus) {
+    if (_suggestionsFromGeminiItem) {
+      [self configureSuggestionsFromGeminiItem];
+      [self reconfigureCellsForItems:@[ _suggestionsFromGeminiItem ]];
+    }
   }
 }
 
