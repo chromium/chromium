@@ -621,6 +621,16 @@ gfx::Rect BaseTabStripRegionView::GetLinkDropBoundsFromPosition(
 
 void BaseTabStripRegionView::OnGlassFrameEligibilityChanged(bool is_eligible) {
   SchedulePaint();
+  // The parent of the Tab views are layer backed, so we need to explicitly
+  // schedule a repaint on them.
+  if (UnpinnedTabContainerView* unpinned_tabs_container_view =
+          GetUnpinnedTabsContainer()) {
+    unpinned_tabs_container_view->SchedulePaint();
+  }
+  if (PinnedTabContainerView* pinned_tab_container_view =
+          GetPinnedTabsContainer()) {
+    pinned_tab_container_view->SchedulePaint();
+  }
 }
 
 BEGIN_METADATA(BaseTabStripRegionView)
