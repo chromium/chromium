@@ -420,18 +420,15 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, CloseButtonVisibilityActiveTab) {
       base::test::RunUntil([&]() { return !close_button->GetVisible(); }));
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CloseButtonVisibilityHover DISABLED_CloseButtonVisibilityHover
-#else
-#define MAYBE_CloseButtonVisibilityHover CloseButtonVisibilityHover
-#endif
-IN_PROC_BROWSER_TEST_F(TabViewTest, MAYBE_CloseButtonVisibilityHover) {
+IN_PROC_BROWSER_TEST_F(TabViewTest, CloseButtonVisibilityHover) {
   TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();
   TabView* tab_view = views::AsViewClass<TabView>(tab_node->view());
   TabCloseButton* close_button = tab_view->close_button_for_testing();
 
-  // Deactivate the tab.
+  // Deactivate the tab and explicitly reset hovered state so mouse cursor
+  // placement doesn't keep the close button visible.
   AppendTab();
+  tab_view->UpdateHovered(false);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !close_button->GetVisible(); }));
 
