@@ -3756,7 +3756,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // object's InvalidatePaint(). It's different from
   // DisplayItemClient::GetPaintInvalidationReason() which is set during
   // PrePaint and cleared in PaintController::FinishCycle().
-  unsigned paint_invalidation_reason_for_pre_paint_ : 6;
+  unsigned paint_invalidation_reason_for_pre_paint_ : 5;
 
   // This is the cached 'position' value of this object
   // (see ComputedStyle::position).

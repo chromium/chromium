@@ -57,7 +57,7 @@ class PLATFORM_EXPORT DisplayItem {
   //     <Category>[<Subset>]PaintPhaseFirst + PaintPhaseMax;
   // - DEFINE_PAINT_PHASE_CONVERSION_METHOD(<Category>[<Subset>]) to define
   //   paintPhaseTo<Category>[<Subset>]Type(PaintPhase) method.
-  enum Type {
+  enum Type : uint8_t {
     kUninitializedType,
 
     kDrawingFirst,
@@ -160,9 +160,6 @@ class PLATFORM_EXPORT DisplayItem {
     kTypeLast = kScrollbarVertical,
   };
 
-  static_assert(kTypeLast < (1 << 8),
-                "DisplayItem::Type should fit in uint8_t");
-
   DisplayItem(const DisplayItem&) = delete;
   DisplayItem(DisplayItem&&) = delete;
   DisplayItem& operator=(const DisplayItem&) = delete;
@@ -199,7 +196,7 @@ class PLATFORM_EXPORT DisplayItem {
       }
 
       DisplayItemClientId client_id = kInvalidDisplayItemClientId;
-      DisplayItem::Type type = static_cast<DisplayItem::Type>(0);
+      DisplayItem::Type type = kUninitializedType;
       wtf_size_t fragment = 0;
     };
 
@@ -218,10 +215,10 @@ class PLATFORM_EXPORT DisplayItem {
   const gfx::Rect& VisualRect() const { return visual_rect_; }
 
   RasterEffectOutset GetRasterEffectOutset() const {
-    return static_cast<RasterEffectOutset>(raster_effect_outset_);
+    return raster_effect_outset_;
   }
 
-  Type GetType() const { return static_cast<Type>(type_); }
+  Type GetType() const { return type_; }
 
   // The fragment is part of the id, to uniquely identify display items in
   // different fragments for the same client and type.
@@ -261,14 +258,13 @@ class PLATFORM_EXPORT DisplayItem {
   }
 
   PaintInvalidationReason GetPaintInvalidationReason() const {
-    return static_cast<PaintInvalidationReason>(paint_invalidation_reason_);
+    return paint_invalidation_reason_;
   }
   void SetPaintInvalidationReason(PaintInvalidationReason reason) {
-    paint_invalidation_reason_ = static_cast<unsigned>(reason);
+    paint_invalidation_reason_ = reason;
   }
   bool IsCacheable() const {
-    return static_cast<PaintInvalidationReason>(paint_invalidation_reason_) !=
-           PaintInvalidationReason::kUncacheable;
+    return paint_invalidation_reason_ != PaintInvalidationReason::kUncacheable;
   }
 
   bool EqualsForUnderInvalidation(const DisplayItem& other) const;
@@ -302,10 +298,9 @@ class PLATFORM_EXPORT DisplayItem {
       : client_id_(client_id),
         visual_rect_(visual_rect),
         fragment_(0),
-        paint_invalidation_reason_(
-            static_cast<unsigned>(paint_invalidation_reason)),
+        paint_invalidation_reason_(paint_invalidation_reason),
         type_(type),
-        raster_effect_outset_(static_cast<unsigned>(raster_effect_outset)),
+        raster_effect_outset_(raster_effect_outset),
         draws_content_(draws_content),
         is_not_tombstone_(true),
         opaqueness_(0) {}
@@ -335,17 +330,17 @@ class PLATFORM_EXPORT DisplayItem {
   // paint_invalidation_reason_ is set during construction (or, in the case of a
   // DisplayItem copied from the cache, shortly thereafter). Once set, it is
   // never modified. It is used to inform raster invalidation.
-  unsigned paint_invalidation_reason_ : 8;
-  unsigned type_ : 8;
-  unsigned raster_effect_outset_ : 2;
-  unsigned draws_content_ : 1;
+  PaintInvalidationReason paint_invalidation_reason_;
+  Type type_;
+  RasterEffectOutset raster_effect_outset_;
+  uint8_t draws_content_ : 1;
   // This is not |is_tombstone_| to allow memset(0) to clear a display item to
   // be a tombstone.
-  unsigned is_not_tombstone_ : 1;
+  uint8_t is_not_tombstone_ : 1;
 
  protected:
   // For DrawingDisplayItem to save memory.
-  mutable unsigned opaqueness_ : 2;
+  mutable uint8_t opaqueness_ : 2;
 };
 
 inline bool operator==(const DisplayItem::Id& a, const DisplayItem::Id& b) {

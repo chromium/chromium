@@ -106,7 +106,7 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
     marked_for_validation_ = 0;
   }
 
-  mutable uint8_t paint_invalidation_reason_ : 7;
+  mutable uint8_t paint_invalidation_reason_ : 5;
   mutable uint8_t marked_for_validation_ : 1;
 };
 

@@ -10,8 +10,8 @@
 
 namespace blink {
 
-static_assert(static_cast<uint8_t>(PaintInvalidationReason::kMax) < (1 << 6),
-              "PaintInvalidationReason must fit in 6 bits");
+static_assert(static_cast<uint8_t>(PaintInvalidationReason::kMax) < (1 << 5),
+              "PaintInvalidationReason must fit in 5 bits");
 
 const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
   switch (reason) {
