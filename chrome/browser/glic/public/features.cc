@@ -240,4 +240,8 @@ BASE_FEATURE(kGlicOptInDialogLinkA11yFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicOptInDialogA11yFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicStructuredYieldMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Runs the glic client in a PrivilegedWebContents instead of a webview.
+// This is a work in progress. See b/534807813.
+BASE_FEATURE(kGlicNoWebview, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

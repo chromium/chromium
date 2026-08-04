@@ -138,6 +138,9 @@ BASE_DECLARE_FEATURE(kGlicSparkSettingsAccessibleLabels);
 
 BASE_DECLARE_FEATURE(kGlicOptInDialogA11yFix);
 BASE_DECLARE_FEATURE(kGlicStructuredYieldMetadata);
+
+BASE_DECLARE_FEATURE(kGlicNoWebview);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
