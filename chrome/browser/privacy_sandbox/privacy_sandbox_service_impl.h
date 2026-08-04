@@ -60,12 +60,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       const GURL& site_url) const override;
   bool IsPartOfManagedRelatedWebsiteSet(
       const net::SchemefulSite& site) const override;
-  void GetFledgeJoiningEtldPlusOneForDisplay(
-      base::OnceCallback<void(std::vector<std::string>)> callback) override;
-  std::vector<std::string> GetBlockedFledgeJoiningTopFramesForDisplay()
-      const override;
-  void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
-                               bool allowed) const override;
   bool ShouldUsePrivacyPolicyChinaDomain() override;
 
  protected:
@@ -133,11 +127,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 
   PrefChangeRegistrar user_prefs_registrar_;
 
-  // Called when the Fledge preference is changed.
-  void OnFledgePrefChanged();
-
-  // Called when the Ad measurement preference is changed.
-  void OnAdMeasurementPrefChanged();
 
   // Returns a PrivacySandboxCountries reference.
   PrivacySandboxCountries* GetPrivacySandboxCountries();

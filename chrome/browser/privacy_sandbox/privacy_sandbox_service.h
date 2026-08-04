@@ -65,23 +65,6 @@ class PrivacySandboxService : public KeyedService {
   virtual bool IsPartOfManagedRelatedWebsiteSet(
       const net::SchemefulSite& site) const = 0;
 
-  // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE
-  // interest group. Consults with the InterestGroupManager associated with
-  // |profile_| and formats the returned data for direct display to the user.
-  virtual void GetFledgeJoiningEtldPlusOneForDisplay(
-      base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
-
-  // Returns the set of top frames which are blocked from joining the profile to
-  // an interest group.
-  virtual std::vector<std::string> GetBlockedFledgeJoiningTopFramesForDisplay()
-      const = 0;
-
-  // Sets Fledge interest group joining to |allowed| for |top_frame_etld_plus1|.
-  // Forwards the setting to the PrivacySandboxSettings service, but also
-  // removes any Fledge data for the |top_frame_etld_plus1| if |allowed| is
-  // false.
-  virtual void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
-                                       bool allowed) const = 0;
 
   // Determines whether the China domain should be used for the Privacy Policy
   // page.

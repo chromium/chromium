@@ -137,15 +137,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   DCHECK(cookie_settings_);
   // Register observers for the Privacy Sandbox preferences.
   user_prefs_registrar_.Init(pref_service_);
-  user_prefs_registrar_.Add(
-      prefs::kPrivacySandboxM1FledgeEnabled,
-      base::BindRepeating(&PrivacySandboxServiceImpl::OnFledgePrefChanged,
-                          base::Unretained(this)));
-  user_prefs_registrar_.Add(
-      prefs::kPrivacySandboxM1AdMeasurementEnabled,
-      base::BindRepeating(
-          &PrivacySandboxServiceImpl::OnAdMeasurementPrefChanged,
-          base::Unretained(this)));
 
   // If the Sandbox is currently restricted, disable it and reset any consent
   // information. The user must manually enable the sandbox if they stop being
@@ -259,46 +250,6 @@ bool PrivacySandboxServiceImpl::IsPartOfManagedRelatedWebsiteSet(
   return first_party_sets_policy_service_->IsSiteInManagedSet(site);
 }
 
-void PrivacySandboxServiceImpl::GetFledgeJoiningEtldPlusOneForDisplay(
-    base::OnceCallback<void(std::vector<std::string>)> callback) {
-  std::move(callback).Run({});
-}
-
-std::vector<std::string>
-PrivacySandboxServiceImpl::GetBlockedFledgeJoiningTopFramesForDisplay() const {
-  const base::DictValue& pref_value =
-      pref_service_->GetDict(prefs::kPrivacySandboxFledgeJoinBlocked);
-
-  std::vector<std::string> blocked_top_frames;
-
-  for (auto entry : pref_value) {
-    blocked_top_frames.emplace_back(entry.first);
-  }
-
-  // Apply a lexographic ordering to match other settings permission surfaces.
-  std::sort(blocked_top_frames.begin(), blocked_top_frames.end());
-
-  return blocked_top_frames;
-}
-
-void PrivacySandboxServiceImpl::SetFledgeJoiningAllowed(
-    const std::string& top_frame_etld_plus1,
-    bool allowed) const {
-  privacy_sandbox_settings_->SetFledgeJoiningAllowed(top_frame_etld_plus1,
-                                                     allowed);
-
-  if (!allowed && browsing_data_remover_) {
-    std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
-        content::BrowsingDataFilterBuilder::Create(
-            content::BrowsingDataFilterBuilder::Mode::kDelete);
-    filter->AddRegisterableDomain(top_frame_etld_plus1);
-    browsing_data_remover_->RemoveWithFilter(
-        base::Time::Min(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-        std::move(filter));
-  }
-}
 
 void PrivacySandboxServiceImpl::RecordFirstPartySetsStateHistogram() {
   auto rws_status = FirstPartySetsState::kFpsNotRelevant;
@@ -371,39 +322,6 @@ void PrivacySandboxServiceImpl::MaybeInitializeRelatedWebsiteSetsPref() {
       true);
 }
 
-void PrivacySandboxServiceImpl::OnFledgePrefChanged() {
-  // If the user has disabled the preference, any related data stored should
-  // be cleared.
-  if (pref_service_->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled)) {
-    return;
-  }
-
-  if (browsing_data_remover_) {
-    browsing_data_remover_->Remove(
-        base::Time::Min(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
-            content::BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE |
-            content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_INTERNAL,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
-  }
-}
-
-void PrivacySandboxServiceImpl::OnAdMeasurementPrefChanged() {
-  // If the user has disabled the preference, any related data stored should
-  // be cleared.
-  if (pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled)) {
-    return;
-  }
-
-  if (browsing_data_remover_) {
-    browsing_data_remover_->Remove(
-        base::Time::Min(), base::Time::Max(),
-            content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
-            content::BrowsingDataRemover::
-                DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
-  }
-}
 
 bool PrivacySandboxServiceImpl::IsConsentRequired() {
   return privacy_sandbox::IsConsentRequired(privacy_sandbox_countries_);
