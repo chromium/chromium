@@ -152,11 +152,6 @@ bool ChromeIOSTranslateClient::IsTranslatableURL(const GURL& url) {
   return TranslateServiceIOS::IsTranslatableURL(url);
 }
 
-void ChromeIOSTranslateClient::CheckIfPdfIsTranslatable(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
-}
-
 void ChromeIOSTranslateClient::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {

@@ -70,10 +70,6 @@ class TranslateClient {
 
   // Returns true if the URL can be translated.
   virtual bool IsTranslatableURL(const GURL& url) = 0;
-
-  // Queries asynchronously whether the PDF is translatable (e.g. has text).
-  virtual void CheckIfPdfIsTranslatable(
-      base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace translate

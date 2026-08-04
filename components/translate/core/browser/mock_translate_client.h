@@ -55,10 +55,6 @@ class MockTranslateClient : public TranslateClient {
                     TranslateErrors,
                     bool));
   MOCK_METHOD1(IsTranslatableURL, bool(const GURL&));
-  MOCK_METHOD(void,
-              CheckIfPdfIsTranslatable,
-              (base::OnceCallback<void(bool)>),
-              (override));
 
  private:
   raw_ptr<TranslateDriver> driver_;
