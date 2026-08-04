@@ -147,9 +147,9 @@ ProcessRankPolicyAndroid::ProcessRankPolicyAndroid()
 }
 
 ProcessRankPolicyAndroid::ProcessRankPolicyAndroid(
-    bool is_perceptible_importance_supported)
-    : is_perceptible_importance_supported_(
-          is_perceptible_importance_supported) {}
+    bool is_not_perceptible_importance_supported)
+    : is_not_perceptible_importance_supported_(
+          is_not_perceptible_importance_supported) {}
 
 ProcessRankPolicyAndroid::~ProcessRankPolicyAndroid() = default;
 
@@ -355,7 +355,7 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
   content::ChildProcessImportance subframe_importance =
       content::ChildProcessImportance::NORMAL;
   if (importance >= content::ChildProcessImportance::NOT_PERCEPTIBLE) {
-    if (is_perceptible_importance_supported_) {
+    if (is_not_perceptible_importance_supported_) {
       subframe_importance = content::ChildProcessImportance::NOT_PERCEPTIBLE;
     } else if (base::FeatureList::IsEnabled(
                    chrome::android::kProtectedTabsAndroid) &&
@@ -394,7 +394,7 @@ content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
   }
 
   if (!base::FeatureList::IsEnabled(chrome::android::kProtectedTabsAndroid) ||
-      !is_perceptible_importance_supported_) {
+      !is_not_perceptible_importance_supported_) {
     const PageLiveStateDecorator::Data* live_state_data =
         PageLiveStateDecorator::Data::FromPageNode(page_node);
     if (live_state_data && live_state_data->IsActiveTab()) {
@@ -409,7 +409,7 @@ content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     if (eligibility_policy->CanDiscard(
             page_node, DiscardEligibilityPolicy::DiscardReason::PROACTIVE) !=
         CanDiscardResult::kEligible) {
-      if (is_perceptible_importance_supported_) {
+      if (is_not_perceptible_importance_supported_) {
         return content::ChildProcessImportance::NOT_PERCEPTIBLE;
       } else if (chrome::android::kFallbackToModerateParam.Get()) {
         return content::ChildProcessImportance::MODERATE;
