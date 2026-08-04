@@ -2045,10 +2045,30 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
         doReturn(JUnitTestGURLs.BLUE_1).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
 
-        mMediator.loadUrlFromVoice("sample voice query");
+        mMediator.loadUrlFromVoice("sample voice query", /* fallbackProfile= */ null);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(JUnitTestGURLs.BLUE_1.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    @SmallTest
+    public void loadUrlFromVoice_outsideInputSession_loadsUrl() {
+        doReturn(JUnitTestGURLs.BLUE_1).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
+
+        mMediator.loadUrlFromVoice("sample voice query", mProfile);
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(JUnitTestGURLs.BLUE_1.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_SESSIONLESS_VOICE_SEARCH)
+    public void loadUrlFromVoice_outsideInputSession_killswitchDisabled_doesNotLoadUrl() {
+        mMediator.loadUrlFromVoice("sample voice query", mProfile);
+
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
     }
 
     @Test

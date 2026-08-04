@@ -501,6 +501,10 @@ BASE_FEATURE(kResetSuggestionsScroll, DISABLED);
 // If enabled, the UrlBar context menu will use ListMenu instead of MenuItem.
 BASE_FEATURE(kOmniboxListMenuContextMenu, ENABLED);
 
+// Kill switch for special handling for session-less voice search queries
+// (e.g. from NTP fakebox). This special case was added to address b/541295247.
+BASE_FEATURE(kOmniboxSessionlessVoiceSearch, ENABLED);
+
 namespace android {
 static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
@@ -529,7 +533,8 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kExactMatchFavicons,
       &kStarterPackExpansion,
       &kOmniboxSearchPrefetchOnEnterKeyDown,
-      &kOmniboxAimImageDownscaling};
+      &kOmniboxAimImageDownscaling,
+      &kOmniboxSessionlessVoiceSearch};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());
