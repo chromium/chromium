@@ -186,6 +186,9 @@
     'android_tab': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/Tab'
     },
+    'android_tab_strip': {
+      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/'
+    },
     'android_toolbar_deps': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/toolbar/DEPS'
     },
@@ -2620,6 +2623,7 @@
     'android_studio': ['wnwen+watch@chromium.org',
                        'nyquist+watch@chromium.org'],
     'android_tab': ['dtrainor+watch@chromium.org'],
+    'android_tab_strip': ['nemco+watch@google.com'],
     'android_toolbar_deps': ['jinsukkim+watch@chromium.org'],
     'android_ui_actions': ['polardz+watch@google.com',
                            'ckitagawa+watch@chromium.org'],
