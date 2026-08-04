@@ -18,6 +18,14 @@ struct PageContentNode {
   array<PageContentNode> children;
 };
 
+// Result payload containing base64-encoded JPEG image data and scale metadata.
+struct RawViewportRegionResult {
+  string jpeg_data_b64;
+  int32 width;
+  int32 height;
+  float scale_factor;
+};
+
 // Factory for creating a PageHandler.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -46,6 +54,13 @@ interface PageHandler {
   // Returns current mouse pointer coordinates relative to the tab viewport,
   // or null if the cursor is outside the target web contents.
   GetCursorPosition() => (gfx.mojom.Point? position);
+
+  // Captures a cropped, un-annotated region of the tab surface.
+  //
+  // x, y: Top-left corner coordinates of the target region in viewport CSS pixels.
+  // width, height: Dimensions of the target region in viewport CSS pixels.
+  CaptureRawViewportRegion(int32 x, int32 y, int32 width, int32 height)
+      => (RawViewportRegionResult? result);
 };
 
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.

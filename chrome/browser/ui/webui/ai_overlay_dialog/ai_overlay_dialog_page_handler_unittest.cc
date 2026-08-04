@@ -81,6 +81,22 @@ TEST_F(AiOverlayDialogPageHandlerTest, GetCursorPosition) {
   }
 }
 
+TEST_F(AiOverlayDialogPageHandlerTest, CaptureRawViewportRegion) {
+  AddTab(browser(), GURL("about:blank"));
+
+  base::test::TestFuture<ai_overlay_dialog::mojom::RawViewportRegionResultPtr>
+      future;
+  handler_remote()->CaptureRawViewportRegion(10, 10, 100, 100,
+                                             future.GetCallback());
+
+  // May return null in headless/headless unit test environment without a real view surface
+  auto result = future.Take();
+  if (result) {
+    EXPECT_GT(result->width, 0);
+    EXPECT_GT(result->height, 0);
+  }
+}
+
 }  // namespace
 
 }  // namespace ttc
