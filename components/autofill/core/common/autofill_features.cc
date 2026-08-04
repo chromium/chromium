@@ -498,6 +498,10 @@ BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
 BASE_FEATURE(kAutofillAtMemoryTriggerShortcut,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether AtMemory uses the strongly-typed AutofillFetchPlan.
+BASE_FEATURE(kAutofillAtMemoryTypedFetchPlan,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the placeholder is not considered a label fallback on the
 // renderer side anymore. Instead, local heuristic will match regexes against
 // either the label or the placeholder, depending on how high quality the label
