@@ -500,22 +500,16 @@ AuthenticatorRequestDialogController::~AuthenticatorRequestDialogController() {
 
 AuthenticatorRequestDialogModel* AuthenticatorRequestDialogController::model()
     const {
-  return model_;
-}
-
-void AuthenticatorRequestDialogController::OnModelDestroyed(
-    AuthenticatorRequestDialogModel* model) {
-  // This stops the destructor of this object from trying to remove itself from
-  // the list of observers. But this is not a valid state for this object to be
-  // in: many functions will crash. So this is just to make destroying the two
-  // objects together not depend on the order of destruction.
-  CHECK_EQ(model, model_);
-  model_ = nullptr;
+  return model_.get();
 }
 
 void AuthenticatorRequestDialogController::StartOver() {
+  content::RenderFrameHost* render_frame_host = MaybeGetRenderFrameHost();
+  if (!render_frame_host) {
+    return;
+  }
   PrefService* pref_service =
-      Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
           ->GetOriginalProfile()
           ->GetPrefs();
   if (model_->step() == Step::kGPMTrustThisComputerCreation ||
@@ -596,9 +590,11 @@ void AuthenticatorRequestDialogController::OpenBlePreferences() {
 }
 
 void AuthenticatorRequestDialogController::OpenGpmSettings() {
-  auto* render_frame_host = GetRenderFrameHost();
   auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
+      content::WebContents::FromRenderFrameHost(MaybeGetRenderFrameHost());
+  if (!web_contents) {
+    return;
+  }
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   chrome::ShowPasswordManagerSettings(browser);
@@ -627,13 +623,8 @@ void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
 
   // SetCurrentStep(Step::kClosed) can synchronously destroy the hosting
   // WebContents and therefore `this`. See crbug.com/522566295.
-  base::WeakPtr<AuthenticatorRequestDialogController> weak_this =
-      weak_factory_.GetWeakPtr();
   if (is_request_complete()) {
     SetCurrentStep(Step::kClosed);
-  }
-  if (!weak_this) {
-    return;
   }
 
   for (auto& observer : model_->observers) {
@@ -643,10 +634,10 @@ void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
 
 void AuthenticatorRequestDialogController::OnRequestComplete() {
   if (ui_presentation() == UIPresentation::kAutofill) {
-    auto* render_frame_host = GetRenderFrameHost();
+    auto* render_frame_host = MaybeGetRenderFrameHost();
     auto* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
-    if (web_contents && render_frame_host) {
+    if (web_contents) {
       ChromeWebAuthnCredentialsDelegate* delegate =
           ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
               ->GetDelegateForFrame(render_frame_host);
@@ -972,8 +963,12 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
     // GPM.
     return false;
   }
+  content::RenderFrameHost* render_frame_host = MaybeGetRenderFrameHost();
+  if (!render_frame_host) {
+    return false;
+  }
   Profile* const profile =
-      Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
           ->GetOriginalProfile();
   bool can_default_to_enclave = CanDefaultToEnclave(profile);
 
@@ -1002,12 +997,7 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
 void AuthenticatorRequestDialogController::
     HideDialogAndDispatchToPlatformAuthenticator(
         std::optional<AuthenticatorType> type) {
-  base::WeakPtr<AuthenticatorRequestDialogController> weak_this =
-      weak_factory_.GetWeakPtr();
   SetCurrentStep(Step::kPlatformAuthenticator);
-  if (!weak_this) {
-    return;
-  }
 
   std::vector<AuthenticatorReference>& authenticators =
       ephemeral_state_.saved_authenticators_;
@@ -1727,9 +1717,13 @@ void AuthenticatorRequestDialogController::ConfigureEnclaveForUpgrade(
   std::tie(enclave_request_callback, event_stream) = EnclaveEventStream::New();
   discovery_factory->set_enclave_ui_request_stream(std::move(event_stream));
 
+  content::RenderFrameHost* render_frame_host = MaybeGetRenderFrameHost();
+  if (!render_frame_host) {
+    return;
+  }
   passkey_upgrade_request_controller_ =
       std::make_unique<PasskeyUpgradeRequestController>(
-          GetRenderFrameHost(), std::move(enclave_request_callback),
+          render_frame_host, std::move(enclave_request_callback),
           cmtg_key_requested);
 }
 
@@ -1829,19 +1823,27 @@ void AuthenticatorRequestDialogController::StartEnclave() {
 }
 
 void AuthenticatorRequestDialogController::ReauthForSyncRestore() {
+  content::RenderFrameHost* render_frame_host = MaybeGetRenderFrameHost();
+  if (!render_frame_host) {
+    return;
+  }
   signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-    Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
-        ->GetOriginalProfile(),
-    signin_metrics::AccessPoint::kWebauthnModalDialog);
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
+          ->GetOriginalProfile(),
+      signin_metrics::AccessPoint::kWebauthnModalDialog);
   CancelAuthenticatorRequest();
 }
 
 void AuthenticatorRequestDialogController::StartAutofillRequest() {
   model_->creds = transport_availability_.recognized_credentials;
 
-  auto* render_frame_host = GetRenderFrameHost();
+  auto* render_frame_host = MaybeGetRenderFrameHost();
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!web_contents) {
+    return;
+  }
+
   std::vector<password_manager::PasskeyCredential> credentials;
   for (const auto& credential : model_->creds) {
     if (credential.source == AuthenticatorType::kEnclave &&
@@ -2198,6 +2200,7 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
         has_password = true;
       }
     }
+    auto* render_frame_host = MaybeGetRenderFrameHost();
     // If one of the passkeys is a valid default, go to that.
     if (!has_password && !multiple_distinct_creds && best_cred.has_value() &&
         // Do not set Windows Hello credentials as priority mechanisms. Doing so
@@ -2208,9 +2211,10 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
         // will jump to Windows if all the credentials are Windows Hello.
         best_cred->second->source != AuthenticatorType::kWinNative &&
         (best_cred->second->source != AuthenticatorType::kEnclave ||
-         CanDefaultToEnclave(Profile::FromBrowserContext(
-                                 GetRenderFrameHost()->GetBrowserContext())
-                                 ->GetOriginalProfile()))) {
+         (render_frame_host &&
+          CanDefaultToEnclave(Profile::FromBrowserContext(
+                                  render_frame_host->GetBrowserContext())
+                                  ->GetOriginalProfile())))) {
       return best_cred->first;
     }
   }
@@ -2264,12 +2268,15 @@ AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
   // authenticator and avoid showing the mechanism selection sheet.
   if (transport_availability_.make_credential_attachment !=
       device::AuthenticatorAttachment::kCrossPlatform) {
-    Profile* profile =
-        Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
-            ->GetOriginalProfile();
-    if (CanDefaultToEnclave(profile) &&
-        enclave_enabled_status_ == EnclaveEnabledStatus::kEnabled) {
-      priority_list.emplace_back(Mechanism::Enclave());
+    content::RenderFrameHost* render_frame_host = MaybeGetRenderFrameHost();
+    if (render_frame_host) {
+      Profile* profile =
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
+              ->GetOriginalProfile();
+      if (CanDefaultToEnclave(profile) &&
+          enclave_enabled_status_ == EnclaveEnabledStatus::kEnabled) {
+        priority_list.emplace_back(Mechanism::Enclave());
+      }
     }
 
     // If Windows Hello is enabled, jump to it if it's a candidate.
@@ -2351,17 +2358,12 @@ bool AuthenticatorRequestDialogController::CanDefaultToEnclave(
 }
 
 content::RenderFrameHost*
-AuthenticatorRequestDialogController::GetRenderFrameHost() const {
+AuthenticatorRequestDialogController::MaybeGetRenderFrameHost() const {
   return content::RenderFrameHost::FromID(frame_host_id_);
 }
 
 void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
-  base::WeakPtr<AuthenticatorRequestDialogController> weak_this =
-      weak_factory_.GetWeakPtr();
   SetCurrentStep(Step::kPasskeyUpgrade);
-  if (!weak_this) {
-    return;
-  }
 
   if (!passkey_upgrade_request_controller_) {
     RecordPasskeyUpgradeResultHistogram(PasskeyUpgradeResult::kGpmDisabled);
@@ -2393,7 +2395,7 @@ void AuthenticatorRequestDialogController::PopulatePasswords() {
         GetMechanismIcon(mechanism_type, ui_presentation()),
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::OnPasswordCredentialSelected,
-            base::Unretained(model_),
+            base::Unretained(model_.get()),
             std::make_pair(password->username_value,
                            password->password_value)));
     mechanism.description = l10n_util::GetStringUTF16(

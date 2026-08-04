@@ -27,6 +27,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -303,6 +304,13 @@ ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
   if (g_observer) {
     g_observer->OnDestroy(this);
   }
+
+  // Destruction of this class can in some cases be triggered by observers of
+  // step transitions in the `AuthenticatorRequestDialogController`. Deferring
+  // deletion allows the stack to unwind first.
+  // See https://crbug.com/539754136.
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(dialog_controller_));
 }
 
 // static

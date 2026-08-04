@@ -105,8 +105,10 @@ class PasskeyUpgradeRequestController
       const sync_pb::WebauthnCredentialSpecifics& passkey) override;
   EnclaveUserVerificationMethod GetUvMethod() override;
 
-  content::RenderFrameHost& render_frame_host() const;
-  Profile* profile() const;
+  // Returns the render frame host associated with this request. May return
+  // nullptr if the initiating frame or tab has been destroyed or detached.
+  content::RenderFrameHost* MaybeGetRenderFrameHost() const;
+  Profile* profile() const { return profile_; }
 
   void OnEnclaveLoaded();
   void OnAccountStateDownloaded(
@@ -117,6 +119,7 @@ class PasskeyUpgradeRequestController
   void FinishRequest(PasskeyUpgradeResult error);
 
   const content::GlobalRenderFrameHostId frame_host_id_;
+  const raw_ptr<Profile> profile_;
 
   const raw_ptr<EnclaveManager> enclave_manager_;
   EnclaveState enclave_state_ = EnclaveState::kUnknown;
