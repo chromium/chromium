@@ -1018,6 +1018,8 @@
       // embed camera and microphone permission request controls directly in the page.
       // https://chromestatus.com/feature/5153829504024576
       name: "CameraAndMicrophoneElements",
+      status: "test",
+      public: true,
     },
     {
       name: "Canvas2dCanvasFilter",

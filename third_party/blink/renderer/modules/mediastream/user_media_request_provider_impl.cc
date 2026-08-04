@@ -16,8 +16,11 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
+#include "third_party/blink/renderer/core/html/html_media_track_element_base.h"
+#include "third_party/blink/renderer/modules/mediastream/html_media_track_element_media_track.h"
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_element_constraints.h"
@@ -42,9 +45,32 @@ void UserMediaRequestProviderCallbacks::OnSuccess(
     return;
   }
   MediaStream* stream = streams[0];
-  HTMLUserMediaElementMediaStream::From(*element_).SetMediaStream(stream);
-  element_->EnqueueEvent(*Event::Create(event_type_names::kStream),
-                         TaskType::kDOMManipulation);
+  if (auto* track_element =
+          DynamicTo<HTMLMediaTrackElementBase>(element_.Get())) {
+    MediaStreamTrack* track = nullptr;
+    if (track_element->IsHTMLCameraElement()) {
+      MediaStreamTrackVector video_tracks = stream->getVideoTracks();
+      track = video_tracks.empty() ? nullptr : video_tracks[0];
+    } else if (track_element->IsHTMLMicrophoneElement()) {
+      MediaStreamTrackVector audio_tracks = stream->getAudioTracks();
+      track = audio_tracks.empty() ? nullptr : audio_tracks[0];
+    }
+    if (track) {
+      HTMLMediaTrackElementMediaTrack::From(*track_element).SetMediaTrack(track);
+      track_element->EnqueueEvent(*Event::Create(event_type_names::kTrack),
+                                  TaskType::kDOMManipulation);
+    } else {
+      element_->SetError(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError, "No matching media track found"));
+      element_->EnqueueEvent(*Event::Create(event_type_names::kError),
+                             TaskType::kDOMManipulation);
+    }
+  } else if (auto* user_media =
+                 DynamicTo<HTMLUserMediaElement>(element_.Get())) {
+    HTMLUserMediaElementMediaStream::From(*user_media).SetMediaStream(stream);
+    element_->EnqueueEvent(*Event::Create(event_type_names::kStream),
+                           TaskType::kDOMManipulation);
+  }
 }
 
 void UserMediaRequestProviderCallbacks::OnError(
@@ -117,10 +143,19 @@ void UserMediaRequestProviderImpl::StartRequest(
     return;
   }
 
-  MediaStream* existing_stream =
-      HTMLUserMediaElementMediaStream::stream(*element);
-  if (existing_stream && existing_stream->active()) {
-    return;
+  if (auto* user_media = DynamicTo<HTMLUserMediaElement>(element)) {
+    MediaStream* existing_stream =
+        HTMLUserMediaElementMediaStream::stream(*user_media);
+    if (existing_stream && existing_stream->active()) {
+      return;
+    }
+  } else if (auto* track_element =
+                 DynamicTo<HTMLMediaTrackElementBase>(element)) {
+    MediaStreamTrack* existing_track =
+        HTMLMediaTrackElementMediaTrack::From(*track_element).MediaTrack();
+    if (existing_track && !existing_track->Ended()) {
+      return;
+    }
   }
 
   // Constraints that are set on the media capture element.

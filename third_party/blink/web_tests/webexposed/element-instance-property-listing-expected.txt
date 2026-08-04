@@ -574,6 +574,11 @@ html element button
     property validity
     property value
     property willValidate
+html element camera
+    property error
+    property ontrack
+    property setConstraints
+    property track
 html element canvas
     property captureElementImage
     property captureStream
@@ -987,6 +992,11 @@ html element meter
     property min
     property optimum
     property value
+html element microphone
+    property error
+    property ontrack
+    property setConstraints
+    property track
 html element nav
 html element nobr
 html element noembed

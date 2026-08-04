@@ -32,4 +32,10 @@ TEST_F(HTMLMicrophoneElementTest, DefaultConstraintsContainMicrophoneOnly) {
   EXPECT_EQ(descriptors[0]->name, PermissionName::AUDIO_CAPTURE);
 }
 
+TEST_F(HTMLMicrophoneElementTest, InheritsFromHTMLMediaTrackElementBase) {
+  ScopedCameraAndMicrophoneElementsForTest scoped_feature(true);
+  auto* element = MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument());
+  EXPECT_TRUE(element->IsHTMLMediaTrackElementBase());
+}
+
 }  // namespace blink

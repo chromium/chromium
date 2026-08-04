@@ -219,6 +219,7 @@ class CORE_EXPORT HTMLElement : public Element {
   // permission/usermedia trials are over.
   virtual bool IsHTMLCapabilityElementBase() const { return false; }
   virtual bool IsHTMLMediaCaptureElementBase() const { return false; }
+  virtual bool IsHTMLMediaTrackElementBase() const { return false; }
   virtual bool IsHTMLUserMediaElement() const { return false; }
   virtual bool IsHTMLCameraElement() const { return false; }
   virtual bool IsHTMLMicrophoneElement() const { return false; }

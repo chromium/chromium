@@ -253,6 +253,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(blink::features::kGeolocationElement);
   aw_feature_overrides.DisableFeature(blink::features::kUserMediaElement);
   aw_feature_overrides.DisableFeature(blink::features::kInstallElement);
+  aw_feature_overrides.DisableFeature(
+      blink::features::kCameraAndMicrophoneElements);
 
   // Delete Incidental Party State (DIPS) feature is not yet supported on
   // WebView.

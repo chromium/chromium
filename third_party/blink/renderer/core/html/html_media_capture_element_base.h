@@ -26,7 +26,6 @@ class CORE_EXPORT HTMLMediaCaptureElementBase
   DOMException* error() const { return error_.Get(); }
   void SetError(DOMException* error) { error_ = error; }
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(stream, kStream)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
 

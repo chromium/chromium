@@ -16,11 +16,14 @@
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_camera_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/modules/mediastream/html_media_track_element_media_track.h"
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_element_constraints.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -82,6 +85,22 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestActiveStreamExists) {
   provider->StartRequest(element, element->GetPermissionDescriptors());
   // Test passes if it doesn't crash and does not change the stream.
   EXPECT_EQ(HTMLUserMediaElementMediaStream::stream(*element), stream);
+}
+
+// Verifies that StartRequest gracefully exits and makes no changes when an
+// active track is already present on a single-track element.
+TEST_F(UserMediaRequestProviderImplTest, StartRequestActiveTrackExists) {
+  V8TestingScope scope;
+  ScopedCameraAndMicrophoneElementsForTest scoped_feature(true);
+  auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
+
+  auto* element = MakeGarbageCollected<HTMLCameraElement>(GetDocument());
+  auto* mock_track = MakeGarbageCollected<MockMediaStreamTrack>();
+  mock_track->SetEnded(false);
+  HTMLMediaTrackElementMediaTrack::From(*element).SetMediaTrack(mock_track);
+
+  provider->StartRequest(element, element->GetPermissionDescriptors());
+  EXPECT_EQ(HTMLMediaTrackElementMediaTrack::track(*element), mock_track);
 }
 
 // Confirms that providing a valid stream sets the generated stream onto the
@@ -185,6 +204,34 @@ TEST_F(UserMediaRequestProviderImplTest, CallbacksOnCancel) {
   ASSERT_TRUE(stored_error);
   EXPECT_EQ(stored_error->name(), "NotAllowedError");
   EXPECT_EQ(stored_error->message(), "User denied");
+}
+
+TEST_F(UserMediaRequestProviderImplTest, CallbacksOnSuccessWithNullTrack) {
+  ScopedCameraAndMicrophoneElementsForTest scoped_feature(true);
+  auto* element = MakeGarbageCollected<HTMLCameraElement>(GetDocument());
+  auto* callbacks =
+      MakeGarbageCollected<UserMediaRequestProviderCallbacks>(element);
+
+  auto* track_listener = MakeGarbageCollected<TestEventListener>();
+  auto* error_listener = MakeGarbageCollected<TestEventListener>();
+  element->addEventListener(event_type_names::kTrack, track_listener);
+  element->addEventListener(event_type_names::kError, error_listener);
+
+  // Empty stream with no video tracks
+  auto* stream = MediaStream::Create(GetDocument().GetExecutionContext());
+  MediaStreamVector streams = {stream};
+
+  callbacks->OnSuccess(streams, /*capture_controller=*/nullptr);
+  test::RunPendingTasks();
+
+  // Track event should NOT fire, error event SHOULD fire
+  EXPECT_FALSE(track_listener->fired());
+  EXPECT_TRUE(error_listener->fired());
+  EXPECT_EQ(HTMLMediaTrackElementMediaTrack::track(*element), nullptr);
+
+  DOMException* stored_error = element->error();
+  ASSERT_TRUE(stored_error);
+  EXPECT_EQ(stored_error->name(), "NotFoundError");
 }
 
 

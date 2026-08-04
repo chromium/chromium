@@ -14,7 +14,7 @@ namespace blink {
 using mojom::blink::PermissionName;
 
 HTMLCameraElement::HTMLCameraElement(Document& document)
-    : HTMLMediaCaptureElementBase(document, html_names::kCameraTag) {
+    : HTMLMediaTrackElementBase(document, html_names::kCameraTag) {
   CHECK(RuntimeEnabledFeatures::CameraAndMicrophoneElementsEnabled(
       document.GetExecutionContext()));
 }
@@ -24,7 +24,7 @@ void HTMLCameraElement::ApplyDefaultConstraints() {
     permission_descriptors_.push_back(
         CreatePermissionDescriptor(PermissionName::VIDEO_CAPTURE));
   }
-  HTMLMediaCaptureElementBase::ApplyDefaultConstraints();
+  HTMLMediaTrackElementBase::ApplyDefaultConstraints();
 }
 
 }  // namespace blink

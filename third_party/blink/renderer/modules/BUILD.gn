@@ -515,6 +515,7 @@ source_set("unit_tests") {
     "mediarecorder/video_track_recorder_unittest.cc",
     "mediasession/media_session_test.cc",
     "mediastream/browser_capture_media_stream_track_test.cc",
+    "mediastream/html_media_track_element_media_track_test.cc",
     "mediastream/html_user_media_element_media_stream_test.cc",
     "mediastream/local_media_stream_audio_source_test.cc",
     "mediastream/low_latency_video_renderer_algorithm_unittest.cc",

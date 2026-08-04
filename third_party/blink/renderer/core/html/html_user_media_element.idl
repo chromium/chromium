@@ -22,6 +22,8 @@
   [MeasureAs=CapabilityElementInitialPermissionStatus, RuntimeEnabled=UserMediaElementLegacy] readonly attribute PermissionState initialPermissionStatus;
   [MeasureAs=CapabilityElementPermissionStatus, RuntimeEnabled=UserMediaElementLegacy] readonly attribute PermissionState permissionStatus;
 
+  attribute EventHandler onstream;
+
   [MeasureAs=CapabilityElementOnPromptAction, RuntimeEnabled=UserMediaElementLegacy] attribute EventHandler onpromptaction;
   [MeasureAs=CapabilityElementOnPromptDismiss, RuntimeEnabled=UserMediaElementLegacy] attribute EventHandler onpromptdismiss;
   [MeasureAs=CapabilityElementOnValidationStatusChange, RuntimeEnabled=UserMediaElementLegacy] attribute EventHandler onvalidationstatuschange;

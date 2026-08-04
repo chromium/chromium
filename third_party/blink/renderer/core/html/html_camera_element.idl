@@ -10,3 +10,4 @@
 ] interface HTMLCameraElement : HTMLElement {
 };
 HTMLCameraElement includes HTMLMediaCaptureElementBase;
+HTMLCameraElement includes HTMLMediaTrackElementBase;

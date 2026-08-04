@@ -5,7 +5,6 @@
 // https://github.com/WICG/PEPC/blob/main/usermedia_element.md
 interface mixin HTMLMediaCaptureElementBase {
   readonly attribute DOMException? error;
-  attribute EventHandler onstream;
   attribute EventHandler oncancel;
   attribute EventHandler onerror;
 };

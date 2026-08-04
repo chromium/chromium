@@ -25,6 +25,8 @@ class CORE_EXPORT HTMLUserMediaElement : public HTMLMediaCaptureElementBase {
 
   DOMException* error() const;
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(stream, kStream)
+
   void AttributeChanged(const AttributeModificationParams& params) override;
   void OnPermissionStatusChange(mojom::blink::PermissionName permission_name,
                                 mojom::blink::PermissionStatus status) override;

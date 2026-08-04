@@ -32,4 +32,10 @@ TEST_F(HTMLCameraElementTest, DefaultConstraintsContainCameraOnly) {
   EXPECT_EQ(descriptors[0]->name, PermissionName::VIDEO_CAPTURE);
 }
 
+TEST_F(HTMLCameraElementTest, InheritsFromHTMLMediaTrackElementBase) {
+  ScopedCameraAndMicrophoneElementsForTest scoped_feature(true);
+  auto* element = MakeGarbageCollected<HTMLCameraElement>(GetDocument());
+  EXPECT_TRUE(element->IsHTMLMediaTrackElementBase());
+}
+
 }  // namespace blink

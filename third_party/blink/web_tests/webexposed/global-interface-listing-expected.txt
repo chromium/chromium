@@ -3889,6 +3889,18 @@ interface HTMLButtonElement : HTMLElement
     setter popoverTargetElement
     setter type
     setter value
+interface HTMLCameraElement : HTMLElement
+    attribute @@toStringTag
+    getter error
+    getter oncancel
+    getter onerror
+    getter ontrack
+    getter track
+    method constructor
+    method setConstraints
+    setter oncancel
+    setter onerror
+    setter ontrack
 interface HTMLCanvasElement : HTMLElement
     attribute @@toStringTag
     getter height
@@ -4977,6 +4989,18 @@ interface HTMLMeterElement : HTMLElement
     setter min
     setter optimum
     setter value
+interface HTMLMicrophoneElement : HTMLElement
+    attribute @@toStringTag
+    getter error
+    getter oncancel
+    getter onerror
+    getter ontrack
+    getter track
+    method constructor
+    method setConstraints
+    setter oncancel
+    setter onerror
+    setter ontrack
 interface HTMLModElement : HTMLElement
     attribute @@toStringTag
     getter cite

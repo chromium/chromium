@@ -10,3 +10,4 @@
 ] interface HTMLMicrophoneElement : HTMLElement {
 };
 HTMLMicrophoneElement includes HTMLMediaCaptureElementBase;
+HTMLMicrophoneElement includes HTMLMediaTrackElementBase;

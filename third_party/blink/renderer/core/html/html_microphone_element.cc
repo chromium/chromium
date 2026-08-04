@@ -14,7 +14,7 @@ namespace blink {
 using mojom::blink::PermissionName;
 
 HTMLMicrophoneElement::HTMLMicrophoneElement(Document& document)
-    : HTMLMediaCaptureElementBase(document, html_names::kMicrophoneTag) {
+    : HTMLMediaTrackElementBase(document, html_names::kMicrophoneTag) {
   CHECK(RuntimeEnabledFeatures::CameraAndMicrophoneElementsEnabled(
       document.GetExecutionContext()));
 }
@@ -24,7 +24,7 @@ void HTMLMicrophoneElement::ApplyDefaultConstraints() {
     permission_descriptors_.push_back(
         CreatePermissionDescriptor(PermissionName::AUDIO_CAPTURE));
   }
-  HTMLMediaCaptureElementBase::ApplyDefaultConstraints();
+  HTMLMediaTrackElementBase::ApplyDefaultConstraints();
 }
 
 }  // namespace blink

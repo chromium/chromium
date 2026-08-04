@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
+#include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -14,16 +15,21 @@ namespace blink {
 
 class MediaStream;
 
+// Supplements HTMLMediaCaptureElementBase (in renderer/core/) with a reference
+// to MediaStream (in renderer/modules/).
+//
+// HTMLMediaCaptureElementBase cannot hold a Member<MediaStream> directly
+// because core/ cannot depend on modules/ in Blink's layered architecture.
 class MODULES_EXPORT HTMLUserMediaElementMediaStream final
     : public GarbageCollected<HTMLUserMediaElementMediaStream>,
       public Supplement<HTMLMediaCaptureElementBase> {
  public:
   static const char kSupplementName[];
 
-  static HTMLUserMediaElementMediaStream& From(HTMLMediaCaptureElementBase&);
-  static MediaStream* stream(HTMLMediaCaptureElementBase&);
+  static HTMLUserMediaElementMediaStream& From(HTMLUserMediaElement&);
+  static MediaStream* stream(HTMLUserMediaElement&);
 
-  explicit HTMLUserMediaElementMediaStream(HTMLMediaCaptureElementBase&);
+  explicit HTMLUserMediaElementMediaStream(HTMLUserMediaElement&);
 
   MediaStream* GetMediaStream() const { return media_stream_.Get(); }
   void SetMediaStream(MediaStream* stream) { media_stream_ = stream; }
