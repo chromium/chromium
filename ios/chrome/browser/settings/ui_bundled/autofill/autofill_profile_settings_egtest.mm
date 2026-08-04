@@ -729,7 +729,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that adding a new entity (Redress) will enable the edit button.
 - (void)testEditButtonEnablesOnAddingEntity {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
   [self openAutofillProfilesSettings];
   // Verify the Edit button is initially disabled.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]

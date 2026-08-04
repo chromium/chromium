@@ -62,7 +62,7 @@ constexpr char kFormElementSubmit[] = "submit_profile";
 constexpr base::TimeDelta kTypingCoolDownPeriod = base::Milliseconds(50);
 
 // Email value used by the tests.
-constexpr std::string_view kEmail = "foo1@gmail.com";
+constexpr std::string_view kEmail = "missing_names@gmail.com";
 
 struct FullAddressFormPageParams {
   // True if the submission should be default prevented.
@@ -451,7 +451,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
 // Ensures that the profile is saved to Account after submitting the form.
 - (void)testUserData_AccountSave {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
 
   [self fillPresidentProfileAndShowSaveModal];
 
@@ -484,7 +485,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // iframes is enabled.
 - (void)testUserData_AccountSave_AutofillAcrossIframe_XHR {
   // Sign-in so the profile can be saved into the account.
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
 
   // Trigger the save infobar via XHR submission in the child frame.
   [self triggerSaveInfobarViaXHRSubmission];
@@ -508,7 +510,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // Ensures that the profile is saved to Account after submitting and editing the
 // form.
 - (void)testUserData_AccountEdit {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
 
   [self fillPresidentProfileAndShowSaveModal];
 
@@ -547,7 +550,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   // Store one local address.
   [AutofillAppInterface saveExampleProfile];
 
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
@@ -671,7 +675,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // Tests that the save address flow is still working correctly when the address
 // badge is removed.
 - (void)FLAKY_testSaveWithoutBadge {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
 
   [self fillPresidentProfileAndShowSaveModal];
 
@@ -805,7 +810,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // TODO(crbug.com/407573862): Re-enable after the test is fixed for
 // ios-fieldtrial-rel.
 - (void)DISABLED_testSaveButtonEnabledStateDependingOnRequiredFields {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Fill and submit the form.
@@ -852,7 +858,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // corresponding feature allows it.
 - (void)testSubmissionDetection_defaultPrevented_whenAllowed {
   // Sign-in so the profile can be saved into the account.
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
 
   // Submit the form with `defaultPrevented` not considered.
   FullAddressFormPageParams params{.default_prevented = true, .redirect = true};
