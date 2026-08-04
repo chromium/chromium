@@ -37,6 +37,7 @@ class SuggestionLayout extends ViewGroup {
     private final @Px int mActionButtonWidthPx;
     private final @Px int mMinimumContentPadding;
     private final @Px int mSuggestionEndPaddingNoActionButtonPx;
+    private final @Px int mSuggestionPopoverShift;
     private @Px int mContentVerticalPaddingPx;
     private boolean mUseLargeDecoration;
     private boolean mShowDecoration;
@@ -166,6 +167,8 @@ class SuggestionLayout extends ViewGroup {
 
         mSuggestionEndPaddingNoActionButtonPx =
                 res.getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding_no_action_button);
+        mSuggestionPopoverShift =
+                res.getDimensionPixelSize(R.dimen.omnibox_suggestion_popover_shift);
 
         mOutlineProvider =
                 new RoundedCornerOutlineProvider(
@@ -212,14 +215,12 @@ class SuggestionLayout extends ViewGroup {
             ((MarginLayoutParams) layoutParams).setMargins(marginSpacing, 0, marginSpacing, 0);
         }
         setLayoutParams(layoutParams);
-
         // If outer margins are not applied, then the content in the suggestion becomes too close to
         // the border of the Omnibox suggestions container. To avoid this, we need to add padding to
         // the left and right of the suggestion. This allows the suggestion hover highlight to span
         // the whole width and the content inside to be aligned correctly.
-        if (!applyOuterMargins) {
-            setPaddingRelative(sideSpacing, getPaddingTop(), sideSpacing, getPaddingBottom());
-        }
+        int padding = applyOuterMargins ? 0 : mSuggestionPopoverShift;
+        setPaddingRelative(padding, getPaddingTop(), padding, getPaddingBottom());
     }
 
     @Override

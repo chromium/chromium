@@ -719,7 +719,39 @@ public class LocationBarTabletUnitTest {
                 mLocationBarTablet
                         .getResources()
                         .getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
-        assertEquals(minWidthPx, mLocationBarTablet.getAlignmentViewTargetWidth());
+        int popoverAdditionalWidth =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_popover_shift);
+        assertEquals(
+                minWidthPx + 2 * popoverAdditionalWidth,
+                mLocationBarTablet.getAlignmentViewTargetWidth());
+    }
+
+    @Test
+    @Config(qualifiers = "w800dp-xhdpi")
+    public void testPopoverAlignmentMargins() {
+        View statusView = mLocationBarTablet.findViewById(R.id.location_bar_status);
+        View activationChip = mLocationBarTablet.findViewById(R.id.fusebox_activation_chip);
+        mLocationBarTablet.setFuseboxLayoutMode(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        int popoverAdditionalWidth =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_popover_shift);
+        int aiChipMarginEnd =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_desktop_popover_margin_end);
+
+        mLocationBarTablet.setReparentedToPopover(true);
+        MarginLayoutParams statusParams = (MarginLayoutParams) statusView.getLayoutParams();
+        MarginLayoutParams chipParams = (MarginLayoutParams) activationChip.getLayoutParams();
+        assertEquals(popoverAdditionalWidth, statusParams.getMarginStart());
+        assertEquals(aiChipMarginEnd, chipParams.getMarginEnd());
+
+        mLocationBarTablet.setReparentedToPopover(false);
+        assertEquals(0, statusParams.getMarginStart());
+        assertEquals(0, chipParams.getMarginEnd());
     }
 
     private void setupContainerAndMeasure(int containerWidth, int prefocusWidth, int leftPosition) {

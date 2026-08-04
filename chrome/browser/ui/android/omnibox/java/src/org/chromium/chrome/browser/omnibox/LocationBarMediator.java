@@ -1606,6 +1606,10 @@ class LocationBarMediator
         set.constrainedHeight(mDropdown.getId(), true);
         set.applyTo(mLocationBarLayout);
         mLocationBarLayout.setReparentedToPopover(true);
+
+        // Recalculate alignment to account for added width in popover mode and to prevent re-layout
+        // causing a flicker in status view icon.
+        mEmbedderImpl.recalculateOmniboxAlignment();
         mUrlCoordinator.finishReparenting(true);
         mIsReparenting = false;
     }
