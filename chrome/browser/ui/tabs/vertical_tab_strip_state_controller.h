@@ -15,11 +15,16 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class PrefService;
 class SessionService;
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
 
 namespace actions {
 class ActionItem;
@@ -87,6 +92,10 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
   bool ShouldDisplayVerticalTabs() const;
   void SetVerticalTabsEnabled(bool enabled);
+
+  const gfx::VectorIcon& GetToggleVectorIcon() const;
+  int GetToggleStringId() const;
+  ui::ImageModel GetToggleIcon(int icon_size = 16) const;
 
   std::unique_ptr<ScopedEnableStateLock> GetEnableStateLock();
 

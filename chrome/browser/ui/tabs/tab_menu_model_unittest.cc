@@ -4,20 +4,26 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sessions/core/session_id.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
@@ -52,6 +58,7 @@ class TabMenuModelTest : public MenuModelTest, public ::testing::Test {
   ~TabMenuModelTest() override = default;
 
   Profile* profile() { return &profile_; }
+  TestingProfile* testing_profile() { return &profile_; }
 
   TabMenuModelDelegate& menu_model_delegate() { return menu_model_delegate_; }
 
@@ -167,6 +174,36 @@ TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
   EXPECT_TRUE(
       regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseAllTabs)
           .has_value());
+}
+
+TEST_F(TabMenuModelTest, VerticalTabsIcon) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{tabs::kVerticalTabsLaunch},
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      /*disabled_features=*/{extensions_features::kExtensionTabContextMenu});
+#else
+      /*disabled_features=*/{});
+#endif
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  tabs::VerticalTabStripStateController controller(
+      &mock_browser_window, profile()->GetPrefs(), nullptr, nullptr,
+      SessionID::NewUnique(), std::nullopt, std::nullopt);
+
+  TestTabStripModelDelegate delegate;
+  delegate.SetBrowserWindowInterface(&mock_browser_window);
+
+  TabStripModel tab_strip_model(&delegate, profile());
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile())),
+      true);
+
+  TabMenuModel model(&delegate_, &menu_model_delegate(), &tab_strip_model, 0);
+  auto index = model.GetIndexOfCommandId(TabStripModel::CommandToggleVertical);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_FALSE(model.GetIconAt(index.value()).IsEmpty());
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

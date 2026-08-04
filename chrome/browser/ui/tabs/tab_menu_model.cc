@@ -508,12 +508,10 @@ void TabMenuModel::Build(int index) {
 
   if (tabs::kVerticalTabsToggleInTabContextMenu.Get() && controller) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    if (controller->ShouldDisplayVerticalTabs()) {
-      AddItemWithStringId(TabStripModel::CommandToggleVertical,
-                          IDS_SWITCH_TO_HORIZONTAL_TAB);
-    } else {
-      AddItemWithStringId(TabStripModel::CommandToggleVertical,
-                          IDS_SWITCH_TO_VERTICAL_TAB);
+    AddItemWithStringIdAndIcon(TabStripModel::CommandToggleVertical,
+                               controller->GetToggleStringId(),
+                               controller->GetToggleIcon(kTabMenuIconSize));
+    if (!controller->ShouldDisplayVerticalTabs()) {
       const bool use_preview_badge =
           base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
       const user_education::DisplayNewBadge show_badge =

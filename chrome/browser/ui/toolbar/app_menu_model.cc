@@ -1191,18 +1191,10 @@ void ToolsMenuModel::Build(Browser* browser) {
       features::IsRoundedIconsEnabled() ? kWebAssetIcon : kNameWindowOldIcon);
 
   if (auto* controller = tabs::VerticalTabStripStateController::From(browser)) {
-    if (controller->ShouldDisplayVerticalTabs()) {
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_TOGGLE_VERTICAL_TABS, IDS_SWITCH_TO_HORIZONTAL_TAB,
-          features::IsRoundedIconsEnabled() ? kToolbarIcon : kToolbarOldIcon);
-    } else {
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_TOGGLE_VERTICAL_TABS, IDS_SWITCH_TO_VERTICAL_TAB,
-          base::i18n::IsRTL() ? features::IsRoundedIconsEnabled()
-                                    ? kDockToLeftIcon
-                                    : kDockToRightOldIcon
-          : features::IsRoundedIconsEnabled() ? kDockToRightIcon
-                                              : kDockToLeftOldIcon);
+    AddItemWithStringIdAndVectorIcon(this, IDC_TOGGLE_VERTICAL_TABS,
+                                     controller->GetToggleStringId(),
+                                     controller->GetToggleVectorIcon());
+    if (!controller->ShouldDisplayVerticalTabs()) {
       const bool use_preview_badge =
           base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
       const ui::NewBadgeType badge_type = use_preview_badge

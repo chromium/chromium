@@ -36,6 +36,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/views/vector_icons.h"
 
 namespace tabs {
@@ -184,6 +185,29 @@ bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {
 void VerticalTabStripStateController::SetVerticalTabsEnabled(bool enabled) {
   NotifyModeWillChange();
   pref_service_->SetBoolean(prefs::kVerticalTabsEnabled, enabled);
+}
+
+const gfx::VectorIcon& VerticalTabStripStateController::GetToggleVectorIcon()
+    const {
+  if (ShouldDisplayVerticalTabs()) {
+    return features::IsRoundedIconsEnabled() ? kToolbarIcon : kToolbarOldIcon;
+  }
+  return base::i18n::IsRTL()
+             ? (features::IsRoundedIconsEnabled() ? kDockToLeftIcon
+                                                  : kDockToRightOldIcon)
+             : (features::IsRoundedIconsEnabled() ? kDockToRightIcon
+                                                  : kDockToLeftOldIcon);
+}
+
+int VerticalTabStripStateController::GetToggleStringId() const {
+  return ShouldDisplayVerticalTabs() ? IDS_SWITCH_TO_HORIZONTAL_TAB
+                                     : IDS_SWITCH_TO_VERTICAL_TAB;
+}
+
+ui::ImageModel VerticalTabStripStateController::GetToggleIcon(
+    int icon_size) const {
+  return ui::ImageModel::FromVectorIcon(GetToggleVectorIcon(),
+                                        ui::kColorMenuIcon, icon_size);
 }
 
 bool VerticalTabStripStateController::IsCollapsed() const {
