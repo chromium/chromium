@@ -676,6 +676,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/win-separate-renderer-fyi-rel",
+            "release_try_builder",
             "dcheck_always_on",
         ],
     ),
