@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string>
 #include <utility>
 
 #include "base/i18n/case_conversion.h"
@@ -127,8 +128,8 @@ std::u16string TitledUrlIndex::Normalize(std::u16string_view text) {
   const icu::Normalizer2* normalizer2 =
       icu::Normalizer2::getInstance(nullptr, "nfkc", UNORM2_COMPOSE, status);
   if (U_FAILURE(status)) {
-    // Log and crash right away to capture the error code in the crash report.
-    LOG(FATAL) << "failed to create a normalizer: " << u_errorName(status);
+    LOG(ERROR) << "failed to create a normalizer: " << u_errorName(status);
+    return std::u16string(text);
   }
   icu::UnicodeString unicode_text(text.data(),
                                   static_cast<int32_t>(text.length()));
