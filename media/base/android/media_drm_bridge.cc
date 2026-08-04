@@ -410,6 +410,33 @@ bool MediaDrmBridge::IsKeySystemSupportedWithType(
 }
 
 // static
+MediaDrmBridge::SupportedContainers MediaDrmBridge::GetSupportedContainers(
+    const std::string& key_system) {
+  CHECK(!key_system.empty());
+
+  UUID scheme_uuid = GetKeySystemManager()->GetUUID(key_system);
+  if (scheme_uuid.empty()) {
+    DVLOG(1) << "Cannot get UUID for key system " << key_system;
+    return {};
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jbyteArray> j_scheme_uuid =
+      base::android::ToJavaByteArray(env, scheme_uuid);
+
+  base::android::ScopedJavaLocalRef<jobjectArray> j_containers =
+      Java_MediaDrmBridge_getSupportedContainers(env, j_scheme_uuid);
+
+  std::vector<std::string> containers;
+  if (!j_containers.is_null()) {
+    base::android::AppendJavaStringArrayToStringVector(env, j_containers,
+                                                       &containers);
+  }
+
+  return MediaDrmBridge::SupportedContainers(std::move(containers));
+}
+
+// static
 std::vector<std::string> MediaDrmBridge::GetPlatformKeySystemNames() {
   return GetKeySystemManager()->GetPlatformKeySystemNames();
 }

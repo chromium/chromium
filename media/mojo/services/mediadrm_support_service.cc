@@ -27,7 +27,10 @@ void MediaDrmSupportService::IsKeySystemSupported(
   DCHECK(!key_system.empty());
   DVLOG(1) << __func__ << " key_system: " << key_system;
 
-  if (!MediaDrmBridge::IsKeySystemSupported(key_system)) {
+  auto supported_containers =
+      MediaDrmBridge::GetSupportedContainers(key_system);
+
+  if (supported_containers.empty()) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -49,9 +52,9 @@ void MediaDrmSupportService::IsKeySystemSupported(
   }
 
   result->key_system_supports_video_webm =
-      MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/webm");
+      supported_containers.contains("video/webm");
   result->key_system_supports_video_mp4 =
-      MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/mp4");
+      supported_containers.contains("video/mp4");
   result->key_system_version = version.value_or(base::Version());
 
   std::move(callback).Run(std::move(result));

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -123,6 +124,13 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   static bool IsKeySystemSupportedWithType(
       const std::string& key_system,
       const std::string& container_mime_type);
+
+  using SupportedContainers = base::flat_set<std::string>;
+
+  // Returns the supported container MIME types (e.g. "video/webm", "video/mp4")
+  // for the specified |key_system|.
+  static SupportedContainers GetSupportedContainers(
+      const std::string& key_system);
 
   // Returns true if this device supports per-application provisioning, false
   // otherwise.

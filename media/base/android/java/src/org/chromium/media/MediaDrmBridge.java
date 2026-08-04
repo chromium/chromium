@@ -437,6 +437,27 @@ public class MediaDrmBridge {
         }
     }
 
+    @CalledByNative
+    private static String[] getSupportedContainers(byte[] keySystemUuid) {
+        UUID cryptoScheme = getUuidFromBytes(keySystemUuid);
+        if (cryptoScheme == null) {
+            return new String[0];
+        }
+
+        List<String> containers = new ArrayList<>();
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            if (MediaDrm.isCryptoSchemeSupported(cryptoScheme, "video/webm")) {
+                containers.add("video/webm");
+            }
+            if (MediaDrm.isCryptoSchemeSupported(cryptoScheme, "video/mp4")) {
+                containers.add("video/mp4");
+            }
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Exception in getSupportedContainers", e);
+        }
+        return containers.toArray(new String[0]);
+    }
+
     /**
      * Create a new MediaDrmBridge from the crypto scheme UUID.
      *
