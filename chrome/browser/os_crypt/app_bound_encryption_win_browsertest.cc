@@ -262,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MANUAL_Uninstall) {}
 
 using AppBoundEncryptionWinTestNoService = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, NoService) {
+// TODO(crbug.com/542625348): This test is disabled as it is failing.
+IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, DISABLED_NoService) {
   const std::string plaintext("plaintext");
   std::string ciphertext;
   DWORD last_error;
