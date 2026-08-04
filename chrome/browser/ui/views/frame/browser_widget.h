@@ -138,6 +138,8 @@ class BrowserWidget : public views::Widget,
   ui::ColorProviderKey GetColorProviderKey() const override;
 
  private:
+  const ui::ThemeProvider* GetBaseThemeProvider() const;
+
   void OnTouchUiChanged();
 
   // Callback for MenuRunner.

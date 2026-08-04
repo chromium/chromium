@@ -4,6 +4,7 @@
 
 #include "chrome/browser/themes/theme_service.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,8 +14,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/buildflags.h"
@@ -229,6 +236,86 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
     waiter.WaitForThemeChanged();
     EXPECT_TRUE(theme_service->GetIsGrayscale());
   }
+}
+
+class FocusModeThemeServiceBrowserTest : public ThemeServiceBrowserTest {
+ public:
+  FocusModeThemeServiceBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kTabGroupsFocusing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FocusModeThemeServiceBrowserTest,
+                       FocusModePerWindowIsolation) {
+  // Install a custom theme with a distinct background image and color in the
+  // test Profile.
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
+  test::ThemeServiceChangedWaiter waiter(theme_service);
+  InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
+  waiter.WaitForThemeChanged();
+  EXPECT_TRUE(theme_service->UsingExtensionTheme());
+
+  // Open Window A.
+  Browser* browser_a = browser();
+  BrowserView* browser_view_a =
+      BrowserView::GetBrowserViewForBrowser(browser_a);
+  ASSERT_TRUE(browser_view_a);
+
+  // Open Window B (same profile).
+  Browser* browser_b = CreateBrowser(browser()->GetProfile());
+  BrowserView* browser_view_b =
+      BrowserView::GetBrowserViewForBrowser(browser_b);
+  ASSERT_TRUE(browser_view_b);
+
+  // Verify both Window A and Window B render with the custom theme.
+  EXPECT_NE(nullptr, browser_view_a->GetWidget()
+                         ->GetColorProviderKeyForTesting()
+                         .custom_theme);
+  EXPECT_TRUE(
+      browser_view_a->GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME));
+  EXPECT_NE(nullptr, browser_view_b->GetWidget()
+                         ->GetColorProviderKeyForTesting()
+                         .custom_theme);
+  EXPECT_TRUE(
+      browser_view_b->GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME));
+
+  // In Window A, create a Tab Group and trigger Focus Mode (which sets the
+  // user_color_override).
+  tab_groups::TabGroupId group_a =
+      browser_a->tab_strip_model()->AddToNewGroup({0});
+  browser_a->tab_strip_model()->SetFocusedGroup(group_a);
+
+  // Verify Window A does not have the custom theme.
+  EXPECT_EQ(nullptr, browser_view_a->GetWidget()
+                         ->GetColorProviderKeyForTesting()
+                         .custom_theme);
+  EXPECT_FALSE(
+      browser_view_a->GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME));
+
+  // Verify Window B still has the custom theme.
+  EXPECT_NE(nullptr, browser_view_b->GetWidget()
+                         ->GetColorProviderKeyForTesting()
+                         .custom_theme);
+  EXPECT_TRUE(
+      browser_view_b->GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME));
+
+  // Unfocus Window A and affirm that its custom theme is restored.
+  browser_a->tab_strip_model()->SetFocusedGroup(std::nullopt);
+
+  EXPECT_NE(nullptr, browser_view_a->GetWidget()
+                         ->GetColorProviderKeyForTesting()
+                         .custom_theme);
+  EXPECT_TRUE(
+      browser_view_a->GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME));
+  EXPECT_NE(nullptr, browser_view_b->GetWidget()
+                         ->GetColorProviderKeyForTesting()
+                         .custom_theme);
+  EXPECT_TRUE(
+      browser_view_b->GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME));
 }
 
 }  // namespace

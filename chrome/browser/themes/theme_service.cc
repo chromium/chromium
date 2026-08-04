@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_number_conversions.h"
@@ -119,6 +120,18 @@ ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
       {BCV::kExpressive, SV::kExpressive},
   });
   return kSchemeVariantMap.at(color_variant);
+}
+
+class DefaultThemeProviderDelegate : public BrowserThemeProviderDelegate {
+ public:
+  CustomThemeSupplier* GetThemeSupplier() const override { return nullptr; }
+  bool ShouldUseCustomFrame() const override { return false; }
+};
+
+const DefaultThemeProviderDelegate& GetDefaultThemeProviderDelegate() {
+  static const base::NoDestructor<DefaultThemeProviderDelegate>
+      kDefaultDelegate;
+  return *kDefaultDelegate;
 }
 
 }  // namespace
@@ -322,7 +335,10 @@ ThemeService::ThemeService(Profile* profile, const ThemeHelper& theme_helper)
     : profile_(profile),
       theme_helper_(theme_helper),
       original_theme_provider_(*theme_helper_, false, this),
-      incognito_theme_provider_(*theme_helper_, true, this) {}
+      incognito_theme_provider_(*theme_helper_, true, this),
+      default_theme_provider_(*theme_helper_,
+                              false,
+                              &GetDefaultThemeProviderDelegate()) {}
 
 ThemeService::~ThemeService() = default;
 
@@ -583,6 +599,10 @@ void ThemeService::RemoveUnusedThemes() {
 
 ThemeSyncableService* ThemeService::GetThemeSyncableService() const {
   return theme_syncable_service_.get();
+}
+
+const ui::ThemeProvider& ThemeService::GetDefaultThemeProvider() const {
+  return default_theme_provider_;
 }
 
 // static
