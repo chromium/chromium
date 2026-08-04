@@ -56,12 +56,6 @@ WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase()
            extensions_features::kExtensionsMenuAccessControl},
           {features::kExtensionsPinnedByDefault}) {}
 
-WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase(
-    const std::vector<base::test::FeatureRef>& enabled,
-    const std::vector<base::test::FeatureRef>& disabled) {
-  feature_list_.InitWithFeatures(enabled, disabled);
-}
-
 WebUIToolbarWebViewTestBase::~WebUIToolbarWebViewTestBase() = default;
 
 void WebUIToolbarWebViewTestBase::SetUpOnMainThread() {
@@ -72,6 +66,12 @@ void WebUIToolbarWebViewTestBase::SetUpOnMainThread() {
 
 ToolbarView* WebUIToolbarWebViewTestBase::GetToolbarView() {
   return BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+}
+
+WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase(
+    const std::vector<base::test::FeatureRef>& enabled,
+    const std::vector<base::test::FeatureRef>& disabled) {
+  feature_list_.InitWithFeatures(enabled, disabled);
 }
 
 void WebUIToolbarWebViewTestBase::SimulateDropOnToolbar(

@@ -13,10 +13,12 @@ import type {HomeControlState} from '/shared/toolbar_ui_api_data_model.mojom-web
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getHtml} from './home_button.html.js';
+import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getCss} from './toolbar_button.css.js';
 import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
 
-const HomeButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const HomeButtonElementBase =
+    HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));
 
 export class HomeButtonElement extends HomeButtonElementBase {
   static get is() {
@@ -39,7 +41,7 @@ export class HomeButtonElement extends HomeButtonElementBase {
     };
   }
 
-  accessor state: HomeControlState = {
+  override accessor state: HomeControlState = {
     shouldBeShown: false,
     isContextMenuVisible: false,
   };

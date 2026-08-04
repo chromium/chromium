@@ -45,12 +45,12 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override;
 
+  ToolbarView* GetToolbarView();
+
  protected:
   WebUIToolbarWebViewTestBase(
       const std::vector<base::test::FeatureRef>& enabled,
       const std::vector<base::test::FeatureRef>& disabled);
-
-  ToolbarView* GetToolbarView();
 
   void SimulateDropOnToolbar(content::WebContents* web_contents,
                              const std::string& text);

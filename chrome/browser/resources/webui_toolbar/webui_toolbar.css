@@ -11,3 +11,7 @@
   margin: 0;
   overflow: hidden;
 }
+
+toolbar-app[webui-toolbar-fully-enabled] {
+  width: max-content;
+}

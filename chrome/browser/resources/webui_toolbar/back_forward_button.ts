@@ -14,9 +14,11 @@ import {getCss} from './back_forward_button.css.js';
 import {getHtml} from './back_forward_button.html.js';
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BackForwardButtonState, BrowserProxy} from './browser_proxy.js';
+import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
 
-const BackForwardButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const BackForwardButtonElementBase =
+    HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));
 
 export interface BackForwardButtonElement {
   $: {
@@ -49,7 +51,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
   }
 
   accessor direction: 'back'|'forward' = 'back';
-  accessor state: BackForwardButtonState = {
+  override accessor state: BackForwardButtonState = {
     enabled: false,
     shouldBeShown: true,
     isContextMenuVisible: false,

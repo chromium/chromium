@@ -237,6 +237,11 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddBoolean(
       "initialWebUISurfaceSyncEnabled",
       base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync));
+  source->AddBoolean(
+      "omniboxResizingPrioritizationEnabled",
+      base::FeatureList::IsEnabled(features::kOmniboxResizingPrioritization));
+  source->AddBoolean("webUIToolbarFullyEnabled",
+                     features::IsWebUIToolbarFullyEnabled());
 
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_ui->GetWebContents());

@@ -12,12 +12,17 @@
 :host {
   align-items: center;
   display: inline-flex;
+  flex: none;
   justify-content: center;
   position: relative;
   --button-height: var(--toolbar-button-height);
   --button-width: var(--toolbar-button-height);
   height: var(--button-height);
   width: var(--button-width);
+}
+
+:host([overflow-display-none]) {
+  display: none !important;
 }
 
 cr-icon-button {

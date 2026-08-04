@@ -20,6 +20,7 @@ import {getCss} from './location_bar.css.js';
 import {getHtml} from './location_bar.html.js';
 import type {PageActionIconsElement} from './page_action_icons.js';
 import type {ReadonlyOmniboxElement} from './readonly_omnibox.js';
+import type {ResponsiveControl} from './responsive_control.js';
 
 export interface LocationBarElement {
   $: {
@@ -28,7 +29,22 @@ export interface LocationBarElement {
   };
 }
 
-export class LocationBarElement extends CrLitElement {
+export class LocationBarElement extends CrLitElement implements
+    ResponsiveControl {
+  // The smallest allowed width of the location bar.
+  //
+  // TODO(crbug.com/474060468): This is a placeholder value. We need to do a
+  // proper calculation.
+  static readonly LOCATION_BAR_MIN_WIDTH = 330;
+  // The preferred width of the location bar. It will, based on priority order,
+  // try to assume this width when ResponsiveControls are all being sized. At
+  // the end of that process, expandUpToPreferredWidth() will be invoked, and it
+  // will claim any extra available width.
+  //
+  // TODO(crbug.com/474060468): This is a placeholder value. We need to do a
+  // proper calculation.
+  static readonly LOCATION_BAR_PREFERRED_WIDTH = 400;
+
   static get is() {
     return 'location-bar';
   }
@@ -164,6 +180,61 @@ export class LocationBarElement extends CrLitElement {
 
   private onBlur_() {
     this.updateFocusWithin_();
+  }
+
+  /**
+   * Calculates the remaining available width for the location bar's content
+   * area. Returned available width includes the width currently taken up by the
+   * location bar. Note that this is available width in a CSS sense, so, e.g.,
+   * exterior margins are not included in the return value. Requires the
+   * location bar be displayed to accurately calculate this value.
+   *
+   * To achieve this without replicating CSS layout calculations (margins,
+   * padding, gaps, child visibility, walking through children), it takes the
+   * inner width of the window, subtracts the current width of the parent
+   * element, which should be the toolbar itself, and then adds back the current
+   * width of the location bar.
+   */
+  private getAvailableWidth(): number {
+    const shadowRoot = this.getRootNode() as ShadowRoot;
+    if (!shadowRoot || !shadowRoot.host) {
+      return 0;
+    }
+    const host = shadowRoot.host as HTMLElement;
+    const availableWidth =
+        window.innerWidth - host.clientWidth + this.clientWidth;
+    // Always consider at least the minimum required width available.
+    return Math.max(availableWidth, LocationBarElement.LOCATION_BAR_MIN_WIDTH);
+  }
+
+  // ResponsiveControl implementation
+  shouldBeShown(): boolean {
+    return true;
+  }
+
+  setToMinWidth() {
+    this.style.width = `${LocationBarElement.LOCATION_BAR_MIN_WIDTH}px`;
+  }
+
+  setToPreferredWidth() {
+    this.style.width = `${LocationBarElement.LOCATION_BAR_PREFERRED_WIDTH}px`;
+  }
+
+  // For the location bar, the "preferred width" is maximum width the location
+  // bar will assume before space is allocated to lower priority
+  // ResponsiveControls. At the end of layout, any remaining available space is
+  // allocated to the location bar by calling setToAvailableWidth(), potentially
+  // increasing its size beyond its preferred width.
+  expandUpToPreferredWidth() {
+    const width = Math.min(
+        this.getAvailableWidth(),
+        LocationBarElement.LOCATION_BAR_PREFERRED_WIDTH);
+    this.style.width = `${width}px`;
+  }
+
+  // Sets size to include all remaining unclaimed space on the toolbar.
+  setToAvailableWidth() {
+    this.style.width = `${this.getAvailableWidth()}px`;
   }
 
   private updateFocusWithin_() {
