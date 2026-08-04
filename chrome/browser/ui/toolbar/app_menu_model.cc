@@ -2158,6 +2158,13 @@ bool AppMenuModel::GetAcceleratorForCommandId(
     return provider_->GetAcceleratorForCommandId(IDC_NEW_INCOGNITO_WINDOW,
                                                  accelerator);
   }
+
+  if (command_id == IDC_NEW_INCOGNITO_WINDOW) {
+    if (!IncognitoModePrefs::IsIncognitoAllowed(browser_->GetProfile())) {
+      return false;
+    }
+  }
+
   return provider_->GetAcceleratorForCommandId(command_id, accelerator);
 }
 

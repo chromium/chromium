@@ -517,7 +517,8 @@ bool BrowserCommandController::IsReservedCommandOrKey(
 #endif
 
   return command_id == IDC_CLOSE_TAB || command_id == IDC_CLOSE_WINDOW ||
-         command_id == IDC_NEW_INCOGNITO_WINDOW || command_id == IDC_NEW_TAB ||
+         command_id == IDC_NEW_INCOGNITO_WINDOW ||
+         command_id == IDC_NEW_ISOLATED_WINDOW || command_id == IDC_NEW_TAB ||
          command_id == IDC_NEW_WINDOW || command_id == IDC_RESTORE_TAB ||
          command_id == IDC_SELECT_NEXT_TAB ||
          command_id == IDC_SELECT_PREVIOUS_TAB ||
