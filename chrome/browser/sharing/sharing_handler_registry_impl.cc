@@ -8,10 +8,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharing/browser_actuator/browser_actuator_message_handler.h"
 #include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler.h"
 #include "chrome/browser/sharing/one_time_tokens/one_time_token_sharing_handler.h"
 #include "chrome/browser/sharing/optimization_guide/optimization_guide_message_handler.h"
 #include "chrome/common/chrome_features.h"
+#include "components/browser_actuator/public/features.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/sharing_message/ack_message_handler.h"
@@ -78,14 +80,32 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
+  bool browser_actuator_enabled =
+      base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator);
+  bool browser_actuator_for_glic_enabled =
+      browser_actuator_enabled &&
+      base::FeatureList::IsEnabled(
+          browser_actuator::
+              kEnableBrowserActuatorForGlicExperimentalTriggering);
+  bool glic_experimental_triggering_enabled =
+      base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering);
+
+  if ((browser_actuator_for_glic_enabled ||
+       glic_experimental_triggering_enabled) &&
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
                                                          /*create=*/true)) {
-    AddSharingHandler(
-        std::make_unique<GlicExperimentalTriggeringMessageHandler>(
-            profile, message_sender),
-        {components_sharing_message::SharingMessage::
-             kGlicExperimentalTriggering});
+    if (browser_actuator_for_glic_enabled) {
+      AddSharingHandler(
+          std::make_unique<BrowserActuatorMessageHandler>(profile),
+          {components_sharing_message::SharingMessage::
+               kGlicExperimentalTriggering});
+    } else {
+      AddSharingHandler(
+          std::make_unique<GlicExperimentalTriggeringMessageHandler>(
+              profile, message_sender),
+          {components_sharing_message::SharingMessage::
+               kGlicExperimentalTriggering});
+    }
   }
 }
 

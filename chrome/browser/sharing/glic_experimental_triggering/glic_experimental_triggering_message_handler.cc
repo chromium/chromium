@@ -152,7 +152,6 @@ GlicExperimentalTriggeringMessageHandler::
       message_sender_(message_sender),
       coordinator_(std::move(coordinator)) {
   CHECK(profile_);
-  CHECK(message_sender_);
   if (!coordinator_) {
     coordinator_ =
         std::make_unique<MessageHandlerCoordinatorDelegate>(profile_, this);
@@ -207,7 +206,7 @@ tabs::TabInterface* GlicExperimentalTriggeringMessageHandler::GetActiveTab()
 void GlicExperimentalTriggeringMessageHandler::OnMessage(
     components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering));
+  CheckFeatureFlags();
   CHECK(message.has_glic_experimental_triggering());
 
   glic::ScopedIncomingMessageResultLogger result_logger(
@@ -330,7 +329,30 @@ void GlicExperimentalTriggeringMessageHandler::ProcessValidatedMessage(
       glic::ProtoToRequest(request);
   domain_request.context_id = context_id;
 
-  auto update_callback = base::BindRepeating(
+  glic::GlicExperimentalTriggeringUpdateCallback update_callback =
+      GetUpdateCallback(message);
+
+  std::optional<glic::ExperimentalTriggeringResponse> domain_response =
+      coordinator_->OnRequest(context_id, domain_request,
+                              std::move(result_logger),
+                              std::move(update_callback), prepared_tab);
+
+  if (domain_response.has_value()) {
+    std::move(done_callback)
+        .Run(ResponseToResponseMessageProto(*domain_response));
+  } else {
+    std::move(done_callback).Run(nullptr);
+  }
+}
+
+void GlicExperimentalTriggeringMessageHandler::CheckFeatureFlags() const {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering));
+}
+
+glic::GlicExperimentalTriggeringUpdateCallback
+GlicExperimentalTriggeringMessageHandler::GetUpdateCallback(
+    components_sharing_message::SharingMessage& message) {
+  return base::BindRepeating(
       [](base::WeakPtr<GlicExperimentalTriggeringMessageHandler>
              weak_message_handler,
          components_sharing_message::ServerChannelConfiguration server_channel,
@@ -366,18 +388,6 @@ void GlicExperimentalTriggeringMessageHandler::ProcessValidatedMessage(
       },
       weak_ptr_factory_.GetWeakPtr(),
       *message.mutable_server_channel_configuration());
-
-  std::optional<glic::ExperimentalTriggeringResponse> domain_response =
-      coordinator_->OnRequest(context_id, domain_request,
-                              std::move(result_logger),
-                              std::move(update_callback), prepared_tab);
-
-  if (domain_response.has_value()) {
-    std::move(done_callback)
-        .Run(ResponseToResponseMessageProto(*domain_response));
-  } else {
-    std::move(done_callback).Run(nullptr);
-  }
 }
 
 bool GlicExperimentalTriggeringMessageHandler::IsVersionSupported(

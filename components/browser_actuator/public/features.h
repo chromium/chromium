@@ -14,6 +14,7 @@
 namespace browser_actuator {
 
 BASE_DECLARE_FEATURE(kBrowserActuator);
+BASE_DECLARE_FEATURE(kEnableBrowserActuatorForGlicExperimentalTriggering);
 
 // The OAuth2 scope used by the Browser Actuator for authentication with
 // Google APIs. This is configurable via Finch to support testing.

@@ -25,6 +25,8 @@ const base::FeatureParam<std::string> kWatchSessionsPathParam{
 }  // namespace
 
 BASE_FEATURE(kBrowserActuator, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableBrowserActuatorForGlicExperimentalTriggering,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kBrowserActuatorOAuth2ScopeParam{
     &kBrowserActuator, "BrowserActuatorOAuth2Scope",

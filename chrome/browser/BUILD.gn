@@ -3049,6 +3049,8 @@ source_set("browser") {
     # c/b/password_manager gets componentized.
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/page_load_metrics:impl",
+    "//chrome/browser/sharing/browser_actuator",
+    "//chrome/browser/sharing/browser_actuator:impl",
     "//chrome/browser/sharing/glic_experimental_triggering",
     "//chrome/browser/sharing/glic_experimental_triggering:impl",
     "//chrome/browser/ui/webauthn:impl",

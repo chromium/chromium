@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_message_handler.h"
 
@@ -56,6 +57,12 @@ class GlicExperimentalTriggeringMessageHandler
   virtual tabs::TabInterface* GetActiveTab() const;
   // Virtual for testing purposes to allow mocking the browser window.
   virtual BrowserWindowInterface* GetBrowserWindow() const;
+
+  // Virtual hooks for subclass customization (e.g.
+  // BrowserActuatorMessageHandler).
+  virtual void CheckFeatureFlags() const;
+  virtual glic::GlicExperimentalTriggeringUpdateCallback GetUpdateCallback(
+      components_sharing_message::SharingMessage& message);
 
  private:
   struct MessageData {
