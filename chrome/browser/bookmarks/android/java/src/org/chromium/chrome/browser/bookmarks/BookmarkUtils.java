@@ -309,12 +309,17 @@ public class BookmarkUtils {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
                 && DeviceInfo.isDesktop()) {
             View anchor = activity.findViewById(R.id.bookmark_button);
-            if (anchor == null) {
+
+            // When the bookmark button isn't visible, fallback to the 3-dot menu.
+            if (anchor == null || !anchor.isShown()) {
+                anchor = activity.findViewById(R.id.menu_button_wrapper);
+            }
+
+            // As a last resort, anchor to the content view. This should be rare/never happen.
+            if (anchor == null || !anchor.isShown()) {
                 anchor = activity.findViewById(android.R.id.content);
             }
-            // TODO(crbug.com/536095968): Support anchor-less invocation, and anchoring on the app
-            // menu for small screen sizes.
-            if (anchor == null) return;
+            assert anchor != null && anchor.isShown() : "Unable to find anchor for bookmark popup.";
 
             BookmarkPopupCoordinator popupCoordinator =
                     new BookmarkPopupCoordinator(activity, profile, anchor, bookmarkManagerOpener);
