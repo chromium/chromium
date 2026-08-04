@@ -713,7 +713,7 @@ public class VerticalTabListCoordinator {
     void setRailCollapseState(@RailCollapseState int railCollapseState) {
         mContainerModel.set(VerticalTabListProperties.COLLAPSE_STATE, railCollapseState);
         updatePinnedLayoutSpanCount();
-        mCollapseController.setRailCollapseState(railCollapseState);
+        mCollapseController.setRailCollapseStateSupplierValue(railCollapseState);
     }
 
     /**

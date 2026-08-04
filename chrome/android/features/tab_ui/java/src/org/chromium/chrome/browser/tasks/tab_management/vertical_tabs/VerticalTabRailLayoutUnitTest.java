@@ -8,9 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -157,5 +161,24 @@ public class VerticalTabRailLayoutUnitTest {
         MotionEvent otherEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 50f, 50f, 0);
         otherEvent.setSource(InputDevice.SOURCE_MOUSE);
         assertFalse(mRailLayout.dispatchGenericMotionEvent(otherEvent));
+    }
+
+    @Test
+    public void testOnWindowFocusChanged_CollapsesRailOnFocusLost() {
+        mRailLayout.onWindowFocusChanged(false);
+        verify(mMockHoverListener).onResult(RailCollapseState.COLLAPSED);
+    }
+
+    @Test
+    public void testOnDragEvent_CollapsesRailOnDragExitedOrEnded() {
+        DragEvent exitEvent = mock(DragEvent.class);
+        when(exitEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_EXITED);
+        mRailLayout.onDragEvent(exitEvent);
+        verify(mMockHoverListener).onResult(RailCollapseState.COLLAPSED);
+
+        DragEvent endEvent = mock(DragEvent.class);
+        when(endEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
+        mRailLayout.onDragEvent(endEvent);
+        verify(mMockHoverListener, times(2)).onResult(RailCollapseState.COLLAPSED);
     }
 }

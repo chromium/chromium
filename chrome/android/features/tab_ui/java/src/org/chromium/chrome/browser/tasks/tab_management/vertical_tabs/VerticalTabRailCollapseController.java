@@ -12,6 +12,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 
 /** Controller for managing the vertical tab rail's expanded/collapsed state. */
 @NullMarked
@@ -21,9 +22,11 @@ class VerticalTabRailCollapseController {
         /**
          * Called when the rail collapse state change is requested by user interaction.
          *
-         * @param newState The target {@link RailCollapseState}.
+         * @param currentState The current {@link RailCollapseState}.
+         * @param targetState The target {@link RailCollapseState}.
          */
-        void onRailCollapseStateChangeRequestedByUser(@RailCollapseState int newState);
+        void onRailCollapseStateChangeRequestedByUser(
+                @RailCollapseState int currentState, @RailCollapseState int targetState);
     }
 
     /** Returns whether the given state is an expanded state. */
@@ -37,13 +40,16 @@ class VerticalTabRailCollapseController {
             mRailCollapseStateSupplier;
 
     private @Nullable RailCollapseListener mRailCollapseListener;
-    // TODO(crbug.com/527641177): Persist rail collapse state in SharedPreferences.
     private @RailCollapseState int mRailCollapseStateByUser;
     private boolean mIsCollapseButtonEnabled = true;
 
     VerticalTabRailCollapseController(
             @Nullable Callback<@RailCollapseState Integer> setRailCollapseStateCallback) {
         mSetRailCollapseStateCallback = setRailCollapseStateCallback;
+        mRailCollapseStateByUser =
+                VerticalTabUtils.isRailCollapsedFromSharedPref()
+                        ? RailCollapseState.COLLAPSED
+                        : RailCollapseState.EXPANDED;
         mRailCollapseStateSupplier = ObservableSuppliers.createNonNull(mRailCollapseStateByUser);
     }
 
@@ -61,15 +67,16 @@ class VerticalTabRailCollapseController {
     void toggleCollapseState() {
         if (!mIsCollapseButtonEnabled) return;
 
-        @RailCollapseState int currentState = mRailCollapseStateSupplier.get();
         @RailCollapseState
         int targetState =
-                currentState == RailCollapseState.EXPANDED
+                mRailCollapseStateByUser == RailCollapseState.EXPANDED
                         ? RailCollapseState.COLLAPSED
                         : RailCollapseState.EXPANDED;
         RecordHistogram.recordBooleanHistogram(
                 "Android.VerticalTabs.RailCollapsed", targetState == RailCollapseState.COLLAPSED);
-        requestRailCollapseStateChangeByUser(currentState, targetState);
+        VerticalTabUtils.setRailCollapsedInSharedPref(targetState == RailCollapseState.COLLAPSED);
+
+        requestRailCollapseStateChangeByUser(mRailCollapseStateByUser, targetState);
     }
 
     /**
@@ -80,12 +87,12 @@ class VerticalTabRailCollapseController {
     void expandOrCollapseOnHover(@RailCollapseState int targetState) {
         if (!mIsCollapseButtonEnabled) return;
 
-        @RailCollapseState int currentState = mRailCollapseStateSupplier.get();
-        if (currentState != RailCollapseState.EXPANDED_FOR_HOVERING
-                && currentState != RailCollapseState.COLLAPSED) {
+        if (mRailCollapseStateByUser != RailCollapseState.EXPANDED_FOR_HOVERING
+                && mRailCollapseStateByUser != RailCollapseState.COLLAPSED) {
             return;
         }
 
+        @RailCollapseState int currentState = mRailCollapseStateSupplier.get();
         requestRailCollapseStateChangeByUser(currentState, targetState);
     }
 
@@ -118,8 +125,8 @@ class VerticalTabRailCollapseController {
         return isNarrow ? RailCollapseState.COLLAPSED : mRailCollapseStateByUser;
     }
 
-    /** Updates the rail collapse state supplier and internal state. */
-    void setRailCollapseState(@RailCollapseState int railCollapseState) {
+    /** Updates the rail collapse state supplier value. */
+    void setRailCollapseStateSupplierValue(@RailCollapseState int railCollapseState) {
         mRailCollapseStateSupplier.set(railCollapseState);
     }
 
@@ -138,6 +145,13 @@ class VerticalTabRailCollapseController {
         return mIsCollapseButtonEnabled;
     }
 
+    /** Applies the rail collapse state by invoking the callback. */
+    void dispatchRailCollapseStateUpdate(@RailCollapseState int railCollapseState) {
+        if (mSetRailCollapseStateCallback != null) {
+            mSetRailCollapseStateCallback.onResult(railCollapseState);
+        }
+    }
+
     /**
      * Requests a change in rail collapse state by user interaction.
      *
@@ -147,16 +161,19 @@ class VerticalTabRailCollapseController {
     void requestRailCollapseStateChangeByUser(
             @RailCollapseState int currentState, @RailCollapseState int targetState) {
         if (currentState == targetState) return;
+        // Call setRailCollapseStateByUser before notifying listeners so
+        // getEffectiveRailCollapseState() reflects the new state.
+        setRailCollapseStateByUser(targetState);
 
         // If SideUiCoordinator is listening, delegate the state change request so it can update
         // user state and trigger Side UI transitions. Otherwise, fall back to setting state
         // directly.
         if (mRailCollapseListener != null) {
-            mRailCollapseListener.onRailCollapseStateChangeRequestedByUser(targetState);
-        } else if (mSetRailCollapseStateCallback != null) {
-            mSetRailCollapseStateCallback.onResult(targetState);
+            mRailCollapseListener.onRailCollapseStateChangeRequestedByUser(
+                    currentState, targetState);
+        } else {
+            dispatchRailCollapseStateUpdate(targetState);
         }
-        mRailCollapseStateByUser = targetState;
     }
 
     /** Returns the registered listener for testing. */

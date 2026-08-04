@@ -44,6 +44,20 @@ public class VerticalTabUtilsUnitTest {
     @After
     public void tearDown() {
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
+    }
+
+    @Test
+    @SmallTest
+    public void testVerticalTabRailCollapsedPreference() {
+        assertFalse(VerticalTabUtils.isRailCollapsedFromSharedPref());
+
+        VerticalTabUtils.setRailCollapsedInSharedPref(true);
+        assertTrue(VerticalTabUtils.isRailCollapsedFromSharedPref());
+
+        VerticalTabUtils.setRailCollapsedInSharedPref(false);
+        assertFalse(VerticalTabUtils.isRailCollapsedFromSharedPref());
     }
 
     @Test
