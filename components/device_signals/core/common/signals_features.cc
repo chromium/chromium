@@ -30,7 +30,7 @@ BASE_FEATURE(kCertificateCollectionEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the versioned content bindings in signal reports.
 BASE_FEATURE(kContentBindingVersioningEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether a signals-only profile report will be triggered when a valid
 // cookie change is observed.
