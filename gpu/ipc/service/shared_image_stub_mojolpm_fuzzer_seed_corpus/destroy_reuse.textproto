@@ -21,7 +21,7 @@ actions {
             m_mailbox {
               new {
                 id: 3
-                m_name { values { value: 0 } }
+                m_name { value_0: { value: 0  } }
               }
             }
           }
@@ -40,7 +40,7 @@ actions {
         m_destroy_shared_image {
           new {
             id: 5
-            m_name { values { value: 0 } }
+            m_name { value_0 { value: 0 } }
           }
         }
       }
@@ -57,7 +57,7 @@ actions {
         m_destroy_shared_image {
           new {
             id: 7
-            m_name { values { value: 0 } }
+            m_name { value_0 { value: 0 } }
           }
         }
       }
@@ -78,7 +78,7 @@ actions {
             m_mailbox {
               new {
                 id: 10
-                m_name { values { value: 0 } }
+                m_name { value_0 { value: 0 } }
               }
             }
           }

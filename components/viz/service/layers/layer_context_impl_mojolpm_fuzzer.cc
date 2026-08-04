@@ -49,44 +49,9 @@ class LayerContextImplTestForFuzzing : public viz::LayerContextImplTest {
   }
 };
 
-void FixUpColorSpace(mojolpm::gfx::mojom::ColorSpace* color_space) {
-  if (color_space->instance_case() ==
-      mojolpm::gfx::mojom::ColorSpace::INSTANCE_NOT_SET) {
-    color_space->mutable_new_();
-  }
-  if (color_space->instance_case() != mojolpm::gfx::mojom::ColorSpace::kNew) {
-    return;
-  }
-  auto* new_cs = color_space->mutable_new_();
-
-  if (!new_cs->has_m_custom_primary_matrix()) {
-    new_cs->mutable_m_custom_primary_matrix();
-  }
-  while (new_cs->m_custom_primary_matrix().values_size() < 9) {
-    new_cs->mutable_m_custom_primary_matrix()->add_values();
-  }
-  while (new_cs->m_custom_primary_matrix().values_size() > 9) {
-    new_cs->mutable_m_custom_primary_matrix()->mutable_values()->RemoveLast();
-  }
-
-  if (!new_cs->has_m_transfer_params()) {
-    new_cs->mutable_m_transfer_params();
-  }
-  while (new_cs->m_transfer_params().values_size() < 7) {
-    new_cs->mutable_m_transfer_params()->add_values();
-  }
-  while (new_cs->m_transfer_params().values_size() > 7) {
-    new_cs->mutable_m_transfer_params()->mutable_values()->RemoveLast();
-  }
-}
-
 void FixUpSharedImageFormat(mojolpm::viz::mojom::SharedImageFormat* format,
                             int index) {
-  if (format->instance_case() ==
-      mojolpm::viz::mojom::SharedImageFormat::INSTANCE_NOT_SET) {
-    format->mutable_new_();
-  }
-  if (format->instance_case() != mojolpm::viz::mojom::SharedImageFormat::kNew) {
+  if (format->instance_case() == mojolpm::viz::mojom::SharedImageFormat::kOld) {
     return;
   }
   auto* union_ptr = format->mutable_new_();
@@ -117,113 +82,40 @@ void FixUpSharedImageFormat(mojolpm::viz::mojom::SharedImageFormat* format,
   }
 }
 
-void FixUpDisplayColorSpaces(mojolpm::gfx::mojom::DisplayColorSpaces* dcs) {
-  if (dcs->instance_case() ==
-      mojolpm::gfx::mojom::DisplayColorSpaces::INSTANCE_NOT_SET) {
-    dcs->mutable_new_();
-  }
-  if (dcs->instance_case() != mojolpm::gfx::mojom::DisplayColorSpaces::kNew) {
-    return;
-  }
-  auto* new_dcs = dcs->mutable_new_();
-
-  if (!new_dcs->has_m_color_spaces()) {
-    new_dcs->mutable_m_color_spaces();
-  }
-  while (new_dcs->m_color_spaces().values_size() < 6) {
-    new_dcs->mutable_m_color_spaces()->add_values();
-  }
-  while (new_dcs->m_color_spaces().values_size() > 6) {
-    new_dcs->mutable_m_color_spaces()->mutable_values()->RemoveLast();
-  }
-  for (int i = 0; i < new_dcs->m_color_spaces().values_size(); ++i) {
-    FixUpColorSpace(
-        new_dcs->mutable_m_color_spaces()->mutable_values(i)->mutable_value());
-  }
-
-  if (!new_dcs->has_m_formats()) {
-    new_dcs->mutable_m_formats();
-  }
-  while (new_dcs->m_formats().values_size() < 6) {
-    new_dcs->mutable_m_formats()->add_values();
-  }
-  while (new_dcs->m_formats().values_size() > 6) {
-    new_dcs->mutable_m_formats()->mutable_values()->RemoveLast();
-  }
-  for (int i = 0; i < new_dcs->m_formats().values_size(); ++i) {
-    FixUpSharedImageFormat(
-        new_dcs->mutable_m_formats()->mutable_values(i)->mutable_value(), i);
-  }
-}
-
-void FixUpTransform(mojolpm::gfx::mojom::Transform* transform) {
-  if (transform->instance_case() ==
-      mojolpm::gfx::mojom::Transform::INSTANCE_NOT_SET) {
-    transform->mutable_new_();
-  }
-  if (transform->instance_case() != mojolpm::gfx::mojom::Transform::kNew) {
-    return;
-  }
-  auto* new_transform = transform->mutable_new_();
-  if (new_transform->has_m_data()) {
-    auto* data = new_transform->mutable_m_data();
-    if (data->instance_case() == mojolpm::gfx::mojom::TransformData::kNew) {
-      auto* data_union = data->mutable_new_();
-      if (data_union->union_member_case() ==
-          mojolpm::gfx::mojom::TransformData_ProtoUnion::kMMatrix) {
-        auto* matrix = data_union->mutable_m_matrix();
-        while (matrix->values_size() < 16) {
-          matrix->add_values();
-        }
-        while (matrix->values_size() > 16) {
-          matrix->mutable_values()->RemoveLast();
-        }
-      }
-    }
-  }
-}
-
-void FixUpTransformNode(mojolpm::viz::mojom::TransformNode* node) {
-  if (node->instance_case() ==
-      mojolpm::viz::mojom::TransformNode::INSTANCE_NOT_SET) {
-    node->mutable_new_();
-  }
-  if (node->instance_case() != mojolpm::viz::mojom::TransformNode::kNew) {
-    return;
-  }
-  auto* new_node = node->mutable_new_();
-  if (new_node->has_m_local()) {
-    FixUpTransform(new_node->mutable_m_local());
-  }
-  if (new_node->has_m_to_parent()) {
-    FixUpTransform(new_node->mutable_m_to_parent());
-  }
-}
-
 void FixUpLayerTreeUpdate(mojolpm::viz::mojom::LayerTreeUpdate* update) {
-  if (update->instance_case() ==
-      mojolpm::viz::mojom::LayerTreeUpdate::INSTANCE_NOT_SET) {
-    update->mutable_new_();
-  }
-  if (update->instance_case() != mojolpm::viz::mojom::LayerTreeUpdate::kNew) {
+  // If update is based on an old instance, it's unnecessary to
+  // fix up the LayerTreeUpdate proto since it's already been done.
+  if (update->instance_case() == mojolpm::viz::mojom::LayerTreeUpdate::kOld) {
     return;
   }
+  // Default construct a LayerTreeUpdate mojo struct and convert it to a proto
+  // to get a valid proto with all fields initialized to their default values.
+  // Then merge the generated proto into the default proto to copy all
+  // initialized fields from the generated proto. The resulting proto contains
+  // all valid fields and retains the fields generated by the fuzzing engine.
+  mojolpm::viz::mojom::LayerTreeUpdate default_update_proto;
+  if (mojolpm::ToProto(viz::mojom::LayerTreeUpdate::New(),
+                       default_update_proto)) {
+    default_update_proto.MergeFrom(*update);
+    *update = std::move(default_update_proto);
+  }
+
   auto* new_update = update->mutable_new_();
 
-  // DisplayColorSpaces is not optional in Mojo, so we must always ensure it
-  // exists and has the exactly required 6 elements.
-  FixUpDisplayColorSpaces(new_update->mutable_m_display_color_spaces());
-
-  if (new_update->has_m_transform_nodes()) {
-    for (int i = 0; i < new_update->m_transform_nodes().values_size(); ++i) {
-      if (new_update->mutable_m_transform_nodes()
-              ->mutable_values(i)
-              ->has_value()) {
-        FixUpTransformNode(new_update->mutable_m_transform_nodes()
-                               ->mutable_values(i)
-                               ->mutable_value());
-      }
-    }
+  // If display_color_spaces is old, skip fixing up SharedImageFormats.
+  if (new_update->mutable_m_display_color_spaces()->instance_case() ==
+      mojolpm::gfx::mojom::DisplayColorSpaces::kOld) {
+    return;
+  }
+  auto* formats = new_update->mutable_m_display_color_spaces()
+                      ->mutable_new_()
+                      ->mutable_m_formats();
+  int i = 0;
+  for (auto* format :
+       {formats->mutable_value_0(), formats->mutable_value_1(),
+        formats->mutable_value_2(), formats->mutable_value_3(),
+        formats->mutable_value_4(), formats->mutable_value_5()}) {
+    FixUpSharedImageFormat(format->mutable_value(), i++);
   }
 }
 

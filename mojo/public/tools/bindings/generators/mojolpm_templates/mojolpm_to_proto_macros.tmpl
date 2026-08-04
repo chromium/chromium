@@ -91,6 +91,7 @@ bool ToProto(
   {{type}}& output) {
   bool result = true;
 
+{% if kind.length is none %}
   for (auto&& in_value : input) {
 {%-   if kind.kind|is_nullable_kind %}
     {{type}}Entry* out_value = output.mutable_values()->Add();
@@ -110,6 +111,14 @@ bool ToProto(
 {%-     endif %}
 {%-   endif %}
   }
+{% else %}
+  // Convert each element from the Mojo fixed-size array into a proto.
+  // Then, assign the element proto to the corresponding field in the
+  // output proto.
+{% for i in range(kind.length) %}
+    ToProto(std::move(input[{{i}}]), *output.mutable_value_{{i}}());
+{% endfor %}
+{% endif %}
 
   return result;
 }{{"\n"-}}

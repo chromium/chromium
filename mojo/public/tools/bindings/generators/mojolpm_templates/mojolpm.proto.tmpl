@@ -66,7 +66,16 @@ enum {{enum_name}} {
 {%-     endif %}
 
   message {{name}} {
-    repeated {{entry_name}} values = 1;
+    {% if kind.length is none %}
+      repeated {{entry_name}} values = 1;
+    {% else %}
+    // Fixed-size arrays must always have a set number of elements.
+    // Repeated fields do not support specifying a number of elements,
+    // so this loop generates fields equal to the number of elements required.
+    {%- for i in range(kind.length) %}
+       required {{entry_name}} value_{{i}} = {{loop.index}};
+   {%- endfor %}
+   {% endif %}
   }
 
 {%-   elif kind|is_map_kind %}

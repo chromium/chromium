@@ -82,6 +82,7 @@ bool FromProto(
     std::vector<{{mojom_type}}>& output) {
   bool result = true;
 
+  {% if kind.length is none %}
   output.reserve(input.values_size());
   for (const auto& entry : input.values()) {
     {{mojom_type}} value{ {{- kind.kind|default_constructor_args -}} };
@@ -105,6 +106,14 @@ bool FromProto(
 {%-   endif %}
     output.emplace_back(std::move(value));
 }
+{% else %}
+  output.resize({{kind.length}});
+  {%- for i in range(kind.length) %}
+  result &= FromProto(input.value_{{i}}(), output[{{i}}]);
+{%- endfor %}
+
+{% endif %}
+
 
   return result;
 }{{"\n"-}}
