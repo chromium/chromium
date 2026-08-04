@@ -277,6 +277,19 @@ VerifySaveDataNotInAccessControlRequestHeader(
   return std::move(http_response);
 }
 
+std::unique_ptr<net::test_server::HttpResponse> HandleServerTimingRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != "/server_timing_test") {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/plain");
+  response->AddCustomHeader("Server-Timing", "db;dur=53");
+  response->set_content("sample content for timing test");
+  return response;
+}
+
 void CountScriptResources(ServiceWorkerContextWrapper* wrapper,
                           const GURL& scope,
                           int* num_resources) {
@@ -1261,6 +1274,44 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
       shell()->web_contents()->GetPrimaryMainFrame());
   EXPECT_TRUE(main_frame->GetLastCommittedOrigin().opaque());
   EXPECT_FALSE(main_frame->GetLastCommittedServiceWorkerClient());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, SubresourceTimingAllowPassed) {
+  StartServerAndNavigateToSetup();
+
+  net::EmbeddedTestServer cross_origin_server;
+  cross_origin_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  cross_origin_server.RegisterRequestHandler(
+      base::BindRepeating(&HandleServerTimingRequest));
+  ASSERT_TRUE(cross_origin_server.Start());
+
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE",
+            EvalJs(shell(), "register('fetch_event_respond_with_fetch.js');"));
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/service_worker/empty.html")));
+
+  const std::string script = base::StringPrintf(
+      "new Promise(resolve => {\n"
+      "  const target = '%s';\n"
+      "  const check = () => {\n"
+      "    const entries = performance.getEntriesByName(target);\n"
+      "    if (entries.length > 0) {\n"
+      "      resolve(entries[0].serverTiming.length === 0 && "
+      "entries[0].encodedBodySize === 0 && "
+      "entries[0].decodedBodySize === 0);\n"
+      "    }\n"
+      "  };\n"
+      "  new PerformanceObserver(() => check()).observe({type: 'resource', "
+      "buffered: true});\n"
+      "  fetch(target, {mode: 'no-cors'}).then(() => check());\n"
+      "});",
+      cross_origin_server.GetURL("/server_timing_test").spec().c_str());
+
+  EXPECT_EQ(true, EvalJs(shell(), script));
 }
 
 // A document that commits with a non-opaque origin because its response carries

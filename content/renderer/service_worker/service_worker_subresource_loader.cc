@@ -870,9 +870,15 @@ void ServiceWorkerSubresourceLoader::StartResponse(
       response_head_->load_timing.receive_headers_start;
   response_source_ = response->response_source;
 
-  // Constructed subresource responses are always same-origin as the requesting
-  // client.
-  response_head_->timing_allow_passed = true;
+  // Synthetic and same-origin responses are same-origin to the requesting
+  // client, so the timing allow check trivially passes. Filtered responses
+  // wrap a cross-origin response for which the timing allow check must not
+  // be assumed to have passed.
+  response_head_->timing_allow_passed =
+      response_head_->response_type ==
+          network::mojom::FetchResponseType::kBasic ||
+      response_head_->response_type ==
+          network::mojom::FetchResponseType::kDefault;
 
   // Set the actual source type to `kFetchEvent` if nothing is set yet.
   auto* router_info = response_head_->service_worker_router_info.get();
