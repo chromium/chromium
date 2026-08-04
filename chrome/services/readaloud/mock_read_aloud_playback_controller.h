@@ -76,6 +76,10 @@ class MockReadAloudPlaybackController
   void DefaultSeekToTime(base::TimeDelta position);
   void DefaultSetPlaybackRate(float rate);
 
+  void set_simulated_latency(base::TimeDelta latency) {
+    simulated_latency_ = latency;
+  }
+  void set_simulated_hang(bool hang) { simulated_hang_ = hang; }
   float playback_rate() const { return playback_rate_; }
 
  private:
@@ -86,6 +90,7 @@ class MockReadAloudPlaybackController
   };
 
   base::TimeDelta CalculateTotalDuration() const;
+  void PlayAfterLatency();
   void StartTimer();
   void OnTimerFired();
   void TriggerWordBoundary();
@@ -103,6 +108,11 @@ class MockReadAloudPlaybackController
   read_aloud::mojom::PlaybackState state_ =
       read_aloud::mojom::PlaybackState::kPaused;
 
+  base::TimeDelta simulated_latency_;
+  bool simulated_hang_ = false;
+
+  base::WeakPtrFactory<MockReadAloudPlaybackController> latency_weak_factory_{
+      this};
   base::WeakPtrFactory<MockReadAloudPlaybackController> weak_factory_{this};
 };
 

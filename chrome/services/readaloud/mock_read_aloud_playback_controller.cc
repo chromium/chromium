@@ -98,14 +98,32 @@ void MockReadAloudPlaybackController::DefaultSetTextContent(
 }
 
 void MockReadAloudPlaybackController::DefaultPlay() {
-  if (state_ == read_aloud::mojom::PlaybackState::kPlaying) {
+  if (state_ == read_aloud::mojom::PlaybackState::kPlaying ||
+      state_ == read_aloud::mojom::PlaybackState::kBuffering) {
     return;
   }
 
+  if (simulated_latency_.is_positive()) {
+    UpdatePlaybackState(read_aloud::mojom::PlaybackState::kBuffering);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&MockReadAloudPlaybackController::PlayAfterLatency,
+                       latency_weak_factory_.GetWeakPtr()),
+        simulated_latency_);
+    return;
+  }
+
+  PlayAfterLatency();
+}
+
+void MockReadAloudPlaybackController::PlayAfterLatency() {
   if (current_boundary_index_ >= word_boundaries_.size()) {
     current_boundary_index_ = 0;
   }
   UpdatePlaybackState(read_aloud::mojom::PlaybackState::kPlaying);
+  if (simulated_hang_) {
+    return;
+  }
   TriggerWordBoundary();
   current_boundary_index_++;
 
@@ -113,6 +131,7 @@ void MockReadAloudPlaybackController::DefaultPlay() {
 }
 
 void MockReadAloudPlaybackController::DefaultPause() {
+  latency_weak_factory_.InvalidateWeakPtrs();
   if (state_ == read_aloud::mojom::PlaybackState::kPaused) {
     return;
   }
@@ -185,7 +204,8 @@ void MockReadAloudPlaybackController::DefaultSetPlaybackRate(float rate) {
     return;
   }
   playback_rate_ = std::clamp(rate, 0.25f, 4.0f);
-  if (state_ == read_aloud::mojom::PlaybackState::kPlaying) {
+  if (state_ == read_aloud::mojom::PlaybackState::kPlaying &&
+      !simulated_hang_) {
     StartTimer();
   }
 }

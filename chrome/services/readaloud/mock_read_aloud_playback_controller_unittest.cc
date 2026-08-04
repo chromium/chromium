@@ -210,6 +210,75 @@ TEST_F(MockPlaybackControllerTest, SeekToTime) {
   ::testing::Mock::VerifyAndClearExpectations(client_.get());
 }
 
+// Verifies simulated buffering latency before playback transitions to Playing.
+TEST_F(MockPlaybackControllerTest, SimulatedLatency) {
+  mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>
+      client_remote;
+  client_ = std::make_unique<::testing::NiceMock<MockClient>>(
+      client_remote.InitWithNewPipeAndPassReceiver());
+
+  controller_impl_ =
+      std::make_unique<::testing::NiceMock<MockReadAloudPlaybackController>>(
+          controller_.BindNewPipeAndPassReceiver());
+  controller_impl_->InitializeClient(std::move(client_remote));
+
+  controller_->SetTextContent(CreateSingleSegment(0, u"One Two"));
+  controller_.FlushForTesting();
+
+  // Configure 1 second latency.
+  controller_impl_->set_simulated_latency(base::Seconds(1));
+
+  EXPECT_CALL(*client_, OnPlaybackStateChanged(
+                            read_aloud::mojom::PlaybackState::kBuffering))
+      .Times(1);
+  controller_->Play();
+  controller_.FlushForTesting();
+  ::testing::Mock::VerifyAndClearExpectations(client_.get());
+
+  // At 500ms, still buffering.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  // At 1000ms, transitions to Playing and fires first word boundary.
+  ::testing::Sequence seq;
+  EXPECT_CALL(*client_, OnPlaybackStateChanged(
+                            read_aloud::mojom::PlaybackState::kPlaying))
+      .InSequence(seq);
+  EXPECT_CALL(*client_, OnWordBoundaryReached(0, 0, base::TimeDelta()))
+      .InSequence(seq);
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+}
+
+// Verifies simulated service hang prevents word boundary timer firing.
+TEST_F(MockPlaybackControllerTest, SimulatedHang) {
+  mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>
+      client_remote;
+  client_ = std::make_unique<::testing::NiceMock<MockClient>>(
+      client_remote.InitWithNewPipeAndPassReceiver());
+
+  controller_impl_ =
+      std::make_unique<::testing::NiceMock<MockReadAloudPlaybackController>>(
+          controller_.BindNewPipeAndPassReceiver());
+  controller_impl_->InitializeClient(std::move(client_remote));
+
+  controller_->SetTextContent(CreateSingleSegment(0, u"One Two"));
+  controller_.FlushForTesting();
+
+  controller_impl_->set_simulated_hang(true);
+
+  EXPECT_CALL(*client_, OnPlaybackStateChanged(
+                            read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(1);
+  EXPECT_CALL(*client_,
+              OnWordBoundaryReached(::testing::_, ::testing::_, ::testing::_))
+      .Times(0);
+
+  controller_->Play();
+  controller_.FlushForTesting();
+
+  // Fast forward time, no word boundary callbacks should fire.
+  task_environment_.FastForwardBy(base::Seconds(5));
+}
+
 // Verifies playback rate clamping and invalid input handling.
 TEST_F(MockPlaybackControllerTest, PlaybackRateEdgeCases) {
   mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>
