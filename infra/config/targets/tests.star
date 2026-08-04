@@ -1727,6 +1727,14 @@ targets.tests.isolated_script_test(
     name = "module_installer_junit_tests",
 )
 
+targets.tests.gtest_test(
+    name = "mojo_legacy_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "mojo_proxy_unittests",
+)
+
 targets.tests.isolated_script_test(
     name = "mojo_python_unittests",
 )

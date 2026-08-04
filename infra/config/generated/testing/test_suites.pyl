@@ -2231,6 +2231,8 @@
         },
       },
       'keyboard_unittests': {},
+      'mojo_legacy_unittests': {},
+      'mojo_proxy_unittests': {},
       'ozone_gl_unittests': {
         'args': [
           '--ozone-platform=headless',

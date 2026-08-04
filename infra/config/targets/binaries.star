@@ -1702,6 +1702,18 @@ targets.binaries.generated_script(
     module_scheme = "junit",
 )
 
+targets.binaries.console_test_launcher(
+    name = "mojo_legacy_unittests",
+    label = "//chromeos/ash/components/mojo_proxy/mojo_core:mojo_legacy_unittests",
+    module_scheme = "gtest",
+)
+
+targets.binaries.console_test_launcher(
+    name = "mojo_proxy_unittests",
+    label = "//chromeos/ash/components/mojo_proxy/service:mojo_proxy_unittests",
+    module_scheme = "gtest",
+)
+
 targets.binaries.script(
     name = "mojo_python_unittests",
     label = "//mojo/public/tools:mojo_python_unittests",

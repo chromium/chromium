@@ -1217,6 +1217,8 @@ targets.legacy_basic_suite(
         "exo_unittests": targets.legacy_test_config(),
         "gl_unittests_ozone": targets.legacy_test_config(),
         "keyboard_unittests": targets.legacy_test_config(),
+        "mojo_legacy_unittests": targets.legacy_test_config(),
+        "mojo_proxy_unittests": targets.legacy_test_config(),
         "ozone_gl_unittests": targets.legacy_test_config(
             args = [
                 "--ozone-platform=headless",

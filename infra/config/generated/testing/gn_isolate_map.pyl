@@ -1563,6 +1563,16 @@
     "module_scheme": "junit",
     "skip_usage_check": True,
   },
+  "mojo_legacy_unittests": {
+    "label": "//chromeos/ash/components/mojo_proxy/mojo_core:mojo_legacy_unittests",
+    "type": "console_test_launcher",
+    "module_scheme": "gtest",
+  },
+  "mojo_proxy_unittests": {
+    "label": "//chromeos/ash/components/mojo_proxy/service:mojo_proxy_unittests",
+    "type": "console_test_launcher",
+    "module_scheme": "gtest",
+  },
   "mojo_python_unittests": {
     "label": "//mojo/public/tools:mojo_python_unittests",
     "type": "script",
