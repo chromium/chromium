@@ -1239,15 +1239,23 @@ bool FramebufferManager::IsComplete(const Framebuffer* framebuffer) {
 }
 
 std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>>
-FramebufferManager::GetBindingFramebuffersForTexture(TextureRef* texture_ref) {
+FramebufferManager::GetBindingFramebuffersForTexture(
+    TextureRef* texture_ref,
+    bool include_color_attachments) {
   std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>> result;
   if (!texture_ref) {
     return result;
   }
   for (const auto& pair : framebuffers_) {
     Framebuffer* framebuffer = pair.second.get();
-    for (GLenum attachment_point :
-         {GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT}) {
+    std::vector<GLenum> attachment_points = {GL_DEPTH_ATTACHMENT,
+                                             GL_STENCIL_ATTACHMENT};
+    if (include_color_attachments) {
+      for (uint32_t i = 0; i < max_color_attachments_; ++i) {
+        attachment_points.push_back(GL_COLOR_ATTACHMENT0 + i);
+      }
+    }
+    for (GLenum attachment_point : attachment_points) {
       const Framebuffer::Attachment* attachment =
           framebuffer->GetAttachment(attachment_point);
       if (attachment && attachment->IsTexture(texture_ref)) {

@@ -3840,6 +3840,18 @@
       "features": [
         "dont_change_base_level_for_npot_immutable_textures"
       ]
+    },
+    {
+      "id": 487,
+      "cr_bugs": [499602793],
+      "description": "Reattach texture to FBO after layer count increase on PowerVR GPUs.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "reattach_texture_to_fbo_after_layer_increase"
+      ]
     }
   ]
 }
