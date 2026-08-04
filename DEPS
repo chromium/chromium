@@ -284,9 +284,6 @@ vars = {
   # siso CIPD package version.
   'siso_version': 'git_revision:cb6ccf7181532ce7ca0d533152a68747d1a885c3',
 
-  # CPython 3 CIPD package version for Siso hermetic toolchain.
-  'cpython3_version': 'version:3@3.11.9.chromium.37',
-
   # reclient options.
   # download reclient binaries, required for 'use_reclient` gn arg.
   # TODO(crbug.com/448517720): make it false by default.
@@ -2298,31 +2295,6 @@ deps = {
         },
       ],
       'condition': 'host_os == "linux" and non_git_source',
-      'dep_type': 'cipd',
-  },
-
-  # Always download Linux x64 package regardless of host OS for RBE workers.
-  'src/third_party/cpython3/linux-amd64': {
-      'packages': [
-        {
-          'package': 'infra/3pp/tools/cpython3/linux-amd64',
-          'version': Var('cpython3_version'),
-        },
-      ],
-      'condition': 'non_git_source',
-      'dep_type': 'cipd',
-  },
-
-  # Host platform package. ${platform} folder is not used as in .gn the variable
-  # is not initialized yet by the time Python is required.
-  'src/third_party/cpython3/host': {
-      'packages': [
-        {
-          'package': 'infra/3pp/tools/cpython3/${{platform}}',
-          'version': Var('cpython3_version'),
-        },
-      ],
-      'condition': 'non_git_source',
       'dep_type': 'cipd',
   },
 
