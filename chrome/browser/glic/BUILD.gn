@@ -798,6 +798,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "actor/glic_actor_policy_checker_browsertest.cc",
     "common/instance_independent_hotkey_manager_browsertest.cc",
     "common/panel_focus_dependent_hotkey_manager_browsertest.cc",
     "common/panel_visibility_dependent_hotkey_manager_browsertest.cc",
@@ -823,6 +824,7 @@ source_set("browser_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser:browser_features",
     "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/background/glic",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/glic/actor",
@@ -858,7 +860,6 @@ source_set("browser_tests") {
 
   if (!is_android) {
     sources += [
-      "actor/glic_actor_policy_checker_browsertest.cc",
       "experimental_opt_in/glic_experimental_opt_in_dialog_browsertest.cc",
       "glic_browsertest.cc",
       "glic_context_menu_browsertest.cc",
