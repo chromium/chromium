@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_chromeos)
+
+source_set("document_scanner_discovery_confirmation_dialog") {
+  sources = [
+    "document_scanner_discovery_confirmation_dialog.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/extensions",
+    "//extensions/common:common_constants",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
