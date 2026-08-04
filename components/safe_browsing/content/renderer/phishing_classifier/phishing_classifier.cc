@@ -56,14 +56,15 @@ void PhishingClassifier::SetClientSideDetectionType(
 }
 
 void PhishingClassifier::BeginClassification(DoneCallback done_callback) {
-  TRACE_EVENT_BEGIN("safe_browsing", "PhishingClassification",
-                    perfetto::NamedTrack::FromPointer(
-                        "safe_browsing::PhishingClassifier", this));
   DCHECK(is_ready());
 
   // However, in an opt build, we will go ahead and clean up the pending
   // classification so that we can start in a known state.
   CancelPendingClassification();
+
+  TRACE_EVENT_BEGIN("safe_browsing", "PhishingClassification",
+                    perfetto::NamedTrack::FromPointer(
+                        "safe_browsing::PhishingClassifier", this));
 
   visual_extractor_ = std::make_unique<PhishingVisualFeatureExtractor>();
   done_callback_ = std::move(done_callback);
@@ -97,6 +98,11 @@ void PhishingClassifier::BeginClassification(DoneCallback done_callback) {
 }
 
 void PhishingClassifier::CancelPendingClassification() {
+  if (!done_callback_.is_null()) {
+    TRACE_EVENT_END("safe_browsing",
+                    perfetto::NamedTrack::FromPointer(
+                        "safe_browsing::PhishingClassifier", this));
+  }
   // Note that cancelling the feature extractors is simply a no-op if they
   // were not running.
   visual_extractor_.reset();

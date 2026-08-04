@@ -31,14 +31,15 @@ PhishingImageEmbedder::~PhishingImageEmbedder() {
 void PhishingImageEmbedder::BeginImageEmbedding(
     bool can_extract_visual_features,
     DoneCallback done_callback) {
-  TRACE_EVENT_BEGIN("safe_browsing", "PhishingImageEmbedding",
-                    perfetto::NamedTrack::FromPointer(
-                        "safe_browsing::PhishingImageEmbedder", this));
   DCHECK(is_ready());
 
   // However, in an opt build, we will go ahead and clean up the pending
   // image embedding so that we can start in a known state.
   CancelPendingImageEmbedding();
+
+  TRACE_EVENT_BEGIN("safe_browsing", "PhishingImageEmbedding",
+                    perfetto::NamedTrack::FromPointer(
+                        "safe_browsing::PhishingImageEmbedder", this));
 
   visual_extractor_ = std::make_unique<PhishingVisualFeatureExtractor>();
   done_callback_ = std::move(done_callback);
@@ -81,6 +82,11 @@ void PhishingImageEmbedder::OnPlaybackDone(bool can_extract_visual_features,
 }
 
 void PhishingImageEmbedder::CancelPendingImageEmbedding() {
+  if (!done_callback_.is_null()) {
+    TRACE_EVENT_END("safe_browsing",
+                    perfetto::NamedTrack::FromPointer(
+                        "safe_browsing::PhishingImageEmbedder", this));
+  }
   visual_extractor_.reset();
   weak_factory_.InvalidateWeakPtrs();
   Clear();
