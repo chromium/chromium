@@ -763,6 +763,59 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
+    Close_Animated_TabSwitchMidAnimation_PanelStaysClosedAndDoesNotReopenOnReturn) {
+  // Arrange: Create two tabs.
+  tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list_->OpenTab(GURL("about:blank"), /*index=*/1);
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto* first_registry = SidePanelRegistry::From(first_tab);
+  first_registry->Register(CreateSidePanelEntry(entry_key, browser_));
+
+  // Open the tab-scoped entry on first_tab.
+  tab_list_->ActivateTab(first_tab->GetHandle());
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+  ASSERT_TRUE(
+      coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+  ASSERT_TRUE(first_registry->GetActiveEntry().has_value());
+
+  // Act 1: Initiate an animated close on first_tab.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+
+  // Assert 1:
+  // Even while the close animation is ongoing and before WaitUntilClosed
+  // completes, ResetActiveEntry() should have immediately cleared the active
+  // entry.
+  ASSERT_EQ(SidePanelState::kClosing, coordinator_->GetStateForTesting());
+  EXPECT_FALSE(first_registry->GetActiveEntry().has_value());
+
+  // Act 2: Switch to second_tab mid-animation before the close completes.
+  tab_list_->ActivateTab(second_tab->GetHandle());
+
+  // Wait for any remaining closing animation to complete.
+  WaitUntilClosed(coordinator_);
+
+  // Assert 2: Panel is closed while on second_tab.
+  EXPECT_FALSE(coordinator_->IsSidePanelShowing());
+  EXPECT_EQ(SidePanelState::kClosed, coordinator_->GetStateForTesting());
+
+  // Act 3: Switch back to first_tab (where the close was initiated).
+  tab_list_->ActivateTab(first_tab->GetHandle());
+
+  // Assert 3: Panel does NOT reopen and remains closed on first_tab because its
+  // active entry was immediately cleared when the close started.
+  EXPECT_FALSE(coordinator_->IsSidePanelShowing());
+  EXPECT_FALSE(first_registry->GetActiveEntry().has_value());
+  EXPECT_EQ(SidePanelState::kClosed, coordinator_->GetStateForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
     Close_ClearsCachedEntryViewForInactiveEntriesInContextualRegistries) {
   // Arrange: Register two tab-scoped entries.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();

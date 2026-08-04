@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -505,6 +506,36 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         waitForContainerViewClose(coordinator);
     }
 
+    @Test
+    @MediumTest
+    public void closePanel_switchTabMidAnimation_staysClosedWhenReturningToTab() {
+        // Arrange: Open 2 tabs and show the side panel on tab1.
+        Tab tab1 = mResponsivePageStation.getTab();
+        var newTabPageStation = mResponsivePageStation.openNewTabFast();
+        Tab tab2 = newTabPageStation.getTab();
+
+        SidePanelContainerCoordinatorImpl coordinator = getSidePanelContainerCoordinator();
+        mResponsivePageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
+        showPanel(tab1);
+        waitForContainerViewOpen(coordinator);
+
+        // Start animated close on tab1.
+        closePanel(tab1, /* suppressAnimations= */ false);
+
+        // Switch to tab2 mid-animation.
+        newTabPageStation =
+                mResponsivePageStation.selectTabFast(tab2, RegularNewTabPageStation::newBuilder);
+
+        // Wait for the closing animation to complete.
+        waitForContainerViewClose(coordinator);
+
+        // Act 3: Switch back to tab1.
+        mResponsivePageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
+
+        // Assert: The panel remains closed on tab1 and does not reopen.
+        waitForContainerViewClose(coordinator);
+    }
+
     private SidePanelContainerCoordinatorImpl getSidePanelContainerCoordinator() {
         var sidePanelContainerCoordinator =
                 getSidePanelContainerCoordinator(mFreshCtaTransitTestRule.getActivity());
@@ -549,10 +580,14 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     }
 
     private static void closePanel(Tab tab) {
+        closePanel(tab, /* suppressAnimations= */ true);
+    }
+
+    private static void closePanel(Tab tab, boolean suppressAnimations) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         SidePanelContainerCoordinatorIntegrationTestSupport.closeSidePanel(
-                                tab, /* suppressAnimations= */ true));
+                                tab, suppressAnimations));
     }
 
     /**
