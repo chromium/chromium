@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid.ImmersivePlaybackConfirmationCallback;
 import org.chromium.content_public.browser.ImmersivePlaybackConfirmationStatus;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
@@ -46,7 +47,9 @@ public class ImmersiveVideoFormatSelectionDialogTest {
         MockitoAnnotations.openMocks(this);
         mContext = Robolectric.buildActivity(Activity.class).get();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mDialog = new ImmersiveVideoFormatSelectionDialog(mContext, mModalDialogManager, mCallback);
+        mDialog =
+                new ImmersiveVideoFormatSelectionDialog(
+                        mContext, mModalDialogManager, mCallback::onResult);
     }
 
     @Test
@@ -83,7 +86,8 @@ public class ImmersiveVideoFormatSelectionDialogTest {
                 .onResult(
                         ImmersivePlaybackConfirmationStatus.CONFIRMED,
                         ImmersiveStereoMode.MONO,
-                        ImmersiveProjectionType.QUAD);
+                        ImmersiveProjectionType.QUAD,
+                        false);
     }
 
     @Test
@@ -115,7 +119,8 @@ public class ImmersiveVideoFormatSelectionDialogTest {
                 .onResult(
                         ImmersivePlaybackConfirmationStatus.CONFIRMED,
                         ImmersiveStereoMode.SIDE_BY_SIDE,
-                        ImmersiveProjectionType.HEMISPHERE);
+                        ImmersiveProjectionType.HEMISPHERE,
+                        false);
     }
 
     @Test
@@ -137,7 +142,8 @@ public class ImmersiveVideoFormatSelectionDialogTest {
                 .onResult(
                         ImmersivePlaybackConfirmationStatus.DECLINED,
                         ImmersiveStereoMode.MONO,
-                        ImmersiveProjectionType.QUAD);
+                        ImmersiveProjectionType.QUAD,
+                        false);
     }
 
     @Test
@@ -159,6 +165,7 @@ public class ImmersiveVideoFormatSelectionDialogTest {
                 .onResult(
                         ImmersivePlaybackConfirmationStatus.CANCELED,
                         ImmersiveStereoMode.MONO,
-                        ImmersiveProjectionType.QUAD);
+                        ImmersiveProjectionType.QUAD,
+                        false);
     }
 }

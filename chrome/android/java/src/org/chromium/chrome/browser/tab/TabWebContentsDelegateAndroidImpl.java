@@ -21,7 +21,6 @@ import org.chromium.base.AndroidInfo;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid.ImmersivePlaybackConfirmationCallback;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
@@ -618,12 +618,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.isImmersivePlaybackEnabled();
     }
 
-    @CalledByNative
     @Override
     public void requestImmersivePlaybackConfirmation(
             @ImmersiveStereoMode int stereoMode,
             @ImmersiveProjectionType int projectionType,
-            JniOnceCallback<Integer> callback) {
+            ImmersivePlaybackConfirmationCallback callback) {
         mDelegate.requestImmersivePlaybackConfirmation(stereoMode, projectionType, callback);
     }
 

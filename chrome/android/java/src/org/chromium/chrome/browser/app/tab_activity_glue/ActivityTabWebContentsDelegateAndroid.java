@@ -26,7 +26,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -68,7 +67,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
-import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid.ImmersivePlaybackConfirmationCallback;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.content_public.browser.ImmersivePlaybackConfirmationStatus;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
@@ -620,22 +619,13 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     public void requestImmersivePlaybackConfirmation(
             @ImmersiveStereoMode int stereoMode,
             @ImmersiveProjectionType int projectionType,
-            JniOnceCallback<Integer> callback) {
+            ImmersivePlaybackConfirmationCallback callback) {
         if (!isImmersivePlaybackEnabled() || mImmersivePlaybackMessageController == null) {
             callback.onResult(ImmersivePlaybackConfirmationStatus.FAILED);
             return;
         }
 
-        mImmersivePlaybackMessageController.show(
-                (status, selectedStereoMode, selectedProjectionType) -> {
-                    // Pack the results into a single integer:
-                    // status (4 bits) | stereoMode (4 bits) | projectionType (4 bits).
-                    int packedResult =
-                            status | (selectedStereoMode << 4) | (selectedProjectionType << 8);
-                    callback.onResult(packedResult);
-                },
-                stereoMode,
-                projectionType);
+        mImmersivePlaybackMessageController.show(callback, stereoMode, projectionType);
     }
 
     @Override

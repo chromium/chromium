@@ -167,10 +167,6 @@ class TabWebContentsDelegateAndroid
       content::WebContents* contents) override;
 
   bool IsImmersivePlaybackEnabled() const override;
-  void RequestImmersivePlaybackConfirmation(
-      const content::ImmersiveOptions& default_options,
-      base::OnceCallback<void(content::ImmersivePlaybackConfirmationResult)>
-          callback) override;
 
  private:
   std::unique_ptr<device::mojom::GeolocationContext>

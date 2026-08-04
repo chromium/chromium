@@ -850,63 +850,6 @@ bool TabWebContentsDelegateAndroid::IsImmersivePlaybackEnabled() const {
                                                                            obj);
 }
 
-void TabWebContentsDelegateAndroid::RequestImmersivePlaybackConfirmation(
-    const content::ImmersiveOptions& default_options,
-    base::OnceCallback<void(content::ImmersivePlaybackConfirmationResult)>
-        callback) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null()) {
-    content::ImmersivePlaybackConfirmationResult result;
-    result.status = content::ImmersivePlaybackConfirmationStatus::kFailed;
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-
-  auto wrapped_callback = base::BindOnce(
-      [](const content::ImmersiveOptions& default_options,
-         base::OnceCallback<void(content::ImmersivePlaybackConfirmationResult)>
-             callback,
-         int packed_result) {
-        content::ImmersivePlaybackConfirmationResult result;
-
-        result.status =
-            static_cast<content::ImmersivePlaybackConfirmationStatus>(
-                packed_result & 0xF);
-
-        if (result.status ==
-            content::ImmersivePlaybackConfirmationStatus::kConfirmed) {
-          content::ImmersiveOptions options;
-          options.stereo_mode = static_cast<content::ImmersiveStereoMode>(
-              (packed_result >> 4) & 0xF);
-          options.projection_type =
-              static_cast<content::ImmersiveProjectionType>(
-                  (packed_result >> 8) & 0xF);
-
-          // When the backend provides a non-default spatial format, the
-          // confirmation flow skips the format selection dialog and returns
-          // those exact options. Therefore, any confirmed option matching a
-          // non-default spatial format is marked as recommended.
-          options.is_recommended =
-              (options.stereo_mode == default_options.stereo_mode &&
-               options.projection_type == default_options.projection_type &&
-               (default_options.stereo_mode !=
-                    content::ImmersiveStereoMode::kMono ||
-                default_options.projection_type !=
-                    content::ImmersiveProjectionType::kQuad));
-          result.options = options;
-        }
-
-        std::move(callback).Run(std::move(result));
-      },
-      default_options, std::move(callback));
-
-  Java_TabWebContentsDelegateAndroidImpl_requestImmersivePlaybackConfirmation(
-      env, obj, static_cast<int>(default_options.stereo_mode),
-      static_cast<int>(default_options.projection_type),
-      base::android::ToJniCallback(env, std::move(wrapped_callback)));
-}
-
 }  // namespace android
 
 static void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(

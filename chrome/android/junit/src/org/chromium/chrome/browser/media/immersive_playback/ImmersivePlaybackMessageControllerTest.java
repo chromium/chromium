@@ -33,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid.ImmersivePlaybackConfirmationCallback;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -42,7 +43,9 @@ import org.chromium.content_public.browser.ImmersivePlaybackConfirmationStatus;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -114,6 +117,72 @@ public class ImmersivePlaybackMessageControllerTest {
     }
 
     @Test
+    public void testDialogSelection_ConfirmsOption() {
+        mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
+
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
+        PropertyModel messageModel = messageCaptor.getValue();
+
+        var unused = messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+
+        ArgumentCaptor<PropertyModel> dialogCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager)
+                .showDialog(
+                        dialogCaptor.capture(),
+                        eq(ModalDialogManager.ModalDialogType.APP),
+                        eq(true));
+
+        PropertyModel dialogModel = dialogCaptor.getValue();
+        ImmersiveVideoFormatRadioGroup radioGroup =
+                (ImmersiveVideoFormatRadioGroup) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        Assert.assertNotNull(radioGroup);
+
+        radioGroup.checkOption(
+                ImmersiveStereoMode.SIDE_BY_SIDE, ImmersiveProjectionType.HEMISPHERE);
+
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+
+        verify(mCallback)
+                .onResult(
+                        ImmersivePlaybackConfirmationStatus.CONFIRMED,
+                        ImmersiveStereoMode.SIDE_BY_SIDE,
+                        ImmersiveProjectionType.HEMISPHERE,
+                        false);
+    }
+
+    @Test
+    public void testActionClicks_RecommendedOptions_ConfirmsImmediately() {
+        mController.show(
+                mCallback, ImmersiveStereoMode.SIDE_BY_SIDE, ImmersiveProjectionType.HEMISPHERE);
+
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
+        PropertyModel messageModel = messageCaptor.getValue();
+
+        Supplier<Integer> primaryAction =
+                messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION);
+        int behavior = primaryAction.get();
+
+        verify(mTab).removeObserver(any());
+        verify(mFullscreenManager).removeObserver(any());
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+        verify(mCallback)
+                .onResult(
+                        ImmersivePlaybackConfirmationStatus.CONFIRMED,
+                        ImmersiveStereoMode.SIDE_BY_SIDE,
+                        ImmersiveProjectionType.HEMISPHERE,
+                        true);
+        Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, behavior);
+    }
+
+    @Test
     public void testDismissNoAction_Declines() {
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
 
@@ -132,7 +201,8 @@ public class ImmersivePlaybackMessageControllerTest {
                 .onResult(
                         ImmersivePlaybackConfirmationStatus.DECLINED,
                         ImmersiveStereoMode.MONO,
-                        ImmersiveProjectionType.QUAD);
+                        ImmersiveProjectionType.QUAD,
+                        false);
     }
 
     @Test
@@ -173,7 +243,8 @@ public class ImmersivePlaybackMessageControllerTest {
                 .onResult(
                         ImmersivePlaybackConfirmationStatus.FAILED,
                         ImmersiveStereoMode.MONO,
-                        ImmersiveProjectionType.QUAD);
+                        ImmersiveProjectionType.QUAD,
+                        false);
         verify(mMessageDispatcher, never()).enqueueMessage(any(), any(), anyInt(), anyBoolean());
         verify(mTab, never()).addObserver(any());
     }

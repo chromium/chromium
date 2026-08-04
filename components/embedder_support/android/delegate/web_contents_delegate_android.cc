@@ -6,16 +6,20 @@
 
 #include <android/keycodes.h>
 
+#include <memory>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/id_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "components/embedder_support/android/delegate/html_color_picker_bridge.h"
@@ -66,6 +70,24 @@ using content::WebContents;
 using content::WebContentsDelegate;
 
 namespace web_contents_delegate_android {
+
+namespace {
+
+using ImmersivePlaybackConfirmationCallback =
+    base::OnceCallback<void(int status,
+                            int stereo_mode,
+                            int projection_type,
+                            bool is_recommended)>;
+
+base::IDMap<std::unique_ptr<ImmersivePlaybackConfirmationCallback>>&
+GetImmersivePlaybackConfirmationCallbackMap() {
+  static base::NoDestructor<
+      base::IDMap<std::unique_ptr<ImmersivePlaybackConfirmationCallback>>>
+      map;
+  return *map;
+}
+
+}  // namespace
 
 WebContentsDelegateAndroid::WebContentsDelegateAndroid(
     JNIEnv* env,
@@ -367,6 +389,48 @@ void WebContentsDelegateAndroid::ShowRepostFormWarningDialog(
     return;
   }
   Java_WebContentsDelegateAndroid_showRepostFormWarningDialog(env, obj);
+}
+
+void WebContentsDelegateAndroid::RequestImmersivePlaybackConfirmation(
+    const content::ImmersiveOptions& default_options,
+    base::OnceCallback<void(content::ImmersivePlaybackConfirmationResult)>
+        callback) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    std::move(callback).Run(
+        {.status = content::ImmersivePlaybackConfirmationStatus::kFailed});
+    return;
+  }
+
+  auto jni_callback = base::BindOnce(
+      [](base::OnceCallback<void(content::ImmersivePlaybackConfirmationResult)>
+             callback,
+         int status, int stereo_mode, int projection_type,
+         bool is_recommended) {
+        std::move(callback).Run({
+            .status = static_cast<content::ImmersivePlaybackConfirmationStatus>(
+                status),
+            .options =
+                content::ImmersiveOptions{
+                    .stereo_mode =
+                        static_cast<content::ImmersiveStereoMode>(stereo_mode),
+                    .projection_type =
+                        static_cast<content::ImmersiveProjectionType>(
+                            projection_type),
+                    .is_recommended = is_recommended,
+                },
+        });
+      },
+      std::move(callback));
+
+  int32_t callback_id = GetImmersivePlaybackConfirmationCallbackMap().Add(
+      std::make_unique<ImmersivePlaybackConfirmationCallback>(
+          std::move(jni_callback)));
+
+  Java_WebContentsDelegateAndroid_requestImmersivePlaybackConfirmation(
+      env, obj, static_cast<int>(default_options.stereo_mode),
+      static_cast<int>(default_options.projection_type), callback_id);
 }
 
 bool WebContentsDelegateAndroid::ShouldBlockMediaRequest(const GURL& url) {
@@ -778,6 +842,23 @@ void WebContentsDelegateAndroid::PrintCrossProcessSubframe(
     client->PrintCrossProcessSubframe(rect, document_cookie, subframe_host);
   }
 #endif
+}
+
+static void JNI_WebContentsDelegateAndroid_OnImmersivePlaybackConfirmation(
+    JNIEnv* env,
+    int32_t callback_id,
+    int32_t status,
+    int32_t stereo_mode,
+    int32_t projection_type,
+    bool is_recommended) {
+  auto* callback_wrapper =
+      GetImmersivePlaybackConfirmationCallbackMap().Lookup(callback_id);
+  if (!callback_wrapper) {
+    return;
+  }
+  auto callback = std::move(*callback_wrapper);
+  GetImmersivePlaybackConfirmationCallbackMap().Remove(callback_id);
+  std::move(callback).Run(status, stereo_mode, projection_type, is_recommended);
 }
 
 }  // namespace web_contents_delegate_android

@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid.ImmersivePlaybackConfirmationCallback;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -96,10 +97,7 @@ public class ImmersivePlaybackMessageController {
         mRecommendedProjectionType = recommendedProjectionType;
 
         if (mModalDialogManagerSupplier.get() == null) {
-            reportResultAndReset(
-                    ImmersivePlaybackConfirmationStatus.FAILED,
-                    ImmersiveStereoMode.MONO,
-                    ImmersiveProjectionType.QUAD);
+            reportResultAndReset(ImmersivePlaybackConfirmationStatus.FAILED);
             return;
         }
 
@@ -123,10 +121,7 @@ public class ImmersivePlaybackMessageController {
             mDialog = null;
         }
         if (mCallback != null) {
-            reportResultAndReset(
-                    ImmersivePlaybackConfirmationStatus.CANCELED,
-                    ImmersiveStereoMode.MONO,
-                    ImmersiveProjectionType.QUAD);
+            reportResultAndReset(ImmersivePlaybackConfirmationStatus.CANCELED);
         }
     }
 
@@ -138,16 +133,14 @@ public class ImmersivePlaybackMessageController {
             reportResultAndReset(
                     ImmersivePlaybackConfirmationStatus.CONFIRMED,
                     mRecommendedStereoMode,
-                    mRecommendedProjectionType);
+                    mRecommendedProjectionType,
+                    /* isRecommended= */ true);
             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         }
 
         ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
         if (modalDialogManager == null) {
-            reportResultAndReset(
-                    ImmersivePlaybackConfirmationStatus.FAILED,
-                    ImmersiveStereoMode.MONO,
-                    ImmersiveProjectionType.QUAD);
+            reportResultAndReset(ImmersivePlaybackConfirmationStatus.FAILED);
             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         }
 
@@ -159,10 +152,7 @@ public class ImmersivePlaybackMessageController {
         mMessageModel = null;
         unregisterObservers();
         if (dismissReason != DismissReason.PRIMARY_ACTION) {
-            reportResultAndReset(
-                    ImmersivePlaybackConfirmationStatus.DECLINED,
-                    ImmersiveStereoMode.MONO,
-                    ImmersiveProjectionType.QUAD);
+            reportResultAndReset(ImmersivePlaybackConfirmationStatus.DECLINED);
         }
     }
 
@@ -170,10 +160,7 @@ public class ImmersivePlaybackMessageController {
         MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
         WebContents webContents = mTab.getWebContents();
         if (messageDispatcher == null || webContents == null) {
-            reportResultAndReset(
-                    ImmersivePlaybackConfirmationStatus.FAILED,
-                    ImmersiveStereoMode.MONO,
-                    ImmersiveProjectionType.QUAD);
+            reportResultAndReset(ImmersivePlaybackConfirmationStatus.FAILED);
             return;
         }
 
@@ -225,11 +212,16 @@ public class ImmersivePlaybackMessageController {
     private void reportResultAndReset(
             @ImmersivePlaybackConfirmationStatus int status,
             @ImmersiveStereoMode int stereoMode,
-            @ImmersiveProjectionType int projectionType) {
-        mDialog = null;
+            @ImmersiveProjectionType int projectionType,
+            boolean isRecommended) {
         if (mCallback != null) {
-            mCallback.onResult(status, stereoMode, projectionType);
+            ImmersivePlaybackConfirmationCallback callback = mCallback;
             mCallback = null;
+            callback.onResult(status, stereoMode, projectionType, isRecommended);
         }
+    }
+
+    private void reportResultAndReset(@ImmersivePlaybackConfirmationStatus int status) {
+        reportResultAndReset(status, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD, false);
     }
 }

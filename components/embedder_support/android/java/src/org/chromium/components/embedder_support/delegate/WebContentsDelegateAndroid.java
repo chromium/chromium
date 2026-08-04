@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.JniOnceCallback;
@@ -158,20 +159,53 @@ public class WebContentsDelegateAndroid {
     @CalledByNative
     public void showRepostFormWarningDialog() {}
 
+    /** Callback for immersive playback confirmation flow. */
+    public static class ImmersivePlaybackConfirmationCallback {
+        private int mCallbackId;
+
+        public ImmersivePlaybackConfirmationCallback(int callbackId) {
+            mCallbackId = callbackId;
+        }
+
+        public void onResult(
+                @ImmersivePlaybackConfirmationStatus int status,
+                @ImmersiveStereoMode int stereoMode,
+                @ImmersiveProjectionType int projectionType,
+                boolean isRecommended) {
+            if (mCallbackId != 0) {
+                WebContentsDelegateAndroidJni.get()
+                        .onImmersivePlaybackConfirmation(
+                                mCallbackId, status, stereoMode, projectionType, isRecommended);
+                mCallbackId = 0;
+            }
+        }
+
+        public void onResult(@ImmersivePlaybackConfirmationStatus int status) {
+            onResult(status, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD, false);
+        }
+    }
+
     /**
      * Called when the page wants to start immersive Picture-in-Picture playback session.
      *
      * @param stereoMode The default stereo mode to use, defined in {@link ImmersiveStereoMode}.
      * @param projectionType The default projection type to use, defined in {@link
      *     ImmersiveProjectionType}.
-     * @param callback The callback to be called when the user confirms or cancels the request. The
-     *     callback expects a packed integer containing the status and options.
+     * @param callbackId The ID of the native callback.
      */
     @CalledByNative
+    public final void requestImmersivePlaybackConfirmation(
+            @ImmersiveStereoMode int stereoMode,
+            @ImmersiveProjectionType int projectionType,
+            int callbackId) {
+        requestImmersivePlaybackConfirmation(
+                stereoMode, projectionType, new ImmersivePlaybackConfirmationCallback(callbackId));
+    }
+
     public void requestImmersivePlaybackConfirmation(
             @ImmersiveStereoMode int stereoMode,
             @ImmersiveProjectionType int projectionType,
-            JniOnceCallback<Integer> callback) {
+            ImmersivePlaybackConfirmationCallback callback) {
         callback.onResult(ImmersivePlaybackConfirmationStatus.FAILED);
     }
 
@@ -480,5 +514,15 @@ public class WebContentsDelegateAndroid {
         WeakReference<WebContentsDelegateAndroid> reference =
                 sRefMap.get(nativeWebContentsDelegateAndroid);
         return reference == null ? null : reference.get();
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onImmersivePlaybackConfirmation(
+                int callbackId,
+                @ImmersivePlaybackConfirmationStatus int status,
+                @ImmersiveStereoMode int stereoMode,
+                @ImmersiveProjectionType int projectionType,
+                boolean isRecommended);
     }
 }
