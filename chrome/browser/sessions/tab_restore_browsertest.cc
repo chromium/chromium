@@ -3902,5 +3902,52 @@ IN_PROC_BROWSER_TEST_F(TabRestoreVerticalTabsTest,
   EXPECT_EQ(new_state_controller->GetUncollapsedWidth(), kUncollapsedWidth);
 }
 
+class TabRestoreFocusModeTest : public TabRestoreTest {
+ public:
+  TabRestoreFocusModeTest() {
+    scoped_feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+  }
+
+  TabRestoreFocusModeTest(const TabRestoreFocusModeTest&) = delete;
+  TabRestoreFocusModeTest& operator=(const TabRestoreFocusModeTest&) = delete;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest, RestoreFocusedTabGroup) {
+  AddFileSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  const tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1});
+  tab_strip_model->SetFocusedGroup(group);
+  EXPECT_EQ(group, tab_strip_model->GetFocusedGroup());
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), chrome::ChromeUINewTabURLAsGURL(),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // Close the first browser.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // Restore the closed window.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  chrome::RestoreTab(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  BrowserWindowInterface* const restored_browser_window =
+      browser_created_observer.Wait();
+  Browser* restored_browser =
+      restored_browser_window->GetBrowserForMigrationOnly();
+
+  // Verify that the restored window is in focus mode for the group.
+  TabStripModel* restored_tab_strip_model =
+      restored_browser->GetTabStripModel();
+  EXPECT_TRUE(restored_tab_strip_model->GetFocusedGroup().has_value());
+  EXPECT_EQ(restored_tab_strip_model->GetTabGroupForTab(0),
+            restored_tab_strip_model->GetFocusedGroup());
+}
 
 }  // namespace sessions

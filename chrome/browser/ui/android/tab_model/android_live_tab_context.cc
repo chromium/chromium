@@ -155,6 +155,24 @@ void AndroidLiveTabContext::SetVisualDataForGroup(
   NOTREACHED();
 }
 
+const std::optional<tab_groups::TabGroupId>
+AndroidLiveTabContext::GetInitialFocusedTabGroup() const {
+  // Android does not support focused tab groups.
+
+  // This function would return the tab group ID that was focused when the
+  // window was closed, so it can be restored to focus.
+  return std::nullopt;
+}
+
+void AndroidLiveTabContext::SetFocusedTabGroup(
+    const tab_groups::TabGroupId& group) {
+  // Android does not support focused tab groups.
+
+  // This function would set the focused tab group for the window, removing the
+  // visibility of other tabs to instead show just the given tab group.
+  NOTIMPLEMENTED();
+}
+
 const gfx::Rect AndroidLiveTabContext::GetRestoredBounds() const {
   // Not applicable to android.
   return gfx::Rect();

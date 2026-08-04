@@ -87,6 +87,9 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
+  const std::optional<tab_groups::TabGroupId> GetInitialFocusedTabGroup()
+      const override;
+  void SetFocusedTabGroup(const tab_groups::TabGroupId& group) override;
   const gfx::Rect GetRestoredBounds() const override;
   ui::mojom::WindowShowState GetRestoredState() const override;
   std::string GetWorkspace() const override;

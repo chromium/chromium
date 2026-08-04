@@ -72,6 +72,9 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) = 0;
+  virtual const std::optional<tab_groups::TabGroupId>
+  GetInitialFocusedTabGroup() const = 0;
+  virtual void SetFocusedTabGroup(const tab_groups::TabGroupId& group) = 0;
   virtual const gfx::Rect GetRestoredBounds() const = 0;
   virtual ui::mojom::WindowShowState GetRestoredState() const = 0;
   virtual std::string GetWorkspace() const = 0;

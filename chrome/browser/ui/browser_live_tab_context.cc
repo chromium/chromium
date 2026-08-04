@@ -24,6 +24,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -35,7 +36,9 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -177,6 +180,14 @@ BrowserLiveTabContext::GetExtraDataForWindow() const {
         base::NumberToString(controller->GetUncollapsedWidth());
   }
 
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    if (std::optional<tab_groups::TabGroupId> focused_group =
+            tab_strip_model_->GetFocusedGroup()) {
+      data[tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey] =
+          focused_group->ToString();
+    }
+  }
+
   return data;
 }
 
@@ -258,6 +269,28 @@ void BrowserLiveTabContext::SetVisualDataForGroup(
   CHECK(group_model);
   CHECK(group_model->ContainsTabGroup(group));
   tab_strip_model_->ChangeTabGroupVisuals(group, std::move(visual_data));
+}
+
+const std::optional<tab_groups::TabGroupId>
+BrowserLiveTabContext::GetInitialFocusedTabGroup() const {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
+      !tab_strip_model_->SupportsTabGroups()) {
+    return std::nullopt;
+  }
+  BrowserInitState* browser_init_state = BrowserInitState::From(&*browser_);
+  CHECK(browser_init_state);
+  return browser_init_state->initial_focused_tab_group_id();
+}
+
+void BrowserLiveTabContext::SetFocusedTabGroup(
+    const tab_groups::TabGroupId& group) {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
+      !tab_strip_model_->SupportsTabGroups()) {
+    return;
+  }
+  if (tab_strip_model_->group_model()->ContainsTabGroup(group)) {
+    tab_strip_model_->SetFocusedGroup(group);
+  }
 }
 
 const gfx::Rect BrowserLiveTabContext::GetRestoredBounds() const {
@@ -472,6 +505,18 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
                   tabs::VerticalTabStripStateController::kUncollapsedWidthKey),
               &uncollapsed_width)) {
         create_params->vertical_tab_strip_uncollapsed_width = uncollapsed_width;
+      }
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    auto it = extra_data.find(
+        tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey);
+    if (it != extra_data.end()) {
+      std::optional<base::Token> token = base::Token::FromString(it->second);
+      if (token.has_value()) {
+        create_params->focused_tab_group_id =
+            tab_groups::TabGroupId::FromRawToken(*token);
       }
     }
   }

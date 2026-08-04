@@ -104,6 +104,10 @@ class TabStripModelSelectionState final {
   void InvalidateListSelectionModel(base::PassKey<TabStripModel>) const;
   void UpdateListSelectionModel(base::PassKey<TabStripModel>) const;
 
+  // Key used to store and restore the focused tab group ID in
+  // SessionWindow::extra_data.
+  static constexpr char kFocusedTabGroupIdKey[] = "focused_tab_group_id";
+
  private:
   void UpdateFocusGroupValidity();
   void UpdateListSelectionModel() const;

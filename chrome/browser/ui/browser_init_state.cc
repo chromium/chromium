@@ -35,6 +35,7 @@ BrowserInitState::BrowserInitState(const Browser::CreateParams& params,
           params.vertical_tab_strip_collapsed),
       initial_vertical_tab_strip_uncollapsed_width_(
           params.vertical_tab_strip_uncollapsed_width),
+      initial_focused_tab_group_id_(params.focused_tab_group_id),
       scoped_unowned_user_data_(host, *this) {}
 
 BrowserInitState::~BrowserInitState() = default;

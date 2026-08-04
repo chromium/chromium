@@ -133,6 +133,24 @@ void LiveTabContextBrowserAgent::SetVisualDataForGroup(
   // Not supported on iOS.
 }
 
+const std::optional<tab_groups::TabGroupId>
+LiveTabContextBrowserAgent::GetInitialFocusedTabGroup() const {
+  // iOS does not support focused tab groups.
+
+  // This function would return the tab group ID that was focused when the
+  // window was closed, so it can be restored to focus.
+  return std::nullopt;
+}
+
+void LiveTabContextBrowserAgent::SetFocusedTabGroup(
+    const tab_groups::TabGroupId& group) {
+  // iOS does not support focused tab groups.
+
+  // This function would set the focused tab group for the window, removing the
+  // visibility of other tabs to instead show just the given tab group.
+  NOTREACHED();
+}
+
 const gfx::Rect LiveTabContextBrowserAgent::GetRestoredBounds() const {
   // Not supported by iOS.
   return gfx::Rect();

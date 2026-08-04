@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/ui/browser.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,6 +82,10 @@ class BrowserInitState {
     return initial_vertical_tab_strip_uncollapsed_width_;
   }
 
+  std::optional<tab_groups::TabGroupId> initial_focused_tab_group_id() const {
+    return initial_focused_tab_group_id_;
+  }
+
   bool omit_from_session_restore() const { return omit_from_session_restore_; }
   bool should_trigger_session_restore() const {
     return should_trigger_session_restore_;
@@ -114,6 +119,7 @@ class BrowserInitState {
 
   const std::optional<bool> initial_vertical_tab_strip_collapsed_;
   const std::optional<int> initial_vertical_tab_strip_uncollapsed_width_;
+  const std::optional<tab_groups::TabGroupId> initial_focused_tab_group_id_;
 
   ui::ScopedUnownedUserData<BrowserInitState> scoped_unowned_user_data_;
 };

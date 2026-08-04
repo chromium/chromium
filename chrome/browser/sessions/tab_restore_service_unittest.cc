@@ -129,6 +129,9 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_METHOD2(SetVisualDataForGroup,
                void(const tab_groups::TabGroupId& group,
                     const tab_groups::TabGroupVisualData& visual_data));
+  MOCK_CONST_METHOD0(GetInitialFocusedTabGroup,
+                     const std::optional<tab_groups::TabGroupId>());
+  MOCK_METHOD1(SetFocusedTabGroup, void(const tab_groups::TabGroupId& group));
   MOCK_CONST_METHOD0(GetRestoredBounds, const gfx::Rect());
   MOCK_CONST_METHOD0(GetRestoredState, ui::mojom::WindowShowState());
   MOCK_CONST_METHOD0(GetWorkspace, std::string());
