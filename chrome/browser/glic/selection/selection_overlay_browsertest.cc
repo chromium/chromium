@@ -5,22 +5,19 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
-#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
 
-// TODO(crbug.com/537848933): Simplify this test suite to GlicBrowserTest.
-class SelectionOverlayBrowserTest : public NonInteractiveGlicTest {
+class SelectionOverlayBrowserTest : public GlicBrowserTest {
  public:
   SelectionOverlayBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kGlicCaptureRegion,
-         // Only supports multi-instance mode for now.
-         ::features::kGlicMultiInstance},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(::features::kGlicCaptureRegion);
   }
   ~SelectionOverlayBrowserTest() override = default;
 
@@ -32,68 +29,57 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
                        SelectionUsedFromController) {
   base::HistogramTester histogram_tester;
 
-  RunTestSequence(
-      OpenGlic(), CheckGlicInstanceIsShowing(), Do([this]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        auto* controller =
-            SelectionOverlayController::FromTabWebContents(web_contents);
-        controller->Show(/*options=*/nullptr);
-      }),
-      WaitUntil(
-          [this]() -> std::string {
-            content::WebContents* web_contents =
-                browser()->tab_strip_model()->GetActiveWebContents();
-            auto* controller =
-                SelectionOverlayController::FromTabWebContents(web_contents);
-            return (controller &&
-                    controller->state() ==
-                        SelectionOverlayController::State::kOverlay)
-                       ? "overlay"
-                       : "not overlay";
-          },
-          "overlay"),
-      Do([this]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        auto* controller =
-            SelectionOverlayController::FromTabWebContents(web_contents);
-        static_cast<selection::SelectionOverlayPageHandler*>(controller)
-            ->AdjustRegion(
-                selection::SelectedRegion::New(base::UnguessableToken::Create(),
-                                               selection::RegionShape::NewRect(
-                                                   gfx::RectF(10, 10, 10, 10))),
-                /*is_using_keyboard=*/false);
-      }),
-      Do([this, &histogram_tester]() {
-        auto* host = GetHost();
-        CHECK(host);
+  // 1. Navigate to a valid page.
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
 
-        host->instance_metrics_backwards_compatibility().OnUserInputSubmitted(
-            mojom::WebClientMode::kText);
-        histogram_tester.ExpectBucketCount(
-            "Glic.Instance.InputSubmitted.SelectionCount", 1, 1);
+  // 2. Open Glic.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
 
-        // Submit another input, should still log 1.
-        host->instance_metrics_backwards_compatibility().OnUserInputSubmitted(
-            mojom::WebClientMode::kText);
-        histogram_tester.ExpectBucketCount(
-            "Glic.Instance.InputSubmitted.SelectionCount", 1, 2);
+  // 3. Show the selection overlay.
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
 
-        // Close the overlay.
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        SelectionOverlayController::FromTabWebContents(web_contents)->Close();
+  // 4. Wait until state is State::kOverlay.
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
 
-        // Submit another input, should log 0.
-        host->instance_metrics_backwards_compatibility().OnUserInputSubmitted(
-            mojom::WebClientMode::kText);
-        histogram_tester.ExpectBucketCount(
-            "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
-        histogram_tester.ExpectTotalCount(
-            "Glic.Instance.InputSubmitted.SelectionCount", 3);
-      }),
-      CloseGlic());
+  // 5. Adjust region.
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->AdjustRegion(
+          selection::SelectedRegion::New(
+              base::UnguessableToken::Create(),
+              selection::RegionShape::NewRect(gfx::RectF(10, 10, 10, 10))),
+          /*is_using_keyboard=*/false);
+
+  // 6. Submit user input and verify metrics.
+  auto& host = instance->host();
+
+  host.instance_metrics_backwards_compatibility().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 1, 1);
+
+  // Submit another input, should still log 1.
+  host.instance_metrics_backwards_compatibility().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 1, 2);
+
+  // Close the overlay.
+  controller->Close();
+
+  // Submit another input, should log 0.
+  host.instance_metrics_backwards_compatibility().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Instance.InputSubmitted.SelectionCount", 3);
 }
 
 }  // namespace glic
