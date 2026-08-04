@@ -23,6 +23,7 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -107,6 +109,12 @@ public class SettingsSearchCoordinatorUnitTest {
                         modalDialogSupplier);
     }
 
+    @After
+    public void tearDown() {
+        // Avoid runnable pollution between tests.
+        ShadowLooper.idleMainLooper();
+    }
+
     @Test
     public void testAccessibilityStateChanged_whenMultiColumnSettingsNotAdded_doesNotCrash() {
         // Mock multiColumnSettings to return null context (not attached).
@@ -161,6 +169,7 @@ public class SettingsSearchCoordinatorUnitTest {
 
         SlidingPaneLayout slidingPaneLayout = new SlidingPaneLayout(mActivity);
         when(mMultiColumnSettings.getView()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.getSlidingPaneLayout()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
 
         // Start in multi-column mode.

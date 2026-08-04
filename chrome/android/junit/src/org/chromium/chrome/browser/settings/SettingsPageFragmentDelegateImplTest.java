@@ -47,6 +47,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -693,6 +694,8 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
         when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(1);
 
+        // Ensure layout updates are handled before processing the back press.
+        ShadowLooper.idleMainLooper();
         assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
         verify(mMultiColumnSettings).popBackStack();
     }
@@ -704,6 +707,8 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(null);
         when(mMockSettingsHostFragment.getBackStackEntryCount()).thenReturn(1);
 
+        // Ensure layout updates are handled before processing the back press.
+        ShadowLooper.idleMainLooper();
         assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
         verify(mMockSettingsHostFragment).popBackStack();
     }
@@ -715,6 +720,8 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
         when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
 
+        // Ensure layout updates are handled before processing the back press.
+        ShadowLooper.idleMainLooper();
         assertEquals(BackPressResult.FAILURE, mDelegate.handleBackPress());
     }
 
@@ -726,10 +733,12 @@ public class SettingsPageFragmentDelegateImplTest {
 
         when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
         mDelegate.onHeaderLayoutUpdated();
+        ShadowLooper.idleMainLooper();
         assertFalse(mDelegate.getHandleBackPressChangedSupplier().get());
 
         when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(1);
         mDelegate.onHeaderLayoutUpdated();
+        ShadowLooper.idleMainLooper();
         assertTrue(mDelegate.getHandleBackPressChangedSupplier().get());
     }
 }
