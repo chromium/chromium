@@ -627,6 +627,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - Private
 
+// Returns YES if the bottom toolbar edge background should be created.
+- (BOOL)shouldCreateBottomBackground {
+  if (@available(iOS 26, *)) {
+    return YES;
+  }
+  return IsChromeNextIaEnabled();
+}
+
 // Updates elements in response to trait collection changes.
 - (void)handleTraitChanges {
   [self updateConstraintsOnTraitChange];
@@ -636,10 +644,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Updates the edge effects on the top and bottom toolbars based on the current
 // layout.
 - (void)updateToolbarEdgeEffects {
-  if (!@available(iOS 26, *)) {
-    return;
-  }
-
   UIView* topToolbar = self.topToolbar;
   UIView* bottomToolbar = self.bottomToolbar;
 
@@ -649,28 +653,36 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (shouldUseCompactLayout) {
     UIView* view = self.view;
 
-    [view insertSubview:_topToolbarBackground belowSubview:topToolbar];
-    [NSLayoutConstraint activateConstraints:@[
-      [_topToolbarBackground.leadingAnchor
-          constraintEqualToAnchor:view.leadingAnchor],
-      [_topToolbarBackground.trailingAnchor
-          constraintEqualToAnchor:view.trailingAnchor],
-      [_topToolbarBackground.topAnchor constraintEqualToAnchor:view.topAnchor],
-      [_topToolbarBackground.bottomAnchor
-          constraintEqualToAnchor:topToolbar.bottomAnchor],
-    ]];
+    // `_topToolbarBackground` is only instantiated on iOS 26+.
+    if (_topToolbarBackground && !_topToolbarBackground.superview) {
+      [view insertSubview:_topToolbarBackground belowSubview:topToolbar];
+      [NSLayoutConstraint activateConstraints:@[
+        [_topToolbarBackground.leadingAnchor
+            constraintEqualToAnchor:view.leadingAnchor],
+        [_topToolbarBackground.trailingAnchor
+            constraintEqualToAnchor:view.trailingAnchor],
+        [_topToolbarBackground.topAnchor
+            constraintEqualToAnchor:view.topAnchor],
+        [_topToolbarBackground.bottomAnchor
+            constraintEqualToAnchor:topToolbar.bottomAnchor],
+      ]];
+    }
 
-    [view insertSubview:_bottomToolbarBackground belowSubview:bottomToolbar];
-    [NSLayoutConstraint activateConstraints:@[
-      [_bottomToolbarBackground.leadingAnchor
-          constraintEqualToAnchor:view.leadingAnchor],
-      [_bottomToolbarBackground.trailingAnchor
-          constraintEqualToAnchor:view.trailingAnchor],
-      [_bottomToolbarBackground.topAnchor
-          constraintEqualToAnchor:bottomToolbar.topAnchor],
-      [_bottomToolbarBackground.bottomAnchor
-          constraintEqualToAnchor:view.bottomAnchor],
-    ]];
+    // `_bottomToolbarBackground` is instantiated on iOS 26+ and on pre-iOS 26
+    // when ChromeNextIA is enabled.
+    if (_bottomToolbarBackground && !_bottomToolbarBackground.superview) {
+      [view insertSubview:_bottomToolbarBackground belowSubview:bottomToolbar];
+      [NSLayoutConstraint activateConstraints:@[
+        [_bottomToolbarBackground.leadingAnchor
+            constraintEqualToAnchor:view.leadingAnchor],
+        [_bottomToolbarBackground.trailingAnchor
+            constraintEqualToAnchor:view.trailingAnchor],
+        [_bottomToolbarBackground.topAnchor
+            constraintEqualToAnchor:bottomToolbar.topAnchor],
+        [_bottomToolbarBackground.bottomAnchor
+            constraintEqualToAnchor:view.bottomAnchor],
+      ]];
+    }
 
   } else {
     [_topToolbarBackground removeFromSuperview];
@@ -1017,7 +1029,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.layoutGuideCenter referenceView:bottomToolbar
                               underName:kTabGridBottomToolbarGuide];
 
-  if (@available(iOS 26, *)) {
+  if ([self shouldCreateBottomBackground]) {
     _bottomToolbarBackground = [[TabGridToolbarBackgroundView alloc]
         initWithPosition:TabGridToolbarBackgroundPosition::kBottom];
     _bottomToolbarBackground.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1216,16 +1228,23 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           self.tabGroupsPanelViewController.remainingScrollDistanceBottom;
       break;
   }
-  if (@available(iOS 26, *)) {
+  // Update modern background views when attached to the view hierarchy,
+  // otherwise fall back to legacy discrete edge state updates on the toolbars
+  // (e.g. on iPad / non-compact layout where the background views are
+  // detached).
+  if (_topToolbarBackground && _topToolbarBackground.superview) {
     _topToolbarBackground.remainingScrollDistance = remainingScrollDistanceTop;
+  } else {
+    [self.topToolbar
+        setScrollViewScrolledToEdge:remainingScrollDistanceTop <= 0];
+  }
+  if (_bottomToolbarBackground && _bottomToolbarBackground.superview) {
     _bottomToolbarBackground.remainingScrollDistance =
         remainingScrollDistanceBottom;
-    return;
+  } else {
+    [self.bottomToolbar
+        setScrollViewScrolledToEdge:remainingScrollDistanceBottom <= 0];
   }
-
-  [self.topToolbar setScrollViewScrolledToEdge:remainingScrollDistanceTop <= 0];
-  [self.bottomToolbar
-      setScrollViewScrolledToEdge:remainingScrollDistanceBottom <= 0];
 }
 
 - (void)reportTabSelectionTime {
