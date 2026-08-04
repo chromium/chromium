@@ -5,6 +5,7 @@
 #include "services/audio/input_controller.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -54,7 +55,9 @@
 
 using ::testing::_;
 using ::testing::AtLeast;
+using ::testing::Contains;
 using ::testing::Exactly;
+using ::testing::HasSubstr;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::NotNull;
@@ -146,11 +149,18 @@ class MockInputControllerEventHandler : public InputController::EventHandler {
   MockInputControllerEventHandler& operator=(
       const MockInputControllerEventHandler&) = delete;
 
-  void OnLog(std::string_view) override {}
+  void OnLog(std::string_view message) override {
+    log_messages_.emplace_back(message);
+  }
+
+  const std::vector<std::string>& log_messages() const { return log_messages_; }
 
   MOCK_METHOD1(OnCreated, void(bool initially_muted));
   MOCK_METHOD1(OnError, void(InputController::ErrorCode error_code));
   MOCK_METHOD1(OnMuted, void(bool is_muted));
+
+ private:
+  std::vector<std::string> log_messages_;
 };
 
 class MockSyncWriter : public InputController::SyncWriter {
@@ -285,6 +295,7 @@ class TimeSourceInputControllerTest : public ::testing::Test {
       const TimeSourceInputControllerTest&) = delete;
 
   ~TimeSourceInputControllerTest() override {
+    controller_.reset();
     audio_manager_->Shutdown();
     task_environment_.RunUntilIdle();
   }
@@ -438,6 +449,41 @@ TEST_F(InputControllerTestWithMockAudioManager, PropagatesGlitchInfo) {
   controller_->Close();
 }
 
+TEST_F(InputControllerTestWithMockAudioManager, LogsStatsInDestructor) {
+  MockAudioInputStream mock_stream;
+  static_cast<media::MockAudioManager*>(audio_manager_.get())
+      ->SetMakeInputStreamCB(base::BindRepeating(
+          [](media::AudioInputStream* stream,
+             const media::AudioParameters& params,
+             const std::string& device_id) { return stream; },
+          &mock_stream));
+  auto audio_bus = media::AudioBus::Create(params_);
+
+  CreateAudioController();
+  ASSERT_TRUE(controller_.get());
+  controller_->Record();
+
+  ASSERT_TRUE(mock_stream.captured_callback_);
+  media::AudioInputStream::AudioInputCallback* callback =
+      *mock_stream.captured_callback_;
+
+  const media::AudioGlitchInfo audio_glitch_info{
+      .duration = base::Milliseconds(123), .count = 5};
+  EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, audio_glitch_info));
+  callback->OnData(audio_bus.get(), base::TimeTicks::Now(), 1,
+                   audio_glitch_info);
+  testing::Mock::VerifyAndClearExpectations(&sync_writer_);
+
+  EXPECT_CALL(sync_writer_, Close());
+  controller_->Close();
+  controller_.reset();
+
+  EXPECT_THAT(event_handler_.log_messages(),
+              Contains(HasSubstr("AIC::Dtor => (duration=")));
+  EXPECT_THAT(event_handler_.log_messages(),
+              Contains(HasSubstr("AIC::Dtor => (glitches=")));
+}
+
 TEST_F(InputControllerTest, RecordTwice) {
   EXPECT_CALL(event_handler_, OnCreated(_));
   CreateAudioController();
@@ -580,8 +626,10 @@ class TimeSourceInputControllerTestWithReferenceSignalProvider
         base::BindOnce(&DoNotCreateLoopbackMixin), this->params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
 
-    helper_ =
-        std::make_unique<InputControllerTestHelper>(this->controller_.get());
+    if (this->controller_) {
+      helper_ =
+          std::make_unique<InputControllerTestHelper>(this->controller_.get());
+    }
   }
 
   enum class AudioProcessingType {
