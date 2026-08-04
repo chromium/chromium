@@ -2770,7 +2770,13 @@ class ContextualTasksCopyUrlTest : public ContextualTasksInteractiveUiTest,
   base::test::ScopedFeatureList copy_url_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, CopyUrl) {
+// TODO(crbug.com/542608217): Disable on Linux MSan due to failure/flakiness.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_CopyUrl DISABLED_CopyUrl
+#else
+#define MAYBE_CopyUrl CopyUrl
+#endif
+IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, MAYBE_CopyUrl) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50&q=test");
 
