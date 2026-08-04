@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_GLOBAL_STATE_H_
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_GLOBAL_STATE_H_
 
+#import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #import "components/optimization_guide/core/delivery/prediction_manager.h"
@@ -14,13 +15,25 @@
 #import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "ios/chrome/browser/optimization_guide/model/chrome_profile_download_service_tracker.h"
 
+class ApplicationLocaleStorage;
+class PrefService;
+class ProfileManagerIOS;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace optimization_guide {
 
 // This holds the ModelBrokerState and other common objects shared between
 // profiles. // This is normally owned by the ApplicationContext.
 class OptimizationGuideGlobalState final {
  public:
-  OptimizationGuideGlobalState();
+  OptimizationGuideGlobalState(
+      PrefService* local_state,
+      ProfileManagerIOS* profile_manager,
+      ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   ~OptimizationGuideGlobalState();
 
   PredictionModelStore& prediction_model_store() {

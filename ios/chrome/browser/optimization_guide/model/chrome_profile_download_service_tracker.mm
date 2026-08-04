@@ -5,14 +5,14 @@
 #import "ios/chrome/browser/optimization_guide/model/chrome_profile_download_service_tracker.h"
 
 #import "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
 namespace optimization_guide {
 
-ChromeProfileDownloadServiceTracker::ChromeProfileDownloadServiceTracker() {
-  if (auto* profile_manager = GetApplicationContext()->GetProfileManager()) {
+ChromeProfileDownloadServiceTracker::ChromeProfileDownloadServiceTracker(
+    ProfileManagerIOS* profile_manager) {
+  if (profile_manager) {
     // Could be null in tests.
     profile_manager_observation_.Observe(profile_manager);
   }

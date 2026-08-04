@@ -57,7 +57,7 @@ class ChromeProfileDownloadServiceTrackerIOSTest : public PlatformTest {
 };
 
 TEST_F(ChromeProfileDownloadServiceTrackerIOSTest, OneProfile) {
-  ChromeProfileDownloadServiceTracker service_tracker;
+  ChromeProfileDownloadServiceTracker service_tracker(&profile_manager_);
   ProfileIOS* foo_profile = CreateTestingProfile(kProfileFoo);
   task_environment_.RunUntilIdle();
 
@@ -66,7 +66,7 @@ TEST_F(ChromeProfileDownloadServiceTrackerIOSTest, OneProfile) {
 }
 
 TEST_F(ChromeProfileDownloadServiceTrackerIOSTest, TwoProfiles) {
-  ChromeProfileDownloadServiceTracker service_tracker;
+  ChromeProfileDownloadServiceTracker service_tracker(&profile_manager_);
   ProfileIOS* foo_profile = CreateTestingProfile(kProfileFoo);
   ProfileIOS* bar_profile = CreateTestingProfile(kProfileBar);
   task_environment_.RunUntilIdle();
@@ -93,7 +93,7 @@ TEST_F(ChromeProfileDownloadServiceTrackerIOSTest,
   ProfileIOS* foo_profile = CreateTestingProfile(kProfileFoo);
   task_environment_.RunUntilIdle();
 
-  ChromeProfileDownloadServiceTracker service_tracker;
+  ChromeProfileDownloadServiceTracker service_tracker(&profile_manager_);
 
   EXPECT_EQ(service_tracker.GetBackgroundDownloadService(),
             GetBackgroundDownloadServiceForProfile(foo_profile));

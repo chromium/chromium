@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/check_deref.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"
@@ -21,24 +22,27 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/services/unzip/in_process_unzipper.h"
 #import "ios/chrome/browser/optimization_guide/model/chrome_profile_download_service_tracker.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "mojo/public/cpp/bindings/pending_receiver.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace optimization_guide {
 
-OptimizationGuideGlobalState::OptimizationGuideGlobalState()
-    : prediction_model_store_(*GetApplicationContext()->GetLocalState()),
+OptimizationGuideGlobalState::OptimizationGuideGlobalState(
+    PrefService* local_state,
+    ProfileManagerIOS* profile_manager,
+    ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : prediction_model_store_(CHECK_DEREF(local_state)),
+      profile_download_service_tracker_(profile_manager),
       prediction_manager_(
           &prediction_model_store_,
-          GetApplicationContext()->GetSharedURLLoaderFactory(),
-          GetApplicationContext()->GetLocalState(),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+          shared_url_loader_factory,
+          local_state,
+          application_locale_storage->Get(),
           OptimizationGuideLogger::GetInstance(),
           base::BindRepeating(&unzip::LaunchInProcessUnzipper)) {
   prediction_manager_.MaybeInitializeModelDownloads(
-      profile_download_service_tracker_,
-      GetApplicationContext()->GetLocalState());
+      profile_download_service_tracker_, local_state);
 }
 
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;

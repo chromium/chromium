@@ -398,7 +398,9 @@ optimization_guide::OptimizationGuideGlobalState*
 TestingApplicationContext::GetOptimizationGuideGlobalState() {
   if (!optimization_guide_global_state_) {
     optimization_guide_global_state_ =
-        std::make_unique<optimization_guide::OptimizationGuideGlobalState>();
+        std::make_unique<optimization_guide::OptimizationGuideGlobalState>(
+            GetLocalState(), GetProfileManager(), GetApplicationLocaleStorage(),
+            GetSharedURLLoaderFactory());
   }
   return optimization_guide_global_state_.get();
 }
