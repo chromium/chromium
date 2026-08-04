@@ -146,6 +146,10 @@ class MEDIA_EXPORT H265NaluParser {
   // from AdvanceToNextNALU().
   std::vector<SubsampleEntry> GetCurrentSubsamples();
 
+  bool validate_extended_bitstream() const {
+    return validate_extended_bitstream_;
+  }
+
  protected:
   H264BitReader br_;
 

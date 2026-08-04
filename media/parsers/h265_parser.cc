@@ -193,14 +193,20 @@ uint8_t H265ScalingListData::GetScalingList32x32EntryInRasterOrder(
 }
 
 H265SPS::H265SPS() = default;
-
+H265SPS::H265SPS(const H265SPS&) = default;
+H265SPS& H265SPS::operator=(const H265SPS&) = default;
 H265SPS::H265SPS(H265SPS&&) noexcept = default;
+H265SPS& H265SPS::operator=(H265SPS&&) noexcept = default;
 
 H265ProfileTierLevel::H265ProfileTierLevel() = default;
 
 H265VUIParameters::H265VUIParameters() = default;
-
+H265VUIParameters::H265VUIParameters(const H265VUIParameters&) = default;
+H265VUIParameters& H265VUIParameters::operator=(const H265VUIParameters&) =
+    default;
 H265VUIParameters::H265VUIParameters(H265VUIParameters&&) noexcept = default;
+H265VUIParameters& H265VUIParameters::operator=(H265VUIParameters&&) noexcept =
+    default;
 
 H265PPS::H265PPS() = default;
 

@@ -202,6 +202,7 @@ void H265Decoder::Reset() {
   parser_.Reset();
   accelerator_->Reset();
 
+  active_sps_.reset();
   decoder_buffer_.reset();
   secure_handle_ = 0;
 
@@ -654,10 +655,15 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
                             new_color_space != picture_color_space_;
   }
 
-  const bool is_config_change =
-      pic_size_ != new_pic_size || dpb_.max_num_pics() != sps->max_dpb_size ||
-      profile_ != new_profile || bit_depth_ != new_bit_depth ||
-      chroma_sampling_ != new_chroma_sampling;
+  bool is_config_change = false;
+  if (parser_.validate_extended_bitstream()) {
+    is_config_change = !active_sps_ || *active_sps_ != *sps;
+  } else {
+    is_config_change = pic_size_ != new_pic_size ||
+                       dpb_.max_num_pics() != sps->max_dpb_size ||
+                       profile_ != new_profile || bit_depth_ != new_bit_depth ||
+                       chroma_sampling_ != new_chroma_sampling;
+  }
 
   if (is_config_change) {
     // Only color space changes are allowed on non-IRAP pictures.
@@ -681,6 +687,7 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
              << VideoChromaSamplingToString(new_chroma_sampling);
     profile_ = new_profile;
     bit_depth_ = new_bit_depth;
+    active_sps_ = std::make_unique<H265SPS>(*sps);
     pic_size_ = new_pic_size;
     chroma_sampling_ = new_chroma_sampling;
     picture_color_space_ = new_color_space;

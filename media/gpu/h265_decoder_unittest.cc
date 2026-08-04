@@ -576,36 +576,70 @@ TEST_F(H265DecoderTest, ConfigChangeOnNonIRAP) {
   EXPECT_CALL(*accelerator_, SubmitDecode(_)).Times(1);
   EXPECT_CALL(*accelerator_, OutputPicture(_)).Times(1);
   EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
-
-  // 2. Inject 10-bit SPS/PPS followed by an 8-bit P-frame (non-IRAP).
-  std::vector<uint8_t> ten_bit_sps_pps;
-  auto ten_bit_file = GetTestDataFilePath(k10BitFrame0);
-  std::vector<uint8_t> ten_bit_data;
-  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(ten_bit_file),
-                               ten_bit_data));
-  // NALU at 0, type 32 (VPS)
-  // NALU at 28, type 33 (SPS)
-  // NALU at 73, type 34 (PPS)
-  // NALU at 84, type 39 (SEI)
-  // We want VPS + SPS + PPS.
-  base::Extend(ten_bit_sps_pps, base::span(ten_bit_data).first(84u));
+  EXPECT_TRUE(decoder_->Flush());
 
   std::vector<uint8_t> p_frame_data;
   auto p_frame_file = GetTestDataFilePath(kFrame1);
   CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(p_frame_file),
                                p_frame_data));
 
-  std::vector<uint8_t> malicious_bitstream = ten_bit_sps_pps;
-  base::Extend(malicious_bitstream, p_frame_data);
+  // 2. Inject 10-bit SPS/PPS (bit-depth config change) followed by P-frame
+  // (non-IRAP).
+  std::vector<uint8_t> ten_bit_sps_pps;
+  auto ten_bit_file = GetTestDataFilePath(k10BitFrame0);
+  std::vector<uint8_t> ten_bit_data;
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(ten_bit_file),
+                               ten_bit_data));
+  base::Extend(ten_bit_sps_pps, base::span(ten_bit_data).first(84u));
 
-  auto buffer = DecoderBuffer::CopyFrom(malicious_bitstream);
+  std::vector<uint8_t> bit_depth_bitstream = ten_bit_sps_pps;
+  base::Extend(bit_depth_bitstream, p_frame_data);
+
+  auto buffer1 = DecoderBuffer::CopyFrom(bit_depth_bitstream);
   EXPECT_CALL(*accelerator_, SetStream(_, _));
-  decoder_->SetStream(1, buffer);
+  decoder_->SetStream(1, buffer1);
 
-  // 3. Verify that ConfigChange is NOT allowed on the P-frame.
+  // Verify bit-depth ConfigChange is NOT allowed on P-frame.
   EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
-  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
-  EXPECT_EQ(8u, decoder_->GetBitDepth());
+
+  // Reset decoder state so we can test a second invalid config change stream.
+  decoder_->Reset();
+
+  // 3. Inject SPS with modified CTB size (CTB log size config change) followed
+  // by P-frame (non-IRAP).
+  H26xAnnexBBitstreamBuilder builder;
+  H265SPS sps = {};
+  sps.sps_video_parameter_set_id = 0;
+  sps.sps_max_sub_layers_minus1 = 0;
+  sps.sps_temporal_id_nesting_flag = true;
+  sps.profile_tier_level.general_profile_idc = 1;
+  sps.profile_tier_level.general_level_idc = 120;
+  sps.sps_seq_parameter_set_id = 0;
+  sps.chroma_format_idc = 1;
+  sps.pic_width_in_luma_samples = 320;
+  sps.pic_height_in_luma_samples = 184;
+  sps.log2_min_luma_coding_block_size_minus3 = 1;  // Changed CTB log size
+  sps.log2_diff_max_min_luma_coding_block_size = 1;
+  sps.log2_min_luma_transform_block_size_minus2 = 0;
+  sps.log2_diff_max_min_luma_transform_block_size = 0;
+  sps.max_transform_hierarchy_depth_inter = 0;
+  sps.max_transform_hierarchy_depth_intra = 0;
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.sps_max_dec_pic_buffering_minus1[0] = 1;
+
+  BuildPackedH265SPS(builder, sps);
+  builder.Flush();
+
+  std::vector<uint8_t> ctb_bitstream(builder.data().begin(),
+                                     builder.data().end());
+  base::Extend(ctb_bitstream, p_frame_data);
+
+  auto buffer2 = DecoderBuffer::CopyFrom(ctb_bitstream);
+  EXPECT_CALL(*accelerator_, SetStream(_, _));
+  decoder_->SetStream(2, buffer2);
+
+  // Verify CTB log size ConfigChange is NOT allowed on P-frame.
+  EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
 
   EXPECT_TRUE(decoder_->Flush());
 }

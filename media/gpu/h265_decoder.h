@@ -388,6 +388,8 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   VideoCodecProfile profile_;
   // Bit depth of input bitstream.
   uint8_t bit_depth_ = 0;
+  // Active SPS of input bitstream.
+  std::unique_ptr<H265SPS> active_sps_;
   // Chroma sampling format of input bitstream
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
   // Video color space of input bitstream.

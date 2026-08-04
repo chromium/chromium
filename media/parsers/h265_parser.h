@@ -132,7 +132,10 @@ struct MEDIA_EXPORT H265StRefPicSet {
 
 struct MEDIA_EXPORT H265VUIParameters {
   H265VUIParameters();
+  H265VUIParameters(const H265VUIParameters&);
+  H265VUIParameters& operator=(const H265VUIParameters&);
   H265VUIParameters(H265VUIParameters&&) noexcept;
+  H265VUIParameters& operator=(H265VUIParameters&&) noexcept;
   bool operator==(const H265VUIParameters&) const = default;
 
   // Syntax elements.
@@ -180,7 +183,10 @@ struct MEDIA_EXPORT H265VPS {
 
 struct MEDIA_EXPORT H265SPS {
   H265SPS();
+  H265SPS(const H265SPS&);
+  H265SPS& operator=(const H265SPS&);
   H265SPS(H265SPS&&) noexcept;
+  H265SPS& operator=(H265SPS&&) noexcept;
   bool operator==(const H265SPS&) const = default;
 
   // Syntax elements.
