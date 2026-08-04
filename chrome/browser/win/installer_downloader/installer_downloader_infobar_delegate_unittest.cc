@@ -10,10 +10,8 @@
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
-#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -47,9 +45,6 @@ class InstallerDownloaderInfoBarDelegateTest
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kInstallerDownloader,
-        {{kLearnMoreUrl.name, "https://example.com/learn_more"}});
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 
     widget_ = std::make_unique<views::Widget>();
@@ -81,7 +76,6 @@ class InstallerDownloaderInfoBarDelegateTest
 
   StrictMock<base::MockCallback<base::OnceClosure>> mock_accept_cb_;
   StrictMock<base::MockCallback<base::OnceClosure>> mock_cancel_cb_;
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   gfx::AnimationTestApi::RenderModeResetter disable_animations_;

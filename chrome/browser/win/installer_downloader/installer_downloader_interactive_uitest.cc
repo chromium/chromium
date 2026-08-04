@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
-#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -25,18 +24,12 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 
-// A valid template; IIDGUID and STATS are substituted at runtime.
-constexpr char kUrlTemplate[] =
-    "https://example.com/installer.exe?iid=IIDGUID&stats=STATS";
-
 class InstallerDownloaderInteractiveUiTest
     : public InteractiveBrowserTest,
       public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {kInstallerDownloader,
-         {{kInstallerUrlTemplateParam.name, kUrlTemplate}}}};
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     if (GetParam()) {
       enabled_features.push_back(
           {infobars::kCentralizedInfoBarFramework,

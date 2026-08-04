@@ -17,9 +17,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
-#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_constants.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -69,10 +68,6 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
 class InstallerDownloaderControllerTest : public testing::Test {
  protected:
   InstallerDownloaderControllerTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kInstallerDownloader,
-        {{kInstallerUrlTemplateParam.name, kUrlTemplate}});
-
     auto download_manager = std::make_unique<content::MockDownloadManager>();
     mock_download_manager_ = download_manager.get();
     profile_.SetDownloadManagerForTesting(std::move(download_manager));
@@ -92,8 +87,6 @@ class InstallerDownloaderControllerTest : public testing::Test {
     controller_->SetShouldShowInfobarForProfileCallbackForTesting(
         should_show_infobar_for_profile_mock_callback_.Get());
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -194,7 +187,7 @@ TEST_F(InstallerDownloaderControllerTest,
                   // No leftover placeholders.
                   Not(HasSubstr("IIDGUID")), Not(HasSubstr("STATS")),
                   Not(HasSubstr("LANGUAGE")))),
-          destination.AppendASCII(kDownloadedInstallerFileName.Get()), _, _));
+          destination.AppendASCII(kDownloadedInstallerFileName), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }
@@ -206,7 +199,7 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsEnabled) {
   EXPECT_CALL(
       *mock_model_,
       StartDownload(Property(&GURL::spec, HasSubstr("&stats=1")),
-                    destination.AppendASCII(kDownloadedInstallerFileName.Get()),
+                    destination.AppendASCII(kDownloadedInstallerFileName),
                     _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
@@ -219,7 +212,7 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsDisabled) {
   EXPECT_CALL(
       *mock_model_,
       StartDownload(Property(&GURL::spec, HasSubstr("&stats=0")),
-                    destination.AppendASCII(kDownloadedInstallerFileName.Get()),
+                    destination.AppendASCII(kDownloadedInstallerFileName),
                     _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
@@ -234,7 +227,7 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlLanguageSubstitution) {
       StartDownload(
           Property(&GURL::spec,
                    AllOf(HasSubstr("&lang=en"), Not(HasSubstr("LANGUAGE")))),
-          destination.AppendASCII(kDownloadedInstallerFileName.Get()), _, _));
+          destination.AppendASCII(kDownloadedInstallerFileName), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }
@@ -246,7 +239,7 @@ TEST_F(InstallerDownloaderControllerTest,
 
   const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
   const base::FilePath full_destination =
-      destination.AppendASCII(kDownloadedInstallerFileName.Get());
+      destination.AppendASCII(kDownloadedInstallerFileName);
   GURL first_url;
   GURL second_url;
 
@@ -344,7 +337,7 @@ TEST_F(InstallerDownloaderControllerTest, RequestAcceptedTrueMetric) {
 
   controller_->OnDownloadRequestAccepted(
       base::FilePath(FILE_PATH_LITERAL("C:\\tmp"))
-          .AppendASCII(kDownloadedInstallerFileName.Get()));
+          .AppendASCII(kDownloadedInstallerFileName));
 
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
                                 /*true=*/1, /*expected_count=*/1);
@@ -377,7 +370,7 @@ TEST_F(InstallerDownloaderControllerTest, LogsDownloadResultMetric) {
 
   controller_->OnDownloadRequestAccepted(
       base::FilePath(FILE_PATH_LITERAL("C:\\tmp"))
-          .AppendASCII(kDownloadedInstallerFileName.Get()));
+          .AppendASCII(kDownloadedInstallerFileName));
 
   ASSERT_TRUE(download_completion_callback);
   std::move(download_completion_callback).Run(/*success=*/true);
@@ -405,7 +398,7 @@ TEST_F(InstallerDownloaderControllerTest,
 
   controller_->OnDownloadRequestAccepted(
       base::FilePath(FILE_PATH_LITERAL("C:\\tmp"))
-          .AppendASCII(kDownloadedInstallerFileName.Get()));
+          .AppendASCII(kDownloadedInstallerFileName));
 
   ASSERT_TRUE(completion_callback);
 

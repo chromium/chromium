@@ -31,7 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_constants.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_infobar_window_active_tab_tracker.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model_impl.h"
@@ -89,10 +89,8 @@ std::string GetDefaultInstallerDownloadUrlTemplate() {
 }
 
 std::optional<GURL> BuildInstallerDownloadUrl(bool is_metrics_enabled) {
-  std::string installer_url_template = kInstallerUrlTemplateParam.Get();
-  if (installer_url_template.empty()) {
-    installer_url_template = GetDefaultInstallerDownloadUrlTemplate();
-  }
+  std::string installer_url_template =
+      GetDefaultInstallerDownloadUrlTemplate();
 
   base::ReplaceFirstSubstringAfterOffset(
       &installer_url_template, /*start_offset=*/0, "IIDGUID",
@@ -170,7 +168,7 @@ void InstallerDownloaderController::RegisterInfoBar() {
           .SetMessageText(
               l10n_util::GetStringUTF16(IDS_INSTALLER_DOWNLOADER_DISCLAIMER))
           .SetLinkText(l10n_util::GetStringUTF16(IDS_INSTALLER_DOWNLOADER_LINK))
-          .SetLinkNavigationUrl(GURL(kLearnMoreUrl.Get()))
+          .SetLinkNavigationUrl(GURL(kLearnMoreUrl))
           .SetIcon(features::IsRoundedIconsEnabled()
                        ? omnibox::kChromeProductIcon
                        : vector_icons::kProductRefreshIcon)
@@ -448,7 +446,7 @@ void InstallerDownloaderController::OnDownloadRequestAccepted(
 
   model_->StartDownload(
       installer_url.value(),
-      destination.AppendASCII(kDownloadedInstallerFileName.Get()),
+      destination.AppendASCII(kDownloadedInstallerFileName),
       CHECK_DEREF(profile->GetDownloadManager()),
       base::BindOnce(&InstallerDownloaderController::OnDownloadCompleted,
                      base::Unretained(this), std::move(keep_alive)));
