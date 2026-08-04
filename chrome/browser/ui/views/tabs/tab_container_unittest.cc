@@ -1078,6 +1078,30 @@ TEST_F(TabContainerTest, GroupUnderlineBasics) {
                 TabGroupUnderline::kStrokeThickness);
 }
 
+TEST_F(TabContainerTest, GroupUnderlineHiddenInFocusMode) {
+  AddTab(0);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  std::vector<TabGroupViews*> views = ListGroupViews();
+  EXPECT_EQ(1u, views.size());
+  views[0]->UpdateBounds();
+
+  const TabGroupUnderline* underline = views[0]->underline();
+  EXPECT_TRUE(underline->GetVisible());
+
+  // Focus the group and verify underline becomes hidden.
+  tab_strip_controller_->SetFocusedGroup(group);
+  views[0]->UpdateBounds();
+  EXPECT_FALSE(underline->GetVisible());
+
+  // Unfocus the group and verify underline becomes visible again.
+  tab_strip_controller_->SetFocusedGroup(std::nullopt);
+  views[0]->UpdateBounds();
+  EXPECT_TRUE(underline->GetVisible());
+}
+
 TEST_F(TabContainerTest, UnderlineBoundsTabVisibilityChange) {
   // Validates that group underlines are updated correctly in a single Layout
   // call when the visibility of tabs in the group change. See

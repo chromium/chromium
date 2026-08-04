@@ -262,7 +262,7 @@ void TabGroupView::UpdateChildVisibilityForCollapseState(bool collapsed) {
   if (!collection_node_) {
     return;
   }
-  group_line_->SetVisible(!collapsed);
+  group_line_->SetVisible(!collapsed && !IsGroupFocused());
   for (auto* child : collection_node_->GetDirectChildren()) {
     child->SetVisible(!collapsed);
   }

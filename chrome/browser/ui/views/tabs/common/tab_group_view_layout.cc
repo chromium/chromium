@@ -110,6 +110,8 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
           ? tab_group_view->collection_node_->GetDirectChildren()
           : std::vector<views::View*>();
 
+  const bool is_focused = tab_group_view->IsGroupFocused();
+
   // Layout children in order. Children will have their preferred height and
   // fill available width.
   for (auto* child : children) {
@@ -119,12 +121,17 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
     CHECK(!drag_data || !drag_data->should_hide);
     bounds.set_y(drag_data ? drag_data->offset.y() : height);
 
-    // If the tab strip is not collapsed then the groups tabs should be inset.
-    bounds.set_x(tab_strip_collapse_state !=
-                         tabs::VerticalTabStripCollapseState::kExpanded
-                     ? GetLayoutConstant(
-                           LayoutConstant::kVerticalTabStripHorizontalPadding)
-                     : TabGroupView::kTabLeadingPadding);
+    // If the tab strip is not collapsed and not focused then the groups tabs
+    // should be inset.
+    int child_x = 0;
+    if (tab_strip_collapse_state !=
+        tabs::VerticalTabStripCollapseState::kExpanded) {
+      child_x =
+          GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+    } else if (!is_focused) {
+      child_x = TabGroupView::kTabLeadingPadding;
+    }
+    bounds.set_x(child_x);
     // If width is bounded, child views should respect the width constraints
     // and take up the available width excluding trailing horizontal padding.
     if (size_bounds.width().is_bounded()) {
@@ -140,9 +147,10 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
   if (!children.empty()) {
     group_line_bounds.set_height(height - group_line_bounds.y());
   }
+  const bool show_group_line =
+      !is_focused && tab_group_view->group_line_->GetVisible();
   layouts.child_layouts.emplace_back(tab_group_view->group_line_.get(),
-                                     tab_group_view->group_line_->GetVisible(),
-                                     group_line_bounds);
+                                     show_group_line, group_line_bounds);
 
   // Add extra padding below the group if not collapsed.
   const bool is_group_collapsed = tab_group_view->IsCollapsed();

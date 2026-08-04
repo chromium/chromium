@@ -81,6 +81,9 @@ class TabGroupView : public views::View,
   TabGroupHeaderView* group_header() { return group_header_; }
   const TabGroupHeaderView* group_header() const { return group_header_; }
 
+  views::View* group_line() { return group_line_; }
+  const views::View* group_line() const { return group_line_; }
+
  private:
   friend class TabGroupViewLayout;
 

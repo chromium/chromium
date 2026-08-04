@@ -411,3 +411,23 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsDragTabInGroup) {
     EXPECT_EQ(drag_underline_bounds.right(), dragged_tab->bounds().right());
   }
 }
+
+TEST_F(TabGroupViewsTest, UnderlineHiddenInFocusMode) {
+  Tab* tab = tab_container_->AddChildView(
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller_.get()));
+  tab->SetGroup(id_);
+  tab->SetBounds(100, 0, 100, 50);
+  group_views_->UpdateBounds();
+
+  EXPECT_TRUE(group_views_->underline()->GetVisible());
+
+  // Focus the group and verify underline becomes hidden.
+  tab_strip_controller_->SetFocusedGroup(id_);
+  group_views_->UpdateBounds();
+  EXPECT_FALSE(group_views_->underline()->GetVisible());
+
+  // Unfocus the group and verify underline becomes visible again.
+  tab_strip_controller_->SetFocusedGroup(std::nullopt);
+  group_views_->UpdateBounds();
+  EXPECT_TRUE(group_views_->underline()->GetVisible());
+}

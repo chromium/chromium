@@ -177,6 +177,10 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   std::optional<SkColor> GetGroupColor() const override {
     return tab_->GetGroupColor();
   }
+  bool IsGroupFocused() const override {
+    const std::optional<tab_groups::TabGroupId> group = tab_->group();
+    return group.has_value() && tab_->controller()->GetFocusedGroup() == group;
+  }
   bool IsSplit() const override { return tab_->split().has_value(); }
   std::optional<split_tabs::SplitTabId> GetSplit() const override {
     return tab_->split();
@@ -986,7 +990,8 @@ void Tab::SetClosing(bool closing) {
 }
 
 std::optional<SkColor> Tab::GetGroupColor() const {
-  if (closing_ || !group().has_value()) {
+  if (closing_ || !group().has_value() ||
+      controller_->GetFocusedGroup() == group()) {
     return std::nullopt;
   }
 
