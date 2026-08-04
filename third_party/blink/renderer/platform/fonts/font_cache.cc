@@ -277,12 +277,21 @@ void FontCache::Invalidate() {
 
 void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   int num_families = std::numeric_limits<int>::min();
+  FontUniqueNameLookup::FontServiceConnectionState
+      font_service_connection_state =
+          FontUniqueNameLookup::FontServiceConnectionState::kNotSupported;
 
   num_families = skia::DefaultFontMgr()->countFamilies();
+  if (FontUniqueNameLookup* unique_name_lookup =
+          FontGlobalContext::Get().GetFontUniqueNameLookup()) {
+    font_service_connection_state =
+        unique_name_lookup->GetFontServiceConnectionStateForCrash();
+  }
 
   FontDescription font_description_copy = *font_description;
   base::debug::Alias(&font_description_copy);
   base::debug::Alias(&num_families);
+  base::debug::Alias(&font_service_connection_state);
 
   NOTREACHED();
 }

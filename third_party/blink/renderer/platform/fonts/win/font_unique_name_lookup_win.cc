@@ -79,6 +79,24 @@ bool FontUniqueNameLookupWin::IsFontUniqueNameLookupReadyForSyncLookup() {
   return true;
 }
 
+FontUniqueNameLookup::FontServiceConnectionState
+FontUniqueNameLookupWin::GetFontServiceConnectionStateForCrash() const {
+  if (RuntimeEnabledFeatures::FontDataServiceForCSSLocalFontsEnabled()) {
+    if (!font_data_service_) {
+      return FontServiceConnectionState::kNotBound;
+    }
+    return font_data_service_.is_connected()
+               ? FontServiceConnectionState::kConnected
+               : FontServiceConnectionState::kDisconnected;
+  }
+
+  if (!service_) {
+    return FontServiceConnectionState::kNotBound;
+  }
+  return service_.is_connected() ? FontServiceConnectionState::kConnected
+                                 : FontServiceConnectionState::kDisconnected;
+}
+
 void FontUniqueNameLookupWin::EnsureServiceConnected() {
   if (service_)
     return;

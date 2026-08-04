@@ -27,6 +27,13 @@ class FontUniqueNameLookup {
   USING_FAST_MALLOC(FontUniqueNameLookup);
 
  public:
+  enum class FontServiceConnectionState {
+    kNotSupported = 0,
+    kNotBound = 1,
+    kConnected = 2,
+    kDisconnected = 3,
+  };
+
   // Factory function to construct a platform specific font unique name lookup
   // instance. Client must not use this directly as it is thread
   // specific. Retrieve it from FontGlobalContext instead.
@@ -60,6 +67,13 @@ class FontUniqueNameLookup {
   // early in renderer startup, as opposed to PrepareFontUniqueNameLookup()
   // which is called when sync lookup is first needed.
   virtual void Init() {}
+
+  // Returns a local snapshot for crash diagnostics without binding a service or
+  // sending IPC. The connection can change immediately after this call.
+  virtual FontServiceConnectionState GetFontServiceConnectionStateForCrash()
+      const {
+    return FontServiceConnectionState::kNotSupported;
+  }
 
  protected:
   FontUniqueNameLookup();

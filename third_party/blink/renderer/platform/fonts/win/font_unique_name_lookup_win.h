@@ -29,6 +29,9 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
 
   void Init() override;
 
+  FontServiceConnectionState GetFontServiceConnectionStateForCrash()
+      const override;
+
  private:
   void EnsureServiceConnected();
   void EnsureFontDataServiceConnected();
