@@ -4,6 +4,8 @@
 
 #include "base/mac/launchd.h"
 
+#include <errno.h>
+
 #include "base/logging.h"
 #include "base/mac/scoped_launch_data.h"
 #include "base/numerics/safe_conversions.h"
