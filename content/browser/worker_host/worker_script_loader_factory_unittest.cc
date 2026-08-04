@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -16,6 +17,7 @@
 #include "content/test/fake_network_url_loader_factory.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -184,6 +186,80 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullBrowserContext) {
       CreateTestLoaderAndStart(url, factory.get(), &client);
   client.RunUntilComplete();
   EXPECT_EQ(net::ERR_ABORTED, client.completion_status().error_code);
+}
+
+// Tests that a redirect received while loading a blob: URL is rejected. Loading
+// a blob URL never produces a redirect, so any redirect must be rejected before
+// it is forwarded or followed.
+TEST_F(WorkerScriptLoaderFactoryTest, RedirectFromBlobUrl) {
+  GURL url("blob:https://www.example.com/49146318-7a89-4041-9bcc-36e6b6eeef86");
+
+  // Defer the mock network load so we can inject a redirect on the in-flight
+  // load.
+  network_loader_factory_instance_->DeferHandleRequest();
+
+  // Create the factory.
+  auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(), browser_context_getter_,
+      network_loader_factory_);
+
+  // Start loading the script.
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(url, factory.get(), &client);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return factory->GetScriptLoader() != nullptr; }));
+
+  // Simulate receiving a redirect from the blob load.
+  net::RedirectInfo redirect_info;
+  redirect_info.status_code = 302;
+  redirect_info.new_method = "GET";
+  redirect_info.new_url = GURL("https://other.example.com/worker.js");
+  factory->GetScriptLoader()->OnReceiveRedirect(
+      redirect_info, network::mojom::URLResponseHead::New());
+  client.RunUntilComplete();
+
+  // Verify that the redirect was blocked and the load was aborted with
+  // ERR_UNSAFE_REDIRECT.
+  EXPECT_FALSE(client.has_received_redirect());
+  ASSERT_TRUE(client.has_received_completion());
+  EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, client.completion_status().error_code);
+}
+
+// Tests that a redirect to an unsafe target scheme is rejected.
+TEST_F(WorkerScriptLoaderFactoryTest, RejectUnsafeRedirectTarget) {
+  GURL url("https://www.example.com/worker.js");
+
+  network_loader_factory_instance_->DeferHandleRequest();
+
+  auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(), browser_context_getter_,
+      network_loader_factory_);
+
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(url, factory.get(), &client);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return factory->GetScriptLoader() != nullptr; }));
+
+  // Simulate receiving an unsafe redirect (e.g. to a file scheme).
+  net::RedirectInfo redirect_info;
+  redirect_info.status_code = 302;
+  redirect_info.new_method = "GET";
+  redirect_info.new_url = GURL("file:///path/to/worker.js");
+  factory->GetScriptLoader()->OnReceiveRedirect(
+      redirect_info, network::mojom::URLResponseHead::New());
+  client.RunUntilComplete();
+
+  // Verify that the redirect was blocked and the load was aborted with
+  // ERR_UNSAFE_REDIRECT.
+  EXPECT_FALSE(client.has_received_redirect());
+  ASSERT_TRUE(client.has_received_completion());
+  EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, client.completion_status().error_code);
 }
 
 // TODO(falken): Add a test for a shared worker that's controlled by a service
