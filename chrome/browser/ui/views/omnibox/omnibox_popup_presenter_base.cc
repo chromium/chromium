@@ -462,6 +462,14 @@ void OmniboxPopupPresenterBase::PrimaryPageChanged(content::Page& page) {
 void OmniboxPopupPresenterBase::OnEmbeddedPermissionDialogChanged(
     bool is_showing,
     const gfx::Size& prompt_size) {
+  SetPermissionPromptShowing(is_showing);
+  if (!is_showing) {
+    // Set dismissal handling flag so `kBlur` does not close Omnibox popup.
+    // Do not call `FocusLocation()` here, as refocusing the omnibox on
+    // PEPC dismissal re-triggers WebUI media access requests.
+    is_handling_prompt_dismissal_ = true;
+  }
+
   gfx::Size new_minimum_size = is_showing ? prompt_size : gfx::Size();
 
   if (minimum_size_ == new_minimum_size) {
@@ -535,17 +543,21 @@ void OmniboxPopupPresenterBase::SetPermissionPromptShowing(bool showing) {
   is_prompt_showing_ = showing;
 }
 
-void OmniboxPopupPresenterBase::OnPromptAdded() {
-  SetPermissionPromptShowing(true);
-}
-
-void OmniboxPopupPresenterBase::OnPromptRemoved() {
+void OmniboxPopupPresenterBase::HandlePermissionPromptDismissal() {
   SetPermissionPromptShowing(false);
   is_handling_prompt_dismissal_ = true;
   if (location_bar()) {
     location_bar()->FocusLocation(/*is_user_initiated=*/false,
                                   /*clear_focus_if_failed=*/false);
   }
+}
+
+void OmniboxPopupPresenterBase::OnPromptAdded() {
+  SetPermissionPromptShowing(true);
+}
+
+void OmniboxPopupPresenterBase::OnPromptRemoved() {
+  HandlePermissionPromptDismissal();
 }
 
 void OmniboxPopupPresenterBase::OnPromptRecreateViewFailed() {

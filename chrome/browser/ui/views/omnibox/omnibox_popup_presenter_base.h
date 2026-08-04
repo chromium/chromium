@@ -153,6 +153,9 @@ class OmniboxPopupPresenterBase
   // handlers.
   void SetPermissionPromptShowing(bool showing);
 
+  // Handles common dismissal state updates when a permission prompt is closed.
+  void HandlePermissionPromptDismissal();
+
   // Returns true if a permission prompt is showing or being dismissed,
   // which should prevent out-of-focus activation events from hiding the popup.
   bool IsPermissionPromptPreventingClose() const;
