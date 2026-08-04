@@ -282,7 +282,10 @@ ImageDecoder::ImageDecoder(
       aux_image_(aux_image),
       max_decoded_bytes_(max_decoded_bytes),
       allow_decode_to_yuv_(false),
-      purge_aggressively_(false) {}
+      purge_aggressively_(false),
+      sk_image_color_space_(color_behavior == ColorBehavior::kIgnore
+                                ? nullptr
+                                : SkColorSpace::MakeSRGB()) {}
 
 ImageDecoder::~ImageDecoder() = default;
 
@@ -1107,46 +1110,22 @@ void ImageDecoder::SetEmbeddedColorProfile(
   embedded_color_profile_ = std::move(profile);
   sk_image_color_space_ = nullptr;
   embedded_to_sk_image_transform_.reset();
-}
-
-ColorProfileTransform* ImageDecoder::ColorTransform() {
-  UpdateSkImageColorSpaceAndTransform();
-  return embedded_to_sk_image_transform_.get();
-}
-
-ColorProfileTransform::~ColorProfileTransform() = default;
-
-sk_sp<SkColorSpace> ImageDecoder::ColorSpaceForSkImages() {
-  UpdateSkImageColorSpaceAndTransform();
-  return sk_image_color_space_;
-}
-
-void ImageDecoder::UpdateSkImageColorSpaceAndTransform() {
-  if (color_behavior_ == ColorBehavior::kIgnore) {
-    return;
-  }
-
-  // If `color_behavior_` is not ignore, then this function will always set
-  // `sk_image_color_space_` to something non-nullptr, so, if it is non-nullptr,
-  // then everything is up to date.
-  if (sk_image_color_space_) {
-    return;
-  }
 
   if (color_behavior_ == ColorBehavior::kTag) {
     // Set `sk_image_color_space_` to the best SkColorSpace approximation
     // of `embedded_color_profile_`.
     if (embedded_color_profile_) {
-      const skcms_ICCProfile* profile = embedded_color_profile_->GetProfile();
+      const skcms_ICCProfile* icc_profile =
+          embedded_color_profile_->GetProfile();
 
       // If the ICC profile has CICP data, prefer to use that.
-      if (profile->has_CICP) {
-        sk_image_color_space_ =
-            skia::CICPGetSkColorSpace(profile->CICP.color_primaries,
-                                      profile->CICP.transfer_characteristics,
-                                      profile->CICP.matrix_coefficients,
-                                      profile->CICP.video_full_range_flag,
-                                      /*prefer_srgb_trfn=*/true);
+      if (icc_profile->has_CICP) {
+        sk_image_color_space_ = skia::CICPGetSkColorSpace(
+            icc_profile->CICP.color_primaries,
+            icc_profile->CICP.transfer_characteristics,
+            icc_profile->CICP.matrix_coefficients,
+            icc_profile->CICP.video_full_range_flag,
+            /*prefer_srgb_trfn=*/true);
         // A CICP profile's SkColorSpace is considered an exact representation
         // of `profile`, so don't create `embedded_to_sk_image_transform_`.
         if (sk_image_color_space_) {
@@ -1156,14 +1135,14 @@ void ImageDecoder::UpdateSkImageColorSpaceAndTransform() {
 
       // If there was not CICP data, then use the ICC profile.
       DCHECK(!sk_image_color_space_);
-      sk_image_color_space_ = SkColorSpace::Make(*profile);
+      sk_image_color_space_ = SkColorSpace::Make(*icc_profile);
 
       // If the embedded color space isn't supported by Skia, we will transform
       // to a supported color space using `embedded_to_sk_image_transform_` at
       // decode time.
-      if (!sk_image_color_space_ && profile->has_toXYZD50) {
+      if (!sk_image_color_space_ && icc_profile->has_toXYZD50) {
         // Preserve the gamut, but convert to a standard transfer function.
-        skcms_ICCProfile with_srgb = *profile;
+        skcms_ICCProfile with_srgb = *icc_profile;
         skcms_SetTransferFunction(&with_srgb, skcms_sRGB_TransferFunction());
         sk_image_color_space_ = SkColorSpace::Make(with_srgb);
       }
@@ -1204,6 +1183,8 @@ void ImageDecoder::UpdateSkImageColorSpaceAndTransform() {
   embedded_to_sk_image_transform_ =
       std::make_unique<ColorProfileTransform>(src_profile, &dst_profile);
 }
+
+ColorProfileTransform::~ColorProfileTransform() = default;
 
 bool ImageDecoder::CanReusePreviousFrameBuffer(wtf_size_t) const {
   return false;

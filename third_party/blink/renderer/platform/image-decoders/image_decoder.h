@@ -409,7 +409,9 @@ class PLATFORM_EXPORT ImageDecoder {
   // This returns the color space that will be included in the SkImageInfo of
   // SkImages created from this decoder. This will be nullptr unless the
   // decoder was created with the option ColorSpaceTagged.
-  sk_sp<SkColorSpace> ColorSpaceForSkImages();
+  sk_sp<SkColorSpace> ColorSpaceForSkImages() const {
+    return sk_image_color_space_;
+  }
 
   // This returns whether or not the image included a not-ignored embedded
   // color profile. This is independent of whether or not that profile's
@@ -422,7 +424,9 @@ class PLATFORM_EXPORT ImageDecoder {
   void SetEmbeddedColorProfile(std::unique_ptr<ColorProfile> profile);
 
   // Transformation from embedded color space to target color space.
-  ColorProfileTransform* ColorTransform();
+  ColorProfileTransform* ColorTransform() const {
+    return embedded_to_sk_image_transform_.get();
+  }
 
   AlphaOption GetAlphaOption() const {
     return premultiply_alpha_ ? kAlphaPremultiplied : kAlphaNotPremultiplied;
@@ -621,10 +625,6 @@ class PLATFORM_EXPORT ImageDecoder {
   }
 
   bool purge_aggressively_;
-
-  // Update `sk_image_color_space_` and `embedded_to_sk_image_transform_`, if
-  // needed.
-  void UpdateSkImageColorSpaceAndTransform();
 
   // This methods gets called at the end of InitFrameBuffer. Subclasses can do
   // format specific initialization, for e.g. alpha settings, here.
