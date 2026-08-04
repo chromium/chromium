@@ -15,7 +15,6 @@
   display: flex;
   font-size: calc(12/13 * 1em);
   min-height: var(--destination-item-height);
-  opacity: .87;
   padding-inline-end: 2px;
   padding-inline-start: 0;
   vertical-align: middle;

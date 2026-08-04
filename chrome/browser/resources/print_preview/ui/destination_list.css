@@ -46,13 +46,7 @@
 
 .list-item:hover,
 .list-item:focus {
-  background-color: rgb(228, 236, 247);
-}
-
-@media (prefers-color-scheme: dark) {
-  .list-item:-webkit-any(:hover, :focus) {
-    background-color: var(--cr-menu-background-focus-color);
-  }
+  background-color: var(--cr-hover-background-color);
 }
 
 .list-item:focus {
