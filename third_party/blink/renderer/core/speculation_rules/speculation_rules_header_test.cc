@@ -210,6 +210,40 @@ TEST(SpeculationRulesHeaderTest, InvalidItem) {
                   .Times(4));
 }
 
+TEST(SpeculationRulesHeaderTest, InnerListIsInvalidItem) {
+  test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+
+  ResourceResponse document_response(KURL("https://speculation-rules.test/"));
+  document_response.SetHttpStatusCode(200);
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(
+      http_names::kSpeculationRules,
+      AtomicString("(\"https://speculationrules.test/1.json\"), "
+                   "(\"https://speculationrules.test/1.json\" "
+                   "\"https://speculationrules.test/2.json\")"));
+  SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
+      document_response, *page_holder.GetFrame().DomWindow());
+
+  EXPECT_TRUE(page_holder.GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesHeader));
+  histogram_tester.ExpectUniqueSample(
+      "Blink.SpeculationRules.LoadOutcome",
+      SpeculationRulesLoadOutcome::kInvalidSpeculationRulesHeaderItem, 2);
+  EXPECT_THAT(
+      chrome_client->ConsoleMessages(),
+      Contains(
+          ResultOf(
+              [](const auto& m) { return m.Utf8(); },
+              HasSubstr(
+                  "Only strings are valid in Speculation-Rules header value "
+                  "and inner lists are ignored.")))
+          .Times(2));
+}
+
 TEST(SpeculationRulesHeaderTest, ValidURL) {
   test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester;

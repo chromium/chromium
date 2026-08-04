@@ -82,10 +82,9 @@ void SpeculationRulesHeader::ParseSpeculationRulesHeader(
   }
 
   for (auto const& parsed_item : parsed_header.value()) {
-    // TODO(crbug.com/542579255): This incorrectly allows single-element inner
-    // lists because it does not check `parsed_item.member_is_inner_list`.
+    // Inner lists are not allowed, only individual strings.
     const std::string* str =
-        parsed_item.member.size() != 1u
+        (parsed_item.member_is_inner_list || parsed_item.member.size() != 1u)
             ? nullptr
             : parsed_item.member.front().item.GetIfString();
 
@@ -95,7 +94,7 @@ void SpeculationRulesHeader::ParseSpeculationRulesHeader(
           "Only strings are valid in Speculation-Rules header value "
           "and inner lists are ignored.";
       const std::string* token_str =
-          parsed_item.member.size() != 1u
+          (parsed_item.member_is_inner_list || parsed_item.member.size() != 1u)
               ? nullptr
               : parsed_item.member.front().item.GetIfToken();
       if (token_str) {
