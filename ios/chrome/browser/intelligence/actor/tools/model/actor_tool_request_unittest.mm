@@ -100,6 +100,16 @@ TEST_F(ActorToolRequestSimpleTest, UnknownAction) {
   EXPECT_FALSE(request.GetTargetWebStateId().valid());
 }
 
+// Tests the behavior of the create tab action.
+TEST_F(ActorToolRequestSimpleTest, CreateTabAction) {
+  optimization_guide::proto::Action action;
+  action.mutable_create_tab();
+  ActorToolRequest request(action);
+
+  EXPECT_EQ(request.GetToolType(), ToolType::kCreateTab);
+  EXPECT_FALSE(request.GetTargetWebStateId().valid());
+}
+
 // Verifies the behavior when an action that requires a tab_id doesn't have it
 // set.
 TEST_F(ActorToolRequestSimpleTest, MissingTabId) {

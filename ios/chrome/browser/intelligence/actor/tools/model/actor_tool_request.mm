@@ -38,6 +38,8 @@ ToolType ActorToolRequest::GetToolType() const {
       return ToolType::kAttemptLogin;
     case optimization_guide::proto::Action::kAttemptFormFilling:
       return ToolType::kAttemptFormFilling;
+    case optimization_guide::proto::Action::kCreateTab:
+      return ToolType::kCreateTab;
     case optimization_guide::proto::Action::kCloseTab:
       return ToolType::kCloseTab;
     default:

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/select_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tab_management_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/wait_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -120,13 +121,16 @@ ActorToolFactory::CreateTool(const ActorToolRequest& request,
     case optimization_guide::proto::Action::kCloseTab:
       return TabManagementTool::CreateCloseTabTool(target_web_state,
                                                    target_web_state_list);
+    case optimization_guide::proto::Action::kCreateTab:
+      return TabManagementTool::CreateTabTool(request.action().create_tab(),
+                                              tool_delegate);
     default:
       return base::unexpected(
           ToolExecutionResult(InternalToolErrorCode::kUnsupportedAction));
   }
   // LINT.ThenChange(
   //   //ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:SupportedCapabilities,
-  //   //ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.mm:InjectTabIdIntoAction,
+  //   //ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.mm:InjectDataIntoAction,
   //   //ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.mm:GetToolType,
   //   //ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.mm:GetTargetWebStateId
   // )
@@ -148,6 +152,7 @@ ActorToolFactory::GetSupportedCapabilities() const {
       optimization_guide::proto::Action::kAttemptLogin,
       optimization_guide::proto::Action::kAttemptFormFilling,
       optimization_guide::proto::Action::kCloseTab,
+      optimization_guide::proto::Action::kCreateTab,
   };
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 

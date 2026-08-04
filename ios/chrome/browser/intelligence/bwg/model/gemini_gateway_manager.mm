@@ -8,6 +8,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
@@ -97,9 +98,14 @@
   }
 
   if (IsGeminiActorEnabled()) {
+    ActorBrowserAgent* actor_browser_agent =
+        ActorBrowserAgent::FromBrowser(browser);
     _actuationHandler = [[GeminiActuationHandler alloc]
         initWithActorService:actor::ActorServiceFactory::GetForProfile(profile)
-                webStateList:webStateList];
+                webStateList:webStateList
+                   browserId:actor_browser_agent
+                                 ? actor_browser_agent->browser_id()
+                                 : SessionID::InvalidValue()];
     _gateway.actuationHandler = _actuationHandler;
   }
 }
