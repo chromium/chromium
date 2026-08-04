@@ -245,7 +245,11 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedDataCollectionConsentHelper(
                   SyncServiceFactory::GetForProfile(profile_))),
+#if BUILDFLAG(IS_ANDROID)
+      tab_matcher_(GetTemplateURLService(), profile_, web_contents_getter_),
+#else
       tab_matcher_(GetTemplateURLService(), profile_),
+#endif
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {

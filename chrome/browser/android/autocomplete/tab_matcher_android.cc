@@ -75,6 +75,16 @@ class AutocompleteClientTabAndroidUserData
 TAB_ANDROID_USER_DATA_KEY_IMPL(AutocompleteClientTabAndroidUserData)
 }  // namespace
 
+TabMatcherAndroid::TabMatcherAndroid(
+    const TemplateURLService* template_url_service,
+    Profile* profile,
+    WebContentsGetter web_contents_getter)
+    : template_url_service_{template_url_service},
+      profile_{profile},
+      web_contents_getter_{std::move(web_contents_getter)} {}
+
+TabMatcherAndroid::~TabMatcherAndroid() = default;
+
 bool TabMatcherAndroid::IsTabOpenWithURL(const GURL& url,
                                          const AutocompleteInput* input) const {
   DCHECK(input);
@@ -187,8 +197,20 @@ std::vector<int64_t> TabMatcherAndroid::GetOpenAndroidTabs(
   }
 
   // Retrieve all Tabs associated with previously built TabModels array.
+  int active_tab_id = TabAndroid::kInvalidTabId;
+  if (web_contents_getter_) {
+    content::WebContents* active_web_contents = web_contents_getter_.Run();
+    if (active_web_contents) {
+      TabAndroid* active_tab = TabAndroid::FromWebContents(active_web_contents);
+      if (active_tab) {
+        active_tab_id = active_tab->GetAndroidId();
+      }
+    }
+  }
+
   return Java_ChromeAutocompleteProviderClient_getAllEligibleTabs(
-      env, j_tab_model_array, input->current_page_classification());
+      env, j_tab_model_array, input->current_page_classification(),
+      active_tab_id);
 }
 
 TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(

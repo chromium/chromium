@@ -72,6 +72,9 @@ class TabAndroid : public tabs::TabInterface,
     virtual void OnInitWebContents(TabAndroid* tab) = 0;
   };
 
+  // Denotes an invalid Tab Id.
+  static constexpr int kInvalidTabId = -1;
+
   // Convenience method to retrieve the Tab associated with the passed
   // WebContents. Can return nullptr.
   static TabAndroid* FromWebContents(content::WebContents* web_contents);
