@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/personal_context/proto/features/at_memory.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -557,6 +558,47 @@ TEST_F(AutofillEntityInstanceTest, SetMetadata) {
       .use_date = base::Time::Now() + base::Days(2)};
   entity.set_metadata(new_metadata);
   EXPECT_EQ(entity.metadata(), new_metadata);
+}
+
+// Tests that GetTypedValue() returns the country code for a country attribute.
+TEST_F(AutofillEntityInstanceTest, GetTypedValue_Country) {
+  AttributeType type(kPassportCountry);
+  AttributeInstance attribute(type);
+  attribute.SetInfo(PASSPORT_ISSUING_COUNTRY, u"United States",
+                    /*app_locale=*/"en_US",
+                    /*format_string=*/std::nullopt,
+                    VerificationStatus::kObserved);
+  personal_context::proto::TypedValue val = attribute.GetTypedValue();
+  EXPECT_TRUE(val.has_country_code());
+  EXPECT_EQ(val.country_code(), "US");
+}
+
+// Tests that GetTypedValue() returns the date proto for a date attribute.
+TEST_F(AutofillEntityInstanceTest, GetTypedValue_Date) {
+  AttributeType type(kFlightReservationDepartureDate);
+  AttributeInstance attribute(type);
+  attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
+                    /*app_locale=*/"en_US",
+                    AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+                    VerificationStatus::kObserved);
+  personal_context::proto::TypedValue val = attribute.GetTypedValue();
+  EXPECT_TRUE(val.has_date());
+  EXPECT_EQ(val.date().year(), 2025);
+  EXPECT_EQ(val.date().month(), 1);
+  EXPECT_EQ(val.date().day(), 1);
+}
+
+// Tests that GetTypedValue() returns an unset TypedValue for a string
+// attribute.
+TEST_F(AutofillEntityInstanceTest, GetTypedValue_Unset) {
+  AttributeType type(kPassportNumber);
+  AttributeInstance attribute(type);
+  attribute.SetInfo(PASSPORT_NUMBER, u"12345", /*app_locale=*/"en_US",
+                    /*format_string=*/std::nullopt,
+                    VerificationStatus::kObserved);
+  personal_context::proto::TypedValue val = attribute.GetTypedValue();
+  EXPECT_EQ(val.value_case(),
+            personal_context::proto::TypedValue::VALUE_NOT_SET);
 }
 
 // Tests that calling `set_metadata` with a different GUID causes a CHECK

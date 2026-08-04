@@ -39,7 +39,8 @@ class AutofillValuableSpecifics;
 
 namespace personal_context::proto {
 class Entity;
-}
+class TypedValue;
+}  // namespace personal_context::proto
 
 namespace autofill {
 
@@ -136,6 +137,15 @@ class AttributeInstance final {
   // See GetInfo() for the meaning of `field_type`.
   VerificationStatus GetVerificationStatus(
       std::optional<FieldType> field_type) const;
+
+  // Returns a TypedValue representation of the attribute if available (e.g.,
+  // country code for CountryInfo or calendar date for DateInfo).
+  // If the attribute has no typed representation or is empty/unset, returns a
+  // default-constructed TypedValue whose oneof value is not set. We return a
+  // TypedValue by value (instead of std::optional<TypedValue>) so that
+  // TypedValue can be forward-declared in this header without including the
+  // protobuf header.
+  personal_context::proto::TypedValue GetTypedValue() const;
 
   // Populates the attribute with a value for a specific `type`, according to a
   // given `app_locale`.

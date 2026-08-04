@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/personal_context/proto/features/at_memory.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
@@ -263,6 +264,29 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
           [&](const StateInfo&) { return VerificationStatus::kNoStatus; },
           [&](const std::u16string&) { return VerificationStatus::kNoStatus; }},
       info_);
+}
+
+personal_context::proto::TypedValue AttributeInstance::GetTypedValue() const {
+  personal_context::proto::TypedValue typed_value;
+  std::visit(
+      absl::Overload{[&typed_value](const CountryInfo& country) {
+                       std::string code = country.GetCountryCode();
+                       if (!code.empty()) {
+                         typed_value.set_country_code(std::move(code));
+                       }
+                     },
+                     [&typed_value](const DateInfo& date) {
+                       personal_context::proto::Date date_proto =
+                           date.GetDateProto();
+                       if (date_proto.year() != 0 || date_proto.month() != 0 ||
+                           date_proto.day() != 0) {
+                         *typed_value.mutable_date() = std::move(date_proto);
+                       }
+                     },
+                     [](const NameInfo&) {}, [](const StateInfo&) {},
+                     [](const std::u16string&) {}},
+      info_);
+  return typed_value;
 }
 
 void AttributeInstance::SetInfo(
