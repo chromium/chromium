@@ -1,5 +1,5 @@
 description: Verify the experimental-test-suite-mapper skill correctly maps past revisions requiring heavyweight resolution.
-owner: aadarshb@
+owner: pasthana@
 prompts:
   - "{{query}}"
 providers:
@@ -15,6 +15,3 @@ tests:
     assert:
       - type: contains
         value: "content_unittests"
-    metadata:
-      pass_k_threshold: 1
-      runs_per_test: 3

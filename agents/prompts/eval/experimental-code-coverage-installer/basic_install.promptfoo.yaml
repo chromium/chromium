@@ -1,5 +1,5 @@
 description: Verify the experimental-code-coverage-installer skill correctly verifies the workspace setup.
-owner: aadarshb@
+owner: pasthana@
 prompts:
   - "{{query}}"
 providers:
@@ -15,6 +15,3 @@ tests:
     assert:
       - type: contains
         value: "successfully verified and initialized"
-    metadata:
-      pass_k_threshold: 1
-      runs_per_test: 3

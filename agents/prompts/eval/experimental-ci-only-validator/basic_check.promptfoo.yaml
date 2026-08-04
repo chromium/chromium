@@ -1,5 +1,5 @@
 description: Verify the experimental-ci-only-validator skill correctly identifies ci_only tests.
-owner: aadarshb@
+owner: pasthana@
 prompts:
   - "{{query}}"
 providers:
@@ -17,6 +17,3 @@ tests:
         value: "android-code-coverage"
       - type: contains
         value: "android-x86-code-coverage"
-    metadata:
-      pass_k_threshold: 1
-      runs_per_test: 3

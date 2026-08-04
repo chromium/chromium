@@ -1,0 +1,54 @@
+description: >-
+  Verify experimental-code-coverage-config-validator skill triggers
+  correctly, validates GN arguments per language, and provides actionable
+  quality reports.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-config-validator
+
+tests:
+  - description: >-
+      Trigger: Implicit intent query to validate C++ builder GN arguments
+    vars:
+      query: >-
+        Check if the linux-rel builder is correctly configured in gn-args
+        for C++ code coverage.
+    assert:
+      - type: icontains
+        value: "linux-rel"
+      - type: contains
+        value: "use_clang_coverage"
+
+  - description: "Functional: Validate C++ builder config on linux-rel"
+    vars:
+      query: "Verify linux-rel is properly configured for C++ coverage."
+    assert:
+      - type: contains
+        value: "use_clang_coverage"
+      - type: contains
+        value: "is_clang"
+
+  - description: "Functional: Validate Java config on android-desktop-x64-rel"
+    vars:
+      query: >-
+        Verify if android-desktop-x64-rel is properly configured for java
+        code coverage.
+    assert:
+      - type: contains
+        value: "use_jacoco_coverage"
+
+  - description: "Quality: Verify ~/.gclient environment reminder for C++ context"
+    vars:
+      query: "Check linux-rel for cpp code coverage configuration."
+    assert:
+      - type: contains
+        value: "checkout_clang_coverage_tools"
+      - type: contains
+        value: "~/.gclient"
