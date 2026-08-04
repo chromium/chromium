@@ -24,6 +24,13 @@ group("resources") {
 
 grit("ios_resources") {
   source = "ios_resources.grd"
+  inputs = [
+    "//ios/chrome/browser/optimization_guide/resources/on_device_llm_internals.html",
+    "//ios/chrome/browser/webui/ui_bundled/tracing/resources/tracing.html",
+    "omaha/omaha.css",
+    "omaha/omaha.html",
+    "omaha/omaha.js",
+  ]
   output_dir = "$root_gen_dir/ios/chrome"
 
   outputs = [

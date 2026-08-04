@@ -6,6 +6,18 @@ import("//tools/grit/grit_rule.gni")
 
 grit("theme") {
   source = "ios_theme_resources.grd"
+  inputs = [
+    "default_100_percent/checkmark.png",
+    "default_100_percent/error.png",
+    "default_100_percent/infobar_send_tab_to_self.png",
+    "default_100_percent/infobar_translate.png",
+    "default_200_percent/checkmark.png",
+    "default_200_percent/error.png",
+    "default_200_percent/infobar_send_tab_to_self.png",
+    "default_200_percent/infobar_translate.png",
+    "default_300_percent/infobar_send_tab_to_self.png",
+    "default_300_percent/infobar_translate.png",
+  ]
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [
     "grit/ios_theme_resources.h",

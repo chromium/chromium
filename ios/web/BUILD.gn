@@ -614,6 +614,14 @@ bundle_data("navigation_resources") {
 grit("resources") {
   source = "ios_web_resources.grd"
 
+  inputs = [
+    "${root_gen_dir}/mojo/public/js/mojo_bindings.js",
+    "${root_gen_dir}/ui/webui/resources/tsc/mojo/url/mojom/url.mojom-webui.js",
+    "${root_gen_dir}/ui/webui/resources/tsc/mojo/url/mojom/origin.mojom-webui.js",
+    "${root_gen_dir}/ui/webui/resources/tsc/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js",
+    "${root_gen_dir}/ui/webui/resources/tsc/mojo/ui/base/mojom/ui_base_types.mojom-webui.js",
+  ]
+
   outputs = [
     "grit/ios_web_resources.h",
     "grit/ios_web_resources_map.cc",

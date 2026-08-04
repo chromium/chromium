@@ -33,7 +33,13 @@ repack("packed_resources") {
 grit("resources") {
   source = "test_resources.grd"
 
-  inputs = [ "${root_gen_dir}/ios/web/test/mojo_test.test-mojom.js" ]
+  inputs = [
+    "${root_gen_dir}/ios/web/test/mojo_test.test-mojom.js",
+    "data/mojo_test.html",
+    "data/mojo_test.js",
+    "data/webui_test_2.html",
+    "data/webui_test.html",
+  ]
   deps = [ ":mojo_bindings_js" ]
   outputs = [
     "grit/test_resources.h",
