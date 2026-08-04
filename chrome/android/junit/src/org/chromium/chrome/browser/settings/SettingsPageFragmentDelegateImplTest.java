@@ -31,7 +31,6 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentHostCallback;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.core.app.ApplicationProvider;
@@ -48,7 +47,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -688,28 +686,15 @@ public class SettingsPageFragmentDelegateImplTest {
         verify(mLifecycleDispatcher).unregister(mDelegate);
     }
 
-    // Sets internal Fragment fields directly via ReflectionHelpers. This is required because
-    // AndroidX Fragment methods such as isAdded(), getHost(), and getChildFragmentManager()
-    // are final and cannot be mocked with Mockito.
-    private void setFragmentAttached(Fragment fragment, FragmentManager childFm) {
-        ReflectionHelpers.setField(fragment, "mAdded", true);
-        ReflectionHelpers.setField(fragment, "mHost", mock(FragmentHostCallback.class));
-        ReflectionHelpers.setField(fragment, "mChildFragmentManager", childFm);
-        when(fragment.getView()).thenReturn(null);
-    }
-
     @Test
     public void testHandleBackPress_multiColumnSettingsBackStack() {
         mDelegate.initSettings(mContainerView, "");
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
-
-        FragmentManager childFm = mock(FragmentManager.class);
-        setFragmentAttached(mMultiColumnSettings, childFm);
-        when(childFm.getBackStackEntryCount()).thenReturn(1);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(1);
 
         assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
-        verify(childFm).popBackStack();
+        verify(mMultiColumnSettings).popBackStack();
     }
 
     @Test
@@ -717,13 +702,10 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "");
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(null);
-
-        FragmentManager childFm = mock(FragmentManager.class);
-        setFragmentAttached(mMockSettingsHostFragment, childFm);
-        when(childFm.getBackStackEntryCount()).thenReturn(1);
+        when(mMockSettingsHostFragment.getBackStackEntryCount()).thenReturn(1);
 
         assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
-        verify(childFm).popBackStack();
+        verify(mMockSettingsHostFragment).popBackStack();
     }
 
     @Test
@@ -731,10 +713,7 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "");
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
-
-        FragmentManager childFm = mock(FragmentManager.class);
-        setFragmentAttached(mMultiColumnSettings, childFm);
-        when(childFm.getBackStackEntryCount()).thenReturn(0);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
 
         assertEquals(BackPressResult.FAILURE, mDelegate.handleBackPress());
     }
@@ -745,14 +724,11 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
 
-        FragmentManager childFm = mock(FragmentManager.class);
-        setFragmentAttached(mMultiColumnSettings, childFm);
-
-        when(childFm.getBackStackEntryCount()).thenReturn(0);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
         mDelegate.onHeaderLayoutUpdated();
         assertFalse(mDelegate.getHandleBackPressChangedSupplier().get());
 
-        when(childFm.getBackStackEntryCount()).thenReturn(1);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(1);
         mDelegate.onHeaderLayoutUpdated();
         assertTrue(mDelegate.getHandleBackPressChangedSupplier().get());
     }

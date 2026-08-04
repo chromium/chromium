@@ -515,20 +515,15 @@ public class SettingsPageFragmentDelegateImpl
         return mBackPressStateSupplier;
     }
 
-    private static boolean isFragmentAttached(@Nullable Fragment fragment) {
-        return fragment != null && fragment.isAdded();
-    }
-
     @Override
     public @BackPressResult int handleBackPress() {
         if (mSearchCoordinator != null && mSearchCoordinator.handleBackAction()) {
             return BackPressResult.SUCCESS;
         }
         MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
-        if (isFragmentAttached(multiColumnSettings)) {
-            assumeNonNull(multiColumnSettings);
-            if (multiColumnSettings.getChildFragmentManager().getBackStackEntryCount() > 0) {
-                multiColumnSettings.getChildFragmentManager().popBackStack();
+        if (multiColumnSettings != null) {
+            if (multiColumnSettings.getBackStackEntryCount() > 0) {
+                multiColumnSettings.popBackStack();
                 return BackPressResult.SUCCESS;
             }
             if (multiColumnSettings.getView() != null) {
@@ -539,10 +534,9 @@ public class SettingsPageFragmentDelegateImpl
                 }
             }
         }
-        if (isFragmentAttached(mSettingsHostFragment)) {
-            assumeNonNull(mSettingsHostFragment);
-            if (mSettingsHostFragment.getChildFragmentManager().getBackStackEntryCount() > 0) {
-                mSettingsHostFragment.getChildFragmentManager().popBackStack();
+        if (mSettingsHostFragment != null && mSettingsHostFragment.isAttachedToActivity()) {
+            if (mSettingsHostFragment.getBackStackEntryCount() > 0) {
+                mSettingsHostFragment.popBackStack();
                 return BackPressResult.SUCCESS;
             }
         }
@@ -552,9 +546,8 @@ public class SettingsPageFragmentDelegateImpl
     private void updateBackPressState() {
         boolean canHandle = false;
         MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
-        if (isFragmentAttached(multiColumnSettings)) {
-            assumeNonNull(multiColumnSettings);
-            if (multiColumnSettings.getChildFragmentManager().getBackStackEntryCount() > 0) {
+        if (multiColumnSettings != null) {
+            if (multiColumnSettings.getBackStackEntryCount() > 0) {
                 canHandle = true;
             } else if (multiColumnSettings.getView() != null) {
                 var slidingPane = multiColumnSettings.getSlidingPaneLayout();
@@ -562,10 +555,8 @@ public class SettingsPageFragmentDelegateImpl
                     canHandle = true;
                 }
             }
-        } else if (isFragmentAttached(mSettingsHostFragment)) {
-            assumeNonNull(mSettingsHostFragment);
-            canHandle =
-                    mSettingsHostFragment.getChildFragmentManager().getBackStackEntryCount() > 0;
+        } else if (mSettingsHostFragment != null && mSettingsHostFragment.isAttachedToActivity()) {
+            canHandle = mSettingsHostFragment.getBackStackEntryCount() > 0;
         }
         mBackPressStateSupplier.set(canHandle);
     }

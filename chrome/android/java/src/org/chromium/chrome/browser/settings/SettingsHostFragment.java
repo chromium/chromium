@@ -407,4 +407,15 @@ public class SettingsHostFragment extends Fragment
             multiColumnSettings.getChildFragmentManager().executePendingTransactions();
         }
     }
+
+    /** Returns the number of entries in the child fragment manager back stack. */
+    public int getBackStackEntryCount() {
+        return isAdded() ? getChildFragmentManager().getBackStackEntryCount() : 0;
+    }
+
+    /** Pops the top entry from the child fragment manager back stack. */
+    public void popBackStack() {
+        assert isAdded();
+        getChildFragmentManager().popBackStack();
+    }
 }
