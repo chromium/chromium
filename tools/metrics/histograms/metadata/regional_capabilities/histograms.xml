@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Reported) -->
 
 <histogram name="RegionalCapabilities.FunnelStage.Reported{Profile}"
-    enum="RegionalCapabilitiesFunnelStage" expires_after="2026-11-29">
+    enum="RegionalCapabilitiesFunnelStage" expires_after="2027-01-31">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>

@@ -1377,7 +1377,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SearchEngines.Interactions"
-    enum="SettingsSearchEnginesInteractions" expires_after="2026-11-29">
+    enum="SettingsSearchEnginesInteractions" expires_after="2027-01-31">
   <owner>yoangela@chromium.org</owner>
   <owner>amelies@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
