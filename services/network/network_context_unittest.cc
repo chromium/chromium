@@ -2623,6 +2623,15 @@ TEST_F(NetworkContextTest, MultipleClearHttpCacheCalls) {
 }
 
 TEST_F(NetworkContextTest, DestroyWithPendingHttpCacheDataRemovers) {
+  // Force Simple Cache to avoid memory leaks reported on Fuchsia and Windows
+  // ASan bots. The legacy Blockfile backend intentionally drops in-flight tasks
+  // during non-test teardown via DropPendingIO(), which AddressSanitizer flags
+  // as leaks. Using Simple Cache tests NetworkContext teardown without legacy
+  // blockfile interference.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+
   mojom::NetworkContextParamsPtr context_params =
       CreateNetworkContextParamsForTesting();
   context_params->file_paths = mojom::NetworkContextFilePaths::New();
@@ -2646,7 +2655,7 @@ TEST_F(NetworkContextTest, DestroyWithPendingHttpCacheDataRemovers) {
 
   // Run pending tasks to ensure clean teardown without dangling pointers or
   // races.
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(callback_called);
 }
