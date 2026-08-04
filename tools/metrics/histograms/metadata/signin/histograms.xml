@@ -663,6 +663,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountPreview.TriggerCauseWithAllCachesAvailable"
+    enum="AccountPreviewFetchTriggerCause" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the initial trigger cause of a fetch cycle that did not result in
+    any actual network fetches because the data for all accounts was already
+    fully cached.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountPreview.{State}FetchTriggerCause"
     enum="AccountPreviewFetchTriggerCause" expires_after="2027-06-01">
   <owner>rsult@google.com</owner>
