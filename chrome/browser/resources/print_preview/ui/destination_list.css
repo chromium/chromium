@@ -42,13 +42,14 @@
 
 .list-item {
   transition: background-color 150ms;
+  border-radius: 8px;
 }
 
-.list-item:hover,
-.list-item:focus {
+.list-item:hover {
   background-color: var(--cr-hover-background-color);
 }
 
 .list-item:focus {
-  outline: none;
+  outline: solid 2px var(--cr-focus-outline-color);
+  outline-offset: -2px;
 }
