@@ -10,7 +10,7 @@ config("gcapi_config") {
   # gcapi can be bundled with installers of other software, which might run on
   # older macOS versions than chrome itself. To not making a dependency on gcapi
   # a problem for these installers, make it target a very old version of macOS.
-  min_version = "10.13"
+  min_version = "11.0"
   cflags = [
     "-isysroot",
     rebase_path(sysroot, root_build_dir),

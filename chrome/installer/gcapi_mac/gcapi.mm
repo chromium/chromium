@@ -500,6 +500,22 @@ int LaunchGoogleChrome() {
 
     // NSWorkspace launches processes as the current console owner,
     // even when running with euid of 0.
-    return [NSWorkspace.sharedWorkspace launchApplication:app_path];
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    if (!semaphore) {
+      return 0;
+    }
+
+    __block bool success = false;
+
+    [NSWorkspace.sharedWorkspace
+        openApplicationAtURL:[NSURL fileURLWithPath:app_path]
+               configuration:[NSWorkspaceOpenConfiguration configuration]
+           completionHandler:^(NSRunningApplication* app, NSError* error) {
+             success = (error == nil);
+             dispatch_semaphore_signal(semaphore);
+           }];
+
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    return success ? 1 : 0;
   }
 }
