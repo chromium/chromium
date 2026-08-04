@@ -33,6 +33,9 @@ constexpr base::FilePath::CharType kContextHubDatabaseFileName[] =
 // static
 context_hub::ContextHubService* ContextHubServiceFactory::GetForProfile(
     Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
   return static_cast<context_hub::ContextHubService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

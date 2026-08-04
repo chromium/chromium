@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
@@ -86,23 +87,38 @@ class BrowserTabProvider : public ContextHubPageHandler::TabProvider {
 #endif
 
 ContextHubPageHandler::ContextHubPageHandler(
+    mojo::PendingRemote<browser::context_hub::mojom::Page> page,
     mojo::PendingReceiver<browser::context_hub::mojom::PageHandler> receiver,
     Profile* profile,
     content::WebContents* web_contents,
     std::unique_ptr<TabProvider> tab_provider)
-    : receiver_(this, std::move(receiver)),
+    : page_(std::move(page)),
+      receiver_(this, std::move(receiver)),
       tab_provider_(std::move(tab_provider)),
       profile_(profile),
       web_contents_(web_contents) {
+  CHECK(page_.is_bound());
   if (!tab_provider_) {
 #if !BUILDFLAG(IS_ANDROID)
     tab_provider_ = std::make_unique<BrowserTabProvider>();
 #endif
   }
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service_observation_.Observe(service);
+  }
 }
 
 ContextHubPageHandler::~ContextHubPageHandler() = default;
 
+void ContextHubPageHandler::OnAutoTodosChanged(
+    base::span<const context_hub::AutoTodoEntry> entries) {
+  page_->OnAutoTodosChanged(std::vector(std::from_range, entries));
+}
+
+// TODO(crbug.com/540562062): Update this to GenerateFirstPartyAutoTodos and
+// allow the cache change notification to return the updated Todos.
 void ContextHubPageHandler::GenerateAutoTodos(
     GenerateAutoTodosCallback callback) {
   context_hub::ContextHubService* service =
@@ -113,6 +129,45 @@ void ContextHubPageHandler::GenerateAutoTodos(
   }
 
   service->GenerateFirstPartyAutoTodos(std::move(callback));
+}
+
+void ContextHubPageHandler::GetAutoTodos(GetAutoTodosCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run({}, {});
+    return;
+  }
+
+  service->GetAutoTodos(base::BindOnce(
+      [](GetAutoTodosCallback callback,
+         std::vector<context_hub::AutoTodoEntry> entries) {
+        std::vector<context_hub::AutoTodoEntry> first_party_todos;
+        std::vector<context_hub::AutoTodoEntry> third_party_todos;
+        for (auto& entry : entries) {
+          if (entry.is_first_party()) {
+            first_party_todos.push_back(std::move(entry));
+          } else if (entry.is_third_party()) {
+            third_party_todos.push_back(std::move(entry));
+          }
+        }
+        std::move(callback).Run(std::move(first_party_todos),
+                                std::move(third_party_todos));
+      },
+      std::move(callback)));
+}
+
+void ContextHubPageHandler::UpdateAutoTodo(
+    const context_hub::AutoTodoEntry& todo,
+    UpdateAutoTodoCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  service->UpdateAutoTodo(todo, std::move(callback));
 }
 
 void ContextHubPageHandler::SetTodoFeedback(

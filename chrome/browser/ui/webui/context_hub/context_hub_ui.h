@@ -9,6 +9,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -38,6 +39,7 @@ class ContextHubUI : public ui::MojoWebUIController,
  private:
   // browser::context_hub::mojom::PageHandlerFactory:
   void CreatePageHandler(
+      mojo::PendingRemote<browser::context_hub::mojom::Page> page,
       mojo::PendingReceiver<browser::context_hub::mojom::PageHandler> handler)
       override;
 

@@ -60,9 +60,10 @@ void ContextHubUI::BindInterface(
 }
 
 void ContextHubUI::CreatePageHandler(
+    mojo::PendingRemote<browser::context_hub::mojom::Page> page,
     mojo::PendingReceiver<browser::context_hub::mojom::PageHandler> handler) {
   page_handler_ = std::make_unique<ContextHubPageHandler>(
-      std::move(handler), Profile::FromWebUI(web_ui()),
+      std::move(page), std::move(handler), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents());
 }
 

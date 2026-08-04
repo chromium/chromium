@@ -67,7 +67,6 @@ source_set("context_hub_page_handler") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
-    "//components/personal_context/proto:personal_context_proto",
     "//components/sessions",
   ]
 

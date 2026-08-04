@@ -117,11 +117,21 @@ struct AutoTodoItemFeedback {
   bool liked;
 };
 
+// Interface for the browser process to push updates to the WebUI page.
+// Implemented in the renderer process (the Context Hub WebUI).
+interface Page {
+  // Notifies the WebUI when the list of Auto Todos in the cache changes.
+  [RuntimeFeature=kAutoTodos]
+  OnAutoTodosChanged(array<AutoTodoItem> todos);
+};
+
 // Factory used by the WebUI page (caller) to create a PageHandler in the
 // browser process (callee) for the Context Hub page.
 interface PageHandlerFactory {
-  // Creates a PageHandler instance and binds it to the given receiver.
-  CreatePageHandler(pending_receiver<PageHandler> handler);
+  // Creates a PageHandler instance and binds it to the given receiver and page
+  // remote.
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
 };
 
 // Provides access to context hub features.
@@ -129,8 +139,21 @@ interface PageHandlerFactory {
 // process (callee).
 interface PageHandler {
   // Generates and returns a list of Auto Todos. Gated by kAutoTodos flag.
+  // TODO(crbug.com/540562062): Update this to GenerateFirstPartyAutoTodos and
+  // allow the cache change notification to return the updated Todos.
   [RuntimeFeature=kAutoTodos]
   GenerateAutoTodos() => (array<AutoTodoItem>? todos);
+
+  // Returns stored Auto Todos from the cache, differentiated by whether they
+  // are first party or third party.
+  [RuntimeFeature=kAutoTodos]
+  GetAutoTodos() => (array<AutoTodoItem> first_party_todos,
+                     array<AutoTodoItem> third_party_todos);
+
+  // Updates an existing Auto Todo item in the cache, returns true if
+  // successful.
+  [RuntimeFeature=kAutoTodos]
+  UpdateAutoTodo(AutoTodoItem todo) => (bool success);
 
   // Stores or updates feedback on an Auto Todo item in the cache.
   [RuntimeFeature=kAutoTodos]

@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CONTEXT_HUB_CONTEXT_HUB_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CONTEXT_HUB_CONTEXT_HUB_PAGE_HANDLER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -17,7 +22,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
+class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
+                              public context_hub::ContextHubService::Observer {
  public:
   class TabProvider {
    public:
@@ -29,6 +35,7 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
   };
 
   ContextHubPageHandler(
+      mojo::PendingRemote<browser::context_hub::mojom::Page> page,
       mojo::PendingReceiver<browser::context_hub::mojom::PageHandler> receiver,
       Profile* profile,
       content::WebContents* web_contents,
@@ -38,8 +45,15 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
   ContextHubPageHandler(const ContextHubPageHandler&) = delete;
   ContextHubPageHandler& operator=(const ContextHubPageHandler&) = delete;
 
+  // context_hub::ContextHubService::Observer:
+  void OnAutoTodosChanged(
+      base::span<const context_hub::AutoTodoEntry> entries) override;
+
   // browser::context_hub::mojom::PageHandler:
   void GenerateAutoTodos(GenerateAutoTodosCallback callback) override;
+  void GetAutoTodos(GetAutoTodosCallback callback) override;
+  void UpdateAutoTodo(const context_hub::AutoTodoEntry& todo,
+                      UpdateAutoTodoCallback callback) override;
   void SetTodoFeedback(
       browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback,
       SetTodoFeedbackCallback callback) override;
@@ -66,7 +80,11 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
                             AskGeminiWithContextCallback callback) override;
 
  private:
+  mojo::Remote<browser::context_hub::mojom::Page> page_;
   mojo::Receiver<browser::context_hub::mojom::PageHandler> receiver_;
+  base::ScopedObservation<context_hub::ContextHubService,
+                          context_hub::ContextHubService::Observer>
+      service_observation_{this};
   std::unique_ptr<TabProvider> tab_provider_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
