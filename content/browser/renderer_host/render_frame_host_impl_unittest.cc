@@ -423,11 +423,15 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   EXPECT_EQ(main_rfh->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kDefault);
 
+  base::UnguessableToken initiator_state_token =
+      base::UnguessableToken::Create();
   static_cast<blink::mojom::PolicyContainerHost*>(
       main_rfh->policy_container_host())
-      ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways);
+      ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways,
+                          initiator_state_token);
   EXPECT_EQ(main_rfh->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kAlways);
+  EXPECT_EQ(main_rfh->current_initiator_state_token(), initiator_state_token);
 
   // Create a child frame and check that it inherits the PolicyContainerHost
   // from the parent frame.
@@ -439,11 +443,18 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   EXPECT_EQ(child_frame->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kAlways);
 
+  // The child frame's `initiator_state_token` should be different.
+  EXPECT_NE(child_frame->current_initiator_state_token(),
+            initiator_state_token);
+
   // Create a new WebContents with opener and test that the new main frame
   // inherits the PolicyContainerHost from the opener.
+  base::UnguessableToken child_initiator_state_token =
+      base::UnguessableToken::Create();
   static_cast<blink::mojom::PolicyContainerHost*>(
       child_frame->policy_container_host())
-      ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
+      ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever,
+                          child_initiator_state_token);
   WebContents::CreateParams params(browser_context());
   std::unique_ptr<WebContentsImpl> new_contents(
       WebContentsImpl::CreateWithOpener(params, child_frame));
@@ -453,6 +464,11 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   ASSERT_NE(new_frame->policy_container_host(), nullptr);
   EXPECT_EQ(new_frame->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kNever);
+
+  // The new frame's `initiator_state_token` should be different.
+  EXPECT_NE(new_frame->current_initiator_state_token(), initiator_state_token);
+  EXPECT_NE(new_frame->current_initiator_state_token(),
+            child_initiator_state_token);
 }
 
 TEST_F(RenderFrameHostImplTest, FaviconURLsSet) {

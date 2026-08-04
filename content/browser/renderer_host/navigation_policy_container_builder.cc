@@ -54,7 +54,13 @@ NavigationPolicyContainerBuilder::NavigationPolicyContainerBuilder(
     : parent_policies_(GetParentPolicies(parent)),
       history_policies_(GetHistoryPolicies(history_entry)) {}
 
-NavigationPolicyContainerBuilder::~NavigationPolicyContainerBuilder() = default;
+NavigationPolicyContainerBuilder::~NavigationPolicyContainerBuilder() {
+  // The `host_` will have set the NavigationRequest as client, so ensure that
+  // it is reset here before destroying it.
+  if (host_) {
+    host_->SetClient(nullptr);
+  }
+}
 
 const PolicyContainerPolicies*
 NavigationPolicyContainerBuilder::ParentPolicies() const {

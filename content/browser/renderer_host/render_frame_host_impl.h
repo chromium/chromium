@@ -4336,6 +4336,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // PolicyContainerHost::Client:
   void DidChangeReferrerPolicy(
       network::mojom::ReferrerPolicy referrer_policy) final;
+  void DidUpdateInitiatorStateToken(
+      const base::UnguessableToken& new_initiator_state_token) final;
 
   // Initializes |local_network_access_request_policy_|. Constructor helper.
   void InitializeLocalNetworkAccessRequestPolicy();

@@ -192,6 +192,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void AddInspectorIssue(AuditsIssue) final;
   EventTarget* ErrorEventTarget() final { return this; }
   KURL OutgoingReferrerUrl() const final;
+  void SetInitiatorStateToken(
+      const base::UnguessableToken& initiator_state_token) final;
   CoreProbeSink* GetProbeSink() final;
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
   FrameOrWorkerScheduler* GetScheduler() final;
@@ -523,10 +525,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   //   associated with the token.
   const base::UnguessableToken& GetInitiatorStateToken() const {
     return initiator_state_token_;
-  }
-  void SetInitiatorStateToken(
-      const base::UnguessableToken& initiator_state_token) {
-    initiator_state_token_ = initiator_state_token;
   }
 
   void DidReceiveUserActivation();

@@ -642,12 +642,14 @@ TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
         NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_frame);
     static_cast<blink::mojom::PolicyContainerHost*>(
         child_frame->policy_container_host())
-        ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways);
+        ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways,
+                            base::UnguessableToken::Create());
     navigation->SetInitiatorFrame(child_frame);
     navigation->Start();
     static_cast<blink::mojom::PolicyContainerHost*>(
         child_frame->policy_container_host())
-        ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
+        ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever,
+                            base::UnguessableToken::Create());
     navigation->Commit();
     EXPECT_EQ(
         test.expect_inherit ? network::mojom::ReferrerPolicy::kAlways

@@ -91,7 +91,14 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
             network::mojom::blink::ContentSecurityPolicySource::kMeta,
             *(window->GetSecurityOrigin()));
     window->GetContentSecurityPolicy()->AddPolicies(mojo::Clone(parsed));
-    window->GetPolicyContainer()->AddContentSecurityPolicies(std::move(parsed));
+
+    // Generate a new initiator state token to pass to the browser process and
+    // to update `window`.
+    base::UnguessableToken new_initiator_state_token =
+        base::UnguessableToken::Create();
+    window->GetPolicyContainer()->AddContentSecurityPolicies(
+        std::move(parsed), new_initiator_state_token);
+    window->SetInitiatorStateToken(new_initiator_state_token);
   } else if (EqualIgnoringAsciiCase(equiv,
                                     "content-security-policy-report-only")) {
     window->GetContentSecurityPolicy()->ReportReportOnlyInMeta(content);

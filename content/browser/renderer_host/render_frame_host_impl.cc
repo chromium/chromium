@@ -4441,6 +4441,14 @@ void RenderFrameHostImpl::DidChangeReferrerPolicy(
   owner_->DidChangeReferrerPolicy(referrer_policy);
 }
 
+void RenderFrameHostImpl::DidUpdateInitiatorStateToken(
+    const base::UnguessableToken& new_initiator_state_token) {
+  // TODO(crbug.com/510258191): We should create a new InitiatorNavigationState
+  // and associate it with the updated token, while validating that the updated
+  // token is valid and is not already in use.
+  current_initiator_state_token_ = new_initiator_state_token;
+}
+
 void RenderFrameHostImpl::InitializeLocalNetworkAccessRequestPolicy() {
   if (!policy_container_host_) {
     // Only speculative RFHs may lack a policy container.

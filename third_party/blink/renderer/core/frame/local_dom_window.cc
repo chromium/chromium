@@ -606,6 +606,11 @@ KURL LocalDOMWindow::OutgoingReferrerUrl() const {
   return referrer_document->OutgoingReferrerUrl();
 }
 
+void LocalDOMWindow::SetInitiatorStateToken(
+    const base::UnguessableToken& initiator_state_token) {
+  initiator_state_token_ = initiator_state_token;
+}
+
 CoreProbeSink* LocalDOMWindow::GetProbeSink() {
   return probe::ToCoreProbeSink(GetFrame());
 }

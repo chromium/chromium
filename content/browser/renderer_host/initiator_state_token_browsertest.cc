@@ -183,6 +183,45 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, FailedNavigation) {
   EXPECT_EQ(unique_tokens.size(), seen_tokens.size());
 }
 
+IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, UpdateReferrerPolicy) {
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
+  const base::UnguessableToken initial_token =
+      GetBrowserSideToken(web_contents());
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "let meta = document.createElement('meta');"
+                     "meta.name = 'referrer';"
+                     "meta.content = 'no-referrer';"
+                     "document.head.appendChild(meta);"));
+
+  EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
+  const base::UnguessableToken updated_token =
+      GetBrowserSideToken(web_contents());
+  EXPECT_NE(initial_token, updated_token);
+}
+
+IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest,
+                       UpdateContentSecurityPolicy) {
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
+  const base::UnguessableToken initial_token =
+      GetBrowserSideToken(web_contents());
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "let meta = document.createElement('meta');"
+                     "meta.httpEquiv = 'content-security-policy';"
+                     "meta.content = \"script-src 'self'\";"
+                     "document.head.appendChild(meta);"));
+
+  EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
+  const base::UnguessableToken updated_token =
+      GetBrowserSideToken(web_contents());
+  EXPECT_NE(initial_token, updated_token);
+}
+
 }  // namespace
 
 }  // namespace content

@@ -4022,8 +4022,9 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
     Vector<network::mojom::blink::ContentSecurityPolicyPtr>
         parsed_embedder_policies = ParseContentSecurityPolicies(
             header.header_value, header.type, header.source, Url());
+    initiator_state_token_ = base::UnguessableToken::Create();
     policy_container_->AddContentSecurityPolicies(
-        mojo::Clone(parsed_embedder_policies));
+        mojo::Clone(parsed_embedder_policies), initiator_state_token_);
     csp->AddPolicies(std::move(parsed_embedder_policies));
   }
 

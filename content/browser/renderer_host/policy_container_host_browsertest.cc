@@ -201,9 +201,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, CopiedFromParent) {
   // could occur if the renderer was compromised.
   // This will enable the following test, which verifies that the copied policy
   // comes from the browser.
-  static_cast<blink::mojom::PolicyContainerHost*>(
-      current_frame_host()->policy_container_host())
-      ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kSameOrigin);
+  current_frame_host()->policy_container_host()->SetReferrerPolicyForTesting(
+      network::mojom::ReferrerPolicy::kSameOrigin);
   // Repeat the previous test with the tainted policy container:
   {
     // Add an iframe and verify its Policy Container value.

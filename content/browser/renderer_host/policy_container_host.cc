@@ -266,10 +266,11 @@ PolicyContainerHost::~PolicyContainerHost() = default;
 void PolicyContainerHost::AddContentSecurityPoliciesForTesting(
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies) {
-  AddContentSecurityPolicies(std::move(content_security_policies));
+  AddContentSecurityPolicies(std::move(content_security_policies),
+                             base::UnguessableToken::Create());
 }
 
-void PolicyContainerHost::SetReferrerPolicy(
+void PolicyContainerHost::SetReferrerPolicyForTesting(
     network::mojom::ReferrerPolicy referrer_policy) {
   policies_.referrer_policy = referrer_policy;
   if (client_) {
@@ -277,10 +278,24 @@ void PolicyContainerHost::SetReferrerPolicy(
   }
 }
 
+void PolicyContainerHost::SetReferrerPolicy(
+    network::mojom::ReferrerPolicy referrer_policy,
+    const base::UnguessableToken& new_initiator_state_token) {
+  policies_.referrer_policy = referrer_policy;
+  if (client_) {
+    client_->DidChangeReferrerPolicy(referrer_policy);
+    client_->DidUpdateInitiatorStateToken(new_initiator_state_token);
+  }
+}
+
 void PolicyContainerHost::AddContentSecurityPolicies(
     std::vector<network::mojom::ContentSecurityPolicyPtr>
-        content_security_policies) {
+        content_security_policies,
+    const base::UnguessableToken& new_initiator_state_token) {
   policies_.AddContentSecurityPolicies(std::move(content_security_policies));
+  if (client_) {
+    client_->DidUpdateInitiatorStateToken(new_initiator_state_token);
+  }
 }
 
 blink::mojom::PolicyContainerPtr

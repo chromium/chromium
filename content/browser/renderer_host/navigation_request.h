@@ -139,7 +139,8 @@ class CONTENT_EXPORT NavigationRequest
       private RenderProcessHostObserver,
       private network::mojom::TrustTokenAccessObserver,
       private network::mojom::SharedDictionaryAccessObserver,
-      public network::mojom::DeviceBoundSessionAccessObserver {
+      public network::mojom::DeviceBoundSessionAccessObserver,
+      public PolicyContainerHost::Client {
  public:
   // Keeps track of the various stages of a NavigationRequest.
   // To see what state transitions are allowed, see |SetState|.
@@ -2531,6 +2532,12 @@ class CONTENT_EXPORT NavigationRequest
   // commit an error document happens after receiving the regular document's
   // response.
   void ComputePoliciesToCommitForError();
+
+  // PolicyContainerHost::Client:
+  void DidChangeReferrerPolicy(
+      network::mojom::ReferrerPolicy referrer_policy) final {}
+  void DidUpdateInitiatorStateToken(
+      const base::UnguessableToken& new_initiator_state_token) final;
 
   // CHECK that transitioning from the current state to |state| valid. This
   // does nothing in non-debug builds.
