@@ -255,12 +255,9 @@ public class MediaSessionHelper implements MediaImageCallback {
         if (mHideNotificationDelayedTask != null) return;
 
         mHideNotificationDelayedTask =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mHideNotificationDelayedTask = null;
-                        hideNotificationInternal();
-                    }
+                () -> {
+                    mHideNotificationDelayedTask = null;
+                    hideNotificationInternal();
                 };
         mHandler.postDelayed(mHideNotificationDelayedTask, HIDE_NOTIFICATION_DELAY_MILLIS);
 

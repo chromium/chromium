@@ -8,7 +8,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
@@ -113,17 +112,14 @@ public class FocusAnimator {
             // Translate the child to its new place while changing where its bottom is drawn to
             // animate the child changing height without causing another layout.
             childAnimator.addUpdateListener(
-                    new AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            float progress = (Float) animation.getAnimatedValue();
-                            child.setTranslationY(translationDifference * (1f - progress));
+                    animation -> {
+                        float progress = (Float) animation.getAnimatedValue();
+                        child.setTranslationY(translationDifference * (1f - progress));
 
-                            if (oldHeight != newHeight) {
-                                float animatedHeight =
-                                        oldHeight * (1f - progress) + newHeight * progress;
-                                child.setBottom(child.getTop() + (int) animatedHeight);
-                            }
+                        if (oldHeight != newHeight) {
+                            float animatedHeight =
+                                    oldHeight * (1f - progress) + newHeight * progress;
+                            child.setBottom(child.getTop() + (int) animatedHeight);
                         }
                     });
 
@@ -143,12 +139,9 @@ public class FocusAnimator {
         int newContainerHeight = finalChildTops.get(finalChildTops.size() - 1);
         ValueAnimator layoutAnimator = ValueAnimator.ofInt(oldContainerHeight, newContainerHeight);
         layoutAnimator.addUpdateListener(
-                new AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        mLayout.setBottom(((Integer) animation.getAnimatedValue()));
-                        requestChildFocus();
-                    }
+                animation -> {
+                    mLayout.setBottom(((Integer) animation.getAnimatedValue()));
+                    requestChildFocus();
                 });
         animators.add(layoutAnimator);
 

@@ -219,13 +219,10 @@ public class MediaNotificationController {
             // `mThrottleTask` takes care of clearing itself and `mLastPendingInfo` controls when to
             // exit the throttled state.
             mThrottleTask =
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mThrottleTask = null;
-                            if (mLastPendingInfo != null) {
-                                showNotificationImmediately(mLastPendingInfo);
-                            }
+                    () -> {
+                        mThrottleTask = null;
+                        if (mLastPendingInfo != null) {
+                            showNotificationImmediately(mLastPendingInfo);
                         }
                     };
 
@@ -297,13 +294,7 @@ public class MediaNotificationController {
          */
         @VisibleForTesting
         public void postDelayedTask() {
-            mSwipeInitTask =
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            createPendingIntentActionSwipeIfNeeded();
-                        }
-                    };
+            mSwipeInitTask = () -> createPendingIntentActionSwipeIfNeeded();
             mHandler.postDelayed(mSwipeInitTask, MAX_INIT_WAIT_TIME_MILLIS);
         }
 

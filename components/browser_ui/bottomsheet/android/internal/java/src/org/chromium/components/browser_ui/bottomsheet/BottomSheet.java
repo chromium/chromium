@@ -532,28 +532,15 @@ class BottomSheet extends FrameLayout
 
         // Listen to height changes on the toolbar.
         mToolbarHolder.addOnLayoutChangeListener(
-                new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(
-                            View v,
-                            int left,
-                            int top,
-                            int right,
-                            int bottom,
-                            int oldLeft,
-                            int oldTop,
-                            int oldRight,
-                            int oldBottom) {
-                        // Make sure the size of the layout actually changed.
-                        if (bottom - top == oldBottom - oldTop
-                                && right - left == oldRight - oldLeft) {
-                            return;
-                        }
-
-                        if (!mGestureDetector.isScrolling() && isRunningSettleAnimation()) return;
-
-                        setSheetState(mCurrentState, false);
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    // Make sure the size of the layout actually changed.
+                    if (bottom - top == oldBottom - oldTop && right - left == oldRight - oldLeft) {
+                        return;
                     }
+
+                    if (!mGestureDetector.isScrolling() && isRunningSettleAnimation()) return;
+
+                    setSheetState(mCurrentState, false);
                 });
 
         mSheetContainer.removeView(this);
@@ -848,14 +835,11 @@ class BottomSheet extends FrameLayout
                 });
 
         mSettleAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animator) {
-                        // Cancelled animation on M seem to continue updating, block them.
-                        if (animator != mSettleAnimator) return;
+                animator -> {
+                    // Cancelled animation on M seem to continue updating, block them.
+                    if (animator != mSettleAnimator) return;
 
-                        setSheetOffsetFromBottom((Float) animator.getAnimatedValue(), reason);
-                    }
+                    setSheetOffsetFromBottom((Float) animator.getAnimatedValue(), reason);
                 });
 
         setInternalCurrentState(SheetState.SCROLLING, reason);

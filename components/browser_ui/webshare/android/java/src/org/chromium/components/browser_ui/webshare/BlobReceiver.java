@@ -135,9 +135,7 @@ public class BlobReceiver implements BlobReaderClient {
         watcher.start(
                 consumerHandle,
                 Core.HandleSignals.READABLE,
-                new Watcher.Callback() {
-                    @Override
-                    public void onResult(int result) {
+                result ->
                         mTaskRunner.execute(
                                 () -> {
                                     if (mIsClosed) {
@@ -148,9 +146,7 @@ public class BlobReceiver implements BlobReaderClient {
                                     } else {
                                         reportError(result, "Watcher reported error.");
                                     }
-                                });
-                    }
-                });
+                                }));
     }
 
     // BlobReaderClient

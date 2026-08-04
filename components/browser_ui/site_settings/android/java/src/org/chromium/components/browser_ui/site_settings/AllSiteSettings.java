@@ -10,7 +10,6 @@ import static org.chromium.components.browser_ui.settings.SearchUtils.handleSear
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultTextColorLink;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -339,12 +338,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         builder.setView(dialogView);
         builder.setPositiveButton(
                 R.string.storage_delete_dialog_clear_storage_option,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        clearStorage();
-                    }
-                });
+                (dialog, id) -> clearStorage());
         builder.setNegativeButton(R.string.cancel, null);
         builder.setTitle(R.string.storage_delete_site_storage_title);
         builder.create().show();

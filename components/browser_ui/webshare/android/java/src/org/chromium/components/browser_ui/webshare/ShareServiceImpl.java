@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.ComponentName;
 import android.net.Uri;
 
-import org.chromium.base.Callback;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
@@ -262,14 +261,11 @@ public class ShareServiceImpl implements ShareService {
                 mCollator =
                         new SharedFileCollator(
                                 files.length,
-                                new Callback<Boolean>() {
-                                    @Override
-                                    public void onResult(Boolean success) {
-                                        if (success) {
-                                            mDelegate.share(paramsBuilder.build());
-                                        } else {
-                                            callback.call(ShareError.INTERNAL_ERROR);
-                                        }
+                                success -> {
+                                    if (success) {
+                                        mDelegate.share(paramsBuilder.build());
+                                    } else {
+                                        callback.call(ShareError.INTERNAL_ERROR);
                                     }
                                 });
                 return true;

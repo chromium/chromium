@@ -92,12 +92,9 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             };
 
     private final OnDismissListener mDismissListener =
-            new OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    sBubbles.remove(TextBubble.this);
-                    sCountSupplier.set(sBubbles.size());
-                }
+            () -> {
+                sBubbles.remove(this);
+                sCountSupplier.set(sBubbles.size());
             };
 
     /**
