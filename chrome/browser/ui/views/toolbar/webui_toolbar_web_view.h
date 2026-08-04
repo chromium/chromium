@@ -195,8 +195,11 @@ class WebUIToolbarWebView
                          ui::mojom::MenuSourceType source) override;
   void ShowContentSettingsBubble(
       ::toolbar_ui_api::mojom::ContentSettingImageType type,
+      bool is_pointer_interaction,
       toolbar_ui_api::mojom::ToolbarUIService::ShowContentSettingsBubbleCallback
           callback) override;
+  void OnContentSettingImagePointerDown(
+      ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
   void OnPageActionClick(
       ::toolbar_ui_api::mojom::PageActionId action_id,
       ::toolbar_ui_api::mojom::PageActionTrigger trigger,

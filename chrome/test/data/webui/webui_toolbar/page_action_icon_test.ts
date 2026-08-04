@@ -28,6 +28,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
     return new Promise<never>(() => {});
   }
   onPageInitialized() {}
+  onContentSettingImagePointerDown() {}
   showContentSettingsBubble() {
     return new Promise<never>(() => {});
   }

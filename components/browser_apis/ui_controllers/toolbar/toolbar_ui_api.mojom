@@ -66,8 +66,16 @@ interface ToolbarUIService {
   // Called when the page finishes initialization.
   OnPageInitialized();
 
+  // Called when a content setting image chip is pressed.
+  OnContentSettingImagePointerDown(ContentSettingImageType type);
+
   // Displays the bubble, anchored to the URL bar, that corresponds to `type`.
-  ShowContentSettingsBubble(ContentSettingImageType type)
+  // `is_pointer_interaction` is true if the bubble was opened via a pointer
+  // interaction (mouse, touch, etc.) rather than a keyboard interaction. This
+  // is necessary because the backend uses this context to decide whether to run
+  // pointer-specific rapid-reopen suppression shielding.
+  ShowContentSettingsBubble(ContentSettingImageType type,
+                            bool is_pointer_interaction)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Called after an interaction with the icon, with `trigger` specifying

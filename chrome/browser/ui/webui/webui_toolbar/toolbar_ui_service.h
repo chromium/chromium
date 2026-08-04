@@ -39,7 +39,10 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         ui::mojom::MenuSourceType source) = 0;
     virtual void ShowContentSettingsBubble(
         ::toolbar_ui_api::mojom::ContentSettingImageType type,
+        bool is_pointer_interaction,
         ShowContentSettingsBubbleCallback callback) = 0;
+    virtual void OnContentSettingImagePointerDown(
+        ::toolbar_ui_api::mojom::ContentSettingImageType type) = 0;
     virtual void OnPageActionClick(
         ::toolbar_ui_api::mojom::PageActionId action_id,
         ::toolbar_ui_api::mojom::PageActionTrigger trigger,
@@ -128,7 +131,10 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void OnPageInitialized() override;
   void ShowContentSettingsBubble(
       ::toolbar_ui_api::mojom::ContentSettingImageType type,
+      bool is_pointer_interaction,
       ShowContentSettingsBubbleCallback callback) override;
+  void OnContentSettingImagePointerDown(
+      ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
   void OnPageActionClick(::toolbar_ui_api::mojom::PageActionId action_id,
                          ::toolbar_ui_api::mojom::PageActionTrigger trigger,
                          OnPageActionClickCallback callback) override;

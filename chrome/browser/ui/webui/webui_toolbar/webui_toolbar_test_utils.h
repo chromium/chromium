@@ -72,8 +72,13 @@ class MockToolbarUIServiceDelegate
   MOCK_METHOD(void,
               ShowContentSettingsBubble,
               (::toolbar_ui_api::mojom::ContentSettingImageType type,
+               bool is_pointer_interaction,
                ::toolbar_ui_api::mojom::ToolbarUIService::
                    ShowContentSettingsBubbleCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              OnContentSettingImagePointerDown,
+              (::toolbar_ui_api::mojom::ContentSettingImageType type),
               (override));
   MOCK_METHOD(
       void,

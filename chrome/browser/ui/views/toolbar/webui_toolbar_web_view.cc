@@ -589,17 +589,26 @@ void WebUIToolbarWebView::HandleContextMenu(
 
 void WebUIToolbarWebView::ShowContentSettingsBubble(
     ::toolbar_ui_api::mojom::ContentSettingImageType type,
+    bool is_pointer_interaction,
     toolbar_ui_api::ToolbarUIService::ShowContentSettingsBubbleCallback
         callback) {
   if (location_bar_) {
     location_bar_->content_setting_image_control().ShowContentSettingsBubble(
-        type, std::move(callback));
+        type, is_pointer_interaction, std::move(callback));
   } else {
     std::move(callback).Run(base::unexpected(Error::New(
         Code::kFailedPrecondition,
         base::StringPrintf("WebUIToolbarWebView: cannot create bubble without "
                            "location_bar_ for type: %d",
                            static_cast<int32_t>(type)))));
+  }
+}
+
+void WebUIToolbarWebView::OnContentSettingImagePointerDown(
+    ::toolbar_ui_api::mojom::ContentSettingImageType type) {
+  if (location_bar_) {
+    location_bar_->content_setting_image_control()
+        .OnContentSettingImagePointerDown(type);
   }
 }
 

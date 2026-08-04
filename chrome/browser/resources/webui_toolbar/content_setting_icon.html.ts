@@ -17,7 +17,8 @@ export function getHtml(this: ContentSettingIconElement) {
     @contextmenu="${this.onContextmenu_}"
     @pointerenter="${this.onPointerenter_}"
     @pointerleave="${this.onPointerleave_}"
-    @pointercancel="${this.onPointercancel_}">
+    @pointercancel="${this.onPointercancel_}"
+    @pointerdown="${this.onPointerdown_}">
   <div id="icon" slot="prefix-icon"
       style="mask-image: ${this.getIconUrl_()};"></div>
   <span id="label">${this.state.explanatoryString}</span>

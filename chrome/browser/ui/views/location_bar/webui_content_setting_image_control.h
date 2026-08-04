@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_WEBUI_CONTENT_SETTING_IMAGE_CONTROL_H_
 
 #include <memory>
+#include <optional>
 #include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/mojom/base/error.mojom-forward.h"
@@ -55,11 +57,22 @@ class WebUIContentSettingImageControl {
   ContentSettingImageModel* GetModel(
       toolbar_ui_api::mojom::ContentSettingImageType type) const;
 
+  // Called when the user presses the mouse button on the chip.
+  void OnContentSettingImagePointerDown(
+      toolbar_ui_api::mojom::ContentSettingImageType type);
+
   // Creates and shows a bubble for the given `type`.
   void ShowContentSettingsBubble(
       toolbar_ui_api::mojom::ContentSettingImageType type,
+      bool is_pointer_interaction,
       toolbar_ui_api::mojom::ToolbarUIService::ShowContentSettingsBubbleCallback
           callback);
+
+  bool IsBubbleShowing() const;
+
+  void SetSuppressionThresholdForTesting(base::TimeDelta threshold) {
+    bubble_reopen_suppressor_.SetSuppressionThresholdForTesting(threshold);
+  }
 
  private:
   // Like ShowContentSettingsBubble(), but returns the result instead of passing
@@ -72,9 +85,15 @@ class WebUIContentSettingImageControl {
   // this instance.
   const raw_ptr<ContentSettingImageViewDelegate> setting_view_delegate_ =
       nullptr;
+  friend class WebUIContentSettingImageControlTest;
+
   // Safe since Init() requires that `webui_delegate_` outlive this instance.
   raw_ptr<WebUIToolbarControlDelegate> webui_delegate_ = nullptr;
   std::vector<std::unique_ptr<ContentSettingImageModel>> models_;
+  std::optional<toolbar_ui_api::mojom::ContentSettingImageType>
+      last_tracked_bubble_type_;
+
+  WebUIBubbleReopenSuppressor bubble_reopen_suppressor_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_WEBUI_CONTENT_SETTING_IMAGE_CONTROL_H_

@@ -399,12 +399,11 @@ std::string DispatchEventScript(const std::string& selector,
 }
 
 // Dispatches a pointerup or pointerdown event based on `event`name`.
-std::string DispatchPointerEvent(
+std::string DispatchPointerEventImpl(
     const std::string& event_name,
-    const std::string& selector,
+    const std::string& el_js,
     const std::string& pointer_type = "mouse",
     const std::string& opts = "detail: 1, button: 0") {
-  const std::string el = GetButtonIconJS(selector);
   return base::StringPrintf(
       "(() => { const target = %s; "
       "%s"
@@ -412,17 +411,30 @@ std::string DispatchPointerEvent(
       "target.dispatchEvent(new PointerEvent('%s', {bubbles: true, cancelable: "
       "true, view: window, pointerType: '%s', clientX: x, clientY: y, %s})); "
       "})();",
-      el.c_str(), kGetCoordinatesJS,
+      el_js.c_str(), kGetCoordinatesJS,
       AddMockPointerCaptureFunctions("target").c_str(), event_name.c_str(),
       pointer_type.c_str(), opts.c_str());
 }
 
-// Simulates a full physical click cycle (press + release) using PointerEvents.
-std::string DispatchPointerClick(
+std::string DispatchPointerEvent(
+    const std::string& event_name,
     const std::string& selector,
     const std::string& pointer_type = "mouse",
     const std::string& opts = "detail: 1, button: 0") {
-  const std::string el = GetButtonIconJS(selector);
+  return DispatchPointerEventImpl(event_name, GetButtonIconJS(selector),
+                                  pointer_type, opts);
+}
+
+// Simulates a physical pointer press + release cycle without dispatching a
+// top-level 'click' event. This is practically sufficient for interacting with
+// some custom WebUI elements (like CrIconButton) that bind their action logic
+// exclusively to 'pointerup'. It is also strictly required for simulating
+// auxiliary interactions (like middle-clicks) which do not produce standard
+// 'click' events.
+std::string DispatchPointerDownAndUpImpl(
+    const std::string& el_js,
+    const std::string& pointer_type = "mouse",
+    const std::string& opts = "detail: 1, button: 0") {
   return base::StringPrintf(
       "(() => { const target = %s; "
       "%s"
@@ -435,9 +447,31 @@ std::string DispatchPointerClick(
       "cancelable: true, view: window, pointerType: '%s', clientX: x, clientY: "
       "y, "
       "%s})); })();",
-      el.c_str(), kGetCoordinatesJS,
+      el_js.c_str(), kGetCoordinatesJS,
       AddMockPointerCaptureFunctions("target").c_str(), pointer_type.c_str(),
       opts.c_str(), pointer_type.c_str(), opts.c_str());
+}
+
+// Simulates a full physical left-click sequence (press, release, click) on an
+// element. This mirrors exactly how a native browser synthesizes DOM events for
+// hardware mouse interactions. Using this prevents internal WebUI state
+// machines (like drag captures, ripples, or gesture detectors) from getting
+// silently deadlocked.
+std::string DispatchLeftClickSequenceImpl(
+    const std::string& el_js,
+    const std::string& pointer_type = "mouse") {
+  return base::StrCat(
+      {DispatchPointerEventImpl("pointerdown", el_js, pointer_type),
+       DispatchPointerEventImpl("pointerup", el_js, pointer_type),
+       DispatchPointerEventImpl("click", el_js, pointer_type)});
+}
+
+std::string DispatchPointerDownAndUp(
+    const std::string& selector,
+    const std::string& pointer_type = "mouse",
+    const std::string& opts = "detail: 1, button: 0") {
+  return DispatchPointerDownAndUpImpl(GetButtonIconJS(selector), pointer_type,
+                                      opts);
 }
 
 std::string GetContentSettingIcon(
@@ -1101,8 +1135,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
     std::string back_script;
     std::string forward_script;
   } test_cases[] = {
-      {"Mouse Click", DispatchPointerClick(kBackSelector),
-       DispatchPointerClick(kForwardSelector)},
+      {"Mouse Click", DispatchPointerDownAndUp(kBackSelector),
+       DispatchPointerDownAndUp(kForwardSelector)},
       {"Keyboard Click",
        DispatchEventScript(kBackSelector, "MouseEvent", "click", "detail: 0"),
        DispatchEventScript(kForwardSelector, "MouseEvent", "click",
@@ -1178,9 +1212,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // On Mac, Ctrl+Click opens a context menu and does not navigate.
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kBackSelector, "mouse",
-                           "detail: 1, button: 0, ctrlKey: true")));
-  // DispatchPointerClick only sends pointerdown and pointerup.
+      DispatchPointerDownAndUp(kBackSelector, "mouse",
+                               "detail: 1, button: 0, ctrlKey: true")));
+  // DispatchPointerDownAndUp only sends pointerdown and pointerup.
   // Explicitly dispatch the contextmenu event to accurately simulate real-world
   // browser behavior on Mac, where a real Ctrl+LeftClick natively triggers both
   // pointerdown and contextmenu events.
@@ -1208,8 +1242,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kBackSelector, "mouse",
-                           "detail: 1, button: 0, ctrlKey: true")));
+      DispatchPointerDownAndUp(kBackSelector, "mouse",
+                               "detail: 1, button: 0, ctrlKey: true")));
 
   nav_observer.Wait();
 
@@ -1238,8 +1272,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kForwardSelector, "mouse",
-                           "detail: 1, button: 0, shiftKey: true")));
+      DispatchPointerDownAndUp(kForwardSelector, "mouse",
+                               "detail: 1, button: 0, shiftKey: true")));
 
   Browser* new_browser = new_browser_observer.Wait();
   ASSERT_TRUE(new_browser);
@@ -3486,7 +3520,7 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, ClickReloadButton) {
     const char* name;
     std::string script;
   } test_cases[] = {
-      {"Mouse Click", DispatchPointerClick(kReloadButtonSelector)},
+      {"Mouse Click", DispatchPointerDownAndUp(kReloadButtonSelector)},
       {"Keyboard Click",
        DispatchEventScript(kReloadButtonSelector, "MouseEvent", "click",
                            "detail: 0")}};
@@ -3588,11 +3622,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
        DispatchEventScript(kSplitTabsSelector, "MouseEvent", "click",
                            "detail: 0"),
        ui::mojom::MenuSourceType::kKeyboard},
-      {"Mouse Click", DispatchPointerClick(kSplitTabsSelector),
+      {"Mouse Click", DispatchPointerDownAndUp(kSplitTabsSelector),
        ui::mojom::MenuSourceType::kMouse},
-      {"Touch Click", DispatchPointerClick(kSplitTabsSelector, "touch"),
+      {"Touch Click", DispatchPointerDownAndUp(kSplitTabsSelector, "touch"),
        ui::mojom::MenuSourceType::kTouch},
-      {"Pen Click", DispatchPointerClick(kSplitTabsSelector, "pen"),
+      {"Pen Click", DispatchPointerDownAndUp(kSplitTabsSelector, "pen"),
        ui::mojom::MenuSourceType::kTouch},
       {"Keyboard Context Menu",
        DispatchEventScript(kSplitTabsSelector, "MouseEvent", "contextmenu",
@@ -3689,8 +3723,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
       base::StrCat({GetButtonIconJS(kSplitTabsSelector),
                     "?.getAttribute('aria-haspopup') || 'false'"});
   EXPECT_EQ("false", content::EvalJs(web_contents, kGetAriaHasPopup));
-  EXPECT_TRUE(
-      content::ExecJs(web_contents, DispatchPointerClick(kSplitTabsSelector)));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              DispatchPointerDownAndUp(kSplitTabsSelector)));
 
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(base::test::RunUntil(
@@ -4856,7 +4890,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
     const char* name;
     std::string script;
   } test_cases[] = {
-      {"Mouse Click", DispatchPointerClick(kHomeSelector)},
+      {"Mouse Click", DispatchPointerDownAndUp(kHomeSelector)},
       {"Keyboard Click",
        DispatchEventScript(kHomeSelector, "MouseEvent", "click", "detail: 0")}};
 
@@ -4942,7 +4976,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(
+      DispatchPointerDownAndUp(
           kHomeSelector, "mouse",
           base::StrCat({"detail: 1, button: 0, ", kModifier}))));
 
@@ -4979,9 +5013,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kHomeSelector, "mouse",
-                           base::StrCat({"detail: 1, button: 0, ", kModifier,
-                                         ", shiftKey: true"}))));
+      DispatchPointerDownAndUp(kHomeSelector, "mouse",
+                               base::StrCat({"detail: 1, button: 0, ",
+                                             kModifier, ", shiftKey: true"}))));
 
   tab_add_waiter.Wait();
 
@@ -5091,8 +5125,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kHomeSelector, "mouse",
-                           "detail: 1, button: 0, shiftKey: true")));
+      DispatchPointerDownAndUp(kHomeSelector, "mouse",
+                               "detail: 1, button: 0, shiftKey: true")));
 
   Browser* new_browser = new_browser_observer.Wait();
   ASSERT_TRUE(new_browser);
@@ -6474,6 +6508,60 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
   }));
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
+                       ContentSettingIconSuppressionE2E) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_ui_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_ui_contents = web_ui_view->GetWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  TriggerContentBlocked(active_contents, ContentSettingsType::COOKIES);
+
+  auto type = toolbar_ui_api::mojom::ContentSettingImageType::kCookies;
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsIconVisible(web_ui_contents, type); }));
+
+  std::string get_icon_js =
+      base::StringPrintf(R"((%s)?.shadowRoot.querySelector('#chip'))",
+                         GetContentSettingIcon(type).c_str());
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "ContentSettingBubbleContents");
+
+  // First click: opens the Bubble.
+  EXPECT_TRUE(content::ExecJs(web_ui_contents,
+                              DispatchLeftClickSequenceImpl(get_icon_js)));
+
+  views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
+  EXPECT_TRUE(bubble_widget);
+  EXPECT_TRUE(bubble_widget->IsVisible());
+
+  auto* location_bar = webui_toolbar_view->GetLocationBar();
+  ASSERT_TRUE(location_bar);
+  location_bar->content_setting_image_control()
+      .SetSuppressionThresholdForTesting(base::Seconds(1));
+
+  // Second click (simulating clicking to close)
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+  destroyed_waiter.Wait();
+
+  EXPECT_TRUE(content::ExecJs(web_ui_contents,
+                              DispatchLeftClickSequenceImpl(get_icon_js)));
+
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(50));
+  run_loop.Run();
+
+  // The Bubble should NOT have reopened!
+  EXPECT_FALSE(location_bar->content_setting_image_control().IsBubbleShowing());
+}
+
 class WebUIToolbarSurfaceSyncBrowserTest
     : public WebUIToolbarWebViewBrowserTest {
  public:
@@ -6588,7 +6676,6 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewPermissionBrowserTest,
   EXPECT_TRUE(bubble_widget);
   EXPECT_TRUE(bubble_widget->IsVisible());
 
-  // Set a larger suppression threshold to account for IPC latency on bots.
   auto* location_bar = webui_toolbar_view->GetLocationBar();
   ASSERT_TRUE(location_bar);
   ASSERT_TRUE(location_bar->permission_dashboard_controller());
@@ -6602,15 +6689,8 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewPermissionBrowserTest,
   bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   destroyed_waiter.Wait();
 
-  EXPECT_TRUE(content::ExecJs(
-      web_contents,
-      base::StringPrintf(
-          "%s?.dispatchEvent(new PointerEvent('pointerdown', "
-          "{bubbles: true, cancelable: true, view: window, button: 0}));"
-          "%s?.dispatchEvent(new PointerEvent('click', "
-          "{bubbles: true, cancelable: true, view: window, button: 0, "
-          "pointerType: 'mouse'}));",
-          get_chip_js.c_str(), get_chip_js.c_str())));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              DispatchLeftClickSequenceImpl(get_chip_js)));
 
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -6655,18 +6735,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPermissionBrowserTest,
       views::test::AnyWidgetTestPasskey{}, "PageInfoBubbleView");
 
   // First click: opens the Page Info Bubble.
-  EXPECT_TRUE(content::ExecJs(
-      web_contents,
-      base::StringPrintf(
-          "%s?.dispatchEvent(new MouseEvent('click', "
-          "{bubbles: true, cancelable: true, view: window, button: 0}));",
-          get_icon_js.c_str())));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              DispatchLeftClickSequenceImpl(get_icon_js)));
 
   views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
   EXPECT_TRUE(bubble_widget);
   EXPECT_TRUE(bubble_widget->IsVisible());
 
-  // Set a larger suppression threshold to account for IPC latency on bots.
   auto* location_bar = webui_toolbar_view->GetLocationBar();
   ASSERT_TRUE(location_bar);
   location_bar->SetSuppressionThresholdForTesting(base::Seconds(1));
@@ -6679,15 +6754,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPermissionBrowserTest,
   bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   destroyed_waiter.Wait();
 
-  EXPECT_TRUE(content::ExecJs(
-      web_contents,
-      base::StringPrintf(
-          "%s?.dispatchEvent(new PointerEvent('pointerdown', "
-          "{bubbles: true, cancelable: true, view: window, button: 0}));"
-          "%s?.dispatchEvent(new PointerEvent('click', "
-          "{bubbles: true, cancelable: true, view: window, button: 0, "
-          "pointerType: 'mouse'}));",
-          get_icon_js.c_str(), get_icon_js.c_str())));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              DispatchLeftClickSequenceImpl(get_icon_js)));
 
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

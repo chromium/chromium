@@ -142,11 +142,33 @@ ContentSettingImageModel* WebUIContentSettingImageControl::GetModel(
   return it != models_.end() ? it->get() : nullptr;
 }
 
+void WebUIContentSettingImageControl::OnContentSettingImagePointerDown(
+    ImageType type) {
+  // Only suppress the click if the mouse press occurred on the exact same chip
+  // that corresponds to the observed bubble. Clicking a different chip should
+  // legitimately open a new bubble, even if another one just closed.
+  if (last_tracked_bubble_type_ == type) {
+    bubble_reopen_suppressor_.OnMousePressed();
+  }
+}
+
 void WebUIContentSettingImageControl::ShowContentSettingsBubble(
     ImageType type,
+    bool is_pointer_interaction,
     toolbar_ui_api::mojom::ToolbarUIService::ShowContentSettingsBubbleCallback
         callback) {
+  bool should_suppress = bubble_reopen_suppressor_.ShouldSuppressBubbleShow(
+      is_pointer_interaction);
+
+  if (should_suppress) {
+    std::move(callback).Run(std::monostate());
+    return;
+  }
   std::move(callback).Run(ShowContentSettingsBubbleImpl(type));
+}
+
+bool WebUIContentSettingImageControl::IsBubbleShowing() const {
+  return bubble_reopen_suppressor_.IsShowing();
 }
 
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
@@ -190,8 +212,13 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
       views::BubbleBorder::TOP_RIGHT);
   bubble_contents->SetHighlightedElement(model->GetElementIdentifier());
 
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_contents))
-      ->Show();
+  views::Widget* bubble_widget =
+      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_contents));
+  if (bubble_widget) {
+    bubble_reopen_suppressor_.Observe(bubble_widget);
+    last_tracked_bubble_type_ = type;
+    bubble_widget->Show();
+  }
 
   return std::monostate();
 }
