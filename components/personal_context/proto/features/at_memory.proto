@@ -51,14 +51,85 @@ message AtMemoryQueryResponse {
   repeated AtMemorySearchResult results = 3;
 }
 
+// A definition for what data type to retrieve from local Autofill storage and
+// what filters to apply to it.
+message AutofillFetchSpecification {
+  message StringFilter {
+    string value = 1;
+
+    // We can leave this out initially - just putting it here to motivate
+    // wrapping value in a StringFilter message.
+    enum StringFilterMode {
+      // The client decides on which mode to use.
+      STRING_FILTER_MODE_UNSPECIFIED = 0;
+      // The filter value is a substring of the attribute value (modulo case,
+      // diacritics, whitespace - see `autofill::NormalizeForComparison` in
+      // Chromium code).
+      STRING_FILTER_MODE_SUBSTRING = 1;
+      // The filter value must match the attribute value exactly (modulo case,
+      // diacritics, whitespace - see `autofill::NormalizeForComparison` in
+      // Chromium code).
+      STRING_FILTER_MODE_EXACT = 2;
+      // The filter value must be a fuzzy match of the attribute value (modulo
+      // case, diacritics, whitespace - see `autofill::NormalizeForComparison`
+      // in Chromium code).
+      STRING_FILTER_MODE_FUZZY = 3;
+    }
+    StringFilterMode mode = 2;
+  }
+
+  message TypedValueFilter {
+    TypedValue typed_value = 1;
+
+    // TODO(crbug.com/542022101): Add support for different filter operators
+    // (e.g., equality, greater than, less than, etc.). For now, everything is
+    // an equality check.
+  }
+
+  message Filter {
+    // The data types to apply the filter to. Allows, e.g., filtering
+    // by departure date while still showing flight number as the main value to
+    // fill.
+    // If unset, we try to find a match in any of the relevant attributes.
+    // Otherwise, we consider that the filter matches if it matches any of the
+    // `data_types`.
+    repeated MemoryDataType data_types = 1;
+
+    // The values used to filter.
+
+    // Used only if typed_filter is not set or cannot be read by client.
+    // Kept separately instead of in a oneof to allow backward compatibility
+    // if we add new entries to `TypedValue`.
+    StringFilter string_filter = 2;
+
+    // Used for filtering by date, time, or country code. The filter does not
+    // apply if the `MemoryDataType` it is applied to does not have a matching
+    // `TypedValue` representation.
+    TypedValueFilter typed_value_filter = 3;
+  }
+
+  // The data type to show in the main suggestion.
+  MemoryDataType data_type = 1;
+
+  // The filters applied to the full entity of which data_type represents
+  // an attribute. If multiple filters are specified, all of them are applied
+  // (i.e., logical conjunction / AND). Logical disjunction (OR) can be achieved
+  // by having multiple AutofillFetchSpecifications for the same data type.
+  repeated Filter filters = 2;
+}
+
 // Instructions for retrieving local Autofill data.
 message AutofillFetchPlan {
-  // The list of target local data categories to fetch (e.g.
-  // [MEMORY_DATA_TYPE_FLIGHT_RESERVATION]).
-  repeated MemoryDataType data_types = 1;
+  // Deprecated: used as a fallback if fetch_specifications is empty.
+  repeated MemoryDataType data_types = 1 [deprecated = true];
 
-  // Keywords extracted from the query to filter local database results.
-  repeated string filter_keywords = 2;
+  // Deprecated: used as a fallback if fetch_specifications is empty.
+  repeated string filter_keywords = 2 [deprecated = true];
+
+  // The list of AutofillFetchSpecifications to use for fetching local data.
+  // Repeated to allow either fetching multiple data types or a single data type
+  // with a filter with OR conditions.
+  repeated AutofillFetchSpecification fetch_specifications = 3;
 }
 
 // An individual candidate result entry.
