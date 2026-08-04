@@ -18,6 +18,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -195,8 +196,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // frames are consumed asynchronously and multiple frames can be "in flight"
     // at the same time.
     virtual void OnIncomingCapturedData(
-        const uint8_t* data,
-        int length,
+        base::span<const uint8_t> data,
         const VideoCaptureFormat& frame_format,
         const gfx::ColorSpace& color_space,
         int clockwise_rotation,
@@ -208,6 +208,18 @@ class CAPTURE_EXPORT VideoCaptureDevice
         int frame_feedback_id) = 0;
     // Convenience wrapper that passes in 0 as |frame_feedback_id|.
     void OnIncomingCapturedData(
+        base::span<const uint8_t> data,
+        const VideoCaptureFormat& frame_format,
+        const gfx::ColorSpace& color_space,
+        int clockwise_rotation,
+        bool flip_y,
+        base::TimeTicks reference_time,
+        base::TimeDelta timestamp,
+        std::optional<base::TimeTicks> capture_begin_timestamp,
+        const std::optional<VideoFrameMetadata>& metadata);
+
+    // Deprecated: use the overload taking base::span instead.
+    void OnIncomingCapturedData(
         const uint8_t* data,
         int length,
         const VideoCaptureFormat& frame_format,
@@ -217,7 +229,8 @@ class CAPTURE_EXPORT VideoCaptureDevice
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
         std::optional<base::TimeTicks> capture_begin_timestamp,
-        const std::optional<VideoFrameMetadata>& metadata);
+        const std::optional<VideoFrameMetadata>& metadata,
+        int frame_feedback_id = 0);
 
     // Captured a new video frame, data for which is stored in the
     // shared image pointed to by |shared_image|.  The format of the frame is

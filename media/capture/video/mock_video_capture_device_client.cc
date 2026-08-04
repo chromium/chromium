@@ -143,7 +143,7 @@ MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           });
   ON_CALL(*result, OnIncomingCapturedData)
-      .WillByDefault(WithArgs<2>(
+      .WillByDefault(WithArgs<1>(
           [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
           }));

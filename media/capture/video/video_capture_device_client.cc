@@ -351,8 +351,7 @@ void VideoCaptureDeviceClient::OnCaptureConfigurationChanged() {
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedData(
-    const uint8_t* data,
-    int length,
+    base::span<const uint8_t> data,
     const VideoCaptureFormat& format,
     const gfx::ColorSpace& data_color_space,
     int rotation,
@@ -371,18 +370,10 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
                << data_color_space.ToString();
   }
 
-  // The input |length| can be greater than the required buffer size because of
-  // paddings and/or alignments, but it cannot be smaller.
-  CHECK_GE(static_cast<size_t>(length),
-           media::VideoFrame::AllocationSize(format.pixel_format,
-                                             format.frame_size));
-
-  // TODO(crbug.com/542295549): Migrate
-  // VideoCaptureDevice::Client::OnIncomingCapturedData to take base::span
-  // directly and remove this UNSAFE_BUFFERS conversion. SAFETY: `data` points
-  // to a contiguous memory buffer of at least `length` bytes provided by the
-  // video capture device driver.
-  auto data_span = UNSAFE_TODO(base::span(data, static_cast<size_t>(length)));
+  // The input `data.size()` can be greater than the required buffer size
+  // because of paddings and/or alignments, but it cannot be smaller.
+  CHECK_GE(data.size(), media::VideoFrame::AllocationSize(format.pixel_format,
+                                                          format.frame_size));
 
   if (last_captured_pixel_format_ != format.pixel_format) {
     OnLog("Pixel format: " + VideoPixelFormatToString(format.pixel_format));
@@ -406,9 +397,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   }
 
   if (format.pixel_format == PIXEL_FORMAT_Y16) {
-    return OnIncomingCapturedY16Data(data_span, format, reference_time,
-                                     timestamp, capture_begin_timestamp,
-                                     metadata, frame_feedback_id);
+    return OnIncomingCapturedY16Data(data, format, reference_time, timestamp,
+                                     capture_begin_timestamp, metadata,
+                                     frame_feedback_id);
   }
 
   // |new_unrotated_{width,height}| are the dimensions of the output buffer that
@@ -460,8 +451,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
                !flip) {
       if (on_started_using_gpu_cb_)
         std::move(on_started_using_gpu_cb_).Run();
-      external_jpeg_decoder_->DecodeCapturedData(
-          data, length, format, reference_time, timestamp, std::move(buffer));
+      external_jpeg_decoder_->DecodeCapturedData(data.data(), data.size(),
+                                                 format, reference_time,
+                                                 timestamp, std::move(buffer));
       return;
     }
   }
@@ -469,9 +461,10 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 
   // libyuv::ConvertToI420 uses Rec601 to convert RGB to YUV.
   if (libyuv::ConvertToI420(
-          data, length, i420_buffer.y_plane_data, i420_buffer.y_plane_stride,
-          i420_buffer.u_plane_data, i420_buffer.uv_plane_stride,
-          i420_buffer.v_plane_data, i420_buffer.uv_plane_stride, /*crop_x=*/0,
+          data.data(), data.size(), i420_buffer.y_plane_data,
+          i420_buffer.y_plane_stride, i420_buffer.u_plane_data,
+          i420_buffer.uv_plane_stride, i420_buffer.v_plane_data,
+          i420_buffer.uv_plane_stride, /*crop_x=*/0,
           /*crop_y=*/0, format.frame_size.width(),
           (flip ? -1 : 1) * format.frame_size.height(), new_unrotated_width,
           new_unrotated_height, rotation_mode, fourcc_format) != 0) {

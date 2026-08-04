@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "media/capture/video/video_capture_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -23,8 +24,7 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
   MOCK_METHOD(void, OnCaptureConfigurationChanged, (), (override));
   MOCK_METHOD(void,
               OnIncomingCapturedData,
-              (const uint8_t* data,
-               int length,
+              (base::span<const uint8_t> data,
                const VideoCaptureFormat& frame_format,
                const gfx::ColorSpace& color_space,
                int rotation,

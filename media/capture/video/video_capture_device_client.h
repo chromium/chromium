@@ -78,8 +78,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   // VideoCaptureDevice::Client implementation.
   void OnCaptureConfigurationChanged() override;
   void OnIncomingCapturedData(
-      const uint8_t* data,
-      int length,
+      base::span<const uint8_t> data,
       const VideoCaptureFormat& frame_format,
       const gfx::ColorSpace& color_space,
       int clockwise_rotation,

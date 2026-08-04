@@ -69,8 +69,7 @@ constexpr GUID GUID_MEDIA_TYPE_INDEX = {
 class MockClient : public VideoCaptureDevice::Client {
  public:
   void OnCaptureConfigurationChanged() override {}
-  void OnIncomingCapturedData(const uint8_t* data,
-                              int length,
+  void OnIncomingCapturedData(base::span<const uint8_t> data,
                               const VideoCaptureFormat& frame_format,
                               const gfx::ColorSpace& color_space,
                               int clockwise_rotation,

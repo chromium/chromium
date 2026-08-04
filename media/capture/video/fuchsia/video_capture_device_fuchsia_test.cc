@@ -148,8 +148,7 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
       wait_frame_run_loop_->Quit();
   }
 
-  void OnIncomingCapturedData(const uint8_t* data,
-                              int length,
+  void OnIncomingCapturedData(base::span<const uint8_t> data,
                               const VideoCaptureFormat& frame_format,
                               const gfx::ColorSpace& color_space,
                               int clockwise_rotation,
