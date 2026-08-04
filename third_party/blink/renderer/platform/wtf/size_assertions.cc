@@ -53,11 +53,25 @@ struct SameSizeAsVectorWithInlineCapacity;
 
 template <typename T>
 struct SameSizeAsVectorWithInlineCapacity<T, 0> {
+  // Declaring constructors and a destructor makes this struct non-POD under C++
+  // ABI rules, matching VectorBufferBase. Making the base struct non-POD allows
+  // derived classes to be smaller. Standard C++ rules forbid placing derived
+  // class members into the trailing padding of a POD base struct. This forces
+  // the compiler to place derived members after the padding and increases total
+  // size. By making this base struct non-POD, the compiler can pack derived
+  // members directly into trailing padding. This matches Vector's memory
+  // layout.
+  SameSizeAsVectorWithInlineCapacity() = default;
+  ~SameSizeAsVectorWithInlineCapacity();
+
   void* buffer_pointer;
   wtf_size_t capacity;
   wtf_size_t size;
 #if DCHECK_IS_ON()
-  int64_t modifications;
+  // Using a 32-bit integer prevents Vector alignof() from becoming 8-bytes on
+  // 32-bit systems, avoiding memory alignment violations in HeapVector
+  // backing stores.
+  uint32_t modifications;
 #endif
 #if BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS)
   wtf_size_t active_iterator_count;
