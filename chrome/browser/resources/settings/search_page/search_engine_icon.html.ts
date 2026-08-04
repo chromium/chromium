@@ -13,9 +13,9 @@ export function getHtml(this: SettingsSearchEngineIconElement) {
     @load="${this.onDownloadedIconLoad_}"
     @error="${this.onDownloadedIconError_}" alt=""
     ?hidden="${!this.shouldShowDownloadedIcon_()}">
-<site-favicon .faviconUrl="${this.engine.iconURL || ''}"
-    .url="${this.engine.url}"
-    .iconPath="${this.engine.iconPath}" aria-hidden="true"
+<site-favicon .faviconUrl="${this.engine?.iconURL || ''}"
+    .url="${this.engine?.url || ''}"
+    .iconPath="${this.engine?.iconPath || ''}" aria-hidden="true"
     ?hidden="${this.shouldShowDownloadedIcon_()}">
 </site-favicon>
 <!--_html_template_end_-->`;

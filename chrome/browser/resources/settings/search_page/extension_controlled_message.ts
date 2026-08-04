@@ -6,13 +6,14 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import {assert} from '//resources/js/assert.js';
 import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 
-import {getTemplate} from './extension_controlled_message.html.js';
+import {getCss} from './extension_controlled_message.css.js';
+import {getHtml} from './extension_controlled_message.html.js';
 
-const ExtensionControlledMessageElementBase = I18nMixin(PolymerElement);
+const ExtensionControlledMessageElementBase = I18nMixinLit(CrLitElement);
 
 export class ExtensionControlledMessageElement extends
     ExtensionControlledMessageElementBase {
@@ -20,34 +21,38 @@ export class ExtensionControlledMessageElement extends
     return 'extension-controlled-message';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      extensionName: String,
-      extensionId: String,
-      extensionCanBeDisabled: Boolean,
+      extensionName: {type: String},
+      extensionId: {type: String},
+      extensionCanBeDisabled: {type: Boolean},
     };
   }
 
-  declare extensionName: string;
-  declare extensionCanBeDisabled: boolean;
-  declare extensionId: string;
+  accessor extensionName: string;
+  accessor extensionCanBeDisabled: boolean;
+  accessor extensionId: string;
 
-  private getDisclaimerHtml_(name: string): TrustedHTML {
+  protected getDisclaimerHtml_(): TrustedHTML {
     const disclaimerStringId = this.extensionCanBeDisabled ?
         'controlledByExtensionWithDisableOption' :
         'controlledByExtensionWithoutDisableOption';
 
     return this.i18nAdvanced(disclaimerStringId, {
-      substitutions: [name, this.i18n('opensInNewTab')],
+      substitutions: [this.extensionName, this.i18n('opensInNewTab')],
       attrs: ['id', 'aria-description'],
     });
   }
 
-  private onDisclaimerClick_(e: Event) {
+  protected onDisclaimerClick_(e: Event) {
     const target = e.target as HTMLElement;
     e.preventDefault();
 
@@ -70,8 +75,7 @@ export class ExtensionControlledMessageElement extends
     assert(this.extensionCanBeDisabled);
     ExtensionControlBrowserProxyImpl.getInstance().disableExtension(
         this.extensionId);
-    this.dispatchEvent(new CustomEvent(
-        'disable-extension-click', {bubbles: true, composed: true}));
+    this.fire('disable-extension-click');
   }
 }
 

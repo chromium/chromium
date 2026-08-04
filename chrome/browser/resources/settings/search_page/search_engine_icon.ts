@@ -44,26 +44,7 @@ export class SettingsSearchEngineIconElement extends CrLitElement {
     };
   }
 
-  accessor engine: SearchEngine = {
-    canBeDefault: false,
-    canBeEdited: false,
-    canBeRemoved: false,
-    canBeActivated: false,
-    canBeDeactivated: false,
-    default: false,
-    displayName: '',
-    iconPath: '',
-    id: -1,
-    isManaged: false,
-    isOmniboxExtension: false,
-    isPrepopulated: false,
-    isStarterPack: false,
-    keyword: '',
-    name: '',
-    shouldConfirmRemoval: false,
-    url: '',
-    urlLocked: false,
-  };
+  accessor engine: SearchEngine|null = null;
   protected accessor showDownloadedIcon_: boolean = false;
   private timeoutId_: number|null = null;
 
@@ -77,7 +58,7 @@ export class SettingsSearchEngineIconElement extends CrLitElement {
   }
 
   protected getIconUrl_(): string {
-    const iconURL = this.engine.iconURL;
+    const iconURL = this.engine?.iconURL;
     if (!iconURL) {
       return '';
     }
@@ -90,8 +71,8 @@ export class SettingsSearchEngineIconElement extends CrLitElement {
   }
 
   private onEngineChanged_(
-      newEngine: SearchEngine, oldEngine: SearchEngine|undefined) {
-    if (oldEngine && newEngine.iconURL === oldEngine.iconURL) {
+      newEngine: SearchEngine|null, oldEngine: SearchEngine|null|undefined) {
+    if (oldEngine && newEngine?.iconURL === oldEngine.iconURL) {
       return;
     }
     this.showDownloadedIcon_ = false;
@@ -123,8 +104,8 @@ export class SettingsSearchEngineIconElement extends CrLitElement {
   }
 
   protected shouldShowDownloadedIcon_(): boolean {
-    return this.showDownloadedIcon_ && !this.engine.iconPath &&
-        !!this.engine.iconURL;
+    return this.showDownloadedIcon_ && !this.engine?.iconPath &&
+        !!this.engine?.iconURL;
   }
 }
 

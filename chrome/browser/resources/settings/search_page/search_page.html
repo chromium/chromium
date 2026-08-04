@@ -1,30 +1,9 @@
-<style include="cr-shared-style settings-shared">
-  #search-wrapper {
-    align-items: center;
-    display: flex;
-    min-height: var(--cr-section-min-height);
-  }
-
-  .default-search-engine .cr-row {
-    --cr-section-min-height: 55px;
-    gap: 12px;
-    padding: 0;
-  }
-
-  .default-search-engine {
-    padding-top: var(--cr-section-vertical-padding);
-  }
-
-  .search-engine-name {
-    margin-inline-end: auto;
-  }
-</style>
-<settings-section page-title="[[searchPageTitle_]]">
+<settings-section page-title="${this.searchPageTitle_}">
   <div route-path="default">
     <!-- Omnibox search engine -->
     <div class="cr-row first">
       <div class="default-search-engine flex">
-        [[searchPageTitle_]]
+        ${this.searchPageTitle_}
         <div class="secondary">
           $i18n{searchEngineChoiceEntryPointSubtitle}
           <a href="$i18n{searchExplanationLearnMoreURL}"
@@ -35,71 +14,66 @@
           </a>
         </div>
         <div class="cr-row first">
-          <settings-search-engine-icon engine="[[defaultSearchEngine_]]">
+          <settings-search-engine-icon .engine="${this.defaultSearchEngine_}">
           </settings-search-engine-icon>
-          <div class="search-engine-name">[[defaultSearchEngine_.name]]</div>
-          <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
-              defaultSearchProviderDataPref_)]]">
+          <div class="search-engine-name">${this.defaultSearchEngine_?.name}</div>
+          ${this.isDefaultSearchControlledByPolicy_() ? html`
             <cr-policy-pref-indicator
-                pref="[[defaultSearchProviderDataPref_]]">
+                .pref="${this.defaultSearchProviderDataPref_}">
             </cr-policy-pref-indicator>
-          </template>
+          ` : ''}
           <cr-button id="openDialogButton"
-              on-click="onOpenDialogButtonClick_"
-              disabled$="[[isDefaultSearchEngineEnforced_(
-                  defaultSearchProviderDataPref_)]]">
+              @click="${this.onOpenDialogButtonClick_}"
+              ?disabled="${this.isDefaultSearchEngineEnforced_()}">
             $i18n{searchEnginesChange}
           </cr-button>
         </div>
       </div>
-      <template is="dom-if" if="[[showSearchEngineListDialog_]]" restamp>
+      ${this.showSearchEngineListDialog_ ? html`
         <settings-search-engine-list-dialog
-            search-engines="[[searchEngines_]]"
-            on-close="onSearchEngineListDialogClose_"
-            on-search-engine-changed="onDefaultSearchEngineChangedInDialog_">
+            .searchEngines="${this.searchEngines_}"
+            @close="${this.onSearchEngineListDialogClose_}"
+            @search-engine-changed="${this.onSearchEngineChanged_}">
         </settings-search-engine-list-dialog>
-      </template>
+      ` : ''}
       <cr-toast id="confirmationToast" duration="10000">
-        <div>[[confirmationToastLabel_]]</div>
+        <div>${this.confirmationToastLabel_}</div>
       </cr-toast>
     </div>
-    <template is="dom-if" if="[[defaultSearchProviderDataPref_.extensionId]]">
-      <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]">
+    ${this.defaultSearchProviderDataPref_?.extensionId ? html`
+      ${this.searchSettingsUpdateEnabled_ ? html`
         <div class="cr-row">
           <extension-controlled-message
               class="flex"
-              extension-id="[[
-                  defaultSearchProviderDataPref_.extensionId]]"
-              extension-name="[[
-                  defaultSearchProviderDataPref_.controlledByName]]"
-              extension-can-be-disabled="[[
-                  defaultSearchProviderDataPref_.extensionCanBeDisabled]]"
-              on-disable-extension-click="onDisableExtensionClick_">
+              extension-id="${this.defaultSearchProviderDataPref_?.extensionId}"
+              extension-name="${
+                  this.defaultSearchProviderDataPref_?.controlledByName}"
+              ?extension-can-be-disabled="${
+                  !!this.defaultSearchProviderDataPref_?.extensionCanBeDisabled}"
+              @disable-extension-click="${this.onDisableExtensionClick_}">
           </extension-controlled-message>
         </div>
-      </template>
-      <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]">
+      ` : html`
         <div class="cr-row continuation">
           <extension-controlled-indicator
               class="flex"
-              extension-id="[[
-                  defaultSearchProviderDataPref_.extensionId]]"
-              extension-name="[[
-                  defaultSearchProviderDataPref_.controlledByName]]"
-              extension-can-be-disabled="[[
-                  defaultSearchProviderDataPref_.extensionCanBeDisabled]]"
-              on-disable-extension-click="onDisableExtensionClick_">
+              extension-id="${this.defaultSearchProviderDataPref_?.extensionId}"
+              extension-name="${
+                  this.defaultSearchProviderDataPref_?.controlledByName}"
+              ?extension-can-be-disabled="${
+                  !!this.defaultSearchProviderDataPref_?.extensionCanBeDisabled}"
+              @disable-extension-click="${this.onDisableExtensionClick_}">
           </extension-controlled-indicator>
         </div>
-      </template>
-    </template>
+      `}
+    ` : ''}
 
-    <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]">
+    ${!this.searchSettingsUpdateEnabled_ ? html`
       <!-- Manage search engines -->
       <cr-link-row class="hr" id="enginesSubpageTrigger"
           label="$i18n{searchEnginesManageSiteSearch}"
-          on-click="onManageSearchEnginesClick_"
+          @click="${this.onManageSearchEnginesClick_}"
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-    </template>
+    ` : ''}
   </div>
 </settings-section>

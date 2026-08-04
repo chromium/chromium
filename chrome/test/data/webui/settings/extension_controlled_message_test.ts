@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ExtensionControlledMessageElement} from 'chrome://settings/settings.js';
 import {OpenWindowProxyImpl, ExtensionControlBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {resetRouterForTesting, loadTimeData} from 'chrome://settings/settings.js';
 
@@ -33,21 +33,20 @@ suite('extension controlled message', function() {
     message.extensionCanBeDisabled = true;
     message.extensionName = 'The Bestest Name Ever';
     document.body.appendChild(message);
-    return flush();
   });
 
-  test('disable link tracks extensionCanBeDisabled', function() {
+  test('disable link tracks extensionCanBeDisabled', async function() {
     assertTrue(message.extensionCanBeDisabled);
-    assertTrue(!!message.shadowRoot!.querySelector('#disableLink'));
+    assertTrue(!!message.shadowRoot.querySelector('#disableLink'));
 
     message.extensionCanBeDisabled = false;
-    flush();
-    assertFalse(!!message.shadowRoot!.querySelector('#disableLink'));
+    await microtasksFinished();
+    assertFalse(!!message.shadowRoot.querySelector('#disableLink'));
   });
 
   test('tapping manage link invokes browser proxy', async function() {
     const manageLink =
-        message.shadowRoot!.querySelector<HTMLElement>('#manageLink');
+        message.shadowRoot.querySelector<HTMLElement>('#manageLink');
     assertTrue(!!manageLink);
     assertEquals(
         'Opens in new tab', manageLink.getAttribute('aria-description'));
@@ -58,7 +57,7 @@ suite('extension controlled message', function() {
 
   test('tapping disable link invokes browser proxy', async function() {
     const disableLink =
-        message.shadowRoot!.querySelector<HTMLElement>('#disableLink');
+        message.shadowRoot.querySelector<HTMLElement>('#disableLink');
     assertTrue(!!disableLink);
     disableLink.click();
     const extensionId = await browserProxy.whenCalled('disableExtension');

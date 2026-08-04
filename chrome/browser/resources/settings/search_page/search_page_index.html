@@ -1,23 +1,10 @@
-<style include="settings-shared">
-  cr-view-manager [hidden-by-search],
-  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
-    display: none;
-  }
-
-  /* Necessary to display multiple cr-view-manager views (in this case "cards")
-     at the same time. */
-  cr-view-manager [slot=view]:not(.closing) {
-    position: initial;
-  }
-</style>
-
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
-    show-all$="[[shouldShowAll]]">
+    ?show-all="${this.shouldShowAll}">
   <settings-search-page slot="view" id="parent"
-      route-path$="[[routes_.SEARCH.path]]">
+      route-path="${this.routes_.SEARCH.path}">
   </settings-search-page>
 
-  <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]" restamp>
+  ${this.searchSettingsUpdateEnabled_ ? html`
     <settings-site-shortcuts-page slot="view" id="siteShortcuts">
     </settings-site-shortcuts-page>
 
@@ -26,12 +13,10 @@
 
     <settings-keyboard-shortcut-page slot="view" id="keyboardShortcut">
     </settings-keyboard-shortcut-page>
-  </template>
-
-  <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]" restamp>
+  ` : html`
     <settings-search-engines-page slot="view" id="searchEngines"
         data-parent-view-id="parent"
-        route-path$="[[routes_.SEARCH_ENGINES.path]]">
+        route-path="${this.routes_.SEARCH_ENGINES.path}">
     </settings-search-engines-page>
-  </template>
+  `}
 </cr-view-manager>
