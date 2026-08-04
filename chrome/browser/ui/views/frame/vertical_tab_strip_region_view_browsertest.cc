@@ -64,15 +64,13 @@ class VerticalTabStripRegionViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
   VerticalTabStripRegionView* region_view() {
-    return browser()
-        ->GetBrowserView()
-        .vertical_tab_strip_region_view_for_testing();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->vertical_tab_strip_region_view_for_testing();
   }
 
   RootTabCollectionNode* root_node() {
-    return browser()
-        ->GetBrowserView()
-        .vertical_tab_strip_region_view_for_testing()
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->vertical_tab_strip_region_view_for_testing()
         ->root_node_for_testing();
   }
 
@@ -81,7 +79,8 @@ class VerticalTabStripRegionViewTest
   }
 
   TabStrip* horizontal_tab_strip() {
-    return browser()->GetBrowserView().horizontal_tab_strip_for_testing();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->horizontal_tab_strip_for_testing();
   }
 
  protected:

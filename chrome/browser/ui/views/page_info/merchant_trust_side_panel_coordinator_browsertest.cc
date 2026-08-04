@@ -295,8 +295,9 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   // Close side panel.
   browser()->GetFeatures().side_panel_ui()->Close();
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->GetBrowserView().side_panel()->state() ==
-           SidePanel::State::kClosed;
+    return BrowserView::GetBrowserViewForBrowser(browser())
+               ->side_panel()
+               ->state() == SidePanel::State::kClosed;
   }));
   EXPECT_FALSE(IsMerchantTrustSidePanelOpen());
 

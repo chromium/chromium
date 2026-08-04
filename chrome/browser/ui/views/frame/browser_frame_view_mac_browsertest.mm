@@ -194,7 +194,8 @@ class VerticalTabStripDoubleClickMacTest
 IN_PROC_BROWSER_TEST_F(VerticalTabStripDoubleClickMacTest,
                        DoubleClickOnEmptyAreaZoomsWindow) {
   VerticalTabStripRegionView* view =
-      browser()->GetBrowserView().vertical_tab_strip_region_view_for_testing();
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->vertical_tab_strip_region_view_for_testing();
   ASSERT_TRUE(view);
   ASSERT_TRUE(view->GetVisible());
 

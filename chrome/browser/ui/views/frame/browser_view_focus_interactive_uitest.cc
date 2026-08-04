@@ -47,7 +47,8 @@ class BrowserViewFocusTest : public InProcessBrowserTest {
 
     std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>
         contents_container_views =
-            browser()->GetBrowserView().GetContentsContainerViews();
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetContentsContainerViews();
     ASSERT_EQ(2, contents_container_views.size());
 
     // Start from the view prior to the left contents web view in the focus
@@ -56,8 +57,9 @@ class BrowserViewFocusTest : public InProcessBrowserTest {
     focus_manager->SetFocusedView(contents_container_views[0]->contents_view());
     focus_manager->AdvanceFocus(true);
     views::View* start_view = focus_manager->GetFocusedView();
-    ASSERT_FALSE(
-        browser()->GetBrowserView().contents_container()->Contains(start_view));
+    ASSERT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
+                     ->contents_container()
+                     ->Contains(start_view));
 
     // Start advancing focus forwards.
     focus_manager->AdvanceFocus(false);
@@ -72,9 +74,8 @@ class BrowserViewFocusTest : public InProcessBrowserTest {
 
     focus_manager->AdvanceFocus(false);
     EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-    EXPECT_TRUE(browser()
-                    ->GetBrowserView()
-                    .multi_contents_view()
+    EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                    ->multi_contents_view()
                     ->resize_area_for_testing()
                     ->Contains(focus_manager->GetFocusedView()));
 
@@ -93,8 +94,9 @@ class BrowserViewFocusTest : public InProcessBrowserTest {
     // on the platform.
     focus_manager->AdvanceFocus(false);
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-    ASSERT_FALSE(browser()->GetBrowserView().contents_container()->Contains(
-        focus_manager->GetFocusedView()));
+    ASSERT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
+                     ->contents_container()
+                     ->Contains(focus_manager->GetFocusedView()));
 
     // Start advancing focus backwards.
     focus_manager->AdvanceFocus(true);
@@ -109,9 +111,8 @@ class BrowserViewFocusTest : public InProcessBrowserTest {
 
     focus_manager->AdvanceFocus(true);
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-    EXPECT_TRUE(browser()
-                    ->GetBrowserView()
-                    .multi_contents_view()
+    EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                    ->multi_contents_view()
                     ->resize_area_for_testing()
                     ->Contains(focus_manager->GetFocusedView()));
 

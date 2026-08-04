@@ -591,7 +591,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   // Wait for browser widget destruction. Below will crash due to raw_ptr
   // detection if the profile bubble outlives the browser.
   tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
-  views::test::WidgetDestroyedWaiter(browser()->GetBrowserView().GetWidget())
+  views::test::WidgetDestroyedWaiter(
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget())
       .Wait();
 }
 

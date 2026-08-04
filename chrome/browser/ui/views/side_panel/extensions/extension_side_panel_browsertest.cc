@@ -272,7 +272,9 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   }
 
   ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
-    return browser()->GetBrowserView().toolbar()->extensions_container();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->extensions_container();
   }
 
   void WaitForSidePanelToolbarCloseButtonVisibility(bool visible) {
@@ -298,8 +300,9 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
 
   void WaitForSidePanelClose() {
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return browser()->GetBrowserView().side_panel()->state() ==
-             SidePanel::State::kClosed;
+      return BrowserView::GetBrowserViewForBrowser(browser())
+                 ->side_panel()
+                 ->state() == SidePanel::State::kClosed;
     }));
   }
 

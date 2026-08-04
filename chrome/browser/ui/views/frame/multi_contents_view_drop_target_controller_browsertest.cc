@@ -54,10 +54,13 @@ class MultiContentsViewDropTargetControllerBrowserTest
 
   MultiContentsViewDropTargetController& controller() { return *controller_; }
   TabStrip* tabstrip() {
-    return browser()->GetBrowserView().horizontal_tab_strip_for_testing();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->horizontal_tab_strip_for_testing();
   }
 
-  int GetViewWidth() { return browser()->GetBrowserView().width(); }
+  int GetViewWidth() {
+    return BrowserView::GetBrowserViewForBrowser(browser())->width();
+  }
 
   void SimulateTabDrag(
       bool is_maximized,
@@ -76,7 +79,7 @@ class MultiContentsViewDropTargetControllerBrowserTest
 
     // Maximize the browser if necessary
     if (is_maximized) {
-      browser()->GetBrowserView().Maximize();
+      BrowserView::GetBrowserViewForBrowser(browser())->Maximize();
       EXPECT_TRUE(ui_test_utils::WaitForMaximized(browser()));
     }
 
