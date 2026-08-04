@@ -88,6 +88,16 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
   return web_view->EvaluateScript(frame_id, expression, await_promise, &result);
 }
 
+void SetSerializedTimeout(base::DictValue& timeouts,
+                          const std::string& key,
+                          base::TimeDelta timeout) {
+  if (timeout == base::TimeDelta::Max()) {
+    timeouts.Set(key, base::Value());
+  } else {
+    SetSafeInt(timeouts, key, timeout.InMilliseconds());
+  }
+}
+
 }  // namespace
 
 InitSessionParams::InitSessionParams(
@@ -193,16 +203,11 @@ base::DictValue CreateCapabilities(Session* session,
   } else {
     caps.Set("setWindowRect", true);
   }
-  if (session->script_timeout == base::TimeDelta::Max()) {
-    caps.SetByDottedPath("timeouts.script", base::Value());
-  } else {
-    SetSafeInt(caps, "timeouts.script",
-               session->script_timeout.InMilliseconds());
-  }
-  SetSafeInt(caps, "timeouts.pageLoad",
-             session->page_load_timeout.InMilliseconds());
-  SetSafeInt(caps, "timeouts.implicit",
-             session->implicit_wait.InMilliseconds());
+  base::DictValue timeouts;
+  SetSerializedTimeout(timeouts, "script", session->script_timeout);
+  SetSerializedTimeout(timeouts, "pageLoad", session->page_load_timeout);
+  SetSerializedTimeout(timeouts, "implicit", session->implicit_wait);
+  caps.Set("timeouts", std::move(timeouts));
   caps.Set("strictFileInteractability", session->strict_file_interactability);
   caps.Set(session->w3c_compliant ? "unhandledPromptBehavior"
                                   : "unexpectedAlertBehaviour",
@@ -1069,8 +1074,6 @@ Status ExecuteSetTimeoutsW3C(Session* session,
     base::TimeDelta timeout;
     const std::string& type = setting.first;
     if (setting.second.is_none()) {
-      if (type != "script")
-        return Status(kInvalidArgument, "timeout can not be null");
       timeout = base::TimeDelta::Max();
     } else {
       if (!GetOptionalSafeInt(params, setting.first, &timeout_ms_int64) ||
@@ -1105,13 +1108,9 @@ Status ExecuteGetTimeouts(Session* session,
                           const base::DictValue& params,
                           std::unique_ptr<base::Value>* value) {
   base::DictValue timeouts;
-  if (session->script_timeout == base::TimeDelta::Max())
-    timeouts.Set("script", base::Value());
-  else
-    SetSafeInt(timeouts, "script", session->script_timeout.InMilliseconds());
-
-  SetSafeInt(timeouts, "pageLoad", session->page_load_timeout.InMilliseconds());
-  SetSafeInt(timeouts, "implicit", session->implicit_wait.InMilliseconds());
+  SetSerializedTimeout(timeouts, "script", session->script_timeout);
+  SetSerializedTimeout(timeouts, "pageLoad", session->page_load_timeout);
+  SetSerializedTimeout(timeouts, "implicit", session->implicit_wait);
 
   *value = base::Value::ToUniquePtrValue(base::Value(std::move(timeouts)));
   return Status(kOk);
