@@ -327,13 +327,14 @@ TEST_F(AutofillAiManagerTest, OnAfterLoadedServerPredictions_TriggersFetch) {
   auto form_structure = std::make_unique<FormStructure>(
       test::GetFormData({.fields = {{.role = PASSPORT_NUMBER}}}));
   AddPredictionsToFormStructure(*form_structure, {{PASSPORT_NUMBER}});
+  FormGlobalId form_id = form_structure->global_id();
   test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
 
   EXPECT_CALL(
       pcontext_manager(),
       PrefetchContext(ElementsAre(EntityType(EntityTypeName::kPassport))));
 
-  manager().OnAfterLoadedServerPredictions(autofill_manager());
+  manager().OnAfterLoadedServerPredictions(autofill_manager(), {form_id});
 }
 
 // Tests that PrefetchContext is not executed if the enablement state is
@@ -352,10 +353,11 @@ TEST_F(AutofillAiManagerTest,
   auto form_structure = std::make_unique<FormStructure>(
       test::GetFormData({.fields = {{.role = PASSPORT_NUMBER}}}));
   AddPredictionsToFormStructure(*form_structure, {{PASSPORT_NUMBER}});
+  FormGlobalId form_id = form_structure->global_id();
   test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
 
   EXPECT_CALL(pcontext_manager(), PrefetchContext).Times(0);
-  manager().OnAfterLoadedServerPredictions(autofill_manager());
+  manager().OnAfterLoadedServerPredictions(autofill_manager(), {form_id});
 }
 
 // Tests that PrefetchContext only fetches non-SPII types if the client
@@ -382,11 +384,12 @@ TEST_F(AutofillAiManagerTest,
                   {.role = FLIGHT_RESERVATION_FLIGHT_NUMBER}}}));
   AddPredictionsToFormStructure(
       *form_structure, {{PASSPORT_NUMBER}, {FLIGHT_RESERVATION_FLIGHT_NUMBER}});
+  FormGlobalId form_id = form_structure->global_id();
   test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
 
   EXPECT_CALL(pcontext_manager(), PrefetchContext(ElementsAre(EntityType(
                                       EntityTypeName::kFlightReservation))));
-  manager().OnAfterLoadedServerPredictions(autofill_manager());
+  manager().OnAfterLoadedServerPredictions(autofill_manager(), {form_id});
 }
 
 // Tests that IPH should be displayed if the user is opted out of the feature,

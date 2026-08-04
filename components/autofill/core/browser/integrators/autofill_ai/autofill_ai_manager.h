@@ -103,7 +103,9 @@ class AutofillAiManager
                                        ukm::SourceId ukm_source_id);
 
   // AutofillManager::Observer:
-  void OnAfterLoadedServerPredictions(AutofillManager& manager) override;
+  void OnAfterLoadedServerPredictions(
+      AutofillManager& manager,
+      base::span<const FormGlobalId> forms) override;
 
   // AutofillAiPersonalContextAccessManager::Observer:
   void OnPrefetchContextComplete(

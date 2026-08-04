@@ -54,6 +54,7 @@ using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
 using ::testing::StrictMock;
+using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 using ::testing::VariantWith;
 using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
@@ -408,8 +409,10 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     base::RunLoop run_loop;
     EXPECT_CALL(observer(), OnBeforeFormsSeen(m, ElementsAre(f, g),
                                               ElementsAre(id_to_remove)));
-    EXPECT_CALL(observer(), OnBeforeLoadedServerPredictions(m));
-    EXPECT_CALL(observer(), OnAfterLoadedServerPredictions(m));
+    EXPECT_CALL(observer(),
+                OnBeforeLoadedServerPredictions(m, ElementsAre(f, g)));
+    EXPECT_CALL(observer(),
+                OnAfterLoadedServerPredictions(m, ElementsAre(f, g)));
     autofill_manager().OnFormsSeen(forms, {id_to_remove},
                                    AutofillManagerTestApi::pass_key());
     EXPECT_CALL(observer(), OnAfterFormsSeen(m, ElementsAre(f, g),
@@ -425,8 +428,10 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(observer(), OnBeforeLanguageDetermined(m));
-    EXPECT_CALL(observer(), OnBeforeLoadedServerPredictions(m));
-    EXPECT_CALL(observer(), OnAfterLoadedServerPredictions(m));
+    EXPECT_CALL(observer(),
+                OnBeforeLoadedServerPredictions(m, UnorderedElementsAre(f, g)));
+    EXPECT_CALL(observer(),
+                OnAfterLoadedServerPredictions(m, UnorderedElementsAre(f, g)));
     autofill_manager().OnLanguageDetermined([] {
       translate::LanguageDetectionDetails details;
       details.adopted_language = "en";
@@ -827,7 +832,8 @@ TEST_F(
   std::vector<FormData> forms = CreateTestForms(1);
   base::RunLoop run_loop;
   EXPECT_CALL(observer_,
-              OnBeforeLoadedServerPredictions(Ref(autofill_manager())));
+              OnBeforeLoadedServerPredictions(
+                  Ref(autofill_manager()), ElementsAre(forms[0].global_id())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(autofill_manager()), forms[0].global_id(),
@@ -842,7 +848,8 @@ TEST_F(
             return true;
           });
   EXPECT_CALL(observer_,
-              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
+              OnAfterLoadedServerPredictions(Ref(autofill_manager()),
+                                             ElementsAre(forms[0].global_id())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
   std::move(run_loop).Run();
@@ -858,7 +865,8 @@ TEST_F(AutofillManagerTest_OnLoadedServerPredictionsObserver, TabInActorMode) {
                              FieldTypeSource::kHeuristicsOrAutocomplete,
                              /*small_forms_were_parsed=*/true));
   EXPECT_CALL(observer_,
-              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
+              OnAfterLoadedServerPredictions(Ref(autofill_manager()),
+                                             ElementsAre(forms[0].global_id())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
   std::move(run_loop).Run();
@@ -870,7 +878,8 @@ TEST_F(
   std::vector<FormData> forms = CreateTestForms(1);
   base::RunLoop run_loop;
   EXPECT_CALL(observer_,
-              OnBeforeLoadedServerPredictions(Ref(autofill_manager())));
+              OnBeforeLoadedServerPredictions(
+                  Ref(autofill_manager()), ElementsAre(forms[0].global_id())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(autofill_manager()), forms[0].global_id(),
@@ -892,7 +901,8 @@ TEST_F(
             return true;
           });
   EXPECT_CALL(observer_,
-              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
+              OnAfterLoadedServerPredictions(Ref(autofill_manager()),
+                                             ElementsAre(forms[0].global_id())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   // We expect 2 calls to OnFormProcessed() here: the first is triggered by the
   // local heuristics parsing during OnFormsSeen(), and the second is triggered

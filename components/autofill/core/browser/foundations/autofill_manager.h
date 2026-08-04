@@ -213,8 +213,15 @@ class AutofillManager
         FormGlobalId form,
         FieldGlobalId field) {}
 
-    virtual void OnBeforeLoadedServerPredictions(AutofillManager& manager) {}
-    virtual void OnAfterLoadedServerPredictions(AutofillManager& manager) {}
+    // The set of `forms` for the before and after call are guaranteed to be
+    // identical, even in case the server did not send responses for some forms
+    // or the server request failed.
+    virtual void OnBeforeLoadedServerPredictions(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> forms) {}
+    virtual void OnAfterLoadedServerPredictions(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> forms) {}
 
     // Fired when the field types predictions of a form *may* have changed.
     // At the moment, we cannot distinguish whether autocomplete attributes or

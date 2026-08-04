@@ -403,7 +403,8 @@ void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
 }
 
 void AutofillAiManager::OnAfterLoadedServerPredictions(
-    AutofillManager& manager) {
+    AutofillManager& manager,
+    base::span<const FormGlobalId> forms) {
   if (MayPerformAutofillAiAction(*client_,
                                  AutofillAiAction::kAmbientAutofill)) {
     PrefetchAmbientAutofillContext(*client_, manager);
