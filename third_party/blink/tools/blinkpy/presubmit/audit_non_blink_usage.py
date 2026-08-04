@@ -569,6 +569,12 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/common/web_package/web_package_request_matcher.cc'
+        ],
+        'allowed': ['net::structured_headers::Item'],
+    },
+    {
         'paths': ['third_party/blink/public/platform/web_url.h'],
         'allowed': [
             # Conversion functions from/to WebURL for non-blink code.

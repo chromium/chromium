@@ -487,8 +487,9 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
 
     if (!value.params.empty()) {
       for (const auto& param : value.params) {
-        if (param.first == "report-to" && param.second.is_token()) {
-          endpoint = String(param.second.GetString());
+        if (const std::string* token = param.second.GetIfToken();
+            param.first == "report-to" && token) {
+          endpoint = String(*token);
         }
       }
     }
@@ -501,24 +502,25 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
       }
 
       String allowlist_item;
-      if (parameterized_item.item.is_token()) {
+      if (const std::string* token_value =
+              parameterized_item.item.GetIfToken()) {
         // All special keyword appears as token, i.e. self, src and *.
-        const std::string& token_value = parameterized_item.item.GetString();
-        if (token_value != "*" && token_value != "self") {
+        if (*token_value != "*" && *token_value != "self") {
           logger_.Warn(UNSAFE_TODO(String::Format(
               "Invalid allowlist item(%s) for feature %s. Allowlist item "
               "must be *, self or quoted url.",
-              token_value.c_str(), feature_name)));
+              token_value->c_str(), feature_name)));
           continue;
         }
 
-        if (token_value == "*") {
+        if (*token_value == "*") {
           allowlist_item = "*";
         } else {
-          allowlist_item = String::Format("'%s'", token_value.c_str());
+          allowlist_item = String::Format("'%s'", token_value->c_str());
         }
-      } else if (parameterized_item.item.is_string()) {
-        allowlist_item = parameterized_item.item.GetString().c_str();
+      } else if (const std::string* str =
+                     parameterized_item.item.GetIfString()) {
+        allowlist_item = str->c_str();
       } else {
         logger_.Warn(UNSAFE_TODO(
             String::Format("Invalid allowlist item for feature %s. Allowlist "

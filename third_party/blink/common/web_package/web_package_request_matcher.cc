@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
@@ -263,9 +264,15 @@ std::unique_ptr<ContentNegotiationAlgorithm> GetContentNegotiationAlgorithm(
   return nullptr;
 }
 
+std::string* GetIfStringOrToken(
+    net::structured_headers::Item& item LIFETIME_BOUND) {
+  std::string* string = item.GetIfString();
+  return string ? string : item.GetIfToken();
+}
+
 // https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variants
 std::optional<std::vector<std::pair<std::string, std::vector<std::string>>>>
-ParseVariants(const std::string_view& str) {
+ParseVariants(std::string_view str) {
   // Compatibility note: Draft 4 of Variants
   // (https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variants)
   // uses a custom format for the Variants-04 header, which this method attempts
@@ -290,32 +297,35 @@ ParseVariants(const std::string_view& str) {
   // variant-axis.  The first list-member of the inner-list is interpreted as
   // the field-name, and the remaining list-members are the available-values.
   // [spec text]
-  for (const auto& inner_list : *parsed) {
+  for (auto& inner_list : *parsed) {
     auto it = inner_list.begin();
     // Any list-member that is a token is interpreted as a string containing the
     // same characters.
     // [spec text]
-    if (!it->is_string() && !it->is_token())
+    std::string* field_name = GetIfStringOrToken(*it);
+    if (!field_name) {
       return std::nullopt;
-    std::string field_name = it->GetString();
+    }
     std::vector<std::string> available_values;
     available_values.reserve(inner_list.size() - 1);
     for (++it; it != inner_list.end(); ++it) {
       // Any list-member that is a token is interpreted as a string containing
       // the same characters.
       // [spec text]
-      if (!it->is_string() && !it->is_token())
+      std::string* value = GetIfStringOrToken(*it);
+      if (!value) {
         return std::nullopt;
-      available_values.push_back(it->GetString());
+      }
+      available_values.emplace_back(std::move(*value));
     }
-    variants.push_back(std::make_pair(field_name, available_values));
+    variants.emplace_back(std::move(*field_name), std::move(available_values));
   }
   return variants;
 }
 
 // https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variant-key
 std::optional<std::vector<std::vector<std::string>>> ParseVariantKey(
-    const std::string_view& str,
+    std::string_view str,
     size_t num_variant_axes) {
   // Compatibility note: Draft 4 of Variants
   // (https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variant-key)
@@ -340,17 +350,19 @@ std::optional<std::vector<std::vector<std::string>>> ParseVariantKey(
   // every element of each inner-list must be a string. If not, the client MUST
   // treat the representation as having no Variant-Key header field.
   // [spec text]
-  for (const auto& inner_list : *parsed) {
+  for (auto& inner_list : *parsed) {
     std::vector<std::string> list_members;
     list_members.reserve(inner_list.size());
     if (inner_list.size() != num_variant_axes)
       return std::nullopt;
-    for (const net::structured_headers::Item& item : inner_list) {
-      if (!item.is_string() && !item.is_token())
+    for (net::structured_headers::Item& item : inner_list) {
+      std::string* value = GetIfStringOrToken(item);
+      if (!value) {
         return std::nullopt;
-      list_members.push_back(item.GetString());
+      }
+      list_members.emplace_back(std::move(*value));
     }
-    variant_keys.push_back(list_members);
+    variant_keys.emplace_back(std::move(list_members));
   }
   return variant_keys;
 }
