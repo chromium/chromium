@@ -443,6 +443,20 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    public void testResetLoadState_ResetsTwoPagesPerRow() {
+        createPdfCoordinator();
+        mPdfCoordinator.toggleTwoPagesPerRow(true, 1.5f, 2);
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertEquals(2, shadowPdfView.mPagesPerRow);
+
+        mPdfCoordinator.resetLoadState();
+
+        assertEquals(1, shadowPdfView.mPagesPerRow);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testToggleTwoPagesPerRow_PdfViewNull() {
         createPdfCoordinator();
         mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(null);

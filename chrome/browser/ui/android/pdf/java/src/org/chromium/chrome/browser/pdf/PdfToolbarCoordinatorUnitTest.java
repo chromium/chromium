@@ -388,6 +388,64 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
+    public void testTwoPagesPerRowReset() {
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        moreMenuButton.performClick();
+
+        View contentView = mSpyPopupWindow.getContentView();
+        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+
+        View itemView = listView.getAdapter().getView(0, null, listView);
+        itemView.performClick();
+
+        mPdfToolbarCoordinator.resetTwoPagesPerRow();
+
+        mSpyPopupWindow = spy(new ChromePopupWindow(mActivity));
+        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
+        doNothing()
+                .when(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+
+        moreMenuButton.performClick();
+        contentView = mSpyPopupWindow.getContentView();
+        listView = contentView.findViewById(R.id.menu_list);
+
+        itemView = listView.getAdapter().getView(0, null, listView);
+        TextView textView = itemView.findViewById(R.id.menu_item_text);
+        assertEquals(
+                mActivity.getString(R.string.pdf_two_page_view), textView.getText().toString());
+    }
+
+    @Test
+    public void testOnDocumentLoaded_resetsTwoPagesPerRow() {
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        moreMenuButton.performClick();
+
+        View contentView = mSpyPopupWindow.getContentView();
+        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+
+        View itemView = listView.getAdapter().getView(0, null, listView);
+        itemView.performClick();
+
+        mPdfToolbarCoordinator.onDocumentLoaded(100, "test_title.pdf");
+
+        mSpyPopupWindow = spy(new ChromePopupWindow(mActivity));
+        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
+        doNothing()
+                .when(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+
+        moreMenuButton.performClick();
+        contentView = mSpyPopupWindow.getContentView();
+        listView = contentView.findViewById(R.id.menu_list);
+
+        itemView = listView.getAdapter().getView(0, null, listView);
+        TextView textView = itemView.findViewById(R.id.menu_item_text);
+        assertEquals(
+                mActivity.getString(R.string.pdf_two_page_view), textView.getText().toString());
+    }
+
+    @Test
     public void testAdaptiveHiding() {
         PdfToolbar toolbar = mPdfPageView.findViewById(R.id.pdf_toolbar);
         org.junit.Assert.assertNotNull("Toolbar should not be null", toolbar);

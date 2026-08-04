@@ -134,6 +134,20 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
                 newState, currentZoomFactor, Math.max(0, currentPageNumber - 1));
     }
 
+    /**
+     * Resets TWO_PAGES_PER_ROW_ACTIVE to false.
+     *
+     * <p>Unlike ZOOM_LEVEL (automatically reset via PdfView's viewport change listener) and
+     * EDIT_MODE_ACTIVE (automatically reset via EditablePdfViewerFragment's edit mode callbacks),
+     * AndroidX PdfView does not provide a callback when the pages-per-row state changes or resets.
+     * Since PdfView defaults to single-page view when a document is loaded, reloaded, or reset,
+     * two-pages-per-row uniquely requires manual resets in all these places to keep the toolbar
+     * state in sync.
+     */
+    void resetTwoPagesPerRow() {
+        mModel.set(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, false);
+    }
+
     private void showMenu(View anchorView) {
         ModelList modelList = new ModelList();
 
@@ -283,6 +297,9 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
     public void onDocumentLoaded(int pageCount, String title) {
         mModel.set(PdfToolbarProperties.TOTAL_PAGE_COUNT, pageCount);
         mModel.set(PdfToolbarProperties.TITLE, title);
+        // Manually reset two-pages-per-row state since PdfView defaults to single-page view
+        // on load and does not provide a callback when pages-per-row resets.
+        resetTwoPagesPerRow();
     }
 
     /**
