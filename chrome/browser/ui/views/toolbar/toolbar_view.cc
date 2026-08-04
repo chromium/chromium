@@ -400,8 +400,8 @@ void ToolbarView::Init() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (!features::IsWebUIMediaButtonEnabled()) {
     media_button = std::make_unique<MediaToolbarButtonView>(
-        browser_view_, std::make_unique<MediaToolbarButtonContextualMenu>(
-                           browser_->GetProfile()));
+        browser_view_,
+        std::make_unique<MediaToolbarButtonContextualMenu>(browser_));
   }
 #endif
 

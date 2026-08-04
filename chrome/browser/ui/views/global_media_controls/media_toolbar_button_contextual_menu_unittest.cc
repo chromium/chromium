@@ -8,26 +8,40 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/browser_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
-                                             public testing::Test {
+                                             public BrowserWithTestWindowTest {
  public:
-  MediaToolbarButtonContextualMenuTest() = default;
+  MediaToolbarButtonContextualMenuTest() : debugger_(profile()) {}
   ~MediaToolbarButtonContextualMenuTest() override = default;
 
   void SetUp() override {
-    menu_ = std::make_unique<MediaToolbarButtonContextualMenu>(profile());
+    BrowserWithTestWindowTest::SetUp();
+    media_router::MockMediaRouter* router =
+        static_cast<media_router::MockMediaRouter*>(
+            media_router::ChromeMediaRouterFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    profile(), base::BindRepeating(
+                                   &media_router::MockMediaRouter::Create)));
+
+    menu_ = std::make_unique<MediaToolbarButtonContextualMenu>(browser());
+
+    ON_CALL(*router, GetDebugger())
+        .WillByDefault(testing::ReturnRef(debugger_));
   }
 
-  void TearDown() override { menu_.reset(); }
-
-  TestingProfile* profile() { return &profile_; }
+  void TearDown() override {
+    menu_.reset();
+    BrowserWithTestWindowTest::TearDown();
+  }
 
   void ExecuteToggleOtherSessionCommand() {
     menu_->ExecuteCommand(IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS, 0);
@@ -38,12 +52,18 @@ class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
         IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS);
   }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  void ExecuteReportIssueCommand() {
+    menu_->ExecuteCommand(IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE, 0);
+  }
+#endif
+
   void TestOtherSessionItemIsDisabledWhenPolicyIsSet(bool policy_value) {
     profile()->GetTestingPrefService()->SetManagedPref(
         media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
         std::make_unique<base::Value>(policy_value));
 
-    auto menu = std::make_unique<MediaToolbarButtonContextualMenu>(profile());
+    auto menu = std::make_unique<MediaToolbarButtonContextualMenu>(browser());
     auto model = menu->CreateMenuModel();
     ASSERT_EQ(model->GetCommandIdAt(0),
               IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS);
@@ -51,13 +71,12 @@ class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  media_router::MediaRouterDebuggerImpl debugger_;
   std::unique_ptr<MediaToolbarButtonContextualMenu> menu_;
 };
 
 TEST_F(MediaToolbarButtonContextualMenuTest, ShowMenu) {
-  auto menu = std::make_unique<MediaToolbarButtonContextualMenu>(profile());
+  auto menu = std::make_unique<MediaToolbarButtonContextualMenu>(browser());
   auto model = menu->CreateMenuModel();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_EQ(model->GetItemCount(), 2u);
@@ -73,10 +92,10 @@ TEST_F(MediaToolbarButtonContextualMenuTest, ShowMenu) {
 }
 
 // The kMediaRouterShowCastSessionsStartedByOtherDevices pref is not registered
-// on Android.
+// Android.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(MediaToolbarButtonContextualMenuTest, ToggleOtherSessionsItem) {
-  PrefService* pref_service = profile()->GetPrefs();
+  PrefService* pref_service = browser()->GetProfile()->GetPrefs();
   pref_service->SetBoolean(
       media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
       false);
@@ -91,6 +110,14 @@ TEST_F(MediaToolbarButtonContextualMenuTest, ToggleOtherSessionsItem) {
   EXPECT_FALSE(IsOtherSessionItemChecked());
   EXPECT_FALSE(pref_service->GetBoolean(
       media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices));
+}
+#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(MediaToolbarButtonContextualMenuTest, ExecuteReportIssueCommand) {
+  ExecuteReportIssueCommand();
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+            GURL("chrome://cast-feedback"));
 }
 #endif
 

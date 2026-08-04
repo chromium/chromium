@@ -11,13 +11,13 @@
 #include "build/branding_buildflags.h"
 #include "ui/menus/simple_menu_model.h"
 
-class Profile;
+class Browser;
 
 // The contextual menu of the media toolbar button has two items, both of which
 // are related to Cast.
 class MediaToolbarButtonContextualMenu : public ui::SimpleMenuModel::Delegate {
  public:
-  explicit MediaToolbarButtonContextualMenu(Profile* profile);
+  explicit MediaToolbarButtonContextualMenu(Browser* browser);
   MediaToolbarButtonContextualMenu(const MediaToolbarButtonContextualMenu&) =
       delete;
   MediaToolbarButtonContextualMenu& operator=(
@@ -42,6 +42,6 @@ class MediaToolbarButtonContextualMenu : public ui::SimpleMenuModel::Delegate {
   void ReportIssue();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Browser> browser_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTEXTUAL_MENU_H_
