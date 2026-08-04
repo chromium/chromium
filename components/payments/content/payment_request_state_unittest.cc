@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/payments/content/initialization_task.h"
 #include "components/payments/content/payment_app_factory.h"
 #include "components/payments/content/payment_app_service.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -533,6 +534,50 @@ TEST_F(PaymentRequestStateTest, FilteredHomeWorkAddressProfiles) {
   EXPECT_EQ(state()->shipping_profiles().size(), 1U);
   EXPECT_EQ(state()->shipping_profiles()[0]->record_type(),
             autofill::AutofillProfile::RecordType::kLocalOrSyncable);
+}
+
+class PaymentRequestStateSynchronousDestructionTest
+    : public PaymentRequestStateTest,
+      public InitializationTask::Observer {
+ public:
+  // InitializationTask::Observer:
+  void OnInitialized(InitializationTask* initialization_task) override {
+    state_.reset();
+    if (on_initialized_) {
+      std::move(on_initialized_).Run();
+    }
+  }
+
+  base::OnceClosure on_initialized_;
+};
+
+TEST_F(PaymentRequestStateSynchronousDestructionTest,
+       OnDoneCreatingPaymentApps) {
+  auto app_service = std::make_unique<PaymentAppService>(&context_);
+  app_service->AddFactoryForTesting(
+      std::make_unique<TestAppFactory>("https://example.test"));
+
+  base::RunLoop run_loop;
+  on_initialized_ = run_loop.QuitClosure();
+
+  RecreateState(mojom::PaymentOptions::New(), CreateDefaultDetails(),
+                GetMethodDataForUrlMethod("https://example.test"),
+                std::move(app_service));
+
+  // PaymentRequestState's constructor in RecreateState immediately calls
+  // app_service_->Create(), which kicks off payment app factories before
+  // callers can register as an InitializationTask::Observer. We rely on the
+  // fact that default payment app factories in PaymentAppService complete
+  // asynchronously on the message loop, so will not complete until we yield the
+  // run loop below.
+  state()->AddInitializationObserver(this);
+
+  run_loop.Run();
+
+  // OnDoneCreatingPaymentApps should have run and called the initialization
+  // observers, which then synchronously deleted the state. This should not
+  // cause a UAF.
+  EXPECT_FALSE(state_);
 }
 
 }  // namespace

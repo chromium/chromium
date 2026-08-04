@@ -211,7 +211,14 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
       [](const auto& app) { return app->HasEnrolledInstrument(); });
   are_requested_methods_supported_ |= !available_apps_.empty();
   NotifyOnGetAllPaymentAppsFinished();
+
+  // NotifyInitialized() can synchronously trigger observers that destroy the
+  // payment window's WebContents and delete `this`.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   NotifyInitialized();
+  if (!weak_this) {
+    return;
+  }
 
   // Fulfill the pending CanMakePayment call.
   if (can_make_payment_callback_)
