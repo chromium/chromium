@@ -34,15 +34,6 @@ class MEDIA_GPU_EXPORT AV1BitstreamBuilder {
   static AV1BitstreamBuilder BuildFrameHeaderOBU(const SequenceHeader& seq_hdr,
                                                  const FrameHeader& pic_hdr);
 
-  // Pack the HDR content light level metadata OBU. Spec 5.8.1 and 5.8.3.
-  static AV1BitstreamBuilder BuildHDRCLLMetadataOBU(
-      const Libgav1ObuMetadataHdrCll& hdr_cll);
-
-  // Pack the HDR mastering display colour volume metadata OBU. Spec 5.8.1 and
-  // 5.8.4.
-  static AV1BitstreamBuilder BuildHDRMDCVMetadataOBU(
-      const Libgav1ObuMetadataHdrMdcv& hdr_mdcv);
-
   void Write(uint64_t val, int num_bits);
   void WriteBool(bool val);
   // Spec 5.3.2.
@@ -96,8 +87,6 @@ struct MEDIA_GPU_EXPORT AV1BitstreamBuilder::SequenceHeader {
   bool enable_superres = false;
   bool enable_cdef = false;
   bool enable_restoration = false;
-  // Bit depth of the coded stream. Must be 8 or 10, or 12 for profile 2.
-  uint8_t bit_depth = 8;
   bool color_description_present_flag = false;
   Libgav1ColorPrimary color_primaries = kLibgav1ColorPrimaryBt709;
   Libgav1TransferCharacteristics transfer_characteristics =
