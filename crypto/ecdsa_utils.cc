@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
@@ -110,11 +111,7 @@ std::optional<std::vector<uint8_t>> ConvertEcdsaRawComponentsToDer(
       !ECDSA_SIG_marshal(cbb.get(), ecdsa_sig.get())) {
     return std::nullopt;
   }
-  // SAFETY: `CBB_data` returns a pointer to a buffer of `CBB_len` bytes
-  // allocated and owned by `cbb`. This buffer is guaranteed to be valid and
-  // populated with the serialized signature.
-  return UNSAFE_BUFFERS(std::vector<uint8_t>(
-      CBB_data(cbb.get()), CBB_data(cbb.get()) + CBB_len(cbb.get())));
+  return base::ToVector(CbbAsSpan(cbb.get()));
 }
 
 }  // namespace crypto

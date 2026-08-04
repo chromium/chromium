@@ -6,12 +6,15 @@
 #define CRYPTO_OPENSSL_UTIL_H_
 
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "crypto/crypto_export.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 namespace crypto {
 
@@ -84,6 +87,13 @@ class OpenSSLErrStackTracer {
  private:
   const base::Location location_;
 };
+
+// Returns a span over the data in |cbb|.
+inline base::span<const uint8_t> CbbAsSpan(const CBB* cbb) {
+  // SAFETY: BoringSSL ensures that CBBs always have CBB_len() bytes available
+  // at their CBB_data() pointer.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(CBB_data(cbb), CBB_len(cbb)));
+}
 
 }  // namespace crypto
 

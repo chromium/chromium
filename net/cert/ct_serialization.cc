@@ -8,6 +8,8 @@
 
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/merkle_tree_leaf.h"
 #include "net/cert/signed_certificate_timestamp.h"
@@ -146,8 +148,7 @@ bool EncodeDigitallySigned(const DigitallySigned& input,
     return false;
   }
 
-  output->append(reinterpret_cast<const char*>(CBB_data(output_cbb.get())),
-                 CBB_len(output_cbb.get()));
+  output->append(base::as_string_view(crypto::CbbAsSpan(output_cbb.get())));
   return true;
 }
 
@@ -205,8 +206,7 @@ bool EncodeSignedEntry(const SignedEntryData& input, std::string* output) {
     return false;
   }
 
-  output->append(reinterpret_cast<const char*>(CBB_data(output_cbb.get())),
-                 CBB_len(output_cbb.get()));
+  output->append(base::as_string_view(crypto::CbbAsSpan(output_cbb.get())));
   return true;
 }
 
@@ -247,8 +247,7 @@ bool EncodeTreeLeaf(const MerkleTreeLeaf& leaf, std::string* output) {
       !CBB_flush(output_cbb.get())) {
     return false;
   }
-  output->append(reinterpret_cast<const char*>(CBB_data(output_cbb.get())),
-                 CBB_len(output_cbb.get()));
+  output->append(base::as_string_view(crypto::CbbAsSpan(output_cbb.get())));
   return true;
 }
 
@@ -275,8 +274,7 @@ bool EncodeV1SCTSignedData(base::Time timestamp,
       !CBB_flush(output_cbb.get())) {
     return false;
   }
-  output->append(reinterpret_cast<const char*>(CBB_data(output_cbb.get())),
-                 CBB_len(output_cbb.get()));
+  output->append(base::as_string_view(crypto::CbbAsSpan(output_cbb.get())));
   return true;
 }
 
@@ -292,8 +290,7 @@ bool EncodeTreeHeadSignature(const SignedTreeHead& signed_tree_head,
                      signed_tree_head.sha256_root_hash.size())) {
     return false;
   }
-  output->append(reinterpret_cast<const char*>(CBB_data(output_cbb.get())),
-                 CBB_len(output_cbb.get()));
+  output->append(base::as_string_view(crypto::CbbAsSpan(output_cbb.get())));
   return true;
 }
 
@@ -368,8 +365,7 @@ bool EncodeSignedCertificateTimestamp(
       !CBB_flush(output_cbb.get())) {
     return false;
   }
-  output->append(reinterpret_cast<const char*>(CBB_data(output_cbb.get())),
-                 CBB_len(output_cbb.get()));
+  output->append(base::as_string_view(crypto::CbbAsSpan(output_cbb.get())));
   return true;
 }
 
@@ -400,8 +396,7 @@ bool EncodeSCTListForTesting(const std::vector<std::string>& scts,
   if (!CBB_flush(output_cbb.get())) {
     return false;
   }
-  output->append(reinterpret_cast<const char*>(CBB_data(output_cbb.get())),
-                 CBB_len(output_cbb.get()));
+  output->append(base::as_string_view(crypto::CbbAsSpan(output_cbb.get())));
   return true;
 }
 

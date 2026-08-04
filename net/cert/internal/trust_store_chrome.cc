@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "crypto/keypair.h"
+#include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
@@ -939,13 +940,10 @@ std::optional<std::vector<uint8_t>> RelativeOidBytesFromText(
   bssl::ScopedCBB cbb;
   if (!CBB_init(cbb.get(), 32) ||
       !CBB_add_asn1_relative_oid_from_text(cbb.get(), oid_text.data(),
-                                           oid_text.size()) ||
-      !CBB_flush(cbb.get())) {
+                                           oid_text.size())) {
     return std::nullopt;
   }
-  // SAFETY: CBB_len is guaranteed to return the proper size for CBB_data.
-  return base::ToVector(
-      UNSAFE_BUFFERS(base::span(CBB_data(cbb.get()), CBB_len(cbb.get()))));
+  return base::ToVector(crypto::CbbAsSpan(cbb.get()));
 }
 
 // Returns false if `signer` can never be usable in the current configuration,

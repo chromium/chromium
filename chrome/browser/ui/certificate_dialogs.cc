@@ -14,15 +14,18 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
+#include "crypto/openssl_util.h"
 #include "net/base/filename_util.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -213,8 +216,7 @@ std::string Exporter::GetCMSString(size_t start, size_t end) const {
       !PKCS7_bundle_raw_certificates(cbb.get(), stack.get())) {
     return std::string();
   }
-  return std::string(reinterpret_cast<const char*>(CBB_data(cbb.get())),
-                     CBB_len(cbb.get()));
+  return std::string(base::as_string_view(crypto::CbbAsSpan(cbb.get())));
 }
 
 }  // namespace

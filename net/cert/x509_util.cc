@@ -603,13 +603,9 @@ std::vector<uint8_t> AppendOidComponent(base::span<const uint8_t> oid,
   CHECK(CBB_init(cbb.get(),
                  /*initial_capacity=*/oid.size() + kMaxBase128Uint64Size) &&
         CBB_add_bytes(cbb.get(), oid.data(), oid.size()) &&
-        CBB_add_asn1_oid_component(cbb.get(), component) &&
-        CBB_flush(cbb.get()));
+        CBB_add_asn1_oid_component(cbb.get(), component));
 
-  // SAFETY: CBB_data(cbb) returns a pointer to the written data with length
-  // CBB_len(cbb).
-  return base::ToVector(UNSAFE_BUFFERS(
-      base::span<const uint8_t>(CBB_data(cbb.get()), CBB_len(cbb.get()))));
+  return base::ToVector(crypto::CbbAsSpan(cbb.get()));
 }
 
 std::optional<uint64_t> LastOidComponentFromBase(

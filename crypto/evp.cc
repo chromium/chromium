@@ -5,17 +5,8 @@
 #include "crypto/evp.h"
 
 #include "base/containers/to_vector.h"
+#include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
-
-namespace {
-
-base::span<const uint8_t> CBBToSpan(CBB* cbb) {
-  // SAFETY: BoringSSL ensures that CBBs always have CBB_len() bytes available
-  // at their CBB_data() pointer.
-  UNSAFE_BUFFERS(return base::span<const uint8_t>(CBB_data(cbb), CBB_len(cbb));)
-}
-
-}  // namespace
 
 namespace crypto::evp {
 
@@ -44,7 +35,7 @@ std::vector<uint8_t> PublicKeyToBytes(const EVP_PKEY* key) {
   CHECK(CBB_init(cbb.get(), 0));
   CHECK(EVP_marshal_public_key(cbb.get(), key));
 
-  return base::ToVector(CBBToSpan(cbb.get()));
+  return base::ToVector(CbbAsSpan(cbb.get()));
 }
 
 std::vector<uint8_t> PrivateKeyToBytes(const EVP_PKEY* key) {
@@ -52,7 +43,7 @@ std::vector<uint8_t> PrivateKeyToBytes(const EVP_PKEY* key) {
   CHECK(CBB_init(cbb.get(), 0));
   CHECK(EVP_marshal_private_key(cbb.get(), key));
 
-  return base::ToVector(CBBToSpan(cbb.get()));
+  return base::ToVector(CbbAsSpan(cbb.get()));
 }
 
 }  // namespace crypto::evp
