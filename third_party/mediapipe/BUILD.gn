@@ -74,6 +74,10 @@ config("mediapipe_flags") {
   }
 }
 
+config("com_google_audio_tools_config") {
+  include_dirs = [ "src/third_party/com_google_audio_tools" ]
+}
+
 proto_library("any_lite_proto_impl") {
   proto_in_dir = "shims/protobuf"
   cc_generator_options = "lite=true:"
@@ -176,7 +180,7 @@ source_set("com_google_audio_tools_portable") {
     "src/third_party/com_google_audio_tools/audio/dsp/portable/number_util.c",
     "src/third_party/com_google_audio_tools/audio/dsp/portable/number_util.h",
   ]
-  include_dirs = [ "src/third_party/com_google_audio_tools" ]
+  public_configs = [ ":com_google_audio_tools_config" ]
 }
 source_set("com_google_audio_tools") {
   sources = [
@@ -211,7 +215,7 @@ source_set("com_google_audio_tools") {
     defines = [ "_USE_MATH_DEFINES" ]
   }
   public_deps = [ "//third_party/abseil-cpp:absl" ]
-  include_dirs = [ "src/third_party/com_google_audio_tools" ]
+  public_configs = [ ":com_google_audio_tools_config" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
@@ -273,7 +277,6 @@ tflite_source_set("mediapipe_tasks_always_link") {
         [ "src/mediapipe/calculators/tensor/inference_calculator_xnnpack.cc" ]
   }
 
-  include_dirs = [ "src/third_party/com_google_audio_tools" ]
   deps = [
     ":com_google_audio_tools",
     ":mediapipe_flatbuffer_schema",
