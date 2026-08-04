@@ -79,6 +79,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/web/model",
     "//ios/web/public",
+    "//net",
   ]
 }
 
@@ -150,6 +151,8 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//net",
+    "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
     "//third_party/omnibox_proto",
