@@ -887,8 +887,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testThereCanOnlyBeOneFloaty) {
             tab0_instance->GetPanelState().kind);
 }
 
-// TODO(crbug.com/536051726): Re-enable the test on Linux.
-#if defined(NOT_VETTED_ON_ANDROID) || BUILDFLAG(IS_LINUX)
+#if defined(NOT_VETTED_ON_ANDROID)
 #define MAYBE_testSwitchConversationWithEmptyId \
   DISABLED_testSwitchConversationWithEmptyId
 #else
@@ -905,7 +904,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester.GetBucketCount(
                "Glic.Interaction.SwitchConversationTarget",
-               GlicSwitchConversationTarget::kStartNewConversation) == 1;
+               GlicSwitchConversationTarget::kStartNewConversation) == 1 &&
+           coordinator().GetInstances().size() == 1u;
   }));
 
   // Verify that the active instance now has no conversation ID (std::nullopt)
@@ -955,12 +955,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
 
   ExecuteJsTest({.params = base::Value("second"), .instance = tab1_instance});
 
-  auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
-  auto& coordinator = static_cast<GlicInstanceCoordinatorImpl&>(
-      service->instance_coordinator());
-
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return coordinator.GetInstances().size() == 1u; }));
+      [&]() { return coordinator().GetInstances().size() == 1u; }));
   ASSERT_EQ("A", GetOnlyGlicInstance()->conversation_id());
 
   // Switch back to the first tab.
