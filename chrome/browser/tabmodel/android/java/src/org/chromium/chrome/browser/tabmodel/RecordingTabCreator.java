@@ -9,6 +9,7 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
@@ -17,7 +18,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -58,6 +61,7 @@ public class RecordingTabCreator implements TabCreator {
 
     private final List<TabCreationData> mFrozenTabCreationData = new ArrayList<>();
     private final List<TabCreationData> mNewTabCreationData = new ArrayList<>();
+    private final Map<@TabId Integer, String> mRegularFallbackTabs = new HashMap<>();
     private @Nullable TabCreator mDelegate;
     private int mTabCount;
     private boolean mIsRecording = true;
@@ -155,6 +159,23 @@ public class RecordingTabCreator implements TabCreator {
     /** Returns the list of new tab creation data. */
     public List<TabCreationData> getNewTabCreationData() {
         return mNewTabCreationData;
+    }
+
+    /** Returns the map of regular fallback tab IDs to URLs. */
+    public Map<@TabId Integer, String> getRegularFallbackTabs() {
+        return mRegularFallbackTabs;
+    }
+
+    /**
+     * Records a fallback tab created with the given ID and URL.
+     *
+     * @param id The ID of the fallback tab.
+     * @param url The URL string of the fallback tab.
+     */
+    public void recordFallbackTab(@TabId int id, String url) {
+        if (mIsRecording) {
+            mRegularFallbackTabs.put(id, url);
+        }
     }
 
     /** Sets the delegate {@link TabCreator} to use. */

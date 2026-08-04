@@ -27,14 +27,19 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabmodel.TabStoreMetricsService.MetricsBucket;
 import org.chromium.chrome.browser.app.tabmodel.TabStoreMetricsService.WindowMetricsTracker;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateNewTabArguments;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Unit tests for {@link TabStoreMetricsService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -97,7 +102,8 @@ public class TabStoreMetricsServiceUnitTest {
                         .expectBooleanRecord("Tabs.TabStateStore.TabCountDelta.Equal.Tag", true)
                         .build();
 
-        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 0);
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, true, Collections.emptyMap());
         histogramWatcher.assertExpected();
     }
 
@@ -119,7 +125,12 @@ public class TabStoreMetricsServiceUnitTest {
                         .expectIntRecord("Tabs.TabStateStore.RegularFallbackTabCount", 5)
                         .build();
 
-        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 5);
+        Map<@TabId Integer, String> regularFallbackTabs = new HashMap<>();
+        for (int i = 100; i < 105; i++) {
+            regularFallbackTabs.put(i, "http://fallback" + i + ".com");
+        }
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, true, regularFallbackTabs);
         histogramWatcher.assertExpected();
     }
 
@@ -141,7 +152,8 @@ public class TabStoreMetricsServiceUnitTest {
                         .expectIntRecord("Tabs.TabStateStore.TabCountDelta.ShadowHigher.Tag", 1)
                         .build();
 
-        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 0);
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, true, Collections.emptyMap());
         histogramWatcher.assertExpected();
     }
 
@@ -170,7 +182,8 @@ public class TabStoreMetricsServiceUnitTest {
                                 1000)
                         .build();
 
-        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 0);
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, true, Collections.emptyMap());
         histogramWatcher.assertExpected();
     }
 
@@ -220,7 +233,12 @@ public class TabStoreMetricsServiceUnitTest {
 
         // When shadowStoreCaughtUp is false, no counts should be recorded.
         tracker.recordDiffMetrics(
-                authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ false, 0);
+                authFrozen,
+                authNew,
+                shadowFrozen,
+                shadowNew,
+                /* shadowStoreCaughtUp= */ false,
+                Collections.emptyMap());
         assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getTabCount());
         assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getGroupCount());
         assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getPinnedTabCount());
@@ -234,7 +252,12 @@ public class TabStoreMetricsServiceUnitTest {
                         .expectNoRecords("Tabs.TabStateStore.PinnedTabCountDelta.Positive")
                         .build();
         tracker.recordDiffMetrics(
-                authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ true, 0);
+                authFrozen,
+                authNew,
+                shadowFrozen,
+                shadowNew,
+                /* shadowStoreCaughtUp= */ true,
+                Collections.emptyMap());
         assertEquals(3, tracker.getTabCount());
         assertEquals(2, tracker.getGroupCount());
         assertEquals(2, tracker.getPinnedTabCount());
@@ -251,7 +274,12 @@ public class TabStoreMetricsServiceUnitTest {
                         .expectIntRecord("Tabs.TabStateStore.PinnedTabCountDelta.Positive", 1)
                         .build();
         tracker.recordDiffMetrics(
-                authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ true, 0);
+                authFrozen,
+                authNew,
+                shadowFrozen,
+                shadowNew,
+                /* shadowStoreCaughtUp= */ true,
+                Collections.emptyMap());
         assertEquals(4, tracker.getTabCount());
         assertEquals(3, tracker.getGroupCount());
         assertEquals(3, tracker.getPinnedTabCount());
@@ -287,7 +315,12 @@ public class TabStoreMetricsServiceUnitTest {
                         .build();
 
         tracker.recordDiffMetrics(
-                authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ true, 0);
+                authFrozen,
+                authNew,
+                shadowFrozen,
+                shadowNew,
+                /* shadowStoreCaughtUp= */ true,
+                Collections.emptyMap());
 
         assertEquals(2, tracker.getTabCount());
         assertEquals(0, tracker.getGroupCount());
@@ -349,5 +382,35 @@ public class TabStoreMetricsServiceUnitTest {
         TabStoreMetricsService.clearAllTabStoreCounts();
         assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerReg1.getTabCount());
         assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerInc0.getTabCount());
+    }
+
+    @Test
+    public void testRecordDiffMetrics_RegularFallbackTabCount_Filtered() {
+        WindowMetricsTracker tracker =
+                TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
+
+        List<TabCreationData> authFrozen = new ArrayList<>();
+        List<TabCreationData> authNew = new ArrayList<>();
+        List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
+        List<CreateNewTabArguments> shadowNew = new ArrayList<>();
+
+        TabState shadowState = new TabState();
+        shadowState.url = JUnitTestGURLs.URL_2;
+        shadowFrozen.add(new CreateFrozenTabArguments(shadowState, 100, 0));
+
+        Map<@TabId Integer, String> regularFallbackTabs = new HashMap<>();
+        regularFallbackTabs.put(
+                100, JUnitTestGURLs.URL_1.getSpec()); // ID 100 present in shadow store
+        regularFallbackTabs.put(101, JUnitTestGURLs.URL_2.getSpec()); // URL present in shadow store
+        regularFallbackTabs.put(102, JUnitTestGURLs.URL_3.getSpec()); // NOT present in shadow store
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Tabs.TabStateStore.RegularFallbackTabCount", 1)
+                        .build();
+
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, true, regularFallbackTabs);
+        histogramWatcher.assertExpected();
     }
 }

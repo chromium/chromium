@@ -226,7 +226,4 @@ public interface TabPersistentStore extends TabStateAttributes.StoreKey {
     /** Returns the type of store this instance represents. */
     @StoreType
     int getStoreType();
-
-    /** Returns the number of regular fallback tabs created during restoration. */
-    int getRegularFallbackTabCount();
 }

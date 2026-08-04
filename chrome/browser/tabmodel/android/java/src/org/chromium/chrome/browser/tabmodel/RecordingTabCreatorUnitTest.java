@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
@@ -31,6 +32,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /** Unit tests for {@link RecordingTabCreator}. */
@@ -255,5 +257,18 @@ public class RecordingTabCreatorUnitTest {
 
         List<TabCreationData> data = mRecordingTabCreator.getNewTabCreationData();
         assertEquals(0, data.size());
+    }
+
+    @Test
+    public void testRecordFallbackTab() {
+        mRecordingTabCreator.recordFallbackTab(123, "https://fallback.com");
+        Map<@TabId Integer, String> regularFallbackTabs =
+                mRecordingTabCreator.getRegularFallbackTabs();
+        assertEquals(1, regularFallbackTabs.size());
+        assertEquals("https://fallback.com", regularFallbackTabs.get(123));
+
+        mRecordingTabCreator.stopRecording();
+        mRecordingTabCreator.recordFallbackTab(456, "https://fallback456.com");
+        assertEquals(1, mRecordingTabCreator.getRegularFallbackTabs().size());
     }
 }

@@ -511,12 +511,6 @@ public class TabStateStore implements TabPersistentStore {
         return StoreType.TAB_STATE_STORE;
     }
 
-    @Override
-    public int getRegularFallbackTabCount() {
-        // TabStateStore doesn't create fallback tabs without a TabState.
-        return 0;
-    }
-
     /** Called when the authoritative store has finished loading state for the window. */
     public void onAuthoritativeStateLoaded() {
         assert !mIsAuthoritative;

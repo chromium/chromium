@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateNewTabArguments;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
@@ -287,7 +288,8 @@ public class TabStoreMetricsService {
          * @param shadowFrozenData The list of frozen tabs in the shadow store.
          * @param shadowNewTabData The list of new tabs in the shadow store.
          * @param shadowStoreCaughtUp Whether the shadow store has caught up.
-         * @param fallbackTabCount The number of fallback tabs created during restoration.
+         * @param regularFallbackTabs The map of tab IDs to URLs of regular fallback tabs created
+         *     during restoration for the legacy store.
          */
         public void recordDiffMetrics(
                 List<TabCreationData> authFrozenData,
@@ -295,7 +297,7 @@ public class TabStoreMetricsService {
                 List<CreateFrozenTabArguments> shadowFrozenData,
                 List<CreateNewTabArguments> shadowNewTabData,
                 boolean shadowStoreCaughtUp,
-                int fallbackTabCount) {
+                Map<@TabId Integer, String> regularFallbackTabs) {
             if (!shadowStoreCaughtUp) return;
 
             int authTabCount = authFrozenData.size() + authNewTabData.size();
@@ -345,8 +347,11 @@ public class TabStoreMetricsService {
                         "Tabs.TabStateStore.TabCountDelta.Equal" + mOrchestratorTagSuffix, true);
             }
 
+            int filteredFallbackTabCount =
+                    calculateFilteredFallbackTabCount(
+                            regularFallbackTabs, shadowFrozenData, shadowNewTabData);
             RecordHistogram.recordCount1000Histogram(
-                    "Tabs.TabStateStore.RegularFallbackTabCount", fallbackTabCount);
+                    "Tabs.TabStateStore.RegularFallbackTabCount", filteredFallbackTabCount);
 
             SparseArray<TabCreationData> authoritativeDataMap =
                     new SparseArray<>(authFrozenData.size());
@@ -385,6 +390,52 @@ public class TabStoreMetricsService {
                                 + mOrchestratorTagSuffix,
                         -timeDelta);
             }
+        }
+
+        /**
+         * Calculates the number of fallback tabs from the authoritative store that are not present
+         * in the shadow store.
+         *
+         * @param regularFallbackTabs The map of tab IDs to URLs of regular fallback tabs.
+         * @param shadowFrozenData The frozen tabs restored by the shadow store.
+         * @param shadowNewTabData The new tabs created by the shadow store.
+         * @return The count of fallback tabs not found in the shadow store.
+         */
+        private int calculateFilteredFallbackTabCount(
+                Map<@TabId Integer, String> regularFallbackTabs,
+                List<CreateFrozenTabArguments> shadowFrozenData,
+                List<CreateNewTabArguments> shadowNewTabData) {
+            Set<@TabId Integer> shadowTabIds = new HashSet<>();
+            Set<String> shadowUrls = new HashSet<>();
+            for (CreateFrozenTabArguments arg : shadowFrozenData) {
+                shadowTabIds.add(arg.id);
+                if (arg.state != null && arg.state.url != null) {
+                    String spec = arg.state.url.getSpec();
+                    if (spec.isEmpty()) {
+                        spec = arg.state.url.getPossiblyInvalidSpec();
+                    }
+                    if (!spec.isEmpty()) {
+                        shadowUrls.add(spec);
+                    }
+                }
+            }
+            for (CreateNewTabArguments arg : shadowNewTabData) {
+                if (arg.loadUrlParams != null && arg.loadUrlParams.getUrl() != null) {
+                    shadowUrls.add(arg.loadUrlParams.getUrl());
+                }
+            }
+
+            int filteredFallbackTabCount = 0;
+            for (Map.Entry<@TabId Integer, String> entry : regularFallbackTabs.entrySet()) {
+                @TabId int tabId = entry.getKey();
+                String url = entry.getValue();
+                boolean presentInNewStore =
+                        shadowTabIds.contains(tabId) || shadowUrls.contains(url);
+                if (!presentInNewStore) {
+                    filteredFallbackTabCount++;
+                }
+            }
+            return filteredFallbackTabCount;
         }
     }
 }

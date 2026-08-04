@@ -111,6 +111,7 @@ public class ShadowTabStoreValidator {
 
         mAuthoritativeTabCreator.getFrozenTabCreationData().clear();
         mAuthoritativeTabCreator.getNewTabCreationData().clear();
+        mAuthoritativeTabCreator.getRegularFallbackTabs().clear();
 
         mAuthoritativeStore.removeObserver(mAuthoritativeObserver);
         mShadowStore.removeObserver(mShadowObserver);
@@ -133,7 +134,7 @@ public class ShadowTabStoreValidator {
                         mShadowTabCreator.createFrozenTabArgumentsList,
                         mShadowTabCreator.createNewTabArgumentsList,
                         mShadowStoreCaughtUp,
-                        mAuthoritativeStore.getRegularFallbackTabCount());
+                        mAuthoritativeTabCreator.getRegularFallbackTabs());
     }
 
     private boolean isTabStateStoreShadowing() {

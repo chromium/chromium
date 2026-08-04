@@ -207,7 +207,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     // Tracks whether this TabPersistentStore's tabs are being loaded.
     private boolean mLoadInProgress;
     private long mTabRestoreStartTime = INVALID_TIME;
-    private int mRegularFallbackTabCount;
     @Nullable AsyncTask<@Nullable TabState> mPrefetchTabStateActiveTabTask;
 
     /**
@@ -617,7 +616,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void restoreTabs(boolean setActiveTab) {
-        mRegularFallbackTabCount = 0;
         if (setActiveTab) {
             // Restore and select the active tab, which is first in the restore list.
             // If the active tab can't be restored, restore and select another tab. Otherwise, the
@@ -829,7 +827,13 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             mSeenTabIds.add(tabId);
         } else {
             Log.w(TAG, "Failed to restore TabState; creating Tab with last known URL.");
-            if (!isIncognito) mRegularFallbackTabCount++;
+            if (!isIncognito) {
+                TabCreator tabCreator = mTabCreatorManager.getTabCreator(isIncognito);
+                if (tabCreator instanceof RecordingTabCreator recordingTabCreator) {
+                    recordingTabCreator
+                            .recordFallbackTab(tabToRestore.id, tabToRestore.url);
+                }
+            }
             Tab fallbackTab =
                     mTabCreatorManager
                             .getTabCreator(isIncognito)
@@ -2244,10 +2248,5 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 }
             }
         }
-    }
-
-    @Override
-    public int getRegularFallbackTabCount() {
-        return mRegularFallbackTabCount;
     }
 }
