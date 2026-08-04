@@ -340,6 +340,13 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+    if (os_signals.vendor_id) {
+      auto* ios_attributes = os_report->mutable_ios_specific_attributes();
+      ios_attributes->set_vendor_id(os_signals.vendor_id.value());
+    }
+#endif  // BUILDFLAG(IS_IOS)
+
     browser_report->set_browser_version(os_signals.browser_version);
   }
 
