@@ -5455,8 +5455,19 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     return false;
   }
 
-  // Allow loading Chrome's DLLs.
-  for (const auto* dll : {chrome::kBrowserResourcesDll, chrome::kElfDll}) {
+  // Allow loading chrome.dll and chrome_elf.dll for most process types.
+  static constexpr auto kChildDlls = {chrome::kBrowserResourcesDll,
+                                      chrome::kElfDll};
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+  // Allow loading chrome_renderer.dll and chrome_elf.dll for renderers.
+  static constexpr auto kRendererDlls = {chrome::kRendererDll, chrome::kElfDll};
+  const auto& extra_dlls = sandbox_type == sandbox::mojom::Sandbox::kRenderer
+                               ? kRendererDlls
+                               : kChildDlls;
+#else
+  const auto& extra_dlls = kChildDlls;
+#endif
+  for (const auto* dll : extra_dlls) {
     result = config->AllowExtraDll(GetModulePath(dll).value());
     if (result != sandbox::SBOX_ALL_OK) {
       return false;

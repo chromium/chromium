@@ -138,13 +138,13 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
 #include "chrome/app/chrome_main_mac.h"
-#include "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/mac/code_sign_clone_manager.h"
 #include "chrome/browser/mac/relauncher.h"
 #include "components/crash/core/common/objc_zombie.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(BUILDING_CHROME_RENDERER)
+#include "chrome/browser/chrome_browser_application_mac.h"  // nogncheck
 #include "chrome/browser/shell_integration.h"  // nogncheck
 #endif  // !defined(BUILDING_CHROME_RENDERER)
 #endif

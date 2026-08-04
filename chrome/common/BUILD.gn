@@ -57,6 +57,7 @@ buildflag_header("buildflags") {
     "ENABLE_DOWNGRADE_PROCESSING=$enable_downgrade_processing",
     "ENABLE_HANGOUT_SERVICES_EXTENSION=$enable_hangout_services_extension",
     "ENABLE_PDF_SAVE_TO_DRIVE=$enable_pdf_save_to_drive",
+    "ENABLE_SEPARATE_RENDERER_BINARY=$enable_separate_renderer_binary",
     "ENABLE_SERVICE_DISCOVERY=$enable_service_discovery",
     "ENABLE_SESSION_SERVICE=$enable_session_service",
     "ENABLE_WEBUI_CERTIFICATE_VIEWER=$enable_webui_certificate_viewer",
@@ -65,9 +66,7 @@ buildflag_header("buildflags") {
 }
 
 source_set("readaloud_constants") {
-  sources = [
-    "readaloud/read_aloud_constants.h",
-  ]
+  sources = [ "readaloud/read_aloud_constants.h" ]
   public_deps = [
     "//base",
     "//media",

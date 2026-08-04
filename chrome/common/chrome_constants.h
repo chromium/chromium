@@ -39,6 +39,8 @@ inline constexpr base::FilePath::CharType kBrowserResourcesDll[] =
     FILE_PATH_LITERAL("chrome.dll");
 inline constexpr base::FilePath::CharType kElfDll[] =
     FILE_PATH_LITERAL("chrome_elf.dll");
+inline constexpr base::FilePath::CharType kRendererDll[] =
+    FILE_PATH_LITERAL("chrome_renderer.dll");
 inline constexpr base::FilePath::CharType kStatusTrayWindowClass[] =
     FILE_PATH_LITERAL("Chrome_StatusTrayWindow");
 #endif  // BUILDFLAG(IS_WIN)

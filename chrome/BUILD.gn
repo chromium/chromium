@@ -238,6 +238,10 @@ if (!is_android && !is_mac) {
         "//components/crash/win:chrome_wer",
       ]
 
+      if (enable_separate_renderer_binary) {
+        data_deps += [ ":chrome_renderer" ]
+      }
+
       if (is_chrome_branded) {
         data_deps += [
           "//chrome/common/request_header_integrity/internal:chromecompaneros",

@@ -27,6 +27,7 @@
 #include "base/logging.h"
 #include "base/memory/self_deleting.h"
 #include "base/path_service.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
@@ -39,6 +40,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/active_use_util.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -79,7 +81,7 @@ class DllPreReader : public base::PlatformThread::Delegate,
   base::FilePath module_;
 };
 
-// The entry point signature of chrome.dll.
+// The entry point signature of all main modules.
 typedef int (*DLL_MAIN)(HINSTANCE,
                         sandbox::SandboxInterfaceInfo*,
                         int64_t exe_main_entry_point_ticks,
@@ -87,6 +89,31 @@ typedef int (*DLL_MAIN)(HINSTANCE,
                         int64_t preread_end_ticks);
 
 typedef void (*RelaunchChromeBrowserWithNewCommandLineIfNeededFunc)();
+
+// Properties for the main module to be loaded.
+struct ModuleProperties {
+  // The basename of the module (e.g., "chrome.dll").
+  base::FilePath::StringViewType module_name;
+
+  // The name of the main entrypoint of the module (e.g., "ChromeMain").
+  base::cstring_view entrypoint_name;
+};
+
+// Returns the properties for the module to be loaded in `process_type`.
+const ModuleProperties& ModulePropertiesFromProcessType(
+    std::string_view process_type) {
+  // Most process types load chrome.dll and run `ChromeMain`.
+  static constexpr ModuleProperties kOtherProperties = {installer::kChromeDll,
+                                                        "ChromeMain"};
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+  // Renderers load chrome_renderer.dll and run `ChromeRendererMain`.
+  static constexpr ModuleProperties kRendererProperties = {
+      chrome::kRendererDll, "ChromeRendererMain"};
+  return process_type == "renderer" ? kRendererProperties : kOtherProperties;
+#else
+  return kOtherProperties;
+#endif
+}
 
 std::wstring GetMachineGuid() {
   base::win::RegKey key;
@@ -190,17 +217,17 @@ HMODULE LoadModuleWithDirectory(const base::FilePath& module,
   return handle;
 }
 
-// Prefetches and loads the appropriate DLL for the process type
-// |process_type_|. Populates |module| with the path of the loaded DLL.
-// Returns a handle to the loaded DLL, or nullptr on failure.
+// Prefetches and loads `module_name`. Populates `module` with the path of the
+// loaded DLL. Returns a handle to the loaded DLL, or nullptr on failure.
 HMODULE Load(base::FilePath* module,
+             const base::FilePath::StringViewType module_name,
              const base::CommandLine& cmd_line,
              bool is_browser,
              base::TimeTicks& preread_begin_ticks,
              base::TimeTicks& preread_end_ticks) {
-  *module = GetModulePath(installer::kChromeDll);
+  *module = GetModulePath(module_name);
   if (module->empty()) {
-    PLOG(ERROR) << "Cannot find module " << installer::kChromeDll;
+    PLOG(ERROR) << "Cannot find module " << module_name;
     return nullptr;
   }
   HMODULE dll = LoadModuleWithDirectory(*module, cmd_line, is_browser,
@@ -250,9 +277,13 @@ int MainDllLoader::Launch(HINSTANCE instance,
   base::TimeTicks preread_begin_ticks;
   base::TimeTicks preread_end_ticks;
 
+  // Determine the names of the module to load and its main entrypoint.
+  const auto& module_properties =
+      ModulePropertiesFromProcessType(process_type_);
+
   base::FilePath file;
-  dll_ =
-      Load(&file, cmd_line, is_browser, preread_begin_ticks, preread_end_ticks);
+  dll_ = Load(&file, module_properties.module_name, cmd_line, is_browser,
+              preread_begin_ticks, preread_end_ticks);
   if (!dll_)
     return CHROME_RESULT_CODE_MISSING_DATA;
 
@@ -267,8 +298,8 @@ int MainDllLoader::Launch(HINSTANCE instance,
   }
 
   OnBeforeLaunch(process_type_, file);
-  DLL_MAIN chrome_main =
-      reinterpret_cast<DLL_MAIN>(::GetProcAddress(dll_, "ChromeMain"));
+  DLL_MAIN chrome_main = reinterpret_cast<DLL_MAIN>(
+      ::GetProcAddress(dll_, module_properties.entrypoint_name.c_str()));
   int rc = chrome_main(instance, &sandbox_info,
                        exe_entry_point_ticks.ToInternalValue(),
                        preread_begin_ticks.ToInternalValue(),
