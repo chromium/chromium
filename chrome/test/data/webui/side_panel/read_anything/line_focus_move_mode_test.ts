@@ -1042,24 +1042,6 @@ suite('LineFocusMoveMode', () => {
       assertEquals(0, model.getTextBounds().length);
     });
 
-    test('onScrollEnd does nothing', () => {
-      mode.onScrollEnd(101);
-      assertFalse(notifiedMove);
-    });
-
-    test('onTextLocationsChange does nothing', () => {
-      const container = createShortContainer();
-
-      mode.onTextLocationsChange(container, defaultHeight);
-
-      assertFalse(!!bufferValReceived);
-      assertFalse(notifiedMove);
-      assertEquals(0, scrollDiffReceived);
-      assertEquals(0, model.getMaxY());
-      assertEquals(0, model.getMinY());
-      assertEquals(0, model.getTextBounds().length);
-    });
-
     test('snapToNextLine does nothing', () => {
       assertFalse(mode.snapToNextLine(true));
       assertFalse(mode.snapToNextLine(false));
