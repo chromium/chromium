@@ -49,11 +49,9 @@ import org.chromium.ui.accessibility.AccessibilityState.State;
 import org.chromium.ui.accessibility.AccessibilityState.StateBuilderForTests;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 /**
  * Provides utility methods relating to measuring accessibility state on Android. See native
@@ -74,6 +72,10 @@ class AccessibilityStateDelegateImpl {
             "Accessibility.Android.UpdateAccessibilityServices.Runtime";
     private static final int MAX_RUNTIME_BUCKET = 16 * 1000; // 16,000 microseconds = 16ms.
     private int mPollCount;
+
+    interface ListenerCallback {
+        Set<AccessibilityState.Listener> getListeners();
+    }
 
     // The service ID and whether the `isAccessibilityTool=true` manifest flag is explicitly
     // set for a given service. Before Android S, `isAccessibilityTool` is always false.
@@ -170,11 +172,7 @@ class AccessibilityStateDelegateImpl {
     // The IDs and `isAccessibilityTool` manifest state of all running accessibility services.
     private @Nullable List<ServiceProperties> mServiceProperties;
 
-    // The set of listeners of AccessibilityState, implemented using
-    // a WeakHashSet behind the scenes so that listeners can be garbage-collected
-    // and will be automatically removed from this set.
-    private final Set<Listener> mListeners =
-            Collections.newSetFromMap(new WeakHashMap<Listener, Boolean>());
+    private final ListenerCallback mListenerCallback;
 
     // The number of milliseconds to wait before checking the set of running accessibility services
     // again, when we think it changed. Uses an exponential back-off until it's greater than
@@ -184,8 +182,9 @@ class AccessibilityStateDelegateImpl {
     private static final int MAX_DELAY_MILLIS = 5000;
     private int mNextDelayMillis = MIN_DELAY_MILLIS;
 
-    public void addListener(Listener listener) {
-        mListeners.add(listener);
+    public AccessibilityStateDelegateImpl(ListenerCallback listenerCallback) {
+        mListenerCallback = listenerCallback;
+        // Listeners will be notified on the next {@link updateAccessibilityServices()} call.
     }
 
     public boolean isComplexUserInteractionServiceEnabled() {
@@ -742,7 +741,7 @@ class AccessibilityStateDelegateImpl {
         mState = newState;
 
         Log.i(TAG, "New AccessibilityState: " + mState.toString());
-        for (Listener listener : mListeners) {
+        for (Listener listener : mListenerCallback.getListeners()) {
             listener.onAccessibilityStateChanged(oldState, newState);
         }
     }

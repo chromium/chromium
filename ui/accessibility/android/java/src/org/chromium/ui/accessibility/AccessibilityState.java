@@ -13,8 +13,10 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * Provides utility methods relating to measuring accessibility state on Android. See native
@@ -244,15 +246,25 @@ public class AccessibilityState {
 
     private static @Nullable AccessibilityStateDelegateImpl sDelegate;
 
+    // The set of listeners of AccessibilityState, implemented using
+    // a WeakHashSet behind the scenes so that listeners can be garbage-collected
+    // and will be automatically removed from this set.
+    // Not a member of delegate because {@code sListeners} can outlive the delegate in JUnit
+    // tests. Static instances such as {@link DeviceAccessibilitySettingsHandler} add listeners to
+    // AccessibilityState. These static instances are reused between JUnit test suites.
+    private static final Set<Listener> sListeners =
+            Collections.newSetFromMap(new WeakHashMap<Listener, Boolean>());
+
     static AccessibilityStateDelegateImpl getDelegate() {
         if (sDelegate == null) {
-            sDelegate = new AccessibilityStateDelegateImpl();
+            sDelegate = new AccessibilityStateDelegateImpl(() -> sListeners);
         }
         return sDelegate;
     }
 
+    /** Not thread safe. */
     public static void addListener(Listener listener) {
-        getDelegate().addListener(listener);
+        sListeners.add(listener);
     }
 
     public static boolean isComplexUserInteractionServiceEnabled() {
@@ -498,47 +510,55 @@ public class AccessibilityState {
     // ForTesting methods.
 
     public static void setIsComplexUserInteractionServiceEnabledForTesting(boolean enabled) {
-        getDelegate().setIsComplexUserInteractionServiceEnabledForTesting(enabled);
+        getOrCreateDelegateForTesting()
+                .setIsComplexUserInteractionServiceEnabledForTesting(enabled);
     }
 
     public static void setIsTouchExplorationEnabledForTesting(boolean enabled) {
-        getDelegate().setIsTouchExplorationEnabledForTesting(enabled);
+        getOrCreateDelegateForTesting().setIsTouchExplorationEnabledForTesting(enabled);
     }
 
     public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
-        getDelegate().setIsPerformGesturesEnabledForTesting(enabled);
+        getOrCreateDelegateForTesting().setIsPerformGesturesEnabledForTesting(enabled);
     }
 
     public static void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
-        getDelegate().setIsAnyAccessibilityServiceEnabledForTesting(enabled);
+        getOrCreateDelegateForTesting().setIsAnyAccessibilityServiceEnabledForTesting(enabled);
     }
 
     public static void setIsAccessibilityToolPresentForTesting(boolean enabled) {
-        getDelegate().setIsAccessibilityToolPresentForTesting(enabled);
+        getOrCreateDelegateForTesting().setIsAccessibilityToolPresentForTesting(enabled);
     }
 
     public static void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
-        getDelegate().setIsTextShowPasswordEnabledForTesting(enabled);
+        getOrCreateDelegateForTesting().setIsTextShowPasswordEnabledForTesting(enabled);
     }
 
     public static void setIsOnlyAutofillRunningForTesting(boolean enabled) {
-        getDelegate().setIsOnlyAutofillRunningForTesting(enabled);
+        getOrCreateDelegateForTesting().setIsOnlyAutofillRunningForTesting(enabled);
     }
 
     public static void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
-        getDelegate().setIsOnlyPasswordManagersEnabledForTesting(enabled);
+        getOrCreateDelegateForTesting().setIsOnlyPasswordManagersEnabledForTesting(enabled);
     }
 
     public static void setIsKnownScreenReaderEnabledForTesting(boolean enabled) {
-        getDelegate().setIsKnownScreenReaderEnabledForTesting(enabled);
+        getOrCreateDelegateForTesting().setIsKnownScreenReaderEnabledForTesting(enabled);
     }
 
     public static void setEventMaskForTesting(int eventMask) {
-        getDelegate().setEventMaskForTesting(eventMask);
+        getOrCreateDelegateForTesting().setEventMaskForTesting(eventMask);
     }
 
     public static void setServiceIdsForTesting(String newServiceId, boolean isAccessibilityTool) {
-        getDelegate().setServiceIdsForTesting(newServiceId, isAccessibilityTool);
+        getOrCreateDelegateForTesting().setServiceIdsForTesting(newServiceId, isAccessibilityTool);
+    }
+
+    private static FakeAccessibilityStateDelegate getOrCreateDelegateForTesting() {
+        if (!(getDelegate() instanceof FakeAccessibilityStateDelegate)) {
+            setDelegateForTesting(new FakeAccessibilityStateDelegate(() -> sListeners));
+        }
+        return (FakeAccessibilityStateDelegate) getDelegate();
     }
 
     public static void uninitializeForTesting() {
@@ -546,5 +566,12 @@ public class AccessibilityState {
             sDelegate.uninitializeForTesting();
         }
         sDelegate = null;
+    }
+
+    public static void setDelegateForTesting(@Nullable AccessibilityStateDelegateImpl delegate) {
+        if (sDelegate != null) {
+            sDelegate.uninitializeForTesting();
+        }
+        sDelegate = delegate;
     }
 }
