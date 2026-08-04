@@ -728,6 +728,8 @@ HEADLESS_PROTOCOL_TEST(WindowOpenShiftClickOpenerId,
 
 HEADLESS_PROTOCOL_TEST(BlockNewWebContents, "sanity/block-new-web-contents.js")
 
+HEADLESS_PROTOCOL_TEST(ContextDisposal, "sanity/context-disposal.js")
+
 HEADLESS_PROTOCOL_TEST(ScreenRotationSecondaryScreen,
                        "sanity/screen-rotation-secondary-screen.js")
 
@@ -847,5 +849,7 @@ HEADLESS_PROTOCOL_TEST(RangeMouseEventAfterNodeRemoval,
 
 HEADLESS_PROTOCOL_TEST(GetCanvasContextWebGL,
                        "shared/get-canvas-context-webgl.js")
+
+HEADLESS_PROTOCOL_TEST(GetBrowserContexts, "shared/get-browser-contexts.js")
 
 }  // namespace headless

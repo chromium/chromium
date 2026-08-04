@@ -69,22 +69,35 @@ void HeadlessDevToolsManagerDelegate::ClientDetached(
   sessions_.erase(channel);
 }
 
-std::vector<content::BrowserContext*>
+std::vector<base::WeakPtr<content::BrowserContext>>
 HeadlessDevToolsManagerDelegate::GetBrowserContexts() {
-  std::vector<content::BrowserContext*> contexts;
+  std::vector<base::WeakPtr<content::BrowserContext>> contexts;
   if (!browser_)
     return contexts;
   for (auto* context : browser_->GetAllBrowserContexts()) {
-    if (context != browser_->GetDefaultBrowserContext())
-      contexts.push_back(HeadlessBrowserContextImpl::From(context));
+    if (context != browser_->GetDefaultBrowserContext()) {
+      contexts.push_back(
+          HeadlessBrowserContextImpl::From(context)->GetWeakPtr());
+    }
   }
   return contexts;
 }
+
 content::BrowserContext*
 HeadlessDevToolsManagerDelegate::GetDefaultBrowserContext() {
-  return browser_ ? HeadlessBrowserContextImpl::From(
-                        browser_->GetDefaultBrowserContext())
-                  : nullptr;
+  if (!browser_) {
+    return nullptr;
+  }
+  return HeadlessBrowserContextImpl::From(browser_->GetDefaultBrowserContext());
+}
+
+content::BrowserContext* HeadlessDevToolsManagerDelegate::GetBrowserContext(
+    const std::string& context_id) {
+  if (!browser_) {
+    return nullptr;
+  }
+  return HeadlessBrowserContextImpl::From(
+      browser_->GetBrowserContextForId(context_id));
 }
 
 content::BrowserContext*

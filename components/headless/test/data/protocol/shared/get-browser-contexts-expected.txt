@@ -1,0 +1,11 @@
+Tests Target.getBrowserContexts
+Initial browserContextIds count: 0
+Has defaultBrowserContextId: true
+browserContextIds count after create: 1
+Contains created context: true
+browserContextIds count after dispose: 0
+Attempting to dispose default browser context...
+Error disposing default context: {
+    code : -32000
+    message : Cannot dispose default browser context.
+}

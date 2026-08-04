@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/devtools_manager_delegate.h"
+
 #include "base/values.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
 
 namespace content {
@@ -74,11 +76,17 @@ scoped_refptr<DevToolsAgentHost> DevToolsManagerDelegate::CreateNewTarget(
   return nullptr;
 }
 
-std::vector<BrowserContext*> DevToolsManagerDelegate::GetBrowserContexts() {
-  return std::vector<BrowserContext*>();
+std::vector<base::WeakPtr<BrowserContext>>
+DevToolsManagerDelegate::GetBrowserContexts() {
+  return std::vector<base::WeakPtr<BrowserContext>>();
 }
 
 BrowserContext* DevToolsManagerDelegate::GetDefaultBrowserContext() {
+  return nullptr;
+}
+
+BrowserContext* DevToolsManagerDelegate::GetBrowserContext(
+    const std::string& context_id) {
   return nullptr;
 }
 

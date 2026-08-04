@@ -68,11 +68,11 @@ content::BrowserContext* DevToolsBrowserContextManager::CreateBrowserContext() {
   return otr_profile;
 }
 
-std::vector<content::BrowserContext*>
+std::vector<base::WeakPtr<content::BrowserContext>>
 DevToolsBrowserContextManager::GetBrowserContexts() {
-  std::vector<content::BrowserContext*> result;
+  std::vector<base::WeakPtr<content::BrowserContext>> result;
   for (const auto& profile_pair : otr_profiles_)
-    result.push_back(profile_pair.second);
+    result.push_back(profile_pair.second->GetWeakPtr());
   return result;
 }
 

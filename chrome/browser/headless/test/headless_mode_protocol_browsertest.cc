@@ -523,4 +523,7 @@ HEADLESS_MODE_PROTOCOL_TEST(PopupWindowHasOpener,
 HEADLESS_MODE_PROTOCOL_TEST(NormalWindowHasOpener,
                             "shared/normal-window-has-opener.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(GetBrowserContexts,
+                            "shared/get-browser-contexts.js")
+
 }  // namespace headless
