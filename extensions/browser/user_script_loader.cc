@@ -550,11 +550,8 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
       NOTREACHED();
   }
 
-  base::ReadOnlySharedMemoryRegion region_for_process =
-      shared_memory.Duplicate();
-  if (!region_for_process.IsValid()) {
-    return SendUpdateResult::kNoActionTaken;
-  }
+  base::ReadOnlySharedMemoryRegion region_for_process;
+  bool use_custom_region = false;
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // If the process only hosts guest frames, then those guest frames share the
@@ -601,10 +598,48 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
         if (owner_host != host_id().id) {
           return SendUpdateResult::kNoActionTaken;
         }
+
+        if (host_id().type ==
+            mojom::HostID::HostType::kControlledFrameEmbedder) {
+          use_custom_region = true;
+          std::optional<std::set<std::string>> script_ids =
+              WebViewRendererState::GetInstance()
+                  ->GetContentScriptIDsForProcess(process->GetID());
+          if (!script_ids || script_ids->empty()) {
+            return SendUpdateResult::kNoActionTaken;
+          }
+          if (loaded_scripts_) {
+            UserScriptList filtered_scripts;
+            for (const std::unique_ptr<UserScript>& script : *loaded_scripts_) {
+              if (script_ids->count(script->id())) {
+                std::unique_ptr<UserScript> filtered_script =
+                    UserScript::CopyMetadataFrom(*script);
+                for (size_t i = 0; i < script->js_scripts().size(); ++i) {
+                  filtered_script->js_scripts()[i]->set_content(
+                      std::string(script->js_scripts()[i]->GetContent()));
+                }
+                for (size_t i = 0; i < script->css_scripts().size(); ++i) {
+                  filtered_script->css_scripts()[i]->set_content(
+                      std::string(script->css_scripts()[i]->GetContent()));
+                }
+                filtered_scripts.push_back(std::move(filtered_script));
+              }
+            }
+            region_for_process = Serialize(filtered_scripts);
+          }
+        }
         break;
     }
   }
 #endif
+
+  if (!use_custom_region) {
+    region_for_process = shared_memory.Duplicate();
+  }
+
+  if (!region_for_process.IsValid()) {
+    return SendUpdateResult::kNoActionTaken;
+  }
 
   renderer->UpdateUserScripts(std::move(region_for_process),
                               mojom::HostID::New(host_id().type, host_id().id));

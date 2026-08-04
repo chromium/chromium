@@ -14,6 +14,7 @@
 #define EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_RENDERER_STATE_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -65,6 +66,10 @@ class WebViewRendererState {
   // process ID. Returns true and writes the partition ID to `partition_id` if
   // found, otherwise returns false.
   bool GetPartitionID(int guest_process_id, std::string* partition_id) const;
+
+  // Returns the content script IDs for the given guest process.
+  std::optional<std::set<std::string>> GetContentScriptIDsForProcess(
+      content::ChildProcessId guest_process_id) const;
 
   // Returns true if the renderer with process ID `render_process_id` is a
   // WebView guest process.

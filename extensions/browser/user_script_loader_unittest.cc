@@ -161,10 +161,12 @@ class UserScriptLoaderUnitTest : public ExtensionsTest {
     return process;
   }
 
-  void LoadScriptsAndWait(UserScriptLoader* loader,
-                          content::RenderProcessHost* embedder_process) {
+  void LoadScriptsAndWait(
+      UserScriptLoader* loader,
+      content::RenderProcessHost* embedder_process,
+      std::string script_id = UserScript::GenerateUserScriptID()) {
     auto script = std::make_unique<UserScript>();
-    script->set_id(UserScript::GenerateUserScriptID());
+    script->set_id(script_id);
     script->set_host_id(loader->host_id());
     auto content = UserScript::Content::CreateInlineCode(
         GURL("https://embedder.example/inline.js"));
@@ -202,8 +204,10 @@ TEST_F(UserScriptLoaderUnitTest, EmbedderScriptsSentToGuestRenderer) {
   ASSERT_TRUE(helper()->IsProcessInitializedForTesting(guest_process.get()));
 
   const std::string owner_host = "isolated-app://embedder.example";
+  const std::string script_id = UserScript::GenerateUserScriptID();
   WebViewRendererState::WebViewInfo web_view_info;
   web_view_info.owner_host = owner_host;
+  web_view_info.content_script_ids.insert(script_id);
   const int dummy_routing_id = 1;
   WebViewRendererState::GetInstance()->AddGuestForTesting(
       guest_process->GetDeprecatedID(), dummy_routing_id, web_view_info);
@@ -218,7 +222,7 @@ TEST_F(UserScriptLoaderUnitTest, EmbedderScriptsSentToGuestRenderer) {
       browser_context(),
       mojom::HostID(mojom::HostID::HostType::kControlledFrameEmbedder,
                     owner_host));
-  LoadScriptsAndWait(&loader, guest_process.get());
+  LoadScriptsAndWait(&loader, guest_process.get(), script_id);
 
   EXPECT_TRUE(loader.initial_load_complete());
   EXPECT_TRUE(helper()->ProcessReceivedUpdateUserScripts(guest_process.get()));
@@ -252,6 +256,40 @@ TEST_F(UserScriptLoaderUnitTest, EmbedderScriptsNotSentToNonGuestRenderer) {
     EXPECT_TRUE(loader.initial_load_complete());
     EXPECT_FALSE(helper()->ProcessReceivedUpdateUserScripts(web_process.get()));
   }
+}
+
+// Test that an embedder content script is NOT sent to a guest renderer
+// if that guest's ID is not associated with the script.
+// This prevents cross-guest script leaks in Controlled Frame.
+TEST_F(UserScriptLoaderUnitTest,
+       EmbedderScriptsNotSentToUnrelatedGuestProcess) {
+  std::unique_ptr<content::MockRenderProcessHost> guest_process =
+      CreateAndInitializeProcess(/*is_for_guests_only=*/true);
+  ASSERT_TRUE(helper()->IsProcessInitializedForTesting(guest_process.get()));
+
+  const std::string owner_host = "isolated-app://embedder.example";
+  // Deliberately do NOT add the script_id to web_view_info.content_script_ids.
+  // This simulates a sibling guest process that shouldn't receive the script.
+  WebViewRendererState::WebViewInfo web_view_info;
+  web_view_info.owner_host = owner_host;
+  const int dummy_routing_id = 1;
+  WebViewRendererState::GetInstance()->AddGuestForTesting(
+      guest_process->GetDeprecatedID(), dummy_routing_id, web_view_info);
+  base::ScopedClosureRunner cleanup_guest(base::BindOnce(
+      [](int process_id, int routing_id) {
+        WebViewRendererState::GetInstance()->RemoveGuestForTesting(process_id,
+                                                                   routing_id);
+      },
+      guest_process->GetDeprecatedID(), dummy_routing_id));
+
+  EmbedderUserScriptLoader loader(
+      browser_context(),
+      mojom::HostID(mojom::HostID::HostType::kControlledFrameEmbedder,
+                    owner_host));
+  LoadScriptsAndWait(&loader, guest_process.get());
+
+  EXPECT_TRUE(loader.initial_load_complete());
+  EXPECT_FALSE(helper()->ProcessReceivedUpdateUserScripts(guest_process.get()));
 }
 
 }  // namespace
