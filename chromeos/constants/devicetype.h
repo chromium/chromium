@@ -30,6 +30,9 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) std::string GetFormFactor();
 // Returns the current device type, e.g. Chromebook, Chromebox.
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) DeviceType GetDeviceType();
 
+// Returns true if the device supports subpixel font rendering.
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool DeviceSupportsSubpixelFontRendering();
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_CONSTANTS_DEVICETYPE_H_

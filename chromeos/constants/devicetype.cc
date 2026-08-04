@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 
 namespace chromeos {
@@ -45,6 +47,18 @@ DeviceType GetDeviceType() {
   }
   LOG(ERROR) << "Unknown device type \"" << value << "\"";
   return DeviceType::kUnknown;
+}
+
+bool DeviceSupportsSubpixelFontRendering() {
+  std::vector<std::string> board =
+      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (board.empty()) {
+    return true;
+  }
+  const std::string& board_name = board[0];
+  return !(base::EqualsCaseInsensitiveASCII(board_name, "trogdor") ||
+           base::EqualsCaseInsensitiveASCII(board_name, "strongbad"));
 }
 
 }  // namespace chromeos

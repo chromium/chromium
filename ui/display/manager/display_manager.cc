@@ -560,6 +560,11 @@ void DisplayManager::RefreshFontParams() {
   if (features::IsOledScaleFactorEnabled()) {
     force_disable_subpixel_font_rendering = true;
   }
+
+  if (!chromeos::DeviceSupportsSubpixelFontRendering()) {
+    force_disable_subpixel_font_rendering = true;
+  }
+
   gfx::SetForceDisableSubpixelFontRendering(
       force_disable_subpixel_font_rendering);
 

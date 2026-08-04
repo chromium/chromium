@@ -5,6 +5,7 @@
 #include "chromeos/constants/devicetype.h"
 
 #include "base/command_line.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,34 @@ TEST(DeviceTypeTest, GetDeviceTypeAsh) {
   {
     command_line->InitFromArgv({"", ""});
     EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kUnknown);
+  }
+}
+
+TEST(DeviceTypeTest, DeviceSupportsSubpixelFontRenderin) {
+  {
+    base::test::ScopedChromeOSVersionInfo version_info(
+        "CHROMEOS_RELEASE_BOARD=trogdor\n", base::Time());
+    EXPECT_FALSE(chromeos::DeviceSupportsSubpixelFontRendering());
+  }
+  {
+    base::test::ScopedChromeOSVersionInfo version_info(
+        "CHROMEOS_RELEASE_BOARD=trogdor-signed-mp-v2keys\n", base::Time());
+    EXPECT_FALSE(chromeos::DeviceSupportsSubpixelFontRendering());
+  }
+  {
+    base::test::ScopedChromeOSVersionInfo version_info(
+        "CHROMEOS_RELEASE_BOARD=strongbad\n", base::Time());
+    EXPECT_FALSE(chromeos::DeviceSupportsSubpixelFontRendering());
+  }
+  {
+    base::test::ScopedChromeOSVersionInfo version_info(
+        "CHROMEOS_RELEASE_BOARD=eve\n", base::Time());
+    EXPECT_TRUE(chromeos::DeviceSupportsSubpixelFontRendering());
+  }
+  {
+    base::test::ScopedChromeOSVersionInfo version_info(
+        "CHROMEOS_RELEASE_BOARD=unknown\n", base::Time());
+    EXPECT_TRUE(chromeos::DeviceSupportsSubpixelFontRendering());
   }
 }
 
