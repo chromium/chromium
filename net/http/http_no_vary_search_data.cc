@@ -42,10 +42,11 @@ std::optional<std::vector<std::string>> ParseStringList(
   std::vector<std::string> keys;
   keys.reserve(items.size());
   for (const auto& item : items) {
-    if (!item.item.is_string()) {
+    const std::string* string = item.item.GetIfString();
+    if (!string) {
       return std::nullopt;
     }
-    keys.push_back(UnescapePercentEncodedUrl(item.item.GetString()));
+    keys.push_back(UnescapePercentEncodedUrl(*string));
   }
   return keys;
 }
@@ -252,11 +253,13 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   if (auto keyorder_it = dict.find(keys::kKeyOrder);
       keyorder_it != dict.end()) {
     const auto& key_order = keyorder_it->second;
-    if (key_order.member_is_inner_list ||
-        !key_order.member[0].item.is_boolean()) {
+    const bool* boolean = key_order.member_is_inner_list
+                              ? nullptr
+                              : key_order.member[0].item.GetIfBoolean();
+    if (!boolean) {
       return base::unexpected(ParseErrorEnum::kNonBooleanKeyOrder);
     }
-    vary_on_key_order = !key_order.member[0].item.GetBoolean();
+    vary_on_key_order = !*boolean;
   }
 
   // Populate `affected_params` or `vary_by_default` based on the "params" key.
@@ -268,8 +271,8 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
         return base::unexpected(ParseErrorEnum::kParamsNotStringList);
       }
       affected_params = std::move(*keys);
-    } else if (params.member[0].item.is_boolean()) {
-      vary_by_default = !params.member[0].item.GetBoolean();
+    } else if (const bool* boolean = params.member[0].item.GetIfBoolean()) {
+      vary_by_default = !*boolean;
     } else {
       return base::unexpected(ParseErrorEnum::kParamsNotStringList);
     }

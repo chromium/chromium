@@ -42,8 +42,8 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
       return std::nullopt;
     }
 
-    const structured_headers::ParameterizedItem& item = member.member[0];
-    if (!item.item.is_string()) {
+    const std::string* name = member.member[0].item.GetIfString();
+    if (!name) {
       // Non-string items are not permitted here.
       return std::nullopt;
     }
@@ -78,17 +78,16 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
     // contain a ";" or "=" character (or several other characters excluded by
     // RFC 6265 in addition to Chromium). In the interest of interoperability,
     // those are expressly rejected.
-    const std::string& name = item.item.GetString();
-    if (name.find_first_of("()<>@,;:\\\"/[]?={} \t") != std::string::npos) {
+    if (name->find_first_of("()<>@,;:\\\"/[]?={} \t") != std::string::npos) {
       // This is one of those structured field strings that is not a valid
       // cookie name according to RFC 6265.
       // TODO(crbug.com/328628231): Watch mnot/I-D#346 to see if a different
       // behavior is agreed on.
       continue;
     }
-    CHECK(ParsedCookie::IsValidCookieName(name))
-        << "invalid cookie name \"" << name << "\"";
-    cookie_names.push_back(name);
+    CHECK(ParsedCookie::IsValidCookieName(*name))
+        << "invalid cookie name \"" << *name << "\"";
+    cookie_names.push_back(*name);
   }
   return cookie_names;
 }
