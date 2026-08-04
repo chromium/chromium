@@ -1559,6 +1559,64 @@ coverage_builder(
     use_clang_coverage = True,
 )
 
+# Experimental builder. Does not export_coverage_to_zoss.
+coverage_builder(
+    name = "mac-libfuzzer-coverage",
+    description_html = "This builder collects code coverage for fuzz targets on Mac.",
+    executable = "recipe:chromium/fuzz",
+    # TODO(crbug.com/537414135): Add triggering policy once builder is stable
+    triggered_by = [],
+    triggering_policy = None,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["use_clang_coverage"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "use_clang_coverage",
+            "static",
+            "mojo_fuzzer",
+            "libfuzzer",
+            "dcheck_off",
+            "remoteexec",
+            "chrome_with_codecs",
+            "pdf_xfa",
+            "release",
+            "mac",
+            "x64",
+        ],
+    ),
+    builderless = True,
+    cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "mac-fuzz",
+            short_name = "mac-libfuzz",
+        ),
+    ],
+    contact_team_email = "chrome-fuzzing-core@google.com",
+    execution_timeout = 48 * time.hour,
+    notifies = ["chrome-fuzzing-core"],
+    properties = {
+        "collect_fuzz_coverage": True,
+        "fuzz_engine": "libfuzzer",
+    },
+)
+
 coverage_builder(
     name = "win10-code-coverage",
     builder_spec = builder_config.builder_spec(
@@ -1695,4 +1753,60 @@ coverage_builder(
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
     use_clang_coverage = True,
+)
+
+# Experimental builder. Does not export_coverage_to_zoss.
+coverage_builder(
+    name = "win-libfuzzer-coverage",
+    description_html = "This builder collects code coverage for fuzz targets on Windows.",
+    executable = "recipe:chromium/fuzz",
+    # TODO(crbug.com/537414135): Add triggering policy once builder is stable
+    triggered_by = [],
+    triggering_policy = None,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["use_clang_coverage"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "use_clang_coverage",
+            "static",
+            "mojo_fuzzer",
+            "libfuzzer",
+            "dcheck_off",
+            "remoteexec",
+            "chrome_with_codecs",
+            "pdf_xfa",
+            "release",
+            "win",
+            "x64",
+        ],
+    ),
+    builderless = True,
+    os = os.WINDOWS_10,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "win-fuzz",
+            short_name = "win-libfuzz",
+        ),
+    ],
+    contact_team_email = "chrome-fuzzing-core@google.com",
+    execution_timeout = 48 * time.hour,
+    notifies = ["chrome-fuzzing-core"],
+    properties = {
+        "collect_fuzz_coverage": True,
+        "fuzz_engine": "libfuzzer",
+    },
 )

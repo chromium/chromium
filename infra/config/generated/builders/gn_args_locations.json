@@ -214,6 +214,8 @@
     "linux-js-code-coverage": "ci/linux-js-code-coverage/gn-args.json",
     "linux-x64-fuzzilli-coverage": "ci/linux-x64-fuzzilli-coverage/gn-args.json",
     "mac-code-coverage": "ci/mac-code-coverage/gn-args.json",
+    "mac-libfuzzer-coverage": "ci/mac-libfuzzer-coverage/gn-args.json",
+    "win-libfuzzer-coverage": "ci/win-libfuzzer-coverage/gn-args.json",
     "win10-code-coverage": "ci/win10-code-coverage/gn-args.json"
   },
   "chromium.dawn": {
