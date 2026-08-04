@@ -64,9 +64,9 @@ class TestDistillerFactoryImpl : public DistillerFactory {
   ~TestDistillerFactoryImpl() override = default;
 
   std::unique_ptr<Distiller> CreateDistiller() override {
-    dom_distiller::proto::DomDistillerOptions options;
-    return std::make_unique<DistillerImpl>(*distiller_url_fetcher_factory_,
-                                           options);
+    return std::make_unique<DistillerImpl>(
+        *distiller_url_fetcher_factory_,
+        DistillerOptions(dom_distiller_options_));
   }
 
  private:

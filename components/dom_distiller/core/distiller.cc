@@ -38,12 +38,6 @@ DistillerFactoryImpl::DistillerFactoryImpl(
     : distiller_url_fetcher_factory_(std::move(distiller_url_fetcher_factory)),
       options_(options) {}
 
-DistillerFactoryImpl::DistillerFactoryImpl(
-    std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory,
-    const dom_distiller::proto::DomDistillerOptions& dom_distiller_options)
-    : distiller_url_fetcher_factory_(std::move(distiller_url_fetcher_factory)),
-      options_(dom_distiller_options) {}
-
 DistillerFactoryImpl::~DistillerFactoryImpl() = default;
 
 std::unique_ptr<Distiller> DistillerFactoryImpl::CreateDistiller() {
@@ -64,12 +58,6 @@ DistillerImpl::DistillerImpl(
       options_(options),
       max_pages_in_article_(kMaxPagesInArticle),
       destruction_allowed_(true) {}
-
-DistillerImpl::DistillerImpl(
-    const DistillerURLFetcherFactory& distiller_url_fetcher_factory,
-    const dom_distiller::proto::DomDistillerOptions& dom_distiller_options)
-    : DistillerImpl(distiller_url_fetcher_factory,
-                    DistillerOptions(dom_distiller_options)) {}
 
 DistillerImpl::~DistillerImpl() {
   DCHECK(destruction_allowed_);

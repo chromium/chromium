@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/content/browser/test/test_util.h"
+#include "components/dom_distiller/core/distiller_options.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
@@ -107,8 +108,7 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
 
   void DistillPage(base::OnceClosure quit_closure, const std::string& url) {
     distiller_page_->DistillPage(
-        embedded_test_server()->GetURL(url),
-        dom_distiller::proto::DomDistillerOptions(),
+        embedded_test_server()->GetURL(url), dom_distiller::DistillerOptions(),
         base::BindOnce(
             &DistillerPageWebContentsTest::OnPageDistillationFinished,
             base::Unretained(this), std::move(quit_closure)));

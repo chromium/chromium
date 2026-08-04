@@ -73,14 +73,6 @@ void DistillerPage::DistillPage(const GURL& gurl,
   DistillPageImpl(gurl, script);
 }
 
-void DistillerPage::DistillPage(
-    const GURL& gurl,
-    const dom_distiller::proto::DomDistillerOptions dom_distiller_options,
-    DistillerPageCallback callback) {
-  DistillPage(gurl, DistillerOptions(dom_distiller_options),
-              std::move(callback));
-}
-
 void DistillerPage::OnDistillationDone(const GURL& page_url,
                                        const base::Value* value) {
   DCHECK(!ready_);

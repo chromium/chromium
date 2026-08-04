@@ -65,9 +65,6 @@ class DistillerFactoryImpl : public DistillerFactory {
   DistillerFactoryImpl(
       std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory,
       const DistillerOptions& options);
-  DistillerFactoryImpl(
-      std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory,
-      const dom_distiller::proto::DomDistillerOptions& dom_distiller_options);
   ~DistillerFactoryImpl() override;
   std::unique_ptr<Distiller> CreateDistiller() override;
 
@@ -81,9 +78,6 @@ class DistillerImpl : public Distiller {
  public:
   DistillerImpl(const DistillerURLFetcherFactory& distiller_url_fetcher_factory,
                 const DistillerOptions& options);
-  DistillerImpl(
-      const DistillerURLFetcherFactory& distiller_url_fetcher_factory,
-      const dom_distiller::proto::DomDistillerOptions& dom_distiller_options);
   ~DistillerImpl() override;
 
   void DistillPage(const GURL& url,

@@ -57,9 +57,6 @@ class DistillerPage {
   void DistillPage(const GURL& url,
                    const DistillerOptions& options,
                    DistillerPageCallback callback);
-  void DistillPage(const GURL& url,
-                   const proto::DomDistillerOptions options,
-                   DistillerPageCallback callback);
 
   // Returns true if the distiller page should fetch distillation data for
   // offline consumption.
