@@ -76,6 +76,10 @@ const char kVariationsSeedVersion[] = "variations-seed-version";
 // across sessions.
 const char kVariationsOverrideCountry[] = "variations-override-country";
 
+// Allows overriding the administrative area code used for evaluating
+// variations and regional eligibility features.
+const char kVariationsOverrideGeoLevel1[] = "variations-override-geo-level-1";
+
 // Specifies the location of a seed file for Local State's seed to be
 // populated from. The seed file must be in json format with the keys
 // |kVariationsCompressedSeed| and |kVariationsSeedSignature|.

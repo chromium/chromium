@@ -240,6 +240,14 @@ std::string VariationsFieldTrialCreator::GetLatestCountry() const {
              : seed_store_->GetLatestCountry();
 }
 
+std::string VariationsFieldTrialCreator::GetLatestGeoLevel1() const {
+  const std::string override_geo = base::ToLowerASCII(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kVariationsOverrideGeoLevel1));
+  return !override_geo.empty() ? override_geo
+                               : seed_store_->GetLatestGeoLevel1();
+}
+
 bool VariationsFieldTrialCreator::SetUpFieldTrials(
     const std::vector<std::string>& variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,

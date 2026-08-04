@@ -157,6 +157,10 @@ class VariationsFieldTrialCreator {
   // empty if it is not available.
   std::string GetLatestCountry() const;
 
+  // Returns what variations will consider to be the latest administrative
+  // area code. Returns empty if it is not available.
+  std::string GetLatestGeoLevel1() const;
+
   VariationsSeedStore* seed_store() { return seed_store_.get(); }
 
   // Sets up field trials based on stored variations seed data. Returns whether

@@ -39,6 +39,8 @@ extern const char kVariationsSeedVersion[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsOverrideCountry[];
 COMPONENT_EXPORT(VARIATIONS)
+extern const char kVariationsOverrideGeoLevel1[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsTestSeedJsonPath[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsServerURL[];

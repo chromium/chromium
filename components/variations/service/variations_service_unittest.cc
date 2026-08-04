@@ -906,6 +906,32 @@ TEST_F(VariationsServiceTest, OverrideStoredPermanentCountry) {
   }
 }
 
+TEST_F(VariationsServiceTest, GetLatestGeoLevel1) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  prefs_.SetString(prefs::kVariationsGeoLevel1, "us-ca");
+  EXPECT_EQ("us-ca", service.GetLatestGeoLevel1());
+}
+
+TEST_F(VariationsServiceTest, OverrideLatestGeoLevel1) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  prefs_.SetString(prefs::kVariationsGeoLevel1, "us-ca");
+  EXPECT_EQ("us-ca", service.GetLatestGeoLevel1());
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kVariationsOverrideGeoLevel1, "US-NY");
+
+  EXPECT_EQ("us-ny", service.GetLatestGeoLevel1());
+}
+
 struct VariationsServiceSafeModeFetchTestCase {
   metrics::StartupVisibility visibility;
   int expected_streak;

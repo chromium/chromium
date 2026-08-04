@@ -545,6 +545,10 @@ std::string VariationsSeedStore::GetLatestCountry() {
   return std::string(seed_reader_writer_->GetSeedInfo().session_country_code);
 }
 
+std::string VariationsSeedStore::GetLatestGeoLevel1() {
+  return std::string(seed_reader_writer_->GetSeedInfo().session_geo_level1);
+}
+
 std::string VariationsSeedStore::GetPermanentConsistencyCountry() {
   return std::string(seed_reader_writer_->GetSeedInfo().permanent_country_code);
 }

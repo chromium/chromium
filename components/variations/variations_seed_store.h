@@ -236,6 +236,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Returns the latest country code that was received from the server.
   std::string GetLatestCountry();
 
+  // Returns the latest administrative area code that was received from the
+  // server.
+  std::string GetLatestGeoLevel1();
+
   // Returns the first country code returned by the variations server after the
   // client upgraded to the version returned by
   // GetPermanentConsistencyVersion().

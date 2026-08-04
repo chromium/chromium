@@ -179,6 +179,10 @@ class VariationsService
   // br, in.
   std::string GetLatestCountry() const;
 
+  // Returns what variations will consider to be the latest administrative area
+  // code. Returns empty if it is not available. Example: us-ca, us-ny.
+  std::string GetLatestGeoLevel1() const;
+
   // Ensures the locale that was used for evaluating variations matches the
   // passed |locale|. This is used to ensure that the locale determined after
   // loading the resource bundle (which is passed here) corresponds to what
