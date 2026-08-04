@@ -207,18 +207,15 @@ TEST_F(DuplicateTreeDetectorTest,
       installer::IsIdenticalFileHierarchy(non_existent_path, valid_path));
 }
 
-// Test GetFileInfo failure handling for destination path.
+// Test that a non-existent destination path returns false without logging an
+// error.
 TEST_F(DuplicateTreeDetectorTest, IsIdenticalFileHierarchyDestFileInfoFailure) {
   base::FilePath valid_path = temp_source_dir_.GetPath();
   base::FilePath non_existent_path =
       valid_path.Append(FILE_PATH_LITERAL("non_existent_file_or_dir"));
 
   base::test::MockLog log;
-  EXPECT_CALL(log, Log(_, _, _, _, _)).Times(AnyNumber());
-  EXPECT_CALL(log,
-              Log(::logging::LOGGING_ERROR, _, _, _,
-                  HasSubstr("Failed to get file info for destination path: ")))
-      .WillOnce(Return(true));
+  EXPECT_CALL(log, Log(_, _, _, _, _)).Times(0);
 
   log.StartCapturingLogs();
 

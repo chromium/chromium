@@ -290,19 +290,17 @@ void AddChromeWorkItems(const InstallParams& install_params,
     delete_old_archive_work_item->set_rollback_enabled(false);
   }
 
-  // Move the version directory into place. Note that we pass true for
-  // check_duplicates to avoid failing on in-use repair runs if the
-  // current_version is the same as the new_version.
+  // Move the version directory into place. Unconditionally check for duplicates
+  // to avoid failing on in-use repair runs or overinstall retries if the
+  // version directory already exists.
   const base::FilePath target_version_dir =
       target_path.AppendASCII(new_version.GetString());
-  bool check_for_duplicates =
-      (current_version.IsValid() && current_version == new_version);
   // Allow items in `src_path` to be left behind. It is in a temporary directory
   // that will eventually be cleaned up.
   install_list->AddMoveTreeWorkItem(
       src_path.AppendASCII(new_version.GetString()), target_version_dir,
       temp_path,
-      WorkItem::MoveTreeOptions{.check_for_duplicates = check_for_duplicates,
+      WorkItem::MoveTreeOptions{.check_for_duplicates = true,
                                 .lenient_deletion = true});
 
   // Copy installer in install directory.
