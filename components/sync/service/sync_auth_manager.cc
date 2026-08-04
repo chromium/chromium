@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -463,8 +464,9 @@ void SyncAuthManager::OnRefreshTokensLoaded() {
 
 void SyncAuthManager::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
-  CHECK_EQ(identity_manager, identity_manager_);
-  identity_manager_observation_.Reset();
+  // Needs to be destroyed before `IdentityManager`, similar to
+  // `SyncServiceImpl::OnIdentityManagerShutdown()`.
+  NOTREACHED();
 }
 
 bool SyncAuthManager::IsRetryingAccessTokenFetchForTest() const {
