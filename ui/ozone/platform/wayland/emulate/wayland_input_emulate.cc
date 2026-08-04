@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
@@ -30,6 +31,20 @@
 #endif
 
 namespace wl {
+
+namespace {
+
+constexpr std::string_view kUiControlsNotPresentErrorMessage = R"(
+ui-controls protocol extension is not available.
+ * To run in X Window System compatibility mode:
+   * Add '--ozone-platform=x11' to the command line
+ * To run in Wayland+Mutter with XVFB (browser will not be visible):
+   * Add '"checkout_mutter": True' to your .gclient
+   * Add 'use_bundled_mutter = true' to your args.gn
+   * Run with 'testing/xvfb.py --use-mutter --no-xvfb [path to this executable]'
+)";
+
+}  // namespace
 
 WaylandInputEmulate::PendingRequest::PendingRequest(
     PendingRequestType request_type,
@@ -64,9 +79,7 @@ WaylandInputEmulate::WaylandInputEmulate(
   // Roundtrip one time to get the ui_controls global.
   wayland_proxy->RoundTripQueue();
   if (!ui_controls_) {
-    LOG(FATAL)
-        << "ui-controls protocol extension is not available. Please use "
-           "--ozone-platform=x11 to run interactive tests in this environment.";
+    LOG(FATAL) << kUiControlsNotPresentErrorMessage;
   }
 
   static constexpr zcr_ui_controls_v2_listener kUiControlsListener = {
