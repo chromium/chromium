@@ -116,7 +116,7 @@ GlicUserStatusRequest::MapApiErrorCodeAndResponseBodyToUserStatus(
     google_apis::ApiErrorCode api_error_code,
     std::string_view response_body_as_string) {
   // Currently, the is_enterprise_account_data_protected is not used for any
-  // Chrome behavir. Its sole use is to tell the user if their data is logged.
+  // Chrome behavior. Its sole use is to tell the user if their data is logged.
   // It is worse to tell the user that their data  when in fact it is, than to
   // tell the user that their data is logged when in fact it is not. (And that
   // messaging is the only thing this boolean controls). Therefore, we default
