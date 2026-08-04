@@ -15777,6 +15777,7 @@ from previous Chrome versions.
   <int value="385046753" label="DisableSystemBlur:disabled"/>
   <int value="385206456" label="ShowReadyToPayDebugInfo:enabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>
+  <int value="386064454" label="OmniboxDuiPrerendering:enabled"/>
   <int value="386138870" label="DesktopPWAsOmniboxInstall:enabled"/>
   <int value="386328035" label="CalendarJelly:enabled"/>
   <int value="386910266" label="DisableU18FeedbackDesktop:enabled"/>
@@ -17123,6 +17124,7 @@ from previous Chrome versions.
   <int value="805882800" label="SafetyCheckChromeCleanerChild:disabled"/>
   <int value="806035639" label="EnableNeuralPalmDetectionFilter:disabled"/>
   <int value="806173661" label="EnablePolicyPromotionBanner:disabled"/>
+  <int value="806291051" label="OmniboxDuiPrerendering:disabled"/>
   <int value="806334184" label="AndroidSpellChecker:enabled"/>
   <int value="806783713" label="DesktopPWAsTabStripLinkCapturing:enabled"/>
   <int value="807183395" label="WebAuthnCrossDeviceFallbackUrl:disabled"/>

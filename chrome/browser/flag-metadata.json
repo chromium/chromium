@@ -7556,6 +7556,11 @@
     "expiry_milestone": 300
   },
   {
+    "name": "omnibox-dui-prerendering",
+    "owners": [ "robertlin@chromium.org", "chrome-prerendering@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-dynamic-ai-mode-button",
     "owners": [ "caitc@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160

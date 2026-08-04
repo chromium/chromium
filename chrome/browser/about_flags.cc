@@ -13710,6 +13710,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicContextMenuBelowSearchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicContextMenuBelowSearch)},
 
+    {"omnibox-dui-prerendering", flag_descriptions::kOmniboxDuiPrerenderingName,
+     flag_descriptions::kOmniboxDuiPrerenderingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kOmniboxDuiPrerendering)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
