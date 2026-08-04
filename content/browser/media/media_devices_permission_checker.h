@@ -13,6 +13,8 @@ using blink::mojom::MediaDeviceType;
 
 namespace content {
 
+struct GlobalRenderFrameHostId;
+
 // This class provides various utility functions to check if a render frame
 // has permission to access media devices. Note that none of the methods
 // prompts the user to request permission.
@@ -28,13 +30,12 @@ class CONTENT_EXPORT MediaDevicesPermissionChecker {
   MediaDevicesPermissionChecker& operator=(
       const MediaDevicesPermissionChecker&) = delete;
 
-  // Checks if the origin associated to a render frame identified by
-  // |render_process_id| and |render_frame_id| is allowed to access the media
-  // device type |device_type|.
+  // Checks if the origin associated with |render_frame_host_id| is allowed to
+  // access the media device type |device_type|.
   // This method must be called on the UI thread.
-  bool CheckPermissionOnUIThread(MediaDeviceType device_type,
-                                 int render_process_id,
-                                 int render_frame_id) const;
+  bool CheckPermissionOnUIThread(
+      MediaDeviceType device_type,
+      GlobalRenderFrameHostId render_frame_host_id) const;
 
   // This function checks the state of the speaker selection and microphone
   // permissions for the SelectAudioOutput API. The speaker selection state is
@@ -42,41 +43,37 @@ class CONTENT_EXPORT MediaDevicesPermissionChecker {
   // the microphone permission state is returned as a bool (true for allowed,
   // false for not allowed) via the second parameter of `callback`.
   void GetSpeakerSelectionAndMicrophonePermissionState(
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       base::OnceCallback<void(MediaDevicesManager::PermissionDeniedState, bool)>
           callback) const;
 
-  // Checks if the origin associated to a render frame identified by
-  // |render_process_id| and |render_frame_id| is allowed to access the media
-  // device type |device_type|. The result is passed to |callback|.
+  // Checks if the origin associated with |render_frame_host_id| is allowed to
+  // access the media device type |device_type|. The result is passed to
+  // |callback|.
   // This method can be called on any thread. |callback| is fired on the same
   // thread this method is called on.
   void CheckPermission(MediaDeviceType device_type,
-                       int render_process_id,
-                       int render_frame_id,
+                       GlobalRenderFrameHostId render_frame_host_id,
                        base::OnceCallback<void(bool)> callback) const;
 
-  // Checks if the origin associated to a render frame identified by
-  // |render_process_id| and |render_frame_id| is allowed to access the media
-  // device types marked with a value of true in |requested_device_types|. The
-  // result is passed to |callback|. The result is indexed by
-  // blink::mojom::MediaDeviceType. Entries in the result with a value of true
-  // for requested device types indicate that the frame has permission to access
-  // devices of the corresponding types. This method can be called on any
-  // thread. |callback| is fired on the same thread this method is called on.
+  // Checks if the origin associated with |render_frame_host_id| is allowed to
+  // access the media device types marked with a value of true in
+  // |requested_device_types|. The result is passed to |callback| and indexed by
+  // blink::mojom::MediaDeviceType. Entries with a value of true for requested
+  // device types indicate that the frame has permission to access devices of
+  // the corresponding types. This method can be called on any thread.
+  // |callback| is fired on the same thread this method is called on.
   void CheckPermissions(
       MediaDevicesManager::BoolDeviceTypes requested_device_types,
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       base::OnceCallback<void(const MediaDevicesManager::BoolDeviceTypes&)>
           callback) const;
 
-  // Returns true if the origin associated to a render frame identified by
-  // |render_process_id| and |render_frame_id| is allowed to control camera
-  // movement (pan, tilt, and zoom). Otherwise, returns false.
-  static bool HasPanTiltZoomPermissionGrantedOnUIThread(int render_process_id,
-                                                        int render_frame_id);
+  // Returns true if the origin associated with |render_frame_host_id| is
+  // allowed to control camera movement (pan, tilt, and zoom). Otherwise,
+  // returns false.
+  static bool HasPanTiltZoomPermissionGrantedOnUIThread(
+      GlobalRenderFrameHostId render_frame_host_id);
 
  private:
   const bool use_override_;

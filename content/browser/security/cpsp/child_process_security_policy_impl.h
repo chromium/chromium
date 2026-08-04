@@ -220,6 +220,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void GrantCommitScheme(int child_id, const std::string& scheme) override;
   void GrantRequestScheme(int child_id, const std::string& scheme) override;
   bool CanRequestURL(int child_id, const GURL& url) override;
+  bool CanRequestURL(ChildProcessId child_id, const GURL& url);
   bool CanReadFile(ChildProcessId child_id,
                    const base::FilePath& file) override;
   bool CanCreateReadWriteFile(int child_id,

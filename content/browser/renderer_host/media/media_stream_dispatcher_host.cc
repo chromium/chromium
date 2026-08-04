@@ -513,10 +513,8 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
   }
 
   MediaDeviceSaltAndOrigin salt_and_origin = std::move(*ui_check_result);
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  if (!MediaStreamManager::IsOriginAllowed(
-          render_frame_host_id_.child_id.GetUnsafeValue(),
-          salt_and_origin.origin())) {
+  if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
+                                           salt_and_origin.origin())) {
     std::move(callback).Run(MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
                             /*label=*/std::string(),
                             /*stream_devices_set=*/nullptr,
@@ -611,10 +609,8 @@ void MediaStreamDispatcherHost::DoOpenDevice(
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
 
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  if (!MediaStreamManager::IsOriginAllowed(
-          render_frame_host_id_.child_id.GetUnsafeValue(),
-          salt_and_origin.origin())) {
+  if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
+                                           salt_and_origin.origin())) {
     std::move(callback).Run(false /* success */, std::string(),
                             blink::MediaStreamDevice());
     return;
@@ -812,10 +808,8 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
     GetOpenDeviceCallback callback,
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  if (!MediaStreamManager::IsOriginAllowed(
-          render_frame_host_id_.child_id.GetUnsafeValue(),
-          salt_and_origin.origin())) {
+  if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
+                                           salt_and_origin.origin())) {
     std::move(callback).Run(MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
                             nullptr);
     return;

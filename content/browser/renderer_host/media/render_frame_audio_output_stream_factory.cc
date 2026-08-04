@@ -242,7 +242,9 @@ RenderFrameAudioOutputStreamFactory::Core::Core(
     : process_id_(frame->GetProcess()->GetDeprecatedID()),
       global_render_frame_host_id_(frame->GetGlobalId()),
       main_frame_token_(frame->GetMainFrame()->GetGlobalFrameToken()),
-      authorization_handler_(audio_system, media_stream_manager, process_id_) {
+      authorization_handler_(audio_system,
+                             media_stream_manager,
+                             global_render_frame_host_id_) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
 
   ForwardingAudioStreamFactory::Core* tmp_factory =
@@ -303,7 +305,6 @@ void RenderFrameAudioOutputStreamFactory::Core::RequestDeviceAuthorization(
           std::move(provider_receiver), std::move(callback));
 
   authorization_handler_.RequestDeviceAuthorization(
-      global_render_frame_host_id_.frame_routing_id,
       session_id.value_or(base::UnguessableToken()), device_id,
       std::move(completed_callback));
 }

@@ -481,7 +481,8 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   auto handle = p->CreateHandle(kRendererProcess);
 
   // Safe to request, redirect or commit.
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("http://www.google.com/")));
+  EXPECT_TRUE(
+      p->CanRequestURL(kRendererProcess, GURL("http://www.google.com/")));
   EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("https://www.paypal.com/")));
   EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("data:text/html,<b>Hi</b>")));
   EXPECT_TRUE(p->CanRequestURL(
@@ -512,7 +513,7 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   EXPECT_TRUE(p->CanCommitURL(kRendererID, GURL("data:text/html,<b>Hi</b>")));
 
   // Dangerous to request, commit, or set as origin header.
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, GURL("file:///etc/passwd")));
+  EXPECT_FALSE(p->CanRequestURL(kRendererProcess, GURL("file:///etc/passwd")));
   EXPECT_FALSE(p->CanRequestURL(kRendererID, GetWebUIURL("foo/bar")));
   EXPECT_FALSE(p->CanRequestURL(kRendererID,
                                 GURL("view-source:http://www.google.com/")));

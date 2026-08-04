@@ -17,8 +17,8 @@
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_visibility_state.h"
 #include "media/capture/mojom/image_capture_types.h"
@@ -186,7 +186,6 @@ bool ImageCaptureImpl::HasPanTiltZoomPermissionGranted() {
 
   return MediaDevicesPermissionChecker::
       HasPanTiltZoomPermissionGrantedOnUIThread(
-          render_frame_host().GetProcess()->GetDeprecatedID(),
-          render_frame_host().GetRoutingID());
+          render_frame_host().GetGlobalId());
 }
 }  // namespace content

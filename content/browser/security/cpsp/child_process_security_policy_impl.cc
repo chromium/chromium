@@ -1717,6 +1717,13 @@ bool ChildProcessSecurityPolicyImpl::HasOriginCheckExemptionForWebView(
 
 bool ChildProcessSecurityPolicyImpl::CanRequestURL(int child_id,
                                                    const GURL& url) {
+  // TODO(crbug.com/379869738): Remove this conversion when the public
+  // ChildProcessSecurityPolicy API is migrated to ChildProcessId.
+  return CanRequestURL(ChildProcessId::FromUnsafeValue(child_id), url);
+}
+
+bool ChildProcessSecurityPolicyImpl::CanRequestURL(ChildProcessId child_id,
+                                                   const GURL& url) {
   if (!url.is_valid()) {
     return false;  // Can't request invalid URLs.
   }
@@ -1752,9 +1759,7 @@ bool ChildProcessSecurityPolicyImpl::CanRequestURL(int child_id,
   {
     base::AutoLock lock(lock_);
 
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-    if (auto* state = process_states_.GetProcessStateForQuery(
-            ChildProcessId::FromUnsafeValue(child_id))) {
+    if (auto* state = process_states_.GetProcessStateForQuery(child_id)) {
       // Otherwise, we consult the child process's security state to see if it
       // is allowed to request the URL.
       if (state->CanRequestURL(url)) {

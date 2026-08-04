@@ -6,8 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/navigation_simulator.h"
@@ -69,8 +69,7 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     checker_.CheckPermission(
-        device_type, main_rfh()->GetProcess()->GetDeprecatedID(),
-        main_rfh()->GetRoutingID(),
+        device_type, main_rfh()->GetGlobalId(),
         base::BindOnce(
             &MediaDevicesPermissionCheckerTest::CheckPermissionCallback,
             base::Unretained(this)));

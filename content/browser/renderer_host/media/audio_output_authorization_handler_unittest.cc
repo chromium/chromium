@@ -193,15 +193,14 @@ TEST_F(AudioOutputAuthorizationHandlerTest, AuthorizeDefaultDevice_Ok) {
       .Times(1);
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
-          GetAudioSystem(), GetMediaStreamManager(),
-          process()->GetDeprecatedID());
+          GetAudioSystem(), GetMediaStreamManager(), main_rfh()->GetGlobalId());
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken(), kDefaultDeviceId, listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken(),
+          kDefaultDeviceId, listener.Get()));
 
   SyncWithAllThreads();
   GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, handler.release());
@@ -216,15 +215,14 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
       .Times(1);
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
-          GetAudioSystem(), GetMediaStreamManager(),
-          process()->GetDeprecatedID());
+          GetAudioSystem(), GetMediaStreamManager(), main_rfh()->GetGlobalId());
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken(), kEmptyDeviceId, listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken(),
+          kEmptyDeviceId, listener.Get()));
 
   SyncWithAllThreads();
   GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, handler.release());
@@ -243,8 +241,7 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
-          GetAudioSystem(), GetMediaStreamManager(),
-          process()->GetDeprecatedID());
+          GetAudioSystem(), GetMediaStreamManager(), main_rfh()->GetGlobalId());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -260,8 +257,8 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken(), hashed_id, listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken(), hashed_id,
+          listener.Get()));
 
   SyncWithAllThreads();
   GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, handler.release());
@@ -279,8 +276,7 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
-          GetAudioSystem(), GetMediaStreamManager(),
-          process()->GetDeprecatedID());
+          GetAudioSystem(), GetMediaStreamManager(), main_rfh()->GetGlobalId());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -295,8 +291,8 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken(), hashed_id, listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken(), hashed_id,
+          listener.Get()));
 
   SyncWithAllThreads();
   GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, handler.release());
@@ -307,8 +303,7 @@ TEST_F(AudioOutputAuthorizationHandlerTest, AuthorizeInvalidDeviceId_NotFound) {
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
-          GetAudioSystem(), GetMediaStreamManager(),
-          process()->GetDeprecatedID());
+          GetAudioSystem(), GetMediaStreamManager(), main_rfh()->GetGlobalId());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -324,8 +319,8 @@ TEST_F(AudioOutputAuthorizationHandlerTest, AuthorizeInvalidDeviceId_NotFound) {
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken(), kInvalidDeviceId, listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken(),
+          kInvalidDeviceId, listener.Get()));
 
   SyncWithAllThreads();
   // It is possible to request an invalid device id from JS APIs,
@@ -347,11 +342,10 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
   std::string hashed_id =
       GetHMACForRawMediaDeviceID(salt_and_origin, raw_nondefault_id);
   MockAuthorizationCallback listener;
+  NavigateAndCommit(url);
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
-          GetAudioSystem(), GetMediaStreamManager(),
-          process()->GetDeprecatedID());
-  NavigateAndCommit(url);
+          GetAudioSystem(), GetMediaStreamManager(), main_rfh()->GetGlobalId());
 
   EXPECT_CALL(listener, Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED, _,
                             std::string(), std::string()))
@@ -361,8 +355,8 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken(), hashed_id, listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken(), hashed_id,
+          listener.Get()));
   SyncWithAllThreads();
 
   EXPECT_EQ(process()->bad_msg_count(), 0);
@@ -375,8 +369,7 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
-          GetAudioSystem(), GetMediaStreamManager(),
-          process()->GetDeprecatedID());
+          GetAudioSystem(), GetMediaStreamManager(), main_rfh()->GetGlobalId());
 
   EXPECT_CALL(listener, Run(media::OUTPUT_DEVICE_STATUS_OK, _, kDefaultDeviceId,
                             std::string()))
@@ -386,8 +379,8 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken::Create(), std::string(), listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken::Create(),
+          std::string(), listener.Get()));
 
   SyncWithAllThreads();
   GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, handler.release());
@@ -405,8 +398,7 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
-          GetAudioSystem(), GetMediaStreamManager(),
-          process()->GetDeprecatedID());
+          GetAudioSystem(), GetMediaStreamManager(), main_rfh()->GetGlobalId());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -419,8 +411,8 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken(), hashed_id, listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken(), hashed_id,
+          listener.Get()));
   SyncWithAllThreads();
 
   // Reset the salt and expect authorization of the device ID hashed with
@@ -432,8 +424,8 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
       FROM_HERE,
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          base::UnguessableToken(), hashed_id, listener.Get()));
+          base::Unretained(handler.get()), base::UnguessableToken(), hashed_id,
+          listener.Get()));
 
   SyncWithAllThreads();
   GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, handler.release());

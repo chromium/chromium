@@ -3152,14 +3152,11 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
   // owned by BrowserMainLoop and so outlives the IO thread.
   // TODO(crbug.com/40833062): Avoid using PTZ permission checks for non-gUM
   // tracks.
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &MediaDevicesPermissionChecker::
-              HasPanTiltZoomPermissionGrantedOnUIThread,
-          request->requesting_render_frame_host_id.child_id.GetUnsafeValue(),
-          request->requesting_render_frame_host_id.frame_routing_id),
+      base::BindOnce(&MediaDevicesPermissionChecker::
+                         HasPanTiltZoomPermissionGrantedOnUIThread,
+                     request->requesting_render_frame_host_id),
       base::BindOnce(
           &MediaStreamManager::PanTiltZoomPermissionChecked,
           base::Unretained(this), label,
@@ -3188,14 +3185,11 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
   // owned by BrowserMainLoop and so outlives the IO thread.
   // TODO(crbug.com/40833063): Avoid this check once you have this permission
   // value from original context.
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &MediaDevicesPermissionChecker::
-              HasPanTiltZoomPermissionGrantedOnUIThread,
-          request->requesting_render_frame_host_id.child_id.GetUnsafeValue(),
-          request->requesting_render_frame_host_id.frame_routing_id),
+      base::BindOnce(&MediaDevicesPermissionChecker::
+                         HasPanTiltZoomPermissionGrantedOnUIThread,
+                     request->requesting_render_frame_host_id),
       base::BindOnce(
           &MediaStreamManager::PanTiltZoomPermissionChecked,
           base::Unretained(this), label,
@@ -4112,7 +4106,7 @@ void MediaStreamManager::DoNativeLogCallbackUnregistration(
 }
 
 // static
-bool MediaStreamManager::IsOriginAllowed(int render_process_id,
+bool MediaStreamManager::IsOriginAllowed(ChildProcessId render_process_id,
                                          const url::Origin& origin) {
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
           render_process_id, origin.GetURL())) {

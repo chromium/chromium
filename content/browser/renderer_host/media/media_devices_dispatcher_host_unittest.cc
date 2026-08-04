@@ -159,16 +159,16 @@ class FakeContentBrowserClient : public ContentBrowserClient {
 class MockAudioOutputAuthorizationHandler
     : public AudioOutputAuthorizationHandler {
  public:
-  explicit MockAudioOutputAuthorizationHandler(
-      MediaStreamManager* media_stream_manager)
+  MockAudioOutputAuthorizationHandler(
+      MediaStreamManager* media_stream_manager,
+      GlobalRenderFrameHostId render_frame_host_id)
       : AudioOutputAuthorizationHandler(/*media::AudioSystem*=*/nullptr,
                                         media_stream_manager,
-                                        /*render_process_id=*/0) {}
+                                        render_frame_host_id) {}
   ~MockAudioOutputAuthorizationHandler() override = default;
   MOCK_METHOD(void,
               RequestDeviceAuthorization,
-              (int,
-               const base::UnguessableToken&,
+              (const base::UnguessableToken&,
                const std::string&,
                AudioOutputAuthorizationHandler::AuthorizationCompletedCallback),
               (const, override));
@@ -1105,14 +1105,14 @@ TEST_P(SetPreferredSinkIdTest, DispatchPreferredAudioOutputDeviceManager) {
 
   auto authorization_handler =
       std::make_unique<MockAudioOutputAuthorizationHandler>(
-          media_stream_manager_.get());
+          media_stream_manager_.get(), render_frame_host_->GetGlobalId());
   MockAudioOutputAuthorizationHandler* mock_authorization_handler =
       authorization_handler.get();
   SetAuthorizationHandler(std::move(authorization_handler));
 
   EXPECT_CALL(*mock_authorization_handler,
-              RequestDeviceAuthorization(_, _, kHashedDeviceId, _))
-      .WillOnce(base::test::RunOnceCallback<3>(
+              RequestDeviceAuthorization(_, kHashedDeviceId, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
           media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK,
           media::AudioParameters(), kRawDeviceId, ""));
 
@@ -1132,14 +1132,14 @@ TEST_P(SetPreferredSinkIdTest,
 
   auto authorization_handler =
       std::make_unique<MockAudioOutputAuthorizationHandler>(
-          media_stream_manager_.get());
+          media_stream_manager_.get(), render_frame_host_->GetGlobalId());
   MockAudioOutputAuthorizationHandler* mock_authorization_handler =
       authorization_handler.get();
   SetAuthorizationHandler(std::move(authorization_handler));
 
   EXPECT_CALL(*mock_authorization_handler,
-              RequestDeviceAuthorization(_, _, kHashedDeviceId, _))
-      .WillOnce(base::test::RunOnceCallback<3>(
+              RequestDeviceAuthorization(_, kHashedDeviceId, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
           media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
           media::AudioParameters(), kRawDeviceId, ""));
 

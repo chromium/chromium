@@ -43,6 +43,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/buildflags.h"
+#include "content/public/common/child_process_id.h"
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -362,7 +363,8 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Returns true if the renderer process identified with |render_process_id|
   // is allowed to access |origin|.
-  static bool IsOriginAllowed(int render_process_id, const url::Origin& origin);
+  static bool IsOriginAllowed(ChildProcessId render_process_id,
+                              const url::Origin& origin);
 
   // Returns internal single instance of PreferredAudioOutputDeviceManager
   // object instance. The client should not take ownership of the returned
