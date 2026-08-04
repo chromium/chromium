@@ -172,7 +172,7 @@ void RuntimeApplicationServiceImpl::Load(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!grpc_server_);
 
-  if (GetFlagEntry(feature::kCrashOnStart,
+  if (GetFlagEntry(feature::kCastCoreCrashOnStart,
                    request.application_config().extra_features())) {
     LOG(ERROR) << "Triggering intentional runtime crash on startup.";
     base::ImmediateCrash();

@@ -43,7 +43,7 @@ const char kCastCoreBitstreamAudioCodecsInfo[] =
 const char kCastCoreCodecs[] = "cast_core_codecs";
 const char kCastCoreSpatialRendering[] = "cast_core_spatial_rendering";
 
-const char kCrashOnStart[] = "crash-on-start";
+const char kCastCoreCrashOnStart[] = "crash-on-start";
 
 }  // namespace feature
 }  // namespace chromecast
