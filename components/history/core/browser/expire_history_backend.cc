@@ -348,7 +348,7 @@ void ExpireHistoryBackend::ClearOldOnDemandFaviconsIfPossible(
       icon_mappings = favicon_db_->GetOldOnDemandFavicons(expiration_threshold);
   DeleteEffects effects;
 
-  for (auto id_and_mappings_pair : icon_mappings) {
+  for (const auto& id_and_mappings_pair : icon_mappings) {
     favicon_base::FaviconID icon_id = id_and_mappings_pair.first;
     const favicon::IconMappingsForExpiry& mappings =
         id_and_mappings_pair.second;
