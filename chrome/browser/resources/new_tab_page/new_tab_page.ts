@@ -42,7 +42,7 @@ export {WindowProxy} from './window_proxy.js';
 
 export * from './new_tab_page.mojom-webui.js';
 export type {ActionChip, PageRemote as ActionChipsPageRemote, TabInfo} from './action_chips.mojom-webui.js';
-export {ActionChipsHandlerRemote, IconType, PageCallbackRouter as ActionChipsPageCallbackRouter, ToolMode} from './action_chips.mojom-webui.js';
+export {ActionChipsHandlerRemote, IconType, PageCallbackRouter as ActionChipsPageCallbackRouter} from './action_chips.mojom-webui.js';
 export type {CalendarEvent, Attachment} from './calendar_data.mojom-webui.js';
 export type {Promo as NtpPromo, NtpPromoClientRemote, NtpPromoHandlerInterface} from './ntp_promo.mojom-webui.js';
 export {NtpPromoClientCallbackRouter} from './ntp_promo.mojom-webui.js';

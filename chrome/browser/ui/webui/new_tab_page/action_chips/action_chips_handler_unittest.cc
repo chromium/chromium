@@ -63,7 +63,6 @@ using ::action_chips::mojom::Page;
 using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
-using ::action_chips::mojom::ToolMode;
 using ::base::Bucket;
 using ::base::BucketsAreArray;
 using ::testing::_;
@@ -156,8 +155,6 @@ struct ActionChipFields {
   std::string primary_text;
   std::string secondary_text;
   std::optional<TabInfoFields> tab;
-  std::optional<ToolMode> preselected_tool = std::nullopt;
-  std::optional<omnibox::SuggestInventory> preferred_inventory = std::nullopt;
 };
 
 base::Time GetTimeAt(const size_t index) {
@@ -176,8 +173,7 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
       fields.suggestion,
       SuggestTemplateInfo::New(
           fields.icon_type, CreateFormattedString(fields.primary_text),
-          CreateFormattedString(fields.secondary_text), fields.preselected_tool,
-          fields.preferred_inventory, nullptr),
+          CreateFormattedString(fields.secondary_text), nullptr),
       std::move(tab));
 }
 
@@ -518,20 +514,18 @@ TEST_F(
           });
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(MakeActionChipsVector(
-          ActionChip::New(
-              "suggention1",
-              SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
-                                       CreateFormattedString("title1"),
-                                       CreateFormattedString("subtitle1"),
-                                       std::nullopt, std::nullopt, nullptr),
-              nullptr),
-          ActionChip::New(
-              "suggention2",
-              SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
-                                       CreateFormattedString("title2"),
-                                       CreateFormattedString("subtitle2"),
-                                       std::nullopt, std::nullopt, nullptr),
-              nullptr))));
+          ActionChip::New("suggention1",
+                          SuggestTemplateInfo::New(
+                              IconType::kIconTypeUnspecified,
+                              CreateFormattedString("title1"),
+                              CreateFormattedString("subtitle1"), nullptr),
+                          nullptr),
+          ActionChip::New("suggention2",
+                          SuggestTemplateInfo::New(
+                              IconType::kIconTypeUnspecified,
+                              CreateFormattedString("title2"),
+                              CreateFormattedString("subtitle2"), nullptr),
+                          nullptr))));
 
   // Act
   handler().StartActionChipsRetrieval();
@@ -571,17 +565,15 @@ TEST_F(ActionChipsHandlerTest,
     return MakeActionChipsVector(
         ActionChip::New(
             "suggestion1",
-            SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
-                                     CreateFormattedString("title1"),
-                                     CreateFormattedString("subtitle1"),
-                                     std::nullopt, std::nullopt, nullptr),
+            SuggestTemplateInfo::New(
+                IconType::kIconTypeUnspecified, CreateFormattedString("title1"),
+                CreateFormattedString("subtitle1"), nullptr),
             nullptr),
         ActionChip::New(
             "suggestion2",
-            SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
-                                     CreateFormattedString("title2"),
-                                     CreateFormattedString("subtitle2"),
-                                     std::nullopt, std::nullopt, nullptr),
+            SuggestTemplateInfo::New(
+                IconType::kIconTypeUnspecified, CreateFormattedString("title2"),
+                CreateFormattedString("subtitle2"), nullptr),
             nullptr));
   };
 

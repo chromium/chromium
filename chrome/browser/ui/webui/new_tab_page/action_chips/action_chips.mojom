@@ -38,21 +38,6 @@ enum IconType {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
 
-// This enum is mapped to third_party/omnibox_proto/tool_mode.proto.
-enum ToolMode {
-  kUnspecified = 0,
-  kDeepSearch = 1,
-  kCanvas = 2,
-  kGeminiPro = 3,
-  kImageGen = 4,
-  kDeepBrowse = 5,
-  kImageGenSelfie = 6,
-  kImageGenUpload = 7,
-  kDisableSuggest = 8,
-  kAim = 9,
-  kAimGenPrompt = 10,
-};
-
 struct FormattedString {
   string text;
   string? a11y_text;
@@ -61,15 +46,11 @@ struct FormattedString {
 // SuggestTemplateInfo contains a subset of the fields of SuggestTemplateInfo in
 // third_party/omnibox_proto/suggest_template_info.proto.
 // The field names must match.
-// TODO(crbug.com/540070720): Clean up redundant FuseboxAction data structures
-// (ToolMode, ModelMode, SearchboxOverride, QueryActionOverride, TutorialId,
-// TabContext) from this file once FuseboxAction migration is complete.
+
 struct SuggestTemplateInfo {
   IconType type_icon;
   FormattedString? primary_text;
   FormattedString? secondary_text;
-  ToolMode? preselected_tool;
-  searchbox.mojom.SuggestInventory? preferred_inventory;
   fusebox_action.mojom.FuseboxAction? fusebox_action;
 };
 
