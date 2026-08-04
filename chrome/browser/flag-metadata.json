@@ -3656,8 +3656,7 @@
   {
     "name": "enable-escape-handling-for-secondary-activities",
     "owners": [
-      "adelm@google.com",
-      "lazzzis@google.com"
+      "adelm@google.com"
     ],
     "expiry_milestone": 150
   },
@@ -3824,8 +3823,7 @@
   {
     "name": "enable-gesture-user-education-back-swipe",
     "owners": [
-      "jtanaristy@google.com",
-      "lazzzis@google.com"
+      "jtanaristy@google.com"
     ],
     "expiry_milestone": 150
   },
@@ -4426,8 +4424,7 @@
   {
     "name": "enable-three-dot-menu-back-button",
     "owners": [
-      "jtanaristy@google.com",
-      "lazzzis@google.com"
+      "jtanaristy@google.com"
     ],
     "expiry_milestone": 150
   },

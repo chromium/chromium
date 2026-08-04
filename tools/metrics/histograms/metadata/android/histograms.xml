@@ -1066,7 +1066,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.BackPress.Backfalsing2" enum="NavigationDirection"
     expires_after="2026-08-09">
   <owner>eleanorlee@google.com</owner>
-  <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Recorded when a user navigates to a URL by a navigation gesture or a
@@ -1077,7 +1076,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackPress.Failure" enum="BackPressConsumer"
     expires_after="2027-01-17">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>adelm@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>twellington@google.com</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
     Recorded when the user invokes a back navigation only if the handler failed
@@ -1090,7 +1091,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.BackPress.IncorrectEdgeSwipe" enum="SwipeEdge"
     expires_after="2026-10-25">
   <owner>eleanorlee@google.com</owner>
-  <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Records any incorrect edge swipes the user tries to perform. Recorded in
@@ -1103,7 +1103,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.BackPress.IncorrectEdgeSwipe.CountChained"
     units="count" expires_after="2026-04-05">
   <owner>eleanorlee@google.com</owner>
-  <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Records the consecutive number of incorrect edge swipes the user tries to
@@ -1116,7 +1115,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackPress.Intercept{Direction}"
     enum="BackPressConsumer" expires_after="2027-01-03">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>adelm@google.com</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
     Recorded when a specific feature intercepted the system's back press
@@ -1131,7 +1131,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackPress.MinimizeAppAndCloseTab"
     enum="MinimizeAppAndCloseTabType" expires_after="2026-11-29">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>adelm@google.com</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
     Records that the back press causes the app to be minimized or the current
@@ -1141,7 +1142,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackPress.MinimizeAppAndCloseTab.CustomTab.{Task}"
     enum="MinimizeAppAndCloseTabType" expires_after="2026-12-06">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>adelm@google.com</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
     Records that the custom tabs back press causes the app to be minimized or
@@ -1156,7 +1158,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.BackPress.StrictBackfalsing"
     enum="NavigationDirection" expires_after="2027-01-03">
   <owner>eleanorlee@google.com</owner>
-  <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Another version of Android.BackPress.Backfalsing2 with strict definition of
@@ -1169,7 +1170,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackPress.SwipeEdge{Type}" enum="SwipeEdge"
     expires_after="2026-11-29">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>adelm@google.com</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
     Record the edge from which the gesture is swiped from {Type}.
@@ -1183,7 +1185,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackPress.TabClosureType" enum="BackPressTabCloseType"
     expires_after="2026-11-29">
-  <owner>lazzzis@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>adelm@google.com</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
     Record the type of tab closure caused by back press. Record when tab is
@@ -1865,8 +1868,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.DefaultBrowserPromo.Outcome.{CurrentState}"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2026-08-30">
-  <owner>lazzzis@google.com</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>src/chrome/browser/ui/android/default_browser_promo/OWNERS</owner>
   <summary>
     The final default browser state (outcome) after the user has been prompted
     to set Chrome as the default when {CurrentState} is set as the default
@@ -1882,8 +1885,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.DefaultBrowserPromo.Outcome.{CurrentState}.{PromoCount}"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2026-09-06">
-  <owner>lazzzis@google.com</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>src/chrome/browser/ui/android/default_browser_promo/OWNERS</owner>
   <summary>
     The final default browser state (outcome) after the user has been prompted
     to set Chrome as the default when {CurrentState} is set as the default
@@ -1929,8 +1932,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.DefaultBrowserPromo.RoleManagerShown"
     enum="AndroidDefaultBrowserPromoType" expires_after="2026-12-16">
-  <owner>lazzzis@google.com</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>src/chrome/browser/ui/android/default_browser_promo/OWNERS</owner>
   <summary>
     Records the default browser state when the Android Q+ role manager dialog is
     shown.
@@ -3318,7 +3321,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.DismissedWithoutFullyVisible"
     enum="MessageIdentifier" expires_after="2026-08-23">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the message identifier when the message is dismissed without being
@@ -3329,7 +3332,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.Dismissed{MessageIdentifier}"
     enum="MessageDismissReason" expires_after="2026-11-29">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
     Recorded once per message when the message is dismissed to capture the
@@ -3341,7 +3344,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.Enqueued" enum="MessageIdentifier"
     expires_after="2026-12-20">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the message identifier each time a message is enqueued through
@@ -3353,7 +3356,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.Enqueued.Hidden" enum="MessageIdentifier"
     expires_after="2026-12-06">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the message identifier when an enqueued message is not immediately
@@ -3376,7 +3379,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.FullyVisible" enum="MessageIdentifier"
     expires_after="2027-01-17">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the message identifier every time it becomes fully visible to users.
@@ -3386,7 +3389,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.TimeToAction{MessageIdentifier}" units="ms"
     expires_after="2026-11-29">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the time interval the message was displayed on the screen before the
@@ -3402,7 +3405,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.TimeToFullyShow{MessageIdentifier}"
     units="ms" expires_after="2026-11-29">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
     Recorded once per message measuring the duration from the moment it is
@@ -5340,7 +5343,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.PredictiveGestureNavigation{Transition}"
     enum="PredictiveNavTransitionPhase" expires_after="2026-12-31">
-  <owner>lazzzis@google.com</owner>
+  <owner>jinsukkim@google.com</owner>
+  <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Record the phase when a gesture nav is triggered {Transition} by user's
@@ -5357,7 +5361,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.PredictiveNavigationTransition.CaptureNativeViewResult"
     enum="CaptureNativeViewResult" expires_after="2026-12-31">
-  <owner>lazzzis@google.com</owner>
+  <owner>jinsukkim@google.com</owner>
+  <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Record the result of capturing a screenshot of a native page view. This
@@ -5370,7 +5375,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.PredictiveNavigationTransition.NavigateBetweenNativePages"
     enum="Boolean" expires_after="2026-12-31">
-  <owner>lazzzis@google.com</owner>
+  <owner>jinsukkim@google.com</owner>
+  <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Record whether a navigation is about to start from a chrome native page to
@@ -5381,7 +5387,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.PredictiveNavigationTransition.NTPFeedRestorationDuration"
     units="ms" expires_after="2026-12-31">
-  <owner>lazzzis@google.com</owner>
+  <owner>jinsukkim@google.com</owner>
+  <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Record the duration when the feed stream is restored after being transited
@@ -5392,7 +5399,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.PredictiveNavigationTransition.NTPSmoothTransitionByFallback"
     enum="Boolean" expires_after="2026-12-31">
-  <owner>lazzzis@google.com</owner>
+  <owner>jinsukkim@google.com</owner>
+  <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Record whether animation is triggered because of the timeout fallback. False
