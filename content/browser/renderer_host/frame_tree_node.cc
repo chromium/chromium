@@ -123,7 +123,9 @@ FrameTreeNodeId::Generator FrameTreeNode::frame_tree_node_id_generator_;
 // static
 FrameTreeNode* FrameTreeNode::GloballyFindByID(
     FrameTreeNodeId frame_tree_node_id) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
+  // TODO(crbug.com/541051793): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FrameTreeNodeIdMap* nodes = g_frame_tree_node_id_map.Pointer();
   auto it = nodes->find(frame_tree_node_id);
   return it == nodes->end() ? nullptr : it->second;
