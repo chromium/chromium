@@ -947,7 +947,8 @@ PLATFORM_INFO = {
     },
     'win-arm64-snapdragon-elite-perf': {
         'description': 'Windows Dell Snapdragon Elite',
-        'num_shards': 28,
+        # TODO(crbug.com/541980022): reset to 28 when missing bots are found.
+        'num_shards': 18,
         'platform_os': 'win',
         'is_fyi': False
     },
