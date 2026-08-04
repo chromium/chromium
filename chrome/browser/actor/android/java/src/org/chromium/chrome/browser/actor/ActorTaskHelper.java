@@ -93,7 +93,7 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
 
     @Override
     public void onStopWithNative() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)) {
+        if (ChromeFeatureList.sGlicBackgroundActuation.isEnabled()) {
             TabModelSelector selector = mTabModelSelectorSupplier.get();
             assert selector != null;
             ActorForegroundServiceController.get().transitionActiveTasksToBackground(selector);

@@ -93,7 +93,7 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
         if (!mIsForeground) {
             ActorForegroundServiceUmaHelper.recordLifecycleHistogram(ForegroundLifecycle.STARTED);
             mIsForeground = true;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)) {
+            if (ChromeFeatureList.sGlicBackgroundTriggering.isEnabled()) {
                 ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
             }
         } else {
@@ -121,7 +121,7 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         boolean isFeatureEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING);
+                ChromeFeatureList.sGlicBackgroundTriggering.isEnabled();
         Log.d(
                 TAG,
                 "ActorForegroundService onStartCommand. mIsForeground: "
@@ -148,7 +148,7 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
         }
 
         if (intent != null && START_ACTOR_FOREGROUND_SERVICE.equals(intent.getAction())) {
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)) {
+            if (!ChromeFeatureList.sGlicBackgroundTriggering.isEnabled()) {
                 Log.w(TAG, "Background triggering disabled, ignoring start intent.");
                 return Service.START_NOT_STICKY;
             }
