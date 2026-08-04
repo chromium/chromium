@@ -11,10 +11,11 @@
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
-#include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace trusted_vault {
+
+enum class TrustedVaultRegistrationStatus;
 
 // Type of a LocalRecoveryFactor. Overwritten by sub-classes according to how
 // they manage recovery keys locally.

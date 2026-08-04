@@ -45,6 +45,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":coordinator",
+    "//base",
+    "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",

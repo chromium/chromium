@@ -287,6 +287,7 @@ source_set("unit_tests") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:javascript_test",
+    "//net:test_support",
     "//testing/data_driven_testing",
     "//testing/gtest",
     "//third_party/leveldatabase",

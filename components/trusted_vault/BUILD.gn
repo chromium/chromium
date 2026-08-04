@@ -4,29 +4,32 @@
 
 static_library("trusted_vault") {
   sources = [
+    "features.cc",
+    "features.h",
+    "local_recovery_factor.h",
     "trusted_vault_client.h",
+    "trusted_vault_histograms.cc",
+    "trusted_vault_histograms.h",
     "trusted_vault_server_constants.cc",
     "trusted_vault_server_constants.h",
     "trusted_vault_service.cc",
     "trusted_vault_service.h",
   ]
+  deps = [ "//components/signin/public/identity_manager" ]
   public_deps = [
     "//base",
     "//components/keyed_service/core",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  if (!is_android) {
+  if (!is_android && !is_ios) {
     sources += [
       "command_line_switches.cc",
       "command_line_switches.h",
       "download_keys_response_handler.cc",
       "download_keys_response_handler.h",
-      "features.cc",
-      "features.h",
       "frontend_trusted_vault_connection.cc",
       "frontend_trusted_vault_connection.h",
-      "local_recovery_factor.h",
       "physical_device_recovery_factor.cc",
       "physical_device_recovery_factor.h",
       "proto_string_bytes_conversion.cc",
@@ -61,8 +64,6 @@ static_library("trusted_vault") {
       "trusted_vault_crypto.h",
       "trusted_vault_degraded_recoverability_handler.cc",
       "trusted_vault_degraded_recoverability_handler.h",
-      "trusted_vault_histograms.cc",
-      "trusted_vault_histograms.h",
       "trusted_vault_request.cc",
       "trusted_vault_request.h",
       "trusted_vault_throttling_connection.h",
@@ -70,9 +71,8 @@ static_library("trusted_vault") {
       "trusted_vault_throttling_connection_impl.h",
     ]
 
-    deps = [
+    deps += [
       "//components/account_id",
-      "//components/signin/public/identity_manager",
       "//components/trusted_vault/proto",
       "//crypto",
       "//google_apis",
@@ -93,7 +93,7 @@ static_library("trusted_vault") {
   }
 }
 
-if (!is_android) {
+if (!is_android && !is_ios) {
   source_set("unit_tests") {
     testonly = true
     sources = [
@@ -169,7 +169,7 @@ static_library("test_support") {
     "//base",
   ]
 
-  if (!is_android) {
+  if (!is_android && !is_ios) {
     sources += [
       "test/fake_file_access.cc",
       "test/fake_file_access.h",
