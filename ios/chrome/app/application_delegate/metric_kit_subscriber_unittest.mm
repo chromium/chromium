@@ -17,6 +17,7 @@
 #import "base/test/task_environment.h"
 #import "components/crash/core/app/crashpad.h"
 #import "components/crash/core/common/reporter_running_ios.h"
+#import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -187,8 +188,7 @@ TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {
   [[MetricKitSubscriber sharedInstance] didReceiveDiagnosticPayloads:array];
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForFileOperationTimeout, ^bool() {
-        base::RunLoop().RunUntilIdle();
+      base::test::ios::kWaitForFileOperationTimeout, true, ^bool() {
         std::vector<crash_reporter::Report> reports;
         crash_reporter::GetReports(&reports);
         return reports.size() == 1;
@@ -220,4 +220,42 @@ TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {
       [result_data decompressedDataUsingAlgorithm:NSDataCompressionAlgorithmZlib
                                             error:&error];
   EXPECT_NSEQ(data, result_data);
+}
+
+// Test that PreviousSessionInfo report parameters are snapshotted and passed
+// to Crashpad when saving diagnostic payloads.
+TEST_F(MetricKitSubscriberTest, SaveDiagnosticReportWithParameters) {
+  PreviousSessionInfo* previous_session = [PreviousSessionInfo sharedInstance];
+  [previous_session setReportParameterValue:@"test_value" forKey:@"test_param"];
+
+  id mock_report = OCMClassMock([MXDiagnosticPayload class]);
+  NSDate* date = [NSDate date];
+  std::string file_data("report content with params");
+  NSData* data = [NSData dataWithBytes:file_data.c_str()
+                                length:file_data.size()];
+  NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+  [formatter setDateFormat:@"yyyyMMdd_HHmmss"];
+  [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+  OCMStub([mock_report timeStampEnd]).andReturn(date);
+  OCMStub([mock_report JSONRepresentation]).andReturn(data);
+  NSArray* array = @[ mock_report ];
+
+  id mock_diagnostic = OCMClassMock([MXCrashDiagnostic class]);
+  OCMStub([mock_diagnostic JSONRepresentation]).andReturn(data);
+  NSArray* mock_diagnostics = @[ mock_diagnostic ];
+  OCMStub([mock_report crashDiagnostics]).andReturn(mock_diagnostics);
+  [[MetricKitSubscriber sharedInstance] didReceiveDiagnosticPayloads:array];
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, true, ^bool() {
+        std::vector<crash_reporter::Report> reports;
+        crash_reporter::GetReports(&reports);
+        return reports.size() == 1;
+      }));
+
+  std::vector<crash_reporter::Report> reports;
+  crash_reporter::GetReports(&reports);
+  ASSERT_EQ(reports.size(), 1u);
+
+  [previous_session removeReportParameterForKey:@"test_param"];
 }
