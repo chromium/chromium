@@ -32,6 +32,7 @@ import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.util.Pair;
 
 import androidx.annotation.ColorInt;
@@ -1461,7 +1462,11 @@ public class BookmarkManagerMediatorTest {
         // Open in new tab.
         clickChildAt(menu, 5);
         verify(mBookmarkOpener)
-                .openBookmarksInNewTabs(Collections.singletonList(mBookmarkId21), false);
+                .openBookmarksInNewTabs(
+                        eq(Collections.singletonList(mBookmarkId21)),
+                        eq(false),
+                        eq(null),
+                        any(Bundle.class));
     }
 
     @Test
@@ -1494,12 +1499,17 @@ public class BookmarkManagerMediatorTest {
         // Open in new tab.
         clickChildAt(menu, 5);
         verify(mBookmarkOpener)
-                .openBookmarksInNewTabs(Collections.singletonList(mBookmarkId21), true);
+                .openBookmarksInNewTabs(
+                        eq(Collections.singletonList(mBookmarkId21)),
+                        eq(true),
+                        eq(null),
+                        any(Bundle.class));
 
         // Open in other window.
         clickChildAt(menu, 6);
         verify(mBookmarkOpener)
-                .openBookmarksInNewWindow(Collections.singletonList(mBookmarkId21), true);
+                .openBookmarksInNewWindow(
+                        eq(Collections.singletonList(mBookmarkId21)), eq(true), any(Bundle.class));
     }
 
     @Test

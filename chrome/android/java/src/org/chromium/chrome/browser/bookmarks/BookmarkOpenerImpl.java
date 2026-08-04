@@ -126,12 +126,14 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         if (title != null) {
             extras.putString(IntentHandler.EXTRA_TAB_GROUP_TITLE, title);
         }
+        extras.putBoolean(IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, true);
         return openBookmarksInNewTabs(
                 bookmarkIds, incognito, TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, extras);
     }
 
     @Override
-    public boolean openBookmarksInNewWindow(List<BookmarkId> bookmarkIds, boolean incognito) {
+    public boolean openBookmarksInNewWindow(
+            List<BookmarkId> bookmarkIds, boolean incognito, @Nullable Bundle extras) {
         if (bookmarkIds.isEmpty()) return false;
 
         BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
@@ -174,6 +176,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
             }
         }
 
+        if (extras != null) intent.putExtras(extras);
         IntentHandler.startActivityForTrustedIntent(mContext, intent);
 
         return true;

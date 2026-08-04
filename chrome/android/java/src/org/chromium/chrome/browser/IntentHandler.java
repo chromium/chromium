@@ -327,6 +327,10 @@ public class IntentHandler {
     public static final String EXTRA_REPARENT_START_TIME =
             "org.chromium.chrome.browser.reparent_start_time";
 
+    /** An extra to disable initialization of the renderer when creating a new tab context. */
+    public static final String EXTRA_DISABLE_INITIALIZE_RENDERER =
+            "org.chromium.chrome.browser.disable_initialize_renderer";
+
     public static final String EXTRA_CCT_EARLY_NAV = "org.chromium.chrome.browser.cct_early_nav";
 
     /**

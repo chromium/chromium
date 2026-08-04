@@ -72,7 +72,12 @@ public interface BookmarkOpener {
      * @param incognito Whether the bookmarks should be opened in incognito mode.
      * @return Whether the bookmark ids were successfully opened.
      */
-    boolean openBookmarksInNewWindow(List<BookmarkId> bookmarkIds, boolean incognito);
+    default boolean openBookmarksInNewWindow(List<BookmarkId> bookmarkIds, boolean incognito) {
+        return openBookmarksInNewWindow(bookmarkIds, incognito, /* extras= */ null);
+    }
+
+    boolean openBookmarksInNewWindow(
+            List<BookmarkId> bookmarkIds, boolean incognito, @Nullable Bundle extras);
 
     /**
      * @return Whether opening bookmarks in a new window is supported.

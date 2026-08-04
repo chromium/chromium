@@ -119,6 +119,36 @@ public class ChromeTabCreatorTest {
                 bgTab.getWebContents().getNavigationController().getUseDesktopUserAgent());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTab_DisableInitializeRenderer() {
+        final Tab fgTab = mPage.loadedTabElement.value();
+        Intent intent = new Intent();
+        intent.putExtra(IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, true);
+
+        final String url = mTestServer.getURL(TEST_PATH);
+        final String title = "TITLE";
+        final Tab bgTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return ((ChromeTabCreator)
+                                            mActivityTestRule.getActivity().getCurrentTabCreator())
+                                    .createNewTab(
+                                            new LoadUrlParams(url),
+                                            title,
+                                            TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                            fgTab,
+                                            TabModel.INVALID_TAB_INDEX,
+                                            intent,
+                                            /* copyHistory= */ false);
+                        });
+
+        assertNotNull(bgTab.getPendingLoadParams());
+
+        verifyLazyLoadToForeground(bgTab, title, url);
+    }
+
     /** Verify that the tab position is set using the intent. */
     @Test
     @MediumTest
@@ -181,7 +211,11 @@ public class ChromeTabCreatorTest {
                                                     TabModel.INVALID_TAB_INDEX);
                             return tab;
                         });
-        assertEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
+        verifyLazyLoadToForeground(bgTab, title, url);
+    }
+
+    private void verifyLazyLoadToForeground(Tab bgTab, String placeholderTitle, String targetUrl) {
+        assertEquals(placeholderTitle, ChromeTabUtils.getTitleOnUiThread(bgTab));
 
         // Verify that the background tab is not loading.
         assertFalse(bgTab.isLoading());
@@ -196,11 +230,11 @@ public class ChromeTabCreatorTest {
                                         indexOf(bgTab));
                             });
                 };
-        ChromeTabUtils.waitForTabPageLoaded(bgTab, url, loadPage);
+        ChromeTabUtils.waitForTabPageLoaded(bgTab, targetUrl, loadPage);
         assertNotNull(bgTab.getView());
 
         // Title should change when the page loads.
-        assertNotEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
+        assertNotEquals(placeholderTitle, ChromeTabUtils.getTitleOnUiThread(bgTab));
     }
 
     @Test
