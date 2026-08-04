@@ -1329,26 +1329,11 @@ std::optional<int> TabContainerImpl::GetMidAnimationTrailingX() const {
     return std::nullopt;
   }
 
-  if (base::FeatureList::IsEnabled(features::kTabStripNewTabButtonFlickerFix)) {
-    // During animations not related to a drag session, we want to tightly hug
-    // our tabs. The `overall_bounds_view_` is animated smoothly to the ideal
-    // trailing X and is free from the rounding jitter of individual child
-    // views.
-    return overall_bounds_view_->bounds().right();
-  }
-
   // During animations not related to a drag session, we want to tightly hug
-  // our tabs. This allows the NTB to slide smoothly as tabs are opened and
-  // closed.
-
-  int trailing_x = 0;
-  // The visual order of the tabs can be out of sync with the logical order,
-  // so we have to check all of them to find the visually trailing-most one.
-  for (views::View* child : children()) {
-    trailing_x = std::max(trailing_x, child->bounds().right());
-  }
-
-  return trailing_x;
+  // our tabs. The `overall_bounds_view_` is animated smoothly to the ideal
+  // trailing X and is free from the rounding jitter of individual child
+  // views.
+  return overall_bounds_view_->bounds().right();
 }
 
 void TabContainerImpl::CloseTabInViewModel(int index) {

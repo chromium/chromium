@@ -40,8 +40,8 @@ class TabStripInteractiveUiTest
  public:
   TabStripInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabStripNewTabButtonFlickerFix},
-        {tabs::kTabStripUnification});
+        /*enabled_features=*/{},
+        /*disabled_features=*/{tabs::kTabStripUnification});
   }
   ~TabStripInteractiveUiTest() override = default;
 

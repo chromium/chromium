@@ -254,8 +254,6 @@ BASE_FEATURE(kTabHoverCardImages,
 #endif
 );
 
-BASE_FEATURE(kTabStripNewTabButtonFlickerFix, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabModalUsesDesktopWidget, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables creating a web app window when tearing off a tab with a url

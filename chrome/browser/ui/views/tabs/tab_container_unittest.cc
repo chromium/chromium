@@ -184,8 +184,6 @@ class TabContainerTest : public ChromeViewsTestBase {
   TabContainerTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kTabStripNewTabButtonFlickerFix);
   }
   TabContainerTest(const TabContainerTest&) = delete;
   TabContainerTest& operator=(const TabContainerTest&) = delete;
@@ -432,7 +430,6 @@ class TabContainerTest : public ChromeViewsTestBase {
 
   // Used to force animation on, so that any tests that rely on animation pass
   // on machines where animation is turned off.
-  base::test::ScopedFeatureList scoped_feature_list_;
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 
   int tab_container_width_ = 0;
