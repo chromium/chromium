@@ -2854,22 +2854,22 @@ StyleDifference LayoutObject::AdjustStyleDifference(
 void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
                                          bool match_parent_size) {
   NOT_DESTROYED();
-  const ComputedStyle* pseudo_style = owner.Style();
-  DCHECK(pseudo_style->StyleType() == kPseudoIdCheckMark ||
-         pseudo_style->StyleType() == kPseudoIdBefore ||
-         pseudo_style->StyleType() == kPseudoIdAfter ||
-         pseudo_style->StyleType() == kPseudoIdExpandIcon ||
-         pseudo_style->StyleType() == kPseudoIdPickerIcon ||
-         pseudo_style->StyleType() == kPseudoIdInterestButton ||
-         pseudo_style->StyleType() == kPseudoIdMarker ||
-         pseudo_style->StyleType() == kPseudoIdFirstLetter ||
-         pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
-         pseudo_style->IsPageMarginBox() ||
-         pseudo_style->StyleType() == kPseudoIdScrollMarker ||
-         pseudo_style->StyleType() == kPseudoIdScrollButtonBlockStart ||
-         pseudo_style->StyleType() == kPseudoIdScrollButtonInlineStart ||
-         pseudo_style->StyleType() == kPseudoIdScrollButtonInlineEnd ||
-         pseudo_style->StyleType() == kPseudoIdScrollButtonBlockEnd);
+  const ComputedStyle& pseudo_style = owner.StyleRef();
+  DCHECK(pseudo_style.StyleType() == kPseudoIdCheckMark ||
+         pseudo_style.StyleType() == kPseudoIdBefore ||
+         pseudo_style.StyleType() == kPseudoIdAfter ||
+         pseudo_style.StyleType() == kPseudoIdExpandIcon ||
+         pseudo_style.StyleType() == kPseudoIdPickerIcon ||
+         pseudo_style.StyleType() == kPseudoIdInterestButton ||
+         pseudo_style.StyleType() == kPseudoIdMarker ||
+         pseudo_style.StyleType() == kPseudoIdFirstLetter ||
+         pseudo_style.StyleType() == kPseudoIdScrollMarkerGroup ||
+         pseudo_style.IsPageMarginBox() ||
+         pseudo_style.StyleType() == kPseudoIdScrollMarker ||
+         pseudo_style.StyleType() == kPseudoIdScrollButtonBlockStart ||
+         pseudo_style.StyleType() == kPseudoIdScrollButtonInlineStart ||
+         pseudo_style.StyleType() == kPseudoIdScrollButtonInlineEnd ||
+         pseudo_style.StyleType() == kPseudoIdScrollButtonBlockEnd);
 
   InheritIsInDetachedNonDomTree(owner);
 
@@ -2887,7 +2887,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
     ComputedStyleBuilder builder =
         GetDocument()
             .GetStyleResolver()
-            .CreateComputedStyleBuilderInheritingFrom(*pseudo_style);
+            .CreateComputedStyleBuilderInheritingFrom(pseudo_style);
     if (match_parent_size) {
       DCHECK(IsImage());
       builder.SetWidth(Length::Percent(100));
@@ -2902,7 +2902,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
     // See "accessibility/css-generated-content.html"
     const ComputedStyle* initial_letter_text_style =
         GetDocument().GetStyleResolver().StyleForInitialLetterText(
-            *pseudo_style, Parent()->ContainingBlock()->StyleRef());
+            pseudo_style, Parent()->ContainingBlock()->StyleRef());
     SetStyle(std::move(initial_letter_text_style));
     return;
   }
@@ -2912,13 +2912,13 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
     ComputedStyleBuilder combined_text_style_builder =
         GetDocument()
             .GetStyleResolver()
-            .CreateComputedStyleBuilderInheritingFrom(*pseudo_style);
+            .CreateComputedStyleBuilderInheritingFrom(pseudo_style);
     StyleAdjuster::AdjustStyleForCombinedText(combined_text_style_builder);
     SetStyle(combined_text_style_builder.TakeStyle());
     return;
   }
 
-  SetStyle(std::move(pseudo_style));
+  SetStyle(&pseudo_style);
 }
 
 DISABLE_CFI_PERF
