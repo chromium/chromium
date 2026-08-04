@@ -447,7 +447,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         config.screenWidthDp = ViewUtils.pxToDp(mActivity, widthPx);
         mActivityController.configurationChange(config);
         if (mCoordinator != null) {
-            mCoordinator.getView().layout(0, 0, widthPx, 1000);
+            mCoordinator.getView().dispatchConfigurationChanged(config);
         }
     }
 }
