@@ -2635,21 +2635,14 @@ class LocationBarMediator
                 return mAutocompleteCoordinator.handleKeyEvent(keyCode, event);
             }
 
-            boolean selectionCouldLeaveAutocomplete =
-                    (isBackwardsTab && mAutocompleteCoordinator.isFirstItemSelected())
-                            || (isForwardTab && mAutocompleteCoordinator.isLastItemSelected());
             Integer positionBeforeHandle = mAutocompleteCoordinator.getSelectedIndex();
             boolean autocompleteHandled = mAutocompleteCoordinator.handleKeyEvent(keyCode, event);
             Integer positionAfterHandle = mAutocompleteCoordinator.getSelectedIndex();
-            boolean selectionShouldLeaveAutocomplete =
-                    selectionCouldLeaveAutocomplete
-                            && !Objects.equals(positionBeforeHandle, positionAfterHandle);
             boolean autocompleteSelectionMovedFromSecondToFirst =
                     Objects.requireNonNullElse(positionAfterHandle, -1) == 0
                             && Objects.requireNonNullElse(positionBeforeHandle, -1) == 1;
-            if (selectionShouldLeaveAutocomplete) {
+            if (!autocompleteHandled) {
                 mAutocompleteCoordinator.resetSelection();
-                autocompleteHandled = false;
                 if (mCurrentInput != null && mCurrentInput.isInZeroPrefixContext()) {
                     mCurrentInput.setUserText("");
                     mUrlCoordinator.setUrlBarData(
@@ -2681,19 +2674,30 @@ class LocationBarMediator
             if (mSelectionController.isAutocompleteListSelected()) {
                 // We just moved backwards to the autocomplete list. The last item of that list
                 // should be selected.
-                mAutocompleteCoordinator.selectLastItem();
+                boolean autocompleteHasSelectableItems = mAutocompleteCoordinator.selectLastItem();
+                // Special case to avoid selecting an empty suggestions list: move past it if it's
+                // empty.
+                if (!autocompleteHasSelectableItems) {
+                    mSelectionController.selectPreviousItem();
+                }
             }
         } else if (isForwardTab) {
             if (!mSelectionController.selectNextItem()) return false;
             if (mSelectionController.isAutocompleteListSelected()) {
                 // We just moved forwards to the autocomplete list. The first item of that list
                 // should be selected.
-                mAutocompleteCoordinator.selectFirstItem();
-                // Special case for the typed state, where we support nested, simultaneous
-                // selection. The first item of the autocomplete list is selected at the same time
-                // as the url bar. To avoid needing to tab an extra time to go past this view or to
-                // its own nested selection, we re-handle the event.
-                if (isTypedStateConventionalRequest) {
+                boolean autocompleteHasSelectableItems = mAutocompleteCoordinator.selectFirstItem();
+                // Special case to avoid selecting an empty suggestions list: move past it if it's
+                // empty.
+                if (!autocompleteHasSelectableItems) {
+                    mSelectionController.selectNextItem();
+                } else if (isTypedStateConventionalRequest) {
+                    // Special case for the typed state, where we support nested, simultaneous
+                    // selection. The first item of the autocomplete list is selected at the same
+                    // time
+                    // as the url bar. To avoid needing to tab an extra time to go past this view or
+                    // to
+                    // its own nested selection, we re-handle the event.
                     mAutocompleteCoordinator.handleKeyEvent(keyCode, event);
                 }
             }

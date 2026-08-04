@@ -514,8 +514,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                 || (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
                 || KeyNavigationUtil.isTabNavigation(event)) {
             mMediator.allowPendingItemSelection();
-            assumeNonNull(mContainer).onKeyDown(keyCode, event);
-            return true;
+            return assumeNonNull(mContainer).onKeyDown(keyCode, event);
         } else if (KeyNavigationUtil.isEnter(event)) {
             return assumeNonNull(mContainer).onKeyDown(keyCode, event);
         }
@@ -545,16 +544,22 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mDropdown.resetSelection();
     }
 
-    /** Keyboard select the first item in the suggestions list. */
-    public void selectFirstItem() {
-        if (mDropdown == null) return;
-        mDropdown.selectFirstItem();
+    /**
+     * Keyboard select the first item in the suggestions list. Returns true if this selected an
+     * item, false if no item was selected.
+     */
+    public boolean selectFirstItem() {
+        if (mDropdown == null) return false;
+        return mDropdown.selectFirstItem();
     }
 
-    /** Keyboard select the last item in the suggestions list. */
-    public void selectLastItem() {
-        if (mDropdown == null) return;
-        mDropdown.selectLastItem();
+    /**
+     * Keyboard select the last item in the suggestions list. Returns true if this selected an item,
+     * false if no item was selected.
+     */
+    public boolean selectLastItem() {
+        if (mDropdown == null) return false;
+        return mDropdown.selectLastItem();
     }
 
     /**

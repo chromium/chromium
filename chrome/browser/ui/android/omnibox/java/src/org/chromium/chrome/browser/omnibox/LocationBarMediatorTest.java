@@ -3818,6 +3818,7 @@ public class LocationBarMediatorTest {
         LocationBarSelectionController selectionController =
                 mMediator.getSelectionControllerForTesting();
         assertEquals(1, selectionController.getPosition().intValue());
+        doReturn(true).when(mAutocompleteCoordinator).selectFirstItem();
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
         assertEquals(2, selectionController.getPosition().intValue());
         verify(mAutocompleteCoordinator).selectFirstItem();
@@ -3852,6 +3853,7 @@ public class LocationBarMediatorTest {
 
         doReturn(false).when(mKeyEvent).hasNoModifiers();
         doReturn(true).when(mKeyEvent).hasModifiers(KeyEvent.META_SHIFT_ON);
+        doReturn(true).when(mAutocompleteCoordinator).selectLastItem();
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
         assertEquals(2, selectionController.getPosition().intValue());
         verify(mAutocompleteCoordinator).selectFirstItem();
@@ -3960,6 +3962,8 @@ public class LocationBarMediatorTest {
         doReturn(View.GONE).when(mDeleteButton).getVisibility();
         doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
         doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+        doReturn(true).when(mAutocompleteCoordinator).selectFirstItem();
+        doReturn(true).when(mAutocompleteCoordinator).selectLastItem();
 
         var input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH).setUserText("user text");

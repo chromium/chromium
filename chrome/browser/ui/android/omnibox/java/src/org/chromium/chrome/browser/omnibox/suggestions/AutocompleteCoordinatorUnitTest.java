@@ -79,6 +79,9 @@ public class AutocompleteCoordinatorUnitTest {
     public void testHandleKeyEvent() {
         // Suggestions are shown.
         doReturn(true).when(mSuggestionsContainer).isShown();
+        doReturn(true)
+                .when(mSuggestionsContainer)
+                .onKeyDown(eq(KeyEvent.KEYCODE_TAB), any(KeyEvent.class));
 
         // Tab navigation is handled.
         assertTrue(sendKeyDownEvent(KeyEvent.KEYCODE_TAB, 0));

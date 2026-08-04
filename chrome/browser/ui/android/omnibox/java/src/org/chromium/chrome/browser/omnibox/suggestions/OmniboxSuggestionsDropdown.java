@@ -448,16 +448,22 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mSelectionController.reset();
     }
 
-    /** Keyboard select the first item in the suggestions list. */
-    public void selectFirstItem() {
-        if (mSelectionController.getItemCount() == 0) return;
-        mSelectionController.setPosition(0);
+    /**
+     * Keyboard select the first item in the suggestions list. Returns true if this selected an
+     * item, false if no item was selected.
+     */
+    public boolean selectFirstItem() {
+        if (mSelectionController.getItemCount() == 0) return false;
+        return mSelectionController.setPosition(0);
     }
 
-    /** Keyboard select the last item in the suggestions list. */
-    public void selectLastItem() {
-        if (mSelectionController.getItemCount() == 0) return;
-        mSelectionController.setPosition(mSelectionController.getItemCount() - 1);
+    /**
+     * Keyboard select the last item in the suggestions list. Returns true if this selected an item,
+     * false if no item was selected.
+     */
+    public boolean selectLastItem() {
+        if (mSelectionController.getItemCount() == 0) return false;
+        return mSelectionController.setPosition(mSelectionController.getItemCount() - 1);
     }
 
     /**
