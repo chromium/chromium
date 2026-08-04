@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>Local Network Access</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/fetch/local-network-access/resources/support.sub.js"></script>
+<script>
+  "use strict";
+
+  async function runLnaPublicTest(t, options) {
+    const sourceUrl = resolveUrl("resources/RTCPeerConnection-local-network-access-helper.html",
+        sourceResolveOptions({ server: Server.HTTPS_PUBLIC }));
+    for (const [key, value] of Object.entries(options)) {
+      sourceUrl.searchParams.append(key, value);
+    }
+
+    const popup = window.open(sourceUrl);
+    assert_not_equals(popup, null, "Helper popup window must open successfully");
+    t.add_cleanup(() => popup.close());
+
+    await new Promise((resolve, reject) => {
+      const handler = (evt) => {
+        if (evt.source !== popup || !evt.data || (evt.data.type !== 'SUCCESS' && evt.data.type !== 'ERROR')) {
+          return;
+        }
+        window.removeEventListener('message', handler);
+        if (evt.data.type === 'SUCCESS') {
+          resolve();
+        } else {
+          reject(new Error(evt.data.error || 'Test failed inside helper window'));
+        }
+      };
+      window.addEventListener('message', handler);
+    });
+  }
+
+  promise_test(async t => {
+    await runLnaPublicTest(t, {
+      testType: 'setRemoteDescription',
+      permissionStatus: 'denied',
+    });
+  }, 'setRemoteDescription() doesn\'t crash with denied permission and local address.');
+
+  promise_test(async t => {
+    await runLnaPublicTest(t, {
+      testType: 'setRemoteDescription',
+      permissionStatus: 'granted',
+    });
+  }, 'setRemoteDescription() doesn\'t crash with granted permission and local address.');
+
+  promise_test(async t => {
+    await runLnaPublicTest(t, {
+      testType: 'addIceCandidate',
+      permissionStatus: 'denied',
+    });
+  }, 'addIceCandidate() doesn\'t crash with denied permission and local address.');
+
+  promise_test(async t => {
+    await runLnaPublicTest(t, {
+      testType: 'addIceCandidate',
+      permissionStatus: 'granted',
+    });
+  }, 'addIceCandidate() doesn\'t crash with granted permission and local address.');
+
+  for (const serverType of ['turn', 'stun']) {
+    for (const permissionStatus of ['granted', 'denied']) {
+      promise_test(async t => {
+        await runLnaPublicTest(t, {
+          testType: 'iceServer',
+          serverType,
+          permissionStatus,
+        });
+      }, `Using a ${serverType} server with a local address and ` +
+      `${permissionStatus} permission doesn't crash.`);
+    }
+  }
+</script>

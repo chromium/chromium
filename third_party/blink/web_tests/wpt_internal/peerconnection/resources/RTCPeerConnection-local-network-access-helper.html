@@ -1,0 +1,102 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCPeerConnection Local Network Access Helper</title>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script src="test_sdp_data.js"></script>
+<script src="/fetch/local-network-access/resources/support.sub.js"></script>
+<script>
+  "use strict";
+
+  (async () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const testType = params.get("testType");
+      const permissionStatus = params.get("permissionStatus");
+      const serverType = params.get("serverType");
+
+      test_driver.set_test_context(opener);
+      await test_driver.set_permission({ name: 'loopback-network' }, permissionStatus);
+
+      if (testType === 'setRemoteDescription') {
+        const pc = new RTCPeerConnection();
+        try {
+          pc.createDataChannel("myWebRTCChannel");
+
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          await pc.setRemoteDescription({
+            type: 'answer',
+            sdp: REMOTE_DESCRIPTION_WITH_LOCAL_ADDRESS,
+          });
+
+          if (permissionStatus === 'denied') {
+            // When the permission is denied the candidate is not added to the ICE Agent
+            // so the connection process doesn't start and the 'connectionstatechange'
+            // event isn't fired.
+            await waitForIceGatheringState(pc, ['complete']);
+          } else {
+            await waitForConnectionStateChange(pc, ['connecting']);
+          }
+        } finally {
+          pc.close();
+        }
+      } else if (testType === 'addIceCandidate') {
+        const pc = new RTCPeerConnection();
+        try {
+          pc.createDataChannel("myWebRTCChannel");
+
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          await pc.setRemoteDescription({
+            type: 'answer',
+            sdp: REMOTE_DESCRIPTION_WITH_NO_CANDIDATE,
+          });
+
+          await pc.addIceCandidate({
+            candidate: LOCAL_ADDRESS_CANDIDATE,
+            sdpMid: '0',
+            sdpMLineIndex: 0,
+          });
+
+          if (permissionStatus === 'denied') {
+            // When the permission is denied the candidate is not added to the ICE Agent
+            // so the connection process doesn't start and the 'connectionstatechange'
+            // event isn't fired.
+            await waitForIceGatheringState(pc, ['complete']);
+          } else {
+            await waitForConnectionStateChange(pc, ['connecting']);
+          }
+        } finally {
+          pc.close();
+        }
+      } else if (testType === 'iceServer') {
+        const pc = new RTCPeerConnection({
+          iceServers: [{
+            urls: `${serverType}:127.0.0.1:12345`,
+            username: "myuser",
+            credential: "mypassword",
+          }],
+        });
+        try {
+          pc.createDataChannel("myWebRTCChannel");
+
+          const offer = await pc.createOffer();
+          const iceCandidateFired = waitUntilEvent(pc, 'icecandidate');
+          await pc.setLocalDescription(offer);
+          await iceCandidateFired;
+          // Allow background STUN/TURN Local Network Access checks time to execute
+          // before closing the connection, while avoiding the full UDP timeout.
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } finally {
+          pc.close();
+        }
+      }
+
+      opener.postMessage({ type: 'SUCCESS' }, '*');
+    } catch (err) {
+      opener.postMessage({ type: 'ERROR', error: err.toString() }, '*');
+    }
+  })();
+</script>
