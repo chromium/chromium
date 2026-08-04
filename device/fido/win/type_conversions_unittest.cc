@@ -52,6 +52,12 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
        fido_parsing_utils::Materialize(
            test_data::kPackedAttestationStatementCBOR),
        WEBAUTHN_CTAP_TRANSPORT_TEST, true, std::nullopt},
+      {L"packed",
+       fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData),
+       fido_parsing_utils::Materialize(
+           test_data::kPackedAttestationStatementCBOR),
+       WEBAUTHN_CTAP_TRANSPORT_SMART_CARD, true,
+       FidoTransportProtocol::kSmartCard},
       // Unknown attestation formats
       {L"weird-unknown-format",
        fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData),
@@ -194,12 +200,13 @@ TEST(TypeConversionsTest, FromWinTransportsBitmask) {
       FromWinTransportsBitmask(
           WEBAUTHN_CTAP_TRANSPORT_USB | WEBAUTHN_CTAP_TRANSPORT_NFC |
           WEBAUTHN_CTAP_TRANSPORT_BLE | WEBAUTHN_CTAP_TRANSPORT_INTERNAL |
-          WEBAUTHN_CTAP_TRANSPORT_HYBRID),
+          WEBAUTHN_CTAP_TRANSPORT_HYBRID | WEBAUTHN_CTAP_TRANSPORT_SMART_CARD),
       testing::UnorderedElementsAre(
           FidoTransportProtocol::kUsbHumanInterfaceDevice,
           FidoTransportProtocol::kNearFieldCommunication,
           FidoTransportProtocol::kBluetoothLowEnergy,
-          FidoTransportProtocol::kInternal, FidoTransportProtocol::kHybrid));
+          FidoTransportProtocol::kInternal, FidoTransportProtocol::kHybrid,
+          FidoTransportProtocol::kSmartCard));
 
   // Unknown bits are ignored.
   EXPECT_THAT(FromWinTransportsBitmask(WEBAUTHN_CTAP_TRANSPORT_INTERNAL |

@@ -490,6 +490,7 @@ VirtualFidoDevice::GenerateAttestationCertificate(
       transport_bit = 2;
       break;
     case FidoTransportProtocol::kNearFieldCommunication:
+    case FidoTransportProtocol::kSmartCard:
       transport_bit = 3;
       break;
     case FidoTransportProtocol::kInternal:

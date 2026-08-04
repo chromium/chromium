@@ -46,7 +46,9 @@ bool VirtualU2fDevice::IsTransportSupported(FidoTransportProtocol transport) {
   return (base::flat_set<FidoTransportProtocol>(
               {FidoTransportProtocol::kUsbHumanInterfaceDevice,
                FidoTransportProtocol::kBluetoothLowEnergy,
-               FidoTransportProtocol::kNearFieldCommunication}))
+               FidoTransportProtocol::kNearFieldCommunication,
+               FidoTransportProtocol::kInternal,
+               FidoTransportProtocol::kSmartCard}))
       .contains(transport);
 }
 

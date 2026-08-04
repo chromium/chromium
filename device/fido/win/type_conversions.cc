@@ -60,7 +60,9 @@ constexpr auto kTransportMap =
          {WEBAUTHN_CTAP_TRANSPORT_BLE,
           FidoTransportProtocol::kBluetoothLowEnergy},
          {WEBAUTHN_CTAP_TRANSPORT_INTERNAL, FidoTransportProtocol::kInternal},
-         {WEBAUTHN_CTAP_TRANSPORT_HYBRID, FidoTransportProtocol::kHybrid}});
+         {WEBAUTHN_CTAP_TRANSPORT_HYBRID, FidoTransportProtocol::kHybrid},
+         {WEBAUTHN_CTAP_TRANSPORT_SMART_CARD,
+          FidoTransportProtocol::kSmartCard}});
 
 }  // namespace
 
@@ -105,6 +107,9 @@ uint32_t ToWinTransportsMask(
         break;
       case FidoTransportProtocol::kHybrid:
         result |= WEBAUTHN_CTAP_TRANSPORT_HYBRID;
+        break;
+      case FidoTransportProtocol::kSmartCard:
+        result |= WEBAUTHN_CTAP_TRANSPORT_SMART_CARD;
         break;
       case FidoTransportProtocol::kDeprecatedAoa:
         // AOA is unsupported by the Windows API.

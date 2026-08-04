@@ -134,6 +134,7 @@ constexpr int GetMessageIdForTransportDescription(
     case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
+    case AuthenticatorTransport::kSmartCard:
       NOTREACHED();
   }
 }
@@ -161,6 +162,7 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
     case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
+    case AuthenticatorTransport::kSmartCard:
       NOTREACHED();
   }
 }

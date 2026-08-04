@@ -105,6 +105,8 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
 #endif
       return discoveries;
     }
+    case FidoTransportProtocol::kSmartCard:
+      return {};
     case FidoTransportProtocol::kDeprecatedAoa:
       NOTREACHED() << "Android Open Accessory is deprecated.";
   }

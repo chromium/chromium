@@ -474,6 +474,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Cloud-assisted BLE"/>
   <int value="4" label="Internal"/>
   <int value="5" label="Android Accessory (Deprecated)"/>
+  <int value="6" label="Smart Card"/>
 </enum>
 
 <enum name="WebAuthenticationGetAssertionOutcome">

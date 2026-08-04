@@ -71,6 +71,7 @@ enum AuthenticatorTransport {
   BLE,
   HYBRID,
   INTERNAL,
+  SMART_CARD,
 };
 
 // See https://w3c.github.io/webauthn/#enum-hints
