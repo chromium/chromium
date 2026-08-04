@@ -13,15 +13,13 @@ export function getHtml(this: OmniboxPopupContextualEntrypointElement) {
 <div class="context-menu-container">
   ${this.shouldHideEntrypointButton_() ||
       !hasAllowedInputs(this.inputState, this.usePecApi_) ? '' : html`
-    <!-- TODO(b/527571610): Rename omnibox-contextual-entrypoint-button to
-         omnibox-popup-contextual-entrypoint-button. -->
-    <omnibox-contextual-entrypoint-button id="context"
+    <omnibox-popup-contextual-entrypoint-button id="context"
         class="upload-button"
         .inputState="${this.inputState}"
         .applyContextButtonBackground="${this.applyContextButtonBackground_}"
         .isOblongShape="${this.isOblongShape_}"
         ?show-suggestion-label="${this.showContextButtonSuggestionLabel_}">
-    </omnibox-contextual-entrypoint-button>
+    </omnibox-popup-contextual-entrypoint-button>
   `}
   ${this.isCurrentTabChipShown_ ? html`
     <composebox-current-tab-chip id="currentTabChip"

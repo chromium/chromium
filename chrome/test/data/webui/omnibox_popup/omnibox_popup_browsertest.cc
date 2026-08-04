@@ -65,8 +65,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, App) {
   RunTest("omnibox_popup/aim_app_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, ContextualEntrypoint) {
-  RunTest("omnibox_popup/omnibox_contextual_entrypoint_test.js",
+IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, ContextualEntrypointButton) {
+  RunTest("omnibox_popup/omnibox_popup_contextual_entrypoint_button_test.js",
           "mocha.run();");
 }
 

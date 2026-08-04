@@ -4,7 +4,7 @@
 
 import '//resources/cr_components/composebox/composebox_lens_search.js';
 import '//resources/cr_components/composebox/current_tab_chip.js';
-import './omnibox_contextual_entrypoint_button.js';
+import './omnibox_popup_contextual_entrypoint_button.js';
 
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -15,11 +15,11 @@ import {InputType} from '//resources/mojo/components/omnibox/composebox/composeb
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {OmniboxContextualEntrypointButtonElement} from './omnibox_contextual_entrypoint_button.js';
 import {browserProxyFactory} from './omnibox_popup.mojom-webui.js';
 import type {BrowserProxy} from './omnibox_popup.mojom-webui.js';
 import {getCss} from './omnibox_popup_contextual_entrypoint.css.js';
 import {getHtml} from './omnibox_popup_contextual_entrypoint.html.js';
+import type {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
 
 export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
   static get is() {
@@ -126,9 +126,10 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
     }
   }
 
-  getContextEntrypointElement(): OmniboxContextualEntrypointButtonElement|null {
+  getContextEntrypointElement(): OmniboxPopupContextualEntrypointButtonElement
+      |null {
     return this.shadowRoot
-               ?.querySelector<OmniboxContextualEntrypointButtonElement>(
+               ?.querySelector<OmniboxPopupContextualEntrypointButtonElement>(
                    '#context') ??
         null;
   }

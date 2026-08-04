@@ -4,7 +4,7 @@
 
 import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 
-import type {OmniboxContextualEntrypointButtonElement, OmniboxPopupPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import type {OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,8 +13,8 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createDefaultInputState} from './test_searchbox_browser_proxy.js';
 
-suite('OmniboxContextualEntrypointTest', () => {
-  let element: OmniboxContextualEntrypointButtonElement;
+suite('OmniboxPopupContextualEntrypointButtonTest', () => {
+  let element: OmniboxPopupContextualEntrypointButtonElement;
   let handler: TestMock<OmniboxPopupPageHandlerRemote>&
       OmniboxPopupPageHandlerRemote;
   let callbackRouter: OmniboxPopupPageRemote;
@@ -35,7 +35,8 @@ suite('OmniboxContextualEntrypointTest', () => {
     callbackRouter = remote;
     omniboxPopupBrowserProxyFactory.setInstance(instance);
 
-    element = document.createElement('omnibox-contextual-entrypoint-button');
+    element =
+        document.createElement('omnibox-popup-contextual-entrypoint-button');
     element.inputState = {
       ...createDefaultInputState(),
       allowedInputTypes: [0],

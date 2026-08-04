@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {OmniboxContextualEntrypointButtonElement} from './omnibox_contextual_entrypoint_button.js';
+import type {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
 
-export function getHtml(this: OmniboxContextualEntrypointButtonElement) {
+export function getHtml(this: OmniboxPopupContextualEntrypointButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     <cr-composebox-contextual-entrypoint-button
