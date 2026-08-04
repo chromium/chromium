@@ -655,8 +655,6 @@ void ProfileManagementDisclaimerService::OpenPrivacyPolicyArticlePopUp(
   // article.
   Browser::CreateParams create_params(Browser::TYPE_POPUP, &*profile_,
                                       /*user_gesture=*/true);
-  create_params.should_trigger_session_restore = false;
-  create_params.omit_from_session_restore = true;
   Browser* popup_browser = Browser::Create(create_params);
   if (popup_browser) {
     privacy_article_browser_ = popup_browser->GetWeakPtr();

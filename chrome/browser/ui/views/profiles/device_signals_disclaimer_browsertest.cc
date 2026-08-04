@@ -90,7 +90,7 @@ namespace {
       const interval = setInterval(() => {
         const link = document.querySelector('managed-user-profile-notice-app')
                          ?.shadowRoot?.querySelector('signals-disclaimer')
-                         ?.shadowRoot?.querySelector('#learnMoreLink');
+                         ?.shadowRoot?.querySelector('.subtitle a');
         if (link && !link.hidden) {
           clearInterval(interval);
           link.click();
