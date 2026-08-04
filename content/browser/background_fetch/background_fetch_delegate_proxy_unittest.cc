@@ -53,7 +53,9 @@ class FakeBackgroundFetchDelegate : public BackgroundFetchDelegate {
                    ::network::mojom::CredentialsMode credentials_mode,
                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
                    const net::HttpRequestHeaders& headers,
-                   bool has_request_body) override {
+                   bool has_request_body,
+                   scoped_refptr<network::SharedURLLoaderFactory>
+                       url_loader_factory) override {
     if (!job_id_to_client_[job_unique_id])
       return;
 
@@ -161,7 +163,10 @@ class FakeController : public BackgroundFetchDelegateProxy::Controller {
 
   void GetUploadData(
       const std::string& guid,
-      BackgroundFetchDelegate::GetUploadDataCallback callback) override {}
+      BackgroundFetchDelegate::GetUploadDataCallback callback) override {
+    std::move(callback).Run(
+        BackgroundFetchDelegate::Client::GetUploadDataResponse());
+  }
 
   bool request_started_ = false;
   bool request_completed_ = false;

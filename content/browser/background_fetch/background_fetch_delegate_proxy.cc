@@ -201,7 +201,8 @@ void BackgroundFetchDelegateProxy::StartRequest(
       job_unique_id, request->download_guid(), fetch_request->method,
       fetch_request->url, fetch_request->credentials_mode, traffic_annotation,
       headers,
-      /* has_request_body= */ request->request_body_size() > 0u);
+      /* has_request_body= */ request->request_body_size() > 0u,
+      request->url_loader_factory());
 }
 
 void BackgroundFetchDelegateProxy::UpdateUI(
@@ -336,14 +337,17 @@ void BackgroundFetchDelegateProxy::GetUploadData(
 
   auto it = controller_map_.find(job_unique_id);
   if (it == controller_map_.end()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        BackgroundFetchDelegate::Client::GetUploadDataResponse());
     return;
   }
 
-  if (const auto& controller = it->second)
+  if (const auto& controller = it->second) {
     controller->GetUploadData(download_guid, std::move(callback));
-  else
-    std::move(callback).Run(nullptr);
+  } else {
+    std::move(callback).Run(
+        BackgroundFetchDelegate::Client::GetUploadDataResponse());
+  }
 }
 
 BrowserContext* BackgroundFetchDelegateProxy::GetBrowserContext() {

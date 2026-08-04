@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/background_fetch_response.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "url/gurl.h"
 
@@ -120,6 +121,14 @@ class CONTENT_EXPORT BackgroundFetchRequestInfo
   // Returns the time at which the response was completed.
   const base::Time& GetResponseTime() const;
 
+  void set_url_loader_factory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    url_loader_factory_ = std::move(url_loader_factory);
+  }
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() const {
+    return url_loader_factory_;
+  }
+
   // Whether the BackgroundFetchResult was successful.
   bool IsResultSuccess() const;
 
@@ -152,6 +161,8 @@ class CONTENT_EXPORT BackgroundFetchRequestInfo
   // Created on this class's sequence, then accessed on the IO thread only.
   std::unique_ptr<BlobDataOnIO, BrowserThread::DeleteOnIOThread> io_blob_data_;
   uint64_t response_size_ = 0u;
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

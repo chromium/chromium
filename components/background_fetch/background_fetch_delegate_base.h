@@ -52,7 +52,9 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
                    ::network::mojom::CredentialsMode credentials_mode,
                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
                    const net::HttpRequestHeaders& headers,
-                   bool has_request_body) override;
+                   bool has_request_body,
+                   scoped_refptr<network::SharedURLLoaderFactory>
+                       url_loader_factory) override;
   void Abort(const std::string& job_id) override;
   void MarkJobComplete(const std::string& job_id) override;
 
@@ -144,10 +146,11 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
   void OnDownloadReceived(const std::string& guid,
                           download::DownloadParams::StartResult result);
 
-  void DidGetUploadData(const std::string& job_id,
-                        const std::string& download_guid,
-                        download::GetUploadDataCallback callback,
-                        blink::mojom::SerializedBlobPtr blob);
+  void DidGetUploadData(
+      const std::string& job_id,
+      const std::string& download_guid,
+      download::GetUploadDataCallback callback,
+      content::BackgroundFetchDelegate::Client::GetUploadDataResponse response);
 
   raw_ptr<content::BrowserContext> context_;
 

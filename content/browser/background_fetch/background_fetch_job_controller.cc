@@ -379,6 +379,11 @@ void BackgroundFetchJobController::GetUploadData(
   const auto& request = active_request_map_[guid];
   DCHECK(request);
 
+  if (request->request_body_size() == 0) {
+    DidGetUploadData(std::move(callback), BackgroundFetchError::NONE, nullptr);
+    return;
+  }
+
   data_manager_->GetRequestBlob(
       registration_id(), request,
       base::BindOnce(&BackgroundFetchJobController::DidGetUploadData,
@@ -392,12 +397,14 @@ void BackgroundFetchJobController::DidGetUploadData(
   if (error != BackgroundFetchError::NONE) {
     Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
           base::DoNothing());
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(
+        BackgroundFetchDelegate::Client::GetUploadDataResponse());
     return;
   }
 
-  DCHECK(blob);
-  std::move(callback).Run(std::move(blob));
+  BackgroundFetchDelegate::Client::GetUploadDataResponse response;
+  response.blob = std::move(blob);
+  std::move(callback).Run(std::move(response));
 }
 
 }  // namespace content

@@ -83,10 +83,12 @@ void MockBackgroundFetchDelegate::DownloadUrl(
     ::network::mojom::CredentialsMode credentials_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const net::HttpRequestHeaders& headers,
-    bool has_request_body) {
+    bool has_request_body,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   DCHECK(!seen_guids_.count(guid));
 
   download_guid_to_job_id_map_[guid] = job_unique_id;
+  url_loader_factories_[job_unique_id] = std::move(url_loader_factory);
 
   auto url_iter = url_responses_.find(url);
   if (url_iter == url_responses_.end()) {

@@ -88,7 +88,9 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
                    ::network::mojom::CredentialsMode credentials_mode,
                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
                    const net::HttpRequestHeaders& headers,
-                   bool has_request_body) override;
+                   bool has_request_body,
+                   scoped_refptr<network::SharedURLLoaderFactory>
+                       url_loader_factory) override;
   void Abort(const std::string& job_unique_id) override;
   void MarkJobComplete(const std::string& job_unique_id) override;
   void UpdateUI(const std::string& job_unique_id,
@@ -100,6 +102,12 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
 
   const std::set<std::string>& completed_jobs() const {
     return completed_jobs_;
+  }
+
+  scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory(
+      const std::string& job_unique_id) const {
+    auto it = url_loader_factories_.find(job_unique_id);
+    return it != url_loader_factories_.end() ? it->second : nullptr;
   }
 
  private:
@@ -133,6 +141,10 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
 
   // Map from job GUIDs to Clients.
   std::map<std::string, base::WeakPtr<Client>> job_id_to_client_map_;
+
+  // Map from job IDs to URL loader factories.
+  std::map<std::string, scoped_refptr<network::SharedURLLoaderFactory>>
+      url_loader_factories_;
 };
 
 }  // namespace content

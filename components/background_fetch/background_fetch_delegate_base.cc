@@ -74,6 +74,17 @@ void BackgroundFetchDelegateBase::CreateDownloadJob(
 
   job_details->fetch_description = std::move(fetch_description);
 
+  // Pre-populate `download_job_id_map_` for resumed jobs to ensure that
+  // when `GetUploadData()` is invoked for them, it can successfully route
+  // the callback to the controller to rebuild the `URLLoaderFactory`.
+  for (const std::string& guid :
+       job_details->fetch_description->outstanding_guids) {
+    auto result = job_details->current_fetch_guids.emplace(
+        guid, false /* has_upload_data */);
+    result.first->second.status = JobDetails::RequestData::Status::kIncluded;
+    download_job_id_map_[guid] = job_id;
+  }
+
   OnJobDetailsCreated(job_id);
 }
 
@@ -85,11 +96,12 @@ void BackgroundFetchDelegateBase::DownloadUrl(
     ::network::mojom::CredentialsMode credentials_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const net::HttpRequestHeaders& headers,
-    bool has_request_body) {
+    bool has_request_body,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!download_job_id_map_.count(download_guid));
 
-  download_job_id_map_.emplace(download_guid, job_id);
+  auto [it, inserted] = download_job_id_map_.try_emplace(download_guid, job_id);
+  DCHECK_EQ(it->second, job_id);
 
   download::DownloadParams params;
   params.guid = download_guid;
@@ -98,6 +110,7 @@ void BackgroundFetchDelegateBase::DownloadUrl(
   params.request_params.url = url;
   params.request_params.request_headers = headers;
   params.request_params.credentials_mode = credentials_mode;
+  params.request_params.url_loader_factory = std::move(url_loader_factory);
   params.callback =
       base::BindRepeating(&BackgroundFetchDelegateBase::OnDownloadReceived,
                           weak_ptr_factory_.GetWeakPtr());
@@ -216,8 +229,10 @@ void BackgroundFetchDelegateBase::StartDownload(const std::string& job_id,
                                                 bool has_request_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  GetJobDetails(job_id)->current_fetch_guids.emplace(params.guid,
-                                                     has_request_body);
+  JobDetails* job_details = GetJobDetails(job_id);
+  if (!job_details->current_fetch_guids.count(params.guid)) {
+    job_details->current_fetch_guids.emplace(params.guid, has_request_body);
+  }
   GetDownloadService()->StartDownload(std::move(params));
 }
 
@@ -476,22 +491,13 @@ void BackgroundFetchDelegateBase::GetUploadData(
   // client methods, then this can be a DCHECK.
   if (job_it == download_job_id_map_.end()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       download::DownloadRequestParameters()));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  download::DownloadRequestParameters()));
     return;
   }
 
   const std::string& job_id = job_it->second;
   JobDetails* job_details = GetJobDetails(job_id);
-  if (job_details->current_fetch_guids.at(download_guid).status ==
-      JobDetails::RequestData::Status::kAbsent) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       download::DownloadRequestParameters()));
-    return;
-  }
 
   if (job_details->client) {
     job_details->client->GetUploadData(
@@ -499,6 +505,10 @@ void BackgroundFetchDelegateBase::GetUploadData(
         base::BindOnce(&BackgroundFetchDelegateBase::DidGetUploadData,
                        weak_ptr_factory_.GetWeakPtr(), job_id, download_guid,
                        std::move(callback)));
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  download::DownloadRequestParameters()));
   }
 }
 
@@ -506,32 +516,38 @@ void BackgroundFetchDelegateBase::DidGetUploadData(
     const std::string& job_id,
     const std::string& download_guid,
     download::GetUploadDataCallback callback,
-    blink::mojom::SerializedBlobPtr blob) {
-  if (!blob || blob->uuid.empty()) {
-    std::move(callback).Run(download::DownloadRequestParameters());
+    content::BackgroundFetchDelegate::Client::GetUploadDataResponse response) {
+  download::DownloadRequestParameters params;
+  params.url_loader_factory = std::move(response.url_loader_factory);
+
+  JobDetails* job_details = GetJobDetails(job_id, /*allow_null=*/true);
+  if (job_details) {
+    params.initiator = job_details->fetch_description->origin;
+    params.isolation_info = job_details->fetch_description->isolation_info;
+  }
+
+  if (!response.blob || response.blob->uuid.empty()) {
+    std::move(callback).Run(std::move(params));
     return;
   }
 
-  JobDetails* job_details = GetJobDetails(job_id, /*allow_null=*/true);
   if (!job_details) {
-    std::move(callback).Run(download::DownloadRequestParameters());
+    std::move(callback).Run(std::move(params));
     return;
   }
 
   DCHECK(job_details->current_fetch_guids.count(download_guid));
   auto& request_data = job_details->current_fetch_guids.at(download_guid);
-  request_data.body_size_bytes = blob->size;
+  request_data.body_size_bytes = response.blob->size;
 
   // Use a Data Pipe to transfer the blob.
   mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
-  mojo::Remote<blink::mojom::Blob> blob_remote(std::move(blob->blob));
+  mojo::Remote<blink::mojom::Blob> blob_remote(std::move(response.blob->blob));
   blob_remote->AsDataPipeGetter(
       data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
-  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-  request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
+  params.post_body = base::MakeRefCounted<network::ResourceRequestBody>();
+  params.post_body->AppendDataPipe(std::move(data_pipe_getter_remote));
 
-  download::DownloadRequestParameters params;
-  params.post_body = std::move(request_body);
   std::move(callback).Run(std::move(params));
 }
 

@@ -6,6 +6,19 @@
 
 namespace content {
 
+BackgroundFetchDelegate::Client::GetUploadDataResponse::
+    GetUploadDataResponse() = default;
+
+BackgroundFetchDelegate::Client::GetUploadDataResponse::
+    ~GetUploadDataResponse() = default;
+
+BackgroundFetchDelegate::Client::GetUploadDataResponse::GetUploadDataResponse(
+    GetUploadDataResponse&& other) = default;
+
+BackgroundFetchDelegate::Client::GetUploadDataResponse&
+BackgroundFetchDelegate::Client::GetUploadDataResponse::operator=(
+    GetUploadDataResponse&& other) = default;
+
 BackgroundFetchDelegate::BackgroundFetchDelegate() = default;
 
 BackgroundFetchDelegate::~BackgroundFetchDelegate() = default;
