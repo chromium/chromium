@@ -24,7 +24,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/personal_context_types.h"
-#include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -68,8 +67,10 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   // AutoTodosStore::Observer:
   void OnAutoTodosChanged(base::span<const AutoTodoEntry> entries) override;
 
+  // TODO(crbug.com/540562062): Receive updates via observer notifications
+  // rather than on generation.
   using AutoTodosCallback = base::OnceCallback<void(
-      std::optional<personal_context::proto::AutoTodosResponse>)>;
+      const std::optional<std::vector<AutoTodoEntry>>&)>;
 
   // Generates 1P AutoTodos and saves them in the AutoTodos store. Invokes
   // `callback` on completion with the response if successful, or std::nullopt.

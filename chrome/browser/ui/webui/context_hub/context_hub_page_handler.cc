@@ -4,24 +4,16 @@
 
 #include "chrome/browser/ui/webui/context_hub/context_hub_page_handler.h"
 
-#include <array>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/rand_util.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -120,51 +112,7 @@ void ContextHubPageHandler::GenerateAutoTodos(
     return;
   }
 
-  service->GenerateFirstPartyAutoTodos(
-      base::BindOnce(&ContextHubPageHandler::OnAutoTodosGenerated,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ContextHubPageHandler::OnAutoTodosGenerated(
-    GenerateAutoTodosCallback callback,
-    std::optional<personal_context::proto::AutoTodosResponse> result) {
-  std::optional<std::vector<browser::context_hub::mojom::AutoTodoItemPtr>>
-      mojo_todos;
-  if (result.has_value() && result.value().todos_size() > 0) {
-    mojo_todos.emplace();
-    for (const personal_context::proto::AutoTodoItem& todo :
-         result.value().todos()) {
-      browser::context_hub::mojom::AutoTodoItemPtr mojo_todo =
-          browser::context_hub::mojom::AutoTodoItem::New();
-      // TODO(b/540562062): Use the ID from the response.
-      mojo_todo->id = todo.title();
-      mojo_todo->title = todo.title();
-      mojo_todo->description = todo.description();
-      mojo_todo->actionable_url = GURL(todo.actionable_url());
-      mojo_todo->score =
-          std::round(todo.importance_score() * 100.0f) / 100.0f;
-      for (const personal_context::proto::SourceReference& ref :
-           todo.source_references()) {
-        if (ref.has_gmail()) {
-          browser::context_hub::mojom::GmailReferencePtr gmail =
-              browser::context_hub::mojom::GmailReference::New();
-          gmail->message_url = GURL(ref.gmail().message_url());
-          mojo_todo->source_references.push_back(
-              browser::context_hub::mojom::SourceReference::NewGmail(
-                  std::move(gmail)));
-        } else if (ref.has_photos()) {
-          browser::context_hub::mojom::PhotosReferencePtr photos =
-              browser::context_hub::mojom::PhotosReference::New();
-          photos->photos_url = GURL(ref.photos().photos_url());
-          mojo_todo->source_references.push_back(
-              browser::context_hub::mojom::SourceReference::NewPhotos(
-                  std::move(photos)));
-        }
-      }
-      mojo_todos->push_back(std::move(mojo_todo));
-    }
-  }
-  std::move(callback).Run(std::move(mojo_todos));
+  service->GenerateFirstPartyAutoTodos(std::move(callback));
 }
 
 void ContextHubPageHandler::SetTodoFeedback(

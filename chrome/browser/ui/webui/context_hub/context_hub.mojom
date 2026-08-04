@@ -17,6 +17,12 @@ feature kAutoTodos {
   const bool default_state = false;
 };
 
+enum AutoTodoStatus {
+  kActive,
+  kCompleted,
+  kDismissed,
+};
+
 struct GmailReference {
   url.mojom.Url message_url;
 };
@@ -30,16 +36,40 @@ union SourceReference {
   PhotosReference photos;
 };
 
+// Data for Gmail-based AutoTodos.
+struct FirstPartyData {
+  // Source URLs where the AutoTodo was generated from.
+  array<SourceReference> source_references;
+  // The URL to navigate to when the user clicks to start the item.
+  url.mojom.Url actionable_url;
+};
+
+// Data for Browser tab-based AutoTodos.
+struct ThirdPartyData {
+  // Associated tab Session ID.
+  int64 tab_id;
+  // Timestamp when the associated tab was last active.
+  mojo_base.mojom.Time last_active_timestamp;
+};
+
+union AutoTodoData {
+  // Data for Gmail-based AutoTodos.
+  FirstPartyData first_party;
+  // Data for Browser tab-based AutoTodos.
+  ThirdPartyData third_party;
+};
+
 // Represents an item in the Auto Todo list.
 struct AutoTodoItem {
   string id;
   string title;
   string description;
-  array<SourceReference> source_references;
-  // The URL to navigate to when the user clicks to start the item.
-  url.mojom.Url actionable_url;
+  // Status of the item.
+  AutoTodoStatus status;
   // Importance score between 0 and 1 for the item.
   float score;
+  // Type-specific data for the item.
+  AutoTodoData data;
 };
 
 enum EntryType {

@@ -11,6 +11,41 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "browser.context_hub.mojom.AutoTodoStatus"
+          cpp = "::context_hub::AutoTodoEntry::Status"
+        },
+        {
+          mojom = "browser.context_hub.mojom.FirstPartyData"
+          cpp = "::context_hub::FirstPartyData"
+        },
+        {
+          mojom = "browser.context_hub.mojom.ThirdPartyData"
+          cpp = "::context_hub::ThirdPartyData"
+        },
+        {
+          mojom = "browser.context_hub.mojom.AutoTodoData"
+          cpp = "::std::variant<::context_hub::FirstPartyData, ::context_hub::ThirdPartyData>"
+        },
+        {
+          mojom = "browser.context_hub.mojom.AutoTodoItem"
+          cpp = "::context_hub::AutoTodoEntry"
+        },
+      ]
+      traits_headers = [ "context_hub_mojom_traits.h" ]
+      traits_sources = [ "context_hub_mojom_traits.cc" ]
+      traits_deps = [
+        "//base",
+        "//chrome/browser/context_hub/auto_todos",
+        "//mojo/public/mojom/base",
+        "//third_party/abseil-cpp:absl",
+        "//url",
+      ]
+    },
+  ]
 }
 
 source_set("context_hub_page_handler") {
@@ -55,9 +90,9 @@ source_set("context_hub") {
   ]
 
   deps = [
+    "//chrome/browser/context_hub:features",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/context_hub:resources",
-    "//chrome/browser/context_hub:features",
     "//chrome/common",
   ]
 
@@ -79,6 +114,7 @@ source_set("unit_tests") {
     "//components/personal_context/core:test_support",
     "//components/personal_context/proto:personal_context_proto",
     "//content/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
   ]

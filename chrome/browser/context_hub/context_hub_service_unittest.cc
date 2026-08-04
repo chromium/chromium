@@ -111,16 +111,15 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
                   Field(&AutoTodoEntry::title, "Test Todo"),
                   Field(&AutoTodoEntry::description, "Test Description")))));
 
-  base::test::TestFuture<
-      std::optional<personal_context::proto::AutoTodosResponse>>
+  base::test::TestFuture<const std::optional<std::vector<AutoTodoEntry>>&>
       future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(result.value().todos_size(), 1);
-  EXPECT_EQ(result.value().todos(0).title(), "Test Todo");
-  EXPECT_EQ(result.value().todos(0).description(), "Test Description");
+  ASSERT_EQ(result.value().size(), 1u);
+  EXPECT_EQ(result.value()[0].title, "Test Todo");
+  EXPECT_EQ(result.value()[0].description, "Test Description");
 }
 
 TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
@@ -143,8 +142,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
 
   EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
 
-  base::test::TestFuture<
-      std::optional<personal_context::proto::AutoTodosResponse>>
+  base::test::TestFuture<const std::optional<std::vector<AutoTodoEntry>>&>
       future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
@@ -169,8 +167,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
 
   EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
 
-  base::test::TestFuture<
-      std::optional<personal_context::proto::AutoTodosResponse>>
+  base::test::TestFuture<const std::optional<std::vector<AutoTodoEntry>>&>
       future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 

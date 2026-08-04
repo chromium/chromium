@@ -108,6 +108,10 @@ void ContextHubService::OnAutoTodosChanged(
 
 void ContextHubService::GenerateFirstPartyAutoTodos(
     AutoTodosCallback callback) {
+  if (!auto_todos_store_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
 
   personal_context::proto::AutoTodosRequest request_metadata;
   personal_context::ContextMemoryRequestOptions options;
@@ -134,12 +138,16 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
     return;
   }
 
-  if (auto_todos_store_) {
   // TODO(crbug.com/540562062): Remove this once state management is handled.
   auto_todos_store_->Clear(base::DoNothing());
 
+  std::vector<AutoTodoEntry> entries;
+  entries.reserve(response.todos_size());
   for (const personal_context::proto::AutoTodoItem& todo : response.todos()) {
     AutoTodoEntry entry;
+    // TODO(crbug.com/541276677): Remove when the observer is notified of cache
+    // changes.
+    entry.id = todo.title();
     entry.title = todo.title();
     entry.description = todo.description();
     entry.importance_score = todo.importance_score();
@@ -149,16 +157,16 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
     first_party.actionable_url = GURL(todo.actionable_url());
     for (const auto& ref : todo.source_references()) {
       if (ref.has_gmail()) {
-        first_party.source_references.push_back(
-            GURL(ref.gmail().message_url()));
+        first_party.source_references.emplace_back(ref.gmail().message_url());
       }
     }
     entry.data = std::move(first_party);
-    auto_todos_store_->AddOrUpdateItem(std::move(entry), base::DoNothing());
-  }
+    // TODO(crbug.com/541914207): Implement AddAllItems to the cache.
+    auto_todos_store_->AddOrUpdateItem(entry, base::DoNothing());
+    entries.push_back(std::move(entry));
   }
 
-  std::move(callback).Run(std::move(response));
+  std::move(callback).Run(std::move(entries));
 }
 
 void ContextHubService::SetTodoFeedback(

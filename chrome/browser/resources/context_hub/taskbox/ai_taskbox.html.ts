@@ -36,8 +36,10 @@ export function getHtml(this: AiTaskboxElement) {
                           .id="${todo.id}"
                           .heading="${todo.title}"
                           .description="${todo.description}"
-                          .actionableUrl="${todo.actionableUrl}"
-                          .sourceReferences="${todo.sourceReferences}"
+                          .actionableUrl="${
+                  todo.data.firstParty?.actionableUrl || ''}"
+                          .sourceReferences="${
+                  todo.data.firstParty?.sourceReferences || []}"
                           .score="${todo.score}">
                       </todo-item>
                     `) :
@@ -67,8 +69,10 @@ export function getHtml(this: AiTaskboxElement) {
                           .id="${todo.id}"
                           .heading="${todo.title}"
                           .description="${todo.description}"
-                          .actionableUrl="${todo.actionableUrl}"
-                          .sourceReferences="${todo.sourceReferences}"
+                          .actionableUrl="${
+                  todo.data.firstParty?.actionableUrl || ''}"
+                          .sourceReferences="${
+                  todo.data.firstParty?.sourceReferences || []}"
                           .score="${todo.score}">
                       </todo-item>
                     `) :

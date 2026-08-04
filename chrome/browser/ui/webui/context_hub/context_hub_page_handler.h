@@ -5,12 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CONTEXT_HUB_CONTEXT_HUB_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CONTEXT_HUB_CONTEXT_HUB_PAGE_HANDLER_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
-#include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -69,10 +66,6 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
                             AskGeminiWithContextCallback callback) override;
 
  private:
-  void OnAutoTodosGenerated(
-      GenerateAutoTodosCallback callback,
-      std::optional<personal_context::proto::AutoTodosResponse> result);
-
   mojo::Receiver<browser::context_hub::mojom::PageHandler> receiver_;
   std::unique_ptr<TabProvider> tab_provider_;
   raw_ptr<Profile> profile_;
