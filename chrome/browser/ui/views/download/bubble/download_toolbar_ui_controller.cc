@@ -1000,8 +1000,8 @@ void DownloadToolbarUIController::OnBubbleAnchorAssembled(
       base::BindOnce(&DownloadToolbarUIController::OnBubbleClosing,
                      weak_factory_.GetWeakPtr()));
   auto bubble_contents = std::make_unique<DownloadBubbleContentsView>(
-      browser_view_->browser()->AsWeakPtr(), bubble_controller_->GetWeakPtr(),
-      GetWeakPtr(), primary_view_mode_,
+      browser_view_->browser(), bubble_controller_->GetWeakPtr(), GetWeakPtr(),
+      primary_view_mode_,
       std::make_unique<DownloadBubbleContentsViewInfo>(
           std::move(primary_view_models)),
       bubble_delegate.get());

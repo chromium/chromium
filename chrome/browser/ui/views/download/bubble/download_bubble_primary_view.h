@@ -13,7 +13,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-class Browser;
+class BrowserWindowInterface;
 class DownloadBubbleNavigationHandler;
 class DownloadBubbleRowListView;
 class DownloadBubbleRowView;
@@ -58,7 +58,7 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
   // TODO(crbug.com/40853007): Add support for refreshing the scroll view
   // contents.
   void BuildAndAddScrollView(
-      base::WeakPtr<Browser> browser,
+      BrowserWindowInterface* browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       const DownloadBubbleRowListViewInfo& info,
@@ -68,7 +68,7 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
 
   // Maybe show the banner informing the user that any files downloaded
   // in OTR mode are visible to anyone on the device.
-  void MaybeAddOtrInfoRow(Browser* browser);
+  void MaybeAddOtrInfoRow(BrowserWindowInterface* browser);
 
  private:
   // The ScrollView holding the DownloadBubbleRowListView with the download

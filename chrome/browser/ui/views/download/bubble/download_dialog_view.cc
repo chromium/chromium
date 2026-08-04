@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -129,7 +129,7 @@ void DownloadDialogView::CloseBubble() {
 
 void DownloadDialogView::ShowAllDownloads() {
   if (browser_) {
-    chrome::ShowDownloads(browser_.get());
+    chrome::ShowDownloads(browser_);
   }
 }
 
@@ -174,14 +174,13 @@ void DownloadDialogView::AddFooter() {
 }
 
 DownloadDialogView::DownloadDialogView(
-    base::WeakPtr<Browser> browser,
+    BrowserWindowInterface* browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     const DownloadBubbleRowListViewInfo& info)
-    : navigation_handler_(std::move(navigation_handler)),
-      browser_(std::move(browser)) {
+    : navigation_handler_(std::move(navigation_handler)), browser_(browser) {
   AddHeader();
-  MaybeAddOtrInfoRow(browser_.get());
+  MaybeAddOtrInfoRow(browser_);
   BuildAndAddScrollView(browser_, std::move(bubble_controller),
                         navigation_handler_, info, DefaultPreferredWidth());
   AddFooter();

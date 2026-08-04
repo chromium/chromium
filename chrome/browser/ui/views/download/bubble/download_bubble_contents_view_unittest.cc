@@ -13,13 +13,12 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/mock_download_core_service.h"
 #include "chrome/browser/download/offline_item_utils.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -133,11 +132,8 @@ class DownloadBubbleContentsViewTest
         .WillRepeatedly(Return(delegate_.get()));
     EXPECT_CALL(*manager_, GetBrowserContext())
         .WillRepeatedly(Return(profile_.get()));
-    auto window = std::make_unique<TestBrowserWindow>();
-    Browser::CreateParams params(profile_, true);
-    params.type = Browser::TYPE_NORMAL;
-    params.window = window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+    EXPECT_CALL(mock_browser_window_interface_, GetProfile())
+        .WillRepeatedly(Return(profile_));
 
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -149,13 +145,13 @@ class DownloadBubbleContentsViewTest
     bubble_delegate_ = bubble_delegate.get();
     navigation_handler_ =
         std::make_unique<MockDownloadBubbleNavigationHandler>();
-    bubble_controller_ =
-        std::make_unique<DownloadBubbleUIController>(browser_.get());
+    bubble_controller_ = std::make_unique<DownloadBubbleUIController>(
+        &mock_browser_window_interface_);
 
     // TODO(chlily): Parameterize test on one vs multiple items.
     InitItems(2);
     contents_view_ = std::make_unique<DownloadBubbleContentsView>(
-        browser_->AsWeakPtr(), bubble_controller_->GetWeakPtr(),
+        &mock_browser_window_interface_, bubble_controller_->GetWeakPtr(),
         navigation_handler_->GetWeakPtr(), GetDownloadBubbleMode(),
         std::make_unique<DownloadBubbleContentsViewInfo>(GetModels()),
         bubble_delegate_);
@@ -202,7 +198,7 @@ class DownloadBubbleContentsViewTest
   raw_ptr<MockDownloadCoreService> mock_download_core_service_;
   std::unique_ptr<ChromeDownloadManagerDelegate> delegate_;
   std::unique_ptr<testing::NiceMock<content::MockDownloadManager>> manager_;
-  std::unique_ptr<Browser> browser_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
   std::vector<std::unique_ptr<NiceMock<download::MockDownloadItem>>>
       download_items_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;

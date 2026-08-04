@@ -8,7 +8,7 @@
 
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -50,11 +50,11 @@ class SuppressBubbleSettingRow : public views::View,
 
  public:
   SuppressBubbleSettingRow(
-      base::WeakPtr<Browser> browser,
+      BrowserWindowInterface* browser,
       bool should_show_settings_link,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler)
-      : browser_(std::move(browser)),
+      : browser_(browser),
         bubble_controller_(std::move(bubble_controller)),
         navigation_handler_(std::move(navigation_handler)) {
     // Because this view appears directly below the download rows, we want to
@@ -156,11 +156,11 @@ class SuppressBubbleSettingRow : public views::View,
 
   void SettingsLinkClicked() {
     if (bubble_controller_ && browser_) {
-      chrome::ShowSettingsSubPage(browser_.get(), chrome::kDownloadsSubPage);
+      chrome::ShowSettingsSubPage(browser_, chrome::kDownloadsSubPage);
     }
   }
 
-  base::WeakPtr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
@@ -196,20 +196,20 @@ void MaybeRecordImpression(Profile* profile, int impressions) {
 }  // namespace
 
 DownloadBubblePartialView::DownloadBubblePartialView(
-    base::WeakPtr<Browser> browser,
+    BrowserWindowInterface* browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     const DownloadBubbleRowListViewInfo& info,
     base::OnceClosure on_interacted_closure)
     : on_interacted_closure_(std::move(on_interacted_closure)) {
-  MaybeAddOtrInfoRow(browser.get());
+  MaybeAddOtrInfoRow(browser);
 
-  Profile* profile = browser->GetProfile();
+  Profile* profile = browser ? browser->GetProfile() : nullptr;
   const int impressions =
-      download::DownloadBubblePartialViewImpressions(profile) + 1;
+      profile ? download::DownloadBubblePartialViewImpressions(profile) + 1 : 1;
   int preferred_width = DefaultPreferredWidth();
   std::unique_ptr<SuppressBubbleSettingRow> setting_row;
-  if (ShouldShowSuppressSetting(profile, impressions)) {
+  if (profile && ShouldShowSuppressSetting(profile, impressions)) {
     setting_row = std::make_unique<SuppressBubbleSettingRow>(
         browser, ShouldShowSettingsLink(impressions), bubble_controller,
         navigation_handler);
@@ -217,7 +217,7 @@ DownloadBubblePartialView::DownloadBubblePartialView(
         std::max(preferred_width, setting_row->GetPreferredSize().width());
   }
 
-  BuildAndAddScrollView(std::move(browser), std::move(bubble_controller),
+  BuildAndAddScrollView(browser, std::move(bubble_controller),
                         std::move(navigation_handler), info, preferred_width);
 
   if (setting_row) {
@@ -233,7 +233,9 @@ DownloadBubblePartialView::DownloadBubblePartialView(
     AddChildView(std::move(setting_row));
   }
 
-  MaybeRecordImpression(profile, impressions);
+  if (profile) {
+    MaybeRecordImpression(profile, impressions);
+  }
 }
 
 DownloadBubblePartialView::~DownloadBubblePartialView() = default;

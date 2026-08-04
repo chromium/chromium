@@ -21,7 +21,7 @@ enum class DownloadBubbleMode {
   kPartial,
 };
 
-class Browser;
+class BrowserWindowInterface;
 class DownloadBubbleNavigationHandler;
 class DownloadBubblePrimaryView;
 class DownloadBubbleRowView;
@@ -53,7 +53,7 @@ class DownloadBubbleContentsView : public views::View,
   };
 
   DownloadBubbleContentsView(
-      base::WeakPtr<Browser> browser,
+      BrowserWindowInterface* browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       // Whether the primary view is the partial view.

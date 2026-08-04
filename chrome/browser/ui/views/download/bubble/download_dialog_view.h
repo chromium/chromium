@@ -14,7 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/link.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Button;
@@ -33,7 +33,7 @@ class DownloadDialogView : public DownloadBubblePrimaryView {
   DownloadDialogView& operator=(const DownloadDialogView&) = delete;
 
   DownloadDialogView(
-      base::WeakPtr<Browser> browser,
+      BrowserWindowInterface* browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       const DownloadBubbleRowListViewInfo& info);
@@ -51,7 +51,7 @@ class DownloadDialogView : public DownloadBubblePrimaryView {
   void AddFooter();
 
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_;
-  base::WeakPtr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<views::Button> close_button_ = nullptr;
 };
 
