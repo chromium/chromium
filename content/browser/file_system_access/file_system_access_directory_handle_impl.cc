@@ -140,6 +140,13 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
   // and create the document. DidGetFile() will then update the child path
   // before creating the returned handle.
   if (url().virtual_path().IsContentUri()) {
+    if (!IsSafePathComponent(basename)) {
+      std::move(callback).Run(
+          file_system_access_error::FromStatus(
+              FileSystemAccessStatus::kInvalidArgument, "Name is not allowed."),
+          mojo::NullRemote());
+      return;
+    }
     std::string mime_type;
     if (!net::GetWellKnownMimeTypeFromFile(base::FilePath(basename),
                                            &mime_type)) {
@@ -281,6 +288,13 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectory(
   // and create the document. DidGetDirectory() will then update the child path
   // before creating the returned handle.
   if (url().virtual_path().IsContentUri()) {
+    if (!IsSafePathComponent(basename)) {
+      std::move(callback).Run(
+          file_system_access_error::FromStatus(
+              FileSystemAccessStatus::kInvalidArgument, "Name is not allowed."),
+          mojo::NullRemote());
+      return;
+    }
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&base::ContentUriGetChildDocumentOrQuery,
@@ -458,6 +472,11 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
 #if BUILDFLAG(IS_ANDROID)
   // Lookup content-URI by display-name.
   if (url().virtual_path().IsContentUri()) {
+    if (!IsSafePathComponent(basename)) {
+      std::move(callback).Run(file_system_access_error::FromStatus(
+          FileSystemAccessStatus::kInvalidArgument, "Name is not allowed."));
+      return;
+    }
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&base::ContentUriGetChildDocumentOrQuery,
@@ -913,18 +932,23 @@ void FileSystemAccessDirectoryHandleImpl::CurrentBatchEntriesReady(
                                               more_batches_are_expected);
 }
 
+bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+    const std::string& basename) const {
+  return manager()->IsSafePathComponent(url().type(), basename);
+}
+
 blink::mojom::FileSystemAccessErrorPtr
 FileSystemAccessDirectoryHandleImpl::GetChildURL(
     const std::string& basename,
     storage::FileSystemURL* result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const storage::FileSystemURL& parent = url();
-  if (!manager()->IsSafePathComponent(parent.type(), basename)) {
+  if (!IsSafePathComponent(basename)) {
     return file_system_access_error::FromStatus(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
   }
 
+  const storage::FileSystemURL& parent = url();
 #if BUILDFLAG(IS_ANDROID)
   base::FilePath child_path =
       parent.virtual_path().IsContentUri()

@@ -42,6 +42,10 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/android/content_uri_test_utils.h"
+#endif
+
 namespace content {
 namespace {
 using storage::FileSystemURL;
@@ -470,6 +474,95 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries_NoReadAccess) {
             blink::mojom::FileSystemAccessStatus::kPermissionDenied);
   EXPECT_TRUE(entries.empty());
 }
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest, InvalidPathComponent) {
+  constexpr const char* kInvalidNames[] = {"", "..", "../a", "a/b", "a\\b"};
+  for (const char* name : kInvalidNames) {
+    SCOPED_TRACE(name);
+    {
+      base::test::TestFuture<
+          blink::mojom::FileSystemAccessErrorPtr,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+          future;
+      handle_->GetFile(name, /*create=*/false, future.GetCallback());
+      EXPECT_EQ(future.Get<0>()->status,
+                blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+      EXPECT_FALSE(future.Get<1>().is_valid());
+    }
+    {
+      base::test::TestFuture<
+          blink::mojom::FileSystemAccessErrorPtr,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+          future;
+      handle_->GetDirectory(name, /*create=*/false, future.GetCallback());
+      EXPECT_EQ(future.Get<0>()->status,
+                blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+      EXPECT_FALSE(future.Get<1>().is_valid());
+    }
+    {
+      base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+      handle_->RemoveEntry(name, /*recurse=*/false, future.GetCallback());
+      EXPECT_EQ(future.Get()->status,
+                blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+    }
+  }
+}
+
+#if BUILDFLAG(IS_ANDROID)
+// Verifies that `GetFile`, `GetDirectory` and `RemoveEntry` reject names that
+// are not valid path components when the directory handle is backed by a
+// content URI.
+TEST_F(FileSystemAccessDirectoryHandleImplTest, ContentUri_InvalidName) {
+  std::optional<base::FilePath> content_uri =
+      base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+          dir_.GetPath());
+  EXPECT_TRUE(content_uri.has_value());
+  if (!content_uri.has_value()) {
+    return;
+  }
+  EXPECT_TRUE(content_uri->IsContentUri());
+  if (!content_uri->IsContentUri()) {
+    return;
+  }
+  auto handle =
+      GetHandleWithPermissions(*content_uri, /*read=*/true, /*write=*/true);
+  EXPECT_TRUE(handle);
+  if (!handle) {
+    return;
+  }
+
+  constexpr const char* kInvalidNames[] = {"", "..", "../a", "a/b", "a\\b"};
+  for (const char* name : kInvalidNames) {
+    SCOPED_TRACE(name);
+    {
+      base::test::TestFuture<
+          blink::mojom::FileSystemAccessErrorPtr,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+          future;
+      handle->GetFile(name, /*create=*/false, future.GetCallback());
+      EXPECT_EQ(future.Get<0>()->status,
+                blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+      EXPECT_FALSE(future.Get<1>().is_valid());
+    }
+    {
+      base::test::TestFuture<
+          blink::mojom::FileSystemAccessErrorPtr,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+          future;
+      handle->GetDirectory(name, /*create=*/false, future.GetCallback());
+      EXPECT_EQ(future.Get<0>()->status,
+                blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+      EXPECT_FALSE(future.Get<1>().is_valid());
+    }
+    {
+      base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+      handle->RemoveEntry(name, /*recurse=*/false, future.GetCallback());
+      EXPECT_EQ(future.Get()->status,
+                blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests for `FileSystemAccessDirectoryHandleImpl::Remove()`.
 class FileSystemAccessDirectoryHandleImplRemoveTest

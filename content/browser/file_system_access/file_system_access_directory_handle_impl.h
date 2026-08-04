@@ -180,6 +180,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
           std::vector<blink::mojom::FileSystemAccessEntryPtr>)> final_callback,
       std::vector<blink::mojom::FileSystemAccessEntryPtr> entries);
 
+  bool IsSafePathComponent(const std::string& basename) const;
+
   storage::FileSystemURL CreateChildURL(const base::FilePath& child_path);
 
   // Helper to create a blink::mojom::FileSystemAccessEntry struct.

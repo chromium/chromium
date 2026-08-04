@@ -60,8 +60,8 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   const storage::FileSystemURL& url() const { return url_; }
   const SharedHandleState& handle_state() const { return handle_state_; }
   const BindingContext& context() const { return context_; }
-  FileSystemAccessManagerImpl* manager() { return manager_; }
-  storage::FileSystemContext* file_system_context() {
+  FileSystemAccessManagerImpl* manager() const { return manager_; }
+  storage::FileSystemContext* file_system_context() const {
     return manager()->context();
   }
 
