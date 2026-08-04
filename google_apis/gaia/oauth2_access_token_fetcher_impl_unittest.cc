@@ -201,8 +201,9 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, Success) {
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, SuccessUnexpectedFormat) {
   SetupGetAccessToken(net::OK, net::HTTP_OK, std::string());
-  EXPECT_CALL(consumer_, OnGetTokenFailure(GoogleServiceAuthError(
-                             GoogleServiceAuthError::SERVICE_UNAVAILABLE)))
+  EXPECT_CALL(
+      consumer_,
+      OnGetTokenFailure(GoogleServiceAuthError::FromServiceUnavailable("")))
       .Times(1);
   fetcher_->Start("client_id", "client_secret", ScopeList());
   base::RunLoop().RunUntilIdle();

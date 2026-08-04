@@ -17,6 +17,18 @@ import org.chromium.build.annotations.NullMarked;
 public class GoogleServiceAuthError {
     private final @GoogleServiceAuthErrorState int mState;
 
+    /**
+     * Creates an instance from the error `state`. Only supports the following error states:
+     *
+     * <ul>
+     *   <li>{@link GoogleServiceAuthErrorState.NONE}
+     *   <li>{@link GoogleServiceAuthErrorState.SCOPE_LIMITED_UNRECOVERABLE_ERROR}
+     *   <li>{@link GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS}
+     *   <li>{@link GoogleServiceAuthErrorState.CONNECTION_FAILED}
+     *   <li>{@link GoogleServiceAuthErrorState.REQUEST_CANCELED}
+     *   <li>{@link GoogleServiceAuthErrorState.ACCOUNT_NOT_FOUND}
+     * </ul>
+     */
     @CalledByNative
     public GoogleServiceAuthError(@GoogleServiceAuthErrorState int state) {
         mState = state;

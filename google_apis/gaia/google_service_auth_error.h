@@ -142,11 +142,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   friend bool operator==(const GoogleServiceAuthError&,
                          const GoogleServiceAuthError&);
 
-  // Construct a GoogleServiceAuthError from a State with no additional data.
-  explicit GoogleServiceAuthError(State s);
-
-  // Equivalent to calling GoogleServiceAuthError(NONE). Needs to exist and be
-  // public for Mojo bindings code.
+  // Equivalent to calling GoogleServiceAuthError::AuthErrorNone().
   GoogleServiceAuthError();
 
   GoogleServiceAuthError(const GoogleServiceAuthError& other);

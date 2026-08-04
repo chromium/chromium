@@ -78,46 +78,6 @@ bool operator==(const GoogleServiceAuthError&,
 
 GoogleServiceAuthError::GoogleServiceAuthError() : details_(None()) {}
 
-GoogleServiceAuthError::GoogleServiceAuthError(State s) {
-  switch (s) {
-    case NONE:
-      details_.emplace<None>();
-      break;
-    case INVALID_GAIA_CREDENTIALS:
-      details_.emplace<InvalidGaiaCredentials>();
-      break;
-    case ACCOUNT_NOT_FOUND:
-      details_.emplace<AccountNotFound>();
-      break;
-    case CONNECTION_FAILED:
-      details_.emplace<ConnectionFailed>();
-      break;
-    case SERVICE_UNAVAILABLE:
-      details_.emplace<ServiceUnavailable>();
-      break;
-    case REQUEST_CANCELED:
-      details_.emplace<RequestCanceled>();
-      break;
-    case UNEXPECTED_SERVICE_RESPONSE:
-      details_.emplace<UnexpectedServiceResponse>();
-      break;
-    case SERVICE_ERROR:
-      details_.emplace<ServiceError>();
-      break;
-    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-      details_.emplace<ScopeLimitedUnrecoverableError>();
-      break;
-    case CHALLENGE_RESPONSE_REQUIRED:
-      details_.emplace<ChallengeResponseRequired>();
-      break;
-    case DEVICE_MANAGEMENT_ERROR:
-      // A mdm error requires details, so constructing it only with the state
-      // DEVICE_MANAGEMENT_ERROR is an invalid operation
-    case NUM_STATES:
-      NOTREACHED();
-  }
-}
-
 GoogleServiceAuthError::GoogleServiceAuthError(
     const GoogleServiceAuthError& other) = default;
 
@@ -380,18 +340,30 @@ GoogleServiceAuthError GoogleServiceAuthError::FromJavaObject(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_auth_error) {
   CHECK(j_auth_error);
-  GoogleServiceAuthError::State state =
-      static_cast<GoogleServiceAuthError::State>(
-          Java_GoogleServiceAuthError_getState(env, j_auth_error));
-  if (state == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
-    // Android doesn't provide reasons for this type of errors and only creates
-    // them for enterprise policy enforced scopes. So we hardcode the value
-    // here.
-    return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
-        GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
-            kAdminPolicyEnforced);
-  } else {
-    return GoogleServiceAuthError(state);
+  using GSAE = GoogleServiceAuthError;
+
+  GSAE::State state = static_cast<GSAE::State>(
+      Java_GoogleServiceAuthError_getState(env, j_auth_error));
+  switch (state) {
+    case GSAE::NONE:
+      return GSAE::AuthErrorNone();
+    case GSAE::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+      // Android doesn't provide reasons for this type of errors and only
+      // creates them for enterprise policy enforced scopes. So we hardcode the
+      // value here.
+      return GSAE::FromScopeLimitedUnrecoverableErrorReason(
+          GSAE::ScopeLimitedUnrecoverableErrorReason::kAdminPolicyEnforced);
+    case GSAE::INVALID_GAIA_CREDENTIALS:
+      return GSAE::FromInvalidGaiaCredentialsReason(
+          GSAE::InvalidGaiaCredentialsReason::UNKNOWN);
+    case GSAE::CONNECTION_FAILED:
+      return GSAE::FromConnectionError(net::ERR_FAILED);
+    case GSAE::REQUEST_CANCELED:
+      return GSAE::CreateRequestCanceled();
+    case GSAE::ACCOUNT_NOT_FOUND:
+      return GSAE::CreateAccountNotFound();
+    default:
+      NOTREACHED();
   }
 }
 
