@@ -2638,13 +2638,8 @@ class ExtensionOnClosedEventSidePanelBrowserTest
 };
 
 // Tests that onClosed fires when the hosting tab is closed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OnClosedEvent_TabClosed DISABLED_OnClosedEvent_TabClosed
-#else
-#define MAYBE_OnClosedEvent_TabClosed OnClosedEvent_TabClosed
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
-                       MAYBE_OnClosedEvent_TabClosed) {
+                       OnClosedEvent_TabClosed) {
   // Open a new tab first to prevent the browser from shutting down.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -2662,8 +2657,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
       GetCurrentTabRegistry()->GetEntryForKey(GetKey(extension->id()));
   ASSERT_TRUE(extension_entry);
 
+  // Restrict the helper to ONLY wait for the side panel host. This prevents it
+  // from accidentally catching the background page's load event.
   extensions::ExtensionHostTestHelper host_helper(profile(), extension->id());
+  host_helper.RestrictToType(extensions::mojom::ViewType::kExtensionSidePanel);
+
   ShowContextualEntryAndWait(GetKey(extension->id()));
+
+  // Strictly block until the side panel is fully loaded.
   host_helper.WaitForHostCompletedFirstLoad();
 
   // Close the active tab, which has the panel. This action should trigger the
