@@ -8202,11 +8202,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOAuthIppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableOAuthIpp)},
 
-    {"enable-peripheral-customization",
-     flag_descriptions::kEnablePeripheralCustomizationName,
-     flag_descriptions::kEnablePeripheralCustomizationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPeripheralCustomization)},
-
     {"enable-peripherals-logging",
      flag_descriptions::kEnablePeripheralsLoggingName,
      flag_descriptions::kEnablePeripheralsLoggingDescription, kOsCrOS,

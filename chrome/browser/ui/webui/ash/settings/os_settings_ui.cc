@@ -395,9 +395,7 @@ void OSSettingsUI::BindInterface(
   auto* provider =
       OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
           ->input_device_settings_provider();
-  if (features::IsPeripheralCustomizationEnabled()) {
-    provider->Initialize(web_ui());
-  }
+  provider->Initialize(web_ui());
   provider->BindInterface(std::move(receiver));
 }
 
@@ -418,7 +416,6 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<::ash::common::mojom::ShortcutInputProvider>
         receiver) {
-  CHECK(features::IsPeripheralCustomizationEnabled());
   auto* shortcut_input_provider =
       OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
           ->shortcut_input_provider();

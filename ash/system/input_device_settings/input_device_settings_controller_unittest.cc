@@ -662,8 +662,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     image_downloader_ = std::make_unique<TestImageDownloader>();
     scoped_feature_list_.InitWithFeatures(
-        {features::kPeripheralCustomization,
-         features::kAltClickAndSixPackCustomization,
+        {features::kAltClickAndSixPackCustomization,
          features::kPeripheralNotification,
          ::features::kSupportF11AndF12KeyShortcuts, features::kModifierSplit},
         {});
@@ -819,35 +818,6 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardAddingAndRemoving) {
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 2u);
 }
 
-TEST_F(InputDeviceSettingsControllerTest,
-       DeletesPrefsWhenPeripheralCustomizationFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPeripheralCustomization);
-
-  auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
-
-  base::DictValue test_pref_value;
-  test_pref_value.Set("Fake Key", base::DictValue());
-  pref_service->SetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref,
-                        test_pref_value.Clone());
-  pref_service->SetDict(prefs::kGraphicsTabletTabletButtonRemappingsDictPref,
-                        test_pref_value.Clone());
-  pref_service->SetDict(prefs::kMouseButtonRemappingsDictPref,
-                        test_pref_value.Clone());
-
-  SimulateUserLogin({}, kAccountId3, std::move(pref_service));
-
-  PrefService* active_pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  EXPECT_EQ(base::DictValue(),
-            active_pref_service->GetDict(
-                prefs::kGraphicsTabletPenButtonRemappingsDictPref));
-  EXPECT_EQ(base::DictValue(),
-            active_pref_service->GetDict(
-                prefs::kGraphicsTabletTabletButtonRemappingsDictPref));
-  EXPECT_EQ(base::DictValue(), active_pref_service->GetDict(
-                                   prefs::kMouseButtonRemappingsDictPref));
-}
 
 TEST_F(InputDeviceSettingsControllerTest,
        DeletesSimulateRightClickPrefsWhenAltFlagDisabled) {

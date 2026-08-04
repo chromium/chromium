@@ -4194,14 +4194,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-peripheral-customization",
-    "owners": [
-      "dpad@google.com",
-      "cros-device-enablement@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-peripheral-notification",
     "owners": [
       "dpad@google.com",

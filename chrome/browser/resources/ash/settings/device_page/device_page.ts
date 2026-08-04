@@ -19,7 +19,6 @@ import '../settings_shared.css.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isExternalStorageEnabled} from '../common/load_time_booleans.js';
@@ -91,17 +90,6 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       hasStylus_: {
         type: Boolean,
         value: false,
-      },
-
-      /**
-       * Whether users are allowed to customize buttons on their peripherals.
-       */
-      isPeripheralCustomizationEnabled: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enablePeripheralCustomization');
-        },
-        readOnly: true,
       },
 
       isExternalStorageEnabled_: {
@@ -186,7 +174,6 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   declare private hasHapticTouchpad_: boolean;
   declare private inputMethodDisplayName_: string;
   declare private isExternalStorageEnabled_: boolean;
-  declare private isPeripheralCustomizationEnabled: boolean;
   private pointingStickSettingsObserverReceiver:
       PointingStickSettingsObserverReceiver;
   private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
@@ -209,9 +196,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     this.observeKeyboardSettings();
     this.observeTouchpadSettings();
     this.observeMouseSettings();
-    if (this.isPeripheralCustomizationEnabled) {
-      this.observeGraphicsTabletSettings();
-    }
+    this.observeGraphicsTabletSettings();
   }
 
   override connectedCallback(): void {
@@ -498,9 +483,8 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     return this.pointingSticks && this.pointingSticks.length !== 0;
   }
 
-  private showGraphicsTabletRow_(): boolean {
-    return this.isPeripheralCustomizationEnabled && this.graphicsTablets &&
-        this.graphicsTablets.length !== 0;
+  private showGraphicsTabletRow_(graphicsTablets: GraphicsTablet[]): boolean {
+    return !!graphicsTablets && graphicsTablets.length !== 0;
   }
 
   protected restoreDefaults(): void {

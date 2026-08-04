@@ -105,8 +105,6 @@ class MousePrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
-                                          {});
     AshTestBase::SetUp();
     InitializePrefService();
     pref_handler_ = std::make_unique<MousePrefHandlerImpl>();
@@ -532,19 +530,6 @@ TEST_F(MousePrefHandlerTest, UpdateLoginScreenMouseSettings) {
   EXPECT_TRUE(HasInternalLoginScreenSettingsDict(account_id_1));
 }
 
-TEST_F(MousePrefHandlerTest,
-       LoginScreenButtonRemappingListNotPersistedWhenFlagIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPeripheralCustomization);
-  mojom::Mouse mouse1;
-  mouse1.device_key = kMouseKey1;
-  mouse1.is_external = false;
-  mouse1.customization_restriction =
-      mojom::CustomizationRestriction::kAllowCustomizations;
-
-  CallInitializeLoginScreenMouseSettings(account_id_1, mouse1);
-  EXPECT_FALSE(HasLoginScreenMouseButtonRemappingList(account_id_1));
-}
 
 TEST_F(MousePrefHandlerTest, MultipleDevices) {
   CallUpdateMouseSettings(kMouseKey1, kMouseSettings1);

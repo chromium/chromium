@@ -18,9 +18,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
-#endif
 
 namespace ui {
 
@@ -170,10 +167,6 @@ void PenTabletEventConverterEvdev::ConvertKeyEvent(const input_event& input) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!ash::features::IsPeripheralCustomizationEnabled()) {
-    return;
-  }
-
   if ((input.code >= BTN_0 && input.code <= BTN_9) ||
       (input.code >= BTN_A && input.code <= BTN_Z)) {
     dispatcher_->DispatchKeyEvent(KeyEventParams{
