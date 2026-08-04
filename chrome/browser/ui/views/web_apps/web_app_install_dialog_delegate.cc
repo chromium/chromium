@@ -19,12 +19,14 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -32,6 +34,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -78,6 +81,7 @@ NewPageActionHighlight(content::WebContents& web_contents) {
 
   return tab_features->page_action_controller()->AddActivity(kActionInstallPwa);
 }
+
 }  // namespace
 
 std::ostream& operator<<(std::ostream& os, InstallDialogType type) {
@@ -159,7 +163,9 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
   CHECK(prefs_);
 }
 
-WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() = default;
+WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
+  MaybeRestoreFocusToInstallPageAction();
+}
 
 bool WebAppInstallDialogDelegate::OnOkButtonClicked() {
   OnAccept();

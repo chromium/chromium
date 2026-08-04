@@ -30,6 +30,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -63,6 +64,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/constants.h"
@@ -228,7 +230,9 @@ WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
   CHECK(progress_delay_);
 }
 
-WebAppInstallFlowDialogDelegate::~WebAppInstallFlowDialogDelegate() = default;
+WebAppInstallFlowDialogDelegate::~WebAppInstallFlowDialogDelegate() {
+  MaybeRestoreFocusToInstallPageAction();
+}
 
 bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
   CHECK(dialog_model());

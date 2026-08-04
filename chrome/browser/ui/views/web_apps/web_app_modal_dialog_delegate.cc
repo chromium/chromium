@@ -4,9 +4,16 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_modal_dialog_delegate.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/views/widget/widget.h"
 
 namespace web_app {
@@ -49,6 +56,36 @@ void WebAppModalDialogDelegate::OnOcclusionStateChanged(bool occluded) {
   // to prevent spoofing.
   if (occluded) {
     PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+  }
+}
+
+void WebAppModalDialogDelegate::MaybeRestoreFocusToInstallPageAction() {
+  content::WebContents* contents = web_contents();
+  if (!contents) {
+    return;
+  }
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(contents);
+  if (!tab) {
+    return;
+  }
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  if (!browser) {
+    return;
+  }
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || !browser_view->toolbar_button_provider()) {
+    return;
+  }
+  page_actions::PageActionViewInterface* page_action_interface =
+      browser_view->toolbar_button_provider()->GetPageActionViewInterface(
+          kActionInstallPwa);
+  if (!page_action_interface) {
+    return;
+  }
+  views::View* anchor_view =
+      page_action_interface->GetBubbleAnchor().GetIfView();
+  if (anchor_view && anchor_view->GetVisible()) {
+    anchor_view->RequestFocus();
   }
 }
 

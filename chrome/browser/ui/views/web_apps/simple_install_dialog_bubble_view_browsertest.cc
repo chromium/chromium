@@ -7,15 +7,22 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/web_apps/web_app_dialog_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -82,6 +89,18 @@ class SimpleInstallDialogBubbleViewBrowserTest : public WebAppBrowserTestBase {
     feature_list_.InitAndDisableFeature(features::kWebAppInstallDialog);
   }
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
+
+  IconLabelBubbleView* GetPwaInstallIconView() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    if (!browser_view || !browser_view->toolbar_button_provider()) {
+      return nullptr;
+    }
+    auto* provider = browser_view->toolbar_button_provider();
+    return page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionInstallPwa),
+        kActionInstallPwa);
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -366,6 +385,32 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
   histograms.ExpectUniqueSample(
       "WebApp.InstallConfirmation.CloseReason",
       views::Widget::ClosedReason::kCloseButtonClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
+                       FocusRestoredOnCancel) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* icon = GetPwaInstallIconView();
+    return icon && icon->GetVisible();
+  }));
+
+  auto* icon = GetPwaInstallIconView();
+  ASSERT_NE(icon, nullptr);
+  icon->RequestFocus();
+  EXPECT_TRUE(icon->HasFocus());
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       kInstallDialogName);
+  chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  widget->CloseWithReason(views::Widget::ClosedReason::kCancelButtonClicked);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return icon->HasFocus(); }));
+  EXPECT_TRUE(icon->HasFocus());
 }
 
 class PictureInPictureSimpleInstallDialogOcclusionTest

@@ -53,6 +53,11 @@ class WebAppModalDialogDelegate : public ui::DialogModelDelegate,
   // Handle dialog close due to non-user actions - tab switch, navigation, etc.
   virtual void CloseDialogAsIgnored() = 0;
 
+  // Attempts to restore focus to the PWA install page action button
+  // (kActionInstallPwa) in the toolbar if the dialog is closing, provided the
+  // tab and window are still active and the page action icon is visible.
+  void MaybeRestoreFocusToInstallPageAction();
+
  private:
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

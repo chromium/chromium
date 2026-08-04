@@ -173,6 +173,31 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, SimpleInstallFlow) {
   EXPECT_EQ(1, action_tester.GetActionCount("WebAppSimpleDialogAccepted"));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, FocusRestoredOnCancel) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* icon = GetPwaInstallIconView();
+    return icon && icon->GetVisible();
+  }));
+
+  auto* icon = GetPwaInstallIconView();
+  ASSERT_NE(icon, nullptr);
+  icon->RequestFocus();
+  EXPECT_TRUE(icon->HasFocus());
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppInstallFlowDialog");
+  chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  widget->CloseWithReason(views::Widget::ClosedReason::kCancelButtonClicked);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return icon->HasFocus(); }));
+  EXPECT_TRUE(icon->HasFocus());
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DetailedInstallFlow) {
   base::UserActionTester action_tester;
   // Detailed install flow is triggered when screenshots are available.
