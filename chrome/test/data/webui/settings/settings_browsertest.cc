@@ -1324,8 +1324,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSystemPageTest, SystemPage) {
 #endif  //! BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// TODO(crbug.com/537695604): Re-enable on ChromeOS after investigating failure.
-#if !BUILDFLAG(IS_CHROMEOS)
 class SettingsAiPageOfficialTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -1335,7 +1333,6 @@ class SettingsAiPageOfficialTest : public SettingsBrowserTest {
 IN_PROC_BROWSER_TEST_F(SettingsAiPageOfficialTest, AiPageOfficial) {
   RunTest("settings/ai_page_official_test.js", "mocha.run()");
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 using SettingsAboutPageTest = SettingsBrowserTest;
