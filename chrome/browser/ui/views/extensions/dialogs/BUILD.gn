@@ -34,3 +34,20 @@ source_set("document_scanner_start_scan_confirmation_dialog") {
     "//ui/gfx",
   ]
 }
+
+source_set("print_job_confirmation_dialog") {
+  sources = [ "print_job_confirmation_dialog.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//extensions/common:common_constants",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
