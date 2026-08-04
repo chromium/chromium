@@ -155,7 +155,8 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
       return false;
     }
     bool is_showing =
-        browser()->GetBrowserView().GetProperty(kIsPwaUpdateDialogShowingKey);
+        BrowserView::GetBrowserViewForBrowser(browser())->GetProperty(
+            kIsPwaUpdateDialogShowingKey);
     EXPECT_TRUE(is_showing);
     return is_showing;
   }
@@ -258,8 +259,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
   web_app::test::UninstallWebApp(browser()->GetProfile(), app_id_);
   run_loop.Run();
 
-  EXPECT_FALSE(
-      browser()->GetBrowserView().GetProperty(kIsPwaUpdateDialogShowingKey));
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())->GetProperty(
+      kIsPwaUpdateDialogShowingKey));
   EXPECT_EQ(dialog_result_.Get(),
             WebAppIdentityUpdateResult::kAppUninstalledDuringDialog);
 }
@@ -275,8 +276,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
 
   // Verify dialog is closed, and the ignore result is obtained.
   ClickIgnoreButtonOnDialog(dialog_widget);
-  EXPECT_FALSE(
-      browser()->GetBrowserView().GetProperty(kIsPwaUpdateDialogShowingKey));
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())->GetProperty(
+      kIsPwaUpdateDialogShowingKey));
   EXPECT_EQ(dialog_result_.Get(), WebAppIdentityUpdateResult::kIgnore);
 }
 
@@ -335,7 +336,8 @@ class WebAppUpdateDialogBrowserTests : public WebAppBrowserTestBase {
     EXPECT_NE(app_browser, nullptr);
     // Ensure that the app browser is visible before proceeding. This ensures
     // that all PWA launching processes have finished.
-    views::test::WidgetVisibleWaiter(app_browser->GetBrowserView().GetWidget())
+    views::test::WidgetVisibleWaiter(
+        BrowserView::GetBrowserViewForBrowser(app_browser)->GetWidget())
         .Wait();
     // TODO(crbug.com/442643377): Delete this wait after the update runs for
     // every navigation.

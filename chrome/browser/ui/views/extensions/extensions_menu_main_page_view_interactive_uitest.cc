@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -22,11 +24,11 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -528,7 +530,9 @@ class ExtensionsMenuMainPageViewInteractiveTest
   }
 
   ExtensionsToolbarDesktop* extensions_container() {
-    return browser()->GetBrowserView().toolbar()->extensions_container();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->extensions_container();
   }
 
   content::WebContents* active_web_contents() {
@@ -1097,8 +1101,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                 [&]() {
                   auto* context_menu =
                       static_cast<extensions::ExtensionContextMenuModel*>(
-                          incognito_browser->GetBrowserView()
-                              .toolbar()
+                          BrowserView::GetBrowserViewForBrowser(
+                              incognito_browser)
+                              ->toolbar()
                               ->extensions_container()
                               ->GetToolbarViewModel()
                               ->GetActionForId(extension->id())

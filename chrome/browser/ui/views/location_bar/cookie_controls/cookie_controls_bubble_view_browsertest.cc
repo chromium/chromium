@@ -90,15 +90,16 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   void ShowBubble() {
-    coordinator()->ShowBubble(
-        browser()->GetBrowserView().toolbar_button_provider(),
-        active_web_contents(), controller_.get());
+    coordinator()->ShowBubble(BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->toolbar_button_provider(),
+                              active_web_contents(), controller_.get());
   }
 
   void ShowIncognitoBubble() {
-    coordinator()->ShowBubble(
-        browser()->GetBrowserView().toolbar_button_provider(),
-        active_web_contents(), incognito_controller_.get());
+    coordinator()->ShowBubble(BrowserView::GetBrowserViewForBrowser(browser())
+                                  ->toolbar_button_provider(),
+                              active_web_contents(),
+                              incognito_controller_.get());
   }
 
   void WaitForBubbleClose() {

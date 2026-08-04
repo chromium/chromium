@@ -616,9 +616,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   extensions::ExtensionHostTestHelper popup_waiter(browser()->GetProfile(),
                                                    extension->id());
   popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
-  BrowserView& browser_view = browser()->GetBrowserView();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ExtensionsToolbarDesktop* extensions_container =
-      browser_view.toolbar()->extensions_container();
+      browser_view->toolbar()->extensions_container();
   extensions_container->GetToolbarViewModel()->ShowToolbarActionPopupForAPICall(
       extension->id(), ShowPopupCallback());
 
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
 
   // While the extension is loading, open a security UI.
   views::UniqueWidgetPtr security_widget =
-      CreateTestDialogWidget(browser_view.GetWidget());
+      CreateTestDialogWidget(browser_view->GetWidget());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
       security_widget.get());
   security_widget->Show();
@@ -680,9 +680,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   slow_img_response.WaitForRequest();
 
   // While the extension is loading, open a security UI.
-  BrowserView& browser_view = browser()->GetBrowserView();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::UniqueWidgetPtr security_widget =
-      CreateTestDialogWidget(browser_view.GetWidget());
+      CreateTestDialogWidget(browser_view->GetWidget());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
       security_widget.get());
   security_widget->Show();

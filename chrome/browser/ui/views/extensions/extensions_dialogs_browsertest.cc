@@ -25,5 +25,7 @@ ExtensionsDialogBrowserTest::InstallExtension(const std::string& name) {
 }
 
 ExtensionsToolbarDesktop* ExtensionsDialogBrowserTest::extensions_container() {
-  return browser()->GetBrowserView().toolbar()->extensions_container();
+  return BrowserView::GetBrowserViewForBrowser(browser())
+      ->toolbar()
+      ->extensions_container();
 }

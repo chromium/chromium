@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -312,8 +313,8 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
        PinnedExtensionAppearsInAnotherWindow) {
   const std::string& extension_id = InstallExtension("Extension")->id();
   const auto is_action_visible_on_toolbar = [&extension_id](Browser* browser) {
-    return browser->GetBrowserView()
-        .toolbar()
+    return BrowserView::GetBrowserViewForBrowser(browser)
+        ->toolbar()
         ->extensions_container()
         ->IsActionVisibleOnToolbar(extension_id);
   };

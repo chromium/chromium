@@ -97,7 +97,8 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
   auto NameBarMenuChildByTitle(std::string name, std::u16string title) {
     return NameView(
         name, base::BindLambdaForTesting([this, title]() -> views::View* {
-          auto* const bar = browser()->GetBrowserView().bookmark_bar();
+          auto* const bar =
+              BrowserView::GetBrowserViewForBrowser(browser())->bookmark_bar();
           if (!bar || !bar->GetMenu()) {
             return nullptr;
           }

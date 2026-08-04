@@ -333,9 +333,8 @@ TEST_F(PermissionChipUnitTest, AccessibleName) {
   chip_controller->ShowPermissionUi(delegate.GetWeakPtr());
   chip_controller->AnimateExpand();
   ui::AXNodeData data;
-  browser()
-      ->GetBrowserView()
-      .tab_strip_view()
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->tab_strip_view()
       ->GetTabAnchorViewAt(0)
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);
@@ -345,9 +344,8 @@ TEST_F(PermissionChipUnitTest, AccessibleName) {
 
   chip_controller->HideChip();
   data = ui::AXNodeData();
-  browser()
-      ->GetBrowserView()
-      .tab_strip_view()
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->tab_strip_view()
       ->GetTabAnchorViewAt(0)
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);

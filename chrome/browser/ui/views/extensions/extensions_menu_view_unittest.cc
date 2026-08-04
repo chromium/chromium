@@ -231,8 +231,8 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
   const std::string& extension_id =
       InstallExtensionAndLayout("Test Name")->id();
   const auto is_action_visible_on_toolbar = [&extension_id](Browser* browser) {
-    return browser->GetBrowserView()
-        .toolbar()
+    return BrowserView::GetBrowserViewForBrowser(browser)
+        ->toolbar()
         ->extensions_container()
         ->IsActionVisibleOnToolbar(extension_id);
   };
