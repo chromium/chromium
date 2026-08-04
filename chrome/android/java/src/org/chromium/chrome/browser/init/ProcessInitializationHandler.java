@@ -79,7 +79,6 @@ import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.PackageMetrics;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.notifications.TrampolineActivityTracker;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
@@ -137,9 +136,6 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.RegistrationPolicyApplicationStatus;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.base.PhotoPicker;
-import org.chromium.ui.base.PhotoPickerDelegate;
-import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.color.ColorProviderBridgeFactory;
@@ -407,28 +403,21 @@ public class ProcessInitializationHandler {
                 });
 
         SelectFileDialog.setPhotoPickerDelegate(
-                new PhotoPickerDelegate() {
-                    @Override
-                    public PhotoPicker showPhotoPicker(
-                            WindowAndroid windowAndroid,
-                            PhotoPickerListener listener,
-                            boolean allowMultiple,
-                            List<String> mimeTypes) {
-                        Context context = windowAndroid.getContext().get();
-                        assumeNonNull(context);
-                        PhotoPickerDialog dialog =
-                                new PhotoPickerDialog(
-                                        windowAndroid,
-                                        context.getContentResolver(),
-                                        listener,
-                                        allowMultiple,
-                                        mimeTypes,
-                                        shouldDialogPadForContent(windowAndroid));
-                        assumeNonNull(dialog.getWindow()).getAttributes().windowAnimations =
-                                R.style.PickerDialogAnimation;
-                        dialog.show();
-                        return dialog;
-                    }
+                (windowAndroid, listener, allowMultiple, mimeTypes) -> {
+                    Context context = windowAndroid.getContext().get();
+                    assumeNonNull(context);
+                    PhotoPickerDialog dialog =
+                            new PhotoPickerDialog(
+                                    windowAndroid,
+                                    context.getContentResolver(),
+                                    listener,
+                                    allowMultiple,
+                                    mimeTypes,
+                                    shouldDialogPadForContent(windowAndroid));
+                    assumeNonNull(dialog.getWindow()).getAttributes().windowAnimations =
+                            R.style.PickerDialogAnimation;
+                    dialog.show();
+                    return dialog;
                 });
 
         ContactsPickerDelegateProvider.initialize();
@@ -468,14 +457,11 @@ public class ProcessInitializationHandler {
         OsSettingsProviderAndroidBridge.setPreferredColorScheme(initialNightMode);
         GlobalNightModeStateProviderHolder.getInstance()
                 .addObserver(
-                        new NightModeStateProvider.Observer() {
-                            @Override
-                            public void onNightModeStateChanged() {
-                                boolean isDark =
-                                        GlobalNightModeStateProviderHolder.getInstance()
-                                                .isInNightMode();
-                                OsSettingsProviderAndroidBridge.setPreferredColorScheme(isDark);
-                            }
+                        () -> {
+                            boolean isDark =
+                                    GlobalNightModeStateProviderHolder.getInstance()
+                                            .isInNightMode();
+                            OsSettingsProviderAndroidBridge.setPreferredColorScheme(isDark);
                         });
 
         if (DeviceInfo.isAutomotive()) {
@@ -507,20 +493,17 @@ public class ProcessInitializationHandler {
         // extraction might fail. This is ok; in that case, the minidump will be found and uploaded
         // upon the next browser launch.
         ChildProcessCrashObserver.registerCrashCallback(
-                new ChildProcessCrashObserver.ChildCrashedCallback() {
-                    @Override
-                    public void childCrashed(int pid) {
-                        CrashFileManager crashFileManager =
-                                new CrashFileManager(
-                                        ContextUtils.getApplicationContext().getCacheDir());
+                pid -> {
+                    CrashFileManager crashFileManager =
+                            new CrashFileManager(
+                                    ContextUtils.getApplicationContext().getCacheDir());
 
-                        File minidump = crashFileManager.getMinidumpSansLogcatForPid(pid);
-                        if (minidump != null) {
-                            AsyncTask.THREAD_POOL_EXECUTOR.execute(
-                                    new LogcatExtractionRunnable(minidump));
-                        } else {
-                            Log.e(TAG, "Missing dump for child " + pid);
-                        }
+                    File minidump = crashFileManager.getMinidumpSansLogcatForPid(pid);
+                    if (minidump != null) {
+                        AsyncTask.THREAD_POOL_EXECUTOR.execute(
+                                new LogcatExtractionRunnable(minidump));
+                    } else {
+                        Log.e(TAG, "Missing dump for child " + pid);
                     }
                 });
 

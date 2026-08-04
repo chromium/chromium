@@ -307,20 +307,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         checkOrientation();
         findViewById(android.R.id.content)
                 .addOnLayoutChangeListener(
-                        new View.OnLayoutChangeListener() {
-                            @Override
-                            public void onLayoutChange(
-                                    View v,
-                                    int left,
-                                    int top,
-                                    int right,
-                                    int bottom,
-                                    int oldLeft,
-                                    int oldTop,
-                                    int oldRight,
-                                    int oldBottom) {
-                                checkOrientation();
-                            }
+                        (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                            checkOrientation();
                         });
         mNativeInitializationController.onNativeInitializationComplete();
         mLifecycleDispatcher.dispatchNativeInitializationFinished();

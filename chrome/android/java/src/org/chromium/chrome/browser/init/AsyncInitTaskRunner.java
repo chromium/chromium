@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.init;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -56,14 +55,7 @@ public abstract class AsyncInitTaskRunner {
         @Override
         public void run() {
             VariationsSeedFetcher.get().fetchSeed(mRestrictMode, mMilestone, mChannel);
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            tasksPossiblyComplete(null);
-                        }
-                    });
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> tasksPossiblyComplete(null));
         }
 
         private String getChannelString() {
@@ -101,12 +93,9 @@ public abstract class AsyncInitTaskRunner {
             ChromeActivitySessionTracker sessionTracker =
                     ChromeActivitySessionTracker.getInstance();
             sessionTracker.getVariationsRestrictModeValue(
-                    new Callback<>() {
-                        @Override
-                        public void onResult(String restrictMode) {
-                            mFetchSeedTask = new FetchSeedTask(restrictMode);
-                            PostTask.postTask(TaskTraits.USER_BLOCKING, mFetchSeedTask);
-                        }
+                    restrictMode -> {
+                        mFetchSeedTask = new FetchSeedTask(restrictMode);
+                        PostTask.postTask(TaskTraits.USER_BLOCKING, mFetchSeedTask);
                     });
         }
 

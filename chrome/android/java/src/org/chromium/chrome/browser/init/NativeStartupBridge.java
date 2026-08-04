@@ -21,14 +21,11 @@ public class NativeStartupBridge {
 
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        ChromeBrowserInitializer.getInstance()
-                                .handlePreNativeStartupAndLoadLibraries(parts);
-                        ChromeBrowserInitializer.getInstance()
-                                .handlePostNativeStartup(/* isAsync= */ true, parts);
-                    }
+                () -> {
+                    ChromeBrowserInitializer.getInstance()
+                            .handlePreNativeStartupAndLoadLibraries(parts);
+                    ChromeBrowserInitializer.getInstance()
+                            .handlePostNativeStartup(/* isAsync= */ true, parts);
                 });
     }
 }

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.init;
 
-import android.content.DialogInterface;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,14 +36,7 @@ public class LaunchFailedActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.update_needed))
-                .setPositiveButton(
-                        getString(R.string.ok),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                finish();
-                            }
-                        });
+                .setPositiveButton(getString(R.string.ok), (dialog, id) -> finish());
         builder.create().show();
     }
 }
