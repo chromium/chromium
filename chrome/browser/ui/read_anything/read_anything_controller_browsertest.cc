@@ -1863,8 +1863,16 @@ IN_PROC_BROWSER_TEST_F(
       "Accessibility.ReadAnything.ShownDurationMax1Day", 1);
 }
 
+// TODO(crbug.com/542582500): Re-enable test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowImmersiveUI_OverlayIsVisibleAfterWebUIShown \
+  DISABLED_ShowImmersiveUI_OverlayIsVisibleAfterWebUIShown
+#else
+#define MAYBE_ShowImmersiveUI_OverlayIsVisibleAfterWebUIShown \
+  ShowImmersiveUI_OverlayIsVisibleAfterWebUIShown
+#endif
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ShowImmersiveUI_OverlayIsVisibleAfterWebUIShown) {
+                       MAYBE_ShowImmersiveUI_OverlayIsVisibleAfterWebUIShown) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
