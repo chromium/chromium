@@ -41,8 +41,17 @@ _SKIP_TARGETS = {
     'any_span_test is not ported because relies on RTTI',
 }
 
+# Dependencies that preferably shouldn't be public in chromium, but are.
+_PUBLIC_TARGETS = {
+    'base:dynamic_annotations',
+    'base:raw_logging_internal',
+    'container:layout',
+}
+
 # Extra output added just before the target.
 _ADD_PREFIX = {
+    'base:c_header_test':
+    'if (absl_build_tests) { import("//testing/test.gni") ',
     'flags:config':
     '''# Since absl/flags are only used by some test binaries (e.g. in WebRTC),
 # there is no need to strip flags from mobile platforms binaries.
@@ -68,6 +77,8 @@ config("absl_flags_config") {
 
 # Extra build rules added at the end. The reason they are needed vary per target.
 _ADD_CONTENT = {
+    'base:c_header_test':
+    '}',  # Closes extra '{' opened by prefix.
     'cleanup:cleanup_internal':
     'visibility = [ "//third_party/abseil-cpp/absl/*" ]',
     'container:hashtablez_sampler_test':
@@ -309,7 +320,7 @@ class _Converter:
                 out.append(f'')
                 continue
 
-            if is_test and '@googletest//:gtest_main' not in bazel_deps:
+            if is_test and target_name != 'base:c_header_test' and '@googletest//:gtest_main' not in bazel_deps:
                 out.append(
                     f'# {name} is excluded because defines its own main function'
                 )
@@ -319,7 +330,11 @@ class _Converter:
 
             # Start writing the output.
             out.append(_ADD_PREFIX.get(target_name, ''))
-            out.append(f'{rule}("{name}") {{')
+            if target_name == 'base:c_header_test':
+                # This test is ported despite having own main function.
+                out.append('test("absl_c_header_test") {')
+            else:
+                out.append(f'{rule}("{name}") {{')
 
             if bt.get('testonly'):
                 out.append('testonly = true')
@@ -341,8 +356,13 @@ class _Converter:
                     out.append(f'"{h}",')
                 out.append(']')
 
-            vis = ([] if is_test else self._translate_visibility(
-                bt.get('visibility', [])))
+            vis = [] if is_test else self._translate_visibility(
+                bt.get('visibility', []))
+            if target_name in _PUBLIC_TARGETS:
+                if not vis:
+                    # Turn generally public target into public to abseil only.
+                    vis.append("//third_party/abseil-cpp/absl/*")
+                vis.append('//third_party/abseil-cpp:absl_component_deps')
             # empty visibility is handled by the rule template, in particular for non-tests
             # it imply public visibility, but in component builds it is still restricted.
             if vis:
@@ -406,33 +426,10 @@ def convert_one(path):
 
 
 def convert_all(root_dir):
-    # TODO: crbug.com/524565513: walk the root dir when script is fully ready to handle all edge cases.
-    for folder in [
-            'algorithm',
-            'cleanup',
-            'container',
-            'crc',
-            'debugging',
-            'flags',
-            'functional',
-            'hash',
-            'log',
-            'log/internal',
-            'memory',
-            'meta',
-            'numeric',
-            'profiling',
-            'random',
-            'random/internal',
-            'status',
-            'strings',
-            'synchronization',
-            'time',
-            'time/internal/cctz',
-            'types',
-            'utility',
-    ]:
-        convert_one(os.path.join(root_dir, 'absl', folder))
+    for dirpath, dirnames, filenames in os.walk(os.path.join(root_dir,
+                                                             'absl')):
+        if 'BUILD.bazel' in filenames:
+            convert_one(dirpath)
 
 
 if __name__ == '__main__':
