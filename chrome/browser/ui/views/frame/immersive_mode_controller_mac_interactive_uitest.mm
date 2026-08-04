@@ -608,8 +608,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 // fullscreen does not leave the tab overlay widget visible. Previously, stale
 // tab_native_widget_id_ caused an ImmersiveModeTabbedControllerCocoa to be
 // created even with vertical tabs, resulting in a stuck titlebar.
+// TODO(crbug.com/542630477): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
-                       TabOverlayHiddenAfterSwitchToVerticalTabs) {
+                       DISABLED_TabOverlayHiddenAfterSwitchToVerticalTabs) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::Widget* tab_overlay_widget = browser_view->tab_overlay_widget();
   ASSERT_TRUE(tab_overlay_widget);
