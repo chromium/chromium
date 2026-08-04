@@ -8126,9 +8126,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.RestrictedCookieManager.GetCookiesString.Duration.Subsampled"
-    units="microseconds" expires_after="2026-08-16">
-  <owner>acondor@chromium.org</owner>
-  <owner>clank-performance-team@google.com</owner>
+    units="microseconds" expires_after="2027-07-07">
+  <owner>victorvianna@google.com</owner>
+  <owner>woa-performance-team+alerts@google.com</owner>
   <summary>
     Records the time spent executing RestrictedCookieManager::GetCookiesString,
     plus its callback if the callback is invoked synchronously.
