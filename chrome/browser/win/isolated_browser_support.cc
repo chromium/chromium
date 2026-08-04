@@ -99,7 +99,90 @@ void CompleteRegistryPersistence(
 
 }  // namespace
 
-base::expected<base::Process, HRESULT> LaunchIsolatedBrowser(
+IsolatedBrowserProcess::IsolatedBrowserProcess(base::Process process,
+                                               base::win::ScopedHandle job,
+                                               base::win::ScopedHandle iocp)
+    : process_(std::move(process)),
+      job_(std::move(job)),
+      iocp_(std::move(iocp)) {
+  CHECK(process_.IsValid());
+  CHECK(job_.is_valid());
+  CHECK(iocp_.is_valid());
+}
+
+IsolatedBrowserProcess::~IsolatedBrowserProcess() = default;
+
+IsolatedBrowserProcess::IsolatedBrowserProcess(IsolatedBrowserProcess&&) =
+    default;
+IsolatedBrowserProcess& IsolatedBrowserProcess::operator=(
+    IsolatedBrowserProcess&&) = default;
+
+std::optional<int> IsolatedBrowserProcess::WaitForExit() const {
+  int exit_code = 0;
+  // Stage 1: Wait for the primary isolated browser process handle to signal.
+  // During normal browsing operations (which may last for hours or days), the
+  // stub thread remains blocked in this kernel wait state with zero CPU
+  // overhead.
+  if (!process_.WaitForExit(&exit_code)) {
+    return std::nullopt;
+  }
+
+  // Stage 2: The main isolated browser process handle has signaled ExitProcess.
+  // Now drain process exit completion messages until all isolated processes
+  // inside the job object have completed kernel process termination.
+  //
+  // Note: The stub process itself is assigned to the Job Object (to guarantee
+  // that if the stub process is killed or crashes,
+  // JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE terminates all isolated child
+  // processes). Therefore, the stub process counts as 1 active process inside
+  // the job.
+  //
+  // Checking `accounting_info.ActiveProcesses == 1` guarantees that ONLY the
+  // stub process remains inside the Job Object.
+  constexpr DWORD kRecheckIntervalMs = 1000;
+  for (;;) {
+    JOBOBJECT_BASIC_ACCOUNTING_INFORMATION accounting_info = {};
+    if (!::QueryInformationJobObject(
+            job_.get(), JobObjectBasicAccountingInformation, &accounting_info,
+            sizeof(accounting_info), nullptr)) {
+      DPLOG(ERROR) << "QueryInformationJobObject failed";
+      return std::nullopt;
+    }
+
+    if (accounting_info.ActiveProcesses == 1) {
+      return exit_code;
+    }
+
+    if (accounting_info.ActiveProcesses == 0) {
+      DLOG(ERROR) << "Job reported zero active processes while stub is alive";
+      return std::nullopt;
+    }
+
+    DWORD completion_code = 0;
+    ULONG_PTR completion_key = 0;
+    LPOVERLAPPED message_value = nullptr;
+
+    // Note: message delivery is not guaranteed, see
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_associate_completion_port
+    // so wait for maximum of 1 second between each message and re-check the
+    // active process count, this ensures that even if the message is dropped,
+    // the stub always terminates in a timely manner.
+    if (!::GetQueuedCompletionStatus(iocp_.get(), &completion_code,
+                                     &completion_key, &message_value,
+                                     kRecheckIntervalMs)) {
+      const DWORD error = ::GetLastError();
+      if (error == WAIT_TIMEOUT) {
+        // Timeout expired; re-query authoritative accounting state.
+        continue;
+      }
+      DPLOG(ERROR) << "GetQueuedCompletionStatus failed";
+      return std::nullopt;
+    }
+  }
+}
+
+// static
+base::expected<IsolatedBrowserProcess, HRESULT> IsolatedBrowserProcess::Launch(
     const base::CommandLine& command_line) {
   base::win::ScopedCOMInitializer com_init;
 
@@ -139,15 +222,33 @@ base::expected<base::Process, HRESULT> LaunchIsolatedBrowser(
     return base::unexpected(HRESULT_FROM_WIN32(::GetLastError()));
   }
 
-  if (!::AssignProcessToJobObject(job.get(), ::GetCurrentProcess())) {
+  // Create an I/O Completion Port and associate it with the Job Object.
+  // This allows the stub process to monitor process exit events
+  // (`JOB_OBJECT_MSG_EXIT_PROCESS`) and wait until all isolated browser
+  // processes in the job tree have fully terminated.
+  base::win::ScopedHandle iocp;
+  iocp.Set(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 1));
+  if (!iocp.is_valid()) {
     return base::unexpected(HRESULT_FROM_WIN32(::GetLastError()));
   }
 
-  // Leak the job handle. This is because closing the Job before the owning
-  // process terminates will terminate all processes in the tree including this
-  // one. The Job object will be closed when this process terminates,
-  // immediately terminating all other processes.
-  std::ignore = job.release();
+  JOBOBJECT_ASSOCIATE_COMPLETION_PORT port_assoc = {
+      .CompletionKey = job.get(), .CompletionPort = iocp.get()};
+  if (!::SetInformationJobObject(job.get(),
+                                 JobObjectAssociateCompletionPortInformation,
+                                 &port_assoc, sizeof(port_assoc))) {
+    return base::unexpected(HRESULT_FROM_WIN32(::GetLastError()));
+  }
+
+  // Assign the stub process to the job object BEFORE launching the isolated
+  // browser. The elevator creates Chrome with the stub as
+  // PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, so Chrome inherits this job. Chrome
+  // descendants then inherit the job by default. Note: Stub's Crashpad was
+  // initialized prior to this call during early startup, so Crashpad processes
+  // remain outside this Job Object.
+  if (!::AssignProcessToJobObject(job.get(), ::GetCurrentProcess())) {
+    return base::unexpected(HRESULT_FROM_WIN32(::GetLastError()));
+  }
 
   DWORD last_error = 0;
   ULONG_PTR proc_handle;
@@ -159,7 +260,28 @@ base::expected<base::Process, HRESULT> LaunchIsolatedBrowser(
     return base::unexpected(hr);
   }
 
-  return base::Process(reinterpret_cast<base::ProcessHandle>(proc_handle));
+  base::Process process(reinterpret_cast<base::ProcessHandle>(proc_handle));
+
+  // Duplicate a query handle for IsolatedBrowserProcess before leaking the
+  // primary handle.
+  HANDLE query_job_handle = nullptr;
+  if (!::DuplicateHandle(::GetCurrentProcess(), job.get(),
+                         ::GetCurrentProcess(), &query_job_handle,
+                         JOB_OBJECT_QUERY, FALSE, 0)) {
+    return base::unexpected(HRESULT_FROM_WIN32(::GetLastError()));
+  }
+  base::win::ScopedHandle query_job(query_job_handle);
+
+  // Intentionally leak the primary job handle so that ScopedHandle destruction
+  // when IsolatedBrowserProcess goes out of scope does not close the final job
+  // handle while the stub/test process is executing. When the stub/test process
+  // terminates or crashes, Windows kernel automatically closes all process
+  // handles, triggering JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE to kill any
+  // surviving browser processes.
+  std::ignore = job.release();
+
+  return IsolatedBrowserProcess(std::move(process), std::move(query_job),
+                                std::move(iocp));
 }
 
 bool IsIsolationEnabled(const base::CommandLine* command_line) {

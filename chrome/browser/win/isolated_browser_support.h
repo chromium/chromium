@@ -11,6 +11,7 @@
 #include "base/process/process.h"
 #include "base/types/expected.h"
 #include "base/win/access_token.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 
 namespace base {
@@ -21,11 +22,37 @@ class PrefService;
 
 namespace chrome {
 
-// Attempt to launch an isolated browser process with the command line
-// `command_line`. If successful, a `base::Process` is returned, if not then an
-// HRESULT containing the error launching the process.
-base::expected<base::Process, HRESULT> LaunchIsolatedBrowser(
-    const base::CommandLine& command_line);
+// Encapsulates the isolated browser process handle along with its Job Object
+// and I/O Completion Port. This ensures the stub process can wait for all
+// child/helper processes in the job object to terminate cleanly before exiting,
+// while maintaining the JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE guarantee.
+class IsolatedBrowserProcess {
+ public:
+  // Attempt to launch an isolated browser process with the command line
+  // `command_line`. If successful, an `IsolatedBrowserProcess` instance is
+  // returned, otherwise an HRESULT containing the error.
+  static base::expected<IsolatedBrowserProcess, HRESULT> Launch(
+      const base::CommandLine& command_line);
+
+  ~IsolatedBrowserProcess();
+
+  IsolatedBrowserProcess(IsolatedBrowserProcess&&);
+  IsolatedBrowserProcess& operator=(IsolatedBrowserProcess&&);
+
+  // Waits for the main isolated browser process and all child/helper processes
+  // in the job object to fully exit before returning the exit code of the main
+  // isolated browser, or std::nullopt if waiting failed.
+  std::optional<int> WaitForExit() const;
+
+ private:
+  IsolatedBrowserProcess(base::Process process,
+                         base::win::ScopedHandle job,
+                         base::win::ScopedHandle iocp);
+
+  base::Process process_;
+  base::win::ScopedHandle job_;
+  base::win::ScopedHandle iocp_;
+};
 
 // Returns true if the platform configuration indicates that the browser process
 // with the specified `command_line` should launch the isolated browser. To
