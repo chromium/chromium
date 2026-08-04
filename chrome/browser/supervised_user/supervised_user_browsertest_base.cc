@@ -21,7 +21,6 @@
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_search_api/url_checker_client.h"
@@ -56,7 +55,6 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(), settings_service,
-      SyncServiceFactory::GetForProfile(profile),
       std::make_unique<FamilyLinkUrlFilter>(
           settings_service, *profile->GetPrefs(),
           std::make_unique<FakeURLFilterDelegate>(),

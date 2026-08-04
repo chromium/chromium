@@ -33,8 +33,6 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -127,13 +125,11 @@ SupervisedUserService::SupervisedUserService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService& user_prefs,
     FamilyLinkSettingsService& settings_service,
-    syncer::SyncService* sync_service,
     std::unique_ptr<FamilyLinkUrlFilter> url_filter,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
     const DeviceParentalControls& device_parental_controls)
     : user_prefs_(user_prefs),
       settings_service_(settings_service),
-      sync_service_(sync_service),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       url_filter_(std::move(url_filter)),
@@ -160,18 +156,6 @@ SupervisedUserService::SupervisedUserService(
 
 void SupervisedUserService::SetSettingsServiceActive(bool active) {
   settings_service_->SetActive(active);
-
-  // Trigger a sync reconfig to enable/disable the right SU data types.
-  // The logic to do this lives in the
-  // SupervisedUserSettingsDataTypeController.
-  // TODO(crbug.com/40620346): Get rid of this hack and instead call
-  // DataTypePreconditionChanged from the controller.
-  if (sync_service_ &&
-      sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
-    // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and
-    // immediately releasing it again (via the temporary unique_ptr going away).
-    std::ignore = sync_service_->GetSetupInProgressHandle();
-  }
 }
 
 void SupervisedUserService::OnSupervisedUserIdChanged() {

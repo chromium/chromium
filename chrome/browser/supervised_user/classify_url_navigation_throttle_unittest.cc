@@ -150,7 +150,7 @@ class ClassifyUrlNavigationThrottleTestBase
             profile->GetProfileKey()));
     return std::make_unique<SupervisedUserService>(
         identity_manager, url_loader_factory, *profile->GetPrefs(),
-        settings_service, SyncServiceFactory::GetForProfile(profile),
+        settings_service,
         std::make_unique<FamilyLinkUrlFilter>(
             settings_service, *profile->GetPrefs(),
             std::make_unique<FakeURLFilterDelegate>(),

@@ -216,7 +216,7 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       *pref_store_environment_.pref_service(),
-      *pref_store_environment_.settings_service(), &sync_service_,
+      *pref_store_environment_.settings_service(),
       std::make_unique<FamilyLinkUrlFilter>(
           *pref_store_environment_.settings_service(),
           *pref_store_environment_.pref_service(),

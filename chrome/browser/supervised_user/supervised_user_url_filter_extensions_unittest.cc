@@ -58,7 +58,6 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(), settings_service,
-      SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<FamilyLinkUrlFilter>(
           settings_service, *profile->GetPrefs(),
           std::make_unique<FakeURLFilterDelegate>(),

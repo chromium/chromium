@@ -15,12 +15,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_checker_client.h"
-#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
@@ -80,7 +78,6 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
   return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, *profile->GetPrefs(),
       family_link_settings_service,
-      SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<FamilyLinkUrlFilter>(
           family_link_settings_service, *profile->GetPrefs(),
           std::make_unique<FilterDelegateImpl>(),
@@ -100,7 +97,6 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 #endif
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
 }
 

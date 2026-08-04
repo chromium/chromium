@@ -343,7 +343,8 @@ class CommonControllerBuilder {
 #endif
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   std::unique_ptr<syncer::DataTypeController>
-  CreateFamilyLinkSettingsDataTypeController(version_info::Channel channel);
+  CreateFamilyLinkSettingsDataTypeController(syncer::SyncService* sync_service,
+                                             version_info::Channel channel);
 #endif
   std::unique_ptr<syncer::DataTypeController>
   CreateCollaborationGroupDataTypeController(syncer::SyncService* sync_service);

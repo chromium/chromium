@@ -616,7 +616,8 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  add_controller(CreateFamilyLinkSettingsDataTypeController(channel));
+  add_controller(
+      CreateFamilyLinkSettingsDataTypeController(sync_service, channel));
 #endif
 
   if (!disabled_types.Has(syncer::COLLABORATION_GROUP)) {
@@ -1341,6 +1342,7 @@ CommonControllerBuilder::CreateWebauthnCredentialDataTypeController(
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateFamilyLinkSettingsDataTypeController(
+    syncer::SyncService* sync_service,
     version_info::Channel channel) {
   if (!family_link_settings_service_.value()) {
     return nullptr;
@@ -1349,7 +1351,7 @@ CommonControllerBuilder::CreateFamilyLinkSettingsDataTypeController(
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel),
       data_type_store_service_.value()->GetStoreFactory(),
       family_link_settings_service_.value()->AsWeakPtr(),
-      pref_service_.value());
+      pref_service_.value(), sync_service);
 }
 #endif
 

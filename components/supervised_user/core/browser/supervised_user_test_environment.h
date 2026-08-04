@@ -23,7 +23,6 @@
 #include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
-#include "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -192,7 +191,6 @@ class SupervisedUserTestEnvironment {
 
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  syncer::MockSyncService sync_service_;
 
   // Core services under test
   std::unique_ptr<SupervisedUserService> service_;

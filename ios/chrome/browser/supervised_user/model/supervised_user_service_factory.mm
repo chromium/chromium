@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "url/gurl.h"
 
@@ -50,7 +49,6 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 SupervisedUserServiceFactory::SupervisedUserServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SupervisedUserService") {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
 }
 
@@ -68,7 +66,6 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
       family_link_settings_service,
-      &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
       std::make_unique<FamilyLinkUrlFilter>(
           family_link_settings_service, CHECK_DEREF(profile->GetPrefs()),
           std::make_unique<FilterDelegateImpl>(),

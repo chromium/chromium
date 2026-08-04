@@ -35,10 +35,6 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
@@ -145,7 +141,6 @@ class SupervisedUserService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
       FamilyLinkSettingsService& settings_service,
-      syncer::SyncService* sync_service,
       std::unique_ptr<FamilyLinkUrlFilter> url_filter,
       std::unique_ptr<SupervisedUserService::PlatformDelegate>
           platform_delegate,
@@ -191,8 +186,6 @@ class SupervisedUserService : public KeyedService {
   const raw_ref<PrefService> user_prefs_;
 
   const raw_ref<FamilyLinkSettingsService> settings_service_;
-
-  const raw_ptr<syncer::SyncService> sync_service_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 

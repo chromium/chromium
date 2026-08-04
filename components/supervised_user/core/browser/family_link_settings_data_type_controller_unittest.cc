@@ -12,6 +12,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/service/data_type_controller.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +37,8 @@ TEST_F(FamilyLinkSettingsDataTypeControllerTest,
   FamilyLinkSettingsDataTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
-      /*syncable_service=*/nullptr, &pref_service_);
+      /*syncable_service=*/nullptr, &pref_service_,
+      /*sync_service=*/nullptr);
   EXPECT_EQ(
       DataTypeController::PreconditionState::kPreconditionsMet,
       controller.GetPreconditionState(
@@ -49,7 +51,8 @@ TEST_F(FamilyLinkSettingsDataTypeControllerTest,
   FamilyLinkSettingsDataTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
-      /*syncable_service=*/nullptr, &pref_service_);
+      /*syncable_service=*/nullptr, &pref_service_,
+      /*sync_service=*/nullptr);
   EXPECT_EQ(
       DataTypeController::PreconditionState::kMustStopAndClearData,
       controller.GetPreconditionState(
@@ -61,7 +64,24 @@ TEST_F(FamilyLinkSettingsDataTypeControllerTest, HasTransportModeDelegate) {
   FamilyLinkSettingsDataTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
-      /*syncable_service=*/nullptr, &pref_service_);
+      /*syncable_service=*/nullptr, &pref_service_,
+      /*sync_service=*/nullptr);
   EXPECT_TRUE(
       controller.GetDelegateForTesting(syncer::SyncMode::kTransportOnly));
+}
+
+TEST_F(FamilyLinkSettingsDataTypeControllerTest,
+       TriggersDataTypePreconditionChangedOnPrefChange) {
+  syncer::MockSyncService mock_sync_service;
+  FamilyLinkSettingsDataTypeController controller(
+      /*dump_stack=*/base::DoNothing(),
+      /*store_factory=*/base::DoNothing(),
+      /*syncable_service=*/nullptr, &pref_service_, &mock_sync_service);
+
+  EXPECT_CALL(mock_sync_service,
+              DataTypePreconditionChanged(syncer::SUPERVISED_USER_SETTINGS))
+      .Times(1);
+
+  pref_service_.SetString(prefs::kSupervisedUserId,
+                          supervised_user::kChildAccountSUID);
 }
