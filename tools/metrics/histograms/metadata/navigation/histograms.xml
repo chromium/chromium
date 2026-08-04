@@ -1028,6 +1028,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.CreateSubresourceProxyingURLLoaderFactoryBundle.Duration"
+    units="microseconds" expires_after="2027-07-30">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time taken to create and clone subresource_proxying_factory_bundle
+    during navigation commit in RenderFrameHostImpl::CommitNavigation. Recorded
+    for each navigation commit where subresource_loader_factories is present.
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.CSPEmbeddedEnforcement.Outcome"
     enum="NavigationCSPEmbeddedEnforcementOutcome" expires_after="2027-04-22">
   <owner>mkwst@chromium.org</owner>

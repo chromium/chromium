@@ -13228,6 +13228,7 @@ void RenderFrameHostImpl::CommitNavigation(
     scoped_refptr<network::SharedURLLoaderFactory>
         subresource_proxying_factory_bundle;
     if (subresource_loader_factories) {
+      base::ElapsedTimer subresource_proxying_timer;
       // Clone the factory bundle for prefetch.
       auto bundle = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
           std::move(subresource_loader_factories));
@@ -13251,6 +13252,9 @@ void RenderFrameHostImpl::CommitNavigation(
         subresource_proxying_factory_bundle =
             network::SharedURLLoaderFactory::Create(CloneFactoryBundle(bundle));
       }
+      base::UmaHistogramMicrosecondsTimes(
+          "Navigation.CreateSubresourceProxyingURLLoaderFactoryBundle.Duration",
+          subresource_proxying_timer.Elapsed());
     }
 
     // Set up the subresource loader factory to be passed to the renderer. It is
