@@ -156,8 +156,16 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_manager().AddSeenForm(
       form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
+  EXPECT_EQ(autofill_client()
+                .GetPersonalContextFirstRunService()
+                ->ambient_autofill_notice_impressions(),
+            0);
   EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
   EXPECT_TRUE(delegate().IsShowingTouchToFill());
+  EXPECT_EQ(autofill_client()
+                .GetPersonalContextFirstRunService()
+                ->ambient_autofill_notice_impressions(),
+            1);
 }
 
 // Verifies that trying to show TouchToFill returns false if the client fails to
