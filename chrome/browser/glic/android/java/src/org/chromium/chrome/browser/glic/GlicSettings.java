@@ -448,7 +448,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (buttonTogglePref != null) buttonTogglePref.setVisible(false);
 
         if (bottomBarButtonTogglePref != null) {
-            boolean isGlicAllowed = BottomBarActionEligibility.shouldShowGlicSettings(getProfile());
+            boolean isGlicAllowed =
+                    BottomBarActionEligibility.shouldShowBottomBarGlicSetting(getProfile());
             bottomBarButtonTogglePref.setVisible(isGlicAllowed);
             if (isGlicAllowed) {
                 boolean isManaged = GlicEnabling.isPolicyEnforced(getProfile());
@@ -744,6 +745,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                                         R.string.settings_glic_button_toggle_sublabel);
                             }
                         }
+                    }
+                    if (!BottomBarActionEligibility.shouldShowBottomBarGlicSetting(profile)) {
+                        indexData.removeEntryForKey(prefFrag, PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);
                     }
                     if (!ChromeFeatureList.isEnabled(
                             ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)) {
