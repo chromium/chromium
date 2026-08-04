@@ -5,3 +5,5 @@ per-file TabbedNavigationBarColorController.java=clhager@google.com
 per-file TabbedAdaptiveToolbarBehavior.java=jinsukkim@chromium.org
 per-file KeyboardFocusRowManager.java=mschillaci@google.com
 per-file KeyboardFocusRowManager.java=jhimawan@google.com
+per-file MoreToolsItemBuilder.java=agazal@google.com,eleanorlee@google.com
+per-file TabbedAppMenuPropertiesDelegate.java=agazal@google.com,eleanorlee@google.com

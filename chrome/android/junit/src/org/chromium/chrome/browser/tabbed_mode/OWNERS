@@ -1,3 +1,4 @@
 file://chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/OWNERS
 per-file BottomAttachedUiObserverTest.java=clhager@google.com
 per-file TabbedNavigationBarColorControllerUnitTest.java=clhager@google.com
+per-file TabbedAppMenuPropertiesDelegateUnitTest.java=agazal@google.com,eleanorlee@google.com
