@@ -49,6 +49,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
@@ -72,6 +73,7 @@ public class FindsOptInCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        ChannelsInitializer.resetForTesting();
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 

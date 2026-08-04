@@ -32,10 +32,7 @@ import java.util.function.Function;
 /* package */ class AsyncNotificationManagerProxyImpl implements BaseNotificationManagerProxy {
     private static final String TAG = "AsyncNotifManager";
 
-    // This object is initialized and used on a background thread, and it should always be non
-    // null when used.
-    @SuppressWarnings("NullAway.Init")
-    private NotificationManagerCompat mNotificationManager;
+    private final NotificationManagerCompat mNotificationManager;
 
     private static @Nullable AsyncNotificationManagerProxyImpl sInstance;
 
@@ -47,12 +44,7 @@ import java.util.function.Function;
     }
 
     private AsyncNotificationManagerProxyImpl() {
-        runAsync(
-                "AsyncNotificationManagerProxyImpl()",
-                () -> {
-                    mNotificationManager =
-                            NotificationManagerCompat.from(ContextUtils.getApplicationContext());
-                });
+        mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
     }
 
     @Override
@@ -78,16 +70,23 @@ import java.util.function.Function;
 
     @Override
     public void createNotificationChannel(NotificationChannel channel) {
-        runAsync(
-                "AsyncNotificationManagerProxyImpl.createNotificationChannel",
-                () -> mNotificationManager.createNotificationChannel(channel));
+        try (TraceEvent te =
+                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.createNotificationChannel")) {
+            mNotificationManager.createNotificationChannel(channel);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to create notification channel.", e);
+        }
     }
 
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {
-        runAsync(
-                "AsyncNotificationManagerProxyImpl.createNotificationChannelGroup",
-                () -> mNotificationManager.createNotificationChannelGroup(channelGroup));
+        try (TraceEvent te =
+                TraceEvent.scoped(
+                        "AsyncNotificationManagerProxyImpl.createNotificationChannelGroup")) {
+            mNotificationManager.createNotificationChannelGroup(channelGroup);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to create notification channel group.", e);
+        }
     }
 
     @Override
