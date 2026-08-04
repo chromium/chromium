@@ -1885,14 +1885,8 @@ class NetworkContextConfigurationProxySettingsBrowserTest
   NetworkContextConfigurationProxySettingsBrowserTest() {
     // Disable `kPermitTcpSocketPoolConnectBackupJobs`, as backup jobs
     // cause extra connections without opening new WebSockets, breaking tests.
-    // Disable `kTcpSocketPoolLimitRandomization`, as randomization makes size
-    // expectations impossible to test.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            net::features::kPermitTcpSocketPoolConnectBackupJobs,
-            net::features::kTcpSocketPoolLimitRandomization,
-        });
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kPermitTcpSocketPoolConnectBackupJobs);
   }
 
   NetworkContextConfigurationProxySettingsBrowserTest(
@@ -1917,6 +1911,8 @@ class NetworkContextConfigurationProxySettingsBrowserTest
                             static_cast<int>(kTestMaxConnectionsPerProxy));
     local_state->SetInteger(prefs::kMaxConnectionsPerProxyForWebSocket,
                             static_cast<int>(kTestMaxConnectionsPerProxy));
+    local_state->SetBoolean(prefs::kAllowSocketPoolSizeRandomizationForProxies,
+                            false);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> TrackConnections(
@@ -1958,7 +1954,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     expected_connections_loop_ptr_.store(&expected_connections_run_loop);
 
     std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders;
-    for (unsigned int i = 0; i < kTestMaxConnectionsPerProxy + 10; ++i) {
+    for (unsigned int i = 0; i < kTestMaxConnectionsPerProxy + 1; ++i) {
       std::unique_ptr<network::ResourceRequest> request =
           std::make_unique<network::ResourceRequest>();
       request->url =
@@ -1978,10 +1974,10 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     expected_connections_run_loop.Run();
 
     // Then wait for any remaining connections that we should NOT get.
-    base::RunLoop ugly_100ms_wait;
+    base::RunLoop ugly_10ms_wait;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, ugly_100ms_wait.QuitClosure(), base::Milliseconds(100));
-    ugly_100ms_wait.Run();
+        FROM_HERE, ugly_10ms_wait.QuitClosure(), base::Milliseconds(10));
+    ugly_10ms_wait.Run();
 
     // Stop the server.
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
@@ -1999,7 +1995,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     expected_connections_loop_ptr_.store(&expected_connections_run_loop);
 
     std::vector<std::unique_ptr<WaitingHandshakeClient>> waiters;
-    for (unsigned int i = 0; i < kTestMaxConnectionsPerProxy + 10; ++i) {
+    for (unsigned int i = 0; i < kTestMaxConnectionsPerProxy + 1; ++i) {
       const GURL url = net::test_server::GetWebSocketURL(
           *embedded_test_server(), base::StringPrintf("foo%u.test", i),
           base::StringPrintf("/hung_%u", i));
@@ -2036,10 +2032,10 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     expected_connections_run_loop.Run();
 
     // Then wait for any remaining connections that we should NOT get.
-    base::RunLoop ugly_100ms_wait;
+    base::RunLoop ugly_10ms_wait;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, ugly_100ms_wait.QuitClosure(), base::Milliseconds(100));
-    ugly_100ms_wait.Run();
+        FROM_HERE, ugly_10ms_wait.QuitClosure(), base::Milliseconds(10));
+    ugly_10ms_wait.Run();
 
     // Stop the server.
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
@@ -2063,21 +2059,15 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
   RunMaxConnectionsPerProxyTest();
 }
 
-// TODO(crbug.com/542268672): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
-                       DISABLED_MaxConnectionsPerProxyForWebSocket) {
+                       MaxConnectionsPerProxyForWebSocket) {
   RunMaxConnectionsPerProxyForWebSocketTest();
 }
 
 class NetworkContextConfigurationManagedProxySettingsBrowserTest
     : public NetworkContextConfigurationProxySettingsBrowserTest {
  public:
-  NetworkContextConfigurationManagedProxySettingsBrowserTest() {
-    // The test still works as this is overridden by the policy
-    // kPermitSocketPoolSizeRandomizationForProxies below.
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kTcpSocketPoolLimitRandomization);
-  }
+  NetworkContextConfigurationManagedProxySettingsBrowserTest() = default;
 
   NetworkContextConfigurationManagedProxySettingsBrowserTest(
       const NetworkContextConfigurationManagedProxySettingsBrowserTest&) =
