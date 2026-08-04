@@ -10,6 +10,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/safety_checks.h"
@@ -39,6 +40,7 @@
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
+#include "content/browser/worker_host/worker_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_util.h"
@@ -48,6 +50,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/isolation_info.h"
@@ -64,6 +67,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
@@ -360,7 +364,13 @@ void DedicatedWorkerHost::StartScriptLoad(
   // initiator origin to keep consistency with WorkerScriptFetcher, but probably
   // this should be calculated based on the worker origin as the factories be
   // used for subresource loading on the worker.
-  file_url_support_ = creator_origin_.scheme() == url::kFileScheme;
+  std::optional<blink::web_pref::WebPreferences> web_preferences;
+  if (creator_render_frame_host) {
+    web_preferences = creator_render_frame_host->GetOrCreateWebPreferences();
+  }
+  file_url_support_ = DoesCreatorAllowFileUrlSupport(
+      creator_origin_, web_preferences ? &*web_preferences : nullptr,
+      creator_worker ? creator_worker->file_url_support() : false);
 
   // For blob URL workers, inherit the controller from the worker's parent.
   // See https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
@@ -409,7 +419,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       nearest_ancestor_render_frame_host->GetIsolationInfoForSubresources(),
       std::move(client_security_state), credentials_mode,
       std::move(outside_fetch_client_settings_object),
-      network::mojom::RequestDestination::kWorker,
+      network::mojom::RequestDestination::kWorker, file_url_support_,
       storage_partition_impl->GetServiceWorkerContext(),
       service_worker_handle_.get(), std::move(blob_url_loader_factory), nullptr,
       storage_partition_impl, partition_domain,

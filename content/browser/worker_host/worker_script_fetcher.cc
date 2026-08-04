@@ -253,6 +253,7 @@ void WorkerScriptFetcher::CreateAndStart(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     network::mojom::RequestDestination request_destination,
+    bool file_url_support,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     ServiceWorkerMainResourceHandle* service_worker_handle,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -282,9 +283,6 @@ void WorkerScriptFetcher::CreateAndStart(
     return;
   }
 
-  bool constructor_uses_file_url =
-      request_initiator.scheme() == url::kFileScheme;
-
   // TODO(crbug.com/41472712): Filesystem URL support on shared workers
   // are now broken.
   bool filesystem_url_support =
@@ -297,13 +295,13 @@ void WorkerScriptFetcher::CreateAndStart(
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       factory_bundle_for_browser = CreateFactoryBundle(
           LoaderType::kMainResource, worker_process_id, storage_partition,
-          storage_domain, constructor_uses_file_url, filesystem_url_support,
+          storage_domain, file_url_support, filesystem_url_support,
           creator_render_frame_host, request_initiator_storage_key,
           request_destination);
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories = CreateFactoryBundle(
           LoaderType::kSubResource, worker_process_id, storage_partition,
-          storage_domain, constructor_uses_file_url, filesystem_url_support,
+          storage_domain, file_url_support, filesystem_url_support,
           creator_render_frame_host, request_initiator_storage_key,
           request_destination);
 

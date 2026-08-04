@@ -2998,6 +2998,7 @@ test("content_unittests") {
     "../browser/worker_host/shared_worker_service_impl_unittest.cc",
     "../browser/worker_host/worker_script_fetcher_unittest.cc",
     "../browser/worker_host/worker_script_loader_factory_unittest.cc",
+    "../browser/worker_host/worker_util_unittest.cc",
     "../browser/xr/metrics/session_tracker_unittest.cc",
     "../child/blink_platform_impl_unittest.cc",
     "../child/child_performance_coordinator_unittest.cc",

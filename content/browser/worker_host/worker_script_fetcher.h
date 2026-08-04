@@ -137,6 +137,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
       network::mojom::RequestDestination request_destination,
+      bool file_url_support,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       ServiceWorkerMainResourceHandle* service_worker_handle,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
