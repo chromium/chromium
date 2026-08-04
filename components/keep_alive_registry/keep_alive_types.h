@@ -87,6 +87,9 @@ enum class KeepAliveOrigin {
 
   // components/metrics
   UMA_LOG,
+
+  // c/b/ui/omnibox/omnibox_everywhere
+  OMNIBOX_EVERYWHERE,
 };
 
 // Restart: Allow Chrome to restart when all the registered KeepAlives allow

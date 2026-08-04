@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -16,8 +17,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "components/prefs/pref_service.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/events/event_constants.h"
@@ -30,6 +31,11 @@ OmniboxEverywhereController::OmniboxEverywhereController(
     ui::GlobalAcceleratorListener* listener)
     : ui_manager_(std::make_unique<OmniboxEverywhereUIManager>(
           std::move(contents_wrapper_factory))),
+      background_mode_manager_(
+          std::make_unique<OmniboxEverywhereBackgroundModeManager>(
+              base::BindRepeating(
+                  &OmniboxEverywhereController::OnStatusIconClicked,
+                  base::Unretained(this)))),
       listener_(listener ? listener
                          : ui::GlobalAcceleratorListener::GetInstance()) {
   CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere));
@@ -73,6 +79,7 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
                                            gfx::NativeWindow context) {
   switch (source) {
     case InvocationSource::kGlobalHotkey:
+    case InvocationSource::kStatusTrayIcon:
       if (IsVisible() && ui_manager_->profile() == profile) {
         Close();
       } else {
@@ -101,6 +108,23 @@ void OmniboxEverywhereController::ShowProfilePicker() {
       base::BindOnce(&OmniboxEverywhereController::OnProfilePicked,
                      weak_factory_.GetWeakPtr())));
 #endif
+}
+
+void OmniboxEverywhereController::InvokeForActiveBrowserProfile(
+    InvocationSource source) {
+  BrowserWindowInterface* active_bwi =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  Profile* target_profile = GetTargetProfile();
+  if (target_profile) {
+    gfx::NativeWindow context = active_bwi && active_bwi->GetWindow()
+                                    ? active_bwi->GetWindow()->GetNativeWindow()
+                                    : gfx::NativeWindow();
+    OnInvoke(source, target_profile, context);
+  }
+}
+
+void OmniboxEverywhereController::OnStatusIconClicked() {
+  InvokeForActiveBrowserProfile(InvocationSource::kStatusTrayIcon);
 }
 
 void OmniboxEverywhereController::OnProfilePicked(Profile* new_profile) {
@@ -134,16 +158,8 @@ Profile* OmniboxEverywhereController::GetTargetProfile() {
 
 void OmniboxEverywhereController::OnKeyPressed(
     const ui::Accelerator& accelerator) {
-  BrowserWindowInterface* active_bwi =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  Profile* target_profile = GetTargetProfile();
-  if (target_profile) {
-    gfx::NativeWindow context = active_bwi && active_bwi->GetWindow()
-                                    ? active_bwi->GetWindow()->GetNativeWindow()
-                                    : gfx::NativeWindow();
-    ui_manager_->SetIsNavigating(false);
-    OnInvoke(InvocationSource::kGlobalHotkey, target_profile, context);
-  }
+  ui_manager_->SetIsNavigating(false);
+  InvokeForActiveBrowserProfile(InvocationSource::kGlobalHotkey);
 }
 
 void OmniboxEverywhereController::ExecuteCommand(
