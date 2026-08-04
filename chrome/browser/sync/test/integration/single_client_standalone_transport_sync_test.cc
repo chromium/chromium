@@ -243,7 +243,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   // mode, except the OS types which are disabled by
   // SetSyncFeatureDisabledViaDashboard().
   syncer::DataTypeSet expected_types = AllowedTypesInStandaloneTransportMode();
-  expected_types.RemoveAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
+  expected_types.RemoveAll({syncer::APP_LIST, syncer::APPS,
+                            syncer::APP_SETTINGS, syncer::ARC_PACKAGE,
                             syncer::WEB_APPS, syncer::OS_PREFERENCES,
                             syncer::OS_PRIORITY_PREFERENCES, syncer::PRINTERS,
                             syncer::WIFI_CONFIGURATIONS});

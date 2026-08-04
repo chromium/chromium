@@ -232,8 +232,17 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
           std::make_unique<browser_sync::ExtensionDataTypeController>(
               syncer::APPS, data_type_store_factory,
               extension_sync_service_.value()->AsWeakPtr(), dump_stack,
+#if BUILDFLAG(IS_CHROMEOS)
+              base::FeatureList::IsEnabled(
+                  syncer::kReplaceSyncPromosWithSignInPromos)
+                  ? browser_sync::ExtensionDataTypeController::DelegateMode::
+                        kTransportModeWithSingleModel
+                  : browser_sync::ExtensionDataTypeController::DelegateMode::
+                        kLegacyFullSyncModeOnly,
+#else
               browser_sync::ExtensionDataTypeController::DelegateMode::
                   kLegacyFullSyncModeOnly,
+#endif  // BUILDFLAG(IS_CHROMEOS)
               extension_system_profile_.value()));
 
       controllers.push_back(
@@ -242,8 +251,17 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               extensions::settings_sync_util::GetSyncableServiceProvider(
                   extension_system_profile_.value(), syncer::APP_SETTINGS),
               dump_stack,
+#if BUILDFLAG(IS_CHROMEOS)
+              base::FeatureList::IsEnabled(
+                  syncer::kReplaceSyncPromosWithSignInPromos)
+                  ? browser_sync::ExtensionSettingDataTypeController::
+                        DelegateMode::kTransportModeWithSingleModel
+                  : browser_sync::ExtensionSettingDataTypeController::
+                        DelegateMode::kLegacyFullSyncModeOnly,
+#else
               browser_sync::ExtensionSettingDataTypeController::DelegateMode::
                   kLegacyFullSyncModeOnly,
+#endif  // BUILDFLAG(IS_CHROMEOS)
               extension_system_profile_.value()));
     }
 
