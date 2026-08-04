@@ -1491,44 +1491,13 @@ PhysicalOffset OffsetInStitchedFragments(
   LayoutUnit fragment_block_offset;
   const LayoutBox* layout_box = To<LayoutBox>(fragment.GetLayoutObject());
   const auto& first_fragment = *layout_box->GetPhysicalFragment(0);
-  if (first_fragment.GetBreakToken() &&
-      first_fragment.GetBreakToken()->IsRepeated()) {
-    // Repeated content isn't stitched.
-    stitched_block_size =
-        LogicalFragment(writing_direction, first_fragment).BlockSize();
-  } else {
+  if (!first_fragment.GetBreakToken() ||
+      !first_fragment.GetBreakToken()->IsRepeated()) {
     if (const auto* previous_break_token = FindPreviousBreakToken(fragment)) {
       fragment_block_offset = previous_break_token->ConsumedBlockSize();
     }
-    if (fragment.IsOnlyForNode()) {
-      stitched_block_size =
-          LogicalFragment(writing_direction, fragment).BlockSize();
-    } else {
-      wtf_size_t idx = layout_box->PhysicalFragmentCount();
-      DCHECK_GT(idx, 1u);
-      idx--;
-      // Calculating the stitched size is straight-forward if the node isn't
-      // overflowed: Just add the consumed block-size of the last break token
-      // and the block-size of the last fragment. If it is overflowed, on the
-      // other hand, we need to search backwards until we find the end of the
-      // block-end border edge.
-      while (idx) {
-        const PhysicalBoxFragment* walker =
-            layout_box->GetPhysicalFragment(idx);
-        stitched_block_size =
-            LogicalFragment(writing_direction, *walker).BlockSize();
-
-        // Look at the preceding break token.
-        idx--;
-        const BlockBreakToken* break_token =
-            layout_box->GetPhysicalFragment(idx)->GetBreakToken();
-        if (!break_token->IsAtBlockEnd()) {
-          stitched_block_size += break_token->ConsumedBlockSize();
-          break;
-        }
-      }
-    }
   }
+  stitched_block_size = layout_box->StitchedBlockSize();
   LogicalSize stitched_fragments_logical_size(
       LogicalFragment(writing_direction, fragment).InlineSize(),
       stitched_block_size);

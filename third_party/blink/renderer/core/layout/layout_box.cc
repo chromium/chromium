@@ -3677,6 +3677,48 @@ PhysicalOffset LayoutBox::OffsetPoint(const Element* parent) const {
   return AdjustedPositionRelativeTo(PhysicalLocation(), parent);
 }
 
+LayoutUnit LayoutBox::StitchedBlockSize() const {
+  NOT_DESTROYED();
+  if (!PhysicalFragmentCount()) {
+    return LayoutUnit();
+  }
+  auto writing_direction = StyleRef().GetWritingDirection();
+  const auto& first_fragment = *GetPhysicalFragment(0);
+  if (first_fragment.IsOnlyForNode() ||
+      (first_fragment.GetBreakToken() &&
+       first_fragment.GetBreakToken()->IsRepeated())) {
+    // This node either generates a single fragment, or we're dealing with
+    // repeated content, which isn't stitched.
+    return LogicalFragment(writing_direction, first_fragment).BlockSize();
+  }
+
+  wtf_size_t idx = PhysicalFragmentCount();
+  DCHECK_GT(idx, 1u);
+  idx--;
+  // Calculating the stitched size is straight-forward if the node isn't
+  // overflowed: Just add the consumed block-size of the last break token
+  // and the block-size of the last fragment. If it is overflowed, on the
+  // other hand, we need to search backwards until we find the end of the
+  // block-end border edge.
+  LayoutUnit stitched_block_size;
+  while (idx) {
+    const PhysicalBoxFragment* walker = GetPhysicalFragment(idx);
+    stitched_block_size =
+        LogicalFragment(writing_direction, *walker).BlockSize();
+
+    // Look at the preceding break token.
+    idx--;
+    const BlockBreakToken* break_token =
+        GetPhysicalFragment(idx)->GetBreakToken();
+    if (!break_token->IsAtBlockEnd()) {
+      stitched_block_size += break_token->ConsumedBlockSize();
+      break;
+    }
+  }
+
+  return stitched_block_size;
+}
+
 PhysicalSize LayoutBox::StitchedSize() const {
   NOT_DESTROYED();
   if (!HasValidCachedGeometry()) {
