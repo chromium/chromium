@@ -146,18 +146,12 @@ enum class TransitionState {
                willAppearAnimated:YES];
   }
 
-  // Set up fullscreen observation.
-  if (IsFullscreenRefactoringEnabled()) {
-    FullscreenBrowserAgent* agent =
-        FullscreenBrowserAgent::FromBrowser(self.browser);
-    _fullscreenBrowserAgentObserverBridge =
-        std::make_unique<FullscreenBrowserAgentObserverBridge>(self, agent);
-  } else {
-    FullscreenController* fullscreenController =
-        FullscreenController::FromBrowser(self.browser);
-    _fullscreenUIUpdater =
-        std::make_unique<FullscreenUIUpdater>(fullscreenController, self);
-  }
+  [self.baseViewController
+      registerForTraitChanges:
+          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
+                   withTarget:self
+                       action:@selector(sizeClassDidChange)];
+  [self sizeClassDidChange];
 
   __weak __typeof(self) weakSelf = self;
   void (^animations)(void) = ^{
@@ -348,8 +342,7 @@ enum class TransitionState {
   _transitionState = TransitionState::kIdle;
 
   // Cleanup view controller and state.
-  _fullscreenUIUpdater = nullptr;
-  _fullscreenBrowserAgentObserverBridge = nullptr;
+  [self stopFullscreenObservation];
   [_tabGridState removeObserver:self];
   _tabGridState = nil;
 
@@ -374,6 +367,42 @@ enum class TransitionState {
     ProceduralBlock completion = _dismissalCompletion;
     _dismissalCompletion = nil;
     completion();
+  }
+}
+
+// Sets up the fullscreen observation.
+- (void)setupFullscreenObservation {
+  if (_fullscreenBrowserAgentObserverBridge || _fullscreenUIUpdater) {
+    return;
+  }
+
+  // Set up fullscreen observation.
+  if (IsFullscreenRefactoringEnabled()) {
+    FullscreenBrowserAgent* agent =
+        FullscreenBrowserAgent::FromBrowser(self.browser);
+    _fullscreenBrowserAgentObserverBridge =
+        std::make_unique<FullscreenBrowserAgentObserverBridge>(self, agent);
+  } else {
+    FullscreenController* fullscreenController =
+        FullscreenController::FromBrowser(self.browser);
+    _fullscreenUIUpdater =
+        std::make_unique<FullscreenUIUpdater>(fullscreenController, self);
+  }
+}
+
+// Stops the fullscreen observation.
+- (void)stopFullscreenObservation {
+  _fullscreenUIUpdater = nullptr;
+  _fullscreenBrowserAgentObserverBridge = nullptr;
+}
+
+// Called when the view's trait collection changes.
+- (void)sizeClassDidChange {
+  if (IsSidePanelLayout(self.baseViewController.traitCollection)) {
+    [self stopFullscreenObservation];
+    [self updateForFullscreenProgress:1];
+  } else {
+    [self setupFullscreenObservation];
   }
 }
 
