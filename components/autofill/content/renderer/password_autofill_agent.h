@@ -21,7 +21,6 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/core/common/field_data_manager.h"

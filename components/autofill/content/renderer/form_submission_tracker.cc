@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/form_submission_tracker.h"
 
 #include <optional>
 #include <utility>
@@ -111,28 +111,30 @@ void LogSubmittedFormMetric(mojom::SubmissionSource source,
 
 }  // namespace
 
-FormTracker::FormTracker(content::RenderFrame* render_frame,
-                         AutofillAgent& autofill_agent,
-                         PasswordAutofillAgent* password_autofill_agent)
+FormSubmissionTracker::FormSubmissionTracker(
+    content::RenderFrame* render_frame,
+    AutofillAgent& autofill_agent,
+    PasswordAutofillAgent* password_autofill_agent)
     : content::RenderFrameObserver(render_frame),
       blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
       autofill_agent_(autofill_agent),
       password_autofill_agent_(password_autofill_agent) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
 }
 
-FormTracker::~FormTracker() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+FormSubmissionTracker::~FormSubmissionTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   ResetLastInteractedElements();
 }
 
-void FormTracker::AjaxSucceeded() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::AjaxSucceeded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   submission_triggering_events_.xhr_succeeded = true;
   FireSubmissionIfFormDisappear(SubmissionSource::XHR_SUCCEEDED);
 }
 
-void FormTracker::ElementDisappeared(const blink::WebElement& element) {
+void FormSubmissionTracker::ElementDisappeared(
+    const blink::WebElement& element) {
   // Signal is discarded altogether when the feature is disabled.
   if (!base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)) {
@@ -173,8 +175,8 @@ void FormTracker::ElementDisappeared(const blink::WebElement& element) {
   submission_triggering_events_.tracked_element_disappeared = true;
 }
 
-void FormTracker::TrackAutofilledElement(FieldRendererId field_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::TrackAutofilledElement(FieldRendererId field_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   const WebFormControlElement element =
       form_util::GetFormControlByRendererId(field_id);
   if (!element) {
@@ -189,15 +191,14 @@ void FormTracker::TrackAutofilledElement(FieldRendererId field_id) {
   TrackElement(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
 }
 
-void FormTracker::TrackAutofilledElement(
+void FormSubmissionTracker::TrackAutofilledElement(
     const base::flat_map<FieldRendererId, FormRendererId>&
         filled_fields_and_forms) {
-  auto field_is_owned =
-      [](const std::pair<FieldRendererId, FormRendererId>&
-             filled_field_and_form) {
-        return !form_util::GetFormByRendererId(filled_field_and_form.second)
-                    .IsNull();
-      };
+  auto field_is_owned = [](const std::pair<FieldRendererId, FormRendererId>&
+                               filled_field_and_form) {
+    return !form_util::GetFormByRendererId(filled_field_and_form.second)
+                .IsNull();
+  };
   if (auto it = std::ranges::find_if(filled_fields_and_forms, field_is_owned);
       it != filled_fields_and_forms.end()) {
     const auto& [filled_field_id, filled_form_id] = *it;
@@ -226,7 +227,7 @@ void FormTracker::TrackAutofilledElement(
   }
 }
 
-void FormTracker::OnJavaScriptChangedValue(
+void FormSubmissionTracker::OnJavaScriptChangedValue(
     const WebFormControlElement& element) {
   // The provisionally saved form must be updated on JS changes. However, it
   // should not be changed to another form, so that only the user can set the
@@ -264,8 +265,9 @@ void FormTracker::OnJavaScriptChangedValue(
   }
 }
 
-void FormTracker::FormControlDidChange(const WebFormControlElement& element,
-                                       ElementDidChangeCallback callback) {
+void FormSubmissionTracker::FormControlDidChange(
+    const WebFormControlElement& element,
+    ElementDidChangeCallback callback) {
   if (!unsafe_render_frame()) {
     return;
   }
@@ -273,16 +275,18 @@ void FormTracker::FormControlDidChange(const WebFormControlElement& element,
   unsafe_render_frame()
       ->GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalAutofill)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&FormTracker::FormControlDidChangeImpl,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                form_util::GetFieldRendererId(element),
-                                std::move(callback)));
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&FormSubmissionTracker::FormControlDidChangeImpl,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         form_util::GetFieldRendererId(element),
+                         std::move(callback)));
 }
 
-void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
-                                           ElementDidChangeCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::FormControlDidChangeImpl(
+    FieldRendererId element_id,
+    ElementDidChangeCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
   // This function may be called asynchronously, so a navigation may have
@@ -301,21 +305,22 @@ void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
                                     provisionally_saved_form()));
 }
 
-void FormTracker::DidCommitProvisionalLoad(ui::PageTransition transition) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::DidCommitProvisionalLoad(
+    ui::PageTransition transition) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   ResetLastInteractedElements();
 }
 
-void FormTracker::DidFinishSameDocumentNavigation() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::DidFinishSameDocumentNavigation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   submission_triggering_events_.finished_same_document_navigation = true;
   FireSubmissionIfFormDisappear(SubmissionSource::SAME_DOCUMENT_NAVIGATION);
 }
 
-void FormTracker::DidStartNavigation(
+void FormSubmissionTracker::DidStartNavigation(
     const GURL& url,
     std::optional<blink::WebNavigationType> navigation_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   if (!unsafe_render_frame() ||
       !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
     // Ony handle primary main frame as iframe navigations rarely mean
@@ -344,8 +349,9 @@ void FormTracker::DidStartNavigation(
     case blink::kWebNavigationTypeFormResubmittedReload:
     case blink::kWebNavigationTypeRestore:
     // A standard <form> submission. This should already be caught by either
-    // `FormTracker::WillSubmitForm()` or `FormTracker::WilSendSubmitEvent()`,
-    // so submission is not fired here in order to avoid duplicate signals.
+    // `FormSubmissionTracker::WillSubmitForm()` or
+    // `FormSubmissionTracker::WilSendSubmitEvent()`, so submission is not fired
+    // here in order to avoid duplicate signals.
     case blink::kWebNavigationTypeFormSubmitted:
       return;
     // Catch-all for other types. This includes JavaScript-initiated navigations
@@ -358,8 +364,8 @@ void FormTracker::DidStartNavigation(
                      /*submitted_form_element=*/std::nullopt);
 }
 
-void FormTracker::WillDetach(blink::DetachReason detach_reason) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::WillDetach(blink::DetachReason detach_reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   if (!unsafe_render_frame()) {
     return;
   }
@@ -374,8 +380,8 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
   }
 }
 
-void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::WillSendSubmitEvent(const WebFormElement& form) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   CHECK(form);
   // TODO(crbug.com/40281981): Figure out if this is still needed, and document
   // the reason, otherwise remove.
@@ -396,8 +402,8 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
   FireFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form);
 }
 
-void FormTracker::WillSubmitForm(const WebFormElement& form) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::WillSubmitForm(const WebFormElement& form) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   // A form submission may target a frame other than the frame that owns |form|.
   // The WillSubmitForm() event is only fired on the target frame's FormTracker
   // (provided that both have the same origin). In such a case, we ignore the
@@ -410,15 +416,15 @@ void FormTracker::WillSubmitForm(const WebFormElement& form) {
   FireFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form);
 }
 
-void FormTracker::OnDestruct() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+void FormSubmissionTracker::OnDestruct() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   ResetLastInteractedElements();
 }
 
-void FormTracker::FireFormSubmission(
+void FormSubmissionTracker::FireFormSubmission(
     SubmissionSource source,
     std::optional<WebFormElement> submitted_form_element) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   if (!IsTracking() && source != mojom::SubmissionSource::FORM_SUBMISSION) {
     // If no form is being tracked, there's no need to inform the agent of
     // submission since no submitted form will be fetched. The only source
@@ -475,7 +481,8 @@ void FormTracker::FireFormSubmission(
   }
 }
 
-void FormTracker::FireSubmissionIfFormDisappear(SubmissionSource source) {
+void FormSubmissionTracker::FireSubmissionIfFormDisappear(
+    SubmissionSource source) {
   if (CanInferFormSubmitted() ||
       (submission_triggering_events_.tracked_element_disappeared &&
        base::FeatureList::IsEnabled(
@@ -486,7 +493,7 @@ void FormTracker::FireSubmissionIfFormDisappear(SubmissionSource source) {
   TrackElement(source);
 }
 
-bool FormTracker::CanInferFormSubmitted() {
+bool FormSubmissionTracker::CanInferFormSubmitted() {
   if (last_interacted_.form_id) {
     WebFormElement last_interacted_form =
         form_util::GetFormByRendererId(last_interacted_.form_id);
@@ -507,19 +514,20 @@ bool FormTracker::CanInferFormSubmitted() {
   return false;
 }
 
-void FormTracker::TrackElement(mojom::SubmissionSource source) {
+void FormSubmissionTracker::TrackElement(mojom::SubmissionSource source) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)) {
     // Do not use WebFormElementObserver. Instead, rely on the signal
-    // `FormTracker::ElementDisappeared` coming from blink.
+    // `FormSubmissionTracker::ElementDisappeared` coming from blink.
     return;
   }
   // Already has observer for last interacted element.
   if (form_element_observer_) {
     return;
   }
-  auto callback = base::BindOnce(&FormTracker::ElementWasHiddenOrRemoved,
-                                 base::Unretained(this), source);
+  auto callback =
+      base::BindOnce(&FormSubmissionTracker::ElementWasHiddenOrRemoved,
+                     base::Unretained(this), source);
 
   if (WebFormElement last_interacted_form =
           form_util::GetFormByRendererId(last_interacted_.form_id)) {
@@ -533,8 +541,9 @@ void FormTracker::TrackElement(mojom::SubmissionSource source) {
   }
 }
 
-void FormTracker::FireHostSubmitEvents(const FormData& form_data,
-                                       mojom::SubmissionSource source) {
+void FormSubmissionTracker::FireHostSubmitEvents(
+    const FormData& form_data,
+    mojom::SubmissionSource source) {
   if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL &&
       !base::FeatureList::IsEnabled(
           features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
@@ -594,7 +603,7 @@ void FormTracker::FireHostSubmitEvents(const FormData& form_data,
   }
 }
 
-std::optional<FormData> FormTracker::GetSubmittedForm(
+std::optional<FormData> FormSubmissionTracker::GetSubmittedForm(
     mojom::SubmissionSource source,
     std::optional<WebFormElement> submitted_form_element) {
   std::optional<FormData> cached_form = provisionally_saved_form();
@@ -649,7 +658,7 @@ std::optional<FormData> FormTracker::GetSubmittedForm(
   return extracted_form;
 }
 
-void FormTracker::UpdateLastInteractedElement(
+void FormSubmissionTracker::UpdateLastInteractedElement(
     std::variant<WebFormElement, WebFormControlElement> element) {
   ResetLastInteractedElements();
 
@@ -684,7 +693,7 @@ void FormTracker::UpdateLastInteractedElement(
       autofill_agent_->button_titles_cache());
 }
 
-void FormTracker::ResetLastInteractedElements() {
+void FormSubmissionTracker::ResetLastInteractedElements() {
   last_interacted_ = {};
   submission_triggering_events_ = {};
   if (form_element_observer_) {
@@ -693,16 +702,17 @@ void FormTracker::ResetLastInteractedElements() {
   }
 }
 
-bool FormTracker::IsTracking() const {
+bool FormSubmissionTracker::IsTracking() const {
   return last_interacted_.form_id || last_interacted_.formless_element_id ||
          last_interacted_.saved_state;
 }
 
-void FormTracker::ElementWasHiddenOrRemoved(mojom::SubmissionSource source) {
+void FormSubmissionTracker::ElementWasHiddenOrRemoved(
+    mojom::SubmissionSource source) {
   FireFormSubmission(source, /*submitted_form_element=*/std::nullopt);
 }
 
-WebDocument FormTracker::GetDocument() const {
+WebDocument FormSubmissionTracker::GetDocument() const {
   return unsafe_render_frame()
              ? unsafe_render_frame()->GetWebFrame()->GetDocument()
              : WebDocument();

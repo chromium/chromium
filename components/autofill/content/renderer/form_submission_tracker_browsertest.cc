@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/form_submission_tracker.h"
 
 #include <optional>
 #include <string>
@@ -19,7 +19,7 @@
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/form_tracker_test_api.h"
+#include "components/autofill/content/renderer/form_submission_tracker_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -60,12 +60,14 @@ auto HasValue(std::u16string value) {
                   std::move(value));
 }
 
-class MockFormTracker : public FormTracker {
+class MockFormSubmissionTracker : public FormSubmissionTracker {
  public:
-  MockFormTracker(content::RenderFrame* render_frame,
-                  AutofillAgent& autofill_agent,
-                  PasswordAutofillAgent* password_autofill_agent)
-      : FormTracker(render_frame, autofill_agent, password_autofill_agent) {
+  MockFormSubmissionTracker(content::RenderFrame* render_frame,
+                            AutofillAgent& autofill_agent,
+                            PasswordAutofillAgent* password_autofill_agent)
+      : FormSubmissionTracker(render_frame,
+                              autofill_agent,
+                              password_autofill_agent) {
     ON_CALL(*this, FireFormSubmission)
         .WillByDefault([this](mojom::SubmissionSource source,
                               std::optional<blink::WebFormElement> form) {
@@ -73,7 +75,7 @@ class MockFormTracker : public FormTracker {
         });
     ON_CALL(*this, ElementDisappeared)
         .WillByDefault([this](const blink::WebElement& element) {
-          FormTracker::ElementDisappeared(element);
+          FormSubmissionTracker::ElementDisappeared(element);
         });
   }
   MOCK_METHOD((void),
@@ -86,10 +88,10 @@ class MockFormTracker : public FormTracker {
               (override));
 };
 
-class FormTrackerTest : public test::AutofillRendererTest,
-                        public testing::WithParamInterface<int> {
+class FormSubmissionTrackerTest : public test::AutofillRendererTest,
+                                  public testing::WithParamInterface<int> {
  public:
-  FormTrackerTest() {
+  FormSubmissionTrackerTest() {
     EXPECT_LE(GetParam(), 1);
     std::vector<base::test::FeatureRef> features = {
         features::kAutofillReplaceFormElementObserver};
@@ -103,13 +105,13 @@ class FormTrackerTest : public test::AutofillRendererTest,
 
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
-    auto tracker = std::make_unique<MockFormTracker>(
+    auto tracker = std::make_unique<MockFormSubmissionTracker>(
         GetMainRenderFrame(), autofill_agent(), password_autofill_agent());
     test_api(autofill_agent()).set_form_tracker(std::move(tracker));
   }
 
-  MockFormTracker& form_tracker() {
-    return static_cast<MockFormTracker&>(
+  MockFormSubmissionTracker& form_tracker() {
+    return static_cast<MockFormSubmissionTracker&>(
         test_api(autofill_agent()).form_tracker());
   }
 
@@ -140,14 +142,14 @@ class FormTrackerTest : public test::AutofillRendererTest,
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
-                         FormTrackerTest,
+                         FormSubmissionTrackerTest,
                          ::testing::Values(0, 1));
 
 // Check that submission is detected on a page with no <form> when in sequence:
 // 1) User types into a field.
 // 2) Page does an XHR.
 // 3) Page hides all of the inputs.
-TEST_P(FormTrackerTest, FormlessXHRThenHide) {
+TEST_P(FormSubmissionTrackerTest, FormlessXHRThenHide) {
   LoadHTML("<!DOCTYPE HTML><input id='input1'/><input id='input2'/>");
 
   blink::WebFormControlElement input1 = GetFormControlById("input1");
@@ -178,7 +180,7 @@ TEST_P(FormTrackerTest, FormlessXHRThenHide) {
 // 1) User types into a field.
 // 2) Page hides all of the inputs.
 // 3) Page does an XHR.
-TEST_P(FormTrackerTest, FormlessHideThenXhr) {
+TEST_P(FormSubmissionTrackerTest, FormlessHideThenXhr) {
   LoadHTML("<!DOCTYPE HTML><input id='input1'/><input id='input2'/>");
 
   blink::WebFormControlElement input1 = GetFormControlById("input1");
@@ -207,7 +209,7 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
 
 // Check that if a SelectControlSelectionChanged() is called asynchronously
 // after a navigation, the event is a dead end.
-TEST_P(FormTrackerTest, IgnoreSelectChangeInOldDocument) {
+TEST_P(FormSubmissionTrackerTest, IgnoreSelectChangeInOldDocument) {
   LoadHTML(R"(<!DOCTYPE HTML>
     <select id=select>
     <option value=0>0</option>
@@ -234,7 +236,7 @@ TEST_P(FormTrackerTest, IgnoreSelectChangeInOldDocument) {
 
 // Tests that a submission is fired upon starting a navigation resulting from
 // `kWebNavigationTypeOther`.
-TEST_P(FormTrackerTest, ProbablyFormSubmitted) {
+TEST_P(FormSubmissionTrackerTest, ProbablyFormSubmitted) {
   LoadHTML("<!DOCTYPE HTML><input id='input1'/>");
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kTest);
@@ -256,7 +258,8 @@ TEST_P(FormTrackerTest, ProbablyFormSubmitted) {
 
 // Tests that a submission is not fired upon starting a navigation resulting
 // from an uninteresting `WebNavigationType`.
-TEST_P(FormTrackerTest, ProbablyFormSubmitted_IgnoreUninterestingNavigations) {
+TEST_P(FormSubmissionTrackerTest,
+       ProbablyFormSubmitted_IgnoreUninterestingNavigations) {
   using enum blink::WebNavigationType;
   constexpr auto kUninterestingNavigationTypes = std::to_array({
       kWebNavigationTypeLinkClicked,
@@ -288,7 +291,8 @@ TEST_P(FormTrackerTest, ProbablyFormSubmitted_IgnoreUninterestingNavigations) {
 
 // Tests that AutofillAgent::JavaScriptSetValue() updates the last interacted
 // saved state.
-TEST_P(FormTrackerTest, JavaScriptSetValueUpdatesLastInteractedSavedState) {
+TEST_P(FormSubmissionTrackerTest,
+       JavaScriptSetValueUpdatesLastInteractedSavedState) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)) {
     GTEST_SKIP();
@@ -332,7 +336,7 @@ TEST_P(FormTrackerTest, JavaScriptSetValueUpdatesLastInteractedSavedState) {
 // Tests that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
 // updates the last interacted saved state when the <input>s have no containing
 // <form>.
-TEST_P(FormTrackerTest,
+TEST_P(FormSubmissionTrackerTest,
        FormlessApplyFormActionUpdatesLastInteractedSavedState) {
   LoadHTML(R"(
     <input id="text_id">
@@ -369,7 +373,8 @@ TEST_P(FormTrackerTest,
 // Tests that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
 // updates the last interacted saved state when the <input>s have a containing
 // <form>.
-TEST_P(FormTrackerTest, FormApplyFormActionUpdatesLastInteractedSavedState) {
+TEST_P(FormSubmissionTrackerTest,
+       FormApplyFormActionUpdatesLastInteractedSavedState) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="text_id">
@@ -410,7 +415,7 @@ TEST_P(FormTrackerTest, FormApplyFormActionUpdatesLastInteractedSavedState) {
 
 // Tests that hiding an element via display: none triggers ElementDisappeared
 // on FormTracker.
-TEST_P(FormTrackerTest, HideElementTriggersFormTracker_DisplayNone) {
+TEST_P(FormSubmissionTrackerTest, HideElementTriggersFormTracker_DisplayNone) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="field_id">
@@ -427,7 +432,8 @@ TEST_P(FormTrackerTest, HideElementTriggersFormTracker_DisplayNone) {
 
 // Tests that hiding an element via visibility: hidden triggers
 // ElementDisappeared on FormTracker.
-TEST_P(FormTrackerTest, HideElementTriggersFormTracker_VisibilityHidden) {
+TEST_P(FormSubmissionTrackerTest,
+       HideElementTriggersFormTracker_VisibilityHidden) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="field_id">
@@ -444,7 +450,7 @@ TEST_P(FormTrackerTest, HideElementTriggersFormTracker_VisibilityHidden) {
 
 // Tests that changing an input type to hidden triggers ElementDisappeared on
 // FormTracker.
-TEST_P(FormTrackerTest, HideElementTriggersFormTracker_TypeHidden) {
+TEST_P(FormSubmissionTrackerTest, HideElementTriggersFormTracker_TypeHidden) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="field_id">
@@ -461,7 +467,7 @@ TEST_P(FormTrackerTest, HideElementTriggersFormTracker_TypeHidden) {
 
 // Tests that setting the hidden attribute to true triggers ElementDisappeared
 // on FormTracker.
-TEST_P(FormTrackerTest, HideElementTriggersFormTracker_HiddenTrue) {
+TEST_P(FormSubmissionTrackerTest, HideElementTriggersFormTracker_HiddenTrue) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="field_id">
@@ -478,7 +484,7 @@ TEST_P(FormTrackerTest, HideElementTriggersFormTracker_HiddenTrue) {
 
 // Tests that moving an element to an unassigned slot in Shadow DOM triggers
 // ElementDisappeared on FormTracker.
-TEST_P(FormTrackerTest, HideElementTriggersFormTracker_ShadowDom) {
+TEST_P(FormSubmissionTrackerTest, HideElementTriggersFormTracker_ShadowDom) {
   LoadHTML(R"(
    <form id="form_id">
     <div>
@@ -500,7 +506,7 @@ TEST_P(FormTrackerTest, HideElementTriggersFormTracker_ShadowDom) {
 // Tests that an inferred form submission as a result of a page deleting ALL of
 // the <input>s (that the user has edited) on a page with no <form> sends the
 // contents of all of the fields to the browser.
-TEST_P(FormTrackerTest,
+TEST_P(FormSubmissionTrackerTest,
        FormlessOnInferredFormSubmissionAfterXhrAndAllInputsRemoved) {
   LoadHTML(R"(
     <div id='shipping'>
@@ -529,7 +535,7 @@ TEST_P(FormTrackerTest,
 // Tests that an inferred form submission as a result of a page deleting ALL of
 // the <input>s that the user has edited but NOT ALL of the <inputs> on the page
 // sends the user-edited <inputs> to the browser.
-TEST_P(FormTrackerTest,
+TEST_P(FormSubmissionTrackerTest,
        FormlessOnInferredFormSubmissionAfterXhrAndSomeInputsRemoved) {
   LoadHTML(R"(
     Search: <input type='text' id='search'><br>
@@ -558,7 +564,7 @@ TEST_P(FormTrackerTest,
 
 // Tests that edited inputs are sent to the browser when navigation occurs after
 // some inputs are removed on a formless page.
-TEST_P(FormTrackerTest, FormlessOnNavigationAfterSomeInputsRemoved) {
+TEST_P(FormSubmissionTrackerTest, FormlessOnNavigationAfterSomeInputsRemoved) {
   LoadHTML(R"(
     Name: <input type='text' id='name'><br>
     Address: <input type='text' id='address'>
@@ -584,7 +590,7 @@ TEST_P(FormTrackerTest, FormlessOnNavigationAfterSomeInputsRemoved) {
 // Tests that inferred form submission does not send fields that were removed
 // from the DOM hierarchy at autofill time, even if the removed element was the
 // last queried element.
-TEST_P(FormTrackerTest,
+TEST_P(FormSubmissionTrackerTest,
        OnInferredFormSubmissionAfterAutofillRemovesLastQueriedElement) {
   LoadHTML(R"(
     <form id="form">
@@ -635,7 +641,7 @@ TEST_P(FormTrackerTest,
   form_tracker().AjaxSucceeded();
 }
 
-TEST_P(FormTrackerTest, NormalFormSubmit) {
+TEST_P(FormSubmissionTrackerTest, NormalFormSubmit) {
   LoadHTML(R"(
       <html>
         <form id='myForm' action='about:blank'>
@@ -659,7 +665,7 @@ TEST_P(FormTrackerTest, NormalFormSubmit) {
 
 // Tests that FormSubmitted message is generated even the submit event isn't
 // propagated by Javascript.
-TEST_P(FormTrackerTest, SubmitEventPrevented) {
+TEST_P(FormSubmissionTrackerTest, SubmitEventPrevented) {
   LoadHTML(R"(
       <html>
         <form id='myForm'>
@@ -687,7 +693,7 @@ TEST_P(FormTrackerTest, SubmitEventPrevented) {
 
 // Tests that having the form disappear after autofilling triggers submission
 // from Autofill's point of view.
-TEST_P(FormTrackerTest, DomMutationAfterAutofill) {
+TEST_P(FormSubmissionTrackerTest, DomMutationAfterAutofill) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillAcceptDomMutationAfterAutofillSubmission};
   LoadHTML(R"(
@@ -715,7 +721,7 @@ TEST_P(FormTrackerTest, DomMutationAfterAutofill) {
 
 // Tests that completing an Ajax request and having the form disappear will
 // trigger submission from Autofill's point of view.
-TEST_P(FormTrackerTest, AjaxSucceeded_NoLongerVisible) {
+TEST_P(FormSubmissionTrackerTest, AjaxSucceeded_NoLongerVisible) {
   LoadHTML(R"(
       <html>
         <form id='myForm' action='http://example.com/blade.php'>
@@ -745,7 +751,7 @@ TEST_P(FormTrackerTest, AjaxSucceeded_NoLongerVisible) {
 // Tests that completing an Ajax request and having the form with a specific
 // action disappear will trigger submission from Autofill's point of view, even
 // if there is another form with the same data but different action on the page.
-TEST_P(FormTrackerTest,
+TEST_P(FormSubmissionTrackerTest,
        AjaxSucceeded_NoLongerVisible_DifferentActionsSameData) {
   LoadHTML(R"(
       <html>
@@ -787,7 +793,7 @@ TEST_P(FormTrackerTest,
 // specified disappear will trigger submission from Autofill's point of view,
 // even if there is still another form with no action in the page. It will
 // compare field data within the forms.
-TEST_P(FormTrackerTest, MAYBE_NoLongerVisibleBothNoActions) {
+TEST_P(FormSubmissionTrackerTest, MAYBE_NoLongerVisibleBothNoActions) {
   LoadHTML(R"(
       <html>
         <form id='myForm'>
@@ -821,7 +827,7 @@ TEST_P(FormTrackerTest, MAYBE_NoLongerVisibleBothNoActions) {
 
 // Tests that completing an Ajax request and having the form with no action
 // specified disappear will trigger submission from Autofill's point of view.
-TEST_P(FormTrackerTest, AjaxSucceeded_NoLongerVisible_NoAction) {
+TEST_P(FormSubmissionTrackerTest, AjaxSucceeded_NoLongerVisible_NoAction) {
   LoadHTML(R"(
       <html>
         <form id='myForm'>
@@ -850,7 +856,7 @@ TEST_P(FormTrackerTest, AjaxSucceeded_NoLongerVisible_NoAction) {
 
 // Tests that completing an Ajax request but leaving a form visible will not
 // trigger submission from Autofill's point of view.
-TEST_P(FormTrackerTest, AjaxSucceeded_StillVisible) {
+TEST_P(FormSubmissionTrackerTest, AjaxSucceeded_StillVisible) {
   LoadHTML(R"(
       <html>
         <form id='myForm' action='http://example.com/blade.php'>
@@ -871,7 +877,7 @@ TEST_P(FormTrackerTest, AjaxSucceeded_StillVisible) {
 
 // Tests that completing an Ajax request without any prior form interaction
 // does not trigger form submission from Autofill's point of view.
-TEST_P(FormTrackerTest, AjaxSucceeded_NoFormInteractionInvisible) {
+TEST_P(FormSubmissionTrackerTest, AjaxSucceeded_NoFormInteractionInvisible) {
   LoadHTML(R"(
       <html>
         <form id='myForm' action='http://example.com/blade.php'>
@@ -896,7 +902,7 @@ TEST_P(FormTrackerTest, AjaxSucceeded_NoFormInteractionInvisible) {
 // Tests that completing an Ajax request after having autofilled a form,
 // with the form disappearing, will trigger submission from Autofill's
 // point of view.
-TEST_P(FormTrackerTest, AjaxSucceeded_FilledFormIsInvisible) {
+TEST_P(FormSubmissionTrackerTest, AjaxSucceeded_FilledFormIsInvisible) {
   LoadHTML(R"(
       <html>
         <form id='myForm' action='http://example.com/blade.php'>
@@ -926,7 +932,7 @@ TEST_P(FormTrackerTest, AjaxSucceeded_FilledFormIsInvisible) {
 // Tests that completing an Ajax request after having autofilled a form,
 // without the form disappearing, will not trigger submission from Autofill's
 // point of view.
-TEST_P(FormTrackerTest, AjaxSucceeded_FilledFormStillVisible) {
+TEST_P(FormSubmissionTrackerTest, AjaxSucceeded_FilledFormStillVisible) {
   LoadHTML(R"(
       <html>
         <form id='myForm' action='http://example.com/blade.php'>
@@ -946,7 +952,7 @@ TEST_P(FormTrackerTest, AjaxSucceeded_FilledFormStillVisible) {
 
 // Tests that completing an Ajax request without a form present will still
 // trigger submission, if all the inputs the user has modified disappear.
-TEST_P(FormTrackerTest, AjaxSucceeded_FormlessElements) {
+TEST_P(FormSubmissionTrackerTest, AjaxSucceeded_FormlessElements) {
   LoadHTML(R"(
       <head>
         <title>Checkout</title>
@@ -976,7 +982,7 @@ TEST_P(FormTrackerTest, AjaxSucceeded_FormlessElements) {
 
 // Tests that submitting a form that has autocomplete="off" generates
 // WillSubmitForm and FormSubmitted messages.
-TEST_P(FormTrackerTest, AutoCompleteOffFormSubmit) {
+TEST_P(FormSubmissionTrackerTest, AutoCompleteOffFormSubmit) {
   LoadHTML(R"(
       <html>
         <form id='myForm' autocomplete='off' action='about:blank'>
@@ -999,7 +1005,7 @@ TEST_P(FormTrackerTest, AutoCompleteOffFormSubmit) {
 }
 
 // Tests that fields with autocomplete off are submitted.
-TEST_P(FormTrackerTest, AutoCompleteOffInputSubmit) {
+TEST_P(FormSubmissionTrackerTest, AutoCompleteOffInputSubmit) {
   LoadHTML(R"(
       <html>
         <form id='myForm' action='about:blank'>
@@ -1023,7 +1029,7 @@ TEST_P(FormTrackerTest, AutoCompleteOffInputSubmit) {
 
 // Tests that submitting a form that has been dynamically set as autocomplete
 // off generates WillSubmitForm and FormSubmitted messages.
-TEST_P(FormTrackerTest, DynamicAutoCompleteOffFormSubmit) {
+TEST_P(FormSubmissionTrackerTest, DynamicAutoCompleteOffFormSubmit) {
   LoadHTML(R"(
       <html>
         <form id='myForm' action='about:blank'>
@@ -1057,7 +1063,7 @@ TEST_P(FormTrackerTest, DynamicAutoCompleteOffFormSubmit) {
 
 // Tests that hiding a formless element after an AJAX request triggers form
 // submission with XHR_SUCCEEDED source.
-TEST_P(FormTrackerTest, FormSubmittedByDOMMutationAfterXHR) {
+TEST_P(FormSubmissionTrackerTest, FormSubmittedByDOMMutationAfterXHR) {
   LoadHTML(R"(
       <html>
         <input type='text' id='address_field' name='address' autocomplete='on'>
@@ -1082,7 +1088,7 @@ TEST_P(FormTrackerTest, FormSubmittedByDOMMutationAfterXHR) {
 
 // Tests that same document navigation after hiding a modified formless element
 // triggers form submission with SAME_DOCUMENT_NAVIGATION source.
-TEST_P(FormTrackerTest, FormSubmittedBySameDocumentNavigation) {
+TEST_P(FormSubmissionTrackerTest, FormSubmittedBySameDocumentNavigation) {
   LoadHTML(R"(
       <html>
         <input type='text' id='address_field' name='address' autocomplete='on'>
@@ -1107,7 +1113,7 @@ TEST_P(FormTrackerTest, FormSubmittedBySameDocumentNavigation) {
 
 // Tests that starting a navigation after hiding a modified formless element
 // triggers form submission with PROBABLY_FORM_SUBMITTED source.
-TEST_P(FormTrackerTest, FormSubmittedByProbablyFormSubmitted) {
+TEST_P(FormSubmissionTrackerTest, FormSubmittedByProbablyFormSubmitted) {
   LoadHTML(R"(
       <html>
         <input type='text' id='address_field' name='address' autocomplete='on'>

@@ -30,7 +30,7 @@
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/form_submission_tracker.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -71,7 +71,7 @@ namespace autofill {
 namespace {
 
 using ::autofill::FormRendererId;
-using ::autofill::FormTracker;
+using ::autofill::FormSubmissionTracker;
 using ::autofill::mojom::FocusedFieldType;
 using ::autofill::mojom::SubmissionIndicatorEvent;
 using ::base::ASCIIToUTF16;
@@ -1090,7 +1090,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   void SaveAndSubmitForm() { SaveAndSubmitForm(username_element_.Form()); }
 
   void SaveAndSubmitForm(const WebFormElement& form_element) {
-    FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+    FormSubmissionTracker& tracker = test_api(*autofill_agent_).form_tracker();
     static_cast<blink::WebLocalFrameObserver&>(tracker).WillSendSubmitEvent(
         form_element);
     static_cast<content::RenderFrameObserver&>(tracker).WillSubmitForm(
@@ -1103,18 +1103,18 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   }
 
   void SubmitForm() {
-    FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+    FormSubmissionTracker& tracker = test_api(*autofill_agent_).form_tracker();
     static_cast<content::RenderFrameObserver&>(tracker).WillSubmitForm(
         username_element_.Form());
   }
 
   void FireAjaxSucceeded() {
-    FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+    FormSubmissionTracker& tracker = test_api(*autofill_agent_).form_tracker();
     tracker.AjaxSucceeded();
   }
 
   void FireDidFinishSameDocumentNavigation() {
-    FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+    FormSubmissionTracker& tracker = test_api(*autofill_agent_).form_tracker();
     static_cast<content::RenderFrameObserver&>(tracker)
         .DidFinishSameDocumentNavigation();
   }
@@ -2727,7 +2727,7 @@ TEST_F(PasswordAutofillAgentTest,
   confirmation_password_element.SetValue(WebString());
 
   // Submit form.
-  FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+  FormSubmissionTracker& tracker = test_api(*autofill_agent_).form_tracker();
   static_cast<content::RenderFrameObserver&>(tracker).WillSubmitForm(
       username_element.Form());
 

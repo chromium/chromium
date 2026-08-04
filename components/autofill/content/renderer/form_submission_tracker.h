@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
-#define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
+#ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_SUBMISSION_TRACKER_H_
+#define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_SUBMISSION_TRACKER_H_
 
 #include <optional>
 #include <variant>
@@ -36,21 +36,22 @@ class SynchronousFormCache;
 // TODO(crbug.com/40550175): Track the select and checkbox change.
 // This class is used to track user's change of form or WebFormControlElement,
 // notifies observers of form's change and submission.
-class FormTracker : public content::RenderFrameObserver,
-                    public blink::WebLocalFrameObserver {
+class FormSubmissionTracker : public content::RenderFrameObserver,
+                              public blink::WebLocalFrameObserver {
  public:
   using ElementDidChangeCallback =
       base::OnceCallback<void(const blink::WebFormControlElement&,
                               const SynchronousFormCache&)>;
 
-  explicit FormTracker(content::RenderFrame* render_frame,
-                       AutofillAgent& autofill_agent,
-                       PasswordAutofillAgent* password_autofill_agent);
+  explicit FormSubmissionTracker(
+      content::RenderFrame* render_frame,
+      AutofillAgent& autofill_agent,
+      PasswordAutofillAgent* password_autofill_agent);
 
-  FormTracker(const FormTracker&) = delete;
-  FormTracker& operator=(const FormTracker&) = delete;
+  FormSubmissionTracker(const FormSubmissionTracker&) = delete;
+  FormSubmissionTracker& operator=(const FormSubmissionTracker&) = delete;
 
-  ~FormTracker() override;
+  ~FormSubmissionTracker() override;
 
   // Same methods as those in blink::WebAutofillClient, but invoked by
   // AutofillAgent.
@@ -99,7 +100,7 @@ class FormTracker : public content::RenderFrameObserver,
   void OnFormNoLongerSubmittable() { submitted_forms_.clear(); }
 
  private:
-  friend class FormTrackerTestApi;
+  friend class FormSubmissionTrackerTestApi;
 
   // Synchronous task posted by `FormTracker::FormControlDidChange()`.
   void FormControlDidChangeImpl(FieldRendererId element_id,
@@ -116,7 +117,8 @@ class FormTracker : public content::RenderFrameObserver,
   void OnDestruct() override;
 
   // The RenderFrame* is nullptr while the AutofillAgent that owns this
-  // FormTracker is pending deletion, between OnDestruct() and ~FormTracker().
+  // FormSubmissionTracker is pending deletion, between OnDestruct() and
+  // ~FormSubmissionTracker().
   content::RenderFrame* unsafe_render_frame() const {
     return content::RenderFrameObserver::render_frame();
   }
@@ -212,11 +214,11 @@ class FormTracker : public content::RenderFrameObserver,
   raw_ref<AutofillAgent> autofill_agent_;
   raw_ptr<PasswordAutofillAgent> password_autofill_agent_ = nullptr;
 
-  SEQUENCE_CHECKER(form_tracker_sequence_checker_);
+  SEQUENCE_CHECKER(form_submission_tracker_sequence_checker_);
 
-  base::WeakPtrFactory<FormTracker> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FormSubmissionTracker> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
+#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_SUBMISSION_TRACKER_H_

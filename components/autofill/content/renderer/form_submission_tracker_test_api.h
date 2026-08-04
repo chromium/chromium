@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_TEST_API_H_
-#define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_TEST_API_H_
+#ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_SUBMISSION_TRACKER_TEST_API_H_
+#define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_SUBMISSION_TRACKER_TEST_API_H_
 
 #include <optional>
 
 #include "base/memory/raw_ref.h"
-#include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/form_submission_tracker.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace autofill {
 
-class FormTrackerTestApi {
+class FormSubmissionTrackerTestApi {
  public:
-  explicit FormTrackerTestApi(FormTracker* agent) : form_tracker_(*agent) {}
+  explicit FormSubmissionTrackerTestApi(FormSubmissionTracker* agent)
+      : form_tracker_(*agent) {}
 
   void DidFinishSameDocumentNavigation() {
     return form_tracker_->DidFinishSameDocumentNavigation();
@@ -34,18 +35,18 @@ class FormTrackerTestApi {
   void FireFormSubmission(
       mojom::SubmissionSource source,
       std::optional<blink::WebFormElement> submitted_form_element) {
-    form_tracker_->FormTracker::FireFormSubmission(source,
-                                                   submitted_form_element);
+    form_tracker_->FormSubmissionTracker::FireFormSubmission(
+        source, submitted_form_element);
   }
 
  private:
-  const raw_ref<FormTracker> form_tracker_;
+  const raw_ref<FormSubmissionTracker> form_tracker_;
 };
 
-inline FormTrackerTestApi test_api(FormTracker& tracker) {
-  return FormTrackerTestApi(&tracker);
+inline FormSubmissionTrackerTestApi test_api(FormSubmissionTracker& tracker) {
+  return FormSubmissionTrackerTestApi(&tracker);
 }
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_TEST_API_H_
+#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_SUBMISSION_TRACKER_TEST_API_H_

@@ -47,7 +47,7 @@
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
-#include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/form_submission_tracker.h"
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
@@ -576,8 +576,8 @@ AutofillAgent::AutofillAgent(
   if (password_autofill_agent_) {
     password_autofill_agent_->Init(this);
   }
-  form_tracker_ = std::make_unique<FormTracker>(unsafe_render_frame(), *this,
-                                                password_autofill_agent_.get());
+  form_tracker_ = std::make_unique<FormSubmissionTracker>(
+      unsafe_render_frame(), *this, password_autofill_agent_.get());
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(
       &AutofillAgent::BindPendingReceiver, base::Unretained(this)));
   ResetTokenBucket();
