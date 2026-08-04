@@ -4139,7 +4139,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.MagicStack.Module.Click.OnNTP"
     enum="IOSMagicStackModuleType" expires_after="2027-09-13">
   <owner>thegreenfrog@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     This histogram is logged whenever a Magic Stack click happens on the NTP.
   </summary>
