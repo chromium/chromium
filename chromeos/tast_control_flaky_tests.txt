@@ -14,9 +14,6 @@ tast.crostini.AppAndroidStudio.bookworm_clamshell_stable
 # b/537158036
 tast.flex.HWIS
 
-# b/537159921
-tast.inputs.VirtualKeyboardChangeInput.tablet
-
 # b/537159924
 tast.wmp.DesksTemplatesBasic
 tast.wmp.DesksTemplatesLaunch
