@@ -20,9 +20,11 @@ TabDragEventRouter::~TabDragEventRouter() = default;
 void TabDragEventRouter::OnSessionStarted(
     std::vector<tabs_api::NodeId> dragged_tabs,
     TabDragWindowId source_window_id,
-    const gfx::Point& start_point) {
+    const gfx::Point& start_point,
+    int32_t tab_original_offset_x) {
   CHECK(source_window_id);
   dragged_tabs_ = std::move(dragged_tabs);
+  tab_original_offset_x_ = tab_original_offset_x;
   DropTargetId source_target = registry_->FindTargetForWindow(source_window_id);
   TransitionToTarget(source_target, start_point);
 }
@@ -80,7 +82,7 @@ void TabDragEventRouter::DispatchEvent(DropTargetId target_id,
 
   switch (event) {
     case DropTargetEvent::kEntered:
-      target->DragEnter(dragged_tabs_, screen_point);
+      target->DragEnter(dragged_tabs_, screen_point, tab_original_offset_x_);
       break;
     case DropTargetEvent::kDrag:
       target->DragOver(screen_point);

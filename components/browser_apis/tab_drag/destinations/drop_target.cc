@@ -30,9 +30,12 @@ gfx::Point DropTarget::ConvertScreenPointToLocal(
 }
 
 void DropTarget::DragEnter(const std::vector<tabs_api::NodeId>& dragged_tabs,
-                           const gfx::Point& screen_point) {
-  remote_->OnDragEntered(dragged_tabs, window_->ConvertScreenPointToLocal(
-                                           native_view_, screen_point));
+                           const gfx::Point& screen_point,
+                           int32_t tab_original_offset_x) {
+  remote_->OnDragEntered(
+      dragged_tabs,
+      window_->ConvertScreenPointToLocal(native_view_, screen_point),
+      tab_original_offset_x);
 }
 
 void DropTarget::DragOver(const gfx::Point& screen_point) {

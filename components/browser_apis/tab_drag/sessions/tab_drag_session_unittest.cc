@@ -389,16 +389,13 @@ TEST_F(TabDragSessionTest, SingleTabDragImmediateWindowDrag) {
   gfx::Point move_point(10, 10);
   toy_adapter.SendToyEvent(TabDragInputEvent::Type::kMoved, move_point);
 
-  // We expect 3 events: kStarted, kDetached, kDropped.
-  ASSERT_EQ(listener.events().size(), 3u);
+  // We expect 2 events: kStarted, kDropped.
+  ASSERT_EQ(listener.events().size(), 2u);
   EXPECT_EQ(listener.events()[0].type,
             ToyTabDragSessionListener::Event::Type::kStarted);
   EXPECT_EQ(listener.events()[1].type,
-            ToyTabDragSessionListener::Event::Type::kDetached);
-  EXPECT_EQ(listener.events()[1].point, move_point);
-  EXPECT_EQ(listener.events()[2].type,
             ToyTabDragSessionListener::Event::Type::kDropped);
-  EXPECT_EQ(listener.events()[2].point, move_point);
+  EXPECT_EQ(listener.events()[1].point, move_point);
 
   // Verify that DetachToNewWindow was NOT called (we bypassed it).
   EXPECT_FALSE(dummy_window_.detach_to_new_window_called());

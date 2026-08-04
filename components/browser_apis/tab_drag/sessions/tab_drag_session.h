@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/browser_apis/tab_drag/adapters/tab_drag_window_adapter.h"
+#include "components/browser_apis/tab_drag/destinations/drop_target_id.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
 #include "mojo/public/mojom/base/error.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
@@ -28,6 +29,7 @@ struct TabDragSessionParams {
   TabDragWindowId source_window_id;
   std::vector<tabs_api::NodeId> source_tab_ids;
   gfx::Point start_point;
+  int32_t tab_original_offset_x = 0;
   base::OnceClosure end_callback;
 };
 
@@ -48,6 +50,12 @@ class TabDragSession {
   // to it.
   void UpdateDraggedWindow(TabDragWindowId new_window_id);
 
+  // Called when a drop target is registered during an active session.
+  void OnDropTargetRegistered(DropTargetId target_id,
+                              TabDragWindowId window_id);
+
+  TabDragWindowId dragged_window() const { return dragged_window_; }
+
   const gfx::Point& start_point_in_screen() const {
     return start_point_in_screen_;
   }
@@ -58,6 +66,7 @@ class TabDragSession {
   const std::vector<tabs_api::NodeId>& dragged_tabs() const {
     return dragged_tabs_;
   }
+  int32_t tab_original_offset_x() const { return tab_original_offset_x_; }
   TabDragSessionInjector* injector() const { return &*injector_; }
 
   enum class DragMode {
@@ -97,6 +106,7 @@ class TabDragSession {
   TabDragWindowRegistry* registry() const;
   DragMode drag_mode_ = DragMode::kAttachedToWindow;
   gfx::Vector2d start_window_offset_;
+  int32_t tab_original_offset_x_ = 0;
 
   base::WeakPtrFactory<TabDragSession> weak_factory_{this};
 };

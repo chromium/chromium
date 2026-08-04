@@ -38,7 +38,8 @@ class TabDragSessionManager {
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> StartDrag(
       TabDragWindowAdapter* source_window,
       const std::vector<tabs_api::NodeId>& source_tab_ids,
-      const gfx::Point& start_point);
+      const gfx::Point& start_point,
+      int32_t tab_original_offset_x);
 
   TabDragSession* active_session() { return active_session_.get(); }
 

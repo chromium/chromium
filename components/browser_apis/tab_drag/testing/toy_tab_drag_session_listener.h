@@ -40,7 +40,8 @@ class ToyTabDragSessionListener : public TabDragSessionListener {
   // TabDragSessionListener:
   void OnSessionStarted(std::vector<tabs_api::NodeId> dragged_tabs,
                         TabDragWindowId source_window_id,
-                        const gfx::Point& start_point) override;
+                        const gfx::Point& start_point,
+                        int32_t tab_original_offset_x) override;
   void OnTargetChanged(DropTargetId new_target,
                        const gfx::Point& screen_point) override;
   void OnDragMoved(const gfx::Point& screen_point) override;

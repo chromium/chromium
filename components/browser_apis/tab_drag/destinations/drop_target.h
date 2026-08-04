@@ -48,7 +48,8 @@ class DropTarget {
   // Forward drag events to the underlying Mojo remote, performing coordinate
   // conversion internally using the window handle.
   void DragEnter(const std::vector<tabs_api::NodeId>& dragged_tabs,
-                 const gfx::Point& screen_point);
+                 const gfx::Point& screen_point,
+                 int32_t tab_original_offset_x);
   void DragOver(const gfx::Point& screen_point);
   void DragLeave();
   void DragCancel();

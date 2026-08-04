@@ -21,7 +21,8 @@ class TabDragSessionListener {
   // Called when a new drag session starts.
   virtual void OnSessionStarted(std::vector<tabs_api::NodeId> dragged_tabs,
                                 TabDragWindowId source_window_id,
-                                const gfx::Point& start_point) = 0;
+                                const gfx::Point& start_point,
+                                int32_t tab_original_offset_x) = 0;
 
   // Called when the active drop target for the drag changes.
   virtual void OnTargetChanged(DropTargetId new_target,

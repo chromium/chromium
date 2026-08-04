@@ -122,6 +122,10 @@ webui-browser-searchbox[dropdown-is-visible] {
   text-align: left;
 }
 
+.tabstripDiv:has(webui-browser-tab-strip[drag-in-progress]) {
+  overflow: visible;
+}
+
 .captionButtonsDiv {
   float: right;
   flex: 1;

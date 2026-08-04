@@ -92,7 +92,8 @@ export class TabStripElement extends CrLitElement implements
       },
       dragInProgress_: {
         type: Boolean,
-        state: true,
+        reflect: true,
+        attribute: 'drag-in-progress',
       },
       inactiveFrame: {
         type: Boolean,
@@ -474,10 +475,12 @@ export class TabStripElement extends CrLitElement implements
   }
 
   // DropTargetInterface implementation
-  onDragEntered(sourceTabIds: NodeId[], localPoint: Point) {
+  onDragEntered(
+      sourceTabIds: NodeId[], localPoint: Point, tabOriginalOffsetX: number) {
     this.dragInProgress_ = true;
     const nodeId = sourceTabIds[0]!;
-    this.dragDelegate_.onMojoDragEntered(nodeId, localPoint);
+    this.dragDelegate_.onMojoDragEntered(
+        nodeId, localPoint, tabOriginalOffsetX);
   }
 
   onDrag(localPoint: Point) {

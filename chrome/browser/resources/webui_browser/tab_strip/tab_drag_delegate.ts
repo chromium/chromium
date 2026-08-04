@@ -58,7 +58,10 @@ export class TabDragDelegate {
       e.preventDefault();
       const nodeId = tabElement.tabData.id;
       const startPoint = {x: Math.round(e.screenX), y: Math.round(e.screenY)};
-      this.host_.tabDragService.startDrag([nodeId], startPoint);
+      const tabRect = tabElement.getBoundingClientRect();
+      const tabOriginalOffsetX = Math.round(tabRect.left);
+      this.host_.tabDragService.startDrag(
+          [nodeId], startPoint, tabOriginalOffsetX);
     }
   }
 
@@ -71,7 +74,9 @@ export class TabDragDelegate {
   }
 
   // Mojo Drag Callbacks
-  onMojoDragEntered(nodeId: NodeId, localPoint: {x: number, y: number}) {
+  onMojoDragEntered(
+      nodeId: NodeId, localPoint: {x: number, y: number},
+      tabOriginalOffsetX: number) {
     this.draggedTabId_ = nodeId;
     this.dragInProgress_ = true;
     this.lastLocalX_ = localPoint.x;
@@ -82,11 +87,9 @@ export class TabDragDelegate {
     // Save original items for cancel/revert
     this.originalItems_ = [...this.host_.itemsForDrag];
 
-    // Calculate mouse offset relative to the tab's left edge (in viewport
-    // coordinates)
-    const tabElement = this.getDraggedElement_();
-    const tabRect = tabElement.getBoundingClientRect();
-    this.mouseXOffset_ = localPoint.x - tabRect.left;
+    // Calculate mouse offset inside the tab at drag start using
+    // tabOriginalOffsetX
+    this.mouseXOffset_ = localPoint.x - tabOriginalOffsetX;
 
     this.host_.requestUpdate();
   }
