@@ -4,7 +4,10 @@
 
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
 
+#include "base/functional/bind.h"
+#include "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiping_control.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -546,4 +549,59 @@ TEST_F(MacHistorySwiperTest, NoNavigationWithoutOverscrollMsg) {
   EXPECT_EQ(end_count_, 0);
   EXPECT_FALSE(navigated_right_);
   EXPECT_FALSE(navigated_left_);
+}
+
+// When the delegate returns NO for shouldAllowHistorySwiping, history swiping
+// is entirely suppressed.
+TEST_F(MacHistorySwiperTest, DelegateDisallowsSwipingPreventsNavigation) {
+  id mockDelegate =
+      [OCMockObject mockForProtocol:@protocol(HistorySwiperDelegate)];
+  [[[mockDelegate stub] andReturn:view_] viewThatWantsHistoryOverlay];
+  [[[mockDelegate stub] andReturnBool:NO] shouldAllowHistorySwiping];
+
+  HistorySwiper* historySwiper =
+      [[HistorySwiper alloc] initWithDelegate:mockDelegate];
+  id mockHistorySwiper = [OCMockObject partialMockForObject:historySwiper];
+  [[[mockHistorySwiper stub] andDo:^(NSInvocation* invocation) {
+    navigated_right_ = true;
+  }] navigateBrowserInDirection:history_swiper::kForwards];
+  [[[mockHistorySwiper stub] andDo:^(NSInvocation* invocation) {
+    navigated_left_ = true;
+  }] navigateBrowserInDirection:history_swiper::kBackwards];
+  historySwiper_ = mockHistorySwiper;
+
+  startGestureInMiddle();
+  moveGestureInMiddle();
+  onOverscrolled(cc::OverscrollBehavior::Type::kAuto);
+
+  EXPECT_EQ(begin_count_, 0);
+  EXPECT_EQ(end_count_, 0);
+
+  moveGestureAtPoint(NSMakePoint(0.2, 0.5));
+  EXPECT_EQ(begin_count_, 0);
+  EXPECT_EQ(end_count_, 0);
+  EXPECT_FALSE(navigated_right_);
+  EXPECT_FALSE(navigated_left_);
+
+  endGestureAtPoint(NSMakePoint(0.2, 0.5));
+  EXPECT_EQ(begin_count_, 0);
+  EXPECT_EQ(end_count_, 0);
+  EXPECT_FALSE(navigated_right_);
+  EXPECT_FALSE(navigated_left_);
+}
+
+class HistorySwipingControlTest : public ChromeRenderViewHostTestHarness {};
+
+TEST_F(HistorySwipingControlTest, DynamicCallbackEvaluation) {
+  bool allow = true;
+  history_swiper::HistorySwipingControl::CreateForWebContents(
+      web_contents(),
+      base::BindRepeating([](bool* allow_ptr) { return *allow_ptr; }, &allow));
+  auto* control =
+      history_swiper::HistorySwipingControl::FromWebContents(web_contents());
+
+  EXPECT_TRUE(control->ShouldAllowHistorySwiping());
+
+  allow = false;
+  EXPECT_FALSE(control->ShouldAllowHistorySwiping());
 }

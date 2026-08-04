@@ -3338,6 +3338,7 @@ static_library("ui") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/mac",
       "//chrome/browser/renderer_host:delegate",
+      "//chrome/browser/renderer_host:history_swiping_control",
       "//chrome/browser/ui/cocoa",
       "//chrome/browser/updater",
       "//chrome/browser/web_applications/extensions",

@@ -53,6 +53,17 @@ if (is_mac) {
     ]
   }
 
+  source_set("history_swiping_control") {
+    sources = [
+      "chrome_render_widget_host_view_mac_history_swiping_control.cc",
+      "chrome_render_widget_host_view_mac_history_swiping_control.h",
+    ]
+    deps = [
+      "//base",
+      "//content/public/browser",
+    ]
+  }
+
   source_set("delegate") {
     sources = [ "chrome_render_widget_host_view_mac_delegate.h" ]
     public_deps = [ "//content/public/browser" ]
@@ -66,6 +77,7 @@ if (is_mac) {
     deps = [
       ":delegate",
       ":history_swiper",
+      ":history_swiping_control",
       "//base",
       "//chrome/browser/actor/ui:actor_overlay",
       "//chrome/browser/devtools",

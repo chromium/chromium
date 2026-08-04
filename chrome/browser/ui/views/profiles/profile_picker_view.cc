@@ -87,6 +87,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
+#include "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiping_control.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -641,6 +642,15 @@ void ProfilePickerView::Init(Profile* picker_profile) {
       contents_.get());
   web_modal::WebContentsModalDialogManager::FromWebContents(contents_.get())
       ->SetDelegate(this);
+#if BUILDFLAG(IS_MAC)
+  history_swiper::HistorySwipingControl::CreateForWebContents(
+      contents_.get(),
+      base::BindRepeating(
+          [](base::WeakPtr<ProfilePickerView> view) {
+            return view ? view->CanNavigateBack() : true;
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+#endif
 
   // Destroy the System Profile when the ProfilePickerView is closed (assuming
   // its refcount hits 0). We need to use GetOriginalProfile() here because
