@@ -105,11 +105,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Transparency) {
   RunTest("new_tab_page/transparency_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxBase) {
-  RunTest("new_tab_page/composebox/composebox_test.js",
-          "runMochaSuite('NewTabPageComposeboxTest')");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxV2ForkTrue) {
   RunTest("new_tab_page/composebox/composebox_test.js",
           "runMochaSuite('NewTabPageComposeboxTestV2 \\\\(useNtpComposeboxFork = "
