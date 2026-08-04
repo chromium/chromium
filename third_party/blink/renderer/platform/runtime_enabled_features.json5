@@ -7324,6 +7324,10 @@
       base_feature: "none",
     },
     {
+      name: "WebTransportDraining",
+      status: "experimental",
+    },
+    {
       name: "WebTransportHeaders",
       status: "experimental",
       base_feature: "none",

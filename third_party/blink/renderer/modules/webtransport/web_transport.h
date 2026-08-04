@@ -94,6 +94,7 @@ class MODULES_EXPORT WebTransport final
   void close(WebTransportCloseInfo*);
   ScriptPromise<IDLUndefined> ready(ScriptState*);
   ScriptPromise<WebTransportCloseInfo> closed(ScriptState*);
+  ScriptPromise<IDLUndefined> draining(ScriptState*);
   void setDatagramWritableQueueExpirationDuration(double ms);
   ScriptPromise<WebTransportConnectionStats> getStats(ScriptState*);
   const String& protocol();
@@ -136,6 +137,7 @@ class MODULES_EXPORT WebTransport final
   void OnClosed(
       network::mojom::blink::WebTransportCloseInfoPtr close_info,
       network::mojom::blink::WebTransportStatsPtr final_stats) override;
+  void OnDraining() override;
 
   // Implementation of ExecutionContextLifecycleStateObserver
   void ContextDestroyed() final;
@@ -320,6 +322,8 @@ class MODULES_EXPORT WebTransport final
   using ReadyProperty = ScriptPromiseProperty<IDLUndefined, IDLAny>;
   Member<ReadyProperty> ready_;
   Member<ScriptPromiseProperty<WebTransportCloseInfo, IDLAny>> closed_;
+  using DrainingProperty = ScriptPromiseProperty<IDLUndefined, IDLAny>;
+  Member<DrainingProperty> draining_;
   // True if [[State]] is "connecting".
   bool connection_pending_ = true;
 

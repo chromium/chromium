@@ -878,6 +878,7 @@ WebTransport::WebTransport(ScriptState* script_state,
       ready_(MakeGarbageCollected<ReadyProperty>(context)),
       closed_(MakeGarbageCollected<
               ScriptPromiseProperty<WebTransportCloseInfo, IDLAny>>(context)),
+      draining_(MakeGarbageCollected<DrainingProperty>(context)),
       inspector_transport_id_(CreateUniqueIdentifier()) {}
 
 ScriptPromise<WritableStream> WebTransport::createUnidirectionalStream(
@@ -1067,6 +1068,10 @@ ScriptPromise<IDLUndefined> WebTransport::ready(ScriptState* script_state) {
 ScriptPromise<WebTransportCloseInfo> WebTransport::closed(
     ScriptState* script_state) {
   return closed_->Promise(script_state->World());
+}
+
+ScriptPromise<IDLUndefined> WebTransport::draining(ScriptState* script_state) {
+  return draining_->Promise(script_state->World());
 }
 
 ScriptPromise<WebTransportConnectionStats> WebTransport::getStats(
@@ -1292,6 +1297,13 @@ void WebTransport::OnClosed(
   Cleanup(idl_close_info, error, /*abruptly=*/false);
 }
 
+void WebTransport::OnDraining() {
+  DVLOG(1) << "WebTransport::OnDraining() this=" << this;
+  if (draining_->GetState() == DrainingProperty::State::kPending) {
+    draining_->ResolveWithUndefined();
+  }
+}
+
 void WebTransport::OnOutgoingStreamClosed(uint32_t stream_id) {
   DVLOG(1) << "WebTransport::OnOutgoingStreamClosed(" << stream_id
            << ") this=" << this;
@@ -1421,6 +1433,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
   visitor->Trace(ready_);
   visitor->Trace(closed_);
+  visitor->Trace(draining_);
   visitor->Trace(latest_stats_);
   visitor->Trace(pending_get_stats_resolvers_);
   visitor->Trace(incoming_stream_map_);

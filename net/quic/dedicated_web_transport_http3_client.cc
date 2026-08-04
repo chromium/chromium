@@ -851,6 +851,14 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   }
   stream->web_transport()->SetVisitor(
       std::make_unique<WebTransportVisitorProxy>(this));
+  // Install the single-use draining callback before the handshake completes so
+  // a GOAWAY that drains the session during the handshake is not lost.
+  web_transport_session_->SetOnDraining(
+      [weak_this = weak_factory_.GetWeakPtr()]() mutable {
+        if (weak_this) {
+          weak_this->OnSessionDraining();
+        }
+      });
 
   next_connect_state_ = CONNECT_STATE_CONFIRM_CONNECTION;
   return ERR_IO_PENDING;
@@ -961,6 +969,13 @@ void DedicatedWebTransportHttp3Client::OnSessionClosed(
       FROM_HERE,
       base::BindOnce(&DedicatedWebTransportHttp3Client::TransitionToState,
                      weak_factory_.GetWeakPtr(), WebTransportState::CLOSED));
+}
+
+void DedicatedWebTransportHttp3Client::OnSessionDraining() {
+  if (IsTerminalState(state_)) {
+    return;
+  }
+  visitor_->OnDraining();
 }
 
 void DedicatedWebTransportHttp3Client::

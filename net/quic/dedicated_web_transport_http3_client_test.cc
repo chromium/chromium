@@ -62,6 +62,7 @@ class MockVisitor : public WebTransportClientVisitor {
               (const std::optional<WebTransportCloseInfo>&),
               (override));
   MOCK_METHOD(void, OnError, (const WebTransportError&), (override));
+  MOCK_METHOD(void, OnDraining, (), (override));
 
   MOCK_METHOD0(OnIncomingBidirectionalStreamAvailable, void());
   MOCK_METHOD0(OnIncomingUnidirectionalStreamAvailable, void());
@@ -327,6 +328,48 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
       .WillOnce(DoAll(StopRunning(), SaveArg<0>(&received_close_info)));
   Run();
   EXPECT_THAT(received_close_info, Optional(close_info));
+}
+
+TEST_F(DedicatedWebTransportHttp3Test, SessionDraining) {
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/session-close"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  EXPECT_CALL(visitor_, OnClosed(_)).Times(0);
+  EXPECT_CALL(visitor_, OnDraining()).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+
+  // The "/session-close" endpoint sends a DRAIN_WEBTRANSPORT_SESSION capsule
+  // when it receives the string "DRAIN" on a stream.
+  quic::WebTransportStream* stream =
+      client_->session()->OpenOutgoingUnidirectionalStream();
+  ASSERT_TRUE(stream != nullptr);
+  EXPECT_TRUE(stream->Write("DRAIN"));
+  EXPECT_TRUE(stream->SendFin());
+
+  Run();
+}
+
+TEST_F(DedicatedWebTransportHttp3Test,
+       DrainingAfterConnectionFailureIsIgnored) {
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/not-found"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnectionFailed).WillOnce(StopRunning());
+  EXPECT_CALL(visitor_, OnDraining()).Times(0);
+  client_->Connect();
+  Run();
+  ASSERT_EQ(client_->state(), WebTransportState::FAILED);
+
+  client_->OnSessionDraining();
 }
 
 // Test negotiation of the application protocol via

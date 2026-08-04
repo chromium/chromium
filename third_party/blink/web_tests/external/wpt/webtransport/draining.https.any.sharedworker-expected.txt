@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] WebTransport.draining should be a Promise and not resolve immediately
-  assert_true: draining should be a Promise expected true got false
-[FAIL] WebTransport.draining should be accessible before connection is ready
-  assert_true: draining should be accessible before ready resolves expected true got false
-Harness: the test ran to completion.
-

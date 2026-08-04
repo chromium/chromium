@@ -79,6 +79,8 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void OnCloseTimeout();
   void OnDatagramProcessed(std::optional<quic::DatagramStatus> status);
 
+  void OnSessionDraining();
+
   // QuicTransportClientSession::ClientVisitor methods.
   void OnSessionReady() override;
   void OnSessionClosed(quic::WebTransportSessionError error_code,

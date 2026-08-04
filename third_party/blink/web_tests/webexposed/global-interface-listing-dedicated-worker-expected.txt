@@ -3963,6 +3963,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter closed
 [Worker]     getter congestionControl
 [Worker]     getter datagrams
+[Worker]     getter draining
 [Worker]     getter incomingBidirectionalStreams
 [Worker]     getter incomingUnidirectionalStreams
 [Worker]     getter protocol

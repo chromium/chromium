@@ -757,6 +757,13 @@ void WebTransport::OnConnected(
   // then resets the mojo endpoints.
   receiver_.set_disconnect_handler(
       base::BindOnce(&WebTransport::Dispose, base::Unretained(this)));
+
+  // A GOAWAY travels on the connection's control stream, independently of the
+  // CONNECT stream carrying this handshake, so drain signal can be received
+  // before the CONNECT. Send drain now if that happened.
+  if (draining_received_) {
+    client_->OnDraining();
+  }
 }
 
 void WebTransport::OnConnectionFailed(const net::WebTransportError& error) {
@@ -810,6 +817,18 @@ void WebTransport::OnError(const net::WebTransportError& error) {
   DCHECK(!handshake_client_);
 
   TearDown();
+}
+
+void WebTransport::OnDraining() {
+  if (torn_down_ || closing_ || draining_received_) {
+    return;
+  }
+
+  draining_received_ = true;
+
+  if (client_.is_bound()) {
+    client_->OnDraining();
+  }
 }
 
 void WebTransport::OnIncomingBidirectionalStreamAvailable() {

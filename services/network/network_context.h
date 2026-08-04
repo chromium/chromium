@@ -711,6 +711,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::ConnectionChangeNotifier::Observer* observer);
 
   size_t NumOpenWebTransports() const;
+  WebTransport* GetWebTransportForTesting();
 
   size_t num_url_loader_factories_for_testing() const {
     return url_loader_factories_.size();

@@ -2801,6 +2801,11 @@ size_t NetworkContext::NumOpenWebTransports() const {
   return std::ranges::count(web_transports_, false, &WebTransport::torn_down);
 }
 
+WebTransport* NetworkContext::GetWebTransportForTesting() {
+  CHECK_EQ(web_transports_.size(), 1u);
+  return web_transports_.begin()->get();
+}
+
 bool NetworkContext::AllURLLoaderFactoriesAreBoundToNetworkForTesting(
     net::handles::NetworkHandle target_network) const {
   for (const auto& factory : url_loader_factories_) {

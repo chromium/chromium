@@ -92,6 +92,8 @@ class NET_EXPORT WebTransportClientVisitor {
       scoped_refptr<HttpResponseHeaders> response_headers) = 0;
   // CONNECTING -> FAILED
   virtual void OnConnectionFailed(const WebTransportError& error) = 0;
+  // CONNECTING or CONNECTED -> draining notification
+  virtual void OnDraining() = 0;
   // CONNECTED -> CLOSED
   virtual void OnClosed(
       const std::optional<WebTransportCloseInfo>& close_info) = 0;

@@ -206,6 +206,15 @@ interface WebTransportClient {
   // This is the last message and it is not allowed to call methods after
   // calling this.
   OnClosed(WebTransportCloseInfo? close_info, WebTransportStats final_stats);
+
+  // Called when the session enters the "draining" state, i.e. the server has
+  // indicated (via a DRAIN_WEBTRANSPORT_SESSION capsule or an HTTP/3 GOAWAY on
+  // the underlying connection) that it intends to gracefully retire this
+  // session. https://w3c.github.io/webtransport/#dom-webtransport-draining
+  // Existing streams remain usable and the session is not closed; this is a
+  // hint to the application to start migrating work to another session. Unlike
+  // OnClosed, this is not the last message and is delivered at most once.
+  OnDraining();
 };
 
 // Used to create a WebTransport session. This is split from WebTransport

@@ -32,6 +32,10 @@
   [CallWith=ScriptState] readonly attribute Promise<undefined> ready;
   [CallWith=ScriptState] readonly attribute Promise<WebTransportCloseInfo> closed;
 
+  // https://w3c.github.io/webtransport/#dom-webtransport-draining
+  [CallWith=ScriptState, RuntimeEnabled=WebTransportDraining]
+  readonly attribute Promise<undefined> draining;
+
   [CallWith=ScriptState, RuntimeEnabled=WebTransportStats]
   Promise<WebTransportConnectionStats> getStats();
 

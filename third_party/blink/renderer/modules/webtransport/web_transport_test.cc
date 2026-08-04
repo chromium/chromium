@@ -842,6 +842,40 @@ TEST_F(WebTransportTest, GarbageCollectMojoConnectionError) {
   EXPECT_TRUE(closed_tester.IsRejected());
 }
 
+TEST_F(WebTransportTest, PendingDrainingOnConnectionError) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  ScriptPromiseTester draining_tester(
+      scope.GetScriptState(), web_transport->draining(scope.GetScriptState()));
+  ScriptPromiseTester closed_tester(
+      scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
+
+  client_remote_.reset();
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(draining_tester.IsFulfilled());
+  EXPECT_FALSE(draining_tester.IsRejected());
+  EXPECT_TRUE(closed_tester.IsRejected());
+  EXPECT_FALSE(web_transport->HasPendingActivity());
+}
+
+TEST_F(WebTransportTest, PendingDrainingOnContextDestroyed) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  ScriptPromiseTester draining_tester(
+      scope.GetScriptState(), web_transport->draining(scope.GetScriptState()));
+
+  scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  EXPECT_FALSE(draining_tester.IsFulfilled());
+  EXPECT_FALSE(draining_tester.IsRejected());
+  EXPECT_FALSE(web_transport->HasPendingActivity());
+}
+
 TEST_F(WebTransportTest, SendDatagram) {
   V8TestingScope scope;
   auto* web_transport =
