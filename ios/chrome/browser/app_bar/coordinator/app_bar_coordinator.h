@@ -10,15 +10,13 @@
 #import "ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h"
 
 class Browser;
-@protocol ResponderChaining;
 
 // Coordinator for the app bar, the bar at the bottom of the screen on narrow
 // form factors.
 @interface AppBarCoordinator : RootCoordinator
 
 // View controller for the app bar.
-@property(nonatomic, strong, readonly)
-    UIViewController<ResponderChaining>* viewController;
+@property(nonatomic, strong, readonly) UIViewController* viewController;
 
 // Initializes the coordinator with the given browsers.
 - (instancetype)initWithRegularBrowser:(Browser*)regularBrowser

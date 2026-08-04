@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
-#import "ios/chrome/browser/keyboard/ui_bundled/responder_chaining.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
 @class LayoutGuideCenter;
@@ -30,7 +29,7 @@
 //   Tab Groups page: [                   PageControl             Done]
 //   Remote page:     [                   PageControl             Done]
 //   Selection mode:  [SelectAll        SelectedTabsCount         Done]
-@interface TabGridTopToolbar : UIToolbar <KeyCommandActions, ResponderChaining>
+@interface TabGridTopToolbar : UIToolbar <KeyCommandActions>
 
 // These components are publicly available to allow the user to set their
 // contents, visibility and actions.
@@ -85,6 +84,8 @@
 // Updates the appearance of the this toolbar, based on whether the content
 // below it is `scrolledToEdge` or not.
 - (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;
+// Adds the receiver in the chain before the original next responder.
+- (void)respondBeforeResponder:(UIResponder*)nextResponder;
 // Relinquishs the searchBar status as first responder.
 - (void)unfocusSearchBar;
 // Sets the text of the UISearchBar.

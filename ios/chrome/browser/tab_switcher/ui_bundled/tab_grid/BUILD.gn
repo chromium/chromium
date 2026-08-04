@@ -62,7 +62,6 @@ source_set("tab_grid") {
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_action_menu/coordinator",
-    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui",
     "//ios/chrome/browser/main/ui_bundled",

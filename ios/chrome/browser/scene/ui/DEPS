@@ -4,6 +4,5 @@ include_rules = [
   "+ios/chrome/browser/assistant/ui",
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
-  "+ios/chrome/browser/keyboard/ui_bundled/responder_chaining.h",
   # keep-sorted end
 ]

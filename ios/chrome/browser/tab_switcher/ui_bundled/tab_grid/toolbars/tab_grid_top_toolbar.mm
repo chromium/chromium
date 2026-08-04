@@ -792,16 +792,14 @@ CGFloat HorizontalMargin() {
   [_searchBar resignFirstResponder];
 }
 
+- (void)respondBeforeResponder:(UIResponder*)nextResponder {
+  _followingNextResponder = nextResponder;
+}
+
 - (void)setBackgroundContentOffset:(CGPoint)backgroundContentOffset
                           animated:(BOOL)animated {
   [_scrollBackgroundView setContentOffset:backgroundContentOffset
                                  animated:animated];
-}
-
-#pragma mark - ResponderChaining
-
-- (void)respondBeforeResponder:(UIResponder*)nextResponder {
-  _followingNextResponder = nextResponder;
 }
 
 #pragma mark - UIResponder
@@ -819,8 +817,7 @@ CGFloat HorizontalMargin() {
     return _closeAllActionEnabled;
   }
   if (sel_isEqual(action, @selector(keyCommand_close))) {
-    return _exitTabGridButton.enabled || _mode == TabGridMode::kSearch ||
-           _mode == TabGridMode::kSelection;
+    return _exitTabGridButton.enabled || _mode == TabGridMode::kSearch;
   }
   if (sel_isEqual(action, @selector(keyCommand_find))) {
     return _searchButton.enabled;
