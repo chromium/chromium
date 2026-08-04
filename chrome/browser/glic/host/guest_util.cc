@@ -7,10 +7,13 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
@@ -19,6 +22,9 @@
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/host/glic_guest_observer.h"
+#include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -266,6 +272,83 @@ url::Origin GetGuestOrigin() {
   return url::Origin::Create(GetGuestURL());
 }
 
+std::string GetGlicAllowedOrigins(bool is_internal_google_account) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  std::string allowed_origins =
+      command_line->GetSwitchValueASCII(::switches::kGlicAllowedOrigins);
+  if (allowed_origins.empty()) {
+    allowed_origins = features::kGlicAllowedOriginsOverride.Get();
+  }
+
+  // Allow corp origins for @google accounts.
+  if (is_internal_google_account) {
+    allowed_origins += " https://*.corp.google.com";
+  }
+  return allowed_origins;
+}
+
+bool IsOriginAllowedGlicApi(const url::Origin& origin) {
+  if (origin.opaque()) {
+    return false;
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev)) {
+    return true;
+  }
+  if (GetGuestOrigin().IsSameOriginWith(origin)) {
+    return true;
+  }
+  std::string api_allowed_origins = features::kGlicApiAllowedOrigins.Get();
+  if (!api_allowed_origins.empty()) {
+    for (const std::string& allowed :
+         base::SplitString(api_allowed_origins, " ", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY)) {
+      url::Origin allowed_origin = url::Origin::Create(GURL(allowed));
+      if (!allowed_origin.opaque() && allowed_origin.IsSameOriginWith(origin)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host) {
+  if (!base::FeatureList::IsEnabled(features::kGlicEnableMojoJs)) {
+    return false;
+  }
+  content::WebContents* guest_contents =
+      content::WebContents::FromRenderFrameHost(&frame_host);
+  if (!guest_contents || !IsGlicGuest(guest_contents)) {
+    return false;
+  }
+  return IsOriginAllowedGlicApi(frame_host.GetLastCommittedOrigin());
+}
+
+void BindGlicWebClientHandler(
+    content::RenderFrameHost* rfh,
+    mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver) {
+  if (!base::FeatureList::IsEnabled(features::kGlicEnableMojoJs)) {
+    return;
+  }
+  if (!IsFrameAllowedGlicApi(*rfh)) {
+    return;
+  }
+  content::WebContents* guest_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!guest_contents) {
+    return;
+  }
+  content::WebContents* top =
+      guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
+  if (!top) {
+    return;
+  }
+  auto* glic_ui = GlicUI::From(top);
+  if (!glic_ui || !glic_ui->host()) {
+    return;
+  }
+  glic_ui->host()->CreateWebClient(std::move(receiver));
+}
+
 GURL MaybeApplyPresetGuestUrl(GURL guest_url) {
   if (!base::FeatureList::IsEnabled(features::kGlicGuestUrlPresets)) {
     return guest_url;
@@ -401,6 +484,9 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   guest_contents->SetUserData(
       "glic::WebviewWebContentsObserver",
       std::make_unique<WebviewWebContentsObserver>(guest_contents));
+  if (base::FeatureList::IsEnabled(features::kGlicEnableMojoJs)) {
+    glic::GlicGuestObserver::CreateForWebContents(guest_contents);
+  }
   VLOG(1) << "Registered glic::WebviewWebContentsObserver for guest "
              "WebContents with url=\""
           << guest_contents->GetVisibleURL() << "\"";

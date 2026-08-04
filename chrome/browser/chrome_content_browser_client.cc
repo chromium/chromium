@@ -95,6 +95,7 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/font_family_cache.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -551,7 +552,7 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
-#include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -2323,13 +2324,19 @@ bool ChromeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
       origin);
 }
 
-bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForSite(
-    content::BrowserContext* browser_context,
-    const GURL& site_url) {
+bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
+    content::RenderFrameHost& render_frame_host) {
+  if (glic::IsFrameAllowedGlicApi(render_frame_host)) {
+    return true;
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  const GURL& site_url = render_frame_host.GetSiteInstance()
+                             ->GetSecurityPrincipal()
+                             .GetDeprecatedSiteURL();
   if (site_url.SchemeIs(extensions::kExtensionScheme)) {
     return extensions::util::IsMojoJsEnabledForExtension(
-        extensions::ExtensionId(site_url.host()), browser_context);
+        extensions::ExtensionId(site_url.host()),
+        render_frame_host.GetBrowserContext());
   }
 #endif
   return false;

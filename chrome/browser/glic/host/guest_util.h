@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -34,6 +35,9 @@ namespace glic {
 // Returns the URL/origin from where the guest web client will be loaded from.
 GURL GetGuestURL();
 url::Origin GetGuestOrigin();
+std::string GetGlicAllowedOrigins(bool is_internal_google_account = false);
+bool IsOriginAllowedGlicApi(const url::Origin& origin);
+bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host);
 
 // Checks if a preset url is enabled and returns it if so. Otherwise, returns
 // `guest_url`.
@@ -52,6 +56,10 @@ bool IsGlicOwnedTab(tabs::TabInterface* tab);
 
 // Returns true if `web_contents` is the Glic guest WebContents.
 bool IsGlicGuest(content::WebContents* web_contents);
+
+void BindGlicWebClientHandler(
+    content::RenderFrameHost* rfh,
+    mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver);
 
 // Returns true if `process_host` is either the Glic FRE WebUI or the Glic
 // main WebUI.

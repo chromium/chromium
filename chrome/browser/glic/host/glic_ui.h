@@ -76,6 +76,9 @@ class GlicUI : public ui::MojoWebUIController,
   // Associates the WebUI with a given Host. This must be called exactly once.
   void AttachToHost(Host* host);
 
+  GlicPageHandler* page_handler() { return page_handler_.get(); }
+  Host* host() const { return host_; }
+
  private:
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   using SlimWebViewPageHandlerFactory::CreatePageHandler;

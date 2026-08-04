@@ -298,15 +298,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
           IDR_GLIC_GLIC_API_IMPL_GLIC_API_INJECTED_CLIENT_ROLLUP_JS));
 
   std::string allowed_origins =
-      command_line->GetSwitchValueASCII(::switches::kGlicAllowedOrigins);
-  if (allowed_origins.empty()) {
-    allowed_origins = features::kGlicAllowedOriginsOverride.Get();
-  }
-
-  // Allow corp origins for @google accounts.
-  if (is_internal_google_account) {
-    allowed_origins += " https://*.corp.google.com";
-  }
+      glic::GetGlicAllowedOrigins(is_internal_google_account);
 
   source->AddString("glicAllowedOrigins", allowed_origins);
   source->AddString("glicApiAllowedOrigins",

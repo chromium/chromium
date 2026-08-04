@@ -21,7 +21,7 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/visibility.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 class Profile;
 namespace content {

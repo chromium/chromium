@@ -15,6 +15,9 @@
 #include "chrome/browser/actor/actor_script_tool_receiver.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
+#include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -450,6 +453,7 @@ void BindCredentialManager(
 void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
+  map->Add<glic::mojom::WebClientHandler>(&glic::BindGlicWebClientHandler);
   map->Add<image_annotation::mojom::Annotator>(&BindImageAnnotator);
 
   map->Add<blink::mojom::ScriptToolHost>(
