@@ -424,14 +424,13 @@ void WebAuthnHandler::AddCredential(
       CopyBinaryToVector(credential->GetCredentialId());
 
   std::optional<uint32_t> counter;
-  int provided_sign_count = credential->GetSignCount().value_or(0);
-  if (provided_sign_count < -1) {
+  if (credential->GetSignCount() < -1) {
     callback->sendFailure(Response::InvalidParams(kInvalidSignatureCounter));
     return;
   }
-  if (provided_sign_count > -1) {
+  if (credential->GetSignCount() > -1) {
     // -1 is a special value to mean no signature counter.
-    counter = static_cast<uint32_t>(provided_sign_count);
+    counter = static_cast<uint32_t>(credential->GetSignCount());
   }
 
   if (credential->GetIsResidentCredential()) {
