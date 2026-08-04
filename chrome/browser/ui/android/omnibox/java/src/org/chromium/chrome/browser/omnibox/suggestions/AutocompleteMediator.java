@@ -1676,22 +1676,42 @@ class AutocompleteMediator
     }
 
     /**
-     * Uses the provided voice search query to generate a URL, and then loads that URL.
+     * Uses the provided voice search query to generate a URL, and then loads that URL. Works even
+     * when no session is active (e.g., via NTP fakebox), so long as the fallback profile is
+     * provided.
      *
      * @param query The voice search query used to generate the URL to load.
+     * @param fallbackProfile Profile to use for URL generation and classification if not in a
+     *     session.
      */
-    /* package */ void loadUrlFromVoice(String query) {
-        if (!isInInputSession()) return;
+    /* package */ void loadUrlFromVoice(String query, @Nullable Profile fallbackProfile) {
+        // TODO(b/542187860) Preferably, we avoid using a fallback profile by always initializing
+        // a session before this function is called.
+        final Profile profile;
+        final @AutocompleteRequestType int requestType;
+        final @Nullable AutocompleteController autocomplete;
 
-        Profile profile = mSessionState.getProfile();
-        if (profile == null) return;
+        if (!isInInputSession()) {
+            if (!OmniboxFeatures.sOmniboxSessionlessVoiceSearch.isEnabled()) return;
+            if (fallbackProfile == null) return;
+            profile = fallbackProfile;
+            autocomplete = AutocompleteController.getForProfile(profile);
+            requestType = AutocompleteRequestType.SEARCH;
+        } else {
+            @Nullable Profile sessionProfile = mSessionState.getProfile();
+            if (sessionProfile == null) return;
+            profile = sessionProfile;
+            autocomplete = mAutocomplete;
+            requestType = mAutocompleteInput.getRequestType();
+        }
 
-        AutocompleteMatch match = mAutocomplete != null ? mAutocomplete.classify(query) : null;
+        @Nullable AutocompleteMatch match =
+                autocomplete != null ? autocomplete.classify(query) : null;
 
         GURL url;
         if (match == null
                 || match.isSearchSuggestion()
-                || ToolModeUtils.isAimRequest(mAutocompleteInput.getRequestType())) {
+                || ToolModeUtils.isAimRequest(requestType)) {
             url = TemplateUrlServiceFactory.getForProfile(profile).getUrlForVoiceSearchQuery(query);
         } else {
             url = match.getUrl();
