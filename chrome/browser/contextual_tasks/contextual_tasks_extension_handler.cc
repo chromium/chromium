@@ -112,8 +112,8 @@ void ContextualTasksExtensionHandler::ExecuteAction(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {}
-void ContextualTasksExtensionHandler::GetPlaceholderConfig(
-    GetPlaceholderConfigCallback callback) {
+void ContextualTasksExtensionHandler::GetCyclingPlaceholderConfig(
+    GetCyclingPlaceholderConfigCallback callback) {
   std::move(callback).Run(nullptr);
 }
 void ContextualTasksExtensionHandler::GetRecentTabs(
