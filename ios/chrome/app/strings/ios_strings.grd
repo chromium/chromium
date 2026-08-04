@@ -5974,6 +5974,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_TITLE" desc="Title of the subpage explaining how users can help improve enhanced autofill settings. [iOS only]">
         Help improve enhanced autofill
       </message>
+      <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_TITLE" desc="Title of the section in the subpage explaining how users can help improve enhanced autofill settings. [iOS only]">
+        You're helping improve enhanced autofill
+      </message>
       <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY" desc="Subtext or description beneath the 'Manage Connected Apps' entry point, explaining its purpose. 'Gemini' is a proper product name and must remain unlocalized. [iOS only]">
         Choose which apps Gemini connects to
       </message>
@@ -5989,8 +5992,14 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE" desc="Section header or toggle label in Chrome settings for enabling AI-driven autofill suggestions. 'Gemini' is a proper Google product name and must remain unlocalized.">
         Find and fill with Gemini
       </message>
+      <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_THINGS_TO_CONSIDER_TITLE" desc="Subheading in the settings page describing the data logging behavior when the enhanced autofill feature is triggered by the user. [iOS only]">
+        Things to consider
+      </message>
       <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE" desc="Page title in Chrome settings for the advanced, AI-powered form-filling features. 'Autofill' refers to the browser's ability to automatically populate form fields. [iOS only]">
         Enhanced autofill
+      </message>
+      <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_WHEN_USED_TITLE" desc="Subheading in the settings page describing the data logging behavior when the enhanced autofill feature is triggered by the user. [iOS only]">
+        When used
       </message>
       <message name="IDS_IOS_PHONE_CALL_BUTTON" desc="Text in the confirmation dialog button that will initiate a phone call for the presented number. [Length: 10em] [iOS only]">
         Call
