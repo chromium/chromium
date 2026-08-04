@@ -280,7 +280,9 @@
 // Starts the sign-in flow.
 - (void)startSignInOnlyFlow {
   [self showActivityOverlay];
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
+  if (self.accessPoint != signin_metrics::AccessPoint::kDeepLinkDefault) {
+    signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
+  }
   // If this was triggered by the user tapping the default button in the sign-in
   // promo, give the user a chance to see the full email, by showing a snackbar.
   PostSignInActionSet postSigninActions;
