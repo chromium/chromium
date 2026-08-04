@@ -112,6 +112,8 @@ ci.thin_tester(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
+        run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -171,6 +173,8 @@ ci.thin_tester(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
+        run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -488,6 +492,7 @@ ci.thin_tester(
             config = "base_config",
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -542,6 +547,7 @@ ci.thin_tester(
             config = "base_config",
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
