@@ -20,6 +20,8 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/response_head_update_params.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
@@ -38,7 +40,10 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_content_browser_client.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/test/cert_test_util.h"
@@ -71,7 +76,10 @@ class MockSearchPrefetchContentBrowserClient : public TestContentBrowserClient {
   URLLoaderRequestHandler
   CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
       FrameTreeNodeId frame_tree_node_id,
-      const network::ResourceRequest& resource_request) override {
+      const network::ResourceRequest& resource_request,
+      int64_t navigation_id,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
+      override {
     if (handler_) {
       return std::move(handler_);
     }
@@ -598,6 +606,17 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     return helper_->context()->GetStorageControl();
   }
 
+  void SetUpTestWebContentsAndNavigation(const GURL& url) {
+    web_contents_ = WebContentsTester::CreateTestWebContents(
+        helper_->browser_context(), nullptr);
+    frame_tree_node_id_ =
+        web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+
+    navigation_simulator_ =
+        NavigationSimulator::CreateBrowserInitiated(url, web_contents_.get());
+    navigation_simulator_->Start();
+  }
+
   // Starts a request. After calling this, the request is ongoing and the
   // caller can use functions like client_.RunUntilComplete() to wait for
   // completion.
@@ -605,8 +624,10 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     // Create a ServiceWorkerClient and simulate what
     // ServiceWorkerControlleeRequestHandler does to assign it a controller.
     if (!service_worker_client_) {
-      service_worker_client_ = std::make_unique<ScopedServiceWorkerClient>(
-          CreateServiceWorkerClient(helper_->context(), request->url));
+      service_worker_client_ =
+          std::make_unique<ScopedServiceWorkerClient>(CreateServiceWorkerClient(
+              helper_->context(), request->url,
+              /*are_ancestors_secure=*/true, frame_tree_node_id_));
       service_worker_client()->AddMatchingRegistration(registration_.get());
       service_worker_client()->SetControllerRegistration(
           registration_, /*notify_controllerchange=*/false);
@@ -939,6 +960,11 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   bool did_call_fallback_callback_ = false;
   base::OnceClosure quit_closure_for_fallback_callback_;
   ResponseHeadUpdateParams response_head_update_params_;
+
+  RenderViewHostTestEnabler rvh_test_enabler_;
+  std::unique_ptr<WebContents> web_contents_;
+  std::unique_ptr<NavigationSimulator> navigation_simulator_;
+  FrameTreeNodeId frame_tree_node_id_;
 };
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, Basic) {
@@ -1551,6 +1577,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FencedFrameNavigationPreload) {
   registration_->EnableNavigationPreload(true);
 
   std::unique_ptr<network::ResourceRequest> request = CreateRequest();
+  SetUpTestWebContentsAndNavigation(request->url);
   request->destination = network::mojom::RequestDestination::kFencedframe;
 
   // Perform the request.
@@ -2192,6 +2219,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, SearchPrefetchHitInSyntheticResponse
       }));
 
   std::unique_ptr<network::ResourceRequest> request = CreateRequest();
+  SetUpTestWebContentsAndNavigation(request->url);
   request->is_outermost_main_frame = true;
 
   StartRequest(std::move(request));

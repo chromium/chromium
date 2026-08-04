@@ -37,6 +37,14 @@ class SearchPrefetchURLLoaderInterceptor
       const network::ResourceRequest& tentative_resource_request,
       content::FrameTreeNodeId frame_tree_node_id);
 
+  // Maybe proxies the given request handler with the Extensions Web Request
+  // API.
+  static SearchPrefetchURLLoader::RequestHandler MaybeProxyRequestHandler(
+      content::FrameTreeNodeId frame_tree_node_id,
+      int64_t navigation_id,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
+      SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler);
+
   // content::URLLoaderRequestInterceptor:
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
@@ -44,21 +52,13 @@ class SearchPrefetchURLLoaderInterceptor
       content::URLLoaderRequestInterceptor::LoaderCallback callback) override;
 
  private:
-  // Maybe proxies the given request handler with the Extensions Web Request
-  // API.
-  SearchPrefetchURLLoader::RequestHandler MaybeProxyRequestHandler(
-      content::BrowserContext* browser_context,
-      SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler);
-
   // Used to get the current WebContents/Profile.
   const content::FrameTreeNodeId frame_tree_node_id_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // These are sent to the Extensions Web Request API when maybe proxying the
   // prefetch URL loader.
-  int64_t navigation_id_;
+  const int64_t navigation_id_;
   scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner_;
-#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

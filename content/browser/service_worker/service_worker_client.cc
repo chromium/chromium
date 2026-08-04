@@ -54,6 +54,17 @@ void RunCallbacks(
   }
 }
 
+std::optional<int64_t> GetOngoingNavigationId(
+    FrameTreeNodeId frame_tree_node_id) {
+  if (auto* frame_tree_node =
+          FrameTreeNode::GloballyFindByID(frame_tree_node_id)) {
+    if (auto* navigation_request = frame_tree_node->navigation_request()) {
+      return navigation_request->GetNavigationId();
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 // RAII helper class for keeping track of versions waiting for an update hint
@@ -1252,11 +1263,17 @@ ServiceWorkerClient::TakeInterceptingPreloadHandler(
     return std::nullopt;
   }
 
+  std::optional<int64_t> navigation_id =
+      GetOngoingNavigationId(ongoing_navigation_frame_tree_node_id_);
+  CHECK(navigation_id);
   if (ContentBrowserClient::URLLoaderRequestHandler embedder_url_loader_handler =
           GetContentClient()
               ->browser()
               ->CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
-                  ongoing_navigation_frame_tree_node_id_, resource_request)) {
+                  ongoing_navigation_frame_tree_node_id_, resource_request,
+                  *navigation_id,
+                  GetUIThreadTaskRunner(
+                      {BrowserTaskType::kNavigationNetworkResponse}))) {
     return std::move(embedder_url_loader_handler);
   }
 
@@ -1290,7 +1307,7 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
   }
 
   switch (type) {
-    case CreateNetworkURLLoaderFactoryType::kNavigationPreload:
+    case CreateNetworkURLLoaderFactoryType::kNavigationPreload: {
       // Allow the embedder to intercept the URLLoader request if necessary.
       // This must be a synchronous decision by the embedder. In the future, we
       // may wish to support asynchronous decisions using
@@ -1304,16 +1321,22 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       // request may trigger a new request on behalf of a specific context, we
       // need to ensure that the `network_restrictions_id` of that context is
       // provided.
+      std::optional<int64_t> navigation_id =
+          GetOngoingNavigationId(ongoing_navigation_frame_tree_node_id_);
+      CHECK(navigation_id);
       if (ContentBrowserClient::URLLoaderRequestHandler embedder_url_loader_handler =
               GetContentClient()
                   ->browser()
                   ->CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
-                      ongoing_navigation_frame_tree_node_id_,
-                      resource_request)) {
+                      ongoing_navigation_frame_tree_node_id_, resource_request,
+                      *navigation_id,
+                      GetUIThreadTaskRunner(
+                          {BrowserTaskType::kNavigationNetworkResponse}))) {
         return base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
             std::move(embedder_url_loader_handler));
       }
       break;
+    }
     case CreateNetworkURLLoaderFactoryType::kRaceNetworkRequest:
     case CreateNetworkURLLoaderFactoryType::kSyntheticNetworkRequest:
       break;

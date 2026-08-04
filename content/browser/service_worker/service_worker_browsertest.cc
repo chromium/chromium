@@ -8386,7 +8386,10 @@ class MockContentBrowserClientWithInterceptor
   URLLoaderRequestHandler
   CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
       FrameTreeNodeId frame_tree_node_id,
-      const network::ResourceRequest& resource_request) override {
+      const network::ResourceRequest& resource_request,
+      int64_t navigation_id,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
+      override {
     if (intercept_) {
       return base::BindOnce(
           &MockContentBrowserClientWithInterceptor::HandleRequest,

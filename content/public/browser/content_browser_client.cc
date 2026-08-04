@@ -1168,7 +1168,10 @@ ContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
 ContentBrowserClient::URLLoaderRequestHandler ContentBrowserClient::
     CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
         FrameTreeNodeId frame_tree_node_id,
-        const network::ResourceRequest& resource_request) {
+        const network::ResourceRequest& resource_request,
+        int64_t navigation_id,
+        scoped_refptr<base::SequencedTaskRunner>
+            navigation_response_task_runner) {
   return ContentBrowserClient::URLLoaderRequestHandler();
 }
 

@@ -66,15 +66,10 @@ SearchPrefetchURLLoaderInterceptor::SearchPrefetchURLLoaderInterceptor(
     content::FrameTreeNodeId frame_tree_node_id,
     int64_t navigation_id,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
-    : frame_tree_node_id_(frame_tree_node_id) {
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  navigation_id_ = navigation_id;
-  navigation_response_task_runner_ = navigation_response_task_runner;
-#else
-  std::ignore = navigation_id;
-  std::ignore = navigation_response_task_runner;
-#endif
-}
+    : frame_tree_node_id_(frame_tree_node_id),
+      navigation_id_(navigation_id),
+      navigation_response_task_runner_(
+          std::move(navigation_response_task_runner)) {}
 
 SearchPrefetchURLLoaderInterceptor::~SearchPrefetchURLLoaderInterceptor() =
     default;
@@ -139,19 +134,23 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   return {};
 }
 
+// static
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler(
-    content::BrowserContext* browser_context,
+    content::FrameTreeNodeId frame_tree_node_id,
+    int64_t navigation_id,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
     SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler) {
   network::URLLoaderFactoryBuilder factory_builder;
   TRACE_EVENT("loading",
               "SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler");
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   content::WebContents* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   CHECK(web_contents);
   content::RenderFrameHost* render_frame_host =
       web_contents->GetPrimaryMainFrame();
+  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
 
   auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
@@ -161,8 +160,8 @@ SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler(
         browser_context, render_frame_host,
         render_frame_host->GetProcess()->GetDeprecatedID(),
         content::ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-        navigation_id_, ukm::kInvalidSourceIdObj, factory_builder,
-        /*header_client=*/nullptr, navigation_response_task_runner_,
+        navigation_id, ukm::kInvalidSourceIdObj, factory_builder,
+        /*header_client=*/nullptr, std::move(navigation_response_task_runner),
         /*request_initiator=*/url::Origin());
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -188,7 +187,8 @@ void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
 
   if (prefetched_loader_handler) {
     prefetched_loader_handler = MaybeProxyRequestHandler(
-        browser_context, std::move(prefetched_loader_handler));
+        frame_tree_node_id_, navigation_id_, navigation_response_task_runner_,
+        std::move(prefetched_loader_handler));
   }
 
   std::move(callback).Run(std::move(prefetched_loader_handler));
