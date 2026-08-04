@@ -155,6 +155,11 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             AutocompleteInput input,
             AutocompleteMatch suggestion,
             int position) {
+        // Suppress remove and refine actions in Hub and Tab Search overlay contexts.
+        if (PageClassificationUtils.isHubOrTabSearch(input.getPageClassification())) {
+            return;
+        }
+
         if (mShouldShowRemoveButton) {
             if (suggestion.isDeletable()) {
                 setActionButtons(

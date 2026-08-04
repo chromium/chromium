@@ -430,6 +430,26 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     @Test
+    public void setRemoveOrRefineAction_suppressedForHubOrTabSearch() {
+        mInput.setPageClassification(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE);
+        createSuggestion(
+                OmniboxSuggestionType.HISTORY_URL,
+                /* isSearch= */ false,
+                /* hasTabMatch= */ false,
+                TEST_URL);
+        mProcessor.setRemoveOrRefineAction(mModel, mInput, mSuggestion, 0);
+
+        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        assertNull(actions);
+
+        mInput.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+        mProcessor.setRemoveOrRefineAction(mModel, mInput, mSuggestion, 0);
+
+        actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        assertNull(actions);
+    }
+
+    @Test
     public void decorationAndActionChipSpacingDefaults() {
         createSuggestion(
                 OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
