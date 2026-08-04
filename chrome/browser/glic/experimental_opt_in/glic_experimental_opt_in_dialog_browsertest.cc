@@ -174,8 +174,10 @@ class GlicExperimentalOptInTest
     if (!web_contents) {
       web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     }
-    views::Widget* widget = service()->opt_in_controller().ShowDialog(
-        web_contents, std::move(callback));
+    service()->opt_in_controller().ShowDialog(web_contents,
+                                              std::move(callback));
+    views::Widget* widget =
+        service()->opt_in_controller().GetDialogWidgetForTesting();
     if (!widget) {
       return nullptr;
     }
@@ -449,8 +451,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, WebviewURL_OptInNotNeeded) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   base::test::TestFuture<bool> future;
-  views::Widget* widget = service()->opt_in_controller().ShowDialog(
-      web_contents, future.GetCallback());
+  service()->opt_in_controller().ShowDialog(web_contents, future.GetCallback());
+  views::Widget* widget =
+      service()->opt_in_controller().GetDialogWidgetForTesting();
   EXPECT_FALSE(widget);
   EXPECT_TRUE(future.Get());
 }
@@ -830,13 +833,15 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, MultipleOptInRequests) {
 
   base::test::TestFuture<bool> future(base::test::TestFutureMode::kQueue);
 
-  views::Widget* widget1 = service->opt_in_controller().ShowDialog(
-      web_contents, future.GetCallback());
+  service->opt_in_controller().ShowDialog(web_contents, future.GetCallback());
+  views::Widget* widget1 =
+      service->opt_in_controller().GetDialogWidgetForTesting();
   ASSERT_TRUE(widget1);
 
   // Second request should return the same widget and queue callbacks.
-  views::Widget* widget2 = service->opt_in_controller().ShowDialog(
-      web_contents, future.GetCallback());
+  service->opt_in_controller().ShowDialog(web_contents, future.GetCallback());
+  views::Widget* widget2 =
+      service->opt_in_controller().GetDialogWidgetForTesting();
   EXPECT_EQ(widget1, widget2);
 
   views::test::WidgetVisibleWaiter(widget1).Wait();

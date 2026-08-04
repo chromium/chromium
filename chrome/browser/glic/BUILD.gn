@@ -308,6 +308,9 @@ source_set("impl") {
     "common/panel_visibility_dependent_hotkey_manager.cc",
     "common/panel_visibility_dependent_hotkey_manager.h",
     "common/view_scoped_registration_delegate.h",
+    "experimental_opt_in/glic_experimental_opt_in_controller.cc",
+    "experimental_opt_in/glic_experimental_opt_in_controller.h",
+    "experimental_opt_in/glic_experimental_opt_in_ui_host.h",
     "experimental_triggering/glic_experimental_triggering_coordinator.cc",
     "experimental_triggering/glic_experimental_triggering_manager.cc",
     "experimental_triggering/glic_experimental_triggering_manager.h",
@@ -519,8 +522,6 @@ source_set("impl") {
     public_deps += [ "//chrome/browser/glic/selection" ]
     sources += [
       "common/view_scoped_registration_delegate_impl.cc",
-      "experimental_opt_in/glic_experimental_opt_in_controller.cc",
-      "experimental_opt_in/glic_experimental_opt_in_controller.h",
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.cc",
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.h",
       "experimental_opt_in/glic_experimental_opt_in_metrics.cc",
@@ -529,6 +530,7 @@ source_set("impl") {
       "experimental_opt_in/glic_experimental_opt_in_page_handler.h",
       "experimental_opt_in/glic_experimental_opt_in_ui.cc",
       "experimental_opt_in/glic_experimental_opt_in_ui.h",
+      "experimental_opt_in/glic_experimental_opt_in_ui_host_desktop.cc",
       "experimental_opt_in/glic_experimental_opt_in_util.cc",
       "experimental_opt_in/glic_experimental_opt_in_util.h",
       "gemini_spark_settings_policy_handler.cc",
@@ -588,6 +590,7 @@ source_set("impl") {
   } else {  # is_android
     sources += [
       "common/view_scoped_registration_delegate_android.cc",
+      "experimental_opt_in/glic_experimental_opt_in_ui_host_android.cc",
       "glic_settings_util_android.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_android.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_android.h",
