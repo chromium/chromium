@@ -66,6 +66,15 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
     const std::string& app_locale) {
   std::vector<EntityAttributeUpdateDetails> details;
 
+  auto get_attribute_value = [](const AttributeInstance& attribute,
+                                const std::string& app_locale) {
+    if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
+      return *date;
+    } else {
+      return attribute.GetCompleteInfo(app_locale);
+    }
+  };
+
   auto get_attribute_update_type =
       [&](const AttributeInstance& new_entity_attribute) {
         if (!old_entity) {
@@ -74,7 +83,8 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
 
         base::optional_ref<const AttributeInstance> old_entity_attribute =
             old_entity->attribute(new_entity_attribute.type());
-        if (!old_entity_attribute) {
+        if (!old_entity_attribute ||
+            get_attribute_value(*old_entity_attribute, app_locale).empty()) {
           return EntityAttributeUpdateType::kNewEntityAttributeAdded;
         }
 
@@ -106,15 +116,6 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
                    ? EntityAttributeUpdateType::kNewEntityAttributeUnchanged
                    : EntityAttributeUpdateType::kNewEntityAttributeUpdated;
       };
-
-  auto get_attribute_value = [](const AttributeInstance& attribute,
-                                const std::string& app_locale) {
-    if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
-      return *date;
-    } else {
-      return attribute.GetCompleteInfo(app_locale);
-    }
-  };
 
   for (const AttributeInstance& attribute : new_entity.attributes()) {
     EntityAttributeUpdateType update_type =

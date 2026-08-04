@@ -109,6 +109,27 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeAdded) {
                       EntityAttributeUpdateType::kNewEntityAttributeAdded)));
 }
 
+TEST(EntityAttributeUpdateDetailsTest, AttributeAddedFromEmptyString) {
+  EntityInstance new_number = test::GetKnownTravelerNumberInstance(
+      {.name = u"Name", .number = u"4321", .expiration_date = u"2030-01-01"});
+  EntityInstance old_number = test::GetKnownTravelerNumberInstance(
+      {.name = u"Name", .number = u"", .expiration_date = u"2030-01-01"});
+
+  ASSERT_THAT(
+      EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
+          new_number, old_number, "en-US"),
+      ElementsAre(
+          EntityAttributeUpdateDetails(
+              u"Name", u"Name", std::nullopt,
+              EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
+          EntityAttributeUpdateDetails(
+              u"Number", u"4321", std::nullopt,
+              EntityAttributeUpdateType::kNewEntityAttributeAdded),
+          EntityAttributeUpdateDetails(
+              u"Expiration date", u"Jan 1, 2030", std::nullopt,
+              EntityAttributeUpdateType::kNewEntityAttributeUnchanged)));
+}
+
 TEST(EntityAttributeUpdateDetailsTest, AttributeRemoved) {
   EntityInstance new_number = test::GetKnownTravelerNumberInstance(
       {.name = u"Name", .number = u"4321", .expiration_date = nullptr});
