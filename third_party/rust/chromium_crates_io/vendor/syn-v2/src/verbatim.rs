@@ -1,11 +1,10 @@
+use crate::buffer::Cursor;
 use crate::ext::TokenStreamExt as _;
-use crate::parse::ParseStream;
 use core::cmp::Ordering;
 use proc_macro2::{Delimiter, TokenStream};
 
-pub(crate) fn between<'a>(begin: ParseStream<'a>, end: ParseStream<'a>) -> TokenStream {
-    let end = end.cursor();
-    let mut cursor = begin.cursor();
+pub(crate) fn between(begin: Cursor, end: Cursor) -> TokenStream {
+    let mut cursor = begin;
     assert!(crate::buffer::same_buffer(end, cursor));
 
     let mut tokens = TokenStream::new();
