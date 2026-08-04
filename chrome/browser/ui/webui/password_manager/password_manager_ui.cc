@@ -702,6 +702,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordManagerMojoApiPhase2));
 
+  source->AddBoolean(
+      "enableTrustedVaultUnlock",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kTrustedVaultDesktopUnlock));
+
   source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()
                                             ? "webui-refresh-2026"
                                             : "");

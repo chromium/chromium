@@ -239,4 +239,8 @@ bool PasswordManagerClient::IsChromeSigninPage() const {
   return false;
 }
 
+ActionableError PasswordManagerClient::GetActionableError() const {
+  return ActionableError::kNoError;
+}
+
 }  // namespace password_manager

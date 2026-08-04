@@ -53,6 +53,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
@@ -966,18 +967,8 @@ bool PasswordsPrivateDelegateImpl::IsConnectedToCloudAuthenticator() {
 
 password_manager::ActionableError
 PasswordsPrivateDelegateImpl::GetActionableError() {
-  // Only propagate profile errors if there aren't any account store errors.
-  password_manager::ActionableError error =
-      password_manager::ActionableError::kNoError;
-  if (account_password_store_) {
-    error = account_password_store_->GetError();
-  }
-  if (error == password_manager::ActionableError::kNoError &&
-      profile_password_store_) {
-    error = profile_password_store_->GetError();
-  }
-
-  return error;
+  return password_manager::GetActionableErrorFromPasswordStores(
+      account_password_store_.get(), profile_password_store_.get());
 }
 
 void PasswordsPrivateDelegateImpl::DeleteAllPasswordManagerData(

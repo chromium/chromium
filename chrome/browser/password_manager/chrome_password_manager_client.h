@@ -231,6 +231,7 @@ class ChromePasswordManagerClient
   metrics::ProfileMetricsService* GetProfileMetricsService() override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
+  password_manager::ActionableError GetActionableError() const override;
   affiliations::AffiliationService* GetAffiliationService() override;
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override;

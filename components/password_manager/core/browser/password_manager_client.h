@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
@@ -370,6 +371,10 @@ class PasswordManagerClient {
 
   // Gets the sync service associated with this client.
   virtual const syncer::SyncService* GetSyncService() const = 0;
+
+  // Returns the current sync or trusted vault error state that requires user
+  // action, or ActionableError::kNoError if there is none.
+  virtual ActionableError GetActionableError() const;
 
   // Gets the affiliation service associated with this client.
   virtual affiliations::AffiliationService* GetAffiliationService() = 0;

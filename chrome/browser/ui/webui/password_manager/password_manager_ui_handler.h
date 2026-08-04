@@ -123,6 +123,8 @@ class PasswordManagerUIHandler
   void ContinueImport(const std::vector<int32_t>& selected_ids,
                       ContinueImportCallback callback) override;
 
+  void StartTrustedVaultUnlock() override;
+
   // extensions::PasswordsPrivateDelegate::Observer:
   void OnPasswordsExportProgress(password_manager::ExportProgressStatus status,
                                  const std::string& folder_name) override;

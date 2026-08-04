@@ -16,6 +16,9 @@
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
@@ -459,4 +462,13 @@ void PasswordManagerUIHandler::ContinueImport(
   passwords_private_delegate_->ContinueImport(
       selected_ids,
       base::BindOnce(&ToMojomImportResults).Then(std::move(callback)));
+}
+
+void PasswordManagerUIHandler::StartTrustedVaultUnlock() {
+  if (BrowserWindowInterface* browser =
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              web_contents_)) {
+    OpenTabForSyncKeyRetrieval(
+        browser, trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings);
+  }
 }

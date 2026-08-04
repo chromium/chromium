@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <variant>
 
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+
 namespace password_manager {
 
 PasswordChangesOrError JoinPasswordStoreChanges(
@@ -74,6 +76,19 @@ bool IsAbleToSavePasswords(ActionableError error) {
     case ActionableError::kTrustedVaultKeyNeeded:
       return false;
   }
+}
+
+ActionableError GetActionableErrorFromPasswordStores(
+    const PasswordStoreInterface* account_store,
+    const PasswordStoreInterface* profile_store) {
+  ActionableError error = ActionableError::kNoError;
+  if (account_store) {
+    error = account_store->GetError();
+  }
+  if (error == ActionableError::kNoError && profile_store) {
+    error = profile_store->GetError();
+  }
+  return error;
 }
 
 }  // namespace password_manager

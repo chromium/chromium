@@ -22,6 +22,7 @@ source_set("password_manager_ui_handler") {
     ":mojo_bindings",
     "//chrome/browser/password_manager",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/browser_window",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/export",
     "//components/password_manager/core/browser/features:password_features",

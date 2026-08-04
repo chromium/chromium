@@ -13,6 +13,8 @@
 
 namespace password_manager {
 
+class PasswordStoreInterface;
+
 // Aggregates a vector of PasswordChangesOrError into a single
 // PasswordChangesOrError. Does not check for duplicate values.
 // Will return first occurred error if any.
@@ -34,6 +36,12 @@ ActionableError BackendErrorToActionableError(
 // Returns true if saving is allowed with the given `error`. This typically
 // means there is no error or the error is retriable.
 bool IsAbleToSavePasswords(ActionableError error);
+
+// Returns the ActionableError for the given profile and account password
+// stores. Only returns profile errors if there aren't any account store errors.
+ActionableError GetActionableErrorFromPasswordStores(
+    const PasswordStoreInterface* account_store,
+    const PasswordStoreInterface* profile_store);
 
 }  // namespace password_manager
 

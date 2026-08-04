@@ -106,6 +106,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -1036,6 +1037,12 @@ const syncer::SyncService* ChromePasswordManagerClient::GetSyncService() const {
     return SyncServiceFactory::GetForProfile(GetProfile());
   }
   return nullptr;
+}
+
+password_manager::ActionableError
+ChromePasswordManagerClient::GetActionableError() const {
+  return password_manager::GetActionableErrorFromPasswordStores(
+      GetAccountPasswordStore(), GetProfilePasswordStore());
 }
 
 affiliations::AffiliationService*

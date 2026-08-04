@@ -132,6 +132,9 @@ BASE_FEATURE(kIOSProactivePasswordGenerationBottomSheet,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+BASE_FEATURE(kTrustedVaultDesktopUnlock, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kMarkAllCredentialsAsLeaked, base::FEATURE_DISABLED_BY_DEFAULT);
 
