@@ -52,6 +52,8 @@ public class BookmarkPopupViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
+                    .setRevision(1)
+                    .setDescription("Remove duplicate popup background")
                     .build();
 
     private BookmarkPopupView mView;

@@ -12,7 +12,6 @@ found in the LICENSE file.
     android:layout_width="@dimen/bookmark_popup_width"
     android:layout_height="wrap_content"
     android:padding="@dimen/bookmark_popup_padding"
-    android:background="@drawable/menu_bg_baseline"
     tools:ignore="UnusedResources">
 
     <!-- Popup Title and Close Button -->
