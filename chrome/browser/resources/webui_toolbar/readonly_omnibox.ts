@@ -8,7 +8,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/range.mojom-webui.js';
 import type {AdjustOmniboxTextForCopyResult} from '/shared/toolbar_ui_api.mojom-webui.js';
-import type {OmniboxTextPortion, OmniboxViewState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import type {OmniboxActionDropFile, OmniboxActionDropText, OmniboxActionFocusChange, OmniboxActionPointer, OmniboxActionTextInput, OmniboxTextPortion, OmniboxViewState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {FocusRequestTarget, OmniboxTextColor} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {getFaviconUrl} from 'chrome://resources/js/icon.js';
 
@@ -27,6 +27,145 @@ export interface ReadonlyOmniboxElement {
     textContainerWrap: HTMLElement,
     textInput: HTMLInputElement,
   };
+}
+
+interface OmniboxInputDelegate {
+  handleFocusChange(
+      element: ReadonlyOmniboxElement, focusOp: OmniboxActionFocusChange): void;
+  handleTextInput(
+      element: ReadonlyOmniboxElement, textInput: OmniboxActionTextInput): void;
+  handleKey(
+      element: ReadonlyOmniboxElement, isKeyUp: boolean,
+      event: KeyboardEvent): void;
+  handlePointer(element: ReadonlyOmniboxElement, pointer: OmniboxActionPointer):
+      void;
+  handleDropText(
+      element: ReadonlyOmniboxElement, dragText: OmniboxActionDropText): void;
+  handleDropFile(
+      element: ReadonlyOmniboxElement, dragFile: OmniboxActionDropFile): void;
+}
+
+// Implementation of input handling that works by forwarding the relevant
+// events to the browser via Mojo.
+class MojoOmniboxInputDelegate implements OmniboxInputDelegate {
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  // Keys that may need to be forwarded to the browser.
+  private maybeForwardKeys_: Set<string> = new Set([
+    'Control',
+    'Enter',
+    'Escape',
+    'ArrowUp',
+    'ArrowDown',
+    ' ',
+    'Backspace',
+    'Delete',
+    'PageUp',
+    'PageDown',
+    'Tab',
+  ]);
+
+  handleFocusChange(
+      _: ReadonlyOmniboxElement, focusChange: OmniboxActionFocusChange): void {
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      focusChange,
+    });
+  }
+
+  handleTextInput(
+      _element: ReadonlyOmniboxElement,
+      textInput: OmniboxActionTextInput): void {
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      textInput,
+    });
+  }
+
+  handleKey(
+      element: ReadonlyOmniboxElement, isKeyUp: boolean,
+      event: KeyboardEvent): void {
+    if (!this.maybeForwardKeys_.has(event.key)) {
+      return;
+    }
+
+    // OmniboxEditModel keeps track of state of control key separately, and
+    // needs to be notified of its releases. Everything else is handled on
+    // keydown.
+    if (isKeyUp && event.key !== 'Control') {
+      return;
+    }
+
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      // Shift+Down/Up does selection, plain Down/Up navigates suggestions.
+      if (!event.shiftKey) {
+        event.preventDefault();
+      } else {
+        return;
+      }
+    }
+
+    // Backspace is only relevant to the other end if we're at the very
+    // beginning (where it deletes the search keyword rather than a
+    // character).
+    if (event.key === 'Backspace' && !element.isCaretAtStart()) {
+      return;
+    }
+
+    // Shift-Delete can delete suggestion entries.
+    if (event.key === 'Delete') {
+      if (event.shiftKey && element.isPopupOpen) {
+        event.preventDefault();
+      } else {
+        return;
+      }
+    }
+
+    // Page keys navigate selection unless modifiers are pressed.
+    if (event.key === 'PageUp' || event.key === 'PageDown') {
+      if (!event.ctrlKey && !event.altKey && !event.shiftKey) {
+        event.preventDefault();
+      } else {
+        return;
+      }
+    }
+
+    if (event.key === 'Tab') {
+      // See FocusManager::IsTabTraversalKeyEvent
+      if (!event.ctrlKey && !event.altKey && element.isPopupOpen) {
+        event.preventDefault();
+      } else {
+        return;
+      }
+    }
+
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      key: {
+        key: event.key,
+        isKeyDown: !isKeyUp,
+        selection: element.getMojoSelection(),
+        modifiers: getEventDispositionFlags(event),
+      },
+    });
+  }
+
+  handlePointer(_: ReadonlyOmniboxElement, pointer: OmniboxActionPointer):
+      void {
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      pointer,
+    });
+  }
+
+  handleDropText(_: ReadonlyOmniboxElement, dropText: OmniboxActionDropText):
+      void {
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      dropText,
+    });
+  }
+
+  handleDropFile(_: ReadonlyOmniboxElement, dropFile: OmniboxActionDropFile):
+      void {
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      dropFile,
+    });
+  }
 }
 
 enum UnelisionGesture {
@@ -121,9 +260,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  // Keys that may need to be forwarded to the browser.
-  private maybeForwardKeys: Set<string>;
-
   // If this is true, the sequence of events thus far suggests that the next
   // mouse release should select all.
   private selectAllOnMouseRelease_: boolean = false;
@@ -161,21 +297,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   // single-tap select-all.
   private wasMultiTouch_: boolean = false;
 
+  private inputDelegate_: OmniboxInputDelegate = new MojoOmniboxInputDelegate();
+
   constructor() {
     super();
-    this.maybeForwardKeys = new Set([
-      'Control',
-      'Enter',
-      'Escape',
-      'ArrowUp',
-      'ArrowDown',
-      ' ',
-      'Backspace',
-      'Delete',
-      'PageUp',
-      'PageDown',
-      'Tab',
-    ]);
   }
 
   override connectedCallback() {
@@ -376,14 +501,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     // prevents inline completion, which isn't desired for these shortcuts.
     this.sendInputToBrowser();
 
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      focusChange: {
-        hasFocus: true,
-        selection: this.getMojoSelection(),
-        requestClearKeyword: wasAlreadyFocused,
-        startZeroSuggest: isUserInitiated,
-        activateDefaultSearch: activateDefaultSearch,
-      },
+    this.inputDelegate_.handleFocusChange(this, {
+      hasFocus: true,
+      selection: this.getMojoSelection(),
+      requestClearKeyword: wasAlreadyFocused,
+      startZeroSuggest: isUserInitiated,
+      activateDefaultSearch: activateDefaultSearch,
     });
   }
 
@@ -407,14 +530,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.switchView_(/*hasFocus=*/ false);
     this.lastFocusAcquisition_ = null;
 
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      focusChange: {
-        hasFocus: false,
-        selection: this.getMojoSelection(),
-        requestClearKeyword: false,
-        startZeroSuggest: false,
-        activateDefaultSearch: false,
-      },
+    this.inputDelegate_.handleFocusChange(this, {
+      hasFocus: false,
+      selection: this.getMojoSelection(),
+      requestClearKeyword: false,
+      startZeroSuggest: false,
+      activateDefaultSearch: false,
     });
   }
 
@@ -422,14 +543,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.lastFocusAcquisition_ = performance.now();
     this.switchView_(/*hasFocus=*/ true);
 
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      focusChange: {
-        hasFocus: true,
-        selection: this.getMojoSelection(),
-        requestClearKeyword: false,
-        startZeroSuggest: false,
-        activateDefaultSearch: false,
-      },
+    this.inputDelegate_.handleFocusChange(this, {
+      hasFocus: true,
+      selection: this.getMojoSelection(),
+      requestClearKeyword: false,
+      startZeroSuggest: false,
+      activateDefaultSearch: false,
     });
   }
 
@@ -479,11 +598,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       }
     }
 
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      pointer: {
-        isPointerDown: true,
-        startZeroSuggest: false,
-      },
+    this.inputDelegate_.handlePointer(this, {
+      isPointerDown: true,
+      startZeroSuggest: false,
     });
   }
 
@@ -523,11 +640,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
     const zeroSuggest = isOnlyLeftButton(event) &&
         (this.selectAllOnMouseRelease_ || this.userText.length === 0);
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      pointer: {
-        isPointerDown: false,
-        startZeroSuggest: zeroSuggest,
-      },
+    this.inputDelegate_.handlePointer(this, {
+      isPointerDown: false,
+      startZeroSuggest: zeroSuggest,
     });
 
     this.selectAllOnMouseRelease_ = false;
@@ -578,11 +693,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       this.clientYAtTouchDown_ = event.clientY;
     }
 
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      pointer: {
-        isPointerDown: true,
-        startZeroSuggest: false,
-      },
+    this.inputDelegate_.handlePointer(this, {
+      isPointerDown: true,
+      startZeroSuggest: false,
     });
   }
 
@@ -602,11 +715,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       // trigger single-tap select-all.
       this.selectAllOnTouchRelease_ = false;
       if (isMultiTouch && this.activeTouchIds_.size === 0) {
-        this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-          pointer: {
-            isPointerDown: false,
-            startZeroSuggest: false,
-          },
+        this.inputDelegate_.handlePointer(this, {
+          isPointerDown: false,
+          startZeroSuggest: false,
         });
       }
       return;
@@ -622,11 +733,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.sendInputToBrowser();
 
     const zeroSuggest = willSelectAll || this.userText.length === 0;
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      pointer: {
-        isPointerDown: false,
-        startZeroSuggest: zeroSuggest,
-      },
+    this.inputDelegate_.handlePointer(this, {
+      isPointerDown: false,
+      startZeroSuggest: zeroSuggest,
     });
 
     this.selectAllOnTouchRelease_ = false;
@@ -744,62 +853,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       }
     }
 
-    if (this.maybeForwardKeys.has(event.key)) {
-      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        // Shift+Down/Up does selection, plain Down/Up navigates suggestions.
-        if (!event.shiftKey) {
-          event.preventDefault();
-        } else {
-          return;
-        }
-      }
-
-      // Backspace is only relevant to the other end if we're at the very
-      // beginning (where it deletes the search keyword rather than a
-      // character).
-      if (event.key === 'Backspace' &&
-          (this.$.textInput.selectionStart! !== 0 ||
-           this.$.textInput.selectionEnd! !== 0)) {
-        return;
-      }
-
-      // Shift-Delete can delete suggestion entries.
-      if (event.key === 'Delete') {
-        if (event.shiftKey && this.isPopupOpen) {
-          event.preventDefault();
-        } else {
-          return;
-        }
-      }
-
-      // Page keys navigate selection unless modifiers are pressed.
-      if (event.key === 'PageUp' || event.key === 'PageDown') {
-        if (!event.ctrlKey && !event.altKey && !event.shiftKey) {
-          event.preventDefault();
-        } else {
-          return;
-        }
-      }
-
-      if (event.key === 'Tab') {
-        // See FocusManager::IsTabTraversalKeyEvent
-        if (!event.ctrlKey && !event.altKey && this.isPopupOpen) {
-          event.preventDefault();
-        } else {
-          return;
-        }
-      }
-
-      this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-        key: {
-          key: event.key,
-          isKeyDown: true,
-          selection: this.getMojoSelection(),
-          modifiers: getEventDispositionFlags(event),
-        },
-      });
-    }
-
     if (event.key === 'Home') {
       if (this.unelideAndUpdateSelection(UnelisionGesture.HOME_KEY_PRESSED)) {
         if (event.shiftKey) {
@@ -819,22 +872,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         event.preventDefault();
       }
     }
+
+    this.inputDelegate_.handleKey(this, /*isKeyUp=*/ false, event);
   }
 
   private onInputKeyUp(event: KeyboardEvent): void {
-    // OmniboxEditModel keeps track of state of control key separately, and
-    // needs to be notified of its releases. Everything else is handled on
-    // keydown.
-    if (event.key === 'Control') {
-      this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-        key: {
-          key: event.key,
-          isKeyDown: false,
-          selection: this.getMojoSelection(),
-          modifiers: getEventDispositionFlags(event),
-        },
-      });
-    }
+    this.inputDelegate_.handleKey(this, /*isKeyUp=*/ true, event);
     this.checkForSelectionChange_();
   }
 
@@ -861,7 +904,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   // Returns the selection with gfx::Range-compatible semantics, suitable for
   // sending over mojo.
-  private getMojoSelection(): MojomRange {
+  getMojoSelection(): MojomRange {
     // If we're displaying an inline autocompletion, conceptually the selection
     // is a caret at the input end.
     if (this.omniboxViewState.inlineAutocompletion.length !== 0) {
@@ -1053,25 +1096,19 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       }
 
       if (url) {
-        this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-          dropText: {
-            text: url.split('\n')[0]!,
-          },
+        this.inputDelegate_.handleDropText(this, {
+          text: url.split('\n')[0]!,
         });
       }
     } else if (types.includes('Files')) {
-      this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-        dropFile: {
-          dropPosition: {x: e.clientX, y: e.clientY},
-        },
+      this.inputDelegate_.handleDropFile(this, {
+        dropPosition: {x: e.clientX, y: e.clientY},
       });
     } else if (types.includes('text/plain')) {
       const text = e.dataTransfer.getData('text/plain');
       if (text) {
-        this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-          dropText: {
-            text: text,
-          },
+        this.inputDelegate_.handleDropText(this, {
+          text,
         });
       }
     }
@@ -1099,6 +1136,11 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     const input = this.$.textInput;
     return input.selectionStart === 0 &&
         input.selectionEnd === input.value.length;
+  }
+
+  isCaretAtStart(): boolean {
+    const inputProper = this.$.textInput;
+    return inputProper.selectionStart === 0 && inputProper.selectionEnd === 0;
   }
 
   private selectAllBackwards(): void {
@@ -1228,14 +1270,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   private sendInputToBrowser(): void {
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      textInput: {
-        uiVersion: this.omniboxViewState.uiVersion,
-        browserVersion: this.omniboxViewState.browserVersion,
-        text: this.userText,
-        inlineAutocompletion: this.omniboxViewState.inlineAutocompletion,
-        selection: this.getMojoSelection(),
-      },
+    this.inputDelegate_.handleTextInput(this, {
+      uiVersion: this.omniboxViewState.uiVersion,
+      browserVersion: this.omniboxViewState.browserVersion,
+      text: this.userText,
+      inlineAutocompletion: this.omniboxViewState.inlineAutocompletion,
+      selection: this.getMojoSelection(),
     });
   }
 
