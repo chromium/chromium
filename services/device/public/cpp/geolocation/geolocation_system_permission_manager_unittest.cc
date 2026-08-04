@@ -8,9 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,13 +60,7 @@ class SourceImpl : public device::SystemGeolocationSource {
 
 class GeolocationSystemPermissionTests : public testing::Test {
  public:
-  GeolocationSystemPermissionTests() {
-#if BUILDFLAG(IS_WIN)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kWinSystemLocationPermission},
-        /*disabled_features=*/{});
-#endif  // BUILDFLAG(IS_WIN)
-  }
+  GeolocationSystemPermissionTests() = default;
 
   GeolocationSystemPermissionTests(const GeolocationSystemPermissionTests&) =
       delete;
@@ -88,7 +80,6 @@ class GeolocationSystemPermissionTests : public testing::Test {
  protected:
   std::vector<std::unique_ptr<MockObserver>> observers_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(GeolocationSystemPermissionTests, TestAddObserver) {

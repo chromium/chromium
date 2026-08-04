@@ -69,8 +69,6 @@ BASE_FEATURE(kWebHidAttributeAllowsBackForwardCache,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-// Enable integration with the Windows system-level location permission.
-BASE_FEATURE(kWinSystemLocationPermission, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the event-based approach for monitoring the Windows system-level
 // location permission. If disabled, the polling approach is used.
 BASE_FEATURE(kWinSystemLocationPermissionEventBased,
@@ -100,13 +98,6 @@ BASE_FEATURE(kSafeSerialPortImplWinClose, base::FEATURE_ENABLED_BY_DEFAULT);
 // USB-backed serial ports. When disabled the "bus reported device description"
 // is used instead.
 BASE_FEATURE(kSerialUsbDisplayNameWin, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Defines a feature parameter for the `kWinSystemLocationPermission` feature.
-// This parameter controls the polling interval (in milliseconds) for checking
-// the permission status. The default polling interval is set to 500
-// milliseconds.
-const base::FeatureParam<int> kWinSystemLocationPermissionPollingParam{
-    &kWinSystemLocationPermission, "polling_interval_in_ms", 500};
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables usage of the location provider manager to select between
@@ -170,13 +161,11 @@ const base::FeatureParam<device::mojom::LocationProviderManagerMode>
 #endif  // BUILDFLAG(IS_MAC)
 
 bool IsOsLevelGeolocationPermissionSupportEnabled() {
-#if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(features::kWinSystemLocationPermission);
-#elif BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 }
 
 // Controls whether Chrome will try to automatically detach kernel drivers when

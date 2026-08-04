@@ -73,14 +73,6 @@ class GeolocationProviderTest : public testing::Test {
     position2.longitude = 34;
     position2.accuracy = 56;
     position2.timestamp = base::Time::Now();
-
-    feature_list_.InitWithFeatures(/*enabled_features=*/
-                                   {
-#if BUILDFLAG(IS_WIN)
-                                       features::kWinSystemLocationPermission,
-#endif  // BUILDFLAG(IS_WIN)
-                                   },
-                                   /*disabled_features=*/{});
   }
 
   GeolocationProviderTest(const GeolocationProviderTest&) = delete;
@@ -147,8 +139,6 @@ class GeolocationProviderTest : public testing::Test {
 
   // True if |location_provider_manager_| is started.
   bool is_started_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class GeolocationProviderApproxGeoTest : public GeolocationProviderTest {

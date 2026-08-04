@@ -17,7 +17,6 @@
 #include "chrome/browser/permissions/system/system_media_source_win.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
@@ -72,16 +71,10 @@ class PlatformHandleImpl : public PlatformHandle {
   // PlatformHandle:
   bool CanPrompt(ContentSettingsType type) override {
     switch (type) {
-      case ContentSettingsType::GEOLOCATION: {
-        if (base::FeatureList::IsEnabled(
-                features::kWinSystemLocationPermission)) {
-          return device::GeolocationSystemPermissionManager::GetInstance()
-                     ->GetSystemPermission() ==
-                 device::LocationSystemPermissionStatus::kNotDetermined;
-        } else {
-          return false;
-        }
-      }
+      case ContentSettingsType::GEOLOCATION:
+        return device::GeolocationSystemPermissionManager::GetInstance()
+                   ->GetSystemPermission() ==
+               device::LocationSystemPermissionStatus::kNotDetermined;
       // crbug.com/414523295: while the status of camera/microphone can be
       // determined, we currently don't support requesting them on Windows.
       // Until this is fixed we will return `false`.
@@ -97,14 +90,9 @@ class PlatformHandleImpl : public PlatformHandle {
   bool IsDenied(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION:
-        if (base::FeatureList::IsEnabled(
-                features::kWinSystemLocationPermission)) {
-          return device::GeolocationSystemPermissionManager::GetInstance()
-                     ->GetSystemPermission() ==
-                 device::LocationSystemPermissionStatus::kDenied;
-        } else {
-          return false;
-        }
+        return device::GeolocationSystemPermissionManager::GetInstance()
+                   ->GetSystemPermission() ==
+               device::LocationSystemPermissionStatus::kDenied;
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::MEDIASTREAM_MIC:
       case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
@@ -117,14 +105,9 @@ class PlatformHandleImpl : public PlatformHandle {
   bool IsAllowed(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION:
-        if (base::FeatureList::IsEnabled(
-                features::kWinSystemLocationPermission)) {
-          return device::GeolocationSystemPermissionManager::GetInstance()
-                     ->GetSystemPermission() ==
-                 device::LocationSystemPermissionStatus::kAllowed;
-        } else {
-          return true;
-        }
+        return device::GeolocationSystemPermissionManager::GetInstance()
+                   ->GetSystemPermission() ==
+               device::LocationSystemPermissionStatus::kAllowed;
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::MEDIASTREAM_MIC:
       case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
@@ -149,11 +132,8 @@ class PlatformHandleImpl : public PlatformHandle {
                           ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION: {
-        if (base::FeatureList::IsEnabled(
-                features::kWinSystemLocationPermission)) {
-          device::GeolocationSystemPermissionManager::GetInstance()
-              ->OpenSystemPermissionSetting();
-        }
+        device::GeolocationSystemPermissionManager::GetInstance()
+            ->OpenSystemPermissionSetting();
         return;
       }
       case ContentSettingsType::MEDIASTREAM_MIC:
@@ -172,10 +152,6 @@ class PlatformHandleImpl : public PlatformHandle {
     switch (type) {
       case ContentSettingsType::GEOLOCATION: {
         DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-        if (!base::FeatureList::IsEnabled(
-                features::kWinSystemLocationPermission)) {
-          return;
-        }
         geolocation_callbacks_.push_back(std::move(callback));
         // The system permission prompt is modal and requires a user decision
         // (Allow or Deny) before it can be dismissed.

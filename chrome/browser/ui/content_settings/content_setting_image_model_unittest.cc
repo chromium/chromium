@@ -401,10 +401,6 @@ TEST_F(ContentSettingImageModelTest, SensorUnavailable) {
 // Test the correct ContentSettingImageModel for various permutations of site
 // and system level Geolocation permissions
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kWinSystemLocationPermission}, {});
-#endif  // BUILDFLAG(IS_WIN)
   system_permission_settings::MockPlatformHandle mock_platform_handle;
   system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
   EXPECT_CALL(mock_platform_handle, IsAllowed(ContentSettingsType::GEOLOCATION))
@@ -467,10 +463,6 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
 // This test verifies the UI behavior when OS-level geolocation permission is
 // undetermined. This state is only applicable on macOS and Windows.
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kWinSystemLocationPermission}, {});
-#endif  // BUILDFLAG(IS_WIN)
   system_permission_settings::MockPlatformHandle mock_platform_handle;
   system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
   EXPECT_CALL(mock_platform_handle, IsAllowed(ContentSettingsType::GEOLOCATION))

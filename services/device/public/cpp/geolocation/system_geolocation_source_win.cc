@@ -175,13 +175,8 @@ class SystemGeolocationSourceWin::AccessListenerHelper {
 
  private:
   void OnAccessChanged();
-
-  // Minimum and maximum polling intervals (in milliseconds). Any value fetched
-  // from Finch config (features::kWinSystemLocationPermissionPollingParam) will
-  // be clamped within this range to ensure reasonable polling frequency
-  static constexpr int kMinPollingIntervalMs = 500;
-  static constexpr int kMaxPollingIntervalMs = 3000;
   // The interval (in milliseconds) at which to poll for permission changes.
+  static constexpr int kDefaultPollingIntervalMs = 500;
   const int polling_interval_;
   // COM interface to check the app's capability to access location.
   ComPtr<IAppCapability> location_capability_;
@@ -195,10 +190,7 @@ class SystemGeolocationSourceWin::AccessListenerHelper {
 SystemGeolocationSourceWin::AccessListenerHelper::AccessListenerHelper(
     base::WeakPtr<SystemGeolocationSourceWin> source,
     scoped_refptr<base::SequencedTaskRunner> source_task_runner)
-    : polling_interval_(
-          std::clamp(features::kWinSystemLocationPermissionPollingParam.Get(),
-                     kMinPollingIntervalMs,
-                     kMaxPollingIntervalMs)),
+    : polling_interval_(kDefaultPollingIntervalMs),
       location_capability_(CreateAppCapability("location")),
       source_(source),
       source_task_runner_(source_task_runner) {

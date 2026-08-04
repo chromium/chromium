@@ -71,7 +71,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
-#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -239,17 +238,10 @@ class GeolocationPermissionContextTestsBase
   raw_ptr<ContentSettingsPattern> expected_primary_pattern_ = nullptr;
   raw_ptr<ContentSettingsPattern> expected_secondary_pattern_ = nullptr;
   std::vector<std::string> events_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
-GeolocationPermissionContextTestsBase::GeolocationPermissionContextTestsBase() {
-  feature_list_.InitWithFeatureStates({
-#if BUILDFLAG(IS_WIN)
-      {::features::kWinSystemLocationPermission, true},
-#endif  // BUILDFLAG(IS_WIN)
-  });
-}
+GeolocationPermissionContextTestsBase::GeolocationPermissionContextTestsBase() =
+    default;
 
 class GeolocationPermissionContextTests
     : public base::test::WithFeatureOverride,

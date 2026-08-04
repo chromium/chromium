@@ -621,44 +621,12 @@ TEST_F(ContentSettingBubbleModelTest, MAYBE_AccumulateMediastreamMicAndCamera) {
   EXPECT_EQ(0, new_bubble_content.radio_group.default_item);
 }
 
-// Enable geolocation bubble tests to be run with OS-level permission
-// integration enabled or disabled on platforms where support is toggleable.
-class ContentSettingGeolocationBubbleModelTest
-    : public ContentSettingBubbleModelTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    ContentSettingBubbleModelTest::SetUp();
-#if BUILDFLAG(IS_WIN)
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kWinSystemLocationPermission}, {});
-    }
-#endif  // BUILDFLAG(IS_WIN)
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
+TEST_F(ContentSettingBubbleModelTest, Geolocation) {
   system_permission_settings::MockPlatformHandle mock_platform_handle;
   system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
 
-  // This parameter is meaningful only on Windows, where geolocation permissions
-  // are controlled by the 'features::kWinSystemLocationPermission' feature.
-  // If the feature is disabled (GetParam() returns false), the location system
-  // permission is expected to be always allowed.
-  const bool is_os_level_geolocation_permission_support_enabled = GetParam();
-  if (is_os_level_geolocation_permission_support_enabled) {
-    EXPECT_CALL(mock_platform_handle,
-                IsAllowed(ContentSettingsType::GEOLOCATION))
-        .WillRepeatedly(Return(false));
-  } else {
-    EXPECT_CALL(mock_platform_handle,
-                IsAllowed(ContentSettingsType::GEOLOCATION))
-        .WillRepeatedly(Return(true));
-  }
+  EXPECT_CALL(mock_platform_handle, IsAllowed(ContentSettingsType::GEOLOCATION))
+      .WillRepeatedly(Return(false));
 
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
@@ -675,7 +643,7 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   // System-level geolocation permission is blocked.
-  if (is_os_level_geolocation_permission_support_enabled) {
+  {
     auto content_setting_bubble_model =
         std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr, page());
     std::unique_ptr<FakeOwner> owner =
@@ -695,7 +663,7 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
 
   // System-level geolocation permission is blocked, but allowed while the
   // bubble is visible. The displayed message should not change.
-  if (is_os_level_geolocation_permission_support_enabled) {
+  {
     auto content_setting_bubble_model =
         std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr, page());
     std::unique_ptr<FakeOwner> owner =
@@ -926,15 +894,6 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
     EXPECT_EQ(bubble_content.radio_group.default_item, 1);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(ContentSettingGeolocationBubbleModelTests,
-                         ContentSettingGeolocationBubbleModelTest,
-#if BUILDFLAG(IS_WIN)
-                         testing::Values(false, true)
-#else
-                         testing::Values(true)
-#endif
-);
 
 TEST_F(ContentSettingBubbleModelTest, FileURL) {
   std::string file_url("file:///tmp/test.html");
