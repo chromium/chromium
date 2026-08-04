@@ -241,6 +241,39 @@ public class ProfileDataCache
     }
 
     /**
+     * Generates a placeholder image padded to fit within the AI tier ring dimensions.
+     *
+     * @param context Context of the application to extract resources from.
+     * @param placeholder The original placeholder drawable.
+     * @param imageSize The total size of the image.
+     * @param avatarSize The size of the inner avatar.
+     * @return A {@link Drawable} containing the padded placeholder.
+     */
+    // TODO: Make this method non-static and compute the placeholder image once during
+    // initialization. To be addressed after M152 merge.
+    public static Drawable getPlaceholderImageWithAiTierRingPadding(
+            Context context, Drawable placeholder, @Px int imageSize, @Px int ringThicknessPx) {
+        int ringSpacingPx =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.components.browser_ui.util.R.dimen
+                                        .ai_tier_ring_spacing);
+        int padding = ringThicknessPx + ringSpacingPx;
+        int avatarSize = imageSize - 2 * padding;
+
+        Bitmap paddedPicture = Bitmap.createBitmap(imageSize, imageSize, Bitmap.Config.ARGB_8888);
+        paddedPicture.setDensity(context.getResources().getDisplayMetrics().densityDpi);
+        Canvas canvas = new Canvas(paddedPicture);
+
+        Rect oldBounds = placeholder.getBounds();
+        placeholder.setBounds(padding, padding, padding + avatarSize, padding + avatarSize);
+        placeholder.draw(canvas);
+        placeholder.setBounds(oldBounds);
+
+        return new BitmapDrawable(context.getResources(), paddedPicture);
+    }
+
+    /**
      * Gets the list of cached accounts that are synchronized with the device accounts.
      *
      * <p>Accounts data are populated from {@link IdentityManager}. To observe changes to accounts,
