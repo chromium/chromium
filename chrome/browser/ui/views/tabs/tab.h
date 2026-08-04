@@ -38,6 +38,7 @@ class TabSlotController;
 class TabIcon;
 struct TabSizeInfo;
 class TabTitle;
+class TabStyleViewDelegate;
 
 namespace gfx {
 class Animation;
@@ -183,6 +184,24 @@ class Tab : public gfx::AnimationDelegate,
   void ShowHover(TabStyle::ShowHoverStyle style);
   void HideHover(TabStyle::HideHoverStyle style);
 
+  // Returns the progress (0 to 1) of the hover animation.
+  double GetHoverAnimationValue() const;
+  float GetHoverOpacity() const;
+  bool IsHoverAnimationActive() const;
+  bool IsHovering() const;
+
+  // Returns the z-value of the tab, which should be used to paint them in
+  // ascending order. Return values are in the range (0,
+  // TabStyle::GetMaximumZValue()).
+  float GetZValue() const;
+
+  GlowHoverController* GetHoverControllerForTesting() {
+    return hover_controller_.get();
+  }
+
+  static std::unique_ptr<TabStyleViewDelegate> CreateStyleDelegate(
+      const Tab* tab);
+
   // Returns the TabStyle associated with this tab.
   TabStyleViews* tab_style_views() { return tab_style_views_.get(); }
   const TabStyleViews* tab_style_views() const {
@@ -280,6 +299,8 @@ class Tab : public gfx::AnimationDelegate,
   tabs::TabData data_;
 
   std::unique_ptr<TabStyleViews> tab_style_views_;
+
+  std::unique_ptr<GlowHoverController> hover_controller_;
 
   // True if the tab is being animated closed.
   bool closing_ = false;

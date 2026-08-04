@@ -192,13 +192,6 @@ class TabStyle {
       const bool hovered,
       float hover_animation_value,
       const bool frame_active,
-      const ui::ColorProvider* color_provider) const;
-
-  SkColor GetCurrentTabBackgroundColor(
-      const TabSelectionState state,
-      const bool hovered,
-      float hover_animation_value,
-      const bool frame_active,
       const bool frame_glass,
       const ui::ColorProvider* color_provider) const;
 

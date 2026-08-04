@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -1356,7 +1357,7 @@ TEST_F(TabContainerTest, ZOrder_MixedScenario) {
   container_impl->CompleteAnimationAndLayout();
 
   // Hover over the grouped tab.
-  grouped_tab->tab_style_views()->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
+  grouped_tab->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
   grouped_tab->tab_style_views()
       ->GetHoverControllerForTesting()
       ->animation_for_testing()
@@ -1473,7 +1474,7 @@ TEST_F(TabContainerTest, ZOrder_HoveredTabIsAfterNormalTab) {
   container_impl->CompleteAnimationAndLayout();
 
   // Hover over the first tab.
-  tab1->tab_style_views()->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
+  tab1->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
   tab1->tab_style_views()
       ->GetHoverControllerForTesting()
       ->animation_for_testing()

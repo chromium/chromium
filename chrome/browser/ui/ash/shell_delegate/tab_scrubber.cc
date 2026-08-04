@@ -334,7 +334,7 @@ bool TabScrubber::FinishScrub(bool activate) {
 
     if (activate && highlighted_tab_ != -1) {
       Tab* tab = tab_strip_->tab_at(highlighted_tab_);
-      tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
+      tab->HideHover(TabStyle::HideHoverStyle::kImmediate);
       int distance =
           std::abs(highlighted_tab_ -
                    browser_->GetBrowser().GetTabStripModel()->active_index());
@@ -429,13 +429,12 @@ void TabScrubber::UpdateHighlightedTab(Tab* new_tab, int new_index) {
 
   if (highlighted_tab_ != -1) {
     Tab* tab = tab_strip_->tab_at(highlighted_tab_);
-    tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
+    tab->HideHover(TabStyle::HideHoverStyle::kImmediate);
   }
 
   if (new_index != browser_->GetBrowser().GetTabStripModel()->active_index()) {
     highlighted_tab_ = new_index;
-    new_tab->tab_style_views()->ShowHover(
-        TabStyle::ShowHoverStyle::kPronounced);
+    new_tab->ShowHover(TabStyle::ShowHoverStyle::kPronounced);
   } else {
     highlighted_tab_ = -1;
   }

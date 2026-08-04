@@ -37,11 +37,13 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/event_utils.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
+#include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
@@ -159,6 +161,108 @@ class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
   const raw_ptr<TabStyleViews, AcrossTasksDanglingUntriaged> tab_style_views_;
 };
 
+class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
+ public:
+  explicit TabStyleViewDelegateImpl(const Tab* tab) : tab_(tab) { CHECK(tab_); }
+  ~TabStyleViewDelegateImpl() override = default;
+
+  const views::View* GetView() const override { return tab_; }
+  bool IsActive() const override { return tab_->IsActive(); }
+  bool IsSelected() const override { return tab_->IsSelected(); }
+  bool IsHovering() const override { return tab_->IsHovering(); }
+  bool IsClosing() const override { return tab_->closing(); }
+  std::optional<tab_groups::TabGroupId> GetGroup() const override {
+    return tab_->group();
+  }
+  std::optional<SkColor> GetGroupColor() const override {
+    return tab_->GetGroupColor();
+  }
+  bool IsSplit() const override { return tab_->split().has_value(); }
+  std::optional<split_tabs::SplitTabId> GetSplit() const override {
+    return tab_->split();
+  }
+  int GetTabCount() const override { return tab_->controller()->GetTabCount(); }
+
+  bool IsLeftSplitTab() const override {
+    if (!tab_->split().has_value()) {
+      return false;
+    }
+    const std::vector<Tab*>& tabs_in_split =
+        tab_->controller()->GetTabsInSplit(tab_);
+    if (tabs_in_split.size() < 2) {
+      return true;
+    }
+    return tab_ ==
+           tabs_in_split[base::i18n::IsRTL() ? tabs_in_split.size() - 1 : 0];
+  }
+
+  bool IsRightSplitTab() const override {
+    if (!tab_->split().has_value()) {
+      return false;
+    }
+    const std::vector<Tab*>& tabs_in_split =
+        tab_->controller()->GetTabsInSplit(tab_);
+    if (tabs_in_split.size() < 2) {
+      return true;
+    }
+    return tab_ ==
+           tabs_in_split[base::i18n::IsRTL() ? 0 : tabs_in_split.size() - 1];
+  }
+
+  const TabStyleViewDelegate* GetAdjacentTab(bool leading) const override {
+    const Tab* adjacent =
+        tab_->controller()->GetAdjacentTab(tab_, leading ? -1 : 1);
+    return (adjacent && adjacent->tab_style_views())
+               ? adjacent->tab_style_views()->delegate()
+               : nullptr;
+  }
+
+  float GetHoverAnimationValue() const override {
+    return tab_->GetHoverAnimationValue();
+  }
+
+  float GetHoverOpacity() const override { return tab_->GetHoverOpacity(); }
+
+  bool IsHoverAnimationActive() const override {
+    return tab_->IsHoverAnimationActive();
+  }
+
+  bool IsGlassFrame() const override {
+    return tab_->controller()->IsGlassFrame();
+  }
+
+  int GetStrokeThickness() const override {
+    return tab_->controller()->GetStrokeThickness();
+  }
+
+  GlowHoverController* GetHoverControllerForTesting() override {
+    return const_cast<Tab*>(tab_.get())
+        ->GetHoverControllerForTesting();  // IN-TEST
+  }
+
+  BrowserFrameView* GetBrowserFrameView() const override {
+    BrowserWindowInterface* browser_window_interface =
+        tab_->controller()->GetBrowserWindowInterface();
+    if (!browser_window_interface) {
+      CHECK_IS_TEST();
+      return nullptr;
+    }
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser_window_interface);
+    if (!browser_view || !browser_view->browser_widget()) {
+      return nullptr;
+    }
+    return browser_view->browser_widget()->GetFrameView();
+  }
+
+  BrowserWindowInterface* GetBrowserWindowInterface() const override {
+    return tab_->controller()->GetBrowserWindowInterface();
+  }
+
+ private:
+  const raw_ptr<const Tab> tab_;
+};
+
 }  // namespace
 
 // Helper class that observes the tab's close button.
@@ -218,6 +322,9 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
     : HoverCardAnchorTarget(this),
       tab_handle_(handle),
       controller_(controller),
+      hover_controller_(gfx::Animation::ShouldRenderRichAnimation()
+                            ? std::make_unique<GlowHoverController>(this)
+                            : nullptr),
       title_(new TabTitle()),
       title_animation_(this) {
   DCHECK(controller);
@@ -978,15 +1085,93 @@ void Tab::ReleaseFreezingVote() {
 }
 
 void Tab::ShowHover(TabStyle::ShowHoverStyle style) {
-  tab_style_views()->ShowHover(style);
+  if (!hover_controller_) {
+    return;
+  }
+
+  if (style == TabStyle::ShowHoverStyle::kSubtle) {
+    hover_controller_->SetSubtleOpacityScale(
+        controller()->GetHoverOpacityForRadialHighlight());
+  }
+  hover_controller_->Show(style);
   UpdateForegroundColors();
   DeprecatedLayoutImmediately();
 }
 
 void Tab::HideHover(TabStyle::HideHoverStyle style) {
-  tab_style_views()->HideHover(style);
+  if (hover_controller_) {
+    hover_controller_->Hide(style);
+  }
   UpdateForegroundColors();
   DeprecatedLayoutImmediately();
+}
+
+double Tab::GetHoverAnimationValue() const {
+  if (!hover_controller_) {
+    return IsHoverAnimationActive() ? 1.0 : 0.0;
+  }
+  return hover_controller_->GetAnimationValue();
+}
+
+float Tab::GetHoverOpacity() const {
+  const float range_start =
+      static_cast<float>(tab_style()->GetStandardWidth(/*is_split*/ false));
+  constexpr float kWidthForMaxHoverOpacity = 32.0f;
+  const float value_in_range = static_cast<float>(width());
+  const float t = std::clamp(
+      (value_in_range - range_start) / (kWidthForMaxHoverOpacity - range_start),
+      0.0f, 1.0f);
+  return controller()->GetHoverOpacityForTab(t * t);
+}
+
+bool Tab::IsHoverAnimationActive() const {
+  return IsHovering() || (hover_controller_ && hover_controller_->ShouldDraw());
+}
+
+bool Tab::IsHovering() const {
+  if (mouse_hovered()) {
+    return true;
+  }
+
+  return std::ranges::any_of(controller()->GetTabsInSplit(this),
+                             [](const Tab* split_tab) {
+                               return split_tab && split_tab->mouse_hovered();
+                             });
+}
+
+float Tab::GetZValue() const {
+  // This will return values so that inactive tabs can be sorted in the
+  // following order:
+  //
+  // o Unselected tabs, in ascending hover animation value order.
+  // o The single unselected tab being hovered by the mouse, if present.
+  // o Selected tabs, in ascending hover animation value order.
+  // o The single selected tab being hovered by the mouse, if present.
+  //
+  // Representing the above groupings is accomplished by adding a "weight" to
+  // the current hover animation value.
+  //
+  // 0.0 == z-value         Unselected/non hover animating.
+  // 0.0 <  z-value <= 1.0  Unselected/hover animating.
+  // 2.0 <= z-value <= 3.0  Unselected/mouse hovered tab.
+  // 4.0 == z-value         Selected/non hover animating.
+  // 4.0 <  z-value <= 5.0  Selected/hover animating.
+  // 6.0 <= z-value <= 7.0  Selected/mouse hovered tab.
+  //
+  // This function doesn't handle active tabs, as they are normally painted by a
+  // different code path (with z-value infinity).
+  float sort_value = GetHoverAnimationValue();
+  if (IsSelected()) {
+    sort_value += 4.f;
+  }
+  if (IsHovering()) {
+    sort_value += 2.f;
+  }
+
+  DCHECK_GE(sort_value, 0.0f);
+  DCHECK_LE(sort_value, TabStyle::kMaximumZValue);
+
+  return sort_value;
 }
 
 // static
@@ -1393,6 +1578,11 @@ void Tab::OnTabDataChanged(TabChangeType tab_change_type,
 
   DeprecatedLayoutImmediately();
   SchedulePaint();
+}
+
+// static
+std::unique_ptr<TabStyleViewDelegate> Tab::CreateStyleDelegate(const Tab* tab) {
+  return std::make_unique<TabStyleViewDelegateImpl>(tab);
 }
 
 BEGIN_METADATA(Tab)
