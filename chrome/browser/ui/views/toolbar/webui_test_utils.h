@@ -60,6 +60,16 @@ void SetUpWebUI(const ui::ElementIdentifier& element_id,
 // `browser`.
 WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser);
 
+// Simulates a left-click on the WebUI toolbar extension button with the given
+// `id` (or the puzzle piece extensions menu button if `id` is empty).
+void LeftClickExtensionButton(content::WebContents* web_contents,
+                              const std::string& id);
+
+// Simulates a right-click (context menu) on the WebUI toolbar extension button
+// with the given `id`.
+void RightClickExtensionButton(content::WebContents* web_contents,
+                               const std::string& id);
+
 class AvatarButtonUpdateWaiter : public AvatarToolbarButtonInterface::Observer {
  public:
   explicit AvatarButtonUpdateWaiter(AvatarToolbarButtonInterface* button);

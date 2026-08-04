@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/headless/headless_command_processor.h"
@@ -81,6 +82,25 @@ namespace {
       return ::AvatarToolbarButtonState::kNormal;
   }
 }
+
+// JavaScript template for locating an extension button in the WebUI toolbar
+// and performing an action on it. Expects two format arguments:
+// 1. (const char*): The extension ID (or empty string for the puzzle piece
+//    extensions menu button) to locate the button element `btn`.
+// 2. (const char*): The JavaScript statement(s) to execute on `btn` (e.g.
+//    "btn.click();" or dispatching an event).
+constexpr char kClickExtensionButtonScript[] = R"(
+  (() => {
+    const app = document.querySelector('toolbar-app');
+    const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+    const extensionElements = extensionsContainer.shadowRoot
+        .querySelectorAll('webui-toolbar-extension');
+    const el = Array.from(extensionElements)
+        .find(el => el.state.id === '%s');
+    const btn = el.shadowRoot.querySelector('cr-button');
+    %s
+  })();
+)";
 
 }  // namespace
 
@@ -749,4 +769,25 @@ std::u16string AvatarToolbarButtonTestAccessor::GetAccessibilityDescription() {
           },
       },
       GetButton());
+}
+
+void LeftClickExtensionButton(content::WebContents* web_contents,
+                              const std::string& id) {
+  EXPECT_TRUE(content::ExecJs(
+      web_contents, base::StringPrintf(kClickExtensionButtonScript, id.c_str(),
+                                       "btn.click();")));
+}
+
+void RightClickExtensionButton(content::WebContents* web_contents,
+                               const std::string& id) {
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(kClickExtensionButtonScript, id.c_str(), R"(
+        btn.dispatchEvent(new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          button: 2
+        }));
+      )")));
 }

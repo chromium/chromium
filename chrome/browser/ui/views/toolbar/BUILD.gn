@@ -378,6 +378,8 @@ if (!is_android) {
       sources += [
         "toolbar_view_browsertest.cc",
         "webui_toolbar_web_view_browsertest.cc",
+        "webui_toolbar_web_view_test_base.cc",
+        "webui_toolbar_web_view_test_base.h",
       ]
 
       deps += [
@@ -414,6 +416,8 @@ if (!is_android && !is_chromeos_device) {
         "webui_and_views_toolbar_interactive_uitest_base.h",
         "webui_toolbar_interactive_uitest.cc",
         "webui_toolbar_web_view_interactive_uitest.cc",
+        "webui_toolbar_web_view_test_base.cc",
+        "webui_toolbar_web_view_test_base.h",
       ]
     }
 
@@ -445,6 +449,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/waap:manager",
+      "//chrome/browser/ui/webui/webui_toolbar:impl",
       "//chrome/browser/user_education",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

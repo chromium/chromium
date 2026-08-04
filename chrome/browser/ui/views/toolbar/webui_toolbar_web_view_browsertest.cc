@@ -88,6 +88,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_test_base.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
@@ -2561,185 +2562,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
   widget1->CloseNow();
 }
 
-class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
+class WebUIToolbarWebViewBrowserTest : public WebUIToolbarWebViewTestBase {
  public:
-  WebUIToolbarWebViewBrowserTest()
-      : WebUIToolbarWebViewBrowserTest(
-            {features::kInitialWebUI, features::kWebUIReloadButton,
-             features::kWebUISplitTabsButton, features::kWebUIHomeButton,
-             features::kWebUIExtensionsContainer,
-             features::kSkipIPCChannelPausingForNonGuests,
-             features::kWebUIInProcessResourceLoadingV2,
-             // Needed for browser_tests_no_field_trial.
-             extensions_features::kExtensionsMenuAccessControl},
-            {features::kExtensionsPinnedByDefault}) {}
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
-        ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
-  }
-
- protected:
-  WebUIToolbarWebViewBrowserTest(
-      const std::vector<base::test::FeatureRef>& enabled,
-      const std::vector<base::test::FeatureRef>& disabled) {
-    feature_list_.InitWithFeatures(enabled, disabled);
-  }
-
-  ToolbarView* GetToolbarView() {
-    return BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
-  }
-
-  void SimulateDropOnToolbar(content::WebContents* web_contents,
-                             const std::string& text) {
-    EXPECT_TRUE(
-        content::ExecJs(web_contents, base::StringPrintf(R"(
-      const toolbarApp = document.querySelector('toolbar-app');
-      const dataTransfer = new DataTransfer();
-      dataTransfer.setData('text/plain', "%s");
-      const dropEvent = new DragEvent('drop', {
-        bubbles: true,
-        cancelable: true,
-        dataTransfer: dataTransfer
-      });
-      toolbarApp.dispatchEvent(dropEvent);
-    )",
-                                                         text.c_str())));
-  }
-
-  scoped_refptr<const extensions::Extension> LoadAndPinExtension(
-      WebUIToolbarWebView* webui_toolbar_view,
-      content::WebContents* web_contents,
-      base::ScopedTempDir& temp_dir,
-      bool has_background_script = false,
-      bool has_popup = false) {
-    scoped_refptr<const extensions::Extension> extension =
-        LoadExtension(temp_dir, has_background_script, has_popup);
-    if (!extension) {
-      return nullptr;
-    }
-
-    // Pin the extension so it becomes visible.
-    ToolbarActionsModel::Get(browser()->GetProfile())
-        ->SetActionVisibility(extension->id(), true);
-
-    base::RunLoop run_loop;
-    webui_toolbar_view->extensions_container_.OnActionPoppedOut(
-        run_loop.QuitClosure());
-    run_loop.Run();
-
-    return extension;
-  }
-
-  scoped_refptr<const extensions::Extension> LoadExtension(
-      base::ScopedTempDir& temp_dir,
-      bool has_background_script = false,
-      bool has_popup = false) {
-    base::FilePath manifest_path =
-        temp_dir.GetPath().AppendASCII("manifest.json");
-
-    std::string background_section = "";
-    if (has_background_script) {
-      background_section = R"(
-        , "background": {
-          "service_worker": "background.js"
-        }
-      )";
-      base::FilePath script_path =
-          temp_dir.GetPath().AppendASCII("background.js");
-      std::string script_content = R"(
-        chrome.action.onClicked.addListener(() => {
-          chrome.test.sendMessage("clicked");
-        });
-      )";
-      EXPECT_TRUE(base::WriteFile(script_path, script_content));
-    }
-
-    std::string action_section = "{}";
-    if (has_popup) {
-      action_section = R"({"default_popup": "popup.html"})";
-      base::FilePath popup_path = temp_dir.GetPath().AppendASCII("popup.html");
-      EXPECT_TRUE(
-          base::WriteFile(popup_path, "<html><body>Popup</body></html>"));
-    }
-
-    std::string manifest_content =
-        base::StringPrintf(R"({
-      "name": "Test Extension",
-      "version": "1.0",
-      "manifest_version": 3,
-      "action": %s
-      %s,
-      "host_permissions": ["*://allowed.com/*"]
-    })",
-                           action_section.c_str(), background_section.c_str());
-
-    EXPECT_TRUE(base::WriteFile(manifest_path, manifest_content));
-
-    extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
-    scoped_refptr<const extensions::Extension> extension =
-        loader.LoadExtension(temp_dir.GetPath());
-    EXPECT_TRUE(extension);
-
-    return extension;
-  }
-
-  void ClickExtensionButton(content::WebContents* web_contents,
-                            const std::string& id) {
-    EXPECT_TRUE(content::ExecJs(web_contents, base::StringPrintf(R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const el = Array.from(extensionElements)
-            .find(el => el.state.id === '%s');
-        el.shadowRoot.querySelector('cr-button').click();
-      })();
-    )",
-                                                                 id.c_str())));
-  }
-
-  void RightClickExtensionButton(content::WebContents* web_contents,
-                                 const std::string& id) {
-    EXPECT_TRUE(content::ExecJs(web_contents, base::StringPrintf(R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const el = Array.from(extensionElements)
-            .find(el => el.state.id === '%s');
-        const btn = el.shadowRoot.querySelector('cr-button');
-        btn.dispatchEvent(new MouseEvent('contextmenu', {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-          button: 2
-        }));
-      })();
-    )",
-                                                                 id.c_str())));
-  }
-
-  void SimulateUriListDropOnToolbar(content::WebContents* web_contents,
-                                    const std::string& url) {
-    EXPECT_TRUE(content::ExecJs(web_contents, base::StringPrintf(R"(
-      const toolbarApp = document.querySelector('toolbar-app');
-      const dataTransfer = new DataTransfer();
-      dataTransfer.setData('text/uri-list', "%s");
-      const dropEvent = new DragEvent('drop', {
-        bubbles: true,
-        cancelable: true,
-        dataTransfer: dataTransfer
-      });
-      toolbarApp.dispatchEvent(dropEvent);
-    )",
-                                                                 url.c_str())));
-  }
-
-  base::test::ScopedFeatureList feature_list_;
+  using WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase;
 };
 
 class WebUIAppMenuBrowserTest : public WebUIToolbarWebViewBrowserTest {
@@ -4264,7 +4089,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(webui_toolbar_view, web_contents, temp_dir,
+      LoadAndPinExtension(webui_toolbar_view, temp_dir,
                           /*has_background_script=*/false);
   ASSERT_TRUE(extension);
 
@@ -4340,81 +4165,6 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
   }));
 }
 
-// TODO(crbug.com/539283722): Deflake and re-enable.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       DISABLED_ExtensionUserActionsPlumbing) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL allowed_url =
-      embedded_test_server()->GetURL("allowed.com", "/title1.html");
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
-
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(webui_toolbar_view, web_contents, temp_dir,
-                          /*has_background_script=*/true);
-  ASSERT_TRUE(extension);
-
-  std::string extension_id = extension->id();
-
-  // Retrieve the C++ ExtensionsContainer.
-  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
-      ExtensionsContainer::From(*browser()));
-  ASSERT_TRUE(container);
-
-  // 1. Test onClick plumbing for the extension.
-  {
-    ExtensionTestMessageListener listener("clicked");
-
-    // Click the extension button.
-    ClickExtensionButton(web_contents, extension_id);
-
-    EXPECT_TRUE(listener.WaitUntilSatisfied());
-  }
-
-  // 2. Test onClick plumbing for the extensions menu button (id: "").
-  {
-    auto* coordinator = container->extensions_menu_coordinator_.get();
-    ASSERT_TRUE(coordinator);
-    EXPECT_FALSE(coordinator->IsShowing());
-
-    // Click the extensions button (puzzle piece, id: "").
-    ClickExtensionButton(web_contents, "");
-
-    EXPECT_TRUE(
-        base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
-
-    // Toggle it back off.
-    ClickExtensionButton(web_contents, "");
-
-    EXPECT_TRUE(
-        base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
-  }
-
-  // 3. Test onContextMenu plumbing for the extension.
-  {
-    EXPECT_FALSE(container->context_menu_);
-
-    // Trigger context menu event on the extension.
-    RightClickExtensionButton(web_contents, extension_id);
-
-    EXPECT_TRUE(base::test::RunUntil(
-        [&]() { return container->context_menu_ != nullptr; }));
-  }
-}
-
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -4436,7 +4186,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(webui_toolbar_view, web_contents, temp_dir,
+      LoadAndPinExtension(webui_toolbar_view, temp_dir,
                           /*has_background_script=*/false, /*has_popup=*/true);
   ASSERT_TRUE(extension);
 
@@ -4466,7 +4216,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
 
   // 1. Left click on extension icon (opens popup).
   {
-    ClickExtensionButton(web_contents, extension_id);
+    LeftClickExtensionButton(web_contents, extension_id);
 
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return ExtensionPopup::last_popup_for_testing() != nullptr &&
@@ -4504,7 +4254,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
     ASSERT_TRUE(coordinator);
     EXPECT_FALSE(coordinator->IsShowing());
 
-    ClickExtensionButton(web_contents, "");
+    LeftClickExtensionButton(web_contents, "");
 
     EXPECT_TRUE(
         base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
@@ -4519,7 +4269,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
               container->GetExtensionsMenuButtonAnchor()->GetScreenBounds());
 
     // Toggle menu off.
-    ClickExtensionButton(web_contents, "");
+    LeftClickExtensionButton(web_contents, "");
 
     EXPECT_TRUE(
         base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
@@ -4621,20 +4371,18 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
                                      &webui_toolbar_view, &web_view,
                                      browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
-
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   // Load and pin two extensions.
   scoped_refptr<const extensions::Extension> ext1 =
-      LoadAndPinExtension(webui_toolbar_view, web_contents, temp_dir);
+      LoadAndPinExtension(webui_toolbar_view, temp_dir);
   ASSERT_TRUE(ext1);
   base::ScopedTempDir temp_dir2;
   ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
   scoped_refptr<const extensions::Extension> ext2 =
-      LoadAndPinExtension(webui_toolbar_view, web_contents, temp_dir2);
+      LoadAndPinExtension(webui_toolbar_view, temp_dir2);
   ASSERT_TRUE(ext2);
 
   auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
