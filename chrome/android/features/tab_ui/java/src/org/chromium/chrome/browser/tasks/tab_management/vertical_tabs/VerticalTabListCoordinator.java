@@ -878,6 +878,10 @@ public class VerticalTabListCoordinator {
 
         touchHelperCallback.setOnDragOutListener(
                 (viewHolder, dX, dY) -> {
+                    if (!VerticalTabUtils.isExternalDragEnabled()) {
+                        return;
+                    }
+
                     if (!(viewHolder
                             instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder)) {
                         return;
@@ -893,10 +897,6 @@ public class VerticalTabListCoordinator {
                     PointF startPoint = new PointF(mLastTouchPoint.x + dX, mLastTouchPoint.y + dY);
 
                     if (isGroupHeader) {
-                        if (!VerticalTabUtils.isGroupHeaderDragEnabled()) {
-                            return;
-                        }
-
                         Token tabGroupId =
                                 assumeNonNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
 

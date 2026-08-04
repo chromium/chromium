@@ -2558,20 +2558,20 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_ExpandOnHover[] = {
     {"expand_on_hover", "true"}};
-const FeatureEntry::FeatureParam kAndroidVerticalTabs_GroupHeaderDrag[] = {
-    {"group_header_drag", "true"}};
+const FeatureEntry::FeatureParam kAndroidVerticalTabs_ExternalDrag[] = {
+    {"external_drag", "true"}};
 const FeatureEntry::FeatureParam
-    kAndroidVerticalTabs_ExpandOnHoverAndGroupHeaderDrag[] = {
+    kAndroidVerticalTabs_ExpandOnHoverAndExternalDrag[] = {
         {"expand_on_hover", "true"},
-        {"group_header_drag", "true"}};
+        {"external_drag", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with expand-on-hover", kAndroidVerticalTabs_ExpandOnHover, nullptr},
-    {"with group-header-drag", kAndroidVerticalTabs_GroupHeaderDrag, nullptr},
-    {"with expand-on-hover and group-header-drag",
-     kAndroidVerticalTabs_ExpandOnHoverAndGroupHeaderDrag, nullptr},
+    {"with external-drag", kAndroidVerticalTabs_ExternalDrag, nullptr},
+    {"with expand-on-hover and external-drag",
+     kAndroidVerticalTabs_ExpandOnHoverAndExternalDrag, nullptr},
     {"with enabled-by-default", kAndroidVerticalTabs_EnableByDefault, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
