@@ -40,7 +40,7 @@ std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
       params.initial_show_state != ui::mojom::WindowShowState::kMinimized);
   params.window = window.release();
 
-  return Browser::DeprecatedCreateOwnedForTesting(params);
+  return Browser::DeprecatedCreateOwnedForTesting(std::move(params));
 }
 
 // TestBrowserWindow::TestLocationBar -----------------------------------------

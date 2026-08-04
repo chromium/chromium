@@ -58,7 +58,7 @@ class TestBrowserWindowViews : public TestBrowserWindow {
   bool IsActive() const override;
   gfx::Rect GetBounds() const override;
 
-  std::unique_ptr<Browser> CreateBrowser(const Browser::CreateParams& params);
+  std::unique_ptr<Browser> CreateBrowser(Browser::CreateParams params);
 
  private:
   raw_ptr<Browser> browser_;  // not owned
@@ -76,7 +76,7 @@ std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
 
 // Helper that creates a browser with a Widget serving as the BrowserWindow.
 std::unique_ptr<Browser> CreateBrowserWithViewsTestWindowForParams(
-    const Browser::CreateParams& params,
+    Browser::CreateParams params,
     aura::Window* parent = nullptr);
 
 }  // namespace chrome

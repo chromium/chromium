@@ -1623,42 +1623,45 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::mojom::WindowShowState::kMaximized) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
-  auto params = std::to_array<Browser::CreateParams>({
-      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->GetProfile(),
-                            true),
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->GetProfile(), true),
-      Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
-                                          browser()->GetProfile(), true),
-      Browser::CreateParams::CreateForDevTools(browser()->GetProfile()),
-      Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                               browser()->GetProfile(), true),
-      Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
-                            browser()->GetProfile(), true),
-  });
+  std::vector<Browser::CreateParams> params;
+  params.push_back(
+      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->GetProfile(), true));
+  params.push_back(
+      Browser::CreateParams(Browser::TYPE_POPUP, browser()->GetProfile(), true));
+  params.push_back(Browser::CreateParams::CreateForApp(
+      "app_name", true, gfx::Rect(), browser()->GetProfile(), true));
+  params.push_back(
+      Browser::CreateParams::CreateForDevTools(browser()->GetProfile()));
+  params.push_back(Browser::CreateParams::CreateForAppPopup(
+      "app_name", true, gfx::Rect(), browser()->GetProfile(), true));
+  params.push_back(Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
+                                         browser()->GetProfile(), true));
   for (auto& param : params) {
     param.initial_show_state = ui::mojom::WindowShowState::kMaximized;
-    AddBlankTabAndShow(Browser::Create(param));
+    AddBlankTabAndShow(Browser::Create(std::move(param)));
   }
 }
 
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::mojom::WindowShowState::kMinimized) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
-  auto params = std::to_array<Browser::CreateParams>({
-      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->GetProfile(),
-                            true),
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->GetProfile(), true),
-      Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
-                                          browser()->GetProfile(), true),
-      Browser::CreateParams::CreateForDevTools(browser()->GetProfile()),
-      Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                               browser()->GetProfile(), true),
-      Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
-                            browser()->GetProfile(), true),
-  });
+  std::vector<Browser::CreateParams> params;
+  params.push_back(
+      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->GetProfile(), true));
+  params.push_back(
+      Browser::CreateParams(Browser::TYPE_POPUP, browser()->GetProfile(), true));
+  params.push_back(Browser::CreateParams::CreateForApp(
+      "app_name", true, gfx::Rect(), browser()->GetProfile(), true));
+  params.push_back(
+      Browser::CreateParams::CreateForDevTools(browser()->GetProfile()));
+  params.push_back(Browser::CreateParams::CreateForAppPopup(
+      "app_name", true, gfx::Rect(), browser()->GetProfile(), true));
+  params.push_back(Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
+                                         browser()->GetProfile(), true));
   for (auto& param : params) {
     param.initial_show_state = ui::mojom::WindowShowState::kMinimized;
-    AddBlankTabAndShow(Browser::Create(param), /*wait_for_activation=*/false);
+    AddBlankTabAndShow(Browser::Create(std::move(param)),
+                       /*wait_for_activation=*/false);
   }
 }
 

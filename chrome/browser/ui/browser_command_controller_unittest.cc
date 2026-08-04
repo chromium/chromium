@@ -314,7 +314,7 @@ TEST_F(BrowserCommandControllerTest, AvatarMenuAlwaysEnabledInIncognitoMode) {
   Browser::CreateParams profile_params(
       original_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true);
   std::unique_ptr<Browser> otr_browser(
-      CreateBrowserWithTestWindowForParams(profile_params));
+      CreateBrowserWithTestWindowForParams(std::move(profile_params)));
 
   const CommandUpdater* command_updater =
       chrome::BrowserCommandController::From(otr_browser.get());
@@ -609,7 +609,7 @@ TEST_F(BrowserWithTestWindowTest, ClearBrowsingDataIsEnabledInIncognito) {
   // Create a new browser based on the off the record profile.
   Browser::CreateParams profile_params(incognito_profile, true);
   std::unique_ptr<Browser> incognito_browser =
-      CreateBrowserWithTestWindowForParams(profile_params);
+      CreateBrowserWithTestWindowForParams(std::move(profile_params));
 
   chrome::BrowserCommandController* command_controller =
       chrome::BrowserCommandController::From(incognito_browser.get());
@@ -835,7 +835,7 @@ TEST_F(CreateShortcutBrowserCommandControllerTest, DisabledForOTRProfile) {
   // Create a new browser based on the off the record profile.
   Browser::CreateParams profile_params(incognito_profile, true);
   std::unique_ptr<Browser> incognito_browser =
-      CreateBrowserWithTestWindowForParams(profile_params);
+      CreateBrowserWithTestWindowForParams(std::move(profile_params));
 
   EXPECT_FALSE(
       chrome::IsCommandEnabled(incognito_browser.get(), IDC_CREATE_SHORTCUT));

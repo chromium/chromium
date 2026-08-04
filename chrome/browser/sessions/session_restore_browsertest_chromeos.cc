@@ -89,7 +89,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
   }
 
   Browser* CreateBrowserWithParams(Browser::CreateParams params) {
-    Browser* browser = Browser::Create(params);
+    Browser* browser = Browser::Create(std::move(params));
     AddBlankTabAndShow(browser);
     return browser;
   }

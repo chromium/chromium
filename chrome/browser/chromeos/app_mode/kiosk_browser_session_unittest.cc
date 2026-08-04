@@ -94,7 +94,7 @@ constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 class FakeBrowser {
  public:
   explicit FakeBrowser(Browser::CreateParams params)
-      : FakeBrowser(Browser::DeprecatedCreateOwnedForTesting(params)) {}
+      : FakeBrowser(Browser::DeprecatedCreateOwnedForTesting(std::move(params))) {}
 
   explicit FakeBrowser(std::unique_ptr<Browser> browser)
       : browser_(std::move(browser)) {
@@ -201,7 +201,7 @@ std::unique_ptr<FakeBrowser> CreateBrowserWithFullscreenTestWindowForParams(
   auto window = std::make_unique<FullscreenTestBrowserWindow>(
       profile, /*fullscreen=*/is_main_browser);
   params.window = window.release();
-  return std::make_unique<FakeBrowser>(params);
+  return std::make_unique<FakeBrowser>(std::move(params));
 }
 
 class SystemWebAppWaiter {
