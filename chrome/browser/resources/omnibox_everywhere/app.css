@@ -16,6 +16,7 @@ omnibox-everywhere-omnibox {
   --color-composebox-type-ahead: #5f6368;
   --color-composebox-type-ahead-chip: rgba(26, 115, 232, 0.1);
   --color-composebox-font-light: #1f1f1f;
+  --color-searchbox-placeholder: var(--color-composebox-type-ahead);
   display: block;
 }
 

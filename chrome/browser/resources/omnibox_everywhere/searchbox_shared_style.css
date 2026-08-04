@@ -23,6 +23,8 @@
   display: flex;
   flex-direction: row;
   gap: 12px;
+  /* Keeps buttons right-aligned even when contextual entrypoint is omitted. */
+  margin-inline-start: auto;
 }
 
 .searchbox-icon-button-container {
