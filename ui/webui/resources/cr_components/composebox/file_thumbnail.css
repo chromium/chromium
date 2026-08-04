@@ -42,6 +42,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+  pointer-events: none;
   width: 100%;
 }
 
