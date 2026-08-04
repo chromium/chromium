@@ -1917,4 +1917,56 @@ TEST_F(RenderWidgetHostViewAndroidTest,
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
+TEST_F(RenderWidgetHostViewAndroidTest, UpdateVisibilityWhileDetached) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  // 1. Create a window and attach the parent view.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(GetParentView());
+
+  // By default, visibility is set up and is visible (not hidden).
+  EXPECT_FALSE(rwhva->host()->IsHidden());
+
+  // 2. Hide the window. This should hide the view.
+  window->get()->OnVisibilityChanged(nullptr, false);
+  EXPECT_TRUE(rwhva->host()->IsHidden());
+
+  // 3. Detach the parent view from the window and hide the view.
+  GetParentView()->RemoveFromParent();
+  EXPECT_EQ(rwhva->GetNativeView()->GetWindowAndroid(), nullptr);
+  rwhva->Hide();
+
+  // 4. Trigger visibility update by calling ShowWithVisibility() while
+  // detached. Because it is detached (GetWindowAndroid() is null), it should
+  // bypass the window activity/visibility checks and become shown.
+  rwhva->ShowWithVisibility(PageVisibilityState::kVisible);
+  EXPECT_FALSE(rwhva->host()->IsHidden());
+
+  // 5. Re-attach to a visible window.
+  // Since we called ShowWithVisibility(), it should stay shown.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window2 =
+      ui::WindowAndroid::CreateForTesting();
+  window2->get()->OnVisibilityChanged(nullptr, true);
+  window2->get()->AddChild(GetParentView());
+  EXPECT_EQ(rwhva->GetNativeView()->GetWindowAndroid(), window2->get());
+  EXPECT_FALSE(rwhva->host()->IsHidden());
+
+  // 6. Detach again, and verify it's still shown.
+  GetParentView()->RemoveFromParent();
+  EXPECT_EQ(rwhva->GetNativeView()->GetWindowAndroid(), nullptr);
+  EXPECT_FALSE(rwhva->host()->IsHidden());
+
+  // 7. Re-attach to a hidden window.
+  // The view should become hidden to match the window visibility.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window3 =
+      ui::WindowAndroid::CreateForTesting();
+  window3->get()->AddChild(GetParentView());
+  EXPECT_EQ(rwhva->GetNativeView()->GetWindowAndroid(), window3->get());
+
+  // Explicitly notify visibility change to false since it's a hidden window.
+  window3->get()->OnVisibilityChanged(nullptr, false);
+  EXPECT_TRUE(rwhva->host()->IsHidden());
+}
+
 }  // namespace content

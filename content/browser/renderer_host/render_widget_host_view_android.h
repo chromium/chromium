@@ -815,6 +815,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // Whether swipe-to-move-cursor gesture is activated.
   bool swipe_to_move_cursor_activated_ = false;
 
+  bool in_destroy_ = false;
+
   raw_ptr<WebContentsAccessibilityAndroid> web_contents_accessibility_ =
       nullptr;
 

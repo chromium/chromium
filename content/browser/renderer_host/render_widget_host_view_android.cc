@@ -1845,6 +1845,7 @@ void RenderWidgetHostViewAndroid::RenderProcessGone() {
 }
 
 void RenderWidgetHostViewAndroid::Destroy() {
+  in_destroy_ = true;
   host()->render_frame_metadata_provider()->RemoveObserver(this);
   host()->ViewDestroyed();
   host()->RemoveInputEventObserver(
@@ -2431,8 +2432,13 @@ bool RenderWidgetHostViewAndroid::VisibilityNeedsDrawing() const {
 }
 
 void RenderWidgetHostViewAndroid::UpdateVisibility() {
-  bool should_be_showing = VisibilityNeedsDrawing() &&
-                           is_window_activity_started_ && is_window_visible_;
+  if (in_destroy_) {
+    return;
+  }
+  bool should_be_showing =
+      VisibilityNeedsDrawing() &&
+      ((is_window_activity_started_ && is_window_visible_) ||
+       !view_.GetWindowAndroid());
   if (should_be_showing) {
     ShowInternal();
   } else {
@@ -3265,6 +3271,7 @@ void RenderWidgetHostViewAndroid::OnAttachedToWindow() {
   CHECK(view_.GetWindowAndroid(), base::NotFatalUntil::M152);
   if (view_.GetWindowAndroid()->GetCompositor())
     OnAttachCompositor();
+  UpdateVisibility();
 }
 
 void RenderWidgetHostViewAndroid::OnDetachedFromWindow() {
