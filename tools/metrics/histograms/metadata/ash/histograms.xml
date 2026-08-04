@@ -3352,7 +3352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DozeMode.RealPower.DurationPercentage" units="%"
-    expires_after="2026-09-10">
+    expires_after="2027-07-31">
   <owner>vincentchiang@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
@@ -3362,7 +3362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DozeMode.{PowerStatus}.Duration" units="ms"
-    expires_after="2026-08-23">
+    expires_after="2027-07-31">
   <owner>vincentchiang@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
