@@ -381,7 +381,8 @@ GraphBuilderOrt::GraphBuilderOrt(
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     std::optional<uint32_t> batched_matmul_k_dimension_limit)
-    : graph_info_(graph_info),
+    : next_operand_id_(graph_info.operands.size()),
+      graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
       context_properties_(std::move(context_properties)),
       batched_matmul_k_dimension_limit_(

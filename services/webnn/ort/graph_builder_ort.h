@@ -301,9 +301,8 @@ class GraphBuilderOrt {
   base::expected<std::unique_ptr<ModelEditor::ModelInfo>, mojom::ErrorPtr>
   BuildModel();
 
-  // An increasing id starting from 0, used for generating unique names for each
-  // operand.
-  base::CheckedNumeric<uint32_t> next_operand_id_ = 0;
+  // An increasing id used for generating unique names for inserted operand.
+  base::CheckedNumeric<uint32_t> next_operand_id_;
 
   // An increasing id starting from 0, used for generating unique names for each
   // operation.
