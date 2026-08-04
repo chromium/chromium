@@ -494,7 +494,7 @@ AffineTransform LayoutSVGShape::ComputeNonScalingStrokeTransform(
   // unpleasant ways (see crbug.com/747708 for an example.) Maybe it would be
   // better to apply this effect during rasterization?
   AffineTransform host_transform;
-  if (RuntimeEnabledFeatures::SvgNewZoomEnabled()) {
+  if (!RuntimeEnabledFeatures::SvgNewZoomEnabled()) {
     host_transform.Scale(1 / StyleRef().EffectiveZoom())
         .PreConcat(ComputeRootTransform());
   } else {
