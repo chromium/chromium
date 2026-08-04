@@ -17,8 +17,6 @@ import type {SearchEngine} from './search_engines_browser_proxy.js';
 import {getCss} from './search_engines_list.css.js';
 import {getHtml} from './search_engines_list.html.js';
 
-export type SearchEnginesListElement = SettingsSearchEnginesListElement;
-
 export class SettingsSearchEnginesListElement extends CrLitElement {
   static get is() {
     return 'settings-search-engines-list';

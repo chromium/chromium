@@ -46,8 +46,6 @@ export interface SettingsSearchEnginesPageElement {
   };
 }
 
-export type SearchEnginesPageElement = SettingsSearchEnginesPageElement;
-
 const SettingsSearchEnginesPageElementBase =
     SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 

@@ -29,8 +29,6 @@ export interface SettingsSearchPageIndexElement {
   };
 }
 
-export type SearchPageIndexElement = SettingsSearchPageIndexElement;
-
 const SettingsSearchPageIndexElementBase =
     SearchableViewContainerMixinLit(RouteObserverMixinLit(CrLitElement));
 

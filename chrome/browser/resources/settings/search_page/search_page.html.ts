@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsSearchPageElement} from './search_page.js';
+
+export function getHtml(this: SettingsSearchPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-section page-title="${this.searchPageTitle_}">
   <div route-path="default">
     <!-- Omnibox search engine -->
@@ -77,3 +87,5 @@
     ` : ''}
   </div>
 </settings-section>
+<!--_html_template_end_-->`;
+}

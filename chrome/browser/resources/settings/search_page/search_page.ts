@@ -34,8 +34,6 @@ import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search
 import {getCss} from './search_page.css.js';
 import {getHtml} from './search_page.html.js';
 
-export type SearchPageElement = SettingsSearchPageElement;
-
 const SettingsSearchPageElementBase = PrefServiceObserverMixinLit(
     SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement))));
 

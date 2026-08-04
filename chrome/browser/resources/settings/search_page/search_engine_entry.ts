@@ -34,8 +34,6 @@ import {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteract
 const SettingsSearchEngineEntryElementBase =
     PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement));
 
-export type SearchEngineEntryElement = SettingsSearchEngineEntryElement;
-
 export class SettingsSearchEngineEntryElement extends
     SettingsSearchEngineEntryElementBase {
   static get is() {

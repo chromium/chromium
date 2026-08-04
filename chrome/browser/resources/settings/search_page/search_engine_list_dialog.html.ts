@@ -1,7 +1,13 @@
-<!-- #html_wrapper_imports_start
-import type {SearchEngine} from './search_engines_browser_proxy.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SearchEngineListDialogElement} from './search_engine_list_dialog.js';
+
+export function getHtml(this: SearchEngineListDialogElement) {
+  return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" @cancel="${this.onDialogCancel_}" show-on-attach>
   <div slot="title">
     <div class="title">$i18n{searchPageTitle}</div>
@@ -41,3 +47,5 @@ import type {SearchEngine} from './search_engines_browser_proxy.js';
     </cr-button>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+}
