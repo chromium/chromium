@@ -524,22 +524,6 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
 #endif
 }
 
-void PageInfoMainView::SetAdPersonalizationInfo(
-    const AdPersonalizationInfo& info) {
-  ads_personalization_section_ =
-      site_settings_view_->AddChildView(CreateContainerView());
-
-  ads_personalization_section_->RemoveAllChildViews();
-
-  if (info.is_empty()) {
-    return;
-  }
-
-  ads_personalization_section_->AddChildView(CreateAdPersonalizationButton());
-
-  PreferredSizeChanged();
-}
-
 void PageInfoMainView::OnPermissionChanged(
     const PageInfo::PermissionInfo& permission) {
   presenter_->OnSitePermissionChanged(permission.type, permission.setting,
@@ -698,28 +682,6 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteButton(
       views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
 
   return about_this_site_button;
-}
-
-std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
-  auto ads_personalization_button = std::make_unique<RichHoverButton>(
-      base::BindRepeating(&PageInfoNavigationHandler::OpenAdPersonalizationPage,
-                          base::Unretained(navigation_handler_)),
-      PageInfoViewFactory::GetImageModel(features::IsRoundedIconsEnabled()
-                                             ? vector_icons::kAdsClickIcon
-                                             : vector_icons::kAdsClickOldIcon),
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
-      std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
-  ads_personalization_button->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
-  ads_personalization_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP));
-
-  ads_personalization_button->SetTitleTextStyleAndColor(
-      views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
-  ads_personalization_button->SetSubtitleTextStyleAndColor(
-      views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
-
-  return ads_personalization_button;
 }
 
 std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(

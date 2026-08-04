@@ -76,7 +76,6 @@ class PageInfoMainView : public views::View,
                          ChosenObjectInfoList chosen_object_info_list) override;
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
-  void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
   void SetCookieInfo(const CookiesInfo& cookie_info) override;
 
   gfx::Size CalculatePreferredSize(
@@ -137,9 +136,6 @@ class PageInfoMainView : public views::View,
   [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteButton(
       const page_info::proto::SiteInfo& info);
 
-  // Creates 'Ad personalization' button that opens a subpage.
-  [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationButton();
-
   // Creates 'Merchant trust' button.
   [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustButton(
       page_info::MerchantData value);
@@ -194,9 +190,6 @@ class PageInfoMainView : public views::View,
   // The view that contains `SecurityInformationView` and a certificate button.
   raw_ptr<PageInfoSecurityContentView, AcrossTasksDanglingUntriaged>
       security_content_view_ = nullptr;
-
-  // "Ad personalization" button that opens a subpage.
-  raw_ptr<views::View> ads_personalization_section_ = nullptr;
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   // The view that contains ui related to features on a page, like a presenting

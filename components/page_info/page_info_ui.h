@@ -183,14 +183,6 @@ class PageInfoUI {
     int string_id_mid_sentence;
   };
 
-  struct AdPersonalizationInfo {
-    AdPersonalizationInfo();
-    ~AdPersonalizationInfo();
-    bool is_empty() const;
-
-    bool has_joined_user_to_interest_group;
-    std::vector<privacy_sandbox::CanonicalTopic> accessed_topics;
-  };
 
   using PermissionInfoList = std::vector<PageInfo::PermissionInfo>;
   using ChosenObjectInfoList = std::vector<std::unique_ptr<ChosenObjectInfo>>;
@@ -271,10 +263,6 @@ class PageInfoUI {
   // Sets feature related information; for now only if VR content is being
   // presented in a headset.
   virtual void SetPageFeatureInfo(const PageFeatureInfo& page_feature_info) {}
-
-  // Sets ad personalization information.
-  virtual void SetAdPersonalizationInfo(
-      const AdPersonalizationInfo& ad_personalization_info) {}
 
   // Helper to get security description info to display to the user.
   std::unique_ptr<SecurityDescription> GetSecurityDescription(

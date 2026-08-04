@@ -78,7 +78,6 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSettings;
-import org.chromium.components.page_info.PageInfoAdPersonalizationSettings;
 import org.chromium.components.page_info.PageInfoCookiesSettings;
 
 /** Implementation class for launching a {@link SettingsActivity}. */
@@ -352,8 +351,6 @@ public class SettingsNavigationImpl implements SettingsNavigation {
                 return ManageSyncSettings.class;
             case SettingsFragment.NON_CARD_PAYMENT_METHODS:
                 return NonCardPaymentMethodsManagementFragment.class;
-            case SettingsFragment.PAGE_INFO_AD_PERSONALIZATION:
-                return PageInfoAdPersonalizationSettings.class;
             case SettingsFragment.PAGE_INFO_COOKIES:
                 return PageInfoCookiesSettings.class;
             case SettingsFragment.PAYMENT_METHODS:

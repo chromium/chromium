@@ -38824,6 +38824,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PageInfo.AdPersonalization.ManageInterestClicked">
+  <obsolete>Obsolete as of 2026/08.</obsolete>
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -38834,6 +38835,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PageInfo.AdPersonalization.OpenedWithFledge">
+  <obsolete>Obsolete as of 2026/08.</obsolete>
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -38843,6 +38845,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PageInfo.AdPersonalization.OpenedWithFledgeAndTopics">
+  <obsolete>Obsolete as of 2026/08.</obsolete>
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -38852,6 +38855,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PageInfo.AdPersonalization.OpenedWithTopics">
+  <obsolete>Obsolete as of 2026/08.</obsolete>
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>sauski@google.com</owner>

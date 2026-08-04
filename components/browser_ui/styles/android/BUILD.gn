@@ -151,7 +151,6 @@ android_resources("java_resources") {
     "java/res/drawable/circle_white.xml",
     "java/res/drawable/divider_line_bg.xml",
     "java/res/drawable/facilitated_payments_success_icon.xml",
-    "java/res/drawable/gm_ads_click_24.xml",
     "java/res/drawable/ic_account_circle.xml",
     "java/res/drawable/ic_account_circle_24dp.xml",
     "java/res/drawable/ic_add_24dp.xml",

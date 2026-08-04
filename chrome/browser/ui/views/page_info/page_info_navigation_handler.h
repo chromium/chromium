@@ -18,7 +18,6 @@ class PageInfoNavigationHandler {
   virtual void OpenMainPage(base::OnceClosure initialized_callback) = 0;
   virtual void OpenSecurityPage() = 0;
   virtual void OpenPermissionPage(ContentSettingsType type) = 0;
-  virtual void OpenAdPersonalizationPage() = 0;
   virtual void OpenCookiesPage() = 0;
   virtual void OpenMerchantTrustPage() = 0;
   virtual void CloseBubble() = 0;

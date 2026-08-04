@@ -462,7 +462,6 @@ void PageInfo::InitializeUiState(PageInfoUI* ui, base::OnceClosure done) {
   PresentSiteIdentity();
   PresentPageFeatureInfo();
   PresentSiteData(std::move(done));
-  PresentAdPersonalizationData();
 }
 
 void PageInfo::UpdateSecurityState() {
@@ -489,34 +488,9 @@ void PageInfo::RecordPageInfoAction(page_info::PageInfoAction action) {
         .Record(ukm::UkmRecorder::Get());
   }
 
-  auto* settings = GetPageSpecificContentSettings();
-  if (!settings) {
-    return;
-  }
-
-  bool has_topic = settings->HasAccessedTopics();
-  bool has_fledge = settings->HasJoinedUserToInterestGroup();
   switch (action) {
     case page_info::PAGE_INFO_OPENED:
       base::RecordAction(base::UserMetricsAction("PageInfo.Opened"));
-      base::UmaHistogramBoolean("Security.PageInfo.AdPersonalizationRowShown",
-                                has_fledge || has_topic);
-      break;
-    case page_info::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED:
-      if (has_fledge && has_topic) {
-        base::RecordAction(base::UserMetricsAction(
-            "PageInfo.AdPersonalization.OpenedWithFledgeAndTopics"));
-      } else if (has_fledge) {
-        base::RecordAction(base::UserMetricsAction(
-            "PageInfo.AdPersonalization.OpenedWithFledge"));
-      } else if (has_topic) {
-        base::RecordAction(base::UserMetricsAction(
-            "PageInfo.AdPersonalization.OpenedWithTopics"));
-      }
-      break;
-    case page_info::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED:
-      base::RecordAction(base::UserMetricsAction(
-          "PageInfo.AdPersonalization.ManageInterestClicked"));
       break;
     case page_info::PAGE_INFO_CERTIFICATE_DIALOG_OPENED:
       base::RecordAction(
@@ -1752,31 +1726,6 @@ void PageInfo::PresentPageFeatureInfo() {
       delegate_->IsContentDisplayedInVrHeadset();
 
   ui_->SetPageFeatureInfo(info);
-}
-
-void PageInfo::PresentAdPersonalizationData() {
-  // If the Ad Privacy UX Deprecation feature is enabled, do not set or show the
-  // ad personalization data.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation)) {
-    return;
-  }
-  PageInfoUI::AdPersonalizationInfo info;
-  auto* settings = GetPageSpecificContentSettings();
-  if (!settings) {
-    return;
-  }
-
-  info.has_joined_user_to_interest_group =
-      settings->HasJoinedUserToInterestGroup();
-  info.accessed_topics = settings->GetAccessedTopics();
-  std::sort(info.accessed_topics.begin(), info.accessed_topics.end(),
-            [](const privacy_sandbox::CanonicalTopic& a,
-               const privacy_sandbox::CanonicalTopic& b) {
-              return a.GetLocalizedRepresentation() <
-                     b.GetLocalizedRepresentation();
-            });
-  ui_->SetAdPersonalizationInfo(info);
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/page_info/page_info_ad_personalization_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_merchant_trust_content_view.h"
@@ -159,16 +158,6 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
                           presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoPermissionContentView>(presenter_, ui_delegate_,
                                                       type, web_contents));
-}
-
-std::unique_ptr<views::View>
-PageInfoViewFactory::CreateAdPersonalizationPageView() {
-  return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
-          presenter_->GetSubjectNameForDisplay()),
-      std::make_unique<PageInfoAdPersonalizationContentView>(presenter_,
-                                                             ui_delegate_));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {

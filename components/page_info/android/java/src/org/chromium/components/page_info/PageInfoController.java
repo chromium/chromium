@@ -61,7 +61,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
@@ -481,23 +480,6 @@ public class PageInfoController
     @CalledByNative
     private void showConnectionSecurityInfo() {
         mConnectionSecurityController.showSecurityInfo();
-    }
-
-    /** Updates the Topic view if present. */
-    @CalledByNative
-    private void setAdPersonalizationInfo(boolean hasJoinedUserToInterestGroup, String[] topics) {
-        // This logic is a little weird. On Android we already have separate controllers for most
-        // PageInfo components and they usually update themselves. On Desktop we still have one big
-        // controller. Here we are reusing Desktop controller to update the Android component.
-        // In the future the Desktop logic will hopefully be split as well and then we can remove
-        // this logic here.
-        for (PageInfoSubpageController controller : mSubpageControllers) {
-            if (controller instanceof PageInfoAdPersonalizationController) {
-                ((PageInfoAdPersonalizationController) controller)
-                        .setAdPersonalizationInfo(
-                                hasJoinedUserToInterestGroup, Arrays.asList(topics));
-            }
-        }
     }
 
     @Override

@@ -358,8 +358,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // presented in a headset.
   void PresentPageFeatureInfo();
 
-  // Sets (presents) the information about ad personalization in the |ui_|.
-  void PresentAdPersonalizationData();
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Records a password reuse event. If FULL_SAFE_BROWSING is defined, this

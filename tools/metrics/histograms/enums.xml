@@ -28084,8 +28084,8 @@ This is true even if the type has been removed from the mojom file.
   <int value="27" label="Store info clicked"/>
   <int value="28" label="AboutThisSite section clicked"/>
   <int value="29" label="AboutThisSite source link clicked"/>
-  <int value="30" label="Ad personalization page opened"/>
-  <int value="31" label="Ad personalization settings opened"/>
+  <int value="30" label="(Obsolete) Ad personalization page opened"/>
+  <int value="31" label="(Obsolete) Ad personalization settings opened"/>
   <int value="32" label="AboutThisSite 'more about' link opened"/>
   <int value="33" label="Cookies subpage opened"/>
   <int value="34" label="Cookies settings opened"/>

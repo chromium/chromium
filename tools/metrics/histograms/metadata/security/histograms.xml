@@ -650,16 +650,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.PageInfo.AdPersonalizationRowShown" enum="Boolean"
-    expires_after="2026-04-26">
-  <owner>dullweber@chromium.org</owner>
-  <owner>sauski@google.com</owner>
-  <summary>
-    Tracks whether the Ads Personalization section was shown. Recorded every
-    time PageInfo is opened.
-  </summary>
-</histogram>
-
 <histogram name="Security.PageInfo.Cookies.HasFPSInfo" enum="Boolean"
     expires_after="2025-09-10">
   <owner>tommasin@chromium.org</owner>

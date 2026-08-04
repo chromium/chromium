@@ -359,16 +359,4 @@ std::optional<PermissionSetting> PageInfoControllerAndroid::GetSettingToDisplay(
   return std::nullopt;
 }
 
-void PageInfoControllerAndroid::SetAdPersonalizationInfo(
-    const AdPersonalizationInfo& info) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::vector<std::u16string> topic_names;
-  for (const auto& topic : info.accessed_topics) {
-    topic_names.push_back(topic.GetLocalizedRepresentation());
-  }
-  Java_PageInfoController_setAdPersonalizationInfo(
-      env, controller_jobject_, info.has_joined_user_to_interest_group,
-      base::android::ToJavaArrayOfStrings(env, topic_names));
-}
-
 DEFINE_JNI(PageInfoController)

@@ -297,17 +297,6 @@ void PageInfoBubbleView::OpenPermissionPage(ContentSettingsType type) {
   AnnouncePageOpened(PageInfoUI::PermissionTypeToUIString(type));
 }
 
-void PageInfoBubbleView::OpenAdPersonalizationPage() {
-  presenter_->RecordPageInfoAction(
-      page_info::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
-  std::unique_ptr<views::View> ad_personalization_page_view =
-      view_factory_->CreateAdPersonalizationPageView();
-  ad_personalization_page_view->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
-  page_container_->SwitchToPage(std::move(ad_personalization_page_view));
-  AnnouncePageOpened(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER));
-}
 
 void PageInfoBubbleView::OpenCookiesPage() {
   presenter_->OnCookiesPageOpened();

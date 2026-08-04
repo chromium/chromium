@@ -39,7 +39,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/qwac_status.xml",
     "java/res/drawable/sticky_note_2.xml",
-    "java/res/layout/button_preference_text_button.xml",
     "java/res/layout/connection_info.xml",
     "java/res/layout/connection_security.xml",
     "java/res/layout/page_info.xml",
@@ -49,7 +48,6 @@ android_resources("java_resources") {
     "java/res/layout/page_info_title.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
-    "java/res/xml/page_info_ad_personalization_preference.xml",
     "java/res/xml/page_info_cookie_preference.xml",
   ]
   deps = [
@@ -69,8 +67,6 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/CertificateViewer.java",
     "java/src/org/chromium/components/page_info/ConnectionInfoView.java",
     "java/src/org/chromium/components/page_info/ConnectionSecurityView.java",
-    "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationController.java",
-    "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationSettings.java",
     "java/src/org/chromium/components/page_info/PageInfoConnectionController.java",
     "java/src/org/chromium/components/page_info/PageInfoConnectionSecurityController.java",
     "java/src/org/chromium/components/page_info/PageInfoContainer.java",
