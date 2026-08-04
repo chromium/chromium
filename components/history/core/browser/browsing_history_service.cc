@@ -638,12 +638,13 @@ void BrowsingHistoryService::MergeDuplicateResults(
     GroupingKey key{.url = entry.url, .app_id = entry.app_id};
 
     // Keep this visit if it's the first visit to this URL on the current day.
-    if (current_day_entries.count(key) == 0) {
+    auto [it, inserted] = current_day_entries.try_emplace(key, nullptr);
+    if (inserted) {
       deduped.push_back(std::move(entry));
-      current_day_entries[key] = &deduped.back();
+      it->second = &deduped.back();
     } else {
       // Keep track of the timestamps of all visits to the URL on the same day.
-      HistoryEntry* matching_entry = current_day_entries[key];
+      HistoryEntry* matching_entry = it->second;
       // Since this de-duplication logic will only be performed if the grouping
       // is disabled, the entries will only have timestamps for the same URL.
       CHECK_EQ(1u, entry.all_timestamps.size());
@@ -734,11 +735,12 @@ BrowsingHistoryService::GroupSimilarVisits(QueryHistoryState* state) {
                     .app_id = entry.app_id};
 
     // Keep this visit if it's the first visit of it's kind on the current day.
-    if (current_day_entries.find(key) == current_day_entries.end()) {
+    auto [it, inserted] = current_day_entries.try_emplace(key, nullptr);
+    if (inserted) {
       grouped.push_back(std::move(entry));
-      current_day_entries[key] = &grouped.back();
+      it->second = &grouped.back();
     } else {
-      HistoryEntry* matching_entry = current_day_entries[key];
+      HistoryEntry* matching_entry = it->second;
 
       // Merge all timestamps from the current entry into the matching entry.
       // This ensures all visits for similar URLs on the same day are tracked.
