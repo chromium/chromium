@@ -1,0 +1,44 @@
+description: >-
+  Verify experimental-code-coverage-build-inspector skill identifies recipe
+  error sentinels and performs targeted triage.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-build-inspector
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-build-inspector/setup_triage_state.patch
+      mocks:
+        - command: python3
+          rules:
+            - args: ["tools/code_coverage/inspect_coverage_build.py", "*"]
+              stdout: >-
+                === Build Inspection ===
+                Build ID: 875812345681
+                Terminal Status: FAILURE (Terminal: True)
+                [Coverage Pipeline Verification]
+                  * DETECTED RECIPE CONDITION: 'Found invalid profraw files'
+                    (Step: 'process clang code coverage data')
+              exit_code: 0
+
+tests:
+  - description: >-
+      Functional: Recipe Error Sentinel Detection and Targeted Triage
+    vars:
+      query: >-
+        Inspect build https://ci.chromium.org/b/875812345681 which failed during
+        clang coverage processing.
+    assert:
+      - type: contains
+        value: "inspect_coverage_build.py"
+      - type: icontains-any
+        value:
+          - "Found invalid profraw files"
+          - "merge errors"
+          - "buildbucket"

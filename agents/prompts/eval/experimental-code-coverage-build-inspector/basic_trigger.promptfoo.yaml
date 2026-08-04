@@ -1,0 +1,40 @@
+description: >-
+  Verify experimental-code-coverage-build-inspector skill triggers build
+  inspection via inspect_coverage_build.py.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-build-inspector
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-build-inspector/setup_triage_state.patch
+      mocks:
+        - command: python3
+          rules:
+            - args: ["tools/code_coverage/inspect_coverage_build.py", "*"]
+              stdout: >-
+                === Build Inspection ===
+                Build ID: 875812345678
+                Terminal Status: SUCCESS (Terminal: True)
+                [Configuration Verification (cpp)]
+                  * Configuration Valid: YES
+              exit_code: 0
+
+tests:
+  - description: >-
+      Trigger: Implicit query to inspect LUCI coverage build
+    vars:
+      query: >-
+        Inspect LUCI coverage build https://ci.chromium.org/b/875812345678 for
+        C++ code coverage configuration.
+    assert:
+      - type: contains
+        value: "inspect_coverage_build.py"
+      - type: contains
+        value: "875812345678"

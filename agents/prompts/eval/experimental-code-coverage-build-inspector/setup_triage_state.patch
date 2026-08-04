@@ -1,0 +1,20 @@
+diff --git a/scratch/triage_state.json b/scratch/triage_state.json
+new file mode 100644
+index 0000000000000..0a4adc465d466
+--- /dev/null
++++ b/scratch/triage_state.json
+@@ -0,0 +1,14 @@
++{
++  "bug_id": "378464314",
++  "target_files": [
++    "chrome/browser/ui/color/material_new_tab_page_color_mixer.cc"
++  ],
++  "builders_of_concern": [
++    "linux-rel"
++  ],
++  "test_suites": [
++    "unit_tests"
++  ],
++  "control_cl": "https://chromium-review.googlesource.com/c/chromium/src/+/7916168",
++  "control_branch_name": "control_branch"
++}
