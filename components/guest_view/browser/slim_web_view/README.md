@@ -76,7 +76,7 @@ You need to add `ts_path_mappings` for the shared `SlimWebview` resources and in
 
 Example from [chrome/browser/resources/glic/BUILD.gn](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/glic/BUILD.gn):
 ```gn
-  if (enable_guest_view && !enable_extensions_core) {
+  if (!enable_extensions_core) {
     ts_deps += [ "//chrome/browser/resources/guest_view_shared:build_ts" ]
 
     ts_path_mappings +=
