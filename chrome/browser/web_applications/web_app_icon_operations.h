@@ -52,7 +52,6 @@ using IconUrlSizeSet = base::flat_set<IconUrlWithSize>;
 struct IconUrlExtractionOptions {
   bool product_icons = true;
   bool shortcut_menu_item_icons = true;
-  bool file_handling_icons = true;
   bool home_tab_icons = true;
 };
 

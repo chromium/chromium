@@ -801,15 +801,6 @@ std::unique_ptr<WebApp> ParseWebAppProto(
       file_handler.accept.push_back(std::move(accept_entry));
     }
 
-    std::optional<std::vector<apps::IconInfo>> file_handler_icon_infos =
-        ParseAppIconInfos("WebApp", file_handler_proto.downloaded_icons());
-    if (!file_handler_icon_infos) {
-      RecordProtoParseResult(ProtoParseResult::kInvalidIconsInFileHandler);
-      // ParseAppIconInfos() reports any errors.
-      return nullptr;
-    }
-    file_handler.downloaded_icons = std::move(file_handler_icon_infos.value());
-
     file_handlers.push_back(std::move(file_handler));
   }
   web_app->SetFileHandlers(std::move(file_handlers));
@@ -1709,11 +1700,6 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
       for (const auto& file_extension : accept_entry.file_extensions) {
         accept_entry_proto->add_file_extensions(file_extension);
       }
-    }
-
-    for (const apps::IconInfo& icon_info : file_handler.downloaded_icons) {
-      *(file_handler_proto->add_downloaded_icons()) =
-          AppIconInfoToSyncProto(icon_info);
     }
   }
 

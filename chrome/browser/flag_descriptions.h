@@ -2657,12 +2657,6 @@ inline constexpr char kWebIdentityDigitalCredentialsCreationName[] =
 inline constexpr char kWebIdentityDigitalCredentialsCreationDescription[] =
     "Enables the Digital Credentials Creation API.";
 
-inline constexpr char kFileHandlingIconsName[] = "File Handling Icons";
-inline constexpr char kFileHandlingIconsDescription[] =
-    "Allows websites using the file handling API to also register file type "
-    "icons. See https://github.com/WICG/file-handling/blob/main/explainer.md "
-    "for more information.";
-
 inline constexpr char kFillOnAccountSelectName[] =
     "Fill passwords on account selection";
 inline constexpr char kFillOnAccountSelectDescription[] =

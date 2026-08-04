@@ -33,7 +33,7 @@ message WebAppFileHandlerAccept {
 message WebAppFileHandler {
   optional string action = 1;  // Required.
   repeated WebAppFileHandlerAccept accept = 2;
-  repeated sync_pb.WebAppIconInfo downloaded_icons = 3;
+  reserved 3;
   optional string display_name = 4;
 
   // This enum should be synced with `LaunchType` in `apps::FileHandler`.

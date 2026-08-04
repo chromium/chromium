@@ -684,7 +684,6 @@ domain Page
     properties
       string action
       string name
-      optional array of ImageResource icons
       # Mimic a map, name is the key, accepts is the value.
       optional array of FileFilter accepts
       # Won't repeat the enums, using string for easy comparison. Same as the

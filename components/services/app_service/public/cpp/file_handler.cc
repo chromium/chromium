@@ -37,9 +37,6 @@ base::Value FileHandler::AsDebugValue() const {
   for (const AcceptEntry& entry : accept)
     accept_json.Append(entry.AsDebugValue());
   root.Set("action", action.spec());
-  base::ListValue& icons_json = *root.EnsureList("downloaded_icons");
-  for (const IconInfo& entry : downloaded_icons)
-    icons_json.Append(entry.AsDebugValue());
   root.Set("name", display_name);
   root.Set("launch_type", launch_type == LaunchType::kSingleClient
                               ? "kSingleClient"

@@ -23,7 +23,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/web_applications/model/display_override.h"
-#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -167,8 +166,7 @@ class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kFileHandlingIcons,
-                                 blink::features::kWebAppManifestLockScreen,
+  feature_list.InitWithFeatures({blink::features::kWebAppManifestLockScreen,
                                  blink::features::kUnframedIwa},
                                 /*disabled_features=*/{});
 
@@ -185,12 +183,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
     handler->action = GURL("http://example.com/open-files");
     handler->accept[u"image/png"].push_back(u".png");
     handler->name = u"Images";
-    {
-      blink::Manifest::ImageResource icon;
-      icon.src = GURL("fav1.png");
-      icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
-      handler->icons.push_back(icon);
-    }
     manifest->file_handlers.push_back(std::move(handler));
   }
 
@@ -531,18 +523,12 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, TabStripMetadata) {
             GURL("https://www.example.com/"));
 }
 
-TEST_F(ManifestToWebAppInstallInfoJobTest, HomeTabAndFileHandlingIcons) {
-  base::test::ScopedFeatureList feature_list(
-      blink::features::kFileHandlingIcons);
-  WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(true);
+TEST_F(ManifestToWebAppInstallInfoJobTest, HomeTabIcons) {
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
   GURL tab_strip_icon_url("http://www.foo.bar/tab_strip/icon.png");
   int tab_strip_size = 16;
-  GURL file_handler_icon_url("http://www.foo.bar/file_handler/icon.png");
-  int file_handler_size = 32;
 
-  // Set up tabstrip metadata with icons.
   TabStrip tab_strip;
   tab_strip.home_tab = web_app::TabStrip::Visibility::kAuto;
   blink::Manifest::HomeTabParams home_tab_params;
@@ -551,45 +537,19 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, HomeTabAndFileHandlingIcons) {
   icon.purpose.push_back(web_app::Purpose::ANY);
   icon.sizes.emplace_back(tab_strip_size, tab_strip_size);
   home_tab_params.icons.push_back(std::move(icon));
-
   tab_strip.home_tab = home_tab_params;
   manifest->tab_strip = std::move(tab_strip);
 
-  // Set up file handler metadata with icons.
-  {
-    auto handler = blink::mojom::ManifestFileHandler::New();
-    handler->action = GURL("http://www.foo.bar/open-files");
-    handler->accept[u"image/png"].push_back(u".png");
-    handler->name = u"Images";
-    {
-      blink::Manifest::ImageResource file_icon;
-      file_icon.src = file_handler_icon_url;
-      file_icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
-      file_icon.sizes.emplace_back(file_handler_size, file_handler_size);
-      handler->icons.push_back(file_icon);
-    }
-    manifest->file_handlers.push_back(std::move(handler));
-  }
-
-  // Ensure icons are set up correctly in the web_contents.
   SkBitmap tab_strip_icon =
       gfx::test::CreateBitmap(tab_strip_size, SK_ColorBLUE);
   web_contents_manager().GetOrCreateIconState(tab_strip_icon_url).bitmaps = {
       tab_strip_icon};
-  SkBitmap file_handler_icon =
-      gfx::test::CreateBitmap(file_handler_size, SK_ColorRED);
-  web_contents_manager().GetOrCreateIconState(file_handler_icon_url).bitmaps = {
-      file_handler_icon};
 
-  // Verify bitmaps are populated correctly.
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
-  EXPECT_EQ(2u, web_app_info->other_icon_bitmaps.size());
-  EXPECT_TRUE(web_app_info->other_icon_bitmaps.contains(tab_strip_icon_url));
-  EXPECT_TRUE(web_app_info->other_icon_bitmaps.contains(file_handler_icon_url));
+  ASSERT_EQ(1u, web_app_info->other_icon_bitmaps.size());
+  ASSERT_TRUE(web_app_info->other_icon_bitmaps.contains(tab_strip_icon_url));
   EXPECT_THAT(web_app_info->other_icon_bitmaps[tab_strip_icon_url][0],
               gfx::test::EqualsBitmap(tab_strip_icon));
-  EXPECT_THAT(web_app_info->other_icon_bitmaps[file_handler_icon_url][0],
-              gfx::test::EqualsBitmap(file_handler_icon));
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, TabIconsLargeSizeIgnored) {
@@ -765,9 +725,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, InvalidManifestUrl) {
 // |icons_with_size_any| based on the absence of a size parameter.
 TEST_F(ManifestToWebAppInstallInfoJobTest,
        PopulateAnyIconsCorrectlyManifestParsingSVGOnly) {
-  WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(/*value=*/true);
-  base::test::ScopedFeatureList feature_list(
-      blink::features::kFileHandlingIcons);
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
 
@@ -778,10 +735,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
       "https://www.example.com/manifest_image_no_size.svg");
   const GURL manifest_icon_size_url(
       "https://www.example.com/manifest_image_size.svg");
-  const GURL file_handling_no_size_url(
-      "https://www.example.com/file_handling_no_size.svg");
-  const GURL file_handling_size_url(
-      "https://www.example.com/file_handling_size.png");
   const GURL shortcut_icon_no_size_url(
       "https://www.example.com/shortcut_menu_icon_no_size.svg");
   const GURL shortcut_icon_size_url(
@@ -814,32 +767,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
       blink::mojom::ManifestImageResource_Purpose::ANY};
   manifest->icons.push_back(std::move(manifest_icon_size));
   expected_icon_metadata.manifest_icon_provided_sizes.emplace(24, 24);
-
-  // Sample file handler with no size specified for icons.
-  auto file_handler = blink::mojom::ManifestFileHandler::New();
-  file_handler->action = GURL("https://www.action.com/");
-  file_handler->name = u"Random File";
-  file_handler->accept[u"text/html"] = {u".html"};
-
-  blink::Manifest::ImageResource file_handling_icon_no_size;
-  file_handling_icon_no_size.src = file_handling_no_size_url;
-  file_handling_icon_no_size.sizes = {{0, 0}};
-  file_handling_icon_no_size.purpose = {
-      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
-  file_handler->icons.push_back(std::move(file_handling_icon_no_size));
-
-  // Set up the expected icon metadata for file handling icons.
-  expected_icon_metadata.file_handling_icons[IconPurpose::MASKABLE] =
-      file_handling_no_size_url;
-
-  blink::Manifest::ImageResource file_handling_icon_size;
-  file_handling_icon_size.src = file_handling_size_url;
-  file_handling_icon_size.sizes = {{64, 64}};
-  file_handling_icon_size.purpose = {
-      blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
-  file_handler->icons.push_back(std::move(file_handling_icon_size));
-  manifest->file_handlers.push_back(std::move(file_handler));
-  expected_icon_metadata.file_handling_icon_provided_sizes.emplace(64, 64);
 
   // Sample shortcut menu item info with no size specified for icons.
   blink::Manifest::ShortcutItem shortcut_item;
@@ -897,10 +824,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, DeferIconFetching) {
-  base::test::ScopedFeatureList feature_list(
-      blink::features::kFileHandlingIcons);
-  WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(true);
-
   // This manifest already has a default icon of size 64 populated that is blue
   // in color.
   SetupBasicPageState();

@@ -8119,10 +8119,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kSupportForcedSigninPolicy)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"file-handling-icons", flag_descriptions::kFileHandlingIconsName,
-     flag_descriptions::kFileHandlingIconsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kFileHandlingIcons)},
-
     {"strict-origin-isolation", flag_descriptions::kStrictOriginIsolationName,
      flag_descriptions::kStrictOriginIsolationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kStrictOriginIsolation)},

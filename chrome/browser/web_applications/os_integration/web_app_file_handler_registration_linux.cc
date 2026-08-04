@@ -182,11 +182,6 @@ bool ShouldRegisterFileHandlersWithOs() {
   return true;
 }
 
-bool FileHandlingIconsSupportedByOs() {
-  // File type icons are not supported on Linux: see https://crbug.com/40185572
-  return false;
-}
-
 void RegisterFileHandlersWithOs(const webapps::AppId& app_id,
                                 const std::string& app_name,
                                 const base::FilePath& profile_path,

@@ -151,18 +151,6 @@ base::Value IconsWithSizeAny::ToDebugValue() const {
   icons.Set("shortcut_menu_icons_provided_sizes",
             base::Value(std::move(shortcut_sizes)));
 
-  base::DictValue file_handlers;
-  for (const auto& fhicon : file_handling_icons) {
-    file_handlers.Set(base::ToString(fhicon.first), fhicon.second.spec());
-  }
-  icons.Set("file_handling_icons", base::Value(std::move(file_handlers)));
-  base::ListValue file_handling_sizes;
-  for (const auto& size : file_handling_icon_provided_sizes) {
-    file_handling_sizes.Append(size.ToString());
-  }
-  icons.Set("file_handling_icons_manifest_provided_sizes",
-            base::Value(std::move(file_handling_sizes)));
-
   base::DictValue tab_icons;
   for (const auto& thicon : home_tab_icons) {
     tab_icons.Set(base::ToString(thicon.first), thicon.second.spec());

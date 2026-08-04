@@ -30,11 +30,6 @@ class WebAppFileHandlerManager {
                    WebAppProvider& provider);
   void Start();
 
-  // Called by tests to enable file handling icon infrastructure on a platform
-  // independently of whether it's needed or used in production. Note that the
-  // feature flag must also separately be enabled.
-  static void SetIconsSupportedByOsForTesting(bool value);
-
   using LaunchInfos =
       std::vector<std::tuple<GURL, std::vector<base::FilePath>>>;
 
@@ -51,9 +46,6 @@ class WebAppFileHandlerManager {
   // the app they belong to.
   const apps::FileHandlers* GetEnabledFileHandlers(
       const webapps::AppId& app_id) const;
-
-  // Returns true when the system supports file type association icons.
-  static bool IconsEnabled();
 
  protected:
   // Gets all file handlers for |app_id|. |nullptr| if the app has no file

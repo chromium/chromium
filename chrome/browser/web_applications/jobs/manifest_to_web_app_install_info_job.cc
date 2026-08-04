@@ -726,7 +726,6 @@ void ManifestToWebAppInstallInfoJob::FetchIconsInternal(
           .Set("product_icons", icon_url_options.product_icons)
           .Set("shortcut_menu_item_icons",
                icon_url_options.shortcut_menu_item_icons)
-          .Set("file_handling_icons", icon_url_options.file_handling_icons)
           .Set("home_tab_icons", icon_url_options.home_tab_icons));
   IconUrlSizeSet icon_urls_to_download =
       GetValidIconUrlsToDownload(install_info(), icon_url_options);

@@ -1701,13 +1701,6 @@ ManifestParser::ParseFileHandler(const JSONObject* file_handler) {
   }
 
   entry->name = ParseString(file_handler, "name", Trim(true)).value_or("");
-  const bool feature_enabled =
-      base::FeatureList::IsEnabled(blink::features::kFileHandlingIcons) ||
-      RuntimeEnabledFeatures::FileHandlingIconsEnabled(execution_context_);
-  if (feature_enabled) {
-    entry->icons = ParseIcons(file_handler);
-  }
-
   entry->accept = ParseFileHandlerAccept(file_handler->GetJSONObject("accept"));
   if (entry->accept.empty()) {
     AddErrorInfo("FileHandler ignored. Property 'accept' is invalid.");

@@ -60,8 +60,8 @@ void PopulateFileHandlerInfoFromManifest(
     WebAppInstallInfo* web_app_info);
 
 // Populate non-product icons in WebAppInstallInfo using the IconsMap. This
-// currently covers shortcut item icons and file handler icons. It ignores
-// icons that might have already existed in `web_app_info`.
+// currently covers shortcut item and home tab icons. It ignores icons that
+// might have already existed in `web_app_info`.
 void PopulateOtherIcons(WebAppInstallInfo* web_app_info,
                         const IconsMap& icons_map);
 

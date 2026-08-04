@@ -10,14 +10,11 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -30,18 +27,9 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace web_app {
-
-namespace {
-
-// Used to enable running tests on platforms that don't support file handling
-// icons.
-std::optional<bool> g_icons_supported_by_os_override;
-
-}  // namespace
 
 WebAppFileHandlerManager::WebAppFileHandlerManager(Profile* profile)
     : profile_(profile) {}
@@ -57,11 +45,6 @@ void WebAppFileHandlerManager::Start() {
   DCHECK(provider_);
 }
 
-// static
-void WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(bool value) {
-  g_icons_supported_by_os_override = value;
-}
-
 const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
     const webapps::AppId& app_id) const {
   if (ShouldOsIntegrationBeEnabled(app_id) &&
@@ -71,13 +54,6 @@ const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
   }
 
   return nullptr;
-}
-
-// static
-bool WebAppFileHandlerManager::IconsEnabled() {
-  return g_icons_supported_by_os_override.value_or(
-             FileHandlingIconsSupportedByOs()) &&
-         base::FeatureList::IsEnabled(blink::features::kFileHandlingIcons);
 }
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(

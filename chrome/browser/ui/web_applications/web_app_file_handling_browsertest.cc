@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
@@ -55,7 +54,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -485,44 +483,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   EXPECT_EQ(tasks[0].task_descriptor.app_id, app_id());
 }
 #endif
-
-class WebAppFileHandlingIconBrowserTest
-    : public WebAppBrowserTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  WebAppFileHandlingIconBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
-    WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
-  }
-  ~WebAppFileHandlingIconBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL app_url(
-      embedded_test_server()->GetURL("/web_app_file_handling/icons_app.html"));
-  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  ASSERT_FALSE(app_id.empty());
-  auto* provider = WebAppProvider::GetForTest(browser()->GetProfile());
-  const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id);
-  ASSERT_TRUE(web_app);
-
-  ASSERT_EQ(1U, web_app->file_handlers().size());
-  if (WebAppFileHandlerManager::IconsEnabled()) {
-    ASSERT_EQ(1U, web_app->file_handlers()[0].downloaded_icons.size());
-    EXPECT_EQ(20,
-              web_app->file_handlers()[0].downloaded_icons[0].square_size_px);
-  } else {
-    EXPECT_TRUE(web_app->file_handlers()[0].downloaded_icons.empty());
-  }
-}
-
-// TODO(crbug.com/40185556): add more tests.
-
-INSTANTIATE_TEST_SUITE_P(, WebAppFileHandlingIconBrowserTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
   GURL handler_url = embedded_https_test_server().GetURL(

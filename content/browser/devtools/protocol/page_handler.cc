@@ -303,9 +303,6 @@ void GotManifest(std::optional<std::string> manifest_id,
     auto file_handlers = std::make_unique<protocol::Array<Page::FileHandler>>();
     for (const auto& input_file_handler : input_manifest->file_handlers) {
       auto file_handler = Page::FileHandler::Create();
-      if (!input_file_handler->icons.empty()) {
-        file_handler.SetIcons(convert_icons(input_file_handler->icons));
-      }
       if (!input_file_handler->accept.empty()) {
         auto accepts = std::make_unique<protocol::Array<Page::FileFilter>>();
         for (const auto& input_accept : input_file_handler->accept) {

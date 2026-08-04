@@ -2751,8 +2751,6 @@ TEST_F(ManifestParserTest, ShortcutIconsParseRules) {
 }
 
 TEST_F(ManifestParserTest, FileHandlerParseRules) {
-  base::test::ScopedFeatureList feature_list(
-      blink::features::kFileHandlingIcons);
   // Does not contain file_handlers field.
   {
     auto& manifest = ParseManifest("{ }");
@@ -2795,7 +2793,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "accept": {
                 "image/png": [
                   ".png"
@@ -2817,7 +2814,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "https://example.com/files",
               "accept": {
                 "image/png": [
@@ -2845,7 +2841,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/png": [
@@ -2870,7 +2865,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
         R"({
           "file_handlers": [
             {
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/png": [
@@ -2911,7 +2905,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files"
             }
           ]
@@ -2929,7 +2922,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": "image/png"
             }
@@ -2948,7 +2940,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/png": {}
@@ -2973,7 +2964,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/png": 3
@@ -2998,7 +2988,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/png": []
@@ -3019,7 +3008,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/png": [
@@ -3103,7 +3091,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "Foo",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image_png": ".png",
@@ -3124,8 +3111,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     ASSERT_EQ(1u, file_handlers.size());
 
     EXPECT_EQ("Foo", file_handlers[0]->name);
-    EXPECT_EQ("http://foo.com/foo.jpg",
-              file_handlers[0]->icons[0]->src.GetString());
     EXPECT_EQ(KURL("http://foo.com/files"), file_handlers[0]->action);
     ASSERT_EQ(1U, file_handlers[0]->accept.size());
     ASSERT_TRUE(file_handlers[0]->accept.Contains("application/its+xml"));
@@ -3141,7 +3126,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/png": ".png"
@@ -3155,8 +3139,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     ASSERT_EQ(1u, file_handlers.size());
 
     EXPECT_EQ("name", file_handlers[0]->name);
-    EXPECT_EQ("http://foo.com/foo.jpg",
-              file_handlers[0]->icons[0]->src.GetString());
     EXPECT_EQ(KURL("http://foo.com/files"), file_handlers[0]->action);
     ASSERT_TRUE(file_handlers[0]->accept.Contains("image/png"));
     ASSERT_EQ(1u, file_handlers[0]->accept.find("image/png")->value.size());
@@ -3170,7 +3152,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "name",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/jpg": [
@@ -3187,8 +3168,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     ASSERT_EQ(1u, file_handlers.size());
 
     EXPECT_EQ("name", file_handlers[0]->name);
-    EXPECT_EQ("http://foo.com/foo.jpg",
-              file_handlers[0]->icons[0]->src.GetString());
     EXPECT_EQ(KURL("http://foo.com/files"), file_handlers[0]->action);
     ASSERT_TRUE(file_handlers[0]->accept.Contains("image/jpg"));
     ASSERT_EQ(2u, file_handlers[0]->accept.find("image/jpg")->value.size());
@@ -3203,7 +3182,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "Image",
-              "icons": [{ "src": "foo.jpg" }],
               "action": "/files",
               "accept": {
                 "image/png": ".png",
@@ -3221,8 +3199,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     ASSERT_EQ(1u, file_handlers.size());
 
     EXPECT_EQ("Image", file_handlers[0]->name);
-    EXPECT_EQ("http://foo.com/foo.jpg",
-              file_handlers[0]->icons[0]->src.GetString());
     EXPECT_EQ(KURL("http://foo.com/files"), file_handlers[0]->action);
 
     ASSERT_TRUE(file_handlers[0]->accept.Contains("image/jpg"));
@@ -3242,7 +3218,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           "file_handlers": [
             {
               "name": "Graph",
-              "icons": [{ "src": "graph.jpg" }],
               "action": "/graph",
               "accept": {
                 "text/svg+xml": [
@@ -3253,7 +3228,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
             },
             {
               "name": "Raw",
-              "icons": [{ "src": "raw.jpg" }],
               "action": "/raw",
               "accept": {
                 "text/csv": ".csv"
@@ -3267,8 +3241,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     ASSERT_EQ(2u, file_handlers.size());
 
     EXPECT_EQ("Graph", file_handlers[0]->name);
-    EXPECT_EQ("http://foo.com/graph.jpg",
-              file_handlers[0]->icons[0]->src.GetString());
     EXPECT_EQ(KURL("http://foo.com/graph"), file_handlers[0]->action);
     ASSERT_TRUE(file_handlers[0]->accept.Contains("text/svg+xml"));
     ASSERT_EQ(2u, file_handlers[0]->accept.find("text/svg+xml")->value.size());
@@ -3277,8 +3249,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
               file_handlers[0]->accept.find("text/svg+xml")->value[1]);
 
     EXPECT_EQ("Raw", file_handlers[1]->name);
-    EXPECT_EQ("http://foo.com/raw.jpg",
-              file_handlers[1]->icons[0]->src.GetString());
     EXPECT_EQ(KURL("http://foo.com/raw"), file_handlers[1]->action);
     ASSERT_TRUE(file_handlers[1]->accept.Contains("text/csv"));
     ASSERT_EQ(1u, file_handlers[1]->accept.find("text/csv")->value.size());
@@ -3397,142 +3367,6 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("launch_type value 'multiple-client' ignored, unknown value.",
               errors()[0]);
-  }
-}
-
-TEST_F(ManifestParserTest, FileHandlerIconsParseRules) {
-  // Smoke test: if no icons, file_handler->icon has no value.
-  {
-    auto& manifest = ParseManifest(
-        R"({
-          "file_handlers": [
-            {
-              "icons": [],
-              "action": "/files",
-              "accept": {
-                "image/png": ".png"
-              }
-            }
-          ]
-        })");
-    EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.empty());
-    EXPECT_TRUE(manifest->file_handlers[0]->icons.empty());
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Smoke test: if empty icon, file_handler->icons has no value.
-  {
-    auto& manifest = ParseManifest(
-        R"({
-          "file_handlers": [
-            {
-              "icons": [{}],
-              "action": "/files",
-              "accept": {
-                "image/png": ".png"
-              }
-            }
-          ]
-        })");
-    EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.empty());
-    EXPECT_TRUE(manifest->file_handlers[0]->icons.empty());
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Smoke test: icon with invalid src, file_handler->icons has no value.
-  {
-    auto& manifest = ParseManifest(
-        R"({
-          "file_handlers": [
-            {
-              "icons": [{ "icons": [] }],
-              "action": "/files",
-              "accept": {
-                "image/png": ".png"
-              }
-            }
-          ]
-        })");
-    EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.empty());
-    EXPECT_TRUE(manifest->file_handlers[0]->icons.empty());
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Smoke test: if icon with empty src, it will be present in
-  // file_handler->icons.
-  {
-    auto& manifest = ParseManifest(
-        R"({
-          "file_handlers": [
-            {
-              "icons": [{ "src": "" }],
-              "action": "/files",
-              "accept": {
-                "image/png": ".png"
-              }
-            }
-          ]
-        })");
-    EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.empty());
-    EXPECT_FALSE(manifest->file_handlers[0]->icons.empty());
-
-    auto& icons = manifest->file_handlers[0]->icons;
-    EXPECT_EQ(icons.size(), 1u);
-    EXPECT_EQ(icons[0]->src.GetString(), "http://foo.com/manifest.json");
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Smoke test: if one icon with valid src, it will be present in
-  // file_handler->icons.
-  {
-    auto& manifest = ParseManifest(
-        R"({
-          "file_handlers": [
-            {
-              "icons": [{ "src": "foo.jpg" }],
-              "action": "/files",
-              "accept": {
-                "image/png": ".png"
-              }
-            }
-          ]
-        })");
-    EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.empty());
-    EXPECT_FALSE(manifest->file_handlers[0]->icons.empty());
-    auto& icons = manifest->file_handlers[0]->icons;
-    EXPECT_EQ(icons.size(), 1u);
-    EXPECT_EQ(icons[0]->src.GetString(), "http://foo.com/foo.jpg");
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Smoke test: if >1 icon with valid src, it will be present in
-  // file_handler->icons.
-  {
-    auto& manifest = ParseManifest(
-        R"({
-          "file_handlers": [
-            {
-              "icons": [{ "src": "foo.jpg" }, { "src": "bar.jpg" }],
-              "action": "/files",
-              "accept": {
-                "image/png": ".png"
-              }
-            }
-          ]
-        })");
-    EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.empty());
-    EXPECT_FALSE(manifest->file_handlers[0]->icons.empty());
-    auto& icons = manifest->file_handlers[0]->icons;
-    EXPECT_EQ(icons.size(), 2u);
-    EXPECT_EQ(icons[0]->src.GetString(), "http://foo.com/foo.jpg");
-    EXPECT_EQ(icons[1]->src.GetString(), "http://foo.com/bar.jpg");
-    EXPECT_EQ(0u, GetErrorCount());
   }
 }
 

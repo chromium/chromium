@@ -108,24 +108,6 @@ std::vector<IconUrlWithSize> GetShortcutMenuIcons(
   return urls;
 }
 
-std::vector<IconUrlWithSize> GetFileHandlingIcons(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> urls;
-
-  for (const apps::FileHandler& file_handler : web_app_info.file_handlers) {
-    for (const apps::IconInfo& icon : file_handler.downloaded_icons) {
-      urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.url));
-    }
-  }
-
-  PopulateIconUrlsForSizeAnyIfNeeded(
-      std::ref(urls),
-      GetAllIconUrlsForSizeAny(
-          web_app_info.icons_with_size_any.file_handling_icons),
-      web_app_info.icons_with_size_any.file_handling_icon_provided_sizes);
-  return urls;
-}
-
 std::vector<IconUrlWithSize> GetHomeTabIcons(
     const WebAppInstallInfo& web_app_info) {
   std::vector<IconUrlWithSize> urls;
@@ -207,9 +189,6 @@ IconUrlSizeSet GetValidIconUrlsToDownload(const WebAppInstallInfo& web_app_info,
   }
   if (options.shortcut_menu_item_icons) {
     base::Extend(icon_urls_with_sizes, GetShortcutMenuIcons(web_app_info));
-  }
-  if (options.file_handling_icons) {
-    base::Extend(icon_urls_with_sizes, GetFileHandlingIcons(web_app_info));
   }
   if (options.home_tab_icons) {
     base::Extend(icon_urls_with_sizes, GetHomeTabIcons(web_app_info));

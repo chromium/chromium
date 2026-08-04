@@ -778,7 +778,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="InvalidFileHandlerNoActionOrLaunchType"/>
   <int value="21" label="InvalidFileHandlerAction"/>
   <int value="22" label="InvalidFileHandlerAcceptEntry"/>
-  <int value="23" label="InvalidIconsInFileHandler"/>
+  <int value="23" label="(Obsolete) InvalidIconsInFileHandler"/>
   <int value="24" label="InvalidShareTarget"/>
   <int value="25" label="InvalidShareTargetAction"/>
   <int value="26" label="InvalidShareTargetFile"/>

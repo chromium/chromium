@@ -5064,11 +5064,6 @@
     "expiry_milestone": 146
   },
   {
-    "name": "file-handling-icons",
-    "owners": [ "dmurph@chromium.org", "mgiuca@chromium.org", "cmp@chromium.org" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "file-system-provider-cloud-file-system",
     "owners": [ "benreich@google.com", "cassycc@google.com", "simmonsjosh@google.com" ],
     "expiry_milestone": 140
