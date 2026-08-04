@@ -27,6 +27,8 @@ class InMemoryAutoTodosStore : public AutoTodosStore {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void AddOrUpdateItem(AutoTodoEntry item, OperationCallback callback) override;
+  void AddAllTodos(base::span<const AutoTodoEntry> items,
+                   OperationCallback callback) override;
   void DeleteItem(const std::string& id, OperationCallback callback) override;
   void DeleteItemByTabId(int64_t tab_id, OperationCallback callback) override;
   void Clear(base::OnceClosure callback) override;

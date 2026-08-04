@@ -74,6 +74,57 @@ TEST_F(InMemoryAutoTodosStoreTest, AddItemGeneratesIdIfEmpty) {
   EXPECT_EQ(items[0].title, "No ID Todo");
 }
 
+TEST_F(InMemoryAutoTodosStoreTest, AddAllTodos) {
+  AutoTodoEntry item1;
+  item1.id = "1";
+  item1.title = "Item 1";
+  AutoTodoEntry item2;
+  item2.id = "2";
+  item2.title = "Item 2";
+
+  const std::vector<AutoTodoEntry> items_to_add = {item1, item2};
+  base::test::TestFuture<bool> add_future;
+  store_.AddAllTodos(items_to_add, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  store_.GetAllItems(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 2u);
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, AddAllTodosReplacesExistingItems) {
+  AutoTodoEntry item1;
+  item1.id = "1";
+  item1.title = "Original Title";
+  item1.description = "Original Description";
+  item1.importance_score = 0.9f;
+
+  const std::vector<AutoTodoEntry> initial_items = {item1};
+  base::test::TestFuture<bool> add_future;
+  store_.AddAllTodos(initial_items, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  // Replace item1 with a new entry that only has title set.
+  AutoTodoEntry item1_new;
+  item1_new.id = "1";
+  item1_new.title = "Replaced Title";
+
+  const std::vector<AutoTodoEntry> replacement = {item1_new};
+  base::test::TestFuture<bool> replace_future;
+  store_.AddAllTodos(replacement, replace_future.GetCallback());
+  EXPECT_TRUE(replace_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  store_.GetAllItems(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].id, "1");
+  EXPECT_EQ(items[0].title, "Replaced Title");
+  EXPECT_EQ(items[0].description, "");
+  EXPECT_FLOAT_EQ(items[0].importance_score, 0.0f);
+}
+
 TEST_F(InMemoryAutoTodosStoreTest, DeleteItem) {
   AutoTodoEntry item;
   item.id = "del_1";
@@ -150,6 +201,22 @@ TEST_F(InMemoryAutoTodosStoreTest, ObserverNotifiedOnAdd) {
   EXPECT_CALL(observer, OnAutoTodosChanged(SizeIs(1)));
   base::test::TestFuture<bool> add_future;
   store_.AddOrUpdateItem(item, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, ObserverNotifiedOnAddAllTodos) {
+  MockStoreObserver observer;
+  store_.AddObserver(&observer);
+
+  AutoTodoEntry item1;
+  item1.id = "1";
+  AutoTodoEntry item2;
+  item2.id = "2";
+
+  const std::vector<AutoTodoEntry> items_to_add = {item1, item2};
+  EXPECT_CALL(observer, OnAutoTodosChanged(SizeIs(2))).Times(1);
+  base::test::TestFuture<bool> add_future;
+  store_.AddAllTodos(items_to_add, add_future.GetCallback());
   EXPECT_TRUE(add_future.Get());
 }
 

@@ -76,6 +76,16 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   // `callback` on completion with the response if successful, or std::nullopt.
   void GenerateFirstPartyAutoTodos(AutoTodosCallback callback);
 
+  using GetAutoTodosCallback =
+      base::OnceCallback<void(std::vector<AutoTodoEntry>)>;
+  // Returns all stored AutoTodos.
+  void GetAutoTodos(GetAutoTodosCallback callback) const;
+
+  // Updates a todo item in the AutoTodos store. Designed to be called with a
+  // single complete todo item from the UI.
+  void UpdateAutoTodo(AutoTodoEntry item,
+                      AutoTodosStore::OperationCallback callback);
+
   // Stores or updates a todo feedback item in the in-memory cache.
   void SetTodoFeedback(
       browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback);

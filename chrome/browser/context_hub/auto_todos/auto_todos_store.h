@@ -34,10 +34,15 @@ class AutoTodosStore {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Adds or updates a single item in the store.
+  // Adds or replaces a single item in the store.
   // If `item.id` is empty, a unique ID will be assigned.
   virtual void AddOrUpdateItem(AutoTodoEntry item,
                                OperationCallback callback) = 0;
+
+  // Adds or replaces multiple items in the store.
+  // If `item.id` is empty, a unique ID will be assigned.
+  virtual void AddAllTodos(base::span<const AutoTodoEntry> items,
+                           OperationCallback callback) = 0;
 
   // Deletes a single item by its ID.
   virtual void DeleteItem(const std::string& id,

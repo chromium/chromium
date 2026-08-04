@@ -49,6 +49,21 @@ void InMemoryAutoTodosStore::AddOrUpdateItem(AutoTodoEntry item,
   }
 }
 
+void InMemoryAutoTodosStore::AddAllTodos(base::span<const AutoTodoEntry> items,
+                                         OperationCallback callback) {
+  for (AutoTodoEntry item : items) {
+    if (item.id.empty()) {
+      item.id = base::StrCat({"item_", base::NumberToString(next_item_id_++)});
+    }
+    std::string id = item.id;
+    entries_.Put(id, std::move(item));
+  }
+  NotifyAutoTodosChanged();
+  if (callback) {
+    std::move(callback).Run(true);
+  }
+}
+
 void InMemoryAutoTodosStore::DeleteItem(const std::string& id,
                                         OperationCallback callback) {
   auto it = entries_.Peek(id);

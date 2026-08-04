@@ -161,12 +161,29 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
       }
     }
     entry.data = std::move(first_party);
-    // TODO(crbug.com/541914207): Implement AddAllItems to the cache.
-    auto_todos_store_->AddOrUpdateItem(entry, base::DoNothing());
     entries.push_back(std::move(entry));
   }
 
+  auto_todos_store_->AddAllTodos(entries, base::DoNothing());
   std::move(callback).Run(std::move(entries));
+}
+
+void ContextHubService::GetAutoTodos(GetAutoTodosCallback callback) const {
+  if (!auto_todos_store_) {
+    std::move(callback).Run({});
+    return;
+  }
+  auto_todos_store_->GetAllItems(std::move(callback));
+}
+
+void ContextHubService::UpdateAutoTodo(
+    AutoTodoEntry item,
+    AutoTodosStore::OperationCallback callback) {
+  if (!auto_todos_store_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  auto_todos_store_->AddOrUpdateItem(std::move(item), std::move(callback));
 }
 
 void ContextHubService::SetTodoFeedback(
