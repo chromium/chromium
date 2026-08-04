@@ -3220,7 +3220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.IOS.DownloadProtection.ScanTriggered.EventResult"
-    enum="EnterpriseDownloadProtectionEventResult" expires_after="2026-09-15">
+    enum="EnterpriseDownloadProtectionEventResult" expires_after="2027-05-30">
   <owner>mxlg@google.com</owner>
   <owner>bling-enterprise@google.com</owner>
   <summary>
@@ -3231,7 +3231,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.IOS.DownloadProtection.ScanTriggered.WarningBypassed"
-    units="bypasses" expires_after="2026-09-15">
+    units="bypasses" expires_after="2027-05-30">
   <owner>mxlg@google.com</owner>
   <owner>bling-enterprise@google.com</owner>
   <summary>
