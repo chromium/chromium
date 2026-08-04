@@ -2063,8 +2063,9 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
   RunMaxConnectionsPerProxyTest();
 }
 
+// TODO(crbug.com/542268672): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
-                       MaxConnectionsPerProxyForWebSocket) {
+                       DISABLED_MaxConnectionsPerProxyForWebSocket) {
   RunMaxConnectionsPerProxyForWebSocketTest();
 }
 
