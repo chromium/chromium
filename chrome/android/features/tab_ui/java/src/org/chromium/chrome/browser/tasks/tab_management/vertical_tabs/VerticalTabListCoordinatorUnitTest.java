@@ -183,8 +183,12 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private TabModel mNewTabModel;
     @Mock private View mMockChildView;
     @Mock private Tab mMockTab1;
+    @Mock private Tab mMockTab2;
+    @Mock private Tab mMockTab3;
 
     private static final int TAB_ID_1 = 1;
+    private static final int TAB_ID_2 = 2;
+    private static final int TAB_ID_3 = 3;
     private static final int PINNED_TAB_ID = 3;
     private static final int NON_EXISTENT_TAB_ID = 999;
     private static final GURL MOCK_URL = new GURL("https://google.com");
@@ -1519,6 +1523,76 @@ public class VerticalTabListCoordinatorUnitTest {
                 .startGroupDragAction(any(), eq(tabGroupId), any(), any());
     }
 
+    @Test
+    @SmallTest
+    public void testPinnedTabDragOut_MovesToEndOfPinnedTabs() {
+        prepareMockPinnedTab(mMockTab1, TAB_ID_1, 0);
+        prepareMockPinnedTab(mMockTab2, TAB_ID_2, 1);
+        prepareMockPinnedTab(mMockTab3, TAB_ID_3, 2);
+        when(mTabModel.getCount()).thenReturn(3);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(3);
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, true);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+
+        delegateCaptor.getValue().handleDragExit();
+        verify(mTabModel).moveTab(TAB_ID_1, 2);
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabDragOut_LastPinnedTab_DoesNotMove() {
+        prepareMockPinnedTab(mMockTab1, TAB_ID_1, 0);
+        prepareMockPinnedTab(mMockTab2, TAB_ID_2, 1);
+        prepareMockPinnedTab(mMockTab3, TAB_ID_3, 2);
+        when(mTabModel.getCount()).thenReturn(3);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(3);
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_3);
+        model.set(TabProperties.IS_PINNED, true);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+
+        delegateCaptor.getValue().handleDragExit();
+        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabDragOut_SinglePinnedTab_DoesNotMove() {
+        prepareMockPinnedTab(mMockTab1, TAB_ID_1, 0);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(1);
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, true);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+
+        delegateCaptor.getValue().handleDragExit();
+        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+    }
+
     // =============================================================================================
     // Helper Methods
     // =============================================================================================
@@ -1562,6 +1636,16 @@ public class VerticalTabListCoordinatorUnitTest {
         when(tab.getUrl()).thenReturn(MOCK_URL);
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
         return tab;
+    }
+
+    /** Helper method to create a mock pinned {@link Tab} and wire it into {@link #mTabModel}. */
+    private Tab prepareMockPinnedTab(Tab tab, int id, int index) {
+        Tab preparedTab = prepareMockTab(tab, id);
+        when(preparedTab.getIsPinned()).thenReturn(true);
+        when(mTabModel.getTabById(id)).thenReturn(preparedTab);
+        when(mTabModel.getTabAt(index)).thenReturn(preparedTab);
+        when(mTabModel.indexOf(preparedTab)).thenReturn(index);
+        return preparedTab;
     }
 
     /** Helper method to manufacture synthetic {@link MotionEvent} objects for touch testing. */
@@ -1732,8 +1816,10 @@ public class VerticalTabListCoordinatorUnitTest {
 
     /** Helper to construct a {@link SimpleRecyclerViewAdapter.ViewHolder} with model. */
     private SimpleRecyclerViewAdapter.ViewHolder createViewHolder(PropertyModel model) {
+        View view = new View(mActivity);
+        view.setLayoutParams(new RecyclerView.LayoutParams(100, 100));
         SimpleRecyclerViewAdapter.ViewHolder viewHolder =
-                new SimpleRecyclerViewAdapter.ViewHolder(new View(mActivity), /* binder= */ null);
+                new SimpleRecyclerViewAdapter.ViewHolder(view, /* binder= */ null);
         viewHolder.model = model;
         return viewHolder;
     }
