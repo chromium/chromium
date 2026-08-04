@@ -30,6 +30,50 @@
 #endif
 
 namespace glic {
+
+// This file defines Glic API test fixture GlicApiBrowserTest (and
+// GlicApiBrowserTestMixin).
+// These fixtures configure a Glic client that runs test code. Each .cc test
+// file corresponds to a .ts file. The .cc file runs browser-side code, and the
+// .ts file runs glic client code. Each gtest in the .cc file should correspond
+// to a test function in the .ts file.
+// Using these fixtures requires a little bit of setup. Example:
+//
+// class MyNewGlicTest : public GlicApiBrowserTest {
+//  public:
+//   MyNewGlicTest() :
+//     // Make a new .ts file in chrome/test/data/webui/glic/browser_tests
+//     // update build rules, and point to the generated .js file here.
+//     GlicApiBrowserTest("./my_new_glic_test_browsertest.js") {}
+// };
+//
+// // Always include this test in one fixture of your test file. It ensures
+// // the set of tests in the .ts file match the set of tests in the .cc file.
+// IN_PROC_BROWSER_TEST_F(MyNewGlicTest, testAllTestsAreRegistered) {
+//   // Include all test fixture names here.
+//   AssertAllTestsRegistered({
+//       "MyNewGlicTest",
+//   });
+// }
+// // Add test cases...
+//
+// Next, here's boilerplate for the my_new_glic_test_browsertest.ts file:
+//
+// import {ApiTestFixtureBase, testMain} from './browser_test_base.js';
+//
+// class MyNewGlicTest extends ApiTestFixtureBase {
+//   // Normally it's useful to wait until the client is shown to start the test
+//   // but is not necessary.
+//   override async setUpTest() {
+//     await this.client.waitForFirstOpen();
+//   }
+//   // Add test cases...
+// }
+// testMain([
+//   // All test fixtures need to be listed here.
+//   MyNewGlicTest,
+// ]);
+
 namespace internal {
 
 struct CloseTabCommand {
