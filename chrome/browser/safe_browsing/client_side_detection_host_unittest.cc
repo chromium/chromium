@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
@@ -1091,8 +1092,16 @@ TEST_F(ClientSideDetectionHostTest, UnfamiliarLoginPageSampleRate) {
   }
 }
 
+// TODO(crbug.com/542592773): Flaky on Linux TSAN.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_UnfamiliarLoginPage_NoEnhancedProtection_NoTrigger \
+  DISABLED_UnfamiliarLoginPage_NoEnhancedProtection_NoTrigger
+#else
+#define MAYBE_UnfamiliarLoginPage_NoEnhancedProtection_NoTrigger \
+  UnfamiliarLoginPage_NoEnhancedProtection_NoTrigger
+#endif
 TEST_F(ClientSideDetectionHostTest,
-       UnfamiliarLoginPage_NoEnhancedProtection_NoTrigger) {
+       MAYBE_UnfamiliarLoginPage_NoEnhancedProtection_NoTrigger) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
