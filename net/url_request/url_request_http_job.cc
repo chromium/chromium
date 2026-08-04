@@ -1538,8 +1538,7 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
 
   HttpResponseHeaders* headers = GetResponseHeaders();
   std::vector<SourceStreamType> types =
-      FilterSourceStream::GetContentEncodingTypes(
-          request_->accepted_stream_types(), *headers);
+      FilterSourceStream::GetContentEncodingTypes(*headers);
 
   if (types.size() > kMaxNestedSourceStreamDepth) {
     return nullptr;
