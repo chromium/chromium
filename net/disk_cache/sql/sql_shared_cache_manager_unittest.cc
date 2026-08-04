@@ -366,7 +366,7 @@ TEST_P(SqlSharedCacheManagerTest, DeleteResourcesSingleCache) {
   (*handle)
       ->isolated_database_for_testing()
       .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
-      .WithArgs(key1, row1, /*offset=*/0, read_buf)
+      .WithArgs(key1, row1, /*body_size=*/3, /*offset=*/0, read_buf)
       .Then(read_before_future.GetCallback());
   FlushPendingTask();
   EXPECT_TRUE(read_before_future.Get().has_value());
@@ -384,14 +384,14 @@ TEST_P(SqlSharedCacheManagerTest, DeleteResourcesSingleCache) {
   (*handle)
       ->isolated_database_for_testing()
       .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
-      .WithArgs(key1, row1, /*offset=*/0, read_buf)
+      .WithArgs(key1, row1, /*body_size=*/3, /*offset=*/0, read_buf)
       .Then(read_after_future1.GetCallback());
   base::test::TestFuture<SqlSharedCacheIsolatedDatabase::ReadResultOrError>
       read_after_future2;
   (*handle)
       ->isolated_database_for_testing()
       .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
-      .WithArgs(key2, row2, /*offset=*/0, read_buf)
+      .WithArgs(key2, row2, /*body_size=*/3, /*offset=*/0, read_buf)
       .Then(read_after_future2.GetCallback());
   FlushPendingTask();
 
@@ -479,14 +479,14 @@ TEST_P(SqlSharedCacheManagerTest, DeleteResourcesMultipleCaches) {
   (*handle1)
       ->isolated_database_for_testing()
       .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
-      .WithArgs(key1, row1, /*offset=*/0, read_buf)
+      .WithArgs(key1, row1, /*body_size=*/3, /*offset=*/0, read_buf)
       .Then(read_after_future1.GetCallback());
   base::test::TestFuture<SqlSharedCacheIsolatedDatabase::ReadResultOrError>
       read_after_future2;
   (*handle2)
       ->isolated_database_for_testing()
       .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
-      .WithArgs(key2, row2, /*offset=*/0, read_buf)
+      .WithArgs(key2, row2, /*body_size=*/3, /*offset=*/0, read_buf)
       .Then(read_after_future2.GetCallback());
   FlushPendingTask();
 

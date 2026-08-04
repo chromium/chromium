@@ -357,6 +357,7 @@ SqlSharedCacheIsolatedDatabase::WriteBodyInternal(
 SqlSharedCacheIsolatedDatabase::ReadResultOrError
 SqlSharedCacheIsolatedDatabase::Read(const CacheEntryKey& entry_key,
                                      SqlSharedCacheRowId shared_cache_row_id,
+                                     int body_size,
                                      int offset,
                                      scoped_refptr<net::IOBuffer> buffer) {
   if (ShouldSimulateFailure(OperationForTesting::kRead)) {
@@ -368,7 +369,9 @@ SqlSharedCacheIsolatedDatabase::Read(const CacheEntryKey& entry_key,
   CHECK(buffer);
   const int buf_len = buffer->size();
   CHECK_GE(buf_len, 0);
-  if (offset < 0 || buf_len > std::numeric_limits<int32_t>::max() - offset) {
+  CHECK_GE(body_size, 0);
+  if (offset < 0 || buf_len > std::numeric_limits<int32_t>::max() - offset ||
+      offset + buf_len > body_size) {
     return base::unexpected(Error::kInvalidReadRange);
   }
 

@@ -104,11 +104,13 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
                                         scoped_refptr<net::IOBuffer> buffer,
                                         bool set_ready);
 
-  // Reads data from the entry's body into `buffer` starting at
-  // `offset`. The entry must be in the `ready` state, otherwise this operation
-  // will fail.
+  // Reads data from the entry's body into `buffer` starting at `offset`. The
+  // total body size must be specified in `body_size` to validate that the read
+  // range (`offset` + `buffer->size()`) does not exceed `body_size`. The entry
+  // must be in the `ready` state, otherwise this operation will fail.
   ReadResultOrError Read(const CacheEntryKey& entry_key,
                          SqlSharedCacheRowId shared_cache_row_id,
+                         int body_size,
                          int offset,
                          scoped_refptr<net::IOBuffer> buffer);
 

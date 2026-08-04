@@ -7131,7 +7131,8 @@ class SqlPersistentStoreSharedCacheTest
     (*handle)
         ->isolated_database_for_testing()
         .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
-        .WithArgs(key, row_id, /*offset=*/0, read_buf)
+        .WithArgs(key, row_id, /*body_size=*/kTestBodySize, /*offset=*/0,
+                  read_buf)
         .Then(read_future.GetCallback());
     FlushPendingTask();
 

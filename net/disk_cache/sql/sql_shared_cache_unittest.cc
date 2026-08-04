@@ -192,7 +192,8 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
         read_future;
     cache.isolated_database_for_testing()
         .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
-        .WithArgs(key, row_id, /*offset=*/0, read_buffer)
+        .WithArgs(key, row_id, static_cast<int>(expected_data.size()),
+                  /*offset=*/0, read_buffer)
         .Then(read_future.GetCallback());
     async_task_manager_.RunUntilAllTasksCompleteForTest();
     auto read_result = read_future.Take();
@@ -213,7 +214,7 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
         read_future;
     cache.isolated_database_for_testing()
         .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
-        .WithArgs(key, row_id, /*offset=*/0, read_buffer)
+        .WithArgs(key, row_id, /*body_size=*/100, /*offset=*/0, read_buffer)
         .Then(read_future.GetCallback());
     async_task_manager_.RunUntilAllTasksCompleteForTest();
     auto read_result = read_future.Take();
