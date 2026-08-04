@@ -511,6 +511,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/serial/android:java",
       "//chrome/browser/settings:factory_java",
       "//chrome/browser/settings:java",
+      "//chrome/browser/settings:settings_in_tab_java",
       "//chrome/browser/share:java",
       "//chrome/browser/share/android:java_resources",
       "//chrome/browser/signin/services/android:java",

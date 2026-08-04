@@ -16,6 +16,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/settings:settings_in_tab_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",

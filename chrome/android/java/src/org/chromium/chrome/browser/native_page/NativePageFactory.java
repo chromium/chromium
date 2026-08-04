@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bricks.BricksPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginAdapter;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPage;
@@ -53,6 +52,7 @@ import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.printing.PrintHelper;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsPage;
 import org.chromium.chrome.browser.settings.SettingsPageFragmentDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -434,7 +434,7 @@ public class NativePageFactory {
         }
 
         protected NativePage buildSettingsPage(Tab tab, String url) {
-            assert ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IN_TAB);
+            assert SettingsInTab.isEnabled();
             // The fragment delegate acts both as a delegate and as a back press handler.
             var fragmentDelegate =
                     new SettingsPageFragmentDelegateImpl(

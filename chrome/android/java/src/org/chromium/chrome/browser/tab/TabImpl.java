@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.selection.CompositeSelectionActionMenuDelegate;
 import org.chromium.chrome.browser.selection.TextSelectionActionMenuDelegate;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.Tab.SelectionStateSupplier;
@@ -1920,7 +1921,7 @@ class TabImpl implements Tab, TabInternal {
         String host = url.getHost();
         if (!UrlConstants.SETTINGS_HOST.equals(host)) return false;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IN_TAB)) return false;
+        if (SettingsInTab.isEnabled()) return false;
 
         // TODO(crbug.com/456164910): Use the URL path to open deeplinks into Settings.
         SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext());

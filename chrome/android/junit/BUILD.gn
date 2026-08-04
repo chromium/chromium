@@ -1564,6 +1564,7 @@ if (is_android) {
       "//chrome/android:chrome_app_java_resources",
       "//chrome/browser/actor/android:java",
       "//chrome/browser/settings:java",
+      "//chrome/browser/settings:settings_in_tab_java",
       "//third_party/androidx:androidx_preference_preference_java",
       "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java",
     ]

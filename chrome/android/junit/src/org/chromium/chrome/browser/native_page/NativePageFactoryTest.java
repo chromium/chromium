@@ -209,6 +209,7 @@ public class NativePageFactoryTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
     public void testCreateSettingsPage() {
         MockNativePage page =
                 (MockNativePage)
@@ -219,8 +220,20 @@ public class NativePageFactoryTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw320dp")
+    public void testCreateSettingsPageOnPhone_ReturnsNull() {
+        MockNativePage page =
+                (MockNativePage)
+                        mNativePageFactory.createNativePageForURL(
+                                UrlConstants.SETTINGS_URL, null, mTab, false, null);
+        Assert.assertNull(page);
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    public void testCreateSettingsPageDisabled() {
+    @Config(qualifiers = "sw600dp")
+    public void testCreateSettingsPage_SettingsInTabDisabled() {
         MockNativePage page =
                 (MockNativePage)
                         mNativePageFactory.createNativePageForURL(

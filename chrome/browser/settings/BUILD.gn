@@ -51,6 +51,18 @@ android_library("internal_java") {
   sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsNavigationFactory.java" ]
 }
 
+# Avoid circular dependencies for this small, widely-used helper class.
+android_library("settings_in_tab_java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/settings/SettingsInTab.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/settings/ActivityUtil.java",
@@ -59,7 +71,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/settings/FaviconLoader.java",
     "android/java/src/org/chromium/chrome/browser/settings/ProfileDependentSetting.java",
     "android/java/src/org/chromium/chrome/browser/settings/SettingsActivityInterface.java",
-    "android/java/src/org/chromium/chrome/browser/settings/SettingsInTab.java",
     "android/java/src/org/chromium/chrome/browser/settings/SettingsPage.java",
   ]
   public_deps = [
@@ -67,6 +78,7 @@ android_library("java") {
     ":search_java",
   ]
   deps = [
+    ":settings_in_tab_java",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/feedback/android:factory_java",
@@ -105,6 +117,7 @@ android_library("test_support_java") {
   ]
 
   deps = [
+    ":settings_in_tab_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
