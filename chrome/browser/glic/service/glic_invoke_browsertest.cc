@@ -644,6 +644,30 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   ASSERT_OK(WaitForGlicClient(instance));
 }
 
+// Verifies that invoking with an explicit TargetSurface actuation target
+// successfully configures and pipes through.
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWithTargetSurfaceActuationTargetSmokeTest) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.target.actuation_target = mojom::ActuationTarget::kTargetSurface;
+  options.on_success = success_future.GetCallback();
+
+  EXPECT_FALSE(GetInstanceForTab(tab));
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+
+  ASSERT_OK(WaitForGlicClient(instance));
+}
+
 // TODO(crbug.com/528472503): Re-enable this test on Android once flakiness is
 // fixed.
 #if !BUILDFLAG(IS_ANDROID)
