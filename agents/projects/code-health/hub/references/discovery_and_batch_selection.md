@@ -4,11 +4,11 @@ Follow this workflow to identify candidates to process.
 
 ## Steps
 
-1. **Discovery:** Run the discovery script `find_candidates.py` located in the
-   skill's `scripts/` directory:
+1. **Discovery:** Run the unified discovery script `candidate_finder.py` and
+   pass the path to the skill's plugin script:
 
    ```bash
-   python3 agents/projects/code-health/<skill_name>/scripts/find_candidates.py
+   python3 agents/projects/code-health/hub/scripts/candidate_finder.py find --plugin agents/projects/code-health/<skill_name>/scripts/find_candidates.py
    ```
 
 2. **Present Candidates/Batch:** Output the candidate details or candidate batch
