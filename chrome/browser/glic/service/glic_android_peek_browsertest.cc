@@ -197,8 +197,7 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
   EXPECT_EQ(instance->GetActiveEmbedderTabForTesting(), tab1);
 
   // Create a second window/browser.
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(GetProfile());
-  ASSERT_TRUE(browser2);
+  BrowserWindowInterface* browser2 = CreateAdditionalBrowserWindow();
   ASSERT_NE(GetBrowser(), browser2);
 
   // Get the active tab in the second window.
