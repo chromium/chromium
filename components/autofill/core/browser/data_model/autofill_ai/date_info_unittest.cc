@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/autofill_ai/date_info.h"
 
+#include "components/personal_context/proto/features/common_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,6 +59,16 @@ TEST(DateInfo, GetIcuDate_LocalizedOutput) {
   EXPECT_EQ(info.GetIcuDate(u"MMM dd", "en_US"), u"Dec 16");
   EXPECT_EQ(info.GetIcuDate(u"MMM dd", "pl_PL"), u"gru 16");
   EXPECT_EQ(info.GetIcuDate(u"MMM dd", "de_DE"), u"Dez. 16");
+}
+
+// Tests that GetDateProto() populates a proto with  year, month, and day.
+TEST(DateInfo, GetDateProto) {
+  DateInfo info;
+  info.SetDate(u"16/12/2022", u"DD/MM/YYYY");
+  personal_context::proto::Date proto = info.GetDateProto();
+  EXPECT_EQ(proto.year(), 2022);
+  EXPECT_EQ(proto.month(), 12);
+  EXPECT_EQ(proto.day(), 16);
 }
 
 }  // namespace

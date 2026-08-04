@@ -10,6 +10,10 @@
 
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 
+namespace personal_context::proto {
+class Date;
+}  // namespace personal_context::proto
+
 namespace autofill {
 
 // Stores a year, month, day tuple.
@@ -39,6 +43,9 @@ class DateInfo {
   // https://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns.
   std::u16string GetIcuDate(std::u16string_view format,
                             std::string_view locale) const;
+
+  // Returns the date in a `personal_context::proto::Date` representation.
+  personal_context::proto::Date GetDateProto() const;
 
   friend bool operator==(const DateInfo&, const DateInfo&) = default;
 
