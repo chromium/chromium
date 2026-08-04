@@ -651,6 +651,49 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, RejectOptIn) {
                                       OptInFlow::kExperimentalTriggering, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, RejectThenAcceptOptIn) {
+  service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
+  ASSERT_FALSE(service()->enabling().HasConsented());
+
+  // Capture the dialog result to verify it gets rejected upon closing.
+  base::test::TestFuture<bool> opt_in_result;
+  views::Widget* widget =
+      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
+  ASSERT_TRUE(widget);
+
+  content::WebContents* dialog_contents = WaitForGuestContents();
+
+  // 1. Reject first dialog
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  ASSERT_TRUE(ExecJs(dialog_contents, "window.location.hash = '#noThanks';"));
+
+  // The dialog should close and the result should be false (rejected).
+  waiter.Wait();
+  EXPECT_FALSE(opt_in_result.Get());
+  EXPECT_FALSE(service()->enabling().HasConsented());
+
+  // 2. Show second dialog
+  base::test::TestFuture<bool> opt_in_result2;
+  views::Widget* widget2 =
+      ShowDialogAndWait(nullptr, opt_in_result2.GetCallback());
+  ASSERT_TRUE(widget2);
+
+  auto* guest_view2 = GetGuestViewManager()->WaitForNextGuestViewCreated();
+  ASSERT_TRUE(guest_view2);
+  content::WebContents* dialog_contents2 = guest_view2->web_contents();
+  ASSERT_TRUE(dialog_contents2);
+  EXPECT_TRUE(content::WaitForLoadStop(dialog_contents2));
+
+  // 3. Accept second dialog
+  views::test::WidgetDestroyedWaiter waiter2(widget2);
+  ASSERT_TRUE(ExecJs(dialog_contents2, "window.location.hash = '#continue';"));
+
+  // The dialog should close and the result should be true (accepted).
+  waiter2.Wait();
+  EXPECT_TRUE(opt_in_result2.Get());
+  EXPECT_TRUE(service()->enabling().HasConsented());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
                        GlicOptInImpressionMetricRecordedOnLoad) {
   base::UserActionTester user_action_tester;
