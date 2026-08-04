@@ -1042,7 +1042,7 @@ const CGFloat kVerticalOffset = 1;
   }
 
   CHECK_LE(self.attributedAdditionalText.length, self.attributedText.length,
-           base::NotFatalUntil::M150);
+           base::NotFatalUntil::M160);
   /// This should not happen, tracking occurences with NotFatalUntil
   /// crbug.com/421229993.
   if (self.attributedText.length < self.attributedAdditionalText.length) {
