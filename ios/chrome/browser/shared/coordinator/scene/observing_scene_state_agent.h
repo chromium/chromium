@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_OBSERVING_SCENE_STATE_AGENT_H_
 #define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_OBSERVING_SCENE_STATE_AGENT_H_
 
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 
 // A scene agent that acts as a scene state observer.

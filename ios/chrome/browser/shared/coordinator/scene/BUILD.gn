@@ -29,9 +29,11 @@ source_set("scene_activation_level") {
 source_set("scene_state_header") {
   sources = [
     "connection_information.h",
+    "scene_agent.h",
     "scene_controller.h",
     "scene_delegate.h",
     "scene_state.h",
+    "scene_state_animator.h",
     "scene_state_prefs.h",
     "scene_ui_provider.h",
   ]

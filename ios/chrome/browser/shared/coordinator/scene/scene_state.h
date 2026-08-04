@@ -20,40 +20,14 @@
 @class LayoutState;
 @class LensOverlayStateNotifier;
 @class ProfileState;
+@protocol SceneAgent;
 @class SceneController;
 @class SceneState;
+@protocol SceneStateAnimator;
 @class SceneStatePrefs;
-class SigninInProgress;
 @class SceneUIBlockerState;
+class SigninInProgress;
 @class TabGridState;
-
-// During profile switching, it is possible that an animation is displayed
-// over the SceneState until the transition is complete. In that case the
-// object responsible should implement this protocol to allow cancellation
-// of the animation if the Profile initialisation needs to present wait for
-// the user to interact with some mandatory interactive step.
-@protocol SceneStateAnimator
-
-// Cancel any in progress animation. The animation can be restarted with
-// the -restartAnimation method.
-- (void)cancelAnimation;
-
-// Restart the animation if it has been cancelled. Does nothing if the
-// animation has not been cancelled before.
-- (void)restartAnimation;
-
-@end
-
-// Scene agents are objects owned by a scene state and providing some
-// scene-scoped function. They can be driven by SceneStateObserver events.
-@protocol SceneAgent <NSObject>
-
-@required
-// Sets the associated scene state. Called once and only once. Consider using
-// this method to add the agent as an observer.
-- (void)setSceneState:(SceneState*)scene;
-
-@end
 
 // An object containing the state of a UIWindowScene. One state object
 // corresponds to one scene.
