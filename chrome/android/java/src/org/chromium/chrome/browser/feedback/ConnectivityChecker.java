@@ -76,7 +76,8 @@ public final class ConnectivityChecker {
                       policy_exception_justification:
                         "A policy for this is not considered necessary as this request is manually "
                         "initiated by the user and does not contain any additional data."
-                    }""");
+                    }\
+                    """);
 
     /** A callback for whether the device is currently connected to the Internet. */
     public interface ConnectivityCheckerCallback {
@@ -91,14 +92,7 @@ public final class ConnectivityChecker {
     }
 
     private static void postResult(final ConnectivityCheckerCallback callback, final int result) {
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onResult(result);
-                    }
-                });
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(result));
     }
 
     /**

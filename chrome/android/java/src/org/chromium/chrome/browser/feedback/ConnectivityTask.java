@@ -260,14 +260,7 @@ public class ConnectivityTask {
 
         private void postCallbackResult() {
             if (mCallback == null) return;
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallback.onResult(get());
-                        }
-                    });
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> mCallback.onResult(get()));
         }
     }
 

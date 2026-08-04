@@ -85,14 +85,7 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         // If neither the compositor nor the Android view screenshot tasks were kicked off, admit
         // defeat and return a {@code null} screenshot.
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        onBitmapReceived(null);
-                    }
-                });
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onBitmapReceived(null));
     }
 
     @Override
@@ -141,16 +134,13 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Bitmap bitmap =
-                                UiUtils.generateScaledScreenshot(
-                                        activity.getWindow().getDecorView().getRootView(),
-                                        MAX_FEEDBACK_SCREENSHOT_DIMENSION,
-                                        Bitmap.Config.ARGB_8888);
-                        onBitmapReceived(bitmap);
-                    }
+                () -> {
+                    Bitmap bitmap =
+                            UiUtils.generateScaledScreenshot(
+                                    activity.getWindow().getDecorView().getRootView(),
+                                    MAX_FEEDBACK_SCREENSHOT_DIMENSION,
+                                    Bitmap.Config.ARGB_8888);
+                    onBitmapReceived(bitmap);
                 });
 
         return true;
