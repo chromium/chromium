@@ -25,11 +25,11 @@ export function getHtml(this: WebuiBrowserAppElement) {
         <div class="captionButtonsDiv">
           <cr-button type="button" class="caption-button"
             @click="${this.onMinimizeClick_}">
-            <cr-icon icon="webui-browser:minimize"></cr-icon>
+            <cr-icon icon="webui-browser:chrome-minimize"></cr-icon>
           </cr-button>
           <cr-button type="button" class="caption-button"
             @click="${this.onMaximizeClick_}">
-            <cr-icon icon="webui-browser:maximize"></cr-icon>
+            <cr-icon icon="webui-browser:chrome-maximize"></cr-icon>
           </cr-button>
           <cr-button type="button" class="caption-button"
             @click="${this.onCloseClick_}">
@@ -56,12 +56,13 @@ export function getHtml(this: WebuiBrowserAppElement) {
           ?hidden="${!this.showLocationIconButton_}"
           @click="${this.onLocationIconClick_}">
           <cr-icon id="locationIcon"
-            icon="webui-browser:${this.locationIcon_}Icon"></cr-icon>
+            icon="webui-browser:${this.locationIcon_}"></cr-icon>
         </cr-button>
       </div>
       <webui-browser-extensions-bar id="extensionsBar">
       </webui-browser-extensions-bar>
-      <cr-icon-button id="bookmarksButton" iron-icon="webui-browser:bookmark"
+      <cr-icon-button id="bookmarksButton"
+        iron-icon="webui-browser:bookmark-filled"
         @click="${this.onBookmarksClick_}"></cr-icon-button>
       <cr-icon-button id="avatarButton" iron-icon="cr:person-filled"
         @click="${this.onAvatarClick_}"></cr-icon-button>

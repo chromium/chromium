@@ -85,7 +85,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
   protected accessor reloadOrStopIcon_: string = 'icon-refresh';
   protected accessor showingSidePanel_: boolean = false;
   protected accessor showLocationIconButton_: boolean = false;
-  protected accessor locationIcon_: string = 'NoEncryption';
+  protected accessor locationIcon_: string = 'no-encryption';
   protected accessor tabStripInset_: number = 0;
   protected accessor inactive_: boolean = false;
 
@@ -138,18 +138,18 @@ export class WebuiBrowserAppElement extends CrLitElement {
   // Map from SecurityIcon values to the names of icons defined in
   // icons.html.ts.
   private securityIconToIconNameMap = new Map<SecurityIcon, string>([
-    [SecurityIcon.HttpChromeRefresh, 'HttpChromeRefresh'],
-    [SecurityIcon.SecurePageInfoChromeRefresh, 'SecurePageInfoChromeRefresh'],
-    [SecurityIcon.NoEncryption, 'NoEncryption'],
+    [SecurityIcon.HttpChromeRefresh, 'info'],
+    [SecurityIcon.SecurePageInfoChromeRefresh, 'page-info'],
+    [SecurityIcon.NoEncryption, 'no-encryption'],
     [
       SecurityIcon.NotSecureWarningChromeRefresh,
-      'NotSecureWarningChromeRefresh',
+      'warning',
     ],
-    [SecurityIcon.BusinessChromeRefresh, 'BusinessChromeRefresh'],
-    [SecurityIcon.DangerousChromeRefresh, 'DangerousChromeRefresh'],
-    [SecurityIcon.ProductChromeRefresh, 'ProductChromeRefresh'],
-    [SecurityIcon.ExtensionChromeRefresh, 'ExtensionChromeRefresh'],
-    [SecurityIcon.OfflinePin, 'OfflinePin'],
+    [SecurityIcon.BusinessChromeRefresh, 'domain'],
+    [SecurityIcon.DangerousChromeRefresh, 'dangerous-filled'],
+    [SecurityIcon.ProductChromeRefresh, 'chrome-product'],
+    [SecurityIcon.ExtensionChromeRefresh, 'chrome-extension'],
+    [SecurityIcon.OfflinePin, 'OfflinePinIcon-custom'],
   ]);
 
   protected onAppMenuClick_(_: Event) {

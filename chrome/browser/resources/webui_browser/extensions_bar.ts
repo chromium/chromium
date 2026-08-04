@@ -53,8 +53,7 @@ export class ExtensionsBarElement extends CrLitElement {
     this.trackedElementManager = TrackedElementManager.getInstance();
     this.extensionsMenuButton = new CrIconButtonElement();
     this.extensionsMenuButton.id = 'extensionsMenuButton';
-    this.extensionsMenuButton.ironIcon =
-        'webui-browser:ExtensionChromeRefreshIcon';
+    this.extensionsMenuButton.ironIcon = 'webui-browser:chrome-extension';
     this.extensionsMenuButton.title =
         loadTimeData.getString('tooltipExtensionsButton');
     this.extensionsMenuButton.addEventListener(
