@@ -2599,7 +2599,12 @@ ScopedDepthStencilReattacher::ScopedDepthStencilReattacher(
 }
 
 void ScopedDepthStencilReattacher::Initialize() {
-  if (!decoder_->workarounds().reattach_fbo_depth_stencil_on_reallocation) {
+  const bool reattach_depth_stencil =
+      decoder_->workarounds().reattach_fbo_depth_stencil_on_reallocation;
+  const bool reattach_layer_increase =
+      decoder_->workarounds().reattach_texture_to_fbo_after_layer_increase &&
+      texture_ref_ && texture_ref_->texture()->target() == GL_TEXTURE_2D_ARRAY;
+  if (!reattach_depth_stencil && !reattach_layer_increase) {
     return;
   }
 
@@ -2607,7 +2612,7 @@ void ScopedDepthStencilReattacher::Initialize() {
   if (texture_ref_) {
     detached_fbos =
         decoder_->framebuffer_manager()->GetBindingFramebuffersForTexture(
-            texture_ref_);
+            texture_ref_, reattach_layer_increase);
   } else if (renderbuffer_) {
     detached_fbos =
         decoder_->framebuffer_manager()->GetBindingFramebuffersForRenderbuffer(
@@ -2651,8 +2656,14 @@ void ScopedDepthStencilReattacher::Initialize() {
     // Detach in driver.
     decoder_->api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo->service_id());
     if (info.is_texture) {
-      decoder_->api()->glFramebufferTexture2DEXTFn(
-          GL_FRAMEBUFFER, attachment_point, info.texture_target, 0, 0);
+      if (info.texture_target == GL_TEXTURE_2D_ARRAY ||
+          info.texture_target == GL_TEXTURE_3D) {
+        decoder_->api()->glFramebufferTextureLayerFn(GL_FRAMEBUFFER,
+                                                     attachment_point, 0, 0, 0);
+      } else {
+        decoder_->api()->glFramebufferTexture2DEXTFn(
+            GL_FRAMEBUFFER, attachment_point, info.texture_target, 0, 0);
+      }
     } else if (info.is_renderbuffer) {
       decoder_->api()->glFramebufferRenderbufferEXTFn(
           GL_FRAMEBUFFER, attachment_point, GL_RENDERBUFFER, 0);
@@ -2670,7 +2681,8 @@ ScopedDepthStencilReattacher::~ScopedDepthStencilReattacher() {
     Framebuffer* fbo = info.framebuffer.get();
     decoder_->api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo->service_id());
     if (info.is_texture) {
-      if (info.texture_layer == 0) {
+      if (info.texture_target != GL_TEXTURE_2D_ARRAY &&
+          info.texture_target != GL_TEXTURE_3D) {
         if (info.texture_samples == 0) {
           decoder_->api()->glFramebufferTexture2DEXTFn(
               GL_FRAMEBUFFER, info.attachment_point, info.texture_target,
