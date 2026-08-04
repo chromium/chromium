@@ -1308,6 +1308,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         .with(
                                 AppMenuItemProperties.TITLE,
                                 mContext.getString(R.string.page_zoom_menu_title))
+                        .with(
+                                AppMenuItemProperties.TITLE_CONDENSED,
+                                mContext.getString(R.string.page_zoom_menu_title))
                         .with(AppMenuItemProperties.MENU_ITEM_ID, R.id.page_zoom_id)
                         .with(AppMenuItemProperties.ICON, icon)
                         .with(

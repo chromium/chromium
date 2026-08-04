@@ -16,6 +16,7 @@ import static org.chromium.components.browser_ui.accessibility.PageZoomPropertie
 import static org.chromium.components.browser_ui.accessibility.PageZoomProperties.INCREASE_ZOOM_ENABLED;
 import static org.chromium.components.browser_ui.accessibility.PageZoomProperties.ZOOM_PERCENT_TEXT;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -35,12 +36,14 @@ public class PageZoomMenuItemViewBinder {
             int id = model.get(MENU_ITEM_ID);
             assert id == R.id.page_zoom_id;
             view.setId(id);
-        } else if (key == TITLE) {
+        } else if (key == TITLE || key == TITLE_CONDENSED) {
             TextViewWithCompoundDrawables titleView = view.findViewById(R.id.title);
-            titleView.setText(model.get(TITLE));
-        } else if (key == TITLE_CONDENSED) {
-            CharSequence titleCondensed = model.get(TITLE_CONDENSED);
-            view.findViewById(R.id.title).setContentDescription(titleCondensed);
+            CharSequence title = model.get(TITLE);
+            if (TextUtils.isEmpty(title)) {
+                title = model.get(TITLE_CONDENSED);
+            }
+            titleView.setText(title);
+            titleView.setContentDescription(model.get(TITLE_CONDENSED));
         } else if (key == ICON) {
             TextViewWithCompoundDrawables titleView = view.findViewById(R.id.title);
             titleView.setCompoundDrawablesRelative(
