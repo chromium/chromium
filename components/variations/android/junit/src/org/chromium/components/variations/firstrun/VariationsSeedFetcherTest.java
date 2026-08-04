@@ -704,6 +704,28 @@ public class VariationsSeedFetcherTest {
 
     /**
      * Test method to make sure {@link VariationsSeedFetcher#getConnectionString()} honors the
+     * "--fake-variations-platform" switch.
+     */
+    @Test
+    @CommandLineFlags.Add(VariationsSwitches.FAKE_VARIATIONS_PLATFORM + "=android_webview")
+    public void testGetConnectionString_HonorsPlatformCommandlineSwitch() {
+        @VariationsSeedFetcher.VariationsPlatform
+        int platform = VariationsSeedFetcher.VariationsPlatform.ANDROID;
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(platform)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        String urlString = mFetcher.getConnectionString(params);
+
+        // The URL should have an osname param and it should be overridden by the command line.
+        assertTrue(urlString, urlString.contains("osname=android_webview"));
+    }
+
+    /**
+     * Test method to make sure {@link VariationsSeedFetcher#getConnectionString()} honors the
      * "--variations-server-url" switch.
      */
     @Test

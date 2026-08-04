@@ -41,6 +41,13 @@ const char kEnableFieldTrialTestingConfig[] = "enable-field-trial-config";
 // and "canary". This works for official builds as well.
 const char kFakeVariationsChannel[] = "fake-variations-channel";
 
+// Fakes the platform of the browser for variations seed fetching and field
+// trial filtering. Possible values are as follows: "android",
+// "android_webview", "chromeos", "fuchsia", "ios", "linux", "mac", and "win".
+//
+// Intended only for testing.
+const char kFakeVariationsPlatform[] = "fake-variations-platform";
+
 // This option can be used to force parameters of field trials when testing
 // changes locally. The argument is a param list of (key, value) pairs prefixed
 // by an associated (trial, group) pair. You specify the param list for multiple

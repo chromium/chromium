@@ -4,12 +4,14 @@
 
 #include "components/variations/client_filterable_state.h"
 
+#include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/variations_switches.h"
 
 namespace variations {
 
@@ -83,6 +85,37 @@ base::flat_set<std::string> ClientFilterableState::EnterpriseGroups() const {
 
 // static
 Study::Platform ClientFilterableState::GetCurrentPlatform() {
+  const std::string forced_platform =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kFakeVariationsPlatform);
+  if (!forced_platform.empty()) {
+    if (forced_platform == "android") {
+      return Study::PLATFORM_ANDROID;
+    }
+    if (forced_platform == "android_webview") {
+      return Study::PLATFORM_ANDROID_WEBVIEW;
+    }
+    if (forced_platform == "chromeos") {
+      return Study::PLATFORM_CHROMEOS;
+    }
+    if (forced_platform == "fuchsia") {
+      return Study::PLATFORM_FUCHSIA;
+    }
+    if (forced_platform == "ios") {
+      return Study::PLATFORM_IOS;
+    }
+    if (forced_platform == "linux") {
+      return Study::PLATFORM_LINUX;
+    }
+    if (forced_platform == "mac") {
+      return Study::PLATFORM_MAC;
+    }
+    if (forced_platform == "win") {
+      return Study::PLATFORM_WINDOWS;
+    }
+    DVLOG(1) << "Invalid platform provided: " << forced_platform;
+  }
+
 #if BUILDFLAG(IS_WIN)
   return Study::PLATFORM_WINDOWS;
 #elif BUILDFLAG(IS_IOS)

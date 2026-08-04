@@ -27,6 +27,8 @@ extern const char kEnableFieldTrialTestingConfig[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kFakeVariationsChannel[];
 COMPONENT_EXPORT(VARIATIONS)
+extern const char kFakeVariationsPlatform[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kForceFieldTrialParams[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kForceVariationIds[];

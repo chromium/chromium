@@ -33,6 +33,7 @@ namespace {
 
 using variations::kDefaultServerUrl;
 using variations::switches::kFakeVariationsChannel;
+using variations::switches::kFakeVariationsPlatform;
 using variations::switches::kVariationsSeedCorpus;
 using variations::switches::kVariationsServerURL;
 
@@ -234,15 +235,18 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, TestVariationsURLWithDogfood) {
   EXPECT_OCMOCK_VERIFY(mock_url_session);
 }
 
-// Tests that the variations url is correct with a fake channel.
-TEST_F(IOSChromeVariationsSeedFetcherTest, TestVariationsURLWithFakeChannel) {
+// Tests that the variations url is correct with a fake channel and platform.
+TEST_F(IOSChromeVariationsSeedFetcherTest,
+       TestVariationsURLWithFakeChannelAndPlatform) {
   NSString* test_channel = @"fake_channel";
+  NSString* test_platform = @"android";
   // Instantiate mocks.
   BOOL (^request_matcher)(NSMutableURLRequest* request) =
       ^BOOL(NSMutableURLRequest* request) {
         NSString* expected_url = [NSString
-            stringWithFormat:@"%@?osname=ios&milestone=%@&channel=%@",
+            stringWithFormat:@"%@?osname=%@&milestone=%@&channel=%@",
                              base::SysUTF8ToNSString(kDefaultServerUrl),
+                             test_platform,
                              base::SysUTF8ToNSString(
                                  version_info::GetMajorVersionNumber()),
                              test_channel];
@@ -254,15 +258,18 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, TestVariationsURLWithFakeChannel) {
       dataTaskWithRequest:[OCMArg checkWithBlock:request_matcher]
         completionHandler:[OCMArg any]]);
 
-  // Pass a fake value for `kFakeVariationsChannel` to make sure it's
-  // represented in the URL.
-  NSString* test_channel_argument = [NSString
+  // Pass fake channel and platform values.
+  NSString* test_channel_arg = [NSString
       stringWithFormat:@"--%@=%@",
                        base::SysUTF8ToNSString(kFakeVariationsChannel),
                        test_channel];
+  NSString* test_platform_arg = [NSString
+      stringWithFormat:@"--%@=%@",
+                       base::SysUTF8ToNSString(kFakeVariationsPlatform),
+                       test_platform];
   IOSChromeVariationsSeedFetcher* fetcher =
       [[IOSChromeVariationsSeedFetcher alloc]
-          initWithArguments:@[ test_channel_argument ]];
+          initWithArguments:@[ test_channel_arg, test_platform_arg ]];
   [fetcher doActualFetch];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
   EXPECT_OCMOCK_VERIFY(mock_url_session);

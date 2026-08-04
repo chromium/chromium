@@ -228,17 +228,8 @@ public class VariationsSeedFetcher {
             urlString = DEFAULT_VARIATIONS_SERVER_URL;
         }
 
-        urlString += "?osname=";
-        switch (params.mPlatform) {
-            case VariationsPlatform.ANDROID:
-                urlString += "android";
-                break;
-            case VariationsPlatform.ANDROID_WEBVIEW:
-                urlString += "android_webview";
-                break;
-            default:
-                assert false;
-        }
+        urlString += "?osname=" + getOsNameParam(params.mPlatform);
+
         if (params.mRestrictMode != null && !params.mRestrictMode.isEmpty()) {
             urlString += "&restrict=" + params.mRestrictMode;
         }
@@ -257,6 +248,40 @@ public class VariationsSeedFetcher {
         }
 
         return urlString;
+    }
+
+    /**
+     * Returns the platform for which a variations seed should be fetched. Considers the
+     * --fake-variations-platform switch.
+     */
+    private String getOsNameParam(@VariationsPlatform int platform) {
+        String forcedPlatform =
+                CommandLine.getInstance()
+                        .getSwitchValue(VariationsSwitches.FAKE_VARIATIONS_PLATFORM);
+        if (forcedPlatform != null) {
+            if (Arrays.asList(
+                            "android",
+                            "android_webview",
+                            "chromeos",
+                            "fuchsia",
+                            "ios",
+                            "linux",
+                            "mac",
+                            "win")
+                    .contains(forcedPlatform)) {
+                return forcedPlatform;
+            }
+            Log.d(TAG, "Invalid platform provided: %s", forcedPlatform);
+        }
+        switch (platform) {
+            case VariationsPlatform.ANDROID:
+                return "android";
+            case VariationsPlatform.ANDROID_WEBVIEW:
+                return "android_webview";
+            default:
+                assert false;
+                return "";
+        }
     }
 
     /** Object holding information about the seed download parameters. */

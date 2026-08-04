@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -116,6 +117,20 @@ bool g_should_fetch_for_testing = false;
 // Returns a string that will be used for the value of the 'osname' URL param
 // to the variations server.
 std::string GetPlatformString() {
+  const std::string forced_platform =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kFakeVariationsPlatform);
+  if (!forced_platform.empty()) {
+    static constexpr auto kPlatforms = base::MakeFixedFlatSet<std::string_view>(
+        {"android", "android_webview", "chromeos", "fuchsia", "ios", "linux",
+         "mac", "win"});
+    if (kPlatforms.contains(forced_platform)) {
+      return forced_platform;
+    } else {
+      DVLOG(1) << "Invalid platform provided: " << forced_platform;
+    }
+  }
+
 #if BUILDFLAG(IS_WIN)
   return "win";
 #elif BUILDFLAG(IS_IOS)

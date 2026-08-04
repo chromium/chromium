@@ -509,6 +509,22 @@ TEST_F(VariationsServiceTest, VariationsURLHasParams) {
   EXPECT_EQ(corpus, "test_corpus");
 }
 
+TEST_F(VariationsServiceTest, RespectsFakePlatformSwitch) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/true);
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kFakeVariationsPlatform, "ios");
+  GURL url = service.GetVariationsServerURL(TestVariationsService::USE_HTTPS);
+
+  std::string osname;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "osname", &osname));
+  EXPECT_EQ(osname, "ios");
+}
+
 TEST_F(VariationsServiceTest, RequestsInitiallyNotAllowed) {
   std::unique_ptr<net::test::MockNetworkChangeNotifier>
       network_change_notifier = net::test::MockNetworkChangeNotifier::Create();

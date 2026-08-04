@@ -4,7 +4,12 @@
 
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
 
+#import <string>
+#import <string_view>
+
+#import "base/containers/fixed_flat_set.h"
 #import "base/feature_list.h"
+#import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/escape.h"
@@ -42,6 +47,22 @@ const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 // it aborts the task to make sure the fetch result won't be overridden.
 static BOOL g_seed_fetching_in_progress = NO;
 
+// Returns the platform for which a variations seed should be fetched. Considers
+// the --fake-variations-platform switch.
+std::string GetOsName(const std::string& forced_platform) {
+  if (!forced_platform.empty()) {
+    static constexpr auto kPlatforms = base::MakeFixedFlatSet<std::string_view>(
+        {"android", "android_webview", "chromeos", "fuchsia", "ios", "linux",
+         "mac", "win"});
+    if (kPlatforms.contains(forced_platform)) {
+      return forced_platform;
+    } else {
+      DVLOG(1) << "Invalid platform provided: " << forced_platform;
+    }
+  }
+  return "ios";
+}
+
 // Returns the trimmed and URL-escaped value of the given string.
 std::string GetEscapedValue(std::string_view value) {
   return base::EscapeQueryParamValue(
@@ -62,9 +83,10 @@ BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
   // The variations server domain name. Accessed on the main thread.
   std::string _variationsDomain;
 
-  // The forced channel string retrieved from the command line. Accessed on the
-  // main thread.
+  // The forced channel and platform strings retrieved from the command line.
+  // Accessed on the main thread.
   std::string _forcedChannel;
+  std::string _forcedPlatform;
 
   // The timestamp when the current seed request starts. This is used for metric
   // reporting, and will be reset to null value when the request finishes.
@@ -84,11 +106,14 @@ BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
     _variationsDomain = variations::kDefaultServerUrl;
     _forcedChannel = std::string();
+    _forcedPlatform = std::string();
 
     std::string url_switch =
         base::StrCat({"--", variations::switches::kVariationsServerURL, "="});
     std::string channel_switch =
         base::StrCat({"--", variations::switches::kFakeVariationsChannel, "="});
+    std::string platform_switch = base::StrCat(
+        {"--", variations::switches::kFakeVariationsPlatform, "="});
     for (NSString* a in arguments) {
       std::string arg_string = base::SysNSStringToUTF8(a);
 
@@ -102,6 +127,8 @@ BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
         }
       } else if (base::StartsWith(arg, channel_switch)) {
         _forcedChannel = GetEscapedValue(arg.substr(channel_switch.size()));
+      } else if (base::StartsWith(arg, platform_switch)) {
+        _forcedPlatform = GetEscapedValue(arg.substr(platform_switch.size()));
       }
     }
   }
@@ -156,8 +183,9 @@ BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
           ? (GetChannel() != version_info::Channel::UNKNOWN ? GetChannelString()
                                                             : "")
           : _forcedChannel;
-  std::string url = base::StrCat({_variationsDomain, "?osname=ios&milestone=",
-                                  version_info::GetMajorVersionNumber()});
+  std::string url =
+      base::StrCat({_variationsDomain, "?osname=", GetOsName(_forcedPlatform),
+                    "&milestone=", version_info::GetMajorVersionNumber()});
   if (!channel.empty()) {
     base::StrAppend(&url, {"&channel=", channel});
   }
