@@ -180,7 +180,10 @@ using PriceNotificationItems =
 
 - (void)navigateToBookmarks {
   [self.handler hidePriceTrackedItems];
-  GURL URL = _webState->GetLastCommittedURL();
+  if (!self.webState) {
+    return;
+  }
+  GURL URL = self.webState->GetLastCommittedURL();
   [self.bookmarksHandler showBookmarkInBookmarksUI:URL];
 }
 
@@ -545,6 +548,12 @@ using PriceNotificationItems =
 
 - (void)navigateToWebpageForURL:(const GURL&)URL
                     disposition:(WindowOpenDisposition)disposition {
+  if (!URL.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  if (!self.webState) {
+    return;
+  }
   self.webState->OpenURL(web::WebState::OpenURLParams(
       URL, web::Referrer(), disposition, ui::PAGE_TRANSITION_GENERATED,
       /*is_renderer_initiated=*/false));

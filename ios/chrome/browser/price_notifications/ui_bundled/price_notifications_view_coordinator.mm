@@ -101,7 +101,7 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
       initWithShoppingService:shoppingService
                 bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)
-                     webState:webState->GetWeakPtr()
+                     webState:webState ? webState->GetWeakPtr() : nullptr
       pushNotificationService:pushNotificationService];
   self.mediator.consumer = self.tableViewController;
   self.mediator.presenter = self;

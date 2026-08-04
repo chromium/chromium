@@ -58,6 +58,21 @@ const char kTestUrlVariant[] =
 const char kBookmarkTitle[] = "My product title";
 constexpr uint64_t kClusterId = 12345L;
 
+// A FakeWebState that records parameters passed to OpenURL.
+class TestFakeWebState : public web::FakeWebState {
+ public:
+  void OpenURL(const web::WebState::OpenURLParams& params) override {
+    last_open_url_params_ =
+        std::make_unique<web::WebState::OpenURLParams>(params);
+  }
+  web::WebState::OpenURLParams* last_open_url_params() {
+    return last_open_url_params_.get();
+  }
+
+ private:
+  std::unique_ptr<web::WebState::OpenURLParams> last_open_url_params_;
+};
+
 PriceInsightsItem* GetPriceInsightsItem() {
   PriceInsightsItem* item = [[PriceInsightsItem alloc] init];
   item.title = base::SysUTF8ToNSString(kBookmarkTitle);
@@ -137,7 +152,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
     browser_list_ = BrowserListFactory::GetForProfile(test_profile);
     browser_ = std::make_unique<TestBrowser>(test_profile);
     browser_list_->AddBrowser(browser_.get());
-    web_state_ = std::make_unique<web::FakeWebState>();
+    web_state_ = std::make_unique<TestFakeWebState>();
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =
         std::make_unique<web::FakeNavigationManager>();
     navigation_manager->AddItem(GURL(kTestUrl), ui::PAGE_TRANSITION_LINK);
@@ -187,7 +202,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   std::unique_ptr<Browser> browser_;
   PriceNotificationsPriceTrackingMediator* mediator_;
-  std::unique_ptr<web::FakeWebState> web_state_;
+  std::unique_ptr<TestFakeWebState> web_state_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<BrowserList> browser_list_;
@@ -525,4 +540,56 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
       }));
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       NavigateToWebpageForURLWithHTTPOrHTTPSAllowed) {
+  PriceNotificationsTableViewItem* item =
+      [[PriceNotificationsTableViewItem alloc] init];
+  item.tracking = YES;
+  item.entryURL = GURL("https://www.merchant.com");
+  [mediator_ navigateToWebpageForItem:item];
+
+  EXPECT_NE(web_state_->last_open_url_params(), nullptr);
+  EXPECT_EQ(web_state_->last_open_url_params()->url,
+            GURL("https://www.merchant.com"));
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       NavigateToWebpageForURLWithNonHTTPOrHTTPSBlocked) {
+  PriceNotificationsTableViewItem* item =
+      [[PriceNotificationsTableViewItem alloc] init];
+  item.tracking = YES;
+
+  item.entryURL = GURL("javascript:alert(1)");
+  [mediator_ navigateToWebpageForItem:item];
+  EXPECT_EQ(web_state_->last_open_url_params(), nullptr);
+
+  item.entryURL = GURL("chrome://version");
+  [mediator_ navigateToWebpageForItem:item];
+  EXPECT_EQ(web_state_->last_open_url_params(), nullptr);
+
+  item.entryURL = GURL("file:///etc/passwd");
+  [mediator_ navigateToWebpageForItem:item];
+  EXPECT_EQ(web_state_->last_open_url_params(), nullptr);
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       NavigateToWebpageForURLWithNullWebState) {
+  web_state_.reset();
+  PriceNotificationsTableViewItem* item =
+      [[PriceNotificationsTableViewItem alloc] init];
+  item.tracking = YES;
+  item.entryURL = GURL("https://www.merchant.com");
+
+  // Should not crash.
+  [mediator_ navigateToWebpageForItem:item];
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       NavigateToBookmarksWithNullWebState) {
+  web_state_.reset();
+
+  // Should not crash.
+  [mediator_ navigateToBookmarks];
 }
