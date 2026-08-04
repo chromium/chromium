@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/policy/core/common/policy_map.h"
@@ -52,6 +54,8 @@ class EnabledPolicyBrowsertest
  public:
   EnabledPolicyBrowsertest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    scoped_feature_list_.InitAndEnableFeature(
+        content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
   }
 
   void SetUpOnMainThread() override {
@@ -202,6 +206,7 @@ class EnabledPolicyBrowsertest
                   POLICY_SOURCE_ENTERPRISE_DEFAULT, std::move(value), nullptr);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
   net::test_server::EmbeddedTestServer https_server_;
   PolicyMap policies_;

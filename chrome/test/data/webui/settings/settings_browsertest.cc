@@ -1392,7 +1392,16 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
           "runMochaSuite('DeleteBrowsingDataTimePicker')");
 }
 
-using SettingsCookiesPageTest = SettingsBrowserTest;
+class SettingsCookiesPageTest : public SettingsBrowserTest {
+ public:
+  SettingsCookiesPageTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kRelatedWebsiteSetsUi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, CookiesPageTest) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('CookiesPageTest')");

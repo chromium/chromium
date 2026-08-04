@@ -74,8 +74,7 @@ BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
 BASE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-
-BASE_FEATURE(kRelatedWebsiteSetsUi, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRelatedWebsiteSetsUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
              base::FEATURE_ENABLED_BY_DEFAULT);
