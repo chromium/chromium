@@ -74,10 +74,8 @@ UIImage* CustomSettingsRootSymbol(NSString* symbol_name);
 // root screen, with multicolor enabled.
 UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name);
 
-// Returns a custom accessory symbol named `symbol_name` configured with
-// UIImageSymbolWeightRegular.
-UIImage* DefaultAccessorySymbolConfigurationWithRegularWeight(
-    NSString* symbol_name);
+// Returns an accessory symbol configured with UIImageSymbolWeightRegular.
+UIImage* DefaultAccessorySymbolConfigurationWithRegularWeight(Symbol symbol);
 
 // Returns a symbol configured with the given `configuration`.
 UIImage* SymbolWithConfiguration(Symbol symbol,

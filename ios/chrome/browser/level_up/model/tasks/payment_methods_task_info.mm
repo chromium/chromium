@@ -24,10 +24,7 @@ class PaymentMethodsTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Add new payment methods or edit saved ones to check out faster";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kCreditCardSymbol);
-  }
-  bool IsCustomSymbol() const override { return false; }
+  Symbol GetIconSymbol() const override { return SymbolCreditCard; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }

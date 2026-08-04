@@ -134,13 +134,12 @@ UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name) {
       symbol_name, kSettingsRootSymbolImagePointSize));
 }
 
-UIImage* DefaultAccessorySymbolConfigurationWithRegularWeight(
-    NSString* symbol_name) {
-  return DefaultSymbolWithConfiguration(
-      symbol_name, [UIImageSymbolConfiguration
-                       configurationWithPointSize:kSymbolAccessoryPointSize
-                                           weight:UIImageSymbolWeightRegular
-                                            scale:UIImageSymbolScaleMedium]);
+UIImage* DefaultAccessorySymbolConfigurationWithRegularWeight(Symbol symbol) {
+  return SymbolWithConfiguration(
+      symbol, [UIImageSymbolConfiguration
+                  configurationWithPointSize:kSymbolAccessoryPointSize
+                                      weight:UIImageSymbolWeightRegular
+                                       scale:UIImageSymbolScaleMedium]);
 }
 
 UIImage* SymbolWithConfiguration(Symbol symbol,

@@ -9,6 +9,7 @@ source_set("task_info") {
     "task_types.h",
     "task_types.mm",
   ]
+  public_deps = [ "//ios/chrome/browser/shared/ui/symbols" ]
   deps = [ "//base" ]
 }
 

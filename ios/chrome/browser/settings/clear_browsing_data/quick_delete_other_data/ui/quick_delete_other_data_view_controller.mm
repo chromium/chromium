@@ -298,13 +298,13 @@ NSString* AccessibilityIdentifierForItemIdentifier(
       }
       cell.accessoryView = [[UIImageView alloc]
           initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                            kExternalLinkSymbol)];
+                            SymbolExternalLink)];
       cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
       return;
     case kMyActivityIdentifier:
       cell.accessoryView = [[UIImageView alloc]
           initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                            kExternalLinkSymbol)];
+                            SymbolExternalLink)];
       cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
       return;
   }

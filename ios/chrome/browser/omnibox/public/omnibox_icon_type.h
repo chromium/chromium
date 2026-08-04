@@ -24,10 +24,6 @@ enum class LocationBarSecurityIconType {
   LOCATION_BAR_SECURITY_ICON_TYPE_COUNT,
 };
 
-// Returns the symbol name corresponding to the given `iconType`.
-NSString* GetLocationBarSecuritySymbolName(
-    LocationBarSecurityIconType iconType);
-
 // Returns the symbol corresponding to the given `iconType`.
 Symbol GetLocationBarSecuritySymbol(LocationBarSecurityIconType iconType);
 

@@ -25,10 +25,7 @@ class PinTabsTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Save your favorite sites by pinning them";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kPinSymbol);
-  }
-  bool IsCustomSymbol() const override { return false; }
+  Symbol GetIconSymbol() const override { return SymbolPin; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }

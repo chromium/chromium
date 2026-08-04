@@ -26,10 +26,7 @@ class TabGroupsTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Stay organized with tab groups";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kTabsSymbol);
-  }
-  bool IsCustomSymbol() const override { return false; }
+  Symbol GetIconSymbol() const override { return SymbolTabs; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }

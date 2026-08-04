@@ -15,6 +15,7 @@ source_set("view_models") {
   deps = [
     "//base",
     "//ios/chrome/browser/level_up/model",
+    "//ios/chrome/browser/shared/ui/symbols",
   ]
 }
 

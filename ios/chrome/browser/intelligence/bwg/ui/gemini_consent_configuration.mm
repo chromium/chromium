@@ -505,8 +505,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the third live FRE consent row.
 + (GeminiConsentRow*)liveThirdRow {
-  UIImage* icon = DefaultSymbolWithConfiguration(
-      kWarningShieldSymbol, [self defaultSymbolConfiguration]);
+  UIImage* icon = SymbolWithConfiguration(SymbolWarningShield,
+                                          [self defaultSymbolConfiguration]);
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY);
   NSAttributedString* body =

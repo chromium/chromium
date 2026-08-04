@@ -27,10 +27,7 @@ class LensSearchTaskInfo : public TaskInfo {
     return "Draw, highlight, or tap to search and get results without leaving "
            "your tab";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kCameraLensSymbol);
-  }
-  bool IsCustomSymbol() const override { return true; }
+  Symbol GetIconSymbol() const override { return SymbolCameraLens; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSearch;
   }

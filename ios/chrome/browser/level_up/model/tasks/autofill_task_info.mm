@@ -28,10 +28,7 @@ class AutofillTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Quickly sign into sites and apps with your saved passwords";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kPasswordManagerSymbol);
-  }
-  bool IsCustomSymbol() const override { return true; }
+  Symbol GetIconSymbol() const override { return SymbolPasswordManager; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }

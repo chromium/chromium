@@ -131,14 +131,12 @@ UIButton* CreateActionButton(NSString* title,
   return button;
 }
 
-// Creates an icon to be added in the center of the radial progress view.
-UIImageView* CreateProgressIcon(NSString* symbol_name) {
+UIImageView* CreateProgressIcon(Symbol symbol) {
   UIImageConfiguration* image_configuration = [UIImageSymbolConfiguration
       configurationWithPointSize:kSymbolDownloadInfobarPointSize
                           weight:UIImageSymbolWeightBold
                            scale:UIImageSymbolScaleSmall];
-  UIImage* image;
-  image = DefaultSymbolWithConfiguration(symbol_name, image_configuration);
+  UIImage* image = SymbolWithConfiguration(symbol, image_configuration);
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
   icon.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
@@ -604,7 +602,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 - (UIImageView*)filesProgressIcon {
   if (!_filesProgressIcon) {
-    _filesProgressIcon = CreateProgressIcon(kArrowDownSymbol);
+    _filesProgressIcon = CreateProgressIcon(SymbolArrowDown);
   }
 
   return _filesProgressIcon;
@@ -612,7 +610,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 - (UIImageView*)driveProgressIcon {
   if (!_driveProgressIcon) {
-    _driveProgressIcon = CreateProgressIcon(kArrowUpSymbol);
+    _driveProgressIcon = CreateProgressIcon(SymbolArrowUp);
   }
 
   return _driveProgressIcon;

@@ -140,13 +140,7 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
     _iconView.image = SymbolWithPointSize(SymbolCheckmark, kIconSize);
   } else {
     _iconView.tintColor = [UIColor colorNamed:kBlueColor];
-    if (task.isCustomSymbol) {
-      _iconView.image =
-          CustomSymbolWithPointSize(task.iconSymbolName, kIconSize);
-    } else {
-      _iconView.image =
-          DefaultSymbolWithPointSize(task.iconSymbolName, kIconSize);
-    }
+    _iconView.image = SymbolWithPointSize(task.iconSymbol, kIconSize);
   }
 
   _titleLabel.text = task.title;

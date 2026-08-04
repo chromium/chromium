@@ -126,13 +126,13 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
         case LastIndexDateRow:
           content.text = @"Time since last reindexing";
           content.secondaryText = [self timeSinceLastReindexAsString];
-          content.image = DefaultSymbolWithPointSize(
-              @"arrow.counterclockwise.icloud", kSymbolAccessoryPointSize);
+          content.image = SymbolWithPointSize(SymbolArrowCounterclockwiseIcloud,
+                                              kSymbolAccessoryPointSize);
           break;
         case DonatedItemsRow:
           content.text = @"Donated items";
-          content.image = DefaultSymbolWithPointSize(
-              @"square.stack.3d.down.right", kSymbolAccessoryPointSize);
+          content.image = SymbolWithPointSize(SymbolSquareStack3dDownRight,
+                                              kSymbolAccessoryPointSize);
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         default:

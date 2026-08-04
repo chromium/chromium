@@ -26,10 +26,7 @@ class PasswordCheckupTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Check your saved passwords for security issues";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kPasswordManagerSymbol);
-  }
-  bool IsCustomSymbol() const override { return true; }
+  Symbol GetIconSymbol() const override { return SymbolPasswordManager; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSafety;
   }

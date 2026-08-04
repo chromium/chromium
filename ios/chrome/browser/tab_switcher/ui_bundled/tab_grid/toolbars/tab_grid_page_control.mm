@@ -124,24 +124,20 @@ CGPoint RectCenter(CGRect rect) {
 
 // Returns the symbol image for the given `page` and `selected` state.
 UIImage* SymbolForTabGridPage(TabGridPage page, bool selected) {
-  NSString* symbol_name;
-  bool is_system_symbol = false;
+  Symbol symbol;
   switch (page) {
     case TabGridPageRegularTabs:
-      symbol_name = kSquareNumberSymbol;
+      symbol = SymbolSquareNumber;
       break;
     case TabGridPageIncognitoTabs:
-      symbol_name = kIncognitoSymbol;
+      symbol = SymbolIncognito;
       break;
     case TabGridPageTabGroups:
-      symbol_name = kTabGroupsSymbol;
-      is_system_symbol = true;
+      symbol = SymbolTabGroups;
       break;
   }
   CGFloat size = selected ? kSelectedSymbolSize : kUnselectedSymbolSize;
-  return is_system_symbol
-             ? DefaultSymbolTemplateWithPointSize(symbol_name, size)
-             : CustomSymbolTemplateWithPointSize(symbol_name, size);
+  return SymbolTemplateWithPointSize(symbol, size);
 }
 
 // Returns the view for an unselected icon with the given `image`.

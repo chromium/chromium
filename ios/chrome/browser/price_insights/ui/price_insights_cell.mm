@@ -301,7 +301,7 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   verticalStack.isAccessibilityElement = NO;
   verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
-  UIImage* icon = DefaultSymbolWithPointSize(kOpenImageActionSymbol, kIconSize);
+  UIImage* icon = SymbolWithPointSize(SymbolOpenImageAction, kIconSize);
   UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
   iconView.tintColor = [UIColor colorNamed:kGrey500Color];
   iconView.isAccessibilityElement = NO;

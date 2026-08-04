@@ -271,12 +271,12 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 // Returns the action to trigger the search with feature. Calls `handler` on
 // activation.
 - (UIAction*)actionWithHandler:(void (^)(UIAction*))handler {
-  return [UIAction
-      actionWithTitle:[self buttonTitle]
-                image:DefaultSymbolWithPointSize(kMagnifyingglassCircleSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:@"chromeAction.searchWith"
-              handler:handler];
+  return
+      [UIAction actionWithTitle:[self buttonTitle]
+                          image:SymbolWithPointSize(SymbolMagnifyingglassCircle,
+                                                    kSymbolActionPointSize)
+                     identifier:@"chromeAction.searchWith"
+                        handler:handler];
 }
 
 #pragma mark - EditMenuBuilder

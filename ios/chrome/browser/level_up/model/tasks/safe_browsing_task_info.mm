@@ -24,10 +24,7 @@ class SafeBrowsingTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Add an extra layer of protection against online threats";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kShieldSymbol);
-  }
-  bool IsCustomSymbol() const override { return false; }
+  Symbol GetIconSymbol() const override { return SymbolShield; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSafety;
   }

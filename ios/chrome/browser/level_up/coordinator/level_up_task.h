@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/level_up/model/task_types.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 class TaskInfo;
 
@@ -23,11 +24,8 @@ class TaskInfo;
 // Description explaining the task features.
 @property(nonatomic, copy, readonly) NSString* taskDescription;
 
-// Name for this task's icon.
-@property(nonatomic, copy, readonly) NSString* iconSymbolName;
-
-// Whether this icon is a custom asset symbol.
-@property(nonatomic, assign, readonly) BOOL isCustomSymbol;
+// Icon symbol for this task.
+@property(nonatomic, assign, readonly) Symbol iconSymbol;
 
 // The user task completion state.
 @property(nonatomic, assign, readonly) BOOL completed;

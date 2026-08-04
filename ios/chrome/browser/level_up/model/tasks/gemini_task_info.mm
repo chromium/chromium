@@ -22,18 +22,11 @@ class GeminiTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Get answers faster with Gemini in Chrome";
   }
-  std::string GetIconSymbolName() const override {
+  Symbol GetIconSymbol() const override {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    return base::SysNSStringToUTF8(kGeminiBrandedLogoSymbol);
+    return SymbolGeminiBrandedLogo;
 #else
-    return base::SysNSStringToUTF8(kGeminiNonBrandedLogoSymbol);
-#endif
-  }
-  bool IsCustomSymbol() const override {
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    return true;
-#else
-    return false;
+    return SymbolGeminiNonBrandedLogo;
 #endif
   }
   LevelUpTaskCategory GetCategory() const override {

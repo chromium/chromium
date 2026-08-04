@@ -25,7 +25,7 @@ const CGFloat kButtonFontSize = 16.0;
 struct MockStepConfig {
   NSString* title;
   NSString* subtitle = nil;
-  NSString* iconName = nil;
+  Symbol iconSymbol = SymbolNone;
   ActuationWorklogItemStyle style;
 };
 
@@ -82,7 +82,7 @@ struct MockStepConfig {
       {.title = @"Task started",
        .subtitle = @"Use Gemini carefully and take control if needed. You "
                    @"are responsible for Gemini's actions.",
-       .iconName = @"play.fill",
+       .iconSymbol = SymbolPlayFill,
        .style = ActuationWorklogItemStyle::kLabeled},
       {.title = @"Opening a new Tab.",
        .style = ActuationWorklogItemStyle::kSimple},
@@ -92,32 +92,32 @@ struct MockStepConfig {
        .style = ActuationWorklogItemStyle::kSimple},
       {.title = @"Finding theaters near Washington, D.C.",
        .subtitle = @"Finding best matches for AMC theaters within 10 miles.",
-       .iconName = @"mappin.and.ellipse",
+       .iconSymbol = SymbolMapPinAndEllipse,
        .style = ActuationWorklogItemStyle::kLabeled},
       {.title = @"Checking seats availability.",
        .subtitle = @"Checking 7:30 PM showtimes for AMC Georgetown 14.",
-       .iconName = @"person.2.fill",
+       .iconSymbol = SymbolPersonTwoFill,
        .style = ActuationWorklogItemStyle::kLabeled},
       {.title = @"Sign in to amctheatres.com",
        .subtitle =
            @"Gemini can use your saved info in Chrome to sign in for you.",
-       .iconName = @"key.fill",
+       .iconSymbol = SymbolKeyFill,
        .style = ActuationWorklogItemStyle::kCard},
       {.title = @"Filling payment info",
        .subtitle = @"To continue the task, Gemini can ask Google Wallet to "
                    @"fill out credit card info.",
-       .iconName = @"creditcard.fill",
+       .iconSymbol = SymbolCreditCardFill,
        .style = ActuationWorklogItemStyle::kCard},
       {.title = @"Calendar: Golden Gate Tea party",
        .subtitle = @"Sun, June 16 - 3:00 - 5:00 PM at 320 Bowling Dr.",
-       .iconName = @"calendar",
+       .iconSymbol = SymbolCalendar,
        .style = ActuationWorklogItemStyle::kCard},
   };
 
   NSMutableArray<ActuationWorklogItem*>* steps = [NSMutableArray array];
-  for (const MockStepConfig& config : kMockStepConfigs) {
-    UIImage* icon = config.iconName
-                        ? DefaultSymbolWithPointSize(config.iconName, kIconSize)
+  for (const auto& config : kMockStepConfigs) {
+    UIImage* icon = config.iconSymbol != SymbolNone
+                        ? SymbolWithPointSize(config.iconSymbol, kIconSize)
                         : nil;
     ActuationWorklogItem* item =
         [[ActuationWorklogItem alloc] initWithTitle:config.title

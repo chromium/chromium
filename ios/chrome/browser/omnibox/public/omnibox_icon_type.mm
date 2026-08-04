@@ -7,24 +7,6 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
-NSString* GetLocationBarSecuritySymbolName(
-    LocationBarSecurityIconType iconType) {
-  switch (iconType) {
-    case LocationBarSecurityIconType::NONE:
-      return nil;
-    case LocationBarSecurityIconType::INFO:
-      return kInfoCircleSymbol;
-    case LocationBarSecurityIconType::SECURE:
-      return kSecureLocationBarSymbol;
-    case LocationBarSecurityIconType::NOT_SECURE_WARNING:
-      return kWarningFillSymbol;
-    case LocationBarSecurityIconType::DANGEROUS:
-      return kDangerousOmniboxSymbol;
-    case LocationBarSecurityIconType::LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
-      NOTREACHED();
-  }
-}
-
 Symbol GetLocationBarSecuritySymbol(LocationBarSecurityIconType iconType) {
   switch (iconType) {
     case LocationBarSecurityIconType::NONE:

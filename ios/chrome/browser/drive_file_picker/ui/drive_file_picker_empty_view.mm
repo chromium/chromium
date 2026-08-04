@@ -20,15 +20,14 @@ const CGFloat kMessageLeadingTrailingPadding = 20;
 
 @implementation DriveFilePickerEmptyView {
   NSString* _message;
-  NSString* _symbolName;
+  Symbol _symbol;
 }
 
-- (instancetype)initWithMessage:(NSString*)message
-                     symbolName:(NSString*)symbolName {
+- (instancetype)initWithMessage:(NSString*)message symbol:(Symbol)symbol {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _message = message;
-    _symbolName = symbolName;
+    _symbol = symbol;
   }
   return self;
 }
@@ -37,7 +36,7 @@ const CGFloat kMessageLeadingTrailingPadding = 20;
   DriveFilePickerEmptyView* emptyFolderView = [[DriveFilePickerEmptyView alloc]
       initWithMessage:l10n_util::GetNSString(
                           IDS_IOS_DRIVE_FILE_PICKER_EMPTY_FOLDER_MESSAGE)
-           symbolName:kFolderSymbol];
+               symbol:SymbolFolder];
   [emptyFolderView configureAndLayoutSubviews];
   return emptyFolderView;
 }
@@ -46,7 +45,7 @@ const CGFloat kMessageLeadingTrailingPadding = 20;
   DriveFilePickerEmptyView* emptyFolderView = [[DriveFilePickerEmptyView alloc]
       initWithMessage:l10n_util::GetNSString(
                           IDS_IOS_DRIVE_FILE_PICKER_NO_MATCHING_RESULTS_MESSAGE)
-           symbolName:kMagnifyingglassSymbol];
+               symbol:SymbolMagnifyingglass];
   [emptyFolderView configureAndLayoutSubviews];
   return emptyFolderView;
 }
@@ -54,7 +53,7 @@ const CGFloat kMessageLeadingTrailingPadding = 20;
 // Configures the view and adds a layout for its subviews.
 - (void)configureAndLayoutSubviews {
   UIImageView* folderIconView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(_symbolName, kSymbolSize)];
+      initWithImage:SymbolWithPointSize(_symbol, kSymbolSize)];
   folderIconView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
   folderIconView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:folderIconView];

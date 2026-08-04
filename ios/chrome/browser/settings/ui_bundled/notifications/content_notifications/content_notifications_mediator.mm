@@ -124,7 +124,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            text:
                                l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_NOTIFICATIONS_SPORTS_SETTINGS_TOGGLE_TITLE)
-                         symbol:DefaultSettingsRootSymbol(kMedalSymbol)
+                         symbol:SettingsRootSymbol(SymbolMedal)
                      symbolTint:UIColor.whiteColor
           symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
               symbolBorderWidth:0

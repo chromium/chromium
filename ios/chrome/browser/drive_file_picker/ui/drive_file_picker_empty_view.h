@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 // A view to inform the user that a drive collection is empty.
 @interface DriveFilePickerEmptyView : UIView
 
@@ -16,7 +18,7 @@
 + (instancetype)noMatchingResultView;
 
 - (instancetype)initWithMessage:(NSString*)message
-                     symbolName:(NSString*)symbolName NS_UNAVAILABLE;
+                         symbol:(Symbol)symbol NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

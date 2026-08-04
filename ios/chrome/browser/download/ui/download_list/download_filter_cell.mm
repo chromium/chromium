@@ -45,23 +45,23 @@ NSString* GetFilterTypeDisplayText(DownloadFilterType filterType) {
   }
 }
 
-// Returns the corresponding SF Symbol name for the given filter type.
-NSString* GetFilterTypeSymbolName(DownloadFilterType filterType) {
+// Returns the corresponding SF Symbol for the given filter type.
+Symbol GetFilterTypeSymbol(DownloadFilterType filterType) {
   switch (filterType) {
     case DownloadFilterType::kAll:
-      return kCheckmarkSymbol;
+      return SymbolCheckmark;
     case DownloadFilterType::kDocument:
-      return kTextJustifyLeftSymbol;
+      return SymbolTextJustifyLeft;
     case DownloadFilterType::kImage:
-      return kPhotoSymbol;
+      return SymbolPhoto;
     case DownloadFilterType::kVideo:
-      return kVideoSymbol;
+      return SymbolVideo;
     case DownloadFilterType::kAudio:
-      return kWaveformSymbol;
+      return SymbolWaveform;
     case DownloadFilterType::kPDF:
-      return kTextDocument;
+      return SymbolTextDocument;
     case DownloadFilterType::kOther:
-      return kDocSymbol;
+      return SymbolDoc;
   }
 }
 
@@ -117,8 +117,8 @@ NSString* GetFilterTypeSymbolName(DownloadFilterType filterType) {
   _filterType = filterType;
   NSString* text = GetFilterTypeDisplayText(filterType);
   _titleLabel.text = text;
-  _iconImageView.image = DefaultSymbolWithPointSize(
-      GetFilterTypeSymbolName(filterType), kDownloadFilterIconSize);
+  _iconImageView.image = SymbolWithPointSize(GetFilterTypeSymbol(filterType),
+                                             kDownloadFilterIconSize);
   self.accessibilityLabel = text;
 }
 

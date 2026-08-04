@@ -24,10 +24,7 @@ class QuickDeleteTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Manage your history, cookies and more to protect your privacy";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kTrashSymbol);
-  }
-  bool IsCustomSymbol() const override { return false; }
+  Symbol GetIconSymbol() const override { return SymbolTrash; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSafety;
   }

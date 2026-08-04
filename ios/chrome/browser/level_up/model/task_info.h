@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "ios/chrome/browser/level_up/model/task_types.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 @class CommandDispatcher;
 
@@ -26,11 +27,8 @@ class TaskInfo {
   // The localized description of the task.
   virtual std::string GetTaskDescription() const = 0;
 
-  // Name of the icon asset associated with the task.
-  virtual std::string GetIconSymbolName() const = 0;
-
-  // Whether the icon_symbol_name is a custom asset in the bundle.
-  virtual bool IsCustomSymbol() const = 0;
+  // Icon symbol associated with the task.
+  virtual Symbol GetIconSymbol() const = 0;
 
   // The category this task belongs to.
   virtual LevelUpTaskCategory GetCategory() const = 0;

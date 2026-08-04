@@ -25,10 +25,7 @@ class IncognitoTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Open incognito tabs to browse the web privately";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kIncognitoSymbol);
-  }
-  bool IsCustomSymbol() const override { return true; }
+  Symbol GetIconSymbol() const override { return SymbolIncognito; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSafety;
   }

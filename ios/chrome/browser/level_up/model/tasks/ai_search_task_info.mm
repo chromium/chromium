@@ -25,10 +25,7 @@ class AISearchTaskInfo : public TaskInfo {
   std::string GetTaskDescription() const override {
     return "Ask anything and get the best of the web";
   }
-  std::string GetIconSymbolName() const override {
-    return base::SysNSStringToUTF8(kMagnifyingglassSparkSymbol);
-  }
-  bool IsCustomSymbol() const override { return true; }
+  Symbol GetIconSymbol() const override { return SymbolMagnifyingglassSpark; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSearch;
   }

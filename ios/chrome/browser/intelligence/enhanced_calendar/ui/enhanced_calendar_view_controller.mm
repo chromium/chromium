@@ -12,9 +12,6 @@
 
 namespace {
 
-// The header image SF Symbol name.
-constexpr NSString* kHeaderImageName = @"wand.and.sparkles";
-
 // The header image size.
 const CGFloat kHeaderImageSize = 80.0;
 
@@ -43,7 +40,7 @@ const CGFloat kHeaderImageSize = 80.0;
 
     // Header image.
     self.imageHasFixedSize = YES;
-    self.image = DefaultSymbolWithPointSize(kHeaderImageName, kHeaderImageSize);
+    self.image = SymbolWithPointSize(SymbolWandAndSparkles, kHeaderImageSize);
 
     // Loading throbber.
     UIActivityIndicatorView* loadingThrobber = [[UIActivityIndicatorView alloc]

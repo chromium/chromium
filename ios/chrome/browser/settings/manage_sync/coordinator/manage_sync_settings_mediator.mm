@@ -345,7 +345,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   if (hasDisclosureIndicator) {
     self.encryptionItem.accessoryView = [[UIImageView alloc]
         initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                          kChevronForwardSymbol)];
+                          SymbolChevronForward)];
     self.encryptionItem.accessoryView.tintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
   } else {
@@ -365,13 +365,13 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE_EEA);
     personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
         initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                          kChevronForwardSymbol)];
+                          SymbolChevronForward)];
   } else {
     personalizeGoogleServicesItem.title =
         GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE);
     personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
         initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                          kExternalLinkSymbol)];
+                          SymbolExternalLink)];
   }
   personalizeGoogleServicesItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
@@ -389,7 +389,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       [[TableViewImageItem alloc] initWithType:DataFromChromeSync];
   dataFromChromeSyncItem.accessoryView = [[UIImageView alloc]
       initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                        kExternalLinkSymbol)];
+                        SymbolExternalLink)];
   dataFromChromeSyncItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
   dataFromChromeSyncItem.accessibilityIdentifier =
@@ -408,7 +408,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         [[TableViewImageItem alloc] initWithType:ConnectedAppsItemType];
     connectedAppsItem.accessoryView = [[UIImageView alloc]
         initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                          kExternalLinkSymbol)];
+                          SymbolExternalLink)];
     connectedAppsItem.accessoryView.tintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
     connectedAppsItem.accessibilityIdentifier =
