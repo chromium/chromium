@@ -1008,7 +1008,20 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsReportLimit) {
   fake_phishing_detector_.CheckMessage(&url);
 }
 
-TEST_F(ClientSideDetectionHostTest, UnfamiliarLoginPageTriggersClassification) {
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/542592773): Flaky on Linux TSan.
+#define MAYBE_UnfamiliarLoginPageTriggersClassification \
+  DISABLED_UnfamiliarLoginPageTriggersClassification
+#define MAYBE_UnfamiliarLoginPageSampleRate \
+  DISABLED_UnfamiliarLoginPageSampleRate
+#else
+#define MAYBE_UnfamiliarLoginPageTriggersClassification \
+  UnfamiliarLoginPageTriggersClassification
+#define MAYBE_UnfamiliarLoginPageSampleRate UnfamiliarLoginPageSampleRate
+#endif
+
+TEST_F(ClientSideDetectionHostTest,
+       MAYBE_UnfamiliarLoginPageTriggersClassification) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -1042,7 +1055,7 @@ TEST_F(ClientSideDetectionHostTest, UnfamiliarLoginPageTriggersClassification) {
             fake_phishing_detector_.last_request_type());
 }
 
-TEST_F(ClientSideDetectionHostTest, UnfamiliarLoginPageSampleRate) {
+TEST_F(ClientSideDetectionHostTest, MAYBE_UnfamiliarLoginPageSampleRate) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
