@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +13,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/favicon_base/favicon_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 
@@ -67,4 +69,26 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUINewTabPageThirdPartyURL)));
   EXPECT_TRUE(web_contents->GetWebUI());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
+                       GetFaviconForURLSettings) {
+  base::RunLoop run_loop;
+  std::vector<favicon_base::FaviconRawBitmapResult> results;
+  ChromeWebUIControllerFactory::GetInstance()->GetFaviconForURL(
+      browser()->GetProfile(), GURL(chrome::kChromeUISettingsURL), {16},
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             std::vector<favicon_base::FaviconRawBitmapResult>* out_results,
+             const std::vector<favicon_base::FaviconRawBitmapResult>&
+                 favicon_results) {
+            *out_results = favicon_results;
+            run_loop->Quit();
+          },
+          &run_loop, &results));
+  run_loop.Run();
+
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(results[0].bitmap_data);
+  EXPECT_GT(results[0].bitmap_data->size(), 0u);
 }

@@ -338,8 +338,8 @@
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION" file="common/autofill_mandatory_reauth_confirmation.png" />
       </if>
       <structure type="chrome_scaled_image" name="IDR_SCREEN_CAPTURE_NOTIFICATION_GRIP" file="screen_capture_notification_grip.png" />
+      <structure type="chrome_scaled_image" name="IDR_SETTINGS_FAVICON" file="common/favicon_settings.png" />
       <if expr="not is_android">
-        <structure type="chrome_scaled_image" name="IDR_SETTINGS_FAVICON" file="common/favicon_settings.png" />
         <if expr="_google_chrome">
             <structure type="chrome_scaled_image" name="IDR_SHARED_TAB_GROUPS_DARK" file="${branding_path_component}/shared_tab_groups_dark.png" />
             <structure type="chrome_scaled_image" name="IDR_SHARED_TAB_GROUPS_LIGHT" file="${branding_path_component}/shared_tab_groups_light.png" />
