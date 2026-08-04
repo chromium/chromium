@@ -14,9 +14,9 @@ namespace blink {
 struct GridLanesBreakTokenData final : BreakTokenAlgorithmData {
   GridLanesBreakTokenData(const GridLanesDataVector& grid_lanes,
                           const GridLayoutSubtree* grid_layout_subtree,
-                          LayoutUnit intrinsic_block_size)
+                          LayoutUnit total_intrinsic_block_size)
       : BreakTokenAlgorithmData(kGridLanesData),
-        intrinsic_block_size(intrinsic_block_size),
+        total_intrinsic_block_size(total_intrinsic_block_size),
         grid_layout_subtree(grid_layout_subtree),
         grid_lanes(grid_lanes) {}
 
@@ -26,7 +26,7 @@ struct GridLanesBreakTokenData final : BreakTokenAlgorithmData {
     BreakTokenAlgorithmData::Trace(visitor);
   }
 
-  LayoutUnit intrinsic_block_size;
+  LayoutUnit total_intrinsic_block_size;
 
   Member<const GridLayoutSubtree> grid_layout_subtree;
   GridLanesDataVector grid_lanes;

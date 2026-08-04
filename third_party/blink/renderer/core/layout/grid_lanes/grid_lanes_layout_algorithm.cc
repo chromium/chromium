@@ -87,8 +87,10 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
     // TODO(almaher): Do we need to do something special for subgrid
     // related to GetGridLayoutSubtree()?
 
+    LayoutUnit total_intrinsic_block_size;
     GridSizingTree sizing_tree = ComputeGridLanesSizingTree(
-        sizing_constraint, should_apply_inline_size_containment, &grid_items);
+        sizing_constraint, should_apply_inline_size_containment, &grid_items,
+        /*opt_oof_children=*/nullptr, &total_intrinsic_block_size);
     CHECK(grid_items);
 
     auto* layout_data = &sizing_tree.LayoutData();
@@ -113,7 +115,8 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
 
       const GridSizingSubtree sizing_subtree(&sizing_tree);
       PlaceGridLanesItems(*grid_items, sizing_subtree, *layout_data,
-                          running_positions, sizing_constraint);
+                          running_positions, &total_intrinsic_block_size,
+                          sizing_constraint);
       // `stacking_axis_gap` represents the space between each of the items
       // in the row. We need to subtract this as it is always added to
       // `running_positions` whenever an item is placed, but the very last
@@ -148,7 +151,8 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
 }
 
 void GridLanesLayoutAlgorithm::ApplyTrackReverseOverflowShift(
-    GridLayoutData* layout_data) {
+    GridLayoutData* layout_data,
+    LayoutUnit total_intrinsic_block_size) {
   const auto& node = Node();
   if (!node.IsScrollContainer() ||
       !Style().IsReverseGridLanesTrackDirection()) {
@@ -167,7 +171,7 @@ void GridLanesLayoutAlgorithm::ApplyTrackReverseOverflowShift(
   } else {
     const LayoutUnit adjusted_intrinsic_block_size = ClampIntrinsicBlockSize(
         GetConstraintSpace(), node, GetBreakToken(), BorderScrollbarPadding(),
-        intrinsic_block_size_ + BorderScrollbarPadding().BlockSum());
+        total_intrinsic_block_size + BorderScrollbarPadding().BlockSum());
     const LayoutUnit block_size = ComputeBlockSizeForFragment(
         GetConstraintSpace(), node, BorderPadding(),
         contain_intrinsic_block_size_.value_or(adjusted_intrinsic_block_size),
@@ -196,6 +200,11 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
       GetConstraintSpace().HasBlockFragmentation();
 
   LayoutUnit total_intrinsic_block_size;
+  LayoutUnit previously_consumed_block_size;
+  if (GetBreakToken()) {
+    previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
+  }
+
   GridLanesDataVector grid_lanes;
   const GridLayoutSubtree* grid_layout_subtree = nullptr;
   GridLayoutData* layout_data = nullptr;
@@ -207,29 +216,25 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   if (IsBreakInside(GetBreakToken())) {
     const auto* grid_lanes_data =
         To<GridLanesBreakTokenData>(GetBreakToken()->TokenData());
-    total_intrinsic_block_size = grid_lanes_data->intrinsic_block_size;
+    total_intrinsic_block_size = grid_lanes_data->total_intrinsic_block_size;
     grid_lanes = grid_lanes_data->grid_lanes;
     grid_layout_subtree = grid_lanes_data->grid_layout_subtree;
     layout_data = grid_layout_subtree->LayoutData();
 
     // TODO(almaher): We may need to do something here with
     // EBoxDecorationBreak::kClone.
-
-    // TODO(almaher): We should be able to avoid this once the intrinsic block
-    // size logic is handled correctly in the future.
-    intrinsic_block_size_ = total_intrinsic_block_size;
   } else {
     sizing_tree.emplace(ComputeGridLanesSizingTree(
         SizingConstraint::kLayout,
         /*should_apply_inline_size_containment=*/false, &grid_items,
-        &oof_children));
+        &oof_children, &total_intrinsic_block_size));
     CHECK(grid_items);
 
     layout_data = &sizing_tree->LayoutData();
     const auto& track_collection =
         is_for_columns ? layout_data->Columns() : layout_data->Rows();
 
-    ApplyTrackReverseOverflowShift(layout_data);
+    ApplyTrackReverseOverflowShift(layout_data, total_intrinsic_block_size);
 
     // TODO(javiercon): Handle gap decorations in fragmented grid lanes.
     if (!has_block_fragmentation &&
@@ -250,34 +255,23 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
       // once its resolved position is known.
       const GridSizingSubtree sizing_subtree(&sizing_tree.value());
 
-      // TODO(almaher): We should also ensure that `total_intrinsic_block_size`
-      // reflects the actual total, and that `intrinsic_block_size_` is per
-      // fragment. This may require passing that in as an output parameter to
-      // `PlaceGridLanesItems`, and making adjustments to the intrincic block
-      // size logic below.
       PlaceGridLanesItems(*grid_items, sizing_subtree, *layout_data,
-                          running_positions, SizingConstraint::kLayout,
+                          running_positions, &total_intrinsic_block_size,
+                          SizingConstraint::kLayout,
                           has_block_fragmentation ? &grid_lanes : nullptr);
     }
 
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
     // would only apply when we have only flexible track(s).
     if (grid_items->IsEmpty() && node.HasLineIfEmpty()) {
-      intrinsic_block_size_ = std::max(
-          intrinsic_block_size_, node.EmptyLineBlockSize(GetBreakToken()));
+      total_intrinsic_block_size = std::max(
+          total_intrinsic_block_size, node.EmptyLineBlockSize(GetBreakToken()));
     }
 
-    // Account for border, scrollbar, and padding in the intrinsic block size.
-    intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
-    intrinsic_block_size_ = ClampIntrinsicBlockSize(
-        GetConstraintSpace(), node, GetBreakToken(), BorderScrollbarPadding(),
-        intrinsic_block_size_);
-
-    // TODO(almaher): As noted above, this will likely change in the future such
-    // that calculations are done directly on `total_intrinsic_block_size`, and
-    // the `intrinsic_block_size_` will be reserved for per-fragment
-    // calculations.
-    total_intrinsic_block_size = intrinsic_block_size_;
+    total_intrinsic_block_size += border_scrollbar_padding.BlockSum();
+    total_intrinsic_block_size = ClampIntrinsicBlockSize(
+        GetConstraintSpace(), node, GetBreakToken(), border_scrollbar_padding,
+        total_intrinsic_block_size);
   }
 
   if (has_block_fragmentation) {
@@ -291,15 +285,24 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     if (is_for_columns) {
       intrinsic_block_size_ = border_scrollbar_padding.block_start;
       PlaceGridLanesItemsForFragmentation(grid_lanes, *grid_layout_subtree);
+
+      if (grid_lanes.empty() && node.HasLineIfEmpty()) {
+        intrinsic_block_size_ =
+            (total_intrinsic_block_size - border_scrollbar_padding.block_end -
+             previously_consumed_block_size)
+                .ClampNegativeToZero();
+      }
+
+      intrinsic_block_size_ += border_scrollbar_padding.block_end;
       intrinsic_block_size_ = ClampIntrinsicBlockSize(
           GetConstraintSpace(), node, GetBreakToken(), border_scrollbar_padding,
-          intrinsic_block_size_ + border_scrollbar_padding.block_end);
+          intrinsic_block_size_);
+    } else {
+      // TODO(almaher): Remove this once we support rows.
+      intrinsic_block_size_ = total_intrinsic_block_size;
     }
-  }
-
-  LayoutUnit previously_consumed_block_size;
-  if (GetBreakToken()) [[unlikely]] {
-    previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
+  } else {
+    intrinsic_block_size_ = total_intrinsic_block_size;
   }
 
   auto block_size = ComputeBlockSizeForFragment(
@@ -334,7 +337,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   }
   container_builder_.SetMayHaveDescendantAboveBlockStart(false);
 
-  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
+  if (InvolvedInBlockFragmentation(container_builder_)) {
     FinishFragmentation(&container_builder_);
   } else {
 #if DCHECK_IS_ON()
@@ -570,8 +573,10 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     const GridSizingSubtree& sizing_subtree,
     GridLayoutData& layout_data,
     GridLanesRunningPositions& running_positions,
+    LayoutUnit* out_total_intrinsic_block_size,
     std::optional<SizingConstraint> sizing_constraint,
     GridLanesDataVector* out_grid_lanes) {
+  CHECK(out_total_intrinsic_block_size);
   DCHECK(!out_grid_lanes || GetConstraintSpace().HasBlockFragmentation());
 
   const auto& style = Style();
@@ -635,10 +640,10 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
       stacking_axis_gap;
 
   // For column grid-lanes, the block size is the stacking axis size. For row
-  // grid-lanes, `intrinsic_block_size_` is already set in
+  // grid-lanes, `out_total_intrinsic_block_size` is already set in
   // `ComputeGridLanesGeometry` from the track collection.
   if (is_for_columns) {
-    intrinsic_block_size_ = stacking_axis_size_;
+    *out_total_intrinsic_block_size = stacking_axis_size_;
   }
 
   // To determine the size of the grid axis, add the size of the tracks.
@@ -672,7 +677,8 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     const LayoutUnit intrinsic_inline_size =
         is_for_columns ? grid_axis_size : stacking_axis_size_;
     const LayoutUnit content_stacking_axis_size =
-        is_for_columns ? intrinsic_block_size_ : intrinsic_inline_size;
+        is_for_columns ? *out_total_intrinsic_block_size
+                       : intrinsic_inline_size;
 
     // For definite stacking axis, use the container's available size to
     // compute alignment. For indefinite stacking axis, use the intrinsic
@@ -2214,7 +2220,8 @@ GridSizingTree GridLanesLayoutAlgorithm::ComputeGridLanesSizingTree(
     SizingConstraint sizing_constraint,
     bool should_apply_inline_size_containment,
     GridItems** grid_items,
-    HeapVector<Member<LayoutBox>>* opt_oof_children) {
+    HeapVector<Member<LayoutBox>>* opt_oof_children,
+    LayoutUnit* out_total_intrinsic_block_size) {
   CHECK(grid_items);
 
   GridSizingTree sizing_tree;
@@ -2256,12 +2263,13 @@ GridSizingTree GridLanesLayoutAlgorithm::ComputeGridLanesSizingTree(
     auto& track_collection =
         sizing_tree.LayoutData().SizingCollection(kForRows);
 
-    // For row grid-lanes, capture `intrinsic_block_size_` before any
+    // For row grid-lanes, capture `out_total_intrinsic_block_size` before any
     // additional layout pass that may change the track sizes. This preserves
     // the pre-re-run value so the container height is not affected by the
     // re-run, matching grid behavior.
-    if (!sizing_tree.GetGridItems().IsEmpty()) {
-      intrinsic_block_size_ = track_collection.CalculateSetSpanSize();
+    if (out_total_intrinsic_block_size &&
+        !sizing_tree.GetGridItems().IsEmpty()) {
+      *out_total_intrinsic_block_size = track_collection.CalculateSetSpanSize();
     }
 
     if (grid_lanes_available_size_.block_size == kIndefiniteSize ||
