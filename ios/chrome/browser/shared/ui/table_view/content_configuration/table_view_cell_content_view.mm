@@ -27,6 +27,9 @@ constexpr CGFloat kLabelHorizontalSpacing = 8;
 // accessory view in the cell.
 constexpr CGFloat kTrailingMarginWithAccessory = 8;
 
+// Minimum font scale factor allowed when shrinking label fonts to fit width.
+constexpr CGFloat kLabelMinimumScaleFactor = 0.8;
+
 }  // namespace
 
 // Container for the title and subtitle labels. This container's intrinsic width
@@ -416,6 +419,8 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   label.adjustsFontForContentSizeCategory = YES;
+  label.adjustsFontSizeToFitWidth = YES;
+  label.minimumScaleFactor = kLabelMinimumScaleFactor;
   return label;
 }
 
@@ -427,6 +432,8 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   label.adjustsFontForContentSizeCategory = YES;
+  label.adjustsFontSizeToFitWidth = YES;
+  label.minimumScaleFactor = kLabelMinimumScaleFactor;
   return label;
 }
 
@@ -436,6 +443,8 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   label.adjustsFontForContentSizeCategory = YES;
+  label.adjustsFontSizeToFitWidth = YES;
+  label.minimumScaleFactor = kLabelMinimumScaleFactor;
   return label;
 }
 
