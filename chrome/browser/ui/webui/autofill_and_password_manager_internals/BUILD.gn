@@ -29,6 +29,7 @@ source_set("autofill_and_password_manager_internals") {
     "//chrome/common:channel_info",
     "//components/autofill/core/browser/autofill_and_password_manager_internals:resources",
     "//components/autofill/core/common:features",
+    "//components/device_reauth",
     "//components/embedder_support:user_agent",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
@@ -63,6 +64,7 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
+      "//components/device_reauth:test_support",
       "//content/public/browser",
       "//content/test:test_support",
     ]

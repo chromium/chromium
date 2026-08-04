@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/autofill_and_password_manager_internals_resources.h"
 #include "components/grit/autofill_and_password_manager_internals_resources_map.h"
@@ -149,6 +150,11 @@ void InternalsUIHandler::RegisterMessages() {
       "getAutofillAiEntities",
       base::BindRepeating(&InternalsUIHandler::OnGetAutofillAiEntities,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "authenticateToRevealMaskedEntities",
+      base::BindRepeating(
+          &InternalsUIHandler::OnAuthenticateToRevealMaskedEntities,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "removeAutofillAiCacheEntry",
       base::BindRepeating(&InternalsUIHandler::OnDeleteAutofillAiCacheEntry,
@@ -379,6 +385,34 @@ void InternalsUIHandler::SendAutofillAiEntitiesToWebUI() {
   }
 
   FireWebUIListener("display-autofill-ai-entities", std::move(results));
+}
+
+void InternalsUIHandler::OnAuthenticateToRevealMaskedEntities(
+    const base::ListValue& args) {
+  if (!authenticator_) {
+    ContentAutofillClient* client =
+        ContentAutofillClient::FromWebContents(web_ui()->GetWebContents());
+    if (!client) {
+      return;
+    }
+    authenticator_ = client->GetDeviceAuthenticator();
+  }
+  if (!authenticator_ ||
+      !authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
+    OnReauthCompleted(/*auth_succeeded=*/true);
+    return;
+  }
+  std::u16string message = u"Authenticate to view sensitive Autofill AI data.";
+  authenticator_->AuthenticateWithMessage(
+      message, base::BindOnce(&InternalsUIHandler::OnReauthCompleted,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void InternalsUIHandler::OnReauthCompleted(bool auth_succeeded) {
+  authenticator_.reset();
+  if (auth_succeeded) {
+    SendAutofillAiEntitiesToWebUI();
+  }
 }
 
 void InternalsUIHandler::OnLoaded(const base::ListValue& args) {

@@ -885,6 +885,14 @@ function displayAutofillAiEntities(entries: AutofillAiEntityEntry[]) {
   }
 
   container.innerText = '';
+  const reauthButton = document.createElement('span');
+  reauthButton.className = 'fake-button';
+  reauthButton.innerText = 'Reauth to unmask';
+  reauthButton.addEventListener('click', () => {
+    chrome.send('authenticateToRevealMaskedEntities');
+  });
+  container.appendChild(reauthButton);
+  container.appendChild(document.createElement('hr'));
   const groupedEntities =
       new Map<string, Map<string, AutofillAiEntityEntry[]>>();
   for (const entry of entries) {

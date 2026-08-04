@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
@@ -12,9 +13,11 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
@@ -169,6 +172,65 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
       "document.querySelector('#tab-autofill-ai-entities').innerText;";
   std::string table_text = EvalJs(kGetTableText).ExtractString();
   EXPECT_NE(table_text.find(entity_instance.guid().value()), std::string::npos);
+  EXPECT_NE(table_text.find("<redacted>"), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
+                       ReauthButtonTriggersAuth) {
+  autofill::EntityDataManager* entity_data_manager =
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(entity_data_manager);
+
+  autofill::EntityInstance entity_instance =
+      autofill::test::GetPassportEntityInstance();
+  entity_data_manager->AddOrUpdateEntityInstance(entity_instance);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://autofill-internals")));
+
+  // Switch to the Autofill AI entities tab.
+  constexpr char kClickTab[] =
+      "Array.from(document.querySelectorAll('#tab-links a'))"
+      ".find(a => a.innerText === 'AutofillAI entities').click();";
+  EXPECT_TRUE(ExecJs(kClickTab));
+
+  // Wait for the reauth button to render.
+  constexpr char kButtonVisible[] =
+      "document.querySelectorAll('#tab-autofill-ai-entities .fake-button')"
+      ".length > 0;";
+  while (!EvalJs(kButtonVisible).ExtractBool()) {
+    SpinRunLoop();
+  }
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  content::WebUI* web_ui =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWebUI();
+  autofill::InternalsUIHandler* handler = nullptr;
+  for (const std::unique_ptr<content::WebUIMessageHandler>& handler_ptr :
+       *web_ui->GetHandlersForTesting()) {
+    if ((handler =
+             static_cast<autofill::InternalsUIHandler*>(handler_ptr.get()))) {
+      break;
+    }
+  }
+  ASSERT_TRUE(handler);
+  handler->set_authenticator_for_testing(std::move(mock_authenticator));
+
+  // Click the reauth button.
+  constexpr char kClickReauth[] =
+      "document.querySelector('#tab-autofill-ai-entities .fake-button')"
+      ".click();";
+  EXPECT_TRUE(ExecJs(kClickReauth));
+
+  // Verify that sensitive attributes remain redacted.
+  constexpr char kGetTableText[] =
+      "document.querySelector('#tab-autofill-ai-entities').innerText;";
+  std::string table_text = EvalJs(kGetTableText).ExtractString();
   EXPECT_NE(table_text.find("<redacted>"), std::string::npos);
 }
 

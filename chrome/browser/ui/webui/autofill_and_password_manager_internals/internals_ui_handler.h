@@ -12,11 +12,13 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -81,6 +83,11 @@ class InternalsUIHandler
 
   ~InternalsUIHandler() override;
 
+  void set_authenticator_for_testing(
+      std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator) {
+    authenticator_ = std::move(authenticator);
+  }
+
  private:
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -110,6 +117,8 @@ class InternalsUIHandler
   void OnDeleteAutofillAiCacheEntry(const base::ListValue& args);
   void OnGetAutofillAiCache(const base::ListValue& args);
   void OnGetAutofillAiEntities(const base::ListValue& args);
+  void OnAuthenticateToRevealMaskedEntities(const base::ListValue& args);
+  void OnReauthCompleted(bool auth_succeeded);
   void OnLoaded(const base::ListValue& args);
   void OnResetCache(const base::ListValue& args);
   void OnDumpAddresses(const base::ListValue& args);
@@ -139,7 +148,10 @@ class InternalsUIHandler
                           AutofillAiPersonalContextAccessManager::Observer>
       pcontext_observation_{this};
 
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
   std::optional<AutofillCacheResetter> autofill_cache_resetter_;
+
+  base::WeakPtrFactory<InternalsUIHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
