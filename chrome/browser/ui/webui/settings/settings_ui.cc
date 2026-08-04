@@ -421,9 +421,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           ->GetPaymentsDataManager()
           .ShouldShowBnplSettings());
 
-  html_source->AddBoolean("shoppingIntegrationEnabled",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillAmbientAutofill));
+  html_source->AddBoolean(
+      "shoppingIntegrationEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAmbientAutofill) ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillAiWalletShopping));
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));

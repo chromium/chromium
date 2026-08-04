@@ -100,7 +100,7 @@
     [model addItem:_travelInfoDetailItem
         toSectionWithIdentifier:SettingsSectionIdentifierBasics];
 
-    if (autofill::IsAmbientAutofillEnabled()) {
+    if (autofill::IsAutofillShoppingEnabled()) {
       _shoppingDetailItem = ShoppingInfoItem(_shoppingEnabled);
       [model addItem:_shoppingDetailItem
           toSectionWithIdentifier:SettingsSectionIdentifierBasics];

@@ -91,7 +91,7 @@
                        autofill::prefs::kAutofillAiTravelEntitiesEnabled)];
     // TODO(crbug.com/530620605): Introduce logic to enable/disable values based
     // on pref value.
-    if (autofill::IsAmbientAutofillEnabled()) {
+    if (autofill::IsAutofillShoppingEnabled()) {
       [_consumer setShoppingEnabled:YES];
     }
     [self updateShouldShowAutofillAIFeatures];

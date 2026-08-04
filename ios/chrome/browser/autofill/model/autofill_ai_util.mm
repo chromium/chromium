@@ -88,6 +88,11 @@ bool IsAmbientAutofillEnabled() {
   return base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill);
 }
 
+bool IsAutofillShoppingEnabled() {
+  return IsAmbientAutofillEnabled() ||
+         base::FeatureList::IsEnabled(features::kAutofillAiWalletShopping);
+}
+
 bool IsAutofillAtMemoryEnabled() {
   return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
 }

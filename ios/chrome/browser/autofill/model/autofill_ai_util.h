@@ -30,6 +30,9 @@ bool CanPerformAutofillAiAction(
 // Returns whether Ambient Autofill is enabled.
 bool IsAmbientAutofillEnabled();
 
+// Returns whether Autofill order and shipment entities are supported.
+bool IsAutofillShoppingEnabled();
+
 // Returns whether Autofill AI (AtMemory) is enabled.
 bool IsAutofillAtMemoryEnabled();
 
