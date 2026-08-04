@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/allocator/scheduler_loop_quarantine_config.h"
 #include "base/memory/safety_checks.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -65,6 +66,16 @@ class SchedulerLoopQuarantineWebContentsObserverBrowserTestBase
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   }
 
+  void SetUp() override {
+    base::allocator::ResetSchedulerLoopQuarantineConfigForTesting();
+    ContentBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    ContentBrowserTest::TearDown();
+    base::allocator::ResetSchedulerLoopQuarantineConfigForTesting();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ContentBrowserTest::SetUpOnMainThread();
@@ -82,13 +93,13 @@ class SchedulerLoopQuarantineWebContentsObserverBrowserTest
   SchedulerLoopQuarantineWebContentsObserverBrowserTest() {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     feature_list_.InitWithFeaturesAndParameters(
-        {{base::features::kPartitionAllocSchedulerLoopQuarantine,
+        {{
+          base::features::kPartitionAllocSchedulerLoopQuarantine,
           std::map<std::string, std::string> {
             { base::features::kPartitionAllocSchedulerLoopQuarantineConfig.name,
               GetQuarantineConfigJson() }
-          }},
-         { base::features::kPartitionAllocWithAdvancedChecks,
-           {} }},
+          }
+        }},
         // Disable the task observer because the test body is not considered
         // to be inside a "task".
         // TODO(https://crbug.com/351974425): Convert the test to run inside a
@@ -120,8 +131,7 @@ class SchedulerLoopQuarantineWebContentsObserverBrowserTestDisabled
         // Disable preloading `kPrewarm` because it causes the browser to load a
         // webpage before each test starts (during SetUp) which breaks our
         // tests.
-        {base::features::kPartitionAllocSchedulerLoopQuarantine,
-         base::features::kPartitionAllocWithAdvancedChecks});
+        {base::features::kPartitionAllocSchedulerLoopQuarantine});
 #else
     feature_list_.InitWithFeatures(
         {},

@@ -23,10 +23,6 @@ static constexpr char kPAFeatureEnabledProcessesStr[] = "enabled-processes";
 static constexpr char kBrowserOnlyStr[] = "browser-only";
 static constexpr char kBrowserAndRendererStr[] = "browser-and-renderer";
 static constexpr char kNonRendererStr[] = "non-renderer";
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-static constexpr char kGPUOnlyStr[] = "gpu-only";
-static constexpr char kBrowserAndGPUStr[] = "browser-and-gpu";
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 static constexpr char kAllProcessesStr[] = "all-processes";
 
 }  // namespace
@@ -99,27 +95,6 @@ BASE_FEATURE_PARAM(int,
                    "ring-size",
                    partition_alloc::internal::SlotSpanRingMaxSize::kMedium);
 
-BASE_FEATURE(kPartitionAllocWithAdvancedChecks, FEATURE_ENABLED_BY_DEFAULT);
-constexpr FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>::Option
-    kPartitionAllocWithAdvancedChecksEnabledProcessesOptions[] = {
-        {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserOnly,
-         kBrowserOnlyStr},
-        {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserAndRenderer,
-         kBrowserAndRendererStr},
-        {PartitionAllocWithAdvancedChecksEnabledProcesses::kNonRenderer,
-         kNonRendererStr},
-        {PartitionAllocWithAdvancedChecksEnabledProcesses::kGPUOnly,
-         kGPUOnlyStr},
-        {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserAndGPU,
-         kBrowserAndGPUStr},
-        {PartitionAllocWithAdvancedChecksEnabledProcesses::kAllProcesses,
-         kAllProcessesStr}};
-// Note: Do not use the prepared macro as of no need for a local cache.
-constinit const FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>
-    kPartitionAllocWithAdvancedChecksEnabledProcessesParam{
-        &kPartitionAllocWithAdvancedChecks, kPAFeatureEnabledProcessesStr,
-        PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserOnly,
-        &kPartitionAllocWithAdvancedChecksEnabledProcessesOptions};
 
 // Enabled-by-default. Without proper
 // `PartitionAllocSchedulerLoopQuarantineConfig` configuration, the feature

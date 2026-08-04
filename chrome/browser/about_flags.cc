@@ -3575,46 +3575,6 @@ const FeatureEntry::FeatureVariation kContextualCueingV2Options[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-const FeatureEntry::FeatureParam
-    kPartitionAllocWithAdvancedChecksEnabledProcesses_BrowserOnly[] = {
-        {"enabled-processes", "browser-only"}};
-const FeatureEntry::FeatureParam
-    kPartitionAllocWithAdvancedChecksEnabledProcesses_BrowserAndRenderer[] = {
-        {"enabled-processes", "browser-and-renderer"}};
-const FeatureEntry::FeatureParam
-    kPartitionAllocWithAdvancedChecksEnabledProcesses_NonRenderer[] = {
-        {"enabled-processes", "non-renderer"}};
-const FeatureEntry::FeatureParam
-    kPartitionAllocWithAdvancedChecksEnabledProcesses_GPUOnly[] = {
-        {"enabled-processes", "gpu-only"}};
-const FeatureEntry::FeatureParam
-    kPartitionAllocWithAdvancedChecksEnabledProcesses_BrowserAndGPU[] = {
-        {"enabled-processes", "browser-and-gpu"}};
-const FeatureEntry::FeatureParam
-    kPartitionAllocWithAdvancedChecksEnabledProcesses_AllProcesses[] = {
-        {"enabled-processes", "all-processes"}};
-const FeatureEntry::FeatureVariation
-    kPartitionAllocWithAdvancedChecksEnabledProcessesOptions[] = {
-        {"on browser process only",
-         kPartitionAllocWithAdvancedChecksEnabledProcesses_BrowserOnly,
-         nullptr},
-        {"on browser and renderer processes",
-         kPartitionAllocWithAdvancedChecksEnabledProcesses_BrowserAndRenderer,
-         nullptr},
-        {"on non renderer processes",
-         kPartitionAllocWithAdvancedChecksEnabledProcesses_NonRenderer,
-         nullptr},
-        {"on gpu process only",
-         kPartitionAllocWithAdvancedChecksEnabledProcesses_GPUOnly, nullptr},
-        {"on browser and gpu processes",
-         kPartitionAllocWithAdvancedChecksEnabledProcesses_BrowserAndGPU,
-         nullptr},
-        {"on all processes",
-         kPartitionAllocWithAdvancedChecksEnabledProcesses_AllProcesses,
-         nullptr}};
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
 #if BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Feature variations for kPartitionAllocMemoryTagging.
@@ -10784,13 +10744,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPartitionAllocSchedulerLoopQuarantineDescription,
      kOsAll,
      STRING_VALUE_TYPE(switches::kPartitionAllocSchedulerLoopQuarantine, "")},
-    {"partition-alloc-with-advanced-checks",
-     flag_descriptions::kPartitionAllocWithAdvancedChecksName,
-     flag_descriptions::kPartitionAllocWithAdvancedChecksDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         base::features::kPartitionAllocWithAdvancedChecks,
-         kPartitionAllocWithAdvancedChecksEnabledProcessesOptions,
-         "PartitionAllocWithAdvancedChecks")},
 #endif  //  PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
     {"partition-visited-link-database-with-self-links",

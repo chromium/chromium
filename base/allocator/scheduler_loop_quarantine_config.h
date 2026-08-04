@@ -39,10 +39,17 @@ GetSchedulerLoopQuarantineConfiguration(
     std::string_view process_type_identifier,
     SchedulerLoopQuarantineBranchType branch_type);
 
+// Returns whether any branch (excluding AMSC) for `process_type_identifier`
+// has enabled quarantine.
+BASE_EXPORT bool HasMiracleObject(std::string_view process_type_identifier);
+
 // Returns whether any branch for `process_type_identifier` has enabled
 // task-controlled purge or pause in between tasks.
 BASE_EXPORT bool HasSchedulerLoopQuarantineTaskControl(
     std::string_view process_type_identifier);
+
+// Resets cached configuration for testing.
+BASE_EXPORT void ResetSchedulerLoopQuarantineConfigForTesting();
 
 }  // namespace base::allocator
 

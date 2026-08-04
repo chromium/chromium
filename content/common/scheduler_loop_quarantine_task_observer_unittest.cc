@@ -51,13 +51,13 @@ class SchedulerLoopQuarantineTaskObserverTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     feature_list_.InitWithFeaturesAndParameters(
-        {{base::features::kPartitionAllocSchedulerLoopQuarantine,
+        {{
+          base::features::kPartitionAllocSchedulerLoopQuarantine,
           std::map<std::string, std::string> {
             { base::features::kPartitionAllocSchedulerLoopQuarantineConfig.name,
               GetQuarantineConfigJson() }
-          }},
-         { base::features::kPartitionAllocWithAdvancedChecks,
-           {} }},
+          }
+        }},
         // Disable preloading `kPrewarm` because it causes the browser to load a
         // webpage before each test starts (during SetUp) which breaks our
         // tests.

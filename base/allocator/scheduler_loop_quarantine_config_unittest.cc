@@ -90,12 +90,19 @@ constexpr char kValidTestingConfigJSON[] = R"({
   },
 })";
 
-TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
+class SchedulerLoopQuarantineConfigTest : public testing::Test {
+ protected:
+  void SetUp() override { ResetSchedulerLoopQuarantineConfigForTesting(); }
+  void TearDown() override { ResetSchedulerLoopQuarantineConfigForTesting(); }
+};
+
+TEST_F(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       base::features::kPartitionAllocSchedulerLoopQuarantine,
       {{base::features::kPartitionAllocSchedulerLoopQuarantineConfig.name,
         kValidTestingConfigJSON}});
+  ResetSchedulerLoopQuarantineConfigForTesting();
 
   partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
@@ -242,12 +249,13 @@ constexpr char kWildcardMatchingConfigJSON[] = R"({
   },
 })";
 
-TEST(SchedulerLoopQuarantineConfigTest, WildcardMatching) {
+TEST_F(SchedulerLoopQuarantineConfigTest, WildcardMatching) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       base::features::kPartitionAllocSchedulerLoopQuarantine,
       {{base::features::kPartitionAllocSchedulerLoopQuarantineConfig.name,
         kWildcardMatchingConfigJSON}});
+  ResetSchedulerLoopQuarantineConfigForTesting();
 
   partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
@@ -292,12 +300,13 @@ TEST(SchedulerLoopQuarantineConfigTest, WildcardMatching) {
 
 constexpr char kInvalidTestingConfigJSON[] = "nyan";
 
-TEST(SchedulerLoopQuarantineConfigTest, InvalidConfig) {
+TEST_F(SchedulerLoopQuarantineConfigTest, InvalidConfig) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       base::features::kPartitionAllocSchedulerLoopQuarantine,
       {{base::features::kPartitionAllocSchedulerLoopQuarantineConfig.name,
         kInvalidTestingConfigJSON}});
+  ResetSchedulerLoopQuarantineConfigForTesting();
 
   partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
@@ -350,7 +359,7 @@ TEST(SchedulerLoopQuarantineConfigTest, InvalidConfig) {
   EXPECT_STREQ(config.branch_name, "renderer/main");
 }
 
-TEST(SchedulerLoopQuarantineConfigTest, CommandLineOverride) {
+TEST_F(SchedulerLoopQuarantineConfigTest, CommandLineOverride) {
   base::test::ScopedCommandLine scoped_command_line;
   base::test::ScopedFeatureList feature_list;
   // Enable the feature, but with a config that we expect to be overridden.
@@ -371,6 +380,7 @@ TEST(SchedulerLoopQuarantineConfigTest, CommandLineOverride) {
 
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kPartitionAllocSchedulerLoopQuarantine, kCommandLineConfigJSON);
+  ResetSchedulerLoopQuarantineConfigForTesting();
 
   partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
@@ -381,7 +391,7 @@ TEST(SchedulerLoopQuarantineConfigTest, CommandLineOverride) {
   EXPECT_EQ(999, config.branch_capacity_in_bytes);
 }
 
-TEST(SchedulerLoopQuarantineConfigTest, CommandLineOverrideFeatureDisabled) {
+TEST_F(SchedulerLoopQuarantineConfigTest, CommandLineOverrideFeatureDisabled) {
   base::test::ScopedCommandLine scoped_command_line;
   base::test::ScopedFeatureList feature_list;
   // Disable the feature.
@@ -400,6 +410,7 @@ TEST(SchedulerLoopQuarantineConfigTest, CommandLineOverrideFeatureDisabled) {
 
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kPartitionAllocSchedulerLoopQuarantine, kCommandLineConfigJSON);
+  ResetSchedulerLoopQuarantineConfigForTesting();
 
   partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
@@ -411,11 +422,12 @@ TEST(SchedulerLoopQuarantineConfigTest, CommandLineOverrideFeatureDisabled) {
   EXPECT_EQ(999, config.branch_capacity_in_bytes);
 }
 
-TEST(SchedulerLoopQuarantineConfigTest, FeatureDisabledNoSwitch) {
+TEST_F(SchedulerLoopQuarantineConfigTest, FeatureDisabledNoSwitch) {
   base::test::ScopedFeatureList feature_list;
   // Disable the feature.
   feature_list.InitAndDisableFeature(
       base::features::kPartitionAllocSchedulerLoopQuarantine);
+  ResetSchedulerLoopQuarantineConfigForTesting();
 
   partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
@@ -425,7 +437,8 @@ TEST(SchedulerLoopQuarantineConfigTest, FeatureDisabledNoSwitch) {
   EXPECT_FALSE(config.enable_quarantine);
 }
 
-TEST(SchedulerLoopQuarantineConfigTest, HasSchedulerLoopQuarantineTaskControl) {
+TEST_F(SchedulerLoopQuarantineConfigTest,
+       HasSchedulerLoopQuarantineTaskControl) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       base::features::kPartitionAllocSchedulerLoopQuarantine,
@@ -455,6 +468,7 @@ TEST(SchedulerLoopQuarantineConfigTest, HasSchedulerLoopQuarantineTaskControl) {
             }
           }
         })"}});
+  ResetSchedulerLoopQuarantineConfigForTesting();
 
   // Enables both.
   EXPECT_TRUE(HasSchedulerLoopQuarantineTaskControl("browser"));
@@ -464,6 +478,59 @@ TEST(SchedulerLoopQuarantineConfigTest, HasSchedulerLoopQuarantineTaskControl) {
   EXPECT_TRUE(HasSchedulerLoopQuarantineTaskControl("utility"));
   // Enables neither.
   EXPECT_FALSE(HasSchedulerLoopQuarantineTaskControl("renderer"));
+}
+
+TEST_F(SchedulerLoopQuarantineConfigTest, HasMiracleObject) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      base::features::kPartitionAllocSchedulerLoopQuarantine,
+      {{"PartitionAllocSchedulerLoopQuarantineConfig", R"({
+          "browser": {
+            "main": {
+              "enable-quarantine": true
+            }
+          },
+          "renderer": {
+            "main": {
+              "enable-quarantine": false
+            }
+          },
+          "utility": {
+            "amsc": {
+              "enable-quarantine": true
+            }
+          },
+          "gpu": {
+            "amsc": {
+              "enable-quarantine": true
+            },
+            "main": {
+              "enable-quarantine": true
+            }
+          },
+          "ppapi*": {
+            "main": {
+              "enable-quarantine": true
+            }
+          },
+          "network": {
+            "*": {
+              "enable-quarantine": true
+            }
+          }
+        })"}});
+  ResetSchedulerLoopQuarantineConfigForTesting();
+
+  EXPECT_TRUE(HasMiracleObject("browser"));
+  EXPECT_FALSE(HasMiracleObject("renderer"));
+  // AMSC branch is excluded from HasMiracleObject.
+  EXPECT_FALSE(HasMiracleObject("utility"));
+  // AMSC branch listed first is skipped, continuing to main branch.
+  EXPECT_TRUE(HasMiracleObject("gpu"));
+  // Process name wildcard matches "ppapi_process".
+  EXPECT_TRUE(HasMiracleObject("ppapi_process"));
+  // Branch name wildcard "*" matches.
+  EXPECT_TRUE(HasMiracleObject("network"));
 }
 
 }  // namespace

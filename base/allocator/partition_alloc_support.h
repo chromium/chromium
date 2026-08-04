@@ -49,10 +49,6 @@ BASE_EXPORT void InstallUnretainedDanglingRawPtrChecks();
 // Does nothing if allocator shim support is not built.
 BASE_EXPORT void MakeFreeNoOp();
 
-// Checks if the scheduler loop quarantine feature is enabled for the given
-// process type.
-BASE_EXPORT bool IsSchedulerLoopQuarantineEnabled(
-    std::string_view process_type);
 // Apply specialized configuration to the quarantine branch for the current
 // thread.
 BASE_EXPORT void ReconfigureSchedulerLoopQuarantineBranch(
@@ -127,11 +123,6 @@ class BASE_EXPORT PartitionAllocSupport {
 
   // For calling from within third_party/blink/.
   static bool ShouldEnableMemoryTaggingInRendererProcess();
-
-  // Returns true if PA advanced checks should be enabled if available for the
-  // given process type. May be called multiple times per process.
-  static bool ShouldEnablePartitionAllocWithAdvancedChecks(
-      std::string_view process_type);
 
  private:
   PartitionAllocSupport();
