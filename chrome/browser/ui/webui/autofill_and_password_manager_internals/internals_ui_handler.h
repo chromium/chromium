@@ -110,7 +110,7 @@ class InternalsUIHandler
       const AutofillAiPersonalContextAccessManager& manager,
       std::optional<base::span<const EntityInstance>> entities) override;
 
-  void SendAutofillAiEntitiesToWebUI();
+  void SendAutofillAiEntitiesToWebUI(bool is_user_reauthenticated = false);
   void FetchNextPersonalContextType();
 
   // JavaScript call handler.

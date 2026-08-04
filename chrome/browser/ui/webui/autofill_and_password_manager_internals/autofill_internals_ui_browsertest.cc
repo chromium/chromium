@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
-                       ReauthButtonTriggersAuth) {
+                       ReauthToUnmaskEntities) {
   autofill::EntityDataManager* entity_data_manager =
       autofill::AutofillEntityDataManagerFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(entity_data_manager);
@@ -220,18 +220,30 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
   }
   ASSERT_TRUE(handler);
   handler->set_authenticator_for_testing(std::move(mock_authenticator));
-
   // Click the reauth button.
   constexpr char kClickReauth[] =
       "document.querySelector('#tab-autofill-ai-entities .fake-button')"
       ".click();";
   EXPECT_TRUE(ExecJs(kClickReauth));
 
-  // Verify that sensitive attributes remain redacted.
-  constexpr char kGetTableText[] =
-      "document.querySelector('#tab-autofill-ai-entities').innerText;";
-  std::string table_text = EvalJs(kGetTableText).ExtractString();
-  EXPECT_NE(table_text.find("<redacted>"), std::string::npos);
+  // Verify that after reauth succeeds, the sensitive passport number
+  // ("LR1234567") is unmasked and displayed in the table.
+  constexpr char kUnmaskedVisible[] =
+      "document.querySelector('#tab-autofill-ai-entities').innerText"
+      ".includes('LR1234567');";
+  while (!EvalJs(kUnmaskedVisible).ExtractBool()) {
+    SpinRunLoop();
+  }
+
+  // Updating entities re-triggers SendAutofillAiEntitiesToWebUI() without
+  // reauth, which re-masks obfuscated values.
+  entity_data_manager->AddOrUpdateEntityInstance(entity_instance);
+  constexpr char kRedactedVisible[] =
+      "document.querySelector('#tab-autofill-ai-entities').innerText"
+      ".includes('<redacted>');";
+  while (!EvalJs(kRedactedVisible).ExtractBool()) {
+    SpinRunLoop();
+  }
 }
 
 }  // namespace

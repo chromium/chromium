@@ -347,7 +347,8 @@ void InternalsUIHandler::OnPrefetchContextComplete(
   SendAutofillAiEntitiesToWebUI();
 }
 
-void InternalsUIHandler::SendAutofillAiEntitiesToWebUI() {
+void InternalsUIHandler::SendAutofillAiEntitiesToWebUI(
+    bool is_user_reauthenticated) {
   EntityDataManager* entity_data_manager =
       AutofillEntityDataManagerFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));
@@ -367,7 +368,7 @@ void InternalsUIHandler::SendAutofillAiEntitiesToWebUI() {
       if (attribute_instance &&
           !attribute_instance->GetCompleteRawInfo().empty()) {
         value =
-            attribute_type.is_obfuscated()
+            (attribute_type.is_obfuscated() && !is_user_reauthenticated)
                 ? "<redacted>"
                 : base::UTF16ToUTF8(attribute_instance->GetCompleteRawInfo());
       }
@@ -411,7 +412,7 @@ void InternalsUIHandler::OnAuthenticateToRevealMaskedEntities(
 void InternalsUIHandler::OnReauthCompleted(bool auth_succeeded) {
   authenticator_.reset();
   if (auth_succeeded) {
-    SendAutofillAiEntitiesToWebUI();
+    SendAutofillAiEntitiesToWebUI(/*is_user_reauthenticated=*/true);
   }
 }
 
