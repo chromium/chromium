@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "PersonaDef": {
+      "type": "object",
+      "properties": {
+        "role": { "type": "string" },
+        "mandate": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "checklist": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "oneOf": [
+                { "type": "string" },
+                { "type": "array", "items": { "type": "string" } }
+              ]
+            }
+          }
+        }
+      },
+      "required": ["role", "mandate", "checklist"]
+    },
+    "EnvironmentDef": {
+      "type": "object",
+      "properties": {
+        "vcs": { "type": "string", "enum": ["GIT", "JJ"] },
+        "harness": { "type": "string", "enum": ["JETSKI", "GENERIC_CLI"] },
+        "temp_directory": {
+          "type": "string",
+          "description": "The relative path (recommended for workspace isolation) or absolute path to a directory where interim files are stored."
+        }
+      },
+      "required": ["vcs", "harness", "temp_directory"]
+    },
+    "ProjectSpec": {
+      "type": "object",
+      "properties": {
+        "target_skill": {
+          "type": "string",
+          "description": "Path to the skill directory to train."
+        },
+        "feedback_file": {
+          "type": "string",
+          "description": "Path to the JSON file containing the feedback/constraints."
+        },
+        "environment": { "$ref": "#/definitions/EnvironmentDef" },
+        "active_protocol": {
+          "type": "string",
+          "enum": ["MAGI", "TDD", "REVIEW"],
+          "description": "Identifies the active protocol."
+        }
+      },
+      "required": ["target_skill", "feedback_file", "environment", "active_protocol"]
+    }
+  }
+}

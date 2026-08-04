@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "PersonaDef": {
+      "type": "object",
+      "properties": {
+        "role": { "type": "string" },
+        "mandate": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "checklist": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "oneOf": [
+                { "type": "string" },
+                { "type": "array", "items": { "type": "string" } }
+              ]
+            }
+          }
+        }
+      },
+      "required": ["role", "mandate", "checklist"]
+    },
+    "EnvironmentDef": {
+      "type": "object",
+      "properties": {
+        "vcs": { "type": "string", "enum": ["GIT", "JJ"] },
+        "harness": { "type": "string", "enum": ["JETSKI", "GENERIC_CLI"] },
+        "orchestration_pattern": { "type": "string", "enum": ["CENTRALIZED", "DECENTRALIZED"] },
+        "use_reclient": { "type": "boolean" },
+        "is_debug_build": { "type": "boolean" },
+        "repo_type": { "type": "string", "enum": ["CHROMIUM", "GOOGLE_INTERNAL"] },
+        "output_directory": { "type": "string" },
+        "temp_directory": {
+          "type": "string",
+          "description": "The relative path (recommended for workspace isolation) or absolute path to a directory where interim files are stored."
+        }
+      },
+      "required": ["vcs", "harness", "temp_directory"]
+    },
+    "ProjectSpec": {
+      "type": "object",
+      "properties": {
+        "goal": { "type": "string" },
+        "target_files": { "type": "array", "items": { "type": "string" } },
+        "build_targets": { "type": "array", "items": { "type": "string" } },
+        "environment": { "$ref": "#/definitions/EnvironmentDef" },
+        "complexity_level": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
+        "active_protocol": {
+          "type": "string",
+          "enum": ["MAGI", "TDD", "REVIEW"],
+          "description": "Identifies the active protocol for tagging and tracking."
+        }
+      },
+      "required": ["goal", "target_files", "environment", "active_protocol"]
+    },
+    "StateBlock": {
+      "type": "object",
+      "properties": {
+        "iteration": { "type": "integer" },
+        "stage_attempts": {
+          "type": "object",
+          "additionalProperties": { "type": "integer" }
+        },
+        "loop_counters": {
+          "type": "object",
+          "additionalProperties": { "type": "integer" }
+        },
+        "next_stage": {
+          "type": "string",
+          "enum": ["SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", "TEST_FILLING", "VERIFICATION", "COMPLETED", "FAILED", "ESCALATION"]
+        },
+        "verification_status": {
+          "type": "string",
+          "enum": ["PENDING", "PASSED", "FAILED"]
+        }
+      },
+      "required": ["iteration", "stage_attempts", "loop_counters", "next_stage", "verification_status"]
+    },
+    "ChecklistObject": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": { "type": "boolean" }
+      }
+    },
+    "Constraints": {
+      "type": "object",
+      "properties": {
+        "checklist": { "$ref": "#/definitions/ChecklistObject" },
+        "unlisted_issues_found": { "type": "array", "items": { "type": "string" } },
+        "iteration": { "type": "integer" },
+        "oscillation_detected": { "type": "boolean" },
+        "conflict_report": { "type": "array", "items": { "type": "string" } },
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "next_stage": {
+          "type": "string",
+          "enum": ["SYNTHESIS", "VALIDATION", "ESCALATION"]
+        }
+      },
+      "required": ["checklist", "iteration", "oscillation_detected", "constraints", "next_stage"]
+    }
+  }
+}

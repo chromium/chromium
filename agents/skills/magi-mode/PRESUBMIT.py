@@ -306,25 +306,17 @@ def CheckMarkdownFiles(input_api, output_api):
     # Scenario 5: Content mandates
     if skill_md_path in affected_files_map:
         skill_content = input_api.ReadFile(affected_files_map[skill_md_path])
-        if 'TONE MANDATE (SIGNAL-TO-NOISE):' not in skill_content:
+        if 'Tone Mandate (Signal-to-Noise)' not in skill_content:
             results.append(
                 output_api.PresubmitError(
-                    'File SKILL.md must contain the "TONE MANDATE '
-                    '(SIGNAL-TO-NOISE):" section.'))
+                    'File SKILL.md must contain the "Tone Mandate '
+                    '(Signal-to-Noise)" section.'))
         elif ('Zero Preamble/Postamble' not in skill_content
               or 'Artifacts Only' not in skill_content):
             results.append(
                 output_api.PresubmitError(
-                    'File SKILL.md TONE MANDATE must explicitly enforce '
+                    'File SKILL.md Tone Mandate must explicitly enforce '
                     '"Zero Preamble/Postamble" and "Artifacts Only".'))
-        if ('ADD_FAILURE("NOT IMPLEMENTED");' not in skill_content
-                and 'ADD_FAILURE() << "NOT IMPLEMENTED"' not in skill_content):
-            results.append(
-                output_api.PresubmitError(
-                    'File SKILL.md must contain the TDD mandate requiring '
-                    '"ADD_FAILURE(\\"NOT IMPLEMENTED\\");" or '
-                    '"ADD_FAILURE() << \\"NOT IMPLEMENTED\\"" in stubbed tests.'
-                ))
 
     return results
 

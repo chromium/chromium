@@ -1,5 +1,6 @@
 {
   "task_type": "IMPLEMENTATION",
+  "active_protocol": "MAGI",
   "execution_path": "RIGOR_PATH",
   "complexity_level": "MEDIUM",
   "goal": "Mock goal for testing.",

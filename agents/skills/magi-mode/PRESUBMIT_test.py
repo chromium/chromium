@@ -90,10 +90,9 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.files_content = {
             'agents/skills/magi-mode/SKILL.md':
             ('[link](LINKED.md)\n'
-             'TONE MANDATE (SIGNAL-TO-NOISE):\n'
+             'Tone Mandate (Signal-to-Noise)\n'
              'Zero Preamble/Postamble\n'
-             'Artifacts Only\n'
-             'ADD_FAILURE("NOT IMPLEMENTED");\n'),
+             'Artifacts Only\n'),
             'agents/skills/magi-mode/LINKED.md':
             'content\n',
             'agents/skills/magi-mode/ORPHAN.md':
@@ -173,11 +172,11 @@ class MagiPresubmitTest(unittest.TestCase):
                                                    self.mock_output)
 
         self.assertTrue(
-            any('must contain the "TONE MANDATE '
-                '(SIGNAL-TO-NOISE):" section' in r for r in results))
+            any('must contain the "Tone Mandate '
+                '(Signal-to-Noise)" section' in r for r in results))
 
         # Missing Artifacts Only
-        content_partial = ('TONE MANDATE (SIGNAL-TO-NOISE):\n'
+        content_partial = ('Tone Mandate (Signal-to-Noise)\n'
                            'Zero Preamble/Postamble\n')
         self.mock_input.files_content = {
             'agents/skills/magi-mode/SKILL.md': content_partial
@@ -191,24 +190,9 @@ class MagiPresubmitTest(unittest.TestCase):
             any('must explicitly enforce "Zero Preamble/'
                 'Postamble" and "Artifacts Only"' in r for r in results))
 
-        # Missing TDD mandate
-        content_no_tdd = ('TONE MANDATE (SIGNAL-TO-NOISE):\n'
-                          'Zero Preamble/Postamble\nArtifacts Only\n')
-        self.mock_input.files_content = {
-            'agents/skills/magi-mode/SKILL.md': content_no_tdd
-        }
-        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
-                patch('os.path.getsize', return_value=100):
-            results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
-                                                   self.mock_output)
-
-        self.assertTrue(
-            any('must contain the TDD mandate' in r for r in results))
-
-        # Valid (with TDD mandate)
-        content_valid = ('TONE MANDATE (SIGNAL-TO-NOISE):\n'
-                         'Zero Preamble/Postamble\nArtifacts Only\n'
-                         'ADD_FAILURE("NOT IMPLEMENTED");\n')
+        # Valid Tone Mandate
+        content_valid = ('Tone Mandate (Signal-to-Noise)\n'
+                         'Zero Preamble/Postamble\nArtifacts Only\n')
         self.mock_input.files_content = {
             'agents/skills/magi-mode/SKILL.md': content_valid
         }
@@ -218,11 +202,9 @@ class MagiPresubmitTest(unittest.TestCase):
                                                    self.mock_output)
 
         self.assertFalse(
-            any('must contain the "TONE MANDATE '
-                '(SIGNAL-TO-NOISE):" section' in r for r in results))
+            any('must contain the "Tone Mandate '
+                '(Signal-to-Noise)" section' in r for r in results))
         self.assertFalse(any('must explicitly enforce' in r for r in results))
-        self.assertFalse(
-            any('must contain the TDD mandate' in r for r in results))
 
     def testPersonaNamingConvention(self):
         # Invalid persona name (with _expert suffix)

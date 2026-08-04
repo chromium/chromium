@@ -99,17 +99,12 @@
         },
         "temp_directory": {
           "type": "string",
-          "description": "The absolute or relative path to a directory where interim files are stored."
+          "description": "The relative path (recommended for workspace isolation) or absolute path to a directory where interim files are stored."
         }
       },
       "required": [
         "vcs",
         "harness",
-        "orchestration_pattern",
-        "use_reclient",
-        "is_debug_build",
-        "repo_type",
-        "output_directory",
         "temp_directory"
       ]
     },
@@ -300,6 +295,11 @@
         "routing_overlay": {
           "type": "string",
           "description": "Optional path to an internal routing overlay file (e.g., in google3) to merge with ROUTING.md."
+        },
+        "active_protocol": {
+          "type": "string",
+          "enum": ["MAGI", "TDD", "REVIEW"],
+          "description": "Identifies the active protocol for tagging and tracking."
         }
       },
       "required": [
@@ -311,7 +311,8 @@
         "context_resolved",
         "approach_confirmed",
         "ambiguity_level",
-        "environment"
+        "environment",
+        "active_protocol"
       ]
     },
     "ReviewFeedback": {
