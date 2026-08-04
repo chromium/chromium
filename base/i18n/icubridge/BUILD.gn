@@ -4,6 +4,8 @@
 
 source_set("icubridge") {
   sources = [
+    "calendar.cc",
+    "calendar.h",
     "date_time_formatter.cc",
     "date_time_formatter.h",
     "icu_bridge.cc",
@@ -37,6 +39,7 @@ source_set("icubridge") {
 source_set("unittests") {
   testonly = true
   sources = [
+    "calendar_unittest.cc",
     "date_time_formatter_unittest.cc",
     "supported_locales_unittest.cc",
   ]

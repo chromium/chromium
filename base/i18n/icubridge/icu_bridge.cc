@@ -4,6 +4,7 @@
 
 #include "base/i18n/icubridge/icu_bridge.h"
 
+#include "base/i18n/icubridge/calendar.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/no_destructor.h"
 
@@ -17,7 +18,8 @@ IcuBridge& IcuBridge::GetInstance() {
 
 IcuBridge::IcuBridge()
     : date_time_formatter_(
-          std::make_unique<DateTimeFormatter>(base::PassKey<IcuBridge>())) {}
+          std::make_unique<DateTimeFormatter>(base::PassKey<IcuBridge>())),
+      calendar_(std::make_unique<Calendar>(base::PassKey<IcuBridge>())) {}
 IcuBridge::~IcuBridge() = default;
 
 }  // namespace base::i18n

@@ -33,10 +33,13 @@ class BASE_I18N_EXPORT IcuBridge {
   IcuBridge& operator=(const IcuBridge&) = delete;
 
   class BASE_I18N_EXPORT DateTimeFormatter;
+  class BASE_I18N_EXPORT Calendar;
 
   const DateTimeFormatter& date_time_formatter() const {
     return *date_time_formatter_;
   }
+
+  const Calendar& calendar() const { return *calendar_; }
 
  private:
   friend class base::NoDestructor<IcuBridge>;
@@ -45,6 +48,7 @@ class BASE_I18N_EXPORT IcuBridge {
   ~IcuBridge();
 
   std::unique_ptr<DateTimeFormatter> date_time_formatter_;
+  std::unique_ptr<Calendar> calendar_;
 };
 
 }  // namespace base::i18n
