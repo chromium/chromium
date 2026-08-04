@@ -1407,14 +1407,7 @@ TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutTest) {
 
 // Like NavigationTimeoutTest but the navigation initially results in a redirect
 // before hanging, to test a slightly more complicated navigation.
-// TODO(crbug.com/40805451): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_NavigationTimeoutRedirectTest \
-  DISABLED_NavigationTimeoutRedirectTest
-#else
-#define MAYBE_NavigationTimeoutRedirectTest NavigationTimeoutRedirectTest
-#endif
-TEST_F(NavigationURLLoaderImplTest, MAYBE_NavigationTimeoutRedirectTest) {
+TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutRedirectTest) {
   ASSERT_TRUE(http_test_server_.Start());
   const GURL hang_url = http_test_server_.GetURL("/hung");
   const GURL redirect_url =
@@ -1424,6 +1417,7 @@ TEST_F(NavigationURLLoaderImplTest, MAYBE_NavigationTimeoutRedirectTest) {
   loader->Start();
   loader->SetNavigationTimeout(base::Seconds(3));
   delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({});
   delegate.WaitForRequestFailed();
   EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
 }
