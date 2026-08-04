@@ -15,4 +15,6 @@ found in the LICENSE file.
   <!-- This value is only used in split screens on tablet. -->
   <dimen name="doodle_height_tablet_split_screen">84dp</dimen>
   <dimen name="doodle_margin_top">8dp</dimen>
+  <dimen name="doodle_margin_top_small">20dp</dimen>
+  <dimen name="doodle_margin_top_large">28dp</dimen>
 </resources>

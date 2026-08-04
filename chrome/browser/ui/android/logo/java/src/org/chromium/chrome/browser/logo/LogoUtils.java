@@ -37,7 +37,14 @@ public class LogoUtils {
 
     /** Returns the top margin of the LogoView when the current logo is a google doodle. */
     public static int getTopMarginForDoodle(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.doodle_margin_top);
+        switch (NewTabPageUtils.getPaddingStyleForAurora()) {
+            case PaddingStyle.SMALL, PaddingStyle.MEDIUM:
+                return resources.getDimensionPixelSize(R.dimen.doodle_margin_top_small);
+            case PaddingStyle.LARGE:
+                return resources.getDimensionPixelSize(R.dimen.doodle_margin_top_large);
+            default:
+                return resources.getDimensionPixelSize(R.dimen.doodle_margin_top);
+        }
     }
 
     /** Returns the top margin of the default Google logo. */

@@ -85,7 +85,30 @@ public class LogoUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testGetTopMarginForLogo() {
+    public void testGetTopMarginForLogo_phone() {
+        testGetTopMarginForLogoImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testGetTopMarginForLogo_tablet() {
+        Resources resources = mResources;
+        // Verify that on tablets, all Aurora padding resources equal the base dimension.
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top),
+                resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top_small));
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top),
+                resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top_medium));
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top),
+                resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top_large));
+
+        testGetTopMarginForLogoImpl();
+    }
+
+    private void testGetTopMarginForLogoImpl() {
         Resources resources = mResources;
         // Default should be ntp_logo_margin_top.
         Assert.assertEquals(
@@ -109,5 +132,54 @@ public class LogoUtilsUnitTest {
         Assert.assertEquals(
                 resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top_large),
                 LogoUtils.getTopMarginForLogo(resources));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetTopMarginForDoodle_phone() {
+        testGetTopMarginForDoodleImpl();
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testGetTopMarginForDoodle_tablet() {
+        Resources resources = mResources;
+        // Verify that on tablets, all Aurora padding resources equal the base dimension.
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.doodle_margin_top),
+                resources.getDimensionPixelSize(R.dimen.doodle_margin_top_small));
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.doodle_margin_top),
+                resources.getDimensionPixelSize(R.dimen.doodle_margin_top_large));
+
+        testGetTopMarginForDoodleImpl();
+    }
+
+    private void testGetTopMarginForDoodleImpl() {
+        Resources resources = mResources;
+
+        // Default should be the ntp_logo_margin_top.
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.doodle_margin_top),
+                LogoUtils.getTopMarginForDoodle(resources));
+
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, "padding_style", PaddingStyle.SMALL);
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.doodle_margin_top_small),
+                LogoUtils.getTopMarginForDoodle(resources));
+
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, "padding_style", PaddingStyle.MEDIUM);
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.doodle_margin_top_small),
+                LogoUtils.getTopMarginForDoodle(resources));
+
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, "padding_style", PaddingStyle.LARGE);
+        Assert.assertEquals(
+                resources.getDimensionPixelSize(R.dimen.doodle_margin_top_large),
+                LogoUtils.getTopMarginForDoodle(resources));
     }
 }
