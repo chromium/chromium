@@ -916,6 +916,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/media/DocumentPictureInPictureActivityUnitTest.java",
       "src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureControllerUnitTest.java",
       "src/org/chromium/chrome/browser/media/MediaCapturePickerInvokerTest.java",
+      "src/org/chromium/chrome/browser/media/TabSharingUIBridgeTest.java",
       "src/org/chromium/chrome/browser/media/TabSharingUIManagerTest.java",
       "src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderMediatorUnitTest.java",

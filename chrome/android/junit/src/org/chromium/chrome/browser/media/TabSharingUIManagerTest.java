@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +20,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link TabSharingUIManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -26,6 +30,8 @@ public class TabSharingUIManagerTest {
     @Mock private TabSharingUIManager.Observer mObserver1;
     @Mock private TabSharingUIManager.Observer mObserver2;
     @Mock private TabSharingUIBridge mBridge1;
+    @Mock private WebContents mCapturer1;
+    @Mock private WebContents mCapturer2;
 
     private TabSharingUIManager mManager;
 
@@ -81,5 +87,28 @@ public class TabSharingUIManagerTest {
     public void testRemoveBridgeNotFoundAsserts() {
         // This should assert because mBridge1 was never added.
         mManager.removeBridge(mBridge1);
+    }
+
+    @Test
+    public void testStopSharingByCapturerTab() {
+        when(mBridge1.getCapturer()).thenReturn(mCapturer1);
+        mManager.addBridge(mBridge1);
+
+        // Stopping an unrelated capturer should do nothing.
+        mManager.stopSharingByCapturerTab(mCapturer2);
+        verify(mBridge1, org.mockito.Mockito.never()).stopSharing();
+
+        // Stopping the registered capturer should invoke stopSharing().
+        mManager.stopSharingByCapturerTab(mCapturer1);
+        verify(mBridge1).stopSharing();
+    }
+
+    @Test
+    public void testIsSharing() {
+        assertFalse(mManager.isSharing());
+        mManager.addBridge(mBridge1);
+        assertTrue(mManager.isSharing());
+        mManager.removeBridge(mBridge1);
+        assertFalse(mManager.isSharing());
     }
 }

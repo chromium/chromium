@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.media;
 
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +20,6 @@ import java.util.List;
  */
 @NullMarked
 public class TabSharingUIManager {
-    private static final String TAG = "TabSharing";
-
     private static @Nullable TabSharingUIManager sInstance;
 
     public interface Observer {
@@ -86,7 +84,6 @@ public class TabSharingUIManager {
      * @param bridge The bridge to add.
      */
     public void addBridge(TabSharingUIBridge bridge) {
-        Log.d(TAG, "UIManager#addBridge: %s", bridge);
         mActiveBridges.add(bridge);
         for (Observer observer : mObservers) {
             observer.onSharingSessionStarted(bridge);
@@ -102,10 +99,31 @@ public class TabSharingUIManager {
         boolean removed = mActiveBridges.remove(bridge);
         assert removed : "Bridge not found in active bridges: " + bridge;
         if (removed) {
-            Log.d(TAG, "UIManager#removeBridge: %s", bridge);
             for (Observer observer : mObservers) {
                 observer.onSharingSessionStopped(bridge);
             }
         }
+    }
+
+    /**
+     * Stops any active sharing session initiated by the specified capturer WebContents.
+     *
+     * @param capturer The {@link WebContents} performing tab sharing.
+     */
+    public void stopSharingByCapturerTab(WebContents capturer) {
+        for (TabSharingUIBridge bridge : mActiveBridges) {
+            if (bridge.getCapturer() == capturer) {
+                bridge.stopSharing();
+                // A capturer WebContents can have at most one active tab sharing session at a time
+                // (a 1:1 relationship between bridge and capturer), so returning on first match is
+                // safe.
+                return;
+            }
+        }
+    }
+
+    /** Returns whether there are any active tab sharing sessions. */
+    public boolean isSharing() {
+        return !mActiveBridges.isEmpty();
     }
 }

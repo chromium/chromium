@@ -92,7 +92,7 @@ public class MediaCaptureDevicesDispatcherAndroid {
 
     public static void notifyTabCapturingStopped(@Nullable WebContents webContents) {
         if (webContents == null) return;
-        MediaCaptureDevicesDispatcherAndroidJni.get().notifyTabCapturingStopped(webContents);
+        TabSharingUIManager.getInstance().stopSharingByCapturerTab(webContents);
     }
 
     @VisibleForTesting
@@ -111,7 +111,5 @@ public class MediaCaptureDevicesDispatcherAndroid {
         void notifyStopped(@JniType("content::WebContents*") WebContents webContents);
 
         void notifyDisplayMediaStopped(@JniType("content::WebContents*") WebContents webContents);
-
-        void notifyTabCapturingStopped(@JniType("content::WebContents*") WebContents webContents);
     }
 }

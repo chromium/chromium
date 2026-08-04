@@ -10,13 +10,11 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -27,62 +25,20 @@ namespace {
 // The MediaStreamUI interface specifies returning 0 if no window ID is
 // applicable.
 constexpr gfx::NativeViewId kNoWindowId = 0;
-
-class TabSharingUIAndroidHelper
-    : public content::WebContentsUserData<TabSharingUIAndroidHelper> {
- public:
-  ~TabSharingUIAndroidHelper() override = default;
-
-  void set_tab_sharing_ui(TabSharingUIAndroid* tab_sharing_ui) {
-    tab_sharing_ui_ = tab_sharing_ui;
-  }
-  TabSharingUIAndroid* get_tab_sharing_ui() const { return tab_sharing_ui_; }
-
- private:
-  friend class content::WebContentsUserData<TabSharingUIAndroidHelper>;
-  explicit TabSharingUIAndroidHelper(content::WebContents* contents)
-      : content::WebContentsUserData<TabSharingUIAndroidHelper>(*contents) {}
-
-  raw_ptr<TabSharingUIAndroid> tab_sharing_ui_ = nullptr;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabSharingUIAndroidHelper);
-
 }  // namespace
 
 TabSharingUIAndroid::TabSharingUIAndroid(
     content::WebContents* capturer_web_contents,
     const content::DesktopMediaID& media_id)
     : capturer_web_contents_(capturer_web_contents->GetWeakPtr()),
-      media_id_(media_id) {
-  TabSharingUIAndroidHelper::CreateForWebContents(capturer_web_contents);
-  TabSharingUIAndroidHelper::FromWebContents(capturer_web_contents)
-      ->set_tab_sharing_ui(this);
-}
+      media_id_(media_id) {}
 
 TabSharingUIAndroid::~TabSharingUIAndroid() {
   StopSharing();
-  if (capturer_web_contents_) {
-    auto* helper = TabSharingUIAndroidHelper::FromWebContents(
-        capturer_web_contents_.get());
-    if (helper && helper->get_tab_sharing_ui() == this) {
-      helper->set_tab_sharing_ui(nullptr);
-    }
-  }
   if (java_bridge_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_TabSharingUIBridge_destroy(env, java_bridge_);
     java_bridge_.Reset();
-  }
-}
-
-void TabSharingUIAndroid::StopSharing(
-    content::WebContents* capturer_web_contents) {
-  auto* helper =
-      TabSharingUIAndroidHelper::FromWebContents(capturer_web_contents);
-  if (helper && helper->get_tab_sharing_ui()) {
-    helper->get_tab_sharing_ui()->StopSharing();
   }
 }
 

@@ -8,17 +8,17 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 
 /** Glue for the tab sharing toolbar UI code and communication with the native backend. */
 @NullMarked
 public class TabSharingUIBridge {
-    private static final String TAG = "TabSharing";
-
     private final WebContents mCapturer;
     private final WebContents mCapturee;
+    private final WebContentsObserver mCapturerObserver;
+    private final WebContentsObserver mCaptureeObserver;
     private long mNativeTabSharingUIAndroid;
 
     /**
@@ -33,6 +33,20 @@ public class TabSharingUIBridge {
         mNativeTabSharingUIAndroid = nativeTabSharingUIAndroid;
         mCapturer = capturer;
         mCapturee = capturee;
+        mCapturerObserver =
+                new WebContentsObserver(mCapturer) {
+                    @Override
+                    public void webContentsDestroyed() {
+                        stopSharing();
+                    }
+                };
+        mCaptureeObserver =
+                new WebContentsObserver(mCapturee) {
+                    @Override
+                    public void webContentsDestroyed() {
+                        stopSharing();
+                    }
+                };
     }
 
     /**
@@ -43,24 +57,20 @@ public class TabSharingUIBridge {
      * @param capturee The {@link WebContents} that is being shared.
      */
     @CalledByNative
-    private static TabSharingUIBridge create(
+    static TabSharingUIBridge create(
             long nativePtr,
             @JniType("content::WebContents*") WebContents capturer,
             @JniType("content::WebContents*") WebContents capturee) {
         TabSharingUIBridge bridge = new TabSharingUIBridge(nativePtr, capturer, capturee);
-        Log.d(
-                TAG,
-                "UIBridge#create: for capturer %s and capturee %s, created instance %s",
-                capturer,
-                capturee,
-                bridge);
         TabSharingUIManager.getInstance().addBridge(bridge);
         return bridge;
     }
 
     @CalledByNative
-    private void destroy() {
-        Log.d(TAG, "UIBridge#destroy: %s", this);
+    void destroy() {
+        if (mNativeTabSharingUIAndroid == 0) return;
+        mCapturerObserver.observe(null);
+        mCaptureeObserver.observe(null);
         TabSharingUIManager.getInstance().removeBridge(this);
         mNativeTabSharingUIAndroid = 0;
     }
