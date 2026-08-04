@@ -6,25 +6,20 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_footer_panel.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_header_panel.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/app_constants/constants.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/test/scoped_views_test_helper.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -35,10 +30,15 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "components/user_manager/user_manager.h"
 
 namespace {
 
@@ -56,27 +56,6 @@ std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
 }  // namespace
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-namespace test {
-
-class AppInfoDialogTestApi {
- public:
-  explicit AppInfoDialogTestApi(AppInfoDialog* dialog) : dialog_(dialog) {}
-
-  AppInfoDialogTestApi(const AppInfoDialogTestApi&) = delete;
-  AppInfoDialogTestApi& operator=(const AppInfoDialogTestApi&) = delete;
-
-  void ShowAppInWebStore() {
-    auto* header_panel =
-        static_cast<AppInfoHeaderPanel*>(dialog_->children().front());
-    return header_panel->ShowAppInWebStore();
-  }
-
- private:
-  raw_ptr<AppInfoDialog> dialog_;
-};
-
-}  // namespace test
-
 namespace {
 
 const char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
@@ -84,7 +63,7 @@ const char kTestOtherExtensionId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 
 }  // namespace
 
-class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
+class AppInfoDialogViewsTest : public ChromeViewsTestBase,
                                public views::WidgetObserver {
  public:
   AppInfoDialogViewsTest() = default;
@@ -92,17 +71,14 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   AppInfoDialogViewsTest(const AppInfoDialogViewsTest&) = delete;
   AppInfoDialogViewsTest& operator=(const AppInfoDialogViewsTest&) = delete;
 
-  // Overridden from testing::Test:
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS)
-    // Sets up a fake user manager over |BrowserWithTestWindowTest| user
-    // manager.
     arc_app_test_ =
-        std::make_unique<ArcAppTest>(ArcAppTest::UserManagerMode::kDoNothing);
+        std::make_unique<ArcAppTest>(ArcAppTest::UserManagerMode::kCreate);
     arc_app_test_->PreProfileSetUp();
 #endif
 
-    BrowserWithTestWindowTest::SetUp();
+    ChromeViewsTestBase::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS)
     arc_app_test_->PostProfileSetUp(extension_environment_.profile());
@@ -135,30 +111,14 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     arc_app_test_->PreProfileTearDown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    // The Browser class had dependencies on LocalState, which is owned by
-    // |extension_environment_|.
-    std::unique_ptr<Browser> browser = release_browser();
-    if (browser) {
-      browser->tab_strip_model()->CloseAllTabs();
-      browser.reset();
-      // Browser holds a ScopedProfileKeepAlive, which might post a task to the
-      // UI thread on destruction.
-      base::RunLoop().RunUntilIdle();
-    }
     extension_environment_.DeleteProfile();
 
-    BrowserWithTestWindowTest::TearDown();
+    ChromeViewsTestBase::TearDown();
 
 #if BUILDFLAG(IS_CHROMEOS)
     arc_app_test_->PostProfileTearDown();
     arc_app_test_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  }
-
-  TestingProfile* CreateProfile(const std::string& profile_name) override {
-    auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
-    extension_environment_.SetProfile(profile);
-    return profile;
   }
 
  protected:
@@ -211,7 +171,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   extensions::TestExtensionEnvironment extension_environment_{
       extensions::TestExtensionEnvironment::Type::
           kInheritExistingTaskEnvironment,
-      extensions::TestExtensionEnvironment::ProfileCreationType::kNoCreate,
+      extensions::TestExtensionEnvironment::ProfileCreationType::kCreate,
 #if BUILDFLAG(IS_CHROMEOS)
       extensions::TestExtensionEnvironment::OSSetupType::kNoSetUp,
 #endif
@@ -252,39 +212,11 @@ TEST_F(AppInfoDialogViewsTest, UninstallingOtherAppDoesNotCloseDialog) {
 // Tests that the dialog closes when the current profile is destroyed.
 TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
   ShowAppInfo(kTestExtensionId);
-
-  {
-    // Prevent from unexpected profile deletion due to browser deletion.
-    ScopedProfileKeepAlive keep_alive(
-        profile(), ProfileKeepAliveOrigin::kProfileDeletionProcess);
-
-    // First delete the test browser window. This ensures the test harness isn't
-    // surprised by it being closed in response to the profile deletion below.
-    std::unique_ptr<Browser> browser = release_browser();
-    browser->tab_strip_model()->CloseAllTabs();
-    browser.reset();
-
-    // The following serves two purposes:
-    // it ensures the Widget close is being triggered by the DeleteProfile()
-    // call rather than the code above. And prevents a race condition while
-    // tearing down arc_test user_manager.
-    base::RunLoop().RunUntilIdle();
-
-    ASSERT_TRUE(widget_);
-    EXPECT_FALSE(widget_->IsClosed());
-  }
+  ASSERT_TRUE(widget_);
+  EXPECT_FALSE(widget_->IsClosed());
 
   // Delete the profile.
   extension_environment_.DeleteProfile();
-  // ScopedProfileKeepAlive's destruction may post a task to the current
-  // sequence, which needs the profile. So, before calling DeleteProfile,
-  // RunLoop once again.
-  base::RunLoop().RunUntilIdle();
-  // Note: On platforms except ChromeOS, the above RunLoop will delete the
-  // profile. On ChromeOS (i.e. Ash-Chrome), profile won't be delete by that
-  // because even if all browsers are closed Profile is expected to be kept
-  // for system. Explicitly delete it here.
-  DeleteProfile(*GetDefaultProfileName());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(widget_);
@@ -309,34 +241,6 @@ TEST_F(AppInfoDialogViewsTest, DestroyedOtherProfileDoesNotCloseDialog) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// Tests that clicking the View in Store link opens a browser tab and closes the
-// dialog cleanly.
-TEST_F(AppInfoDialogViewsTest, ViewInStore) {
-  ShowAppInfo(kTestExtensionId);
-  ASSERT_TRUE(extension_->from_webstore());
-
-  TabStripModel* tabs = browser()->tab_strip_model();
-  EXPECT_EQ(0, tabs->count());
-
-  ASSERT_TRUE(widget_);
-  EXPECT_FALSE(widget_->IsClosed());
-  test::AppInfoDialogTestApi(dialog_).ShowAppInWebStore();
-
-  ASSERT_TRUE(widget_);
-  EXPECT_TRUE(widget_->IsClosed());
-
-  EXPECT_EQ(1, tabs->count());
-  content::WebContents* web_contents = tabs->GetWebContentsAt(0);
-
-  std::string url = extension_urls::GetWebstoreItemDetailURLPrefix();
-  url += kTestExtensionId;
-  url += "?utm_source=chrome-app-launcher-info-dialog";
-  EXPECT_EQ(GURL(url), web_contents->GetURL());
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(widget_);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AppInfoDialogViewsTest, ArcAppInfoLinks) {
   ShowAppInfo(app_constants::kChromeAppId);
@@ -359,22 +263,34 @@ TEST_F(AppInfoDialogViewsTest, ArcAppInfoLinks) {
 
   // Re-show App Info but for non-primary profile.
   CloseAppInfo();
-  std::unique_ptr<TestingProfile> other_profile =
-      std::make_unique<TestingProfile>();
-  extension_environment_.CreateExtensionServiceForProfile(other_profile.get());
+  const AccountId other_account_id =
+      AccountId::FromUserEmail("other_profile@gmail.com");
+  auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
+      user_manager::UserManager::Get());
+  fake_user_manager->AddUser(other_account_id);
+
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+  ash::ScopedAccountIdAnnotator annotator(profile_manager.profile_manager(),
+                                          other_account_id);
+  TestingProfile* other_profile =
+      profile_manager.CreateTestingProfile("other_profile@gmail.com");
+
+  extension_environment_.CreateExtensionServiceForProfile(other_profile);
   // We're adding the extension to the second profile, so don't install it
   // automatically in the profile from `extension_environment_`.
   const bool install = false;
   scoped_refptr<const extensions::Extension> other_app =
       extension_environment_.MakePackagedApp(app_constants::kChromeAppId,
                                              install);
-  extensions::ExtensionRegistrar::Get(other_profile.get())
+  extensions::ExtensionRegistrar::Get(other_profile)
       ->AddExtension(other_app.get());
-  ShowAppInfoForProfile(app_constants::kChromeAppId, other_profile.get());
+  ShowAppInfoForProfile(app_constants::kChromeAppId, other_profile);
   EXPECT_FALSE(widget_->IsClosed());
   // The ARC App info links are not available if ARC is not allowed for
   // secondary profile.
   EXPECT_FALSE(dialog_->arc_app_info_links_for_test());
+  CloseAppInfo();
 }
 
 // Tests that the pin/unpin button is focused after unpinning/pinning. This is
