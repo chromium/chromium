@@ -250,6 +250,7 @@ source_set("common") {
     "//net",
     "//sandbox",
     "//sandbox:sandbox_buildflags",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",

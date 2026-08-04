@@ -4,6 +4,7 @@ include_rules = [
   "+components/discardable_memory/common",
   "+components/viz/common",
   "+device/base/synchronization",
+  "+services/data_decoder/public/cpp",
   "+services/media_session/public/cpp",
   "+services/device/public/mojom",
   "+services/network/public/cpp",

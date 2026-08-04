@@ -41,6 +41,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/net_errors.h"
+#include "net/http/structured_headers.h"
 #include "sandbox/policy/sandbox.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -206,8 +207,8 @@ class ShellContentRendererUrlLoaderThrottleProvider
       const network::ResourceRequest& request) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     if (local_frame_token.has_value()) {
-      auto throttle =
-          content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
+      auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
+          base::BindRepeating(
               [](const blink::LocalFrameToken& token,
                  const scoped_refptr<base::SequencedTaskRunner>
                      main_thread_task_runner,
@@ -224,7 +225,8 @@ class ShellContentRendererUrlLoaderThrottleProvider
                                                 token, idp_origin, status));
                 }
               },
-              local_frame_token.value(), main_thread_task_runner_));
+              local_frame_token.value(), main_thread_task_runner_),
+          content::GetSetLoginHeaderInProcessParser());
       if (throttle)
         throttles.push_back(std::move(throttle));
     }

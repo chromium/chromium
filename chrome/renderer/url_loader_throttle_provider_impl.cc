@@ -26,6 +26,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/renderer/extension_localization_throttle.h"
+#include "net/http/structured_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -264,8 +265,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 #endif
 
   if (local_frame_token.has_value()) {
-    auto throttle =
-        content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
+    auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
+        base::BindRepeating(
             [](const blink::LocalFrameToken& token,
                const scoped_refptr<base::SequencedTaskRunner>
                    main_thread_task_runner,
@@ -282,7 +283,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
                                               idp_origin, status));
               }
             },
-            local_frame_token.value(), main_thread_task_runner_));
+            local_frame_token.value(), main_thread_task_runner_),
+        content::GetSetLoginHeaderInProcessParser());
     if (throttle) {
       throttles.push_back(std::move(throttle));
     }

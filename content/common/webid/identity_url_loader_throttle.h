@@ -11,15 +11,13 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/public/common/web_identity.h"
+#include "net/http/structured_headers.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-namespace net {
-class HttpResponseHeaders;
-}  // namespace net
 
 namespace content {
 
@@ -27,7 +25,8 @@ namespace content {
 class CONTENT_EXPORT IdentityUrlLoaderThrottle
     : public blink::URLLoaderThrottle {
  public:
-  explicit IdentityUrlLoaderThrottle(SetIdpStatusCallback callback);
+  IdentityUrlLoaderThrottle(SetIdpStatusCallback status_cb,
+                            ParseSetLoginHeaderCallback parse_cb);
   ~IdentityUrlLoaderThrottle() override;
   IdentityUrlLoaderThrottle(const IdentityUrlLoaderThrottle&) = delete;
   IdentityUrlLoaderThrottle& operator=(const IdentityUrlLoaderThrottle&) =
@@ -47,19 +46,21 @@ class CONTENT_EXPORT IdentityUrlLoaderThrottle
       network::HttpRequestHeadersUpdateParams* headers_update_params) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(IdentityUrlLoaderThrottleTest, HeaderHasToken);
-
   void HandleResponseOrRedirect(
       const GURL& response_url,
-      const network::mojom::URLResponseHead& response_head);
+      const network::mojom::URLResponseHead& response_head,
+      bool* defer);
 
-  static bool HeaderHasToken(const net::HttpResponseHeaders& headers,
-                             std::string_view header_name,
-                             std::string_view token);
+  void OnHeaderParsed(
+      const url::Origin& idp_origin,
+      std::optional<net::structured_headers::ParameterizedItem> item);
 
   GURL request_url_;
   std::optional<url::Origin> request_initiator_;
   SetIdpStatusCallback set_idp_status_cb_;
+  ParseSetLoginHeaderCallback parse_set_login_header_cb_;
+  bool is_inside_handler_response_ = false;
+  bool is_header_parsed_ = false;
 
   base::WeakPtrFactory<IdentityUrlLoaderThrottle> weak_ptr_factory_{this};
 };
