@@ -353,6 +353,7 @@ class HeightTransitionHandler {
                 newHeight,
                 mTopPadding,
                 mUpdateStripVisibility,
+                mTabStripSuppressed,
                 () -> {
                     // Acknowledge and record the new height when transition start signal.
                     // This difference in timing is necessary, since the mTabStripHeight is used
