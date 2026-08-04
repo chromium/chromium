@@ -127,6 +127,14 @@
   (subpath (param darwin-user-temp-dir))
 )
 
+; Metal issues a sandbox extension to permit MTLCompilerService to read source
+; files from disk. It's much broader than we'd like (see
+; https://crbug.com/41485470).
+(allow file-issue-extension
+  (require-all
+    (extension-class "com.apple.app-sandbox.read")
+    (subpath "/")))
+
 (if (not (maybe-disable-metal-shader-cache))
   (maybe-allow-metal-shader-cache-access))
 
