@@ -52,6 +52,8 @@ std::string_view GetMetricsSuffixForSource(SplitTabCreatedSource source) {
       return "NewTabButton";
     case SplitTabCreatedSource::kLinkClick:
       return "LinkClick";
+    case SplitTabCreatedSource::kMacMenuBar:
+      return "MacMenuBar";
   }
 }
 

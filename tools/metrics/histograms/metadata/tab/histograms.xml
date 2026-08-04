@@ -45,6 +45,7 @@ chromium-metrics-reviews@google.com.
   <variant name="KeyboardShortcut" summary="created via keyboard shortcut"/>
   <variant name="LinkClick" summary="created via link click"/>
   <variant name="LinkContextMenu" summary="created via link context menu"/>
+  <variant name="MacMenuBar" summary="created via Mac menu bar"/>
   <variant name="NewTabButton" summary="created via new tab button"/>
   <variant name="TabContextMenu" summary="created via tab context menu"/>
   <variant name="ToolbarButton" summary="created via toolbar button"/>

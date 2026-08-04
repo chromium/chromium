@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -111,6 +112,20 @@ double GetGlassFrameTintOpacity(bool is_dark_mode, bool is_vertical_tabs) {
                                        : kLiquidGlassOpacityLightMode);
 
   return std::clamp(opacity, 0.0, 1.0);
+}
+
+bool IsCommandTriggeredFromMacMenu(NSInteger parent_menu_tag, int command_id) {
+  NSEvent* current_event = [NSApp currentEvent];
+  const bool is_mouse_click =
+      current_event && (current_event.type == NSEventTypeLeftMouseUp ||
+                        current_event.type == NSEventTypeLeftMouseDown);
+
+  NSMenuItem* parent_item = [[NSApp mainMenu] itemWithTag:parent_menu_tag];
+  NSMenuItem* command_item = [[parent_item submenu] itemWithTag:command_id];
+  const bool is_menu_item_focused =
+      command_item && [command_item isHighlighted];
+
+  return is_mouse_click || is_menu_item_focused;
 }
 
 }  // namespace
@@ -531,21 +546,10 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
           is_vertical, tabs::VerticalTabStripEntryPoint::kMacViewMenu);
     }
   } else if (command == IDC_TOGGLE_VERTICAL_TABS_COLLAPSE) {
-    NSEvent* current_event = [NSApp currentEvent];
     if (auto* controller =
             tabs::VerticalTabStripStateController::From(browser)) {
-      const bool is_mouse_click =
-          current_event && (current_event.type == NSEventTypeLeftMouseUp ||
-                            current_event.type == NSEventTypeLeftMouseDown);
-
-      NSMenuItem* view_menu_item =
-          [[NSApp mainMenu] itemWithTag:kMacViewMenuId];
-      NSMenuItem* collapse_item = [[view_menu_item submenu]
-          itemWithTag:IDC_TOGGLE_VERTICAL_TABS_COLLAPSE];
-      const bool is_menu_item_focused =
-          collapse_item && [collapse_item isHighlighted];
-
-      const bool is_view_menu = is_mouse_click || is_menu_item_focused;
+      const bool is_view_menu = IsCommandTriggeredFromMacMenu(
+          kMacViewMenuId, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE);
 
       if (is_view_menu) {
         if (controller->IsCollapsed()) {
@@ -564,6 +568,19 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
               "VerticalTabs_TabStrip_KeyboardShortcutToggleCollapsed"));
         }
       }
+    }
+  } else if (command == IDC_NEW_SPLIT_TAB) {
+    const bool is_tab_menu =
+        IsCommandTriggeredFromMacMenu(kMacTabMenuId, IDC_NEW_SPLIT_TAB);
+
+    split_tabs::SplitTabCreatedSource source =
+        is_tab_menu ? split_tabs::SplitTabCreatedSource::kMacMenuBar
+                    : split_tabs::SplitTabCreatedSource::kKeyboardShortcut;
+
+    if (!browser->tab_strip_model()->GetActiveTab()->IsSplit()) {
+      chrome::NewSplitTab(browser, split_tabs::SplitTabLayout::kSideBySide,
+                          source);
+      return true;
     }
   } else if (command == IDC_CLEAR_BROWSING_DATA) {
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(

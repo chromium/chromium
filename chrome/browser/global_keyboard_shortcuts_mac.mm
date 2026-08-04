@@ -174,8 +174,6 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
                       IDC_DEBUG_PRINT_VIEW_TREE_DETAILS});
     }
 
-    keys.push_back({true, false, false, true, kVK_ANSI_N, IDC_NEW_SPLIT_TAB});
-
     return keys;
   }());
   return *keys;
