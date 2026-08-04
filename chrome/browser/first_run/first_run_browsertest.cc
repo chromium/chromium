@@ -108,6 +108,18 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
   }
 
+#if BUILDFLAG(IS_LINUX)
+  bool SetUpUserDataDirectory() override {
+    if (!InProcessBrowserTest::SetUpUserDataDirectory()) {
+      return false;
+    }
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+    base::WriteFile(user_data_dir.Append("EULA Accepted"), "");
+    return true;
+  }
+#endif
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();

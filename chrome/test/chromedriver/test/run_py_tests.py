@@ -7913,6 +7913,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
       cmd = [_CHROME_BINARY,
              '--remote-debugging-port=%d' % port,
              '--user-data-dir=%s' % temp_dir,
+             '--no-first-run',
              '--use-mock-keychain',
              '--password-store=basic',
              'data:,']

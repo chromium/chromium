@@ -3283,6 +3283,9 @@ class StartupBrowserCreatorFirstRunTest : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
+#if BUILDFLAG(IS_LINUX)
+  bool SetUpUserDataDirectory() override;
+#endif
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   policy::PolicyMap policy_map_;
@@ -3292,6 +3295,18 @@ void StartupBrowserCreatorFirstRunTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kForceFirstRun);
 }
+
+#if BUILDFLAG(IS_LINUX)
+bool StartupBrowserCreatorFirstRunTest::SetUpUserDataDirectory() {
+  if (!InProcessBrowserTest::SetUpUserDataDirectory()) {
+    return false;
+  }
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::WriteFile(user_data_dir.Append("EULA Accepted"), "");
+  return true;
+}
+#endif
 
 void StartupBrowserCreatorFirstRunTest::SetUpInProcessBrowserTestFixture() {
   // TODO(crbug.com/382086296): Confirm IS_CHROMEOS is needed here.
