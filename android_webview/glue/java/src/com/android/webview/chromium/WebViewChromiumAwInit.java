@@ -563,38 +563,6 @@ public class WebViewChromiumAwInit {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)
 
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        CookieManagerThreadingCondition.NOT_CALLED_BEFORE_UI_THREAD_SET,
-        CookieManagerThreadingCondition.CALLED_ON_NON_LOOPER_THREAD,
-        CookieManagerThreadingCondition.CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER,
-        CookieManagerThreadingCondition
-                .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_SAME_BACKGROUND_LOOPER,
-        CookieManagerThreadingCondition
-                .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_DIFFERENT_BACKGROUND_LOOPER,
-        CookieManagerThreadingCondition.CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER,
-        CookieManagerThreadingCondition.CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_BACKGROUND_LOOPER,
-    })
-    private @interface CookieManagerThreadingCondition {
-        int NOT_CALLED_BEFORE_UI_THREAD_SET = 0;
-        int CALLED_ON_NON_LOOPER_THREAD = 1;
-        int CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER = 2;
-        int CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_SAME_BACKGROUND_LOOPER = 3;
-        int CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_DIFFERENT_BACKGROUND_LOOPER = 4;
-        int CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER = 5;
-        int CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_BACKGROUND_LOOPER = 6;
-        int COUNT = 7;
-    };
-
-    private static void logCookieManagerThreadingCondition(
-            @CookieManagerThreadingCondition int condition) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.Startup.CookieManagerThreadingCondition",
-                condition,
-                CookieManagerThreadingCondition.COUNT);
-    }
-
     WebViewChromiumAwInit(WebViewChromiumFactoryProvider factory) {
         mFactory = factory;
         // Do not make calls into 'factory' in this ctor - this ctor is called from the
@@ -1139,45 +1107,6 @@ public class WebViewChromiumAwInit {
                             + looper);
             RecordHistogram.recordBooleanHistogram(
                     "Android.WebView.Startup.IsUiThreadMainLooper", isUiThreadMainLooper);
-
-            // Temporary metric collection for different threading conditions related to
-            // CookieManager.
-            boolean cookieManagerCalled = mGetDefaultCookieManagerCalled.get();
-            if (cookieManagerCalled) {
-                Looper cookieManagerLooper = mFirstGetDefaultCookieManagerLooper.get();
-                if (cookieManagerLooper == null) {
-                    logCookieManagerThreadingCondition(
-                            CookieManagerThreadingCondition.CALLED_ON_NON_LOOPER_THREAD);
-                } else if (!mainLooper.equals(cookieManagerLooper)) {
-                    if (isUiThreadMainLooper) {
-                        logCookieManagerThreadingCondition(
-                                CookieManagerThreadingCondition
-                                        .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER);
-                    } else if (looper.equals(cookieManagerLooper)) {
-                        logCookieManagerThreadingCondition(
-                                CookieManagerThreadingCondition
-                                        .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_SAME_BACKGROUND_LOOPER);
-                    } else {
-                        logCookieManagerThreadingCondition(
-                                CookieManagerThreadingCondition
-                                        .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_DIFFERENT_BACKGROUND_LOOPER);
-                    }
-                } else if (mainLooper.equals(cookieManagerLooper)) {
-                    if (isUiThreadMainLooper) {
-                        logCookieManagerThreadingCondition(
-                                CookieManagerThreadingCondition
-                                        .CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER);
-                    } else {
-                        logCookieManagerThreadingCondition(
-                                CookieManagerThreadingCondition
-                                        .CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_BACKGROUND_LOOPER);
-                    }
-                }
-            } else {
-                logCookieManagerThreadingCondition(
-                        CookieManagerThreadingCondition.NOT_CALLED_BEFORE_UI_THREAD_SET);
-            }
-
             ThreadUtils.setUiThread(looper);
             mThreadIsSet = true;
         }
