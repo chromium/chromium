@@ -69,7 +69,8 @@ class OsSettingsManagerTest : public testing::Test {
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
 
-    scoped_feature_list_.InitWithFeatures({arc::kPerAppLanguage}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kPeripheralCustomization, arc::kPerAppLanguage}, {});
     ASSERT_TRUE(profile_manager_.SetUp());
 
     // Log in user to ensure ARC PlayStore can be enabled.

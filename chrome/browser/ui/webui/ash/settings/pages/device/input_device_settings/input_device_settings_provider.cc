@@ -218,9 +218,11 @@ InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
 
 InputDeviceSettingsProvider::~InputDeviceSettingsProvider() {
   if (auto* controller = InputDeviceSettingsController::Get()) {
-    controller->StopObservingButtons();
-    if (widget_) {
-      widget_->RemoveObserver(this);
+    if (features::IsPeripheralCustomizationEnabled()) {
+      controller->StopObservingButtons();
+      if (widget_) {
+        widget_->RemoveObserver(this);
+      }
     }
     controller->RemoveObserver(this);
   }
@@ -234,7 +236,7 @@ InputDeviceSettingsProvider::~InputDeviceSettingsProvider() {
 }
 
 void InputDeviceSettingsProvider::Initialize(content::WebUI* web_ui) {
-  if (!widget_) {
+  if (features::IsPeripheralCustomizationEnabled() && !widget_) {
     widget_ = views::Widget::GetWidgetForNativeWindow(
         web_ui->GetWebContents()->GetTopLevelNativeWindow());
     if (widget_) {
@@ -317,6 +319,7 @@ void InputDeviceSettingsProvider::OnShellDestroying() {
 }
 
 void InputDeviceSettingsProvider::StartObserving(uint32_t device_id) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
   observing_devices_.insert(device_id);
   if (!observing_paused_) {
     InputDeviceSettingsController::Get()->StartObservingButtons(device_id);
@@ -324,6 +327,7 @@ void InputDeviceSettingsProvider::StartObserving(uint32_t device_id) {
 }
 
 void InputDeviceSettingsProvider::StopObserving() {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
   observing_devices_.clear();
   InputDeviceSettingsController::Get()->StopObservingButtons();
 }
@@ -386,6 +390,7 @@ void InputDeviceSettingsProvider::SetTouchpadSettings(
 void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
     uint32_t device_id,
     ::ash::mojom::GraphicsTabletSettingsPtr settings) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   if (!InputDeviceSettingsController::Get()->SetGraphicsTabletSettings(
           device_id, std::move(settings))) {
@@ -486,6 +491,7 @@ void InputDeviceSettingsProvider::ObserveGraphicsTabletSettings(
 
 void InputDeviceSettingsProvider::ObserveButtonPresses(
     mojo::PendingRemote<mojom::ButtonPressObserver> observer) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
   button_press_observers_.Add(std::move(observer));
 }
 
@@ -742,6 +748,7 @@ void InputDeviceSettingsProvider::NotifyMiceUpdated() {
 }
 
 void InputDeviceSettingsProvider::NotifyGraphicsTabletUpdated() {
+  CHECK(features::IsPeripheralCustomizationEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   auto graphics_tablets = SanitizeAndSortDeviceList(
       InputDeviceSettingsController::Get()->GetConnectedGraphicsTablets());

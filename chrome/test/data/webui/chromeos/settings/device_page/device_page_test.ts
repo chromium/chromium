@@ -60,6 +60,14 @@ suite('<settings-device-page>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
+  /**
+   * Set enablePeripheralCustomization feature flag to true for tests.
+   */
+  function setPeripheralCustomizationEnabled(isEnabled: boolean): void {
+    loadTimeData.overrideValues({
+      enablePeripheralCustomization: isEnabled,
+    });
+  }
 
   /**
    * Set enableSpatialAudioToggle feature flag to true for tests.
@@ -91,6 +99,7 @@ suite('<settings-device-page>', () => {
     assertTrue(isVisible(
         devicePage.shadowRoot!.querySelector('#perDeviceKeyboardRow')));
 
+    // enablePeripheralCustomization feature flag by default is turned on.
     assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
   });
 
@@ -177,6 +186,8 @@ suite('<settings-device-page>', () => {
           setInputDeviceSettingsProviderForTesting(provider);
           provider.setFakeGraphicsTablets(fakeGraphicsTablets);
 
+          // Tests with flag on.
+          setPeripheralCustomizationEnabled(true);
           await init();
 
           assertTrue(isVisible(queryTabletRow()));
@@ -195,6 +206,8 @@ suite('<settings-device-page>', () => {
       setInputDeviceSettingsProviderForTesting(provider);
       provider.setFakeGraphicsTablets(fakeGraphicsTablets);
 
+      // Tests with flag on.
+      setPeripheralCustomizationEnabled(true);
       await init();
 
       const row = queryTabletRow();

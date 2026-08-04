@@ -863,7 +863,9 @@ Shell::~Shell() {
   }
   RemovePreTargetHandler(system_gesture_filter_.get());
   RemoveAccessibilityEventHandler(mouse_cursor_filter_.get());
-  RemovePreTargetHandler(shortcut_input_handler_.get());
+  if (features::IsPeripheralCustomizationEnabled()) {
+    RemovePreTargetHandler(shortcut_input_handler_.get());
+  }
   RemovePreTargetHandler(modality_filter_.get());
   if (::features::IsAccessibilityMouseKeysEnabled()) {
     RemovePreTargetHandler(mouse_keys_controller_.get());
@@ -1718,8 +1720,10 @@ void Shell::Init(
   modality_filter_ = std::make_unique<SystemModalContainerEventFilter>(this);
   AddPreTargetHandler(modality_filter_.get());
 
-  shortcut_input_handler_ = std::make_unique<ShortcutInputHandler>();
-  AddPreTargetHandler(shortcut_input_handler_.get());
+  if (features::IsPeripheralCustomizationEnabled()) {
+    shortcut_input_handler_ = std::make_unique<ShortcutInputHandler>();
+    AddPreTargetHandler(shortcut_input_handler_.get());
+  }
 
   event_client_ = std::make_unique<EventClientImpl>();
 

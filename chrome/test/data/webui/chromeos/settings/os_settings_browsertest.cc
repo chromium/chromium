@@ -143,7 +143,21 @@ class OSSettingsMochaTestAppParentalControlsEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-using OSSettingsDeviceTestPeripheralAndSplitEnabled = OSSettingsMochaTest;
+class OSSettingsDeviceTestPeripheralAndSplitEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDeviceTestPeripheralAndSplitEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPeripheralCustomization,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 class OSSettingsDeviceTestSplitAndAltAndFKeyEnabled
     : public OSSettingsMochaTest {

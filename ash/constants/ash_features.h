@@ -231,6 +231,8 @@ BASE_DECLARE_FEATURE(kDeviceMoveConfigSave);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceWeeklyScheduledSuspendMgs);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kPeripheralCustomization);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpressDefaultOn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDiacriticsUseReplaceSurroundingText);
@@ -1060,6 +1062,7 @@ bool IsDemoModeSecondaryGoogleAccountSigninAllowedFalse();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskTemplateSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeviceMoveConfigSaveEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayPerformanceModeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralCustomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralsLoggingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayAlignmentAssistanceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDoNotDisturbShortcutEnabled();

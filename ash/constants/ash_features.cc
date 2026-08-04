@@ -2003,6 +2003,8 @@ BASE_FEATURE(kDeviceMoveConfigSave, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDeviceWeeklyScheduledSuspendMgs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables peripheral customization to be split per device.
+BASE_FEATURE(kPeripheralCustomization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables peripherals logging.
 BASE_FEATURE(kEnablePeripheralsLogging,
@@ -2470,6 +2472,9 @@ bool IsDisplayPerformanceModeEnabled() {
   return base::FeatureList::IsEnabled(kDisplayPerformanceMode);
 }
 
+bool IsPeripheralCustomizationEnabled() {
+  return base::FeatureList::IsEnabled(kPeripheralCustomization);
+}
 
 bool IsPeripheralsLoggingEnabled() {
   return base::FeatureList::IsEnabled(kEnablePeripheralsLogging);
@@ -2977,7 +2982,8 @@ bool IsPerDeskShelfEnabled() {
 }
 
 bool IsPeripheralNotificationEnabled() {
-  return base::FeatureList::IsEnabled(kPeripheralNotification);
+  return base::FeatureList::IsEnabled(kPeripheralNotification) &&
+         IsPeripheralCustomizationEnabled();
 }
 
 bool IsPhoneHubMonochromeNotificationIconsEnabled() {

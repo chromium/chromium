@@ -40,15 +40,19 @@ InputDeviceSettingsDispatcher::InputDeviceSettingsDispatcher(
       Shell::Get()->input_device_settings_controller();
   input_device_settings_controller_->AddObserver(this);
 
-  duplicate_id_finder_ =
-      &input_device_settings_controller_->duplicate_id_finder();
-  duplicate_id_finder_->AddObserver(this);
+  if (features::IsPeripheralCustomizationEnabled()) {
+    duplicate_id_finder_ =
+        &input_device_settings_controller_->duplicate_id_finder();
+    duplicate_id_finder_->AddObserver(this);
+  }
 }
 
 InputDeviceSettingsDispatcher::~InputDeviceSettingsDispatcher() {
   input_device_settings_controller_->RemoveObserver(this);
 
-  duplicate_id_finder_->RemoveObserver(this);
+  if (features::IsPeripheralCustomizationEnabled()) {
+    duplicate_id_finder_->RemoveObserver(this);
+  }
 }
 
 void InputDeviceSettingsDispatcher::OnMouseConnected(
@@ -95,6 +99,10 @@ void InputDeviceSettingsDispatcher::DispatchMouseSettings(
   input_controller_->SetMouseScrollSensitivity(mouse.id,
                                                settings.scroll_sensitivity);
   input_controller_->SetPrimaryButtonRight(mouse.id, settings.swap_right);
+
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    return;
+  }
 
   UpdateDevicesToBlockModifiers();
 }

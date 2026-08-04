@@ -5439,6 +5439,7 @@ class FKeysRewritingPeripheralCustomizationTest
  public:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features, disabled_features;
+    enabled_features.push_back(features::kPeripheralCustomization);
     (GetParam() ? enabled_features : disabled_features)
         .push_back(ash::features::kModifierSplit);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

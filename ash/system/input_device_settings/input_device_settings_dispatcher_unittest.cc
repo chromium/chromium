@@ -134,6 +134,9 @@ class InputDeviceSettingsDispatcherTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
+                                          {});
+
     AshTestBase::SetUp();
     Shell::Get()->event_rewriter_controller()->Initialize(nullptr, nullptr);
     controller_ = std::make_unique<MockInputController>();

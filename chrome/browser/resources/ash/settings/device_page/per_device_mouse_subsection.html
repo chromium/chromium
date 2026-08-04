@@ -23,7 +23,8 @@
     battery-info="[[mouse.batteryInfo]]"
     icon="os-settings:device-mouse">
   </per-device-subsection-header>
-  <template is="dom-if" if="[[showSwapToggleButton(customizationRestriction)]]">
+  <template is="dom-if" if="[[showSwapToggleButton(
+      customizationRestriction, isPeripheralCustomizationEnabled_)]]">
     <settings-toggle-button id="mouseSwapToggleButton"
         label="$i18n{mouseSwapButtonsLabel}" pref="{{primaryRightPref}}">
     </settings-toggle-button>
@@ -34,6 +35,20 @@
   </template>
   <div class="subsection">
     <h2 class="subsection-subtitle">$i18n{mouseCursor}</h2>
+    <template is="dom-if" if="[[!isPeripheralCustomizationEnabled_]]">
+      <div class="settings-box">
+        <div class="start settings-box-text" id="mouseSwapButtonLabel">
+          $i18n{mouseSwapButtonsLabel}
+        </div>
+        <settings-dropdown-menu id="mouseSwapButtonDropdown"
+            aria-describedby="mouseName"
+            label="$i18n{mouseSwapButtonsLabel}"
+            pref="{{primaryRightPref}}"
+            menu-options="[[swapPrimaryOptions_]]"
+            deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
+        </settings-dropdown-menu>
+      </div>
+    </template>
     <settings-toggle-button id="mouseAcceleration"
         class="hr"
         pref="{{accelerationPref}}"
@@ -112,8 +127,9 @@
                        disabled="[[mouse.settings.scrollAcceleration]]"
                        aria-disabled="[[mouse.settings.scrollAcceleration]]">
       </settings-slider>
-    <template is="dom-if"
-        if="[[showCustomizeButtonRow(customizationRestriction)]]">
+    </div>
+    <template is="dom-if" if="[[showCustomizeButtonRow(
+        customizationRestriction,isPeripheralCustomizationEnabled_)]]">
       <cr-link-row id="customizeMouseButtons"
         class="hr bottom-divider" on-click="onCustomizeButtonsClick"
         aria-describedby="mouseName"

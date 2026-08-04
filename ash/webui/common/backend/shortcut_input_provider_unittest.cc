@@ -66,7 +66,10 @@ ui::KeyEvent CreateFnKeyEvent(bool pressed) {
 
 class ShortcutInputProviderTest : public AshTestBase {
  public:
-  ShortcutInputProviderTest() = default;
+  ShortcutInputProviderTest() {
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
+                                          {});
+  }
 
   void SetUp() override {
     ui::ResourceBundle::CleanupSharedInstance();

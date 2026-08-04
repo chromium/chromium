@@ -61,7 +61,8 @@
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-      <template is="dom-if" if="[[showGraphicsTabletRow_(graphicsTablets)]]">
+      <template is="dom-if" if="[[showGraphicsTabletRow_(graphicsTablets,
+          isPeripheralCustomizationEnabled)]]">
         <cr-link-row id="tabletRow"
             start-icon="os-settings:device-tablet" label="$i18n{tabletTitle}"
             on-click="onGraphicsTabletClick"

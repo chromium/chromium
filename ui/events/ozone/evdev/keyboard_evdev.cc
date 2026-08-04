@@ -20,6 +20,9 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/types/event_type.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#endif
 
 namespace ui {
 
@@ -27,6 +30,10 @@ namespace {
 
 std::optional<KeyboardCode> RemapButtonsToKeyboardCodes(unsigned int key) {
 #if BUILDFLAG(IS_CHROMEOS)
+  if (!ash::features::IsPeripheralCustomizationEnabled()) {
+    return std::nullopt;
+  }
+
   if (key >= BTN_0 && key <= BTN_9) {
     return static_cast<KeyboardCode>(static_cast<int>(VKEY_BUTTON_0) +
                                      (key - BTN_0));

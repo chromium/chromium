@@ -931,6 +931,8 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isDemoSession",
                           ash::demo_mode::IsDeviceInDemoMode());
 
+  html_source->AddBoolean("enablePeripheralCustomization",
+                          ash::features::IsPeripheralCustomizationEnabled());
 
   html_source->AddBoolean(
       "enableAltClickAndSixPackCustomization",
@@ -1082,33 +1084,39 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kPerDevicePointingStickSubpagePath);
 
-  // TODO(yyhyyh@): Add icon for graphics tablet to replace the temporary
-  // stylus icon.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_GRAPHICS_TABLET_TITLE, mojom::Subpage::kGraphicsTablet,
-      mojom::SearchResultIcon::kStylus, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kGraphicsTabletSubpagePath);
+  if (ash::features::IsPeripheralCustomizationEnabled()) {
+    // TODO(yyhyyh@): Add icon for graphics tablet to replace the temporary
+    // stylus icon.
+    generator->RegisterTopLevelSubpage(IDS_SETTINGS_GRAPHICS_TABLET_TITLE,
+                                       mojom::Subpage::kGraphicsTablet,
+                                       mojom::SearchResultIcon::kStylus,
+                                       mojom::SearchResultDefaultRank::kMedium,
+                                       mojom::kGraphicsTabletSubpagePath);
 
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE,
-      mojom::Subpage::kCustomizeMouseButtons, mojom::Subpage::kPerDeviceMouse,
-      mojom::SearchResultIcon::kMouse, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kCustomizeMouseButtonsSubpagePath);
+    generator->RegisterNestedSubpage(IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE,
+                                     mojom::Subpage::kCustomizeMouseButtons,
+                                     mojom::Subpage::kPerDeviceMouse,
+                                     mojom::SearchResultIcon::kMouse,
+                                     mojom::SearchResultDefaultRank::kMedium,
+                                     mojom::kCustomizeMouseButtonsSubpagePath);
 
-  // TODO(yyhyyh@): Add icon for graphics tablet to replace the temporary
-  // stylus icon.
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL,
-      mojom::Subpage::kCustomizeTabletButtons, mojom::Subpage::kGraphicsTablet,
-      mojom::SearchResultIcon::kStylus, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kCustomizeTabletButtonsSubpagePath);
+    // TODO(yyhyyh@): Add icon for graphics tablet to replace the temporary
+    // stylus icon.
+    generator->RegisterNestedSubpage(
+        IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL,
+        mojom::Subpage::kCustomizeTabletButtons,
+        mojom::Subpage::kGraphicsTablet, mojom::SearchResultIcon::kStylus,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kCustomizeTabletButtonsSubpagePath);
 
-  // TODO(yyhyyh@): Decide whether to use stylus icon or add a new icon.
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL,
-      mojom::Subpage::kCustomizePenButtons, mojom::Subpage::kGraphicsTablet,
-      mojom::SearchResultIcon::kStylus, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kCustomizePenButtonsSubpagePath);
+    // TODO(yyhyyh@): Decide whether to use stylus icon or add a new icon.
+    generator->RegisterNestedSubpage(
+        IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL,
+        mojom::Subpage::kCustomizePenButtons, mojom::Subpage::kGraphicsTablet,
+        mojom::SearchResultIcon::kStylus,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kCustomizePenButtonsSubpagePath);
+  }
 
   // Keyboard.
   generator->RegisterTopLevelSubpage(

@@ -7,9 +7,10 @@ import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import type {SettingsPerDeviceMouseSubsectionElement} from 'chrome://os-settings/lazy_load.js';
 import {PerDeviceSubsectionHeaderElement} from 'chrome://os-settings/lazy_load.js';
-import type {CrLinkRowElement, CrToggleElement, Mouse, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {FakeInputDeviceSettingsProvider, fakeMice, fakeMice2, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {CrLinkRowElement, CrToggleElement, Mouse, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeMice, fakeMice2, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import type {BluetoothBatteryIconPercentageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_battery_icon_percentage.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -21,6 +22,10 @@ const MOUSE_ACCELERATION_SETTING_ID = 408;
 suite('<settings-per-device-mouse-subsection>', function() {
   let subsection: SettingsPerDeviceMouseSubsectionElement;
   let provider: FakeInputDeviceSettingsProvider;
+
+  setup(() => {
+    setPeripheralCustomizationEnabled(true);
+  });
 
   teardown(() => {
     subsection.remove();
@@ -43,13 +48,31 @@ suite('<settings-per-device-mouse-subsection>', function() {
     return flushTasks();
   }
 
+  /**
+   * Override enablePeripheralCustomization feature flag.
+   * @param {!boolean} isEnabled
+   */
+  function setPeripheralCustomizationEnabled(isEnabled: boolean): void {
+    loadTimeData.overrideValues({
+      enablePeripheralCustomization: isEnabled,
+    });
+  }
 
   /**
    * Test that API are updated when mouse settings change.
    */
   test('Update API when mouse settings change', async () => {
+    setPeripheralCustomizationEnabled(false);
     await initializePerDeviceMouseSubsection(fakeMice);
+    const mouseSwapButtonDropdown =
+        subsection.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#mouseSwapButtonDropdown');
+    assert(mouseSwapButtonDropdown);
+    await flushTasks();
     let updatedMice = await provider.getConnectedMouseSettings();
+    assertEquals(
+        updatedMice[0]!.settings.swapRight,
+        mouseSwapButtonDropdown.pref!.value);
 
     const mouseAccelerationToggleButton =
         subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -148,9 +171,21 @@ suite('<settings-per-device-mouse-subsection>', function() {
     assertEquals(
         fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton.pref!.value);
 
+    // Turn off the feature flag, the mouse swap toggle button disappear.
+    setPeripheralCustomizationEnabled(false);
+    await initializePerDeviceMouseSubsection(fakeMice2);
+    mouseSwapToggleButton =
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#mouseSwapToggleButton');
+    assertFalse(!!mouseSwapToggleButton);
+    customizeButtonsRow =
+        subsection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#customizeMouseButtons');
+    assertFalse(!!customizeButtonsRow);
 
     // If the customization restriction is not kDisallowCustomizations,
     // the mouse swap toggle button disappear.
+    setPeripheralCustomizationEnabled(true);
     await initializePerDeviceMouseSubsection(fakeMice);
     mouseSwapToggleButton =
         subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -167,6 +202,20 @@ suite('<settings-per-device-mouse-subsection>', function() {
    */
   test('Verify mouse settings data', async () => {
     await initializePerDeviceMouseSubsection(fakeMice);
+    // Verify that swapright setting will not be visible when
+    // peripheralCustomization flag is enabled.
+    let mouseSwapButtonDropdown =
+        subsection.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#mouseSwapButtonDropdown');
+    assert(!mouseSwapButtonDropdown);
+
+    setPeripheralCustomizationEnabled(false);
+    await initializePerDeviceMouseSubsection(fakeMice);
+    mouseSwapButtonDropdown =
+        subsection.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#mouseSwapButtonDropdown');
+    assertEquals(
+        fakeMice[0]!.settings.swapRight, mouseSwapButtonDropdown!.pref!.value);
     let mouseAccelerationToggleButton =
         subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#mouseAcceleration');
@@ -199,6 +248,10 @@ suite('<settings-per-device-mouse-subsection>', function() {
 
     assert(fakeMice[1]);
     await changeMouseSubsectionState(fakeMice[1]);
+    mouseSwapButtonDropdown =
+        subsection.shadowRoot!.querySelector('#mouseSwapButtonDropdown');
+    assertEquals(
+        fakeMice[1].settings.swapRight, mouseSwapButtonDropdown!.pref!.value);
     mouseAccelerationToggleButton =
         subsection.shadowRoot!.querySelector('#mouseAcceleration');
     assertEquals(
@@ -274,6 +327,29 @@ suite('<settings-per-device-mouse-subsection>', function() {
     assertEquals(null, subsection.shadowRoot!.activeElement);
   });
 
+  /**
+   * Verifies that the policy indicator is properly reflected in the UI.
+   */
+  test('swap right policy reflected in UI', async () => {
+    setPeripheralCustomizationEnabled(false);
+    await initializePerDeviceMouseSubsection(fakeMice);
+    subsection.set('mousePolicies', {
+      swapRightPolicy: {policy_status: PolicyStatus.kManaged, value: false},
+    });
+    await flushTasks();
+    const swapRightDropdown =
+        subsection.shadowRoot!.querySelector('#mouseSwapButtonDropdown');
+    assert(swapRightDropdown);
+    let policyIndicator =
+        swapRightDropdown.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertTrue(isVisible(policyIndicator));
+
+    subsection.set('mousePolicies', {swapRightPolicy: undefined});
+    await flushTasks();
+    policyIndicator =
+        swapRightDropdown.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertFalse(isVisible(policyIndicator));
+  });
 
   /**
    * Verify clicking the customize mouse buttons row will be redirecting to the

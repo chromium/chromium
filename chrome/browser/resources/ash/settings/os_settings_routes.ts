@@ -371,20 +371,22 @@ export function createRoutes(): OsSettingsRoutes {
       r.PER_DEVICE_KEYBOARD,
       routesMojom.PER_DEVICE_KEYBOARD_REMAP_KEYS_SUBPAGE_PATH,
       Subpage.kPerDeviceKeyboardRemapKeys);
-  r.GRAPHICS_TABLET = createSubpage(
-      r.DEVICE, routesMojom.GRAPHICS_TABLET_SUBPAGE_PATH,
-      Subpage.kGraphicsTablet);
-  if (r.PER_DEVICE_MOUSE) {
-    r.CUSTOMIZE_MOUSE_BUTTONS = createSubpage(
-        r.PER_DEVICE_MOUSE, routesMojom.CUSTOMIZE_MOUSE_BUTTONS_SUBPAGE_PATH,
-        Subpage.kCustomizeMouseButtons);
+  if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
+    r.GRAPHICS_TABLET = createSubpage(
+        r.DEVICE, routesMojom.GRAPHICS_TABLET_SUBPAGE_PATH,
+        Subpage.kGraphicsTablet);
+    if (r.PER_DEVICE_MOUSE) {
+      r.CUSTOMIZE_MOUSE_BUTTONS = createSubpage(
+          r.PER_DEVICE_MOUSE, routesMojom.CUSTOMIZE_MOUSE_BUTTONS_SUBPAGE_PATH,
+          Subpage.kCustomizeMouseButtons);
+    }
+    r.CUSTOMIZE_TABLET_BUTTONS = createSubpage(
+        r.GRAPHICS_TABLET, routesMojom.CUSTOMIZE_TABLET_BUTTONS_SUBPAGE_PATH,
+        Subpage.kCustomizeTabletButtons);
+    r.CUSTOMIZE_PEN_BUTTONS = createSubpage(
+        r.GRAPHICS_TABLET, routesMojom.CUSTOMIZE_PEN_BUTTONS_SUBPAGE_PATH,
+        Subpage.kCustomizePenButtons);
   }
-  r.CUSTOMIZE_TABLET_BUTTONS = createSubpage(
-      r.GRAPHICS_TABLET, routesMojom.CUSTOMIZE_TABLET_BUTTONS_SUBPAGE_PATH,
-      Subpage.kCustomizeTabletButtons);
-  r.CUSTOMIZE_PEN_BUTTONS = createSubpage(
-      r.GRAPHICS_TABLET, routesMojom.CUSTOMIZE_PEN_BUTTONS_SUBPAGE_PATH,
-      Subpage.kCustomizePenButtons);
 
   // Personalization section.
   r.PERSONALIZATION = createSection(
