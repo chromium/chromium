@@ -40,7 +40,7 @@
 namespace optimization_guide {
 
 BASE_FEATURE(kOptimizationGuideManifestBroker,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

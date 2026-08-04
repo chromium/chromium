@@ -9,6 +9,7 @@
 #include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -93,6 +94,10 @@ void ManifestMonitor::OnDiskSpaceEvaluated(
   TRACE_EVENT("optimization_guide", "ManifestMonitor::OnDiskSpaceEvaluated",
               perfetto::Flow::FromPointer(this));
   free_space_ = free_space;
+  if (free_space.has_value()) {
+    base::UmaHistogramCounts10M("OptimizationGuide.OnDeviceModel.FreeDiskSpace",
+                                free_space->InMiB());
+  }
   OnInputsChanged();
 }
 

@@ -18328,24 +18328,6 @@
             ]
         }
     ],
-    "OptimizationGuideManifestBroker": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260618",
-                    "enable_features": [
-                        "OptimizationGuideManifestBroker"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizationGuideProactivePersonalizedHintsFetching": [
         {
             "platforms": [

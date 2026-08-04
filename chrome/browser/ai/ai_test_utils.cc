@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -71,7 +72,10 @@ void AITestUtils::TestStreamingResponder::OnContextOverflow() {
 
 AITestUtils::AITestBase::AITestBase()
     : ChromeRenderViewHostTestHarness(
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  scoped_feature_list_.InitAndDisableFeature(
+      optimization_guide::kOptimizationGuideManifestBroker);
+}
 AITestUtils::AITestBase::~AITestBase() = default;
 
 void AITestUtils::AITestBase::SetUp() {
@@ -137,7 +141,10 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
       std::make_unique<AIManager>(main_rfh()->GetBrowserContext(), main_rfh());
 }
 
-AITestUtils::AITestManifestBase::AITestManifestBase() = default;
+AITestUtils::AITestManifestBase::AITestManifestBase() {
+  manifest_scoped_feature_list_.InitAndEnableFeature(
+      optimization_guide::kOptimizationGuideManifestBroker);
+}
 AITestUtils::AITestManifestBase::~AITestManifestBase() = default;
 
 void AITestUtils::AITestManifestBase::SetupManifest() {}

@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/supports_user_data.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -138,6 +139,8 @@ class AITestUtils {
     std::unique_ptr<optimization_guide::FakeAdaptationAsset> fake_asset_;
 
     std::unique_ptr<AIManager> ai_manager_;
+
+    base::test::ScopedFeatureList scoped_feature_list_;
   };
 
   class AITestManifestBase : public AITestBase {
@@ -152,6 +155,8 @@ class AITestUtils {
 
     std::unique_ptr<optimization_guide::FakeManifestBroker>
         fake_manifest_broker_;
+
+    base::test::ScopedFeatureList manifest_scoped_feature_list_;
   };
 
   // Converts string language codes to AILanguageCode mojo struct.
