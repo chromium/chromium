@@ -64,6 +64,11 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     content::RunAllPendingInMessageLoop();
   }
 
+  void TearDownOnMainThread() override {
+    test_delegate_->SetProfile(nullptr);
+    ExtensionApiTest::TearDownOnMainThread();
+  }
+
   std::unique_ptr<KeyedService> Create(content::BrowserContext* context) {
     return std::make_unique<PasswordsPrivateDelegateProxy>(context,
                                                            test_delegate_);

@@ -214,7 +214,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // List of insecure credentials.
   std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials_;
-  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   bool is_account_storage_enabled_ = false;
 
