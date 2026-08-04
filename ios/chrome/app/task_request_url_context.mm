@@ -20,6 +20,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_for_widget_url_context.h"
+#import "ios/chrome/app/task_request_for_xcallback_url_context.h"
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
@@ -154,10 +155,6 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 
 @end
 
-// Subclass handling X-Callback URLs (googlechrome://x-callback-url/).
-@interface TaskRequestForXCallbackURLContext : TaskRequestForURLContext
-@end
-
 @implementation TaskRequestForURLContext
 
 + (instancetype)taskRequestWithURLContext:(UIOpenURLContext*)URLContext
@@ -271,32 +268,3 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 
 @end
 
-#pragma mark - TaskRequestForXCallbackURLContext
-
-@implementation TaskRequestForXCallbackURLContext
-
-- (void)recordStartupMetrics {
-  [super recordStartupMetrics];
-
-  base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::X_CALLBACK);
-
-  NSString* action = [self.URLContext.URL path];
-  if ([action isEqualToString:
-                  [NSString stringWithFormat:
-                                @"/%s",
-                                app_group::kChromeAppGroupXCallbackCommand]]) {
-    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
-                              START_ACTION_XCALLBACK_APPGROUP_COMMAND,
-                              MOBILE_SESSION_START_ACTION_COUNT);
-  } else if ([action isEqualToString:@"/open"]) {
-    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
-                              START_ACTION_XCALLBACK_OPEN,
-                              MOBILE_SESSION_START_ACTION_COUNT);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
-                              START_ACTION_XCALLBACK_OTHER,
-                              MOBILE_SESSION_START_ACTION_COUNT);
-  }
-}
-
-@end

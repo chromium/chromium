@@ -83,6 +83,8 @@ source_set("tasks_handling") {
     "task_request.mm",
     "task_request_for_widget_url_context.h",
     "task_request_for_widget_url_context.mm",
+    "task_request_for_xcallback_url_context.h",
+    "task_request_for_xcallback_url_context.mm",
     "task_request_private.h",
     "task_request_shortcut_item.h",
     "task_request_shortcut_item.mm",
