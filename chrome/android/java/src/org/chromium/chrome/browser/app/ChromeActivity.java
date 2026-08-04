@@ -1637,6 +1637,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @Override
     public void onStopWithNative() {
         super.onStopWithNative();
+        if (mFullscreenVideoPictureInPictureController != null) {
+            mFullscreenVideoPictureInPictureController.onStop();
+        }
         endUmaSession();
     }
 

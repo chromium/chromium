@@ -285,6 +285,36 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     }
 
     @Test
+    public void pictureInPictureSuspendsMediaWhenClosedByOnStop() {
+        enterPip();
+        verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
+
+        mController.onStop();
+        verify(mMediaSession, times(1)).suspend(SuspendType.SYSTEM);
+
+        mController.onStop();
+        verify(mMediaSession, times(1)).suspend(SuspendType.SYSTEM);
+    }
+
+    @Test
+    public void pictureInPictureDoesNotSuspendMediaWhenRestoredByOnResume() {
+        enterPip();
+        verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
+
+        mController.onResume();
+        mController.onStop();
+        verify(mMediaSession, times(0)).suspend(SuspendType.SYSTEM);
+    }
+
+    @Test
+    public void testOnStopDoesNotSuspendMediaWithoutPictureInPicture() {
+        mController.onStop();
+        verify(mMediaSession, times(0)).suspend(SuspendType.SYSTEM);
+    }
+
+    @Test
     public void testOnEnteredPictureInPictureMode_Success() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
