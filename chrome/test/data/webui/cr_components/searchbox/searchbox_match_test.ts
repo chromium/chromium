@@ -6,7 +6,7 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import {SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {createAutocompleteMatch} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, createKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -155,7 +155,7 @@ suite('CrComponentsRealboxMatchTest', () => {
   test('UpdateSelectionUpdatesClasses', async () => {
     // Add keyword chip and 2 actions.
     const match = createAutocompleteMatch();
-    match.keywordChipHint = 'keyword';
+    match.keywordModel = createKeywordModelForTesting({chipHint: 'keyword'});
     match.actions.push({
       hint: 'hint',
       suggestionContents: 'suggestionContents',
@@ -350,7 +350,8 @@ suite('CrComponentsRealboxMatchTest', () => {
     const match = createAutocompleteMatch();
     match.a11yLabel = 'Search Google';
     match.description = 'Google';
-    match.keywordChipA11y = 'Search Google in Keyword Mode';
+    match.keywordModel = createKeywordModelForTesting(
+        {chipA11y: 'Search Google in Keyword Mode'});
     match.actions = [
       {
         hint: 'action hint',
