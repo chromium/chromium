@@ -75,7 +75,6 @@ struct PLATFORM_EXPORT ShapeResultRun final
   ShapeResultRun(const ShapeResultRun& other)
       : glyph_data_(other.glyph_data_),
         font_data_(other.font_data_),
-        graphemes_(other.graphemes_),
         start_index_(other.start_index_),
         num_characters_(other.num_characters_),
         width_(other.width_),
@@ -86,7 +85,6 @@ struct PLATFORM_EXPORT ShapeResultRun final
   void Trace(Visitor* visitor) const {
     visitor->Trace(glyph_data_);
     visitor->Trace(font_data_);
-    visitor->Trace(graphemes_);
   }
 
   unsigned NumCharacters() const { return num_characters_; }
@@ -174,7 +172,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
         font_data_.Get(), HbDirection(), canvas_rotation_, script_,
         start_index_, glyph_data_.size() + other.glyph_data_.size(),
         num_characters_ + other.num_characters_);
-    // Note: We populate |graphemes_| on demand, e.g. hit testing.
+    // Note: We populate grapheme data on demand, e.g. hit testing.
     const int index_adjust = other.start_index_ - start_index_;
     if (IsRtl()) [[unlikely]] {
       run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
@@ -258,15 +256,36 @@ struct PLATFORM_EXPORT ShapeResultRun final
   class GlyphDataCollection final {
     DISALLOW_NEW();
 
+    class RareData final : public GarbageCollected<RareData> {
+     public:
+      void Trace(Visitor* visitor) const {
+        visitor->Trace(offsets_);
+        visitor->Trace(graphemes_);
+      }
+
+      // `offsets_[i]` is the glyph offset for `data_[i]`.
+      Member<GCedHeapVector<GlyphOffset>> offsets_;
+      // `graphemes_[i]` is the number of graphemes up to and including the
+      // ith character in the run.
+      Member<GCedHeapVector<unsigned>> graphemes_;
+    };
+
    public:
     explicit GlyphDataCollection(unsigned num_glyphs) : data_(num_glyphs) {}
 
     GlyphDataCollection(const GlyphDataCollection& other) : data_(other.data_) {
-      // Always deep copy `offsets_`, as it is generally modified after copying.
-      if (other.offsets_) {
-        offsets_ = MakeGarbageCollected<GCedHeapVector<GlyphOffset>>(
-            other.offsets_->size());
-        std::ranges::copy(*other.offsets_, offsets_->begin());
+      // Always deep copy offsets, as they are generally modified after copying.
+      if (other.HasNonZeroOffsets()) {
+        EnsureRareData();
+        rare_data_->offsets_ =
+            MakeGarbageCollected<GCedHeapVector<GlyphOffset>>(
+                other.OffsetsVector()->size());
+        std::ranges::copy(*other.OffsetsVector(),
+                          rare_data_->offsets_->begin());
+      }
+      if (other.HasGraphemes()) {
+        EnsureRareData();
+        rare_data_->graphemes_ = other.rare_data_->graphemes_;
       }
     }
 
@@ -283,17 +302,32 @@ struct PLATFORM_EXPORT ShapeResultRun final
     HarfBuzzRunGlyphData& back() { return data_.back(); }
     const HarfBuzzRunGlyphData& back() const { return data_.back(); }
 
-    bool HasNonZeroOffsets() const { return offsets_ != nullptr; }
+    bool HasNonZeroOffsets() const { return OffsetsVector(); }
+    bool HasGraphemes() const { return Graphemes(); }
+
+    const GCedHeapVector<unsigned>* Graphemes() const {
+      return rare_data_ ? rare_data_->graphemes_.Get() : nullptr;
+    }
+    GCedHeapVector<unsigned>* Graphemes() {
+      return rare_data_ ? rare_data_->graphemes_.Get() : nullptr;
+    }
+    void SetGraphemes(GCedHeapVector<unsigned>* graphemes) {
+      DCHECK(graphemes);
+      EnsureRareData();
+      rare_data_->graphemes_ = graphemes;
+    }
 
     size_t ByteSize() const {
       return sizeof(*this) + size() * sizeof(HarfBuzzRunGlyphData) +
-             sizeof(GlyphOffset) * (offsets_ ? offsets_->size() : 0u);
+             sizeof(GlyphOffset) *
+                 (HasNonZeroOffsets() ? OffsetsVector()->size() : 0u);
     }
 
     // The `span` of `GlyphOffset` if `HasNonZeroOffsets()`, or an empty span.
     base::span<const GlyphOffset> Offsets() const {
-      return offsets_ ? base::span<const GlyphOffset>(*offsets_)
-                      : base::span<const GlyphOffset>();
+      const auto* offsets = OffsetsVector();
+      return offsets ? base::span<const GlyphOffset>(*offsets)
+                     : base::span<const GlyphOffset>();
     }
 
     template <bool has_non_zero_glyph_offsets>
@@ -314,12 +348,13 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
       if (other1.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
-        std::ranges::copy(*other1.offsets_, offsets_->begin());
+        std::ranges::copy(*other1.OffsetsVector(), OffsetsVector()->begin());
       }
       if (other2.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
-        std::ranges::copy(*other2.offsets_,
-                          UNSAFE_TODO(offsets_->begin() + other1.size()));
+        std::ranges::copy(
+            *other2.OffsetsVector(),
+            UNSAFE_TODO(OffsetsVector()->begin() + other1.size()));
       }
     }
 
@@ -330,23 +365,23 @@ struct PLATFORM_EXPORT ShapeResultRun final
       std::ranges::copy(range, data_.data());
 
       if (!range.HasOffsets() || range.IsEmpty()) {
-        offsets_ = nullptr;
+        ClearOffsets();
       } else {
         AllocateOffsets();
-        std::ranges::copy(range.Offsets(), offsets_->begin());
+        std::ranges::copy(range.Offsets(), OffsetsVector()->begin());
       }
     }
 
     void AddOffsetHeightAt(unsigned index, float delta) {
       DCHECK_NE(delta, 0.0f);
       AllocateOffsetsIfNeeded();
-      (*offsets_)[index].set_y((*offsets_)[index].y() + delta);
+      (*OffsetsVector())[index].set_y((*OffsetsVector())[index].y() + delta);
     }
 
     void AddOffsetWidthAt(unsigned index, float delta) {
       DCHECK_NE(delta, 0.0f);
       AllocateOffsetsIfNeeded();
-      (*offsets_)[index].set_x((*offsets_)[index].x() + delta);
+      (*OffsetsVector())[index].set_x((*OffsetsVector())[index].x() + delta);
     }
 
     void SetOffsetAt(unsigned index, GlyphOffset offset) {
@@ -356,7 +391,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
         }
         AllocateOffsets();
       }
-      (*offsets_)[index] = offset;
+      (*OffsetsVector())[index] = offset;
     }
 
     // Vector<HarfBuzzRunGlyphData> like functions
@@ -380,8 +415,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
     void Reverse() {
       std::ranges::reverse(*this);
-      if (offsets_) {
-        offsets_->Reverse();
+      if (HasNonZeroOffsets()) {
+        OffsetsVector()->Reverse();
       }
     }
 
@@ -394,27 +429,30 @@ struct PLATFORM_EXPORT ShapeResultRun final
       DCHECK_LT(new_size, size());
       data_.Shrink(new_size);
       if (HasNonZeroOffsets()) {
-        offsets_->Shrink(new_size);
+        OffsetsVector()->Shrink(new_size);
       }
     }
 
 #if DCHECK_IS_ON()
     bool operator==(const GlyphDataCollection& other) const {
       return data_ == other.data_ &&
-             base::ValuesEquivalent(offsets_, other.offsets_);
+             base::ValuesEquivalent(OffsetsVector(), other.OffsetsVector()) &&
+             base::ValuesEquivalent(Graphemes(), other.Graphemes());
     }
 #endif
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(data_);
-      visitor->Trace(offsets_);
+      visitor->Trace(rare_data_);
     }
 
    private:
     void AllocateOffsets() {
       DCHECK_GE(size(), 1u);
       DCHECK(!HasNonZeroOffsets());
-      offsets_ = MakeGarbageCollected<GCedHeapVector<GlyphOffset>>(size());
+      EnsureRareData();
+      rare_data_->offsets_ =
+          MakeGarbageCollected<GCedHeapVector<GlyphOffset>>(size());
     }
 
     void AllocateOffsetsIfNeeded() {
@@ -423,13 +461,33 @@ struct PLATFORM_EXPORT ShapeResultRun final
       }
     }
 
-    // Note: |offsets_| holds number of elements instead o here to reduce
-    // memory usage.
+    const GCedHeapVector<GlyphOffset>* OffsetsVector() const {
+      return rare_data_ ? rare_data_->offsets_.Get() : nullptr;
+    }
+    GCedHeapVector<GlyphOffset>* OffsetsVector() {
+      return rare_data_ ? rare_data_->offsets_.Get() : nullptr;
+    }
+    void ClearOffsets() {
+      if (!rare_data_) {
+        return;
+      }
+      rare_data_->offsets_ = nullptr;
+      ClearRareDataIfEmpty();
+    }
+    void EnsureRareData() {
+      if (!rare_data_) {
+        rare_data_ = MakeGarbageCollected<RareData>();
+      }
+    }
+    void ClearRareDataIfEmpty() {
+      if (rare_data_ && !rare_data_->offsets_ && !rare_data_->graphemes_) {
+        rare_data_ = nullptr;
+      }
+    }
+
     HeapVector<HarfBuzzRunGlyphData> data_;
-    // |offsets_| holds collection of offset for |data_[i]|.
-    // When all offsets are zero, we leave this null to reduce memory usage
-    // (most runs, e.g. normal horizontal Latin text, have no glyph offsets).
-    Member<GCedHeapVector<GlyphOffset>> offsets_;
+    // Most runs need neither offsets nor grapheme data.
+    Member<RareData> rare_data_;
   };
 
 #if DCHECK_IS_ON()
@@ -451,7 +509,6 @@ struct PLATFORM_EXPORT ShapeResultRun final
     })();
 
     return glyph_data_ == other.glyph_data_ && font_data_ == other.font_data_ &&
-           base::ValuesEquivalent(graphemes_, other.graphemes_) &&
            start_index_ == other.start_index_ &&
            num_characters_ == other.num_characters_ && width_ == other.width_ &&
            script_equivalent && hb_direction_ == other.hb_direction_ &&
@@ -487,10 +544,6 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
   GlyphDataCollection glyph_data_;
   Member<SimpleFontData> font_data_;
-
-  // graphemes_[i] is the number of graphemes up to (and including) the ith
-  // character in the run.
-  Member<GCedHeapVector<unsigned>> graphemes_;
 
   unsigned start_index_;
   unsigned num_characters_;

@@ -90,9 +90,9 @@ struct SameSizeAsRunInfo {
 
    public:
     HeapVector<int> glyphs;
-    Member<void*> offsets;
+    Member<void*> rare_data;
   } glyph_data;
-  Member<void*> pointer2[2];
+  Member<void*> font_data;
   int integers[5];
 };
 
@@ -173,13 +173,14 @@ float ShapeResultRun::XPositionForVisualOffset(
 }
 
 unsigned ShapeResultRun::NumGraphemes(unsigned start, unsigned end) const {
-  if (!graphemes_ || start >= num_characters_) {
+  const auto* graphemes = glyph_data_.Graphemes();
+  if (!graphemes || start >= num_characters_) {
     return 0;
   }
   CHECK_LT(start, end);
   CHECK_LE(end, num_characters_);
-  CHECK_EQ(num_characters_, graphemes_->size());
-  return (*graphemes_)[end - 1] - (*graphemes_)[start] + 1;
+  CHECK_EQ(num_characters_, graphemes->size());
+  return (*graphemes)[end - 1] - (*graphemes)[start] + 1;
 }
 
 void ShapeResult::EnsureGraphemes(const StringView& text) const {
@@ -190,12 +191,12 @@ void ShapeResult::EnsureGraphemes(const StringView& text) const {
   if (runs_.empty())
     return;
 
-  const bool is_computed = runs_.front()->graphemes_;
+  const bool is_computed = runs_.front()->glyph_data_.HasGraphemes();
 #if EXPENSIVE_DCHECKS_ARE_ON()
   for (const auto& run : runs_) {
-    DCHECK_EQ(is_computed, !!run->graphemes_);
-    if (run->graphemes_) {
-      DCHECK_EQ(run->num_characters_, run->graphemes_->size());
+    DCHECK_EQ(is_computed, run->glyph_data_.HasGraphemes());
+    if (const auto* graphemes = run->glyph_data_.Graphemes()) {
+      DCHECK_EQ(run->num_characters_, graphemes->size());
     }
   }
 #endif
@@ -207,12 +208,12 @@ void ShapeResult::EnsureGraphemes(const StringView& text) const {
     if (!run)
       continue;
     DCHECK_GE(run->start_index_, result_start_index);
-    run->graphemes_ =
-        MakeGarbageCollected<GCedHeapVector<unsigned>>(run->num_characters_);
+    run->glyph_data_.SetGraphemes(
+        MakeGarbageCollected<GCedHeapVector<unsigned>>(run->num_characters_));
     GraphemesClusterList(
         StringView(text, run->start_index_ - result_start_index,
                    run->num_characters_),
-        *run->graphemes_);
+        *run->glyph_data_.Graphemes());
   }
 }
 

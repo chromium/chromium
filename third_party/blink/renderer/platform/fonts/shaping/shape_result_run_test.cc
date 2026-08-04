@@ -26,13 +26,22 @@ class ShapeResultRunTest : public testing::Test {};
 
 TEST_F(ShapeResultRunTest, GlyphDataCopyConstructor) {
   ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
+  auto* graphemes = MakeGarbageCollected<GCedHeapVector<unsigned>>(2);
+  run->glyph_data_.SetGraphemes(graphemes);
 
   ShapeResultRun* run2 = MakeGarbageCollected<ShapeResultRun>(*run);
   EXPECT_FALSE(run2->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(graphemes, run2->glyph_data_.Graphemes());
 
   run->glyph_data_.SetOffsetAt(0, GlyphOffset(1, 1));
   ShapeResultRun* run3 = MakeGarbageCollected<ShapeResultRun>(*run);
   ASSERT_TRUE(run3->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(GlyphOffset(1, 1), run3->glyph_data_.Offsets()[0]);
+  EXPECT_NE(run->glyph_data_.Offsets().data(),
+            run3->glyph_data_.Offsets().data());
+  EXPECT_EQ(graphemes, run3->glyph_data_.Graphemes());
+
+  run->glyph_data_.SetOffsetAt(0, GlyphOffset(2, 2));
   EXPECT_EQ(GlyphOffset(1, 1), run3->glyph_data_.Offsets()[0]);
 }
 
