@@ -83,8 +83,7 @@ class FeaturePromoDialogTest : public TestBase {
     feature_ = GetFeatureForTest();
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features =*/{*feature_},
-        /* disabled_features =*/
-        {feature_engagement::kIPHLiveCaptionFeature});
+        /* disabled_features =*/{});
 
     // TODO(crbug.com/40727458): fix cause of bubbles overflowing the
     // screen and remove this.

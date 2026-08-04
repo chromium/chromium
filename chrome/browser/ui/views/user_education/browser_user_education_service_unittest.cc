@@ -249,7 +249,6 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoMetadata) {
       &feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
       &feature_engagement::kIPHGMCCastStartStopFeature,
       &feature_engagement::kIPHGMCLocalMediaCastingFeature,
-      &feature_engagement::kIPHLiveCaptionFeature,
       &feature_engagement::kIPHTabAudioMutingFeature,
       &feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature,
       &feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,

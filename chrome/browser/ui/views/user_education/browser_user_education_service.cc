@@ -824,12 +824,6 @@ void MaybeRegisterChromeFeaturePromos(
   }
 #endif
 
-  // kIPHLiveCaptionFeature:
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
-      feature_engagement::kIPHLiveCaptionFeature, kToolbarMediaButtonElementId,
-      IDS_LIVE_CAPTION_PROMO, IDS_LIVE_CAPTION_PROMO_SCREENREADER,
-      FeaturePromoSpecification::AcceleratorInfo()));
-
   // kIPHTabAudioMutingFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

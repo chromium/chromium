@@ -16591,9 +16591,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </if>
 
       <!-- Live caption. -->
-      <message name="IDS_LIVE_CAPTION_PROMO" desc="Text shown on promotional UI appearing next to the global media controls button">
-        Get captions for your audio and video
-      </message>
       <message name="IDS_LIVE_CAPTION_PROMO_SCREENREADER" desc="Text announced encouraging users to open live caption">
         Get captions for your audio and video by enabling Live Caption in settings
       </message>

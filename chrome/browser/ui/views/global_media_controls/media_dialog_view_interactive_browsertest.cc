@@ -134,8 +134,7 @@ class TestMediaRouter : public media_router::MockMediaRouter {
 class MediaDialogViewBrowserTest : public InProcessBrowserTest {
  public:
   MediaDialogViewBrowserTest() {
-    feature_list_.InitWithFeatures({feature_engagement::kIPHLiveCaptionFeature,
-                                    media::kFeatureManagementLiveTranslateCrOS},
+    feature_list_.InitWithFeatures({media::kFeatureManagementLiveTranslateCrOS},
                                    {});
   }
 

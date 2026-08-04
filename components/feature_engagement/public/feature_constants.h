@@ -102,7 +102,6 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime;
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHLensOverlayTranslateButtonFeature);
-FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHLiveCaptionFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHTabAudioMutingFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPasswordsSavePrimingPromoFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPasswordsSaveRecoveryPromoFeature);

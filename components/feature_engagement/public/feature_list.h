@@ -455,7 +455,6 @@ DEFINE_VARIATION_PARAM(kIPHMultistepFilterPromoFeature,
 DEFINE_VARIATION_PARAM(kIPHLensOverlayFeature, "IPH_LensOverlay");
 DEFINE_VARIATION_PARAM(kIPHLensOverlayTranslateButtonFeature,
                        "IPH_LensOverlayTranslateButton");
-DEFINE_VARIATION_PARAM(kIPHLiveCaptionFeature, "IPH_LiveCaption");
 DEFINE_VARIATION_PARAM(kIPHPasswordsSavePrimingPromoFeature,
                        "IPH_PasswordsSavePrimingPromo");
 DEFINE_VARIATION_PARAM(kIPHPasswordsSaveRecoveryPromoFeature,
@@ -879,7 +878,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHGMCCastStartStopFeature),
         VARIATION_ENTRY(kIPHGMCLocalMediaCastingFeature),
         VARIATION_ENTRY(kIPHHistorySearchFeature),
-        VARIATION_ENTRY(kIPHLiveCaptionFeature),
         VARIATION_ENTRY(kIPHMemorySaverModeFeature),
         VARIATION_ENTRY(kIPHMultistepFilterPromoFeature),
         VARIATION_ENTRY(kIPHPasswordManagerShortcutFeature),

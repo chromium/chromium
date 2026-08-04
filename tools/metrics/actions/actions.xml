@@ -673,7 +673,7 @@ should be able to be added at any place in this file.
   <variant name="_LensOverlay" summary="For Lens Overlay IPH feature."/>
   <variant name="_LensOverlayTranslateButton"
       summary="For LensOverlay translate button feature."/>
-  <variant name="_LiveCaption" summary="For LiveCaption feature."/>
+  <variant name="_LiveCaption" summary="For LiveCaption feature. (obsolete)"/>
   <variant name="_LongPressToolbarTip" summary="For LongPressToolbar feature."/>
   <variant name="_LowUserEngagementDetector"
       summary="For LowUserEngagementDetector feature."/>

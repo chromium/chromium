@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/live_caption/caption_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -95,15 +94,6 @@ void MediaToolbarButtonView::Hide() {
 void MediaToolbarButtonView::Enable() {
   SetEnabled(true);
 
-  // Have to check for browser window because this can be called during setup,
-  // before there is a valid widget to anchor anything to. Previously any
-  // attempt to display an IPH at this point would have simply failed, so this
-  // is not a behavioral change (see crbug.com/40212637).
-  if (captions::IsLiveCaptionFeatureSupported()) {
-    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-        feature_engagement::kIPHLiveCaptionFeature);
-  }
-
   observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);
 }
 
@@ -145,14 +135,9 @@ void MediaToolbarButtonView::ClosePromoBubble(bool engaged) {
           BrowserUserEducationInterface::From(browser_)) {
     if (engaged) {
       user_education->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHLiveCaptionFeature,
-          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-      user_education->NotifyFeaturePromoFeatureUsed(
           feature_engagement::kIPHGMCCastStartStopFeature,
           FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
     } else {
-      user_education->AbortFeaturePromo(
-          feature_engagement::kIPHLiveCaptionFeature);
       user_education->AbortFeaturePromo(
           feature_engagement::kIPHGMCCastStartStopFeature);
     }
