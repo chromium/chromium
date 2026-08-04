@@ -123,6 +123,10 @@ public class VerticalTabUtils {
      * @param enabled Whether Vertical Tabs should be enabled.
      */
     public static void setVerticalTabsEnabled(boolean enabled) {
+        if (enabled) {
+            // For all 3 entry points, mark as clicked so the "New" badge never shows again.
+            markNewBadgeAsDismissed();
+        }
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, enabled);
     }

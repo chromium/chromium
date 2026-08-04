@@ -2864,7 +2864,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     @Config(qualifiers = "sw600dp")
     public void testListMenuItems_verticalTabs_showsNewBadge() {
-        VerticalTabUtils.setVerticalTabsEnabled(true);
+        VerticalTabUtils.setVerticalTabsEnabled(false);
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 
@@ -2896,7 +2896,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     @Config(qualifiers = "sw600dp")
     public void testListMenuItems_verticalTabs_clickDismissesNewBadge() {
-        VerticalTabUtils.setVerticalTabsEnabled(true);
+        VerticalTabUtils.setVerticalTabsEnabled(false);
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 
@@ -2909,6 +2909,9 @@ public class TabContextMenuCoordinatorUnitTest {
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
 
+        // Simulate enabling vertical tabs as a result of selecting the option.
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+
         // Verify view count was set to max count (3), permanently dismissing the badge.
         assertEquals(
                 VerticalTabUtils.NEW_BADGE_MAX_VIEW_COUNT, VerticalTabUtils.getNewBadgeViewCount());
@@ -2919,7 +2922,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     @Config(qualifiers = "sw600dp")
     public void testListMenuItems_verticalTabs_desktopDevice_suppressesNewBadge() {
-        VerticalTabUtils.setVerticalTabsEnabled(true);
+        VerticalTabUtils.setVerticalTabsEnabled(false);
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 

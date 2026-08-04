@@ -187,6 +187,16 @@ public class MoreToolsItemBuilder {
                         stringRes,
                         iconRes,
                         mIsMenuIconAtStart);
+
+        boolean showNewBadge =
+                !isVerticalActive && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(mContext);
+
+        if (showNewBadge) {
+            VerticalTabUtils.incrementNewBadgeViewCount();
+            CharSequence title = VerticalTabUtils.getTitleWithNewBadge(mContext, stringRes);
+            model.set(AppMenuItemProperties.TITLE, title);
+        }
+
         model.set(
                 AppMenuItemProperties.ENABLED,
                 mCanActivateTabLayoutToggleMenuSupplier.getAsBoolean());

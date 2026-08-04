@@ -352,10 +352,6 @@ public class TabStripContextMenuCoordinator {
                 TabStripMenuMetricsUtils.recordStripMenuUserAction(
                         StripMenuAction.TOGGLE_TAB_LAYOUT, mTabStripLayout);
                 boolean isEnablingVerticalTabs = mTabStripLayout == TabStripLayoutType.HORIZONTAL;
-                if (isEnablingVerticalTabs) {
-                    // Mark as clicked so the "New" badge never shows again.
-                    VerticalTabUtils.markNewBadgeAsDismissed();
-                }
                 VerticalTabUtils.recordLayoutToggle(
                         LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU, isEnablingVerticalTabs);
                 if (mContext instanceof MenuOrKeyboardActionController controller) {

@@ -386,9 +386,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         modalDialogManager);
             } else if (menuId == R.id.toggle_tab_layout_menu_id) {
                 boolean isEnablingVerticalTabs = tabStripLayout == TabStripLayoutType.HORIZONTAL;
-                if (isEnablingVerticalTabs) {
-                    VerticalTabUtils.markNewBadgeAsDismissed();
-                }
                 VerticalTabUtils.recordLayoutToggle(
                         LayoutSwitchEntryPoint.TAB_CONTEXT_MENU, isEnablingVerticalTabs);
                 if (activity instanceof MenuOrKeyboardActionController controller) {

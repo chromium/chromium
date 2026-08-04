@@ -239,7 +239,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @Config(qualifiers = "sw600dp")
     public void showMenu_verifyVerticalTabsEntryPoint_showsNewBadge() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        VerticalTabUtils.setVerticalTabsEnabled(true);
+        VerticalTabUtils.setVerticalTabsEnabled(false);
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 
@@ -267,7 +267,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @Config(qualifiers = "sw600dp")
     public void showMenu_clickVerticalTabsEntryPoint_dismissesBadge() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        VerticalTabUtils.setVerticalTabsEnabled(true);
+        // Start with the horizontal tab.
+        VerticalTabUtils.setVerticalTabsEnabled(false);
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 
@@ -282,6 +283,9 @@ public class TabStripContextMenuCoordinatorUnitTest {
                 .getListMenuDelegate(mContentView)
                 .onItemSelected(toggleLayoutItemModel, mListView);
 
+        // Simulate enabling vertical tabs as a result of the user selection.
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+
         // Verify view count was set to Max count (3), permanently suppressing the badge.
         assertEquals(
                 VerticalTabUtils.NEW_BADGE_MAX_VIEW_COUNT, VerticalTabUtils.getNewBadgeViewCount());
@@ -292,7 +296,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @Config(qualifiers = "sw600dp")
     public void showMenu_desktopDevice_suppressesNewBadge() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        VerticalTabUtils.setVerticalTabsEnabled(true);
+        VerticalTabUtils.setVerticalTabsEnabled(false);
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 
