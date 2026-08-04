@@ -978,6 +978,7 @@ export class AppElement extends AppElementBase {
       text: detail.suggestion,
       files: detail.files,
       mode: detail.fuseboxAction?.preselectedTool,
+      model: detail.fuseboxAction?.preselectedModel,
       suggestInventory: detail.fuseboxAction?.preferredInventory,
     } as ComposeboxState;
     this.toggleComposebox_();
