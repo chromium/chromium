@@ -36,6 +36,13 @@
 // Called when the history button is tapped.
 - (void)assistantAIMHeaderViewDidTapHistory:(AssistantAIMHeaderView*)headerView;
 
+// Called when the my activity button is tapped.
+- (void)assistantAIMHeaderViewDidTapMyActivity:
+    (AssistantAIMHeaderView*)headerView;
+
+// Called when the help button is tapped.
+- (void)assistantAIMHeaderViewDidTapHelp:(AssistantAIMHeaderView*)headerView;
+
 @end
 
 // Represents the header of cobrowse, containing the title and action buttons.

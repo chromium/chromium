@@ -710,6 +710,15 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [self.mutator didTapHistory];
 }
 
+- (void)assistantAIMHeaderViewDidTapMyActivity:
+    (AssistantAIMHeaderView*)headerView {
+  [self.delegate assistantAIMViewControllerDidTapMyActivity:self];
+}
+
+- (void)assistantAIMHeaderViewDidTapHelp:(AssistantAIMHeaderView*)headerView {
+  [self.delegate assistantAIMViewControllerDidTapHelp:self];
+}
+
 #pragma mark - Private
 
 // Sets up a visual indicator when there is a Cobrowse GWS URL override.

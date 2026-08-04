@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -45,6 +46,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_filter.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -332,6 +334,16 @@ class AssistantAIMUIStateProvider
 
 #pragma mark - Private
 
+// Minimizes the cobrowse container and opens the specified URL.
+- (void)minimizeAndOpenURL:(const GURL&)URL {
+  [_containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+}
+
 - (void)dismissKeyboard {
   [_inputPlateCoordinator endEditing];
 }
@@ -530,12 +542,22 @@ class AssistantAIMUIStateProvider
                               completion:nil];
 }
 
+- (void)assistantAIMViewControllerDidTapMyActivity:
+    (AssistantAIMViewController*)viewController {
+  [self minimizeAndOpenURL:GURL(kMyActivityURL)];
+}
+
+- (void)assistantAIMViewControllerDidTapHelp:
+    (AssistantAIMViewController*)viewController {
+  [self minimizeAndOpenURL:GURL(kAssistantAIMHelpCenterURL)];
+}
+
 #pragma mark - AIMSRPDebuggerURLViewControllerDelegate
 
 - (void)debuggerURLViewController:
             (AIMSRPDebuggerURLViewController*)viewController
-                     didUpdateURL:(const GURL&)url {
-  [_mediator loadURL:url];
+                     didUpdateURL:(const GURL&)URL {
+  [_mediator loadURL:URL];
 }
 
 @end

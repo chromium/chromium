@@ -46,6 +46,14 @@
 - (void)assistantAIMViewControllerDidRequestLoadedURL:
     (AssistantAIMViewController*)viewController;
 
+// Called when the user taps on my activity.
+- (void)assistantAIMViewControllerDidTapMyActivity:
+    (AssistantAIMViewController*)viewController;
+
+// Called when the user taps on help.
+- (void)assistantAIMViewControllerDidTapHelp:
+    (AssistantAIMViewController*)viewController;
+
 @end
 
 @interface AssistantAIMViewController
