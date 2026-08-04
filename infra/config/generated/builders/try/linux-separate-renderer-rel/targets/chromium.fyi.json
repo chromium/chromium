@@ -19,6 +19,19 @@
       },
       {
         "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/accessibility:accessibility_unittests",
+        "module_scheme": "gtest",
+        "name": "accessibility_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "accessibility_unittests",
+        "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
+      },
+      {
+        "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/angle/src/tests:angle_unittests",
@@ -30,6 +43,19 @@
         "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
         "use_isolated_scripts_api": true
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/aura:aura_unittests",
+        "module_scheme": "gtest",
+        "name": "aura_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "aura_unittests",
+        "test_id_prefix": "ninja://ui/aura:aura_unittests/"
       },
       {
         "merge": {
@@ -56,6 +82,19 @@
         },
         "test": "blink_common_unittests",
         "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//third_party/blink/renderer/platform:blink_fuzzer_unittests",
+        "module_scheme": "gtest",
+        "name": "blink_fuzzer_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_fuzzer_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_fuzzer_unittests/"
       },
       {
         "merge": {
@@ -132,6 +171,20 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
+        "name": "browser_tests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
         "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
@@ -164,6 +217,45 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//cc:cc_unittests",
+        "module_scheme": "gtest",
+        "name": "cc_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test:chrome_app_unittests",
+        "module_scheme": "gtest",
+        "name": "chrome_app_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_app_unittests",
+        "test_id_prefix": "ninja://chrome/test:chrome_app_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test/chromedriver:chromedriver_unittests",
+        "module_scheme": "gtest",
+        "name": "chromedriver_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_unittests",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//components:components_browsertests",
         "module_scheme": "gtest",
         "name": "components_browsertests",
@@ -186,6 +278,19 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/compositor:compositor_unittests",
+        "module_scheme": "gtest",
+        "name": "compositor_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "compositor_unittests",
+        "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
         "merge": {
@@ -241,6 +346,45 @@
         "test_id_prefix": "ninja://crypto:crypto_unittests/"
       },
       {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//dbus:dbus_unittests",
+        "module_scheme": "gtest",
+        "name": "dbus_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dbus_unittests",
+        "test_id_prefix": "ninja://dbus:dbus_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//device:device_unittests",
+        "module_scheme": "gtest",
+        "name": "device_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "device_unittests",
+        "test_id_prefix": "ninja://device:device_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/display:display_unittests",
+        "module_scheme": "gtest",
+        "name": "display_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "display_unittests",
+        "test_id_prefix": "ninja://ui/display:display_unittests/"
+      },
+      {
         "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -271,6 +415,32 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//extensions:extensions_unittests",
+        "module_scheme": "gtest",
+        "name": "extensions_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "extensions_unittests",
+        "test_id_prefix": "ninja://extensions:extensions_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//components/services/filesystem:filesystem_service_unittests",
+        "module_scheme": "gtest",
+        "name": "filesystem_service_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "filesystem_service_unittests",
+        "test_id_prefix": "ninja://components/services/filesystem:filesystem_service_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//testing/libfuzzer/tests:fuzzing_unittests",
         "module_scheme": "gtest",
         "name": "fuzzing_unittests",
@@ -292,6 +462,19 @@
         },
         "test": "gcm_unit_tests",
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/gfx:gfx_unittests",
+        "module_scheme": "gtest",
+        "name": "gfx_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gfx_unittests",
+        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
         "merge": {
@@ -333,6 +516,20 @@
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
       },
       {
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/gtk:gtk_unittests",
+        "module_scheme": "gtest",
+        "name": "gtk_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gtk_unittests",
+        "test_id_prefix": "ninja://ui/gtk:gtk_unittests/"
+      },
+      {
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -344,6 +541,46 @@
         },
         "test": "gwp_asan_unittests",
         "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//headless:headless_browsertests",
+        "module_scheme": "gtest",
+        "name": "headless_browsertests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "headless_browsertests",
+        "test_id_prefix": "ninja://headless:headless_browsertests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//headless:headless_unittests",
+        "module_scheme": "gtest",
+        "name": "headless_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "headless_unittests",
+        "test_id_prefix": "ninja://headless:headless_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test:interactive_ui_tests",
+        "module_scheme": "gtest",
+        "name": "interactive_ui_tests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
       },
       {
         "merge": {
@@ -428,6 +665,19 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/message_center:message_center_unittests",
+        "module_scheme": "gtest",
+        "name": "message_center_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "message_center_unittests",
+        "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//media/midi:midi_unittests",
         "module_scheme": "gtest",
         "name": "midi_unittests",
@@ -454,6 +704,19 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/native_theme:native_theme_unittests",
+        "module_scheme": "gtest",
+        "name": "native_theme_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "native_theme_unittests",
+        "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//net:net_unittests",
         "module_scheme": "gtest",
         "name": "net_unittests",
@@ -462,6 +725,58 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/browser/media/router:openscreen_unittests",
+        "module_scheme": "gtest",
+        "name": "openscreen_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "openscreen_unittests",
+        "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/ozone:ozone_unittests",
+        "module_scheme": "gtest",
+        "name": "ozone_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/ozone:ozone_x11_unittests",
+        "module_scheme": "gtest",
+        "name": "ozone_x11_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ozone_x11_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_x11_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//pdf:pdf_unittests",
+        "module_scheme": "gtest",
+        "name": "pdf_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "pdf_unittests",
+        "test_id_prefix": "ninja://pdf:pdf_unittests/"
       },
       {
         "merge": {
@@ -480,6 +795,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//printing:printing_unittests",
+        "module_scheme": "gtest",
+        "name": "printing_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "printing_unittests",
+        "test_id_prefix": "ninja://printing:printing_unittests/"
+      },
+      {
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//third_party/pthreadpool:pthreadpool_unittests",
+        "module_scheme": "gtest",
+        "name": "pthreadpool_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "pthreadpool_unittests",
+        "test_id_prefix": "ninja://third_party/pthreadpool:pthreadpool_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//third_party/puffin:puffin_unittests",
         "module_scheme": "gtest",
         "name": "puffin_unittests",
@@ -488,6 +830,32 @@
         },
         "test": "puffin_unittests",
         "test_id_prefix": "ninja://third_party/puffin:puffin_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//remoting:remoting_unittests",
+        "module_scheme": "gtest",
+        "name": "remoting_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "remoting_unittests",
+        "test_id_prefix": "ninja://remoting:remoting_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//sandbox/linux:sandbox_linux_unittests",
+        "module_scheme": "gtest",
+        "name": "sandbox_linux_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "sandbox_linux_unittests",
+        "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
       },
       {
         "merge": {
@@ -532,6 +900,19 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/snapshot:snapshot_unittests",
+        "module_scheme": "gtest",
+        "name": "snapshot_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "snapshot_unittests",
+        "test_id_prefix": "ninja://ui/snapshot:snapshot_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//sql:sql_unittests",
         "module_scheme": "gtest",
         "name": "sql_unittests",
@@ -553,6 +934,20 @@
         },
         "test": "storage_unittests",
         "test_id_prefix": "ninja://storage:storage_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test:sync_integration_tests",
+        "module_scheme": "gtest",
+        "name": "sync_integration_tests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test": "sync_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
       },
       {
         "merge": {
@@ -584,6 +979,33 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/tests:ui_unittests",
+        "module_scheme": "gtest",
+        "name": "ui_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ui_unittests",
+        "test_id_prefix": "ninja://ui/tests:ui_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test:unit_tests",
+        "module_scheme": "gtest",
+        "name": "unit_tests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//url:url_unittests",
         "module_scheme": "gtest",
         "name": "url_unittests",
@@ -597,6 +1019,58 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//ui/views:views_unittests",
+        "module_scheme": "gtest",
+        "name": "views_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//components/viz:viz_unittests",
+        "module_scheme": "gtest",
+        "name": "viz_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/browser/vr:vr_common_unittests",
+        "module_scheme": "gtest",
+        "name": "vr_common_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "vr_common_unittests",
+        "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/wm:wm_unittests",
+        "module_scheme": "gtest",
+        "name": "wm_unittests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wm_unittests",
+        "test_id_prefix": "ninja://ui/wm:wm_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//third_party/blink/renderer/platform/wtf:wtf_unittests",
         "module_scheme": "gtest",
         "name": "wtf_unittests",
@@ -605,6 +1079,19 @@
         },
         "test": "wtf_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test:xr_browser_tests",
+        "module_scheme": "gtest",
+        "name": "xr_browser_tests",
+        "swarming": {
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "xr_browser_tests",
+        "test_id_prefix": "ninja://chrome/test:xr_browser_tests/"
       },
       {
         "merge": {

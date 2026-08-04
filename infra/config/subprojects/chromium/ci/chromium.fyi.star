@@ -2863,7 +2863,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_gtests",
+            "chromium_win10_gtests",
         ],
         additional_compile_targets = [
             "chrome",
@@ -2894,7 +2894,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_gtests",
+            "chromium_linux_gtests",
         ],
         additional_compile_targets = [
             "chrome",
@@ -2922,7 +2922,7 @@ fyi_mac_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_gtests",
+            "chromium_mac_gtests",
         ],
         additional_compile_targets = [
             "chrome",
