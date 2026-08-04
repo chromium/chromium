@@ -107,16 +107,15 @@ mojom::OnNodeMovedEventPtr ToEvent(
 
 mojom::OnDataChangedEventPtr ToEvent(
     const tabs_api::TabStripModelAdapter& adapter,
-    size_t index,
+    tabs::TabInterface* tab,
     TabChangeType change_type) {
   auto tab_change = mojom::TabChange::New();
-  auto tabs = adapter.GetTabs();
-  if (index < tabs.size()) {
-    auto& handle = tabs.at(index);
+  if (tab) {
+    tabs::TabHandle handle = tab->GetHandle();
     const ui::ColorProvider& color_provider = adapter.GetColorProvider();
 
     tab_change->data = tabs_api::converters::BuildMojoTab(
-        handle.Get(), color_provider, adapter.GetTabStates(handle));
+        tab, color_provider, adapter.GetTabStates(handle));
     tab_change->mask = tabs_api::converters::BuildTabFieldMask(change_type);
   }
 

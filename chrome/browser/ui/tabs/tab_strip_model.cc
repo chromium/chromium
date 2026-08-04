@@ -1272,9 +1272,8 @@ int TabStripModel::GetIndexOfWebContents(const WebContents* contents) const {
 
 void TabStripModel::NotifyTabChanged(tabs::TabInterface* tab,
                                      TabChangeType change_type) {
-  const int index = GetIndexOfTab(tab);
   for (auto& observer : observers_) {
-    observer.OnTabChangedAt(tab, index, change_type);
+    observer.OnTabChangedAt(tab, change_type);
   }
 }
 
@@ -1283,7 +1282,7 @@ void TabStripModel::UpdateWebContentsStateAt(int index,
   tabs::TabInterface* tab = GetTabAtIndex(index);
 
   for (auto& observer : observers_) {
-    observer.OnTabChangedAt(tab, index, change_type);
+    observer.OnTabChangedAt(tab, change_type);
   }
 }
 
@@ -1292,7 +1291,7 @@ void TabStripModel::SetTabNeedsAttentionAt(int index, bool attention) {
   TabUIHelper::From(tab)->SetNeedsAttention(attention);
 
   for (auto& observer : observers_) {
-    observer.OnTabChangedAt(tab, index, TabChangeType::kAttentionOnly);
+    observer.OnTabChangedAt(tab, TabChangeType::kAttentionOnly);
   }
 }
 

@@ -64,7 +64,6 @@ class TestTitleObserver : public TabStripModelObserver {
 
   // TabstripModelObserver:
   void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
                       TabChangeType change_type) override {
     content::NavigationEntry* entry =
         tab->GetContents()->GetController().GetVisibleEntry();

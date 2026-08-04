@@ -538,13 +538,12 @@ class TabStripModelObserver {
   // permitted by the `TabStripModel::IsTabClosable` oracle.
   virtual void OnTabCloseCancelled(const tabs::TabInterface* tab);
 
-  // The specified Tab at |index| changed in some way. |tab|
+  // The specified Tab changed in some way. |tab|
   // may be an entirely different object and the old value is no longer
   // available by the time this message is delivered.
   //
   // See tab_change_type.h for a description of |change_type|.
   virtual void OnTabChangedAt(tabs::TabInterface* tab,
-                              int index,
                               TabChangeType change_type);
 
   // Invoked when the pinned state of a tab changes.

@@ -1670,7 +1670,6 @@ void BrowserCommandController::TabGroupedStateChanged(
 }
 
 void BrowserCommandController::OnTabChangedAt(tabs::TabInterface* tab,
-                                              int index,
                                               TabChangeType change_type) {
   if (change_type == TabChangeType::kBlockedOnly) {
     PrintingStateChanged();

@@ -3454,7 +3454,6 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
 }
 
 void BrowserView::OnTabChangedAt(tabs::TabInterface* tab,
-                                 int index,
                                  TabChangeType change_type) {
   content::WebContents* contents = tab->GetContents();
 

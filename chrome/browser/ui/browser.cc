@@ -1207,8 +1207,8 @@ void Browser::ScheduleUIUpdate(WebContents* source, unsigned changed_flags) {
   // TODO(crbug.com/40100269) Figure out a safe way to detach browser delegate
   // from WebContents when it's removed so this doesn't happen - then put a
   // DCHECK back here.
-  if (tab_strip_model_->GetIndexOfWebContents(source) ==
-      TabStripModel::kNoTab) {
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(source);
+  if (!tab || tab->GetBrowserWindowInterface() != this) {
     return;
   }
 
@@ -1232,8 +1232,7 @@ void Browser::ScheduleUIUpdate(WebContents* source, unsigned changed_flags) {
     // Update the loading state synchronously. This is so the throbber will
     // immediately start/stop, which gives a more snappy feel. We want to do
     // this for any tab so they start & stop quickly.
-    NotifyTabUIChanged(tab_strip_model_->GetIndexOfWebContents(source),
-                       TabChangeType::kLoadingOnly);
+    NotifyTabUIChanged(tab, TabChangeType::kLoadingOnly);
     // The status bubble needs to be updated during INVALIDATE_TYPE_LOAD too,
     // but we do that asynchronously by not stripping INVALIDATE_TYPE_LOAD from
     // changed_flags.
@@ -1245,10 +1244,7 @@ void Browser::ScheduleUIUpdate(WebContents* source, unsigned changed_flags) {
   }
 
   // Save the dirty bits.
-  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(source);
-  if (tab) {
-    scheduled_updates_[tab] |= changed_flags;
-  }
+  scheduled_updates_[tab] |= changed_flags;
 
   if (!chrome_updater_factory_.HasWeakPtrs()) {
     base::TimeDelta delay = update_ui_immediately_for_testing_
@@ -1300,8 +1296,7 @@ void Browser::ProcessPendingUIUpdates() {
     // Updates that don't depend upon the selected state go here.
     if (flags & (content::INVALIDATE_TYPE_TAB | content::INVALIDATE_TYPE_TITLE |
                  content::INVALIDATE_TYPE_AUDIO)) {
-      NotifyTabUIChanged(tab_strip_model_->GetIndexOfTab(tab),
-                         TabChangeType::kAll);
+      NotifyTabUIChanged(tab, TabChangeType::kAll);
     }
 
     // Update the bookmark bar and PWA install icon. It may happen that the tab
@@ -1538,10 +1533,8 @@ bool Browser::HasFindBarController() {
   return GetFeatures().HasFindBarController();
 }
 
-void Browser::NotifyTabUIChanged(int tab_index, TabChangeType change_type) {
-  tab_strip_model_->UpdateWebContentsStateAt(tab_index, change_type);
-  tabs::TabInterface* const tab_interface =
-      tab_strip_model_->GetTabAtIndex(tab_index);
-  TabUIHelper::From(tab_interface)
-      ->NotifyTabUIChanged(base::PassKey<Browser>());
+void Browser::NotifyTabUIChanged(tabs::TabInterface* tab,
+                                 TabChangeType change_type) {
+  tab_strip_model_->NotifyTabChanged(tab, change_type);
+  TabUIHelper::From(tab)->NotifyTabUIChanged(base::PassKey<Browser>());
 }

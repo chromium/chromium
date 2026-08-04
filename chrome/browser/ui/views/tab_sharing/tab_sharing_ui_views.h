@@ -96,7 +96,6 @@ class TabSharingUIViews : public TabSharingUI,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
   void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
                       TabChangeType change_type) override;
 
   // InfoBarManager::Observer:

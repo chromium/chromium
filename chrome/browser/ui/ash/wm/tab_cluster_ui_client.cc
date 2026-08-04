@@ -93,7 +93,6 @@ void TabClusterUIClient::OnTabStripModelChanged(
 }
 
 void TabClusterUIClient::OnTabChangedAt(tabs::TabInterface* tab,
-                                        int index,
                                         TabChangeType change_type) {
   content::WebContents* contents = tab->GetContents();
   // Some tests may manually add tabs to browser such that the newly added tabs

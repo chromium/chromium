@@ -423,7 +423,6 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
     }
 
     void OnTabChangedAt(tabs::TabInterface* tab,
-                        int index,
                         TabChangeType change_type) override {
       std::move(on_tab_changed_).Run();
     }

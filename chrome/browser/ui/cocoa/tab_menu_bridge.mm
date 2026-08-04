@@ -286,7 +286,6 @@ void TabMenuBridge::OnTabStripModelChanged(
 }
 
 void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
-                                   int index,
                                    TabChangeType change_type) {
   DCHECK(model_);
 
@@ -301,6 +300,9 @@ void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
     return;
   }
 
+  // TODO(crbug.com/542422033): Replace GetIndexOfTab(tab) with a direct
+  // TabInterface-to-NSMenuItem lookup map.
+  int index = model_->GetIndexOfTab(tab);
   int menu_index = index + dynamic_items_start_;
 
   // It might seem like this can't happen but actually it can:

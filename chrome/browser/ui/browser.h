@@ -599,7 +599,7 @@ class Browser : public TabStripModelObserver,
 
   // Notifies the tab UI that it should update when the browser schedule or
   // process UI updates.
-  void NotifyTabUIChanged(int tab_index, TabChangeType change_type);
+  void NotifyTabUIChanged(tabs::TabInterface* tab, TabChangeType change_type);
 
   // Data members /////////////////////////////////////////////////////////////
 

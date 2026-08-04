@@ -87,7 +87,6 @@ void GlicTabObserverImpl::OnTabStripModelChanged(
 }
 
 void GlicTabObserverImpl::OnTabChangedAt(tabs::TabInterface* tab,
-                                         int index,
                                          TabChangeType change_type) {
   callback_.Run(TabMutationEvent{});
 }

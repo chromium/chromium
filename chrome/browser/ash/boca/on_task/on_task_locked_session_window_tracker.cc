@@ -267,9 +267,8 @@ void LockedSessionWindowTracker::ShowURLBlockedToast() {
   notifications_manager_->CreateToast(std::move(toast_create_params));
 }
 
-// TabStripModel Implementation
+// TabStripModelObserver Implementation
 void LockedSessionWindowTracker::OnTabChangedAt(tabs::TabInterface* tab,
-                                                int index,
                                                 TabChangeType change_type) {
   if (change_type == TabChangeType::kAll) {
     RefreshUrlBlocklist();

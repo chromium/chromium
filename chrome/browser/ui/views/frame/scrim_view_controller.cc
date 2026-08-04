@@ -31,7 +31,6 @@ void ScrimViewController::OnTabStripModelChanged(
 }
 
 void ScrimViewController::OnTabChangedAt(tabs::TabInterface* tab,
-                                         int index,
                                          TabChangeType change_type) {
   if (change_type == TabChangeType::kBlockedOnly) {
     UpdateScrimViews();

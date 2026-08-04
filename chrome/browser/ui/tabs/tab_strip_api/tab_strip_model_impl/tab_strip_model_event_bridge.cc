@@ -115,9 +115,8 @@ void TabStripModelEventBridge::OnTabStripModelChanged(
 }
 
 void TabStripModelEventBridge::OnTabChangedAt(tabs::TabInterface* tab,
-                                              int index,
                                               TabChangeType change_type) {
-  Notify(events::ToEvent(*tab_strip_model_adapter_, index, change_type));
+  Notify(events::ToEvent(*tab_strip_model_adapter_, tab, change_type));
 }
 
 void TabStripModelEventBridge::OnTabGroupChanged(const TabGroupChange& change) {

@@ -45,7 +45,6 @@ class FutureTabStripModelObserver : public TabStripModelObserver {
  public:
   // TabStripModelObserver:
   void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
                       TabChangeType change_type) override {
     if (change_type == TabChangeType::kAll) {
       Reset();

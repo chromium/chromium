@@ -136,7 +136,6 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
     }
   }
   void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
                       TabChangeType change_type) override {
     if (observers_.find(tab->GetContents()) == observers_.end()) {
       observers_[tab->GetContents()] =

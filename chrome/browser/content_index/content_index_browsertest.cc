@@ -102,7 +102,6 @@ class ContentIndexTest : public InProcessBrowserTest,
 
   // TabStripModelObserver implementation:
   void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
                       TabChangeType change_type) override {
     if (wait_for_tab_change_)
       std::move(wait_for_tab_change_).Run();

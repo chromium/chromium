@@ -57,7 +57,6 @@ void AudibleContentsTracker::OnTabStripModelChanged(
 }
 
 void AudibleContentsTracker::OnTabChangedAt(tabs::TabInterface* tab,
-                                            int index,
                                             TabChangeType change_type) {
   // Ignore 'loading' and 'title' changes.
   if (change_type != TabChangeType::kAll)

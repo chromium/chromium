@@ -65,7 +65,6 @@ class CustomTabBarView : public views::AccessiblePaneView,
 
   // TabstripModelObserver:
   void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
                       TabChangeType change_type) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,

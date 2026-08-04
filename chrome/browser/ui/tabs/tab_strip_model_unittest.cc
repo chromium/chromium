@@ -384,9 +384,8 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   }
 
   void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
                       TabChangeType change_type) override {
-    states_.emplace_back(tab->GetContents(), index, CHANGE);
+    states_.emplace_back(tab->GetContents(), std::nullopt, CHANGE);
   }
 
   void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override {
@@ -738,7 +737,7 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
   {
     tabstrip()->UpdateWebContentsStateAt(0, TabChangeType::kAll);
     EXPECT_EQ(1, observer()->GetStateCount());
-    State s1(raw_contents2, 0, MockTabStripModelObserver::CHANGE);
+    State s1(raw_contents2, std::nullopt, MockTabStripModelObserver::CHANGE);
     observer()->ExpectStateEquals(0, s1);
     observer()->ClearStates();
   }

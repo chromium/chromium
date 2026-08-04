@@ -521,7 +521,6 @@ void TopControlsSlideControllerChromeOS::OnTabStripModelChanged(
 
 void TopControlsSlideControllerChromeOS::OnTabChangedAt(
     tabs::TabInterface* tab,
-    int index,
     TabChangeType change_type) {
   if (change_type == TabChangeType::kAttentionOnly) {
     UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);

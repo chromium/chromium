@@ -248,7 +248,6 @@ class GlobalConfirmInfoBar::TabHelper : public TabStripModelObserver {
   }
 
   void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
                       TabChangeType change_type) override {
     global_info_bar_->MaybeAddInfoBar(tab->GetContents());
   }
