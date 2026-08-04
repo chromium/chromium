@@ -74,8 +74,8 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
   LayoutSelectionStatus ComputeSelectionStatus(const InlineCursor&,
                                                const TextOffsetRange&) const;
   SelectionState ComputeSelectionStateFromOffsets(SelectionState state,
-                                                  unsigned start_offset,
-                                                  unsigned end_offset) const;
+                                                  wtf_size_t start_offset,
+                                                  wtf_size_t end_offset) const;
 
   void AssertIsValid() const;
 

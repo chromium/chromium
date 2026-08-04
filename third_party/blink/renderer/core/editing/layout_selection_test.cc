@@ -41,7 +41,7 @@ class LayoutSelectionTestBase : public EditingTestBase {
       cursor.MoveTo(layout_text);
       if (!cursor)
         return;
-      const unsigned text_start = cursor.Current().TextStartOffset();
+      const wtf_size_t text_start = cursor.Current().TextStartOffset();
       for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
         const LayoutSelectionStatus status =
             selection.ComputeLayoutSelectionStatus(cursor);
@@ -1299,7 +1299,7 @@ TEST_F(NGLayoutSelectionTest, SoftHyphen1to5) {
 }
 
 // Regression test: SelectionPaintRange's start/end offsets are
-// std::optional<unsigned> and may be std::nullopt when an endpoint is a
+// std::optional<wtf_size_t> and may be std::nullopt when an endpoint is a
 // non-Text leaf (e.g. <img>). ComputeSelectionStatusForNode and
 // ComputeSelectionStatus(InlineCursor, TextOffsetRange) used to call
 // .value() on those nullopts and crash with std::bad_optional_access.
