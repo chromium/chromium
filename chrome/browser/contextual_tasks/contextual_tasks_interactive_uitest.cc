@@ -2842,6 +2842,13 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, MAYBE_CopyUrl) {
 }
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+  // TODO(crbug.com/542671321): FocusAndBlur/WebUI is flaky/failing on Linux
+  // MSAN.
+  if (GetParam()) {
+    GTEST_SKIP() << "Skipping FocusAndBlur/WebUI on Linux MSAN";
+  }
+#endif
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50&q=test");
 
   ui::Accelerator focus_accelerator;
