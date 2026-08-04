@@ -301,7 +301,6 @@ source_set("impl") {
     "//components/permissions:permissions_common",
     "//components/personal_context/core",
     "//components/plus_addresses/core/browser",
-    "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:features",
     "//components/prefs",
     "//components/privacy_sandbox",

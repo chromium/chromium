@@ -5596,7 +5596,6 @@ test("unit_tests") {
     "//components/performance_manager/scenario_api",
     "//components/performance_manager/test_support:test_support_common",
     "//components/permissions",
-    "//components/plus_addresses/core/browser/resources/strings",
     "//components/policy:generated",
     "//components/policy/content",
     "//components/policy/core/browser:incognito_mode_policy_test_support",

@@ -275,7 +275,6 @@ source_set("impl") {
       "//components/android_autofill/browser:android",
       "//components/messages/android:feature_flags",
       "//components/password_manager/core/browser/features:password_features",
-      "//components/plus_addresses/core/browser/resources/strings",
     ]
   } else {
     sources += [
@@ -315,7 +314,6 @@ source_set("impl") {
       "//components/autofill/core/browser",
       "//components/desktop_to_mobile_promos",
       "//components/password_manager/core/browser/features:password_features",
-      "//components/plus_addresses/core/browser/resources/strings",
       "//extensions/browser",
     ]
 
@@ -641,7 +639,6 @@ if (!is_android) {
       "//components/password_manager/core/common",
       "//components/personal_context/core:test_support",
       "//components/plus_addresses/core/browser:test_support",
-      "//components/plus_addresses/core/browser/resources/strings",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager:test_support",
       "//components/strings:components_strings",

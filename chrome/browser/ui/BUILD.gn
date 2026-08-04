@@ -4395,11 +4395,6 @@ static_library("ui") {
     # free-functions in translate_bubble_test_utils.h as `friend`.
     deps += [ "//chrome/browser/ui/translate:test_support" ]
 
-    # TODO(crbug.com/413572035): Move into build files of the actual modules
-    # depending on this once they are fully modularized. eg: views/autofill,
-    # views/user_education.
-    deps += [ "//components/plus_addresses/core/browser/resources/strings" ]
-
     # Any circular includes must depend on the target
     # "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
