@@ -19,6 +19,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -98,6 +99,11 @@ class WatermarkBrowserTest
     : public UiBrowserTest,
       public testing::WithParamInterface<WatermarkTextParams> {
  public:
+  WatermarkBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_data_protection::kEnableWatermarkTimestampTimezone);
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -113,9 +119,17 @@ class WatermarkBrowserTest
   bool SetWatermark(const std::string& watermark_message) {
     std::string message = watermark_message;
     if (GetParam().timezone) {
-      base::test::ScopedRestoreDefaultTimezone timezone(GetParam().timezone);
+      GetProfile()->GetPrefs()->SetString(
+          enterprise_connectors::kWatermarkStyleTimestampTimezonePref,
+          GetParam().timezone);
+
+      std::string timestamp_timezone =
+          GetTimestampTimezone(GetProfile()->GetPrefs());
+
+      base::test::ScopedRestoreDefaultTimezone timezone("UTC");
       message += enterprise_data_protection::FormatWatermarkTimestamp(
-          base::Time::FromSecondsSinceUnixEpoch(1700000000));
+          base::Time::FromSecondsSinceUnixEpoch(1700000000),
+          timestamp_timezone);
     }
     if (auto* data_protection_overlay_view =
             BrowserView::GetBrowserViewForBrowser(browser())
@@ -191,8 +205,10 @@ INSTANTIATE_TEST_SUITE_P(
                             kTimestampTorontoWatermarkMessage,
                             "America/Toronto"},
         WatermarkTextParams{"TimestampKolkata",
-                            kTimestampKolkataWatermarkMessage,
-                            "Asia/Kolkata"}));
+                            kTimestampKolkataWatermarkMessage, "Asia/Kolkata"},
+        WatermarkTextParams{"TimestampInvalidFallback",
+                            kTimestampUtcWatermarkMessage,
+                            "Invalid/Timezone"}));
 
 // Test fixture for the default chrome://watermark page.
 class WatermarkTestPageBrowserTest : public UiBrowserTest {
@@ -724,7 +740,7 @@ class WatermarkSettingsBrowserTest : public InProcessBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_P(WatermarkSettingsBrowserTest, GetStyleSettings) {
-  PrefService* prefs = browser()->GetProfile()->GetPrefs();
+  PrefService* prefs = GetProfile()->GetPrefs();
 
   // Test with default pref values.
   SkColor expected_fill_color = GetDefaultFillColor();
@@ -773,7 +789,7 @@ class WatermarkSettingsCommandLineBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WatermarkSettingsCommandLineBrowserTest, GetColors) {
-  PrefService* prefs = browser()->GetProfile()->GetPrefs();
+  PrefService* prefs = GetProfile()->GetPrefs();
   EXPECT_EQ(GetFillColor(prefs), SkColorSetA(SkColorSetRGB(0x00, 0x00, 0x00),
                                              PercentageToSkAlpha(50)));
   EXPECT_EQ(GetOutlineColor(prefs), SkColorSetA(SkColorSetRGB(0xff, 0xff, 0xff),

@@ -5,8 +5,14 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/data_protection/utils.h"
 #include "content/public/browser/page.h"
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/enterprise/watermark/settings.h"
+#endif
 
 namespace enterprise_data_protection {
 
@@ -58,7 +64,18 @@ UrlSettings DataProtectionPageUserData::settings() const {
     return data_controls_settings_;
   }
 
-  UrlSettings settings = GetUrlSettings(identifier_, rt_lookup_response_.get());
+  std::string timestamp_timezone;
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  if (Profile* profile = Profile::FromBrowserContext(
+          page().GetMainDocument().GetBrowserContext());
+      profile) {
+    timestamp_timezone =
+        enterprise_watermark::GetTimestampTimezone(profile->GetPrefs());
+  }
+#endif
+
+  UrlSettings settings = GetUrlSettings(identifier_, rt_lookup_response_.get(),
+                                        timestamp_timezone);
   settings.allow_screenshots &= data_controls_settings_.allow_screenshots;
 
   return settings;

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_DATA_PROTECTION_UTILS_H_
 #define COMPONENTS_ENTERPRISE_DATA_PROTECTION_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -33,18 +34,27 @@ struct UrlSettings {
 
 // Returns a `UrlSettings` object representing the restrictions
 // applied by a `RTLookupResponse`.
+// `timestamp_timezone` specifies an optional IANA timezone ID to format the
+// watermark timestamp.
 UrlSettings GetUrlSettings(
     const std::string& identifier,
-    const safe_browsing::RTLookupResponse* rt_lookup_response);
+    const safe_browsing::RTLookupResponse* rt_lookup_response,
+    const std::optional<std::string>& timestamp_timezone = std::nullopt);
 
 // Formats a `base::Time` into the watermark timestamp string:
-// YYYY-MM-DDTHH:MM:SS±HH:MM.
-std::string FormatWatermarkTimestamp(const base::Time& time);
+// YYYY-MM-DDTHH:MM:SS±HH:MM using `timestamp_timezone` if provided or the
+// device's local timezone otherwise.
+std::string FormatWatermarkTimestamp(
+    const base::Time& time,
+    const std::optional<std::string>& timestamp_timezone = std::nullopt);
 
 // Return the watermark string to display if present in `threat_info`.
+// `timestamp_timezone` specifies an optional IANA timezone ID to format the
+// watermark timestamp.
 std::string GetWatermarkString(
     const std::string& identifier,
-    const safe_browsing::MatchedUrlNavigationRule& rule);
+    const safe_browsing::MatchedUrlNavigationRule& rule,
+    const std::optional<std::string>& timestamp_timezone = std::nullopt);
 
 }  // namespace enterprise_data_protection
 
