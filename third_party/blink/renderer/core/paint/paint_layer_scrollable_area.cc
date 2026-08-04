@@ -312,34 +312,7 @@ static int CornerStart(const LayoutBox& box,
 gfx::Rect PaintLayerScrollableArea::CornerRect() const {
   int horizontal_thickness;
   int vertical_thickness;
-
-  // If there is a custom scrollbar in either direction, then it will be a
-  // non-overlay scrollbar and shouldn't have a fixed sized resizer.
-  bool has_custom_scrollbar =
-      (VerticalScrollbar() && VerticalScrollbar()->IsCustomScrollbar()) ||
-      (HorizontalScrollbar() && HorizontalScrollbar()->IsCustomScrollbar());
-
-  // We should use a fixed size for the corner if there is a resizer with no
-  // non-overlay scrollbars in order to make sure that it is big enough for the
-  // user to click or touch. We should not use a fixed size when there are
-  // non-overlay scrollbars so that the resizer matches the size of the
-  // scrollbar.
-  bool use_fixed_size =
-      RuntimeEnabledFeatures::TextAreaResizerFixedSizeEnabled() &&
-      GetPageScrollbarTheme().UsesOverlayScrollbars() &&
-      GetLayoutBox()->CanResize() && !has_custom_scrollbar &&
-      // Custom resizers are excluded
-      !Resizer();
-
-  if (use_fixed_size) {
-    // 15 DIP is a reasonable size for pointer hit testing, and becomes 30 DIP
-    // for touch. It is also large enough to contain the 7x7 resizer with 2px
-    // spacing.
-    const float kFixedCornerSizeDIP = 15.0f;
-    int thickness = std::round(kFixedCornerSizeDIP * ScaleFromDIP());
-    horizontal_thickness = thickness;
-    vertical_thickness = thickness;
-  } else if (!VerticalScrollbar() && !HorizontalScrollbar()) {
+  if (!VerticalScrollbar() && !HorizontalScrollbar()) {
     // We need to know the thickness of custom scrollbars even when they don't
     // exist in order to set the resizer square size properly.
     horizontal_thickness = GetPageScrollbarTheme().ScrollbarThickness(
@@ -352,7 +325,6 @@ gfx::Rect PaintLayerScrollableArea::CornerRect() const {
     vertical_thickness = HorizontalScrollbar()->ScrollbarThickness();
     horizontal_thickness = vertical_thickness;
   } else {
-    DCHECK(VerticalScrollbar() && HorizontalScrollbar());
     horizontal_thickness = VerticalScrollbar()->ScrollbarThickness();
     vertical_thickness = HorizontalScrollbar()->ScrollbarThickness();
   }

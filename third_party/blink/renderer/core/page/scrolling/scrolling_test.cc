@@ -2849,7 +2849,7 @@ TEST_P(ScrollingTest, NonCompositedResizerMainThreadScrollHitTestRegion) {
   // one of the viewport scroll layers because the region should move when the
   // container moves and not when the viewport scrolls.
   auto region = container_cc_layer->main_thread_scroll_hit_test_region();
-  EXPECT_EQ(cc::Region(gfx::Rect(70, 105, 30, 30)), region);
+  EXPECT_EQ(cc::Region(gfx::Rect(86, 121, 14, 14)), region);
 }
 
 TEST_P(ScrollingTest, CompositedResizerMainThreadScrollHitTestRegion) {
@@ -2873,7 +2873,7 @@ TEST_P(ScrollingTest, CompositedResizerMainThreadScrollHitTestRegion) {
 
   auto region =
       LayerByDOMElementId("scroller")->main_thread_scroll_hit_test_region();
-  EXPECT_EQ(cc::Region(gfx::Rect(50, 50, 30, 30)), region);
+  EXPECT_EQ(cc::Region(gfx::Rect(66, 66, 14, 14)), region);
 }
 
 TEST_P(ScrollingTest, TouchActionUpdatesOutsideInterestRect) {

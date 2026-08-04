@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 
@@ -74,10 +73,7 @@ void ScrollableAreaPainter::PaintResizer(const PaintInfo& paint_info,
 
   // Draw a frame around the resizer (1px grey line) if there are any scrollbars
   // present.  Clipping will exclude the right and bottom edges of this frame.
-  // Don't render this when TextAreaResizerFixedSize is enabled because the
-  // resizer may be larger than this box.
-  if (!RuntimeEnabledFeatures::TextAreaResizerFixedSizeEnabled() &&
-      scrollable_area_.NeedsScrollCorner()) {
+  if (scrollable_area_.NeedsScrollCorner()) {
     GraphicsContextStateSaver state_saver(context);
     context.Clip(visual_rect);
     gfx::Rect larger_corner = visual_rect;
@@ -116,71 +112,33 @@ void ScrollableAreaPainter::RecordResizerScrollHitTestData(
 void ScrollableAreaPainter::DrawPlatformResizerImage(
     GraphicsContext& context,
     const gfx::Rect& resizer_corner_rect) {
-  float paint_scale = scrollable_area_.ScaleFromDIP();
-  bool on_left = scrollable_area_.GetLayoutBox()
-                     ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft();
   gfx::Point points[4];
-
-  if (RuntimeEnabledFeatures::TextAreaResizerFixedSizeEnabled()) {
-    // Desired behavior: 7x7 CSS pixel resizer with 2px spacing.
-    int default_spacing = std::round(2.0f * paint_scale);
-    int default_size = std::round(7.0f * paint_scale);
-
-    int w = resizer_corner_rect.width();
-    int h = resizer_corner_rect.height();
-
-    // Cap spacing and size to fit the available corner rect.
-    int spacing_x = w > 0 ? std::max(1, std::min(default_spacing, w / 4)) : 0;
-    int spacing_y = h > 0 ? std::max(1, std::min(default_spacing, h / 4)) : 0;
-
-    int size_x = std::max(1, std::min(default_size, w - spacing_x));
-    int size_y = std::max(1, std::min(default_size, h - spacing_y));
-
-    int spacing = std::min(spacing_x, spacing_y);
-    int size_large = std::min(size_x, size_y);
-    int size_small = std::max(1, size_large / 2);
-
-    if (on_left) {
-      points[0].set_x(resizer_corner_rect.x() + spacing);
-      points[1].set_x(resizer_corner_rect.x() + spacing + size_large);
-      points[2].set_x(points[0].x());
-      points[3].set_x(resizer_corner_rect.x() + spacing + size_small);
-    } else {
-      points[0].set_x(resizer_corner_rect.right() - spacing);
-      points[1].set_x(resizer_corner_rect.right() - (spacing + size_large));
-      points[2].set_x(points[0].x());
-      points[3].set_x(resizer_corner_rect.right() - (spacing + size_small));
-    }
-    points[0].set_y(resizer_corner_rect.bottom() - (spacing + size_large));
-    points[1].set_y(resizer_corner_rect.bottom() - spacing);
-    points[2].set_y(resizer_corner_rect.bottom() - (spacing + size_small));
-    points[3].set_y(points[1].y());
+  bool on_left = false;
+  float paint_scale = scrollable_area_.ScaleFromDIP();
+  int edge_offset = std::ceil(paint_scale);
+  if (scrollable_area_.GetLayoutBox()
+          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
+    on_left = true;
+    points[0].set_x(resizer_corner_rect.x() + edge_offset);
+    points[1].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
+                    resizer_corner_rect.width() / 2);
+    points[2].set_x(points[0].x());
+    points[3].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
+                    resizer_corner_rect.width() * 3 / 4);
   } else {
-    // Old relative drawing logic.
-    int edge_offset = std::ceil(paint_scale);
-    if (on_left) {
-      points[0].set_x(resizer_corner_rect.x() + edge_offset);
-      points[1].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
-                      resizer_corner_rect.width() / 2);
-      points[2].set_x(points[0].x());
-      points[3].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
-                      resizer_corner_rect.width() * 3 / 4);
-    } else {
-      points[0].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
-                      edge_offset);
-      points[1].set_x(resizer_corner_rect.x() +
-                      resizer_corner_rect.width() / 2);
-      points[2].set_x(points[0].x());
-      points[3].set_x(resizer_corner_rect.x() +
-                      resizer_corner_rect.width() * 3 / 4);
-    }
-    points[0].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() / 2);
-    points[1].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() -
+    points[0].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
                     edge_offset);
-    points[2].set_y(resizer_corner_rect.y() +
-                    resizer_corner_rect.height() * 3 / 4);
-    points[3].set_y(points[1].y());
+    points[1].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() / 2);
+    points[2].set_x(points[0].x());
+    points[3].set_x(resizer_corner_rect.x() +
+                    resizer_corner_rect.width() * 3 / 4);
   }
+  points[0].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() / 2);
+  points[1].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() -
+                  edge_offset);
+  points[2].set_y(resizer_corner_rect.y() +
+                  resizer_corner_rect.height() * 3 / 4);
+  points[3].set_y(points[1].y());
 
   cc::PaintFlags paint_flags;
   paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
