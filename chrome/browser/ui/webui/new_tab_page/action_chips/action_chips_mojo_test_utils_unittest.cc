@@ -67,7 +67,7 @@ TEST(ActionChipsMojoTestUtilsTest, PrintSuggestTemplateInfo) {
             "    text: \"Secondary\",\n"
             "    a11y_text: null\n"
             "  },\n"
-            "  click_action: null\n"
+            "  fusebox_action: null\n"
             "}");
 
   auto info_missing = SuggestTemplateInfo::New();
@@ -78,7 +78,7 @@ TEST(ActionChipsMojoTestUtilsTest, PrintSuggestTemplateInfo) {
             "  type_icon: kSearchLoop,\n"
             "  primary_text: nullptr,\n"
             "  secondary_text: nullptr,\n"
-            "  click_action: null\n"
+            "  fusebox_action: null\n"
             "}");
 }
 
@@ -106,7 +106,7 @@ TEST(ActionChipsMojoTestUtilsTest, PrintActionChip) {
             "      a11y_text: null\n"
             "    },\n"
             "    secondary_text: nullptr,\n"
-            "    click_action: null\n"
+            "    fusebox_action: null\n"
             "  },\n"
             "  tab_info: TabInfo{\n"
             "    tab_id: 456,\n"

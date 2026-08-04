@@ -63,9 +63,9 @@ void PrintImpl(const SuggestTemplateInfo& info, int indent, std::ostream* os) {
   PrintImpl(info.primary_text, indent + kIndentUnit, os);
   *os << ",\n" << ind << "  secondary_text: ";
   PrintImpl(info.secondary_text, indent + kIndentUnit, os);
-  *os << ",\n" << ind << "  click_action: ";
-  if (info.click_action) {
-    *os << *info.click_action;
+  *os << ",\n" << ind << "  fusebox_action: ";
+  if (info.fusebox_action) {
+    *os << "FuseboxAction";
   } else {
     *os << "null";
   }
