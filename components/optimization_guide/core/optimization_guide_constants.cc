@@ -5,23 +5,4 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 
 namespace optimization_guide {
-
-const base::FilePath::CharType kWeightsFile[] =
-    FILE_PATH_LITERAL("weights.bin");
-
-const base::FilePath::CharType kWeightCacheFile[] =
-    FILE_PATH_LITERAL("cache.bin");
-
-const base::FilePath::CharType kEncoderCacheFile[] =
-    FILE_PATH_LITERAL("encoder_cache.bin");
-
-const base::FilePath::CharType kAdapterCacheFile[] =
-    FILE_PATH_LITERAL("adapter_cache.bin");
-
-const base::FilePath::CharType kProgramCacheFile[] =
-    FILE_PATH_LITERAL("program_cache.bin");
-
-const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[] =
-    FILE_PATH_LITERAL("on_device_model_execution_config.pb");
-
 }  // namespace optimization_guide

@@ -46,6 +46,20 @@ namespace optimization_guide {
 inline constexpr std::string_view kOnDeviceModelCrxId =
     "fklghjjljmnfjoepjmlobpekiapffcja";
 
+// Files expected to be in the on device model bundle.
+inline constexpr base::FilePath::CharType kWeightsFile[] =
+    FILE_PATH_LITERAL("weights.bin");
+inline constexpr base::FilePath::CharType kWeightCacheFile[] =
+    FILE_PATH_LITERAL("cache.bin");
+inline constexpr base::FilePath::CharType kEncoderCacheFile[] =
+    FILE_PATH_LITERAL("encoder_cache.bin");
+inline constexpr base::FilePath::CharType kAdapterCacheFile[] =
+    FILE_PATH_LITERAL("adapter_cache.bin");
+inline constexpr base::FilePath::CharType kProgramCacheFile[] =
+    FILE_PATH_LITERAL("program_cache.bin");
+inline constexpr base::FilePath::CharType kOnDeviceModelExecutionConfigFile[] =
+    FILE_PATH_LITERAL("on_device_model_execution_config.pb");
+
 class UsageTracker;
 
 // Status of the on-device model.
