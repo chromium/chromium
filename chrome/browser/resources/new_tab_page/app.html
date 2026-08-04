@@ -83,7 +83,8 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
               .clearAllInputsWhenSubmittingQuery="${true}"
               .closeOnEscape="${false}"
               .energyEffectEnabled="${this.energyEffectEnabled_}"
-              .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}">
+              .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+              ?is-dark="${this.isThemeDark_()}">
           </ntp-composebox>
         ${this.enableThreadsRail_ ? html`
           <cr-threads-rail id="threadsRail">

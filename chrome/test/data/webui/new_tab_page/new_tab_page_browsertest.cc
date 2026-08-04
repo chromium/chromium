@@ -412,6 +412,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ContextMenuAnimation) {
           "runMochaSuite('NewTabPageAppContextMenuAnimationTest')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, EnergyEffectVariant) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest EnergyEffectVariant')");
+}
+
 class NewTabPageModulesMostRelevantTabResumptionModuleTest
     : public NewTabPageBrowserTest {
  protected:

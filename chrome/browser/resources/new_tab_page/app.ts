@@ -379,6 +379,7 @@ export class AppElement extends AppElementBase {
 
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
+      energyEffectVariant_: {type: String, reflect: true},
       showCustomizeButton_: {type: Boolean},
     };
   }
@@ -496,6 +497,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('energyEffectEnabled');
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
+  protected accessor energyEffectVariant_: string =
+      loadTimeData.getString('energyEffectVariant');
   protected accessor showCustomizeButton_: boolean =
       loadTimeData.getBoolean('showCustomizeButton');
   protected contextMenuAnimationLimitingEnabled_: boolean =

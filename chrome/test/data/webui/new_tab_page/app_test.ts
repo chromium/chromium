@@ -4196,6 +4196,22 @@ suite('NewTabPageAppTest', () => {
           assertEquals(0, metrics.count('VoiceSearch.Action.NTP_REALBOX'));
         });
   });
+
+  suite('EnergyEffectVariant', () => {
+    ['energy-effect-original',
+     'energy-effect-darker-shadow',
+     'pre-energy-effect-with-border',
+     'energy-effect-fusebox',
+    ]
+        .forEach(
+            (variant) => test(`reflects ${variant} to attribute`, async () => {
+              loadTimeData.overrideValues({
+                energyEffectVariant: variant,
+              });
+              await recreateApp();
+              assertEquals(variant, app.getAttribute('energy-effect-variant_'));
+            }));
+  });
 });
 
 suite('NewTabPageAppReducedMotionTest', () => {
