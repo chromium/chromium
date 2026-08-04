@@ -1316,6 +1316,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3019738915977809060">Salvar cartão de embarque na Carteira</translation>
 <translation id="3022959067768579802">Continue escrevendo</translation>
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
+<translation id="3027857899292697441">O Chrome detectou detalhes que são comuns em sites associados a phishing, malware ou golpes. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imagem SVG</translation>
 <translation id="3030331669969285614">Essas sinalizações evitam ou revertem uma mudança interruptiva e só ficam disponíveis por tempo limitado.</translation>
 <translation id="3033200136993730761">Seu endereço de casa deixa os Serviços do Google, como resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5076,6 +5077,7 @@ Mais detalhes:
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="881559332211266856">Atualizar número de retificação</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para atualizar o Chrome pelas configurações dele</translation>
+<translation id="8816960833040967795">Tenha cuidado neste site</translation>
 <translation id="8819155700324279105">Mais proteção contra ameaças on-line.</translation>
 <translation id="8819855907485254989">Salvar bilhete de transporte na Carteira</translation>
 <translation id="8820817407110198400">Favoritos</translation>

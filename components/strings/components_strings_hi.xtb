@@ -1317,6 +1317,7 @@
 <translation id="3019738915977809060">बोर्डिंग पास को Wallet में सेव करें</translation>
 <translation id="3022959067768579802">मैसेज लिखना जारी रखें</translation>
 <translation id="3024663005179499861">गलत नीति प्रकार</translation>
+<translation id="3027857899292697441">Chrome को ऐसी जानकारी मिली है जो फ़िशिंग, मैलवेयर या धोखाधड़ी वाली साइटों में आम तौर पर मिलती है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG इमेज</translation>
 <translation id="3030331669969285614">ये फ़्लैग, नुकसान पहुंचा सकने वाले बदलाव को रोकते या उन्हें पहले जैसा करते हैं. साथ ही, ये फ़्लैग सिर्फ़ कुछ समय के लिए उपलब्ध रहते हैं.</translation>
 <translation id="3033200136993730761">अगर आपने Chrome में अपने घर का पता सेट किया है, तो Google की अलग-अलग सेवाओं का आसानी से फ़ायदा लिया जा सकता है. जैसे, ज़्यादा काम के नतीजे पाना और Google Maps में घर जाने का रास्ता देखना. <ph name="BEGIN_LINK" />Google खाते <ph name="ACCOUNT" /><ph name="END_LINK" /> में जाकर, अपने पते में बदलाव किया जा सकता है या उसे मिटाया जा सकता है.</translation>
@@ -5076,6 +5077,7 @@
 <translation id="8814707942599948500">C8 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="881559332211266856">रिड्रेस नंबर अपडेट करें</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग से Chrome अपडेट करने के लिए, Tab के बाद Enter दबाएं</translation>
+<translation id="8816960833040967795">इस साइट पर सावधानी बरतें</translation>
 <translation id="8819155700324279105">ऑनलाइन खतरों से बचने के लिए सुरक्षा को और बेहतर बनाएं</translation>
 <translation id="8819855907485254989">बस, मेट्रो वगैरह के टिकट को Wallet में सेव करें</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>

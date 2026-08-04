@@ -1316,6 +1316,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3019738915977809060">Guarde o cartão de embarque na Carteira</translation>
 <translation id="3022959067768579802">Continue a escrever</translation>
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
+<translation id="3027857899292697441">O Chrome detetou detalhes que são comuns em sites associados a phishing, software malicioso ou fraudes. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imagem SVG</translation>
 <translation id="3030331669969285614">Estas sinalizações evitam ou revertem uma alteração interruptiva e estão disponíveis apenas por tempo limitado.</translation>
 <translation id="3033200136993730761">A sua morada de casa pode ajudar a realizar tarefas nos serviços Google, como resultados da pesquisa mais relevantes e direções no Google Maps. Pode editar ou eliminar a sua morada na <ph name="BEGIN_LINK" />Conta Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@ Detalhes adicionais:
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="881559332211266856">Atualize o número de correção</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para atualizar o Chrome nas Definições do Chrome.</translation>
+<translation id="8816960833040967795">Tenha cuidado neste site</translation>
 <translation id="8819155700324279105">Adicione uma camada extra de proteção contra ameaças online</translation>
 <translation id="8819855907485254989">Guarde o bilhete de transportes na Carteira</translation>
 <translation id="8820817407110198400">Marcadores</translation>

@@ -352,6 +352,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1539840569003678498">Bericht gesendet:</translation>
 <translation id="1542105669288201090">Wirtschaftspädagogik</translation>
 <translation id="1542830386724426410">Beim Bezahlen verfügbare Vorteile und Prämien der Karte anzeigen. Es gelten die Bedingungen des Ausstellers. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Weitere Informationen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Aufgrund der Richtlinien deiner Organisation werden die von dir kopierten Inhalte auf vertrauliche Informationen überprüft. Das Einfügen ist möglicherweise nach Abschluss der Überprüfung zulässig.</translation>
 <translation id="1545757265410828525">Preisentwicklung</translation>
 <translation id="1546286808622193216">Kartenvorteile mit Gemini vergleichen</translation>
 <translation id="1549470594296187301">Für diese Funktion muss JavaScript aktiviert sein.</translation>
@@ -1503,6 +1504,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3293642807462928945">Weitere Informationen zur "<ph name="POLICY_NAME" />"-Richtlinie</translation>
 <translation id="3295444047715739395">Passwörter in den Chrome-Einstellungen ansehen und verwalten</translation>
 <translation id="3299098170013242198">Windows Hello ist zum Ausfüllen von Passwörtern aktiviert</translation>
+<translation id="3299197721044635447">Inhalte konnten aufgrund der Richtlinien deiner Organisation nicht außerhalb des verwalteten Chrome-Kontexts eingefügt werden</translation>
 <translation id="3299720788264079132">Bei der Verwendung von <ph name="FEATURE_NAME" /> ist ein Fehler aufgetreten</translation>
 <translation id="3303176609391916566">30 × 42 Zoll</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
@@ -4366,6 +4368,7 @@ Weitere Details:
 <translation id="767550629621587224">Vorgeschnittene Registerkarten</translation>
 <translation id="7675756033024037212">Scrollen und Zoomen nicht zulässig</translation>
 <translation id="7676643023259824263">Nach Text aus Zwischenablage suchen: <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Deine Organisation überwacht das Kopieren</translation>
 <translation id="7678730592635586336">Video neu aufnehmen</translation>
 <translation id="7679287273775285018">Mit E‑Wallet bezahlen</translation>
 <translation id="7679367271685653708">Browserverlauf in den Chrome-Einstellungen anzeigen und verwalten</translation>
@@ -4652,6 +4655,7 @@ Weitere Details:
 <translation id="8134058435519644366">Personalbeschaffung</translation>
 <translation id="8135546115396015134">die linke Taste</translation>
 <translation id="8137456439814903304">Energie und Energieversorger</translation>
+<translation id="814071672416123670">Inhalte konnten aufgrund der Richtlinien deiner Organisation nicht kopiert werden</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vor 1 Monat erstellt}other{Vor {NUM_MONTHS} Monaten erstellt}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktueller Standard. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-Version:</translation>

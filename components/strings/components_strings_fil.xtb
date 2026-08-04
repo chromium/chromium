@@ -1316,6 +1316,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3019738915977809060">I-save ang boarding pass sa Wallet</translation>
 <translation id="3022959067768579802">Magpatuloy sa pagsusulat</translation>
 <translation id="3024663005179499861">Maling uri ng patakaran</translation>
+<translation id="3027857899292697441">May na-detect ang Chrome na mga detalyeng karaniwan sa mga site na nauugnay sa phishing, malware, o mga scam. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Larawang SVG</translation>
 <translation id="3030331669969285614">Pinipigilan o nire-revert ng mga pag-flag na ito ang isang breaking change at magiging available lang ang mga ito sa limitadong panahon.</translation>
 <translation id="3033200136993730761">Makakatulong sa iyo ang address ng tahanan mo sa pagtapos ng mga gawain sa mga serbisyo ng Google, tulad ng mga mas nauugnay na resulta sa Search at direksyon sa Google Maps. Puwede mong i-edit o i-delete ang iyong address <ph name="BEGIN_LINK" />sa Google Account mo na <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -5075,6 +5076,7 @@ Mga karagdagang detalye:
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="881559332211266856">I-update ang numero ng pag-redress</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para i-update ang Chrome mula sa iyong mga setting ng Chrome</translation>
+<translation id="8816960833040967795">Mag-ingat sa site na ito</translation>
 <translation id="8819155700324279105">Magdagdag pa ng proteksyon laban sa mga banta online</translation>
 <translation id="8819855907485254989">I-save ang ticket sa transportasyon sa Wallet</translation>
 <translation id="8820817407110198400">Mga Bookmark</translation>

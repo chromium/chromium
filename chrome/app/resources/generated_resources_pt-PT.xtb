@@ -1551,6 +1551,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2198625180564913276">A adicionar o perfil. Esta ação pode demorar alguns minutos.</translation>
 <translation id="2198712775285959645">Editar</translation>
 <translation id="2199298570273670671">Erro</translation>
+<translation id="220006241671843310">Escolha se o Chrome usa modelos de IA que são executados diretamente no seu dispositivo</translation>
 <translation id="2200094388063410062">Email:</translation>
 <translation id="2200781749203116929">Registos do sistema do ChromeOS</translation>
 <translation id="2202391868799679245">Ativar atalho de teclado</translation>
@@ -2099,7 +2100,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2624142942574147739">Esta página está a aceder à sua câmara e microfone.</translation>
 <translation id="2626799779920242286">Tente mais tarde.</translation>
 <translation id="2627424346328942291">Não é possível partilhar</translation>
-<translation id="2627970398976286795">Rever os riscos do Gemini Spark</translation>
+<translation id="2627970398976286795">Reveja os riscos do Gemini Spark</translation>
 <translation id="2628258844236035475">Remover a sua morada de casa do preenchimento automático do Chrome?</translation>
 <translation id="2628770867680720336">Tem de efetuar a reposição de dados de fábrica deste Chromebook para ativar a depuração do adb. <ph name="BEGIN_LINK_LEARN_MORE" />Saber mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Iniciar novo chat com o Gemini</translation>
@@ -3615,7 +3616,7 @@ Quer pará-lo?</translation>
 <translation id="3756578970075173856">Defina o PIN</translation>
 <translation id="3756806135608816820">Os sites podem pedir para procurar dispositivos Bluetooth</translation>
 <translation id="3756823472711156529">Restaurar grupo</translation>
-<translation id="3757337311115630808">Saber mais sobre o Gemini Spark</translation>
+<translation id="3757337311115630808">Saiba mais sobre o Gemini Spark</translation>
 <translation id="3757567010566591880">Desafixar da barra de ferramentas</translation>
 <translation id="3757645900890881944">Ferramentas da Pesquisa</translation>
 <translation id="3757733214359997190">Não foram encontrados sites.</translation>
