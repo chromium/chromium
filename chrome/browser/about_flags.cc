@@ -804,7 +804,6 @@ const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
      switches::reader_mode_heuristics::kAllArticles},
 };
 
-
 const FeatureEntry::Choice kForceUpdateMenuTypeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kUpdateMenuTypeNone, switches::kForceUpdateMenuType,
@@ -1284,7 +1283,6 @@ const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
      kStartupLaunchForegroundDisabledParams, nullptr},
 };
 #endif  // BUILDFLAG(IS_WIN)
-
 
 const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
     {"annotate_title_instead_of_page_content", "false"},
@@ -2076,7 +2074,6 @@ const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {
 
 const FeatureEntry::FeatureVariation kOmniboxMultilineEditFieldVariants[] = {
     {"For Autocomplete", kOmniboxMultilineEditFieldForAutocomplete, nullptr}};
-
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -3786,7 +3783,6 @@ const FeatureEntry::FeatureVariation kTouchToSearchCalloutVariations[] = {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-
 const FeatureEntry::FeatureParam kEnableNtpBrowserPromosVariationSimple[] = {
     {"promo-type", "simple"}};
 
@@ -3868,8 +3864,6 @@ const FeatureEntry::FeatureVariation
          kSafetyHubDisruptiveNotificationRevocationVariations_Moderate,
          nullptr},
 };
-
-
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kCCTResetTimeoutParams_1min[] = {
@@ -6680,11 +6674,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
-    {"omnibox-resizing-prioritization",
-     flag_descriptions::kOmniboxResizingPrioritizationName,
-     flag_descriptions::kOmniboxResizingPrioritizationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kOmniboxResizingPrioritization)},
-
     {"omnibox-contextual-suggestions",
      flag_descriptions::kOmniboxContextualSuggestionsName,
      flag_descriptions::kOmniboxContextualSuggestionsDescription,
@@ -7061,10 +7050,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"tab-strip-unification", flag_descriptions::kTabStripUnificationName,
      flag_descriptions::kTabStripUnificationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kTabStripUnification)},
-
-    {"vertical-tabs", flag_descriptions::kVerticalTabsName,
-     flag_descriptions::kVerticalTabsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(tabs::kVerticalTabs)},
 
     {"vertical-tabs-expand-on-hover",
      flag_descriptions::kVerticalTabsExpandOnHoverName,
@@ -8655,7 +8640,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
 #endif
 
-
 #if BUILDFLAG(IS_ANDROID)
     {"incognito-screenshot", flag_descriptions::kIncognitoScreenshotName,
      flag_descriptions::kIncognitoScreenshotDescription, kOsAndroid,
@@ -9830,21 +9814,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kToolbarGlowUpVariations,
                                     "ToolbarGlowUp")},
 
-    {"toolbar-profile-chip-resizing",
-     flag_descriptions::kToolbarProfileChipResizingName,
-     flag_descriptions::kToolbarProfileChipResizingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kToolbarProfileChipResizing)},
-
-    {"toolbar-app-menu-label-resizing",
-     flag_descriptions::kToolbarAppMenuLabelResizingName,
-     flag_descriptions::kToolbarAppMenuLabelResizingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kToolbarAppMenuLabelResizing)},
-
-    {"toolbar-glic-button-resizing",
-     flag_descriptions::kToolbarGlicButtonResizingName,
-     flag_descriptions::kToolbarGlicButtonResizingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kToolbarGlicButtonResizing)},
-
     {"rounded-icons", flag_descriptions::kRoundedIconsName,
      flag_descriptions::kRoundedIconsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRoundedIcons)},
@@ -10627,7 +10596,6 @@ const FeatureEntry kFeatureEntries[] = {
          permissions::features::kPermissionsGestureGatedPrompts,
          kPermissionsGestureGatedPromptsVariations,
          "PermissionsGestureGatedPrompts")},
-
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-translate-button",
@@ -11693,7 +11661,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-
 #if !BUILDFLAG(IS_ANDROID)
     {"lens-overlay-permission-bubble-alt",
      flag_descriptions::kLensOverlayPermissionBubbleAltName,
@@ -12518,7 +12485,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableBnplCountryCheckForTesting)},
 
-
 #if BUILDFLAG(IS_ANDROID)
     {"xplat-synced-setup", flag_descriptions::kXplatSyncedSetupName,
      flag_descriptions::kXplatSyncedSetupDescription, kOsAndroid,
@@ -12591,7 +12557,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableTouchToFillReshowForBnpl)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
 
 #if BUILDFLAG(IS_MAC)
     {"enable-accessibility-text-operation",

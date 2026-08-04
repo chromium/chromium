@@ -467,7 +467,6 @@ inline constexpr char
         "Search. "
         "Requires #customize-chrome-wallpaper-search to be enabled too.";
 
-
 inline constexpr char kEnableCancelUploadOnContentAnalysisName[] =
     "Cancel file uploads on content analysis";
 inline constexpr char kEnableCancelUploadOnContentAnalysisDescription[] =
@@ -1937,7 +1936,6 @@ inline constexpr char kEnableProcessIsolationUiName[] =
 inline constexpr char kEnableProcessIsolationUiDescription[] =
     "Shows the Enable Process Isolation toggle in chrome://settings/system.";
 
-
 inline constexpr char kEnableStaticQrCodeForPixName[] =
     "Enable Static Qr Code For Pix";
 inline constexpr char kEnableStaticQrCodeForPixDescription[] =
@@ -1992,7 +1990,6 @@ inline constexpr char kDesktopPWAsTabStripCustomizationsName[] =
 inline constexpr char kDesktopPWAsTabStripCustomizationsDescription[] =
     "Enable PWAs to customize their tab strip when in tabbed mode by adding "
     "the `tab_strip` manifest field.";
-
 
 inline constexpr char kDevToolsEnableDurableMessagesName[] =
     "Preserve HTTP message bodies across navigations for DevTools";
@@ -3138,7 +3135,6 @@ inline constexpr char kLensOverlayEduActionChipDescription[] =
     "Enables Lens Overlay EDU action chip. Intended for testing the chip "
     "itself, not its triggering criteria.";
 
-
 inline constexpr char kLensOverlayForceEmptyCsbQueryName[] =
     "Lens overlay force empty CSB query";
 inline constexpr char kLensOverlayForceEmptyCsbQueryDescription[] =
@@ -3593,12 +3589,6 @@ inline constexpr char kOmniboxNumWebZpsMostVisitedUrlsDescription[] =
     "Controls presence/volume of Most Visited URLs shown in zero-prefix "
     "context on the Web";
 
-inline constexpr char kOmniboxResizingPrioritizationName[] =
-    "Omnibox Resizing Prioritization";
-inline constexpr char kOmniboxResizingPrioritizationDescription[] =
-    "Prioritizes providing space for the Omnibox during browser window "
-    "resizing.";
-
 inline constexpr char kOmniboxSearchPrefetchOnEnterKeyDownName[] =
     "Omnibox search prefetch on Enter KeyDown";
 inline constexpr char kOmniboxSearchPrefetchOnEnterKeyDownDescription[] =
@@ -3840,7 +3830,6 @@ inline constexpr char kWebUIOmniboxHideAimUrlName[] =
 inline constexpr char kWebUIOmniboxHideAimUrlDescription[] =
     "If enabled, hides the AIM button when the default suggestion is a URL.";
 
-
 inline constexpr char kWebUIOmniboxFullPopupName[] =
     "WebUI Omnibox Full Popup";
 inline constexpr char kWebUIOmniboxFullPopupDescription[] =
@@ -3872,7 +3861,6 @@ inline constexpr char kWebUiOmniboxAskGAboutThisPageName[] =
     "WebUI Omnibox Ask G About This Page";
 inline constexpr char kWebUiOmniboxAskGAboutThisPageDescription[] =
     "If enabled, the 'Ask Google about this page' action will route to cobrowse.";
-
 
 inline constexpr char kWebuiRefresh2026Name[] = "WebUI Refresh 2026";
 inline constexpr char kWebuiRefresh2026Description[] =
@@ -4440,10 +4428,6 @@ inline constexpr char kSplitViewTabRestoreName[] = "Split View Tab Restore";
 inline constexpr char kSplitViewTabRestoreDescription[] =
     "Whether or not a split view should restore together.";
 
-inline constexpr char kVerticalTabsName[] = "Vertical Tabs";
-inline constexpr char kVerticalTabsDescription[] =
-    "Enables an option for showing tabs to the side.";
-
 inline constexpr char kVerticalTabsExpandOnHoverName[] =
     "Vertical Tabs Expand On Hover";
 inline constexpr char kVerticalTabsExpandOnHoverDescription[] =
@@ -4743,21 +4727,6 @@ inline constexpr char kTLSTrustAnchorIDsDescription[] =
 inline constexpr char kToolbarGlowUpName[] = "Toolbar Glow Up";
 inline constexpr char kToolbarGlowUpDescription[] =
     "Enables the Toolbar Glow Up feature.";
-
-inline constexpr char kToolbarProfileChipResizingName[] =
-    "Toolbar Profile Chip Resizing";
-inline constexpr char kToolbarProfileChipResizingDescription[] =
-    "Enables resizing of the profile chip in the toolbar.";
-
-inline constexpr char kToolbarAppMenuLabelResizingName[] =
-    "Toolbar App Menu Label Resizing";
-inline constexpr char kToolbarAppMenuLabelResizingDescription[] =
-    "Enables resizing of the app menu label in the toolbar.";
-
-inline constexpr char kToolbarGlicButtonResizingName[] =
-    "Toolbar Glic Button Label Resizing";
-inline constexpr char kToolbarGlicButtonResizingDescription[] =
-    "Enables resizing of the glic button in the toolbar.";
 
 inline constexpr char kRoundedIconsName[] = "Rounded Icons";
 inline constexpr char kRoundedIconsDescription[] = "Enables rounded icons.";
@@ -5153,7 +5122,6 @@ inline constexpr char kWebXrHandAnonymizationChoiceFallback[] =
 inline constexpr char kWebXrIncubationsName[] = "WebXR Incubations";
 inline constexpr char kWebXrIncubationsDescription[] =
     "Enables experimental features for WebXR.";
-
 
 inline constexpr char kZeroCopyName[] = "Zero-copy rasterizer";
 inline constexpr char kZeroCopyDescription[] =
@@ -6724,7 +6692,6 @@ inline constexpr char kMemoryPurgeOnFreezeLimitDescription[] =
     "Do not purge memory in renderers with frozen pages more than once per "
     "backgrounded interval, to minimize overhead when pages are periodically "
     "unfrozen. To be enabled with memory-purge-on-freeze-limit.";
-
 
 inline constexpr char kReadAnythingOmniboxChipName[] =
     "Reading Mode Omnibox Chip";
