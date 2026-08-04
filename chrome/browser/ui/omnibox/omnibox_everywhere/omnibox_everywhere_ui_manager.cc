@@ -7,8 +7,10 @@
 #include <algorithm>
 
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -24,14 +26,23 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_mac_utils.h"
 #endif
 
 namespace omnibox_everywhere {
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
+                                      kOmniboxEverywhereElementId);
 
 namespace {
 
@@ -85,7 +96,8 @@ class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
 
 OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
     ContentsWrapperFactory contents_wrapper_factory)
-    : contents_wrapper_factory_(std::move(contents_wrapper_factory)) {}
+    : event_handler_(std::make_unique<OmniboxEverywhereEventHandler>(*this)),
+      contents_wrapper_factory_(std::move(contents_wrapper_factory)) {}
 
 OmniboxEverywhereUIManager::~OmniboxEverywhereUIManager() = default;
 
@@ -194,7 +206,14 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
       &OmniboxEverywhereUIManager::OnWidgetClosed, base::Unretained(this)));
   widget_observation_.Observe(widget_.get());
 
+#if defined(USE_AURA)
+  CHECK(widget_->GetNativeView());
+  widget_->GetNativeView()->AddPreTargetHandler(event_handler_.get());
+#endif
+
   auto web_view = std::make_unique<views::WebView>(profile_);
+  web_view->SetProperty(views::kElementIdentifierKey,
+                        kOmniboxEverywhereElementId);
   web_view->SetWebContents(web_contents());
   web_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   if (web_contents()) {
@@ -233,6 +252,11 @@ void OmniboxEverywhereUIManager::Close() {
 void OmniboxEverywhereUIManager::CleanUpWidget() {
   if (widget_) {
     widget_observation_.Reset();
+#if defined(USE_AURA)
+    if (auto* native_view = widget_->GetNativeView()) {
+      native_view->RemovePreTargetHandler(event_handler_.get());
+    }
+#endif
     if (auto* contents_view = widget_->GetContentsView()) {
       if (auto* web_view = views::AsViewClass<views::WebView>(contents_view)) {
         web_view->SetWebContents(nullptr);
@@ -357,6 +381,12 @@ void OmniboxEverywhereUIManager::RunFileChooser(
                                    std::move(wrapped_listener), params);
 }
 
+void OmniboxEverywhereUIManager::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  event_handler_->UpdateNoDragRegions(regions);
+}
+
 std::unique_ptr<WebUIContentsWrapper>
 OmniboxEverywhereUIManager::CreateContentsWrapper(Profile* profile) {
   if (contents_wrapper_factory_) {
@@ -364,7 +394,8 @@ OmniboxEverywhereUIManager::CreateContentsWrapper(Profile* profile) {
   }
   return std::make_unique<WebUIContentsWrapperT<OmniboxEverywhereUI>>(
       GURL(chrome::kChromeUIOmniboxEverywhereURL), profile,
-      IDS_TASK_MANAGER_OMNIBOX);
+      IDS_TASK_MANAGER_OMNIBOX, /*esc_closes_ui=*/true,
+      /*supports_draggable_regions=*/true);
 }
 
 }  // namespace omnibox_everywhere
