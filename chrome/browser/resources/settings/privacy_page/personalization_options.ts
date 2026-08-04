@@ -41,6 +41,10 @@ import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
+// <if expr="is_chromeos">
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+// </if>
+
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {pageVisibility} from '../page_visibility.js';
@@ -282,23 +286,10 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   // <if expr="is_chromeos">
-  private navigateToForTesting_?: (url: string) => void;
-
-  setNavigateToForTesting(navigateTo: (url: string) => void): void {
-    this.navigateToForTesting_ = navigateTo;
-  }
-
-  private navigateTo_(url: string): void {
-    if (this.navigateToForTesting_) {
-      this.navigateToForTesting_(url);
-      return;
-    }
-    window.location.href = url;
-  }
-
   private onMetricsReportingLinkClick_() {
     // TODO(wesokuhara) Deep link directly to metrics toggle via settingId.
-    this.navigateTo_(loadTimeData.getString('osSettingsPrivacyHubSubpageUrl'));
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('osSettingsPrivacyHubSubpageUrl'));
   }
   // </if>
 
@@ -323,7 +314,8 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private onUseSpellingServiceLinkClick_() {
-    this.navigateTo_(loadTimeData.getString('osSyncSetupSettingsUrl'));
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('osSyncSetupSettingsUrl'));
   }
   // </if><!-- chromeos -->
   // </if><!-- _google_chrome -->

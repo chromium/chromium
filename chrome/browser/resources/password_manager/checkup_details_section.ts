@@ -381,10 +381,6 @@ export class CheckupDetailsSectionElement extends
       boolean {
     return this.clickedChangePasswordIds_.has(item.id);
   }
-
-  getListenerIdForTesting(): number|null {
-    return this.listenerId_;
-  }
 }
 
 declare global {

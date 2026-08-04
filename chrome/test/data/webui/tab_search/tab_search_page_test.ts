@@ -7,7 +7,7 @@ import 'chrome://tab-search.top-chrome/tab_search.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {SEARCH_QUERY_MAX_LENGTH, SplitTabLayout, SplitViewData, TabGroupColor, TabSearchApiProxyImpl, TabSearchUserAction, tokenToString} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SEARCH_QUERY_MAX_LENGTH, SplitTabLayout, SplitViewData, TabGroupColor, TabSearchApiProxyImpl, TabSearchUserAction} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -581,7 +581,7 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [6, 4]);
     assertEquals(0, tabSearchPage.getSelectedTabIndex());
     keyDownOn(searchField, 0, [], 'ArrowDown');
-    assertEquals('Apple', tabSearchPage.getSearchTextForTesting());
+    assertEquals('Apple', tabSearchPage.getSearchInput().value);
     assertEquals(1, tabSearchPage.getSelectedTabIndex());
 
     // When hidden visibilitychange should reset selection and search text.
@@ -590,7 +590,7 @@ suite('TabSearchAppTest', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     await microtasksFinished();
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    assertEquals('', tabSearchPage.getSearchTextForTesting());
+    assertEquals('', tabSearchPage.getSearchInput().value);
     assertEquals(0, tabSearchPage.getSelectedTabIndex());
 
     // State should match that of the hidden state when visible again.
@@ -599,7 +599,7 @@ suite('TabSearchAppTest', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     await microtasksFinished();
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    assertEquals('', tabSearchPage.getSearchTextForTesting());
+    assertEquals('', tabSearchPage.getSearchInput().value);
     assertEquals(0, tabSearchPage.getSelectedTabIndex());
   });
 
@@ -1065,13 +1065,6 @@ suite('TabSearchAppTest', () => {
     assertEquals(TabGroupColor.kBlue, splitViewRow.tabGroup.color);
 
     const newGroupToken = sampleToken(3n, 3n);
-    tabSearchPage.getTabGroupsMapForTesting().set(
-        tokenToString(newGroupToken), {
-          id: newGroupToken,
-          color: TabGroupColor.kRed,
-          title: 'Personal Group',
-        });
-
     const updatedTab = createTab({
       tabId: 10,
       title: 'Tab A',
@@ -1081,11 +1074,22 @@ suite('TabSearchAppTest', () => {
       groupId: newGroupToken,
     });
 
-    testProxy.getCallbackRouterRemote().tabUpdated({
-      inActiveWindow: true,
-      inHostWindow: true,
-      tab: updatedTab,
-    });
+    testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
+      windows: [{
+        active: true,
+        isHostWindow: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs: [updatedTab, tabs[1]!],
+      }],
+      tabGroups: [
+        tabGroups[0]!,
+        {
+          id: newGroupToken,
+          color: TabGroupColor.kRed,
+          title: 'Personal Group',
+        },
+      ],
+    }));
     await microtasksFinished();
 
     splitViewRow = tabSearchPage.$.tabsList.items.find(

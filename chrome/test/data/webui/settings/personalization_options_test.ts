@@ -12,6 +12,8 @@ import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, resetPageVis
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="_google_chrome and is_chromeos">
+import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // </if>
 // <if expr="_google_chrome or not is_chromeos">
@@ -523,23 +525,24 @@ suite('OfficialBuild', function() {
         assertFalse(isChildVisible(testElement, '#metricsReportingLink'));
       });
 
-  test('Metrics row links to OS Settings Privacy Hub subpage', function() {
-    loadTimeData.overrideValues({shouldUseMetricsConsentRestructure: false});
-    buildTestElement();
+  test(
+      'Metrics row links to OS Settings Privacy Hub subpage', async function() {
+        const openWindowProxy = new TestOpenWindowProxy();
+        OpenWindowProxyImpl.setInstance(openWindowProxy);
 
-    assertTrue(isChildVisible(testElement, '#metricsReportingLink'));
+        loadTimeData.overrideValues(
+            {shouldUseMetricsConsentRestructure: false});
+        buildTestElement();
 
-    let targetUrl: string = '';
-    testElement.setNavigateToForTesting((url: string) => {
-      targetUrl = url;
-    });
+        assertTrue(isChildVisible(testElement, '#metricsReportingLink'));
 
-    testElement.shadowRoot!.querySelector<HTMLElement>(
-                               '#metricsReportingLink')!.click();
-    const expectedUrl =
-        loadTimeData.getString('osSettingsPrivacyHubSubpageUrl');
-    assertEquals(expectedUrl, targetUrl);
-  });
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>('#metricsReportingLink')!.click();
+        const url = await openWindowProxy.whenCalled('openUrl');
+        const expectedUrl =
+            loadTimeData.getString('osSettingsPrivacyHubSubpageUrl');
+        assertEquals(expectedUrl, url);
+      });
   // </if>
 });
 // </if>
