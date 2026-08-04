@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/crypto_utility.h"
+#include "components/enterprise/device_trust/core/attestation/crypto_utility.h"
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"

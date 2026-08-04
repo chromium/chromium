@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
+#include "components/enterprise/device_trust/core/attestation/google_keys.h"
 
 #include "base/compiler_specific.h"
 
@@ -63,7 +63,7 @@ std::string ZeroTerminatedCharArrayToString(
 
 }  // namespace
 
-GoogleKeys ::GoogleKeys() {
+GoogleKeys::GoogleKeys() {
   // No key_id for signing key.
   va_signing_keys_[DEFAULT_VA].set_modulus_in_hex(kDefaultVASigningPublicKey);
   va_signing_keys_[TEST_VA].set_modulus_in_hex(kTestVASigningPublicKey);

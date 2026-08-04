@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_BROWSER_ATTESTATION_SERVICE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_BROWSER_ATTESTATION_SERVICE_H_
+#ifndef COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_BROWSER_ATTESTATION_SERVICE_H_
+#define COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_BROWSER_ATTESTATION_SERVICE_H_
 
 #include <memory>
 #include <optional>
@@ -14,9 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_runner.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_service.h"
 #include "components/enterprise/device_trust/core/attestation/attester.h"
+#include "components/enterprise/device_trust/core/attestation/google_keys.h"
 #include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"
 
 namespace enterprise_connectors {
@@ -82,4 +82,4 @@ class BrowserAttestationService : public AttestationService {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_BROWSER_ATTESTATION_SERVICE_H_
+#endif  // COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_BROWSER_ATTESTATION_SERVICE_H_

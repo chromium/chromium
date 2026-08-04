@@ -15,7 +15,6 @@ source_set("unit_tests") {
 
   if (is_linux || is_mac || is_win) {
     sources += [
-      "browser_attestation_service_unittest.cc",
       "device_attester_unittest.cc",
       "profile_attester_unittest.cc",
     ]

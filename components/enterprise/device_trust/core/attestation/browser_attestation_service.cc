@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.h"
+#include "components/enterprise/device_trust/core/attestation/browser_attestation_service.h"
 
 #include <utility>
 
@@ -17,9 +17,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attestation_switches.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/crypto_utility.h"
+#include "components/enterprise/device_trust/core/attestation/attestation_switches.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_utils.h"
+#include "components/enterprise/device_trust/core/attestation/crypto_utility.h"
 #include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"
 #include "components/enterprise/device_trust/core/common_types.h"
 #include "crypto/aes_cbc.h"

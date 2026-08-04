@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.h"
+#include "components/enterprise/device_trust/core/attestation/browser_attestation_service.h"
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -10,11 +10,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attestation_switches.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/enterprise/device_trust/core/attestation/attestation_switches.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_utils.h"
 #include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -159,18 +158,17 @@ class BrowserAttestationServiceTest : public testing::Test {
 
   void MockSignResponse(bool add_browser_signature = true) {
     EXPECT_CALL(*mock_device_attester_, SignResponse(_, _, _, _))
-        .WillOnce(
-            [add_browser_signature](const std::set<DTCPolicyLevel>& levels,
-                                    const std::string& challenge_response,
-                                    SignedData& signed_data,
-                                    base::OnceClosure done_closure) {
-              ASSERT_FALSE(challenge_response.empty());
-              if ((levels.find(DTCPolicyLevel::kBrowser) != levels.end()) &&
-                  add_browser_signature) {
-                signed_data.set_signature(kFakeSignature);
-              }
-              std::move(done_closure).Run();
-            });
+        .WillOnce([add_browser_signature](
+                      const std::set<DTCPolicyLevel>& levels,
+                      const std::string& challenge_response,
+                      SignedData& signed_data, base::OnceClosure done_closure) {
+          ASSERT_FALSE(challenge_response.empty());
+          if ((levels.find(DTCPolicyLevel::kBrowser) != levels.end()) &&
+              add_browser_signature) {
+            signed_data.set_signature(kFakeSignature);
+          }
+          std::move(done_closure).Run();
+        });
 
     EXPECT_CALL(*mock_profile_attester_, SignResponse(_, _, _, _))
         .WillOnce([](const std::set<DTCPolicyLevel>& levels,

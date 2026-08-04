@@ -32,6 +32,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     "//base",
+    "//components/enterprise/device_trust/core/attestation:unit_tests",
     "//testing/gtest",
   ]
 }

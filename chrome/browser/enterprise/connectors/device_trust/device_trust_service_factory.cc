@@ -24,13 +24,13 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/device_trust/core/attestation/browser_attestation_service.h"
 #include "components/enterprise/device_trust/core/attestation/device_attester.h"
 #include "components/enterprise/device_trust/core/attestation/profile_attester.h"
 #include "components/enterprise/device_trust/core/device_trust_key_manager.h"
@@ -46,8 +46,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/ash/ash_attestation_policy_observer.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/flex_attester.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/enterprise/device_trust/core/attestation/browser_attestation_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {

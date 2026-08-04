@@ -19,23 +19,42 @@ source_set("attestation") {
     "//components/device_signals/core/common",
     "//components/enterprise/device_trust/core",
     "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
+    "//components/enterprise/device_trust/core/attestation/proto:google_key_proto",
+    "//components/enterprise/device_trust/core/attestation/proto:interface_proto",
     "//third_party/abseil-cpp:absl",
   ]
 
   deps = []
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    public += [ "profile_attester.h" ]
-    sources += [ "profile_attester.cc" ]
+    public += [
+      "attestation_switches.h",
+      "browser_attestation_service.h",
+      "crypto_utility.h",
+      "google_keys.h",
+      "profile_attester.h",
+    ]
+
+    sources += [
+      "attestation_switches.cc",
+      "browser_attestation_service.cc",
+      "crypto_utility.cc",
+      "google_keys.cc",
+      "profile_attester.cc",
+    ]
+
     deps += [
       "//components/enterprise/browser/identifiers",
       "//components/policy/core/common",
+      "//crypto",
+      "//third_party/boringssl",
     ]
   }
 
   if (is_linux || is_win || is_mac) {
     public += [ "device_attester.h" ]
     sources += [ "device_attester.cc" ]
+
     deps += [ "//components/enterprise" ]
   }
 }
@@ -67,4 +86,22 @@ source_set("test_support") {
     "//components/enterprise/device_trust/core",
     "//testing/gmock",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+
+  deps = [
+    ":attestation",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [ "browser_attestation_service_unittest.cc" ]
+  }
 }

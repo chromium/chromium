@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_CRYPTO_UTILITY_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_CRYPTO_UTILITY_H_
+#ifndef COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_CRYPTO_UTILITY_H_
+#define COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_CRYPTO_UTILITY_H_
 
 #include "base/containers/span.h"
 #include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"
@@ -27,4 +27,4 @@ bssl::UniquePtr<RSA> GetRSA(const std::string& public_key_modulus_hex);
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_CRYPTO_UTILITY_H_
+#endif  // COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_CRYPTO_UTILITY_H_
