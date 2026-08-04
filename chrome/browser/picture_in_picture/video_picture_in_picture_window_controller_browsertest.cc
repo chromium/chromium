@@ -2565,7 +2565,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(ExecJs(popup_contents, script));
 
   // Wait until the Picture-in-Picture window is visible and its source title
-  // correctly falls back to the opener's origin (example.com).
+  // reflects the precursor origin of the opaque sandboxed frame (example.com).
   SetUpWindowController(popup_contents);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     auto* overlay_window = GetOverlayWindow();
@@ -2622,8 +2622,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(ExecJs(popup2_contents, script));
 
   // Wait until the Picture-in-Picture window is visible and its source title
-  // correctly falls back through the nested openers to the original origin
-  // (example.com).
+  // reflects the inherited precursor origin of the nested popups (example.com).
   SetUpWindowController(popup2_contents);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     auto* overlay_window = GetOverlayWindow();
@@ -2635,7 +2634,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
-                       SourceTitle_ClosestAncestorFallback) {
+                       SourceTitle_InheritedFromNavigatedOpener) {
   const std::string kHost1 = "example.com";
   const std::string kHost2 = "another-site.com";
   const std::u16string kExpectedTitlePrefix = base::ASCIIToUTF16(kHost2);
@@ -2691,7 +2690,8 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
       {video_url.spec()}, nullptr);
   ASSERT_TRUE(ExecJs(popup2_contents, script));
 
-  // Verify source title is Host 2 (the closest opener with a valid precursor).
+  // Verify the source title reflects the opener's origin at the time of the
+  // popup's creation (another-site.com).
   SetUpWindowController(popup2_contents);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     auto* overlay_window = GetOverlayWindow();
@@ -2700,6 +2700,76 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
            base::StartsWith(overlay_window->origin_for_testing()->GetText(),
                             kExpectedTitlePrefix);
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       SourceTitle_AboutBlankPopupUsesInheritedOrigin) {
+  const std::string kHost1 = "example.com";
+  const std::string kHost2 = "another-site.com";
+  const std::u16string kExpectedTitlePrefix = base::ASCIIToUTF16(kHost1);
+
+  // Open a non-sandboxed page on Host 1.
+  GURL url1 = embedded_test_server()->GetURL(kHost1, "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Open an about:blank popup. The popup's committed URL is about:blank, but
+  // its committed origin is inherited from Host 1.
+  content::WebContents* popup_contents;
+  {
+    content::WebContentsAddedObserver observer;
+    ASSERT_TRUE(ExecJs(active_web_contents, "window.open('about:blank');"));
+    popup_contents = observer.GetWebContents();
+  }
+  ASSERT_FALSE(
+      popup_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+  ASSERT_EQ(url::Origin::Create(url1),
+            popup_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  // Navigate the opener cross-origin to Host 2. The popup keeps its inherited
+  // Host 1 origin and its opener relationship.
+  GURL url2 = embedded_test_server()->GetURL(kHost2, "/title1.html");
+  {
+    content::TestNavigationObserver nav_observer(active_web_contents);
+    ASSERT_TRUE(ExecJs(active_web_contents,
+                       base::StringPrintf("window.location.href = '%s';",
+                                          url2.spec().c_str())));
+    nav_observer.Wait();
+  }
+  ASSERT_EQ(active_web_contents->GetPrimaryMainFrame(),
+            popup_contents->GetOpener());
+
+  // Play video in the popup and request Picture-in-Picture.
+  GURL video_url = embedded_test_server()->GetURL(kHost1, "/media/bear.webm");
+  std::string script = base::ReplaceStringPlaceholders(
+      R"(
+        const video = document.createElement('video');
+        video.src = '$1';
+        video.loop = true;
+        document.body.appendChild(video);
+        video.play().then(() => video.requestPictureInPicture());
+      )",
+      {video_url.spec()}, nullptr);
+  ASSERT_TRUE(ExecJs(popup_contents, script));
+
+  // Wait until the Picture-in-Picture window is visible and its source title
+  // has been populated.
+  SetUpWindowController(popup_contents);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* overlay_window = GetOverlayWindow();
+    return overlay_window && overlay_window->IsVisible() &&
+           overlay_window->origin_for_testing() &&
+           !overlay_window->origin_for_testing()->GetText().empty();
+  }));
+
+  // The source title must reflect the popup's own (inherited) origin, not the
+  // opener's current origin.
+  EXPECT_TRUE(
+      base::StartsWith(GetOverlayWindow()->origin_for_testing()->GetText(),
+                       kExpectedTitlePrefix))
+      << "source title is '"
+      << GetOverlayWindow()->origin_for_testing()->GetText() << "'";
 }
 
 struct InteractionTestParam {
