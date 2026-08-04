@@ -8288,6 +8288,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "prerender-new-tab-page-trigger",
+    "owners": [
+      "robertlin@chromium.org",
+      "//content/browser/preloading/prerender/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "prerender-until-script",
     "owners": [
       "lingqi@chromium.org",

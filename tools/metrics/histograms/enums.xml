@@ -18795,6 +18795,7 @@ from previous Chrome versions.
   <int value="1335072054"
       label="NtpFeatureOptimizationShortcutsRemoval:disabled"/>
   <int value="1335454908" label="ShoppingCollection:enabled"/>
+  <int value="1336643494" label="NewTabPageTriggerForPrerender2:disabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338606926" label="BatterySaverModeAvailable:enabled"/>
   <int value="1338745937" label="NotificationWidthIncrease:disabled"/>
@@ -21255,6 +21256,7 @@ from previous Chrome versions.
   <int value="2109483186" label="OmniboxSteadyStateTextColor:disabled"/>
   <int value="2110109003" label="WebAssemblyRelaxedSimd:disabled"/>
   <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>
+  <int value="2111225495" label="NewTabPageTriggerForPrerender2:enabled"/>
   <int value="2112289297" label="DiacriticsUseReplaceSurroundingText:disabled"/>
   <int value="2112312086" label="EditContext:disabled"/>
   <int value="2112534003" label="GtsCloseTabAnimation:disabled"/>
