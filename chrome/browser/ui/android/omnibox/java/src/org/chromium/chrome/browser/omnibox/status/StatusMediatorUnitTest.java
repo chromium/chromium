@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.view.ContextThemeWrapper;
 import android.view.View.OnClickListener;
@@ -77,6 +78,7 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -129,6 +131,7 @@ public final class StatusMediatorUnitTest {
     @Mock private Runnable mOnStatusViewHiddenForPageInfoRemoval;
     @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
+    @Mock private Drawable mMockFaviconDrawable;
 
     @Captor private ArgumentCaptor<PermissionDialogController.Observer> mPermissionObserverCaptor;
 
@@ -170,6 +173,9 @@ public final class StatusMediatorUnitTest {
                 .when(mAutocompleteInput)
                 .getPreviewMatchUrl();
         doReturn(mRequestTypeSupplier).when(mAutocompleteInput).getRequestTypeSupplier();
+        doReturn(AutocompleteInput.AutocompleteState.ENABLED)
+                .when(mAutocompleteInput)
+                .getAutocompleteState();
 
         mContext =
                 new ContextThemeWrapper(
@@ -295,6 +301,48 @@ public final class StatusMediatorUnitTest {
         assertNotEquals(
                 R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
+    public void previewUrlChanged_autocompleteEnabled_showFavicon() {
+        setAutocompleteState(AutocompleteInput.AutocompleteState.ENABLED);
+
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mMediator.onFaviconFetched(JUnitTestGURLs.BLUE_1, mMockFaviconDrawable);
+
+        assertEquals(
+                mMockFaviconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getDrawable(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
+    public void previewUrlChanged_autocompleteStandby_showFavicon() {
+        setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY);
+
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mMediator.onFaviconFetched(JUnitTestGURLs.BLUE_1, mMockFaviconDrawable);
+
+        assertEquals(
+                mMockFaviconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getDrawable(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
+    public void previewUrlChanged_autocompleteDisabled_noFavicon() {
+        setAutocompleteState(AutocompleteInput.AutocompleteState.DISABLED);
+
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mMediator.onFaviconFetched(JUnitTestGURLs.BLUE_1, mMockFaviconDrawable);
+
+        assertNotEquals(
+                mMockFaviconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getDrawable(mContext));
     }
 
     @Test
@@ -1294,6 +1342,11 @@ public final class StatusMediatorUnitTest {
         if (icon != null) {
             assertNotEquals(R.drawable.ic_logo_googleg_20dp, icon.getIconRes());
         }
+    }
+
+    private void setAutocompleteState(@AutocompleteState int state) {
+        doReturn(state).when(mAutocompleteInput).getAutocompleteState();
+        mMediator.beginInput(mFuseboxSessionState);
     }
 
     private String getIconIdentifierForTesting() {

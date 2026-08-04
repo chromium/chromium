@@ -804,22 +804,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testSuspendInput_clearsPreviewMatchUrlSupplier() {
-        mMediator.onFinishNativeInitialization();
-        mProfileSupplier.set(mProfile);
-
-        AutocompleteInput input = new AutocompleteInput();
-        input.setUserText("text");
-        input.setRequestType(AutocompleteRequestType.SEARCH);
-        mMediator.beginInput(input);
-        mSessionState.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.RED_1);
-        assertNotNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
-
-        mMediator.suspendInput();
-        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
-    }
-
-    @Test
     public void testSuspendInput_enabledState_transitionsToStandby() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -4224,6 +4208,38 @@ public class LocationBarMediatorTest {
         assertEquals("www.example.com", mSessionState.getAutocompleteInput().getUserText());
         assertFalse(mSessionState.getAutocompleteInput().hasPreviewText());
         assertEquals(new TextSelection(4, 15), mSessionState.getAutocompleteInput().getSelection());
+    }
+
+    @Test
+    public void testTabSwitch_maintainsPreviewMatchUrl() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        AutocompleteInput input = new AutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.beginInput(input);
+
+        mSessionState.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.RED_1);
+
+        mMediator.suspendInput();
+
+        // Switch to a different tab with its own session state.
+        FuseboxSessionState nextTabSessionState = new FuseboxSessionState();
+        nextTabSessionState.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.BLUE_1);
+        doReturn(nextTabSessionState).when(mLocationBarDataProvider).getFuseboxSessionState();
+        mMediator.onTabChanged(null);
+
+        assertEquals(
+                JUnitTestGURLs.BLUE_1,
+                nextTabSessionState.getAutocompleteInput().getPreviewMatchUrl());
+
+        // Switch back to the original tab.
+        mMediator.suspendInput();
+        doReturn(mSessionState).when(mLocationBarDataProvider).getFuseboxSessionState();
+        mMediator.onTabChanged(null);
+
+        assertEquals(
+                JUnitTestGURLs.RED_1, mSessionState.getAutocompleteInput().getPreviewMatchUrl());
     }
 
     @Test

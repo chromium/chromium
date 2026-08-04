@@ -2939,12 +2939,6 @@ class LocationBarMediator
 
         updateReparentingState();
 
-        // StatusMediator#onPreviewMatchUrlChanged observes this supplier, so we need it to see this
-        // null value before the observer is disconnected in StatusMediator#endInput. This will
-        // no longer be needed after implementing drafting w/o focus TODO(b/530079993), because
-        // suspend input won't clear the favicon anymore.
-        input.setPreviewMatchUrl(null);
-
         mAutocompleteCoordinator.endInput();
         mStatusCoordinator.endInput();
         mUrlCoordinator.endInput();

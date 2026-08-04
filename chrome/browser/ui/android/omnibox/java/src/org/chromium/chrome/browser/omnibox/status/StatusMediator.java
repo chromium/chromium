@@ -55,6 +55,7 @@ import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -589,6 +590,16 @@ public class StatusMediator
                 mInputSessionState == null
                         ? AutocompleteRequestType.SEARCH
                         : mInputSessionState.getAutocompleteInput().getRequestType();
+        @AutocompleteState
+        int autocompleteState =
+                mInputSessionState == null
+                        ? AutocompleteState.DISABLED
+                        : mInputSessionState.getAutocompleteInput().getAutocompleteState();
+        // TODO(b/542569045): Replace AutocompleteState check with DisplayState !=
+        // DisplayState.WEBSITE when DisplayState lands.
+        boolean isAutocompleteActive =
+                autocompleteState == AutocompleteState.ENABLED
+                        || autocompleteState == AutocompleteState.STANDBY;
 
         if (PageClassificationUtils.isHubOrTabSearch(
                 mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))) {
@@ -604,11 +615,13 @@ public class StatusMediator
             applyStatusIconAndTooltipProperties(
                     mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
             clickListener = hasIconOverride ? null : mOnStatusIconNavigateBackButtonPress;
-        } else if (previewMatchFaviconsEnabled && mShowPreviewMatchGlobe) {
+        } else if (isAutocompleteActive && previewMatchFaviconsEnabled && mShowPreviewMatchGlobe) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             iconRes = R.drawable.ic_globe_24dp;
             tintRes = mNavigationIconTintRes;
-        } else if (previewMatchFaviconsEnabled && mPreviewMatchFavicon != null) {
+        } else if (isAutocompleteActive
+                && previewMatchFaviconsEnabled
+                && mPreviewMatchFavicon != null) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             customDrawable = mPreviewMatchFavicon;
         } else if (OmniboxCapabilities.isDesktopPlatform()
@@ -839,7 +852,8 @@ public class StatusMediator
         }
     }
 
-    private void onFaviconFetched(GURL url, @Nullable Drawable favicon) {
+    @VisibleForTesting
+    /* package */ void onFaviconFetched(GURL url, @Nullable Drawable favicon) {
         // If we're not the most recent fetch request, give up.
         if (!url.equals(mPreviewMatchFetchedUrl)) return;
 
