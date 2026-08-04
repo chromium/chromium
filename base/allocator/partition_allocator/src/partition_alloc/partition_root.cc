@@ -1329,6 +1329,13 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
   slot_span->bucket->slot_size = new_slot_size;
   IncreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
                                     slot_span->bucket->slot_size, raw_size);
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+  if (brp_enabled()) [[likely]] {
+    auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
+        slot_span_start.AsSlotStart(), new_slot_size);
+    ref_count->SetRequestedSize(requested_size);
+  }
+#endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
   // Always record in-place realloc() as free()+malloc() pair.
   //
@@ -1383,6 +1390,9 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   if (brp_enabled()) [[likely]] {
     ref_count = InSlotMetadataPointerFromSlotStartAndSize(
         internal::UntaggedSlotStart(slot_start), slot_span->bucket->slot_size);
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+    ref_count->SetRequestedSize(new_size);
+#endif
   }
 #endif  // PARTITION_ALLOC_REALLOC_MANIPULATES_IN_SLOT_METADATA
 

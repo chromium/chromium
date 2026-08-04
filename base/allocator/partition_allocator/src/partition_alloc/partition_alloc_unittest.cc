@@ -6678,6 +6678,65 @@ TEST_P(PartitionAllocTest, BoundsChecksDontCrash) {
   allocator.root()->Free(object);
 }
 
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+
+TEST_P(PartitionAllocTest, RequestedSizeChangesOnReallocForNormalBuckets) {
+  // The requested size is stored inside the `InSlotMetadata`, which is
+  // not present if BackupRefPtr is not enabled.
+  if (!allocator.root()->brp_enabled()) {
+    return;
+  }
+
+  // 2049 and 2050 are chosen since powers of two (e.g. 2048) are
+  // usually also slot sizes.
+  //
+  // Note that without PartitionAlloc extras, 2048 and 2049 would lie in
+  // different buckets.
+  ASSERT_EQ(SizeToBucketSize(2049u), SizeToBucketSize(2050u));
+
+  void* object = allocator.root()->Alloc(2049u);
+
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(object);
+  EXPECT_EQ(in_slot_metadata->requested_size(), 2049u);
+
+  void* new_object = allocator.root()->Realloc(object, 2050u, type_name);
+  ASSERT_EQ(new_object, object);
+
+  in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(object);
+  EXPECT_EQ(in_slot_metadata->requested_size(), 2050u);
+
+  allocator.root()->Free(object);
+}
+
+TEST_P(PartitionAllocTest, RequestedSizeChangesOnReallocForDirectMap) {
+  // The requested size is stored inside the `InSlotMetadata`, which is
+  // not present if BackupRefPtr is not enabled.
+  if (!allocator.root()->brp_enabled()) {
+    return;
+  }
+
+  const size_t kArbitraryDirectMapSize = kMinDirectMappedDownsize + 5u;
+  void* object = allocator.root()->Alloc(kArbitraryDirectMapSize);
+
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(object);
+  EXPECT_EQ(in_slot_metadata->requested_size(), kArbitraryDirectMapSize);
+
+  void* new_object =
+      allocator.root()->Realloc(object, kArbitraryDirectMapSize - 1, type_name);
+  ASSERT_EQ(new_object, object);
+
+  in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(object);
+  EXPECT_EQ(in_slot_metadata->requested_size(), kArbitraryDirectMapSize - 1);
+
+  allocator.root()->Free(object);
+}
+
+#endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+
 }  // namespace partition_alloc::internal
 
 #endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
