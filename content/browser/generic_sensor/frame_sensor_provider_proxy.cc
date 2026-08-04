@@ -12,9 +12,11 @@
 #include "base/notreached.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
@@ -314,9 +316,79 @@ void FrameSensorProviderProxy::RenderFrameHostStateChanged(
   }
 }
 
+void FrameSensorProviderProxy::OnWebContentsFocused(
+    RenderWidgetHost* render_widget_host) {
+  if (!render_widget_host) {
+    return;
+  }
+  if (render_widget_host ==
+      render_frame_host().GetMainFrame()->GetRenderWidgetHost()) {
+    UpdateSensorSessionControllers();
+  }
+}
+
+void FrameSensorProviderProxy::OnWebContentsLostFocus(
+    RenderWidgetHost* render_widget_host) {
+  if (!render_widget_host) {
+    return;
+  }
+  if (render_widget_host ==
+      render_frame_host().GetMainFrame()->GetRenderWidgetHost()) {
+    UpdateSensorSessionControllers();
+  }
+}
+
+void FrameSensorProviderProxy::OnFocusChangedInPage(
+    const FocusedNodeDetails& details) {
+  UpdateSensorSessionControllers();
+}
+
 bool FrameSensorProviderProxy::ShouldSuspendSensors() const {
-  return !web_contents() || !render_frame_host().IsActive() ||
-         web_contents()->GetVisibility() == content::Visibility::HIDDEN;
+  if (!web_contents() || !render_frame_host().IsActive()) {
+    return true;
+  }
+
+  // Virtual / emulated sensors created via DevTools or WPT test_driver bypass
+  // visibility and focus requirements so that DevTools inspection or running
+  // tests in headless test runners (e.g. mac-rel headless_shell) does not
+  // freeze emulated sensor streams.
+  auto* web_contents_proxy =
+      WebContentsSensorProviderProxy::FromWebContents(web_contents());
+  bool is_virtual_sensor =
+      (web_contents_proxy && web_contents_proxy->HasVirtualSensors()) ||
+      DevToolsAgentHost::HasFor(web_contents());
+
+  if (is_virtual_sensor) {
+    return false;
+  }
+
+  // Suspend hardware sensors if not strictly visible (covers HIDDEN and
+  // OCCLUDED).
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    return true;
+  }
+
+  // Determine top-level window focus using the primary main frame's widget.
+  // OOPIF widgets do not track OS-level window focus.
+  RenderWidgetHostImpl* main_rwh = static_cast<RenderWidgetHostImpl*>(
+      render_frame_host().GetMainFrame()->GetRenderWidgetHost());
+  bool window_has_focus = main_rwh && main_rwh->is_focused();
+
+  if (!window_has_focus) {
+    return true;
+  }
+
+  RenderFrameHost* focused_frame = web_contents()->GetFocusedFrame();
+  if (!focused_frame) {
+    return false;
+  }
+
+  if (&render_frame_host() == focused_frame) {
+    return false;
+  }
+
+  return !render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
+      focused_frame->GetLastCommittedOrigin());
 }
 
 void FrameSensorProviderProxy::UpdateSensorSessionControllers() {

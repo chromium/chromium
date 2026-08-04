@@ -11,10 +11,12 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -267,6 +269,12 @@ TEST_F(FrameSensorProviderProxyTest,
 
 TEST_F(FrameSensorProviderProxyTest,
        GetSensor_VisibilityChanged_SuspendsAndResumes) {
+  // Ensure initially focused.
+  auto* rwh_visibility_test = static_cast<RenderWidgetHostImpl*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  rwh_visibility_test->SetPageFocus(true);
+  FocusWebContentsOnFrame(main_test_rfh());
+
   EXPECT_CALL(*permission_manager(),
               GetPermissionResultForCurrentDocument(_, _, _))
       .Times(2)
@@ -375,5 +383,268 @@ TEST_F(FrameSensorProviderProxyTest,
   EXPECT_EQ(result, device::mojom::SensorCreationResult::ERROR_NOT_ALLOWED);
 }
 
+TEST_F(FrameSensorProviderProxyTest, GetSensor_Occluded_Suspends) {
+  // Ensure initially focused.
+  auto* rwh = static_cast<RenderWidgetHostImpl*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  rwh->SetPageFocus(true);
+  FocusWebContentsOnFrame(main_test_rfh());
+
+  EXPECT_CALL(*permission_manager(),
+              GetPermissionResultForCurrentDocument(_, _, _))
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
+
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+
+  // Occlude the web contents.
+  web_contents()->WasOccluded();
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(true));
+
+  // Show it again.
+  web_contents()->WasShown();
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(false));
+}
+
+TEST_F(FrameSensorProviderProxyTest,
+       GetSensor_InitiallyOccluded_StartsSuspended) {
+  EXPECT_CALL(*permission_manager(),
+              GetPermissionResultForCurrentDocument(_, _, _))
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
+
+  web_contents()->WasOccluded();
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+  EXPECT_TRUE(fake_sensor->is_browser_suspended());
+}
+
+TEST_F(FrameSensorProviderProxyTest, GetSensor_LostFocus_Suspends) {
+  EXPECT_CALL(*permission_manager(),
+              GetPermissionResultForCurrentDocument(_, _, _))
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
+
+  // Ensure initially focused.
+  auto* rwh = static_cast<RenderWidgetHostImpl*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  rwh->SetPageFocus(true);
+  FocusWebContentsOnFrame(main_test_rfh());
+  static_cast<WebContentsImpl*>(web_contents())->NotifyWebContentsFocused(rwh);
+
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+  EXPECT_FALSE(fake_sensor->is_browser_suspended());
+
+  // Lose focus.
+  rwh->SetPageFocus(false);
+  static_cast<WebContentsImpl*>(web_contents())
+      ->NotifyWebContentsLostFocus(rwh);
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(true));
+
+  // Gain focus again.
+  rwh->SetPageFocus(true);
+  static_cast<WebContentsImpl*>(web_contents())->NotifyWebContentsFocused(rwh);
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(false));
+}
+
+TEST_F(FrameSensorProviderProxyTest,
+       GetSensor_InitiallyUnfocused_StartsSuspended) {
+  EXPECT_CALL(*permission_manager(),
+              GetPermissionResultForCurrentDocument(_, _, _))
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
+
+  // Ensure initially unfocused.
+  auto* rwh = static_cast<RenderWidgetHostImpl*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  rwh->SetPageFocus(false);
+  static_cast<WebContentsImpl*>(web_contents())
+      ->NotifyWebContentsLostFocus(rwh);
+
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+  EXPECT_TRUE(fake_sensor->is_browser_suspended());
+}
+
+TEST_F(FrameSensorProviderProxyTest, GetSensor_CrossOriginFocus_Suspends) {
+  NavigateAndCommit(GURL("https://google.com"));
+
+  EXPECT_CALL(*permission_manager(),
+              GetPermissionResultForCurrentDocument(_, _, _))
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
+
+  // Ensure main frame is focused initially.
+  auto* main_rwh = static_cast<RenderWidgetHostImpl*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  main_rwh->SetPageFocus(true);
+  FocusWebContentsOnFrame(main_test_rfh());
+
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+  EXPECT_FALSE(fake_sensor->is_browser_suspended());
+
+  // Create a child frame and navigate it to a cross-origin site.
+  TestRenderFrameHost* child_rfh = main_test_rfh()->AppendChild("child");
+  ASSERT_NE(nullptr, child_rfh);
+  GURL cross_origin_url("https://example.com");
+  auto simulator =
+      NavigationSimulator::CreateRendererInitiated(cross_origin_url, child_rfh);
+  simulator->Commit();
+  child_rfh =
+      static_cast<TestRenderFrameHost*>(simulator->GetFinalRenderFrameHost());
+
+  // Focus the child frame.
+  FocusWebContentsOnFrame(child_rfh);
+  // Trigger OnFocusChangedInPage.
+  static_cast<WebContentsImpl*>(web_contents())
+      ->OnFocusedElementChangedInFrame(child_rfh, gfx::Rect(),
+                                       blink::mojom::FocusType::kNone,
+                                       blink::DOMNodeIdType(0));
+
+  // The parent frame's sensor should now be suspended because focus is in a
+  // cross-origin frame.
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(true));
+
+  // Focus back to main frame.
+  FocusWebContentsOnFrame(main_test_rfh());
+  static_cast<WebContentsImpl*>(web_contents())
+      ->OnFocusedElementChangedInFrame(main_test_rfh(), gfx::Rect(),
+                                       blink::mojom::FocusType::kNone,
+                                       blink::DOMNodeIdType(0));
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(false));
+}
+
+TEST_F(FrameSensorProviderProxyTest,
+       GetSensor_SameOriginChildFocus_NotSuspended) {
+  NavigateAndCommit(GURL("https://google.com"));
+
+  EXPECT_CALL(*permission_manager(),
+              GetPermissionResultForCurrentDocument(_, _, _))
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
+
+  // Ensure main frame is focused initially.
+  auto* main_rwh = static_cast<RenderWidgetHostImpl*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  main_rwh->SetPageFocus(true);
+  FocusWebContentsOnFrame(main_test_rfh());
+
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+  EXPECT_FALSE(fake_sensor->is_browser_suspended());
+
+  // Create a child frame and navigate it to a same-origin site.
+  TestRenderFrameHost* child_rfh = main_test_rfh()->AppendChild("child");
+  ASSERT_NE(nullptr, child_rfh);
+  GURL same_origin_url("https://google.com/foo");
+  auto simulator =
+      NavigationSimulator::CreateRendererInitiated(same_origin_url, child_rfh);
+  simulator->Commit();
+  child_rfh =
+      static_cast<TestRenderFrameHost*>(simulator->GetFinalRenderFrameHost());
+
+  // Focus the child frame.
+  FocusWebContentsOnFrame(child_rfh);
+  // Trigger OnFocusChangedInPage.
+  static_cast<WebContentsImpl*>(web_contents())
+      ->OnFocusedElementChangedInFrame(child_rfh, gfx::Rect(),
+                                       blink::mojom::FocusType::kNone,
+                                       blink::DOMNodeIdType(0));
+
+  // The parent frame's sensor should NOT be suspended because focus is in a
+  // same-origin frame.
+  base::test::TestFuture<void> flush_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
+  EXPECT_FALSE(fake_sensor->is_browser_suspended());
+}
 }  // namespace
 }  // namespace content
