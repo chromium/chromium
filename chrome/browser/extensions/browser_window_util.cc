@@ -29,6 +29,11 @@ bool BrowserMatchesHelper(BrowserWindowInterface& browser,
                           bool include_incognito_or_parent,
                           bool restrict_to_normal_browsers,
                           bool restrict_to_current_workspace) {
+  // The browser's going away, don't use it for anything else.
+  if (browser.IsDeleteScheduled()) {
+    return false;
+  }
+
   if (browser.GetProfile() != &profile) {
     if (!include_incognito_or_parent ||
         !profile.IsSameOrParent(browser.GetProfile())) {
