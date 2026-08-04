@@ -18,7 +18,6 @@ namespace blink {
 class DOMArrayBuffer;
 class GPUBufferDescriptor;
 class GPUMappedDOMArrayBuffer;
-struct BoxedMappableWGPUBufferHandles;
 class ScriptState;
 class V8GPUBufferMapState;
 class WebGPUMailboxBuffer;
@@ -119,11 +118,6 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   // Holds onto any ArrayBuffers returned by getMappedRange, mapReadAsync, or
   // mapWriteAsync.
   HeapVector<Member<GPUMappedDOMArrayBuffer>> mapped_array_buffers_;
-
-  // Mappable buffers remove themselves from this set on destruction.
-  // It tracks the set of buffers that need to be destroyed in the
-  // GPU::ContextDestroyed notification.
-  scoped_refptr<BoxedMappableWGPUBufferHandles> mappable_buffer_handles_;
 
   // List of ranges currently returned by getMappedRange, to avoid overlaps.
   Vector<std::pair<size_t, size_t>> mapped_ranges_;

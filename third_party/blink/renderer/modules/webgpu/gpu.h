@@ -18,21 +18,6 @@
 
 namespace blink {
 
-template <>
-struct HashTraits<wgpu::Buffer> : GenericHashTraits<wgpu::Buffer> {
-  STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const wgpu::Buffer& buffer) {
-    return HashPointer(buffer.Get());
-  }
-  static bool Equal(const wgpu::Buffer& a, const wgpu::Buffer& b) {
-    return a.Get() == b.Get();
-  }
-
-  static constexpr bool kEmptyValueIsZero = true;
-  static std::nullptr_t EmptyValue() { return nullptr; }
-  static std::nullptr_t DeletedValue() { return nullptr; }
-};
-
 class GPUAdapter;
 class GPUBuffer;
 class GPURequestAdapterOptions;
@@ -41,18 +26,6 @@ class ScriptState;
 class DawnControlClientHolder;
 class V8GPUTextureFormat;
 class WGSLLanguageFeatures;
-
-struct BoxedMappableWGPUBufferHandles
-    : public RefCounted<BoxedMappableWGPUBufferHandles> {
- public:
-  void insert(const wgpu::Buffer& buffer) { contents_.insert(buffer); }
-  void erase(const wgpu::Buffer& buffer) { contents_.erase(buffer); }
-
-  void ClearAndDestroyAll();
-
- private:
-  HashSet<wgpu::Buffer> contents_;
-};
 
 class MODULES_EXPORT GPU final : public ScriptWrappable,
                                  public Supplement<NavigatorBase>,
@@ -95,10 +68,6 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   // destroyed.
   void UntrackMappableBuffer(GPUBuffer* buffer);
 
-  BoxedMappableWGPUBufferHandles* GetMappableBufferHandles() const {
-    return mappable_buffer_handles_.get();
-  }
-
   void SetDawnControlClientHolderForTesting(
       scoped_refptr<DawnControlClientHolder> dawn_control_client);
 
@@ -120,10 +89,6 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   Vector<base::OnceCallback<void()>> dawn_control_client_initialized_callbacks_;
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
-  // Mappable buffers remove themselves from this set on destruction.
-  // It is boxed in a scoped_refptr so GPUBuffer can access it in its
-  // destructor.
-  scoped_refptr<BoxedMappableWGPUBufferHandles> mappable_buffer_handles_;
 };
 
 }  // namespace blink
