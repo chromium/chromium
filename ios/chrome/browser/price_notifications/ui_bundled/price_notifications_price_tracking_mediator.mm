@@ -288,8 +288,7 @@ using PriceNotificationItems =
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
   if (data) {
-    item.productImage = [UIImage imageWithData:data
-                                         scale:[UIScreen mainScreen].scale];
+    item.productImage = [UIImage imageWithData:data];
   }
 
   [self.consumer reconfigureCellsForItems:@[ item ]];
