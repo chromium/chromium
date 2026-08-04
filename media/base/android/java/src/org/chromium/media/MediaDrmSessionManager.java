@@ -268,22 +268,19 @@ class MediaDrmSessionManager {
     void load(byte[] emeId, final Callback<@Nullable SessionId> callback) {
         mStorage.loadInfo(
                 emeId,
-                new Callback<@Nullable PersistentInfo>() {
-                    @Override
-                    public void onResult(@Nullable PersistentInfo persistentInfo) {
-                        if (persistentInfo == null) {
-                            callback.onResult(null);
-                            return;
-                        }
-
-                        // Loading same persistent license into different sessions isn't
-                        // supported.
-                        assert getSessionIdByEmeId(persistentInfo.emeId()) == null;
-
-                        SessionInfo info = SessionInfo.fromPersistentInfo(persistentInfo);
-                        mEmeSessionInfoMap.put(ByteBuffer.wrap(persistentInfo.emeId()), info);
-                        callback.onResult(info.sessionId());
+                persistentInfo -> {
+                    if (persistentInfo == null) {
+                        callback.onResult(null);
+                        return;
                     }
+
+                    // Loading same persistent license into different sessions isn't
+                    // supported.
+                    assert getSessionIdByEmeId(persistentInfo.emeId()) == null;
+
+                    SessionInfo info = SessionInfo.fromPersistentInfo(persistentInfo);
+                    mEmeSessionInfoMap.put(ByteBuffer.wrap(persistentInfo.emeId()), info);
+                    callback.onResult(info.sessionId());
                 });
     }
 
