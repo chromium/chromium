@@ -5,6 +5,44 @@
 #ifndef COMPONENTS_SERVICES_QUARANTINE_TEST_SUPPORT_H_
 #define COMPONENTS_SERVICES_QUARANTINE_TEST_SUPPORT_H_
 
+#include "build/build_config.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <memory>
+#include <string_view>
+
+#include "base/test/test_reg_util_win.h"
+
+namespace quarantine {
+class ScopedZoneForSite;
+
+class QuarantineTestBase : public testing::Test {
+ public:
+  QuarantineTestBase();
+  ~QuarantineTestBase() override;
+
+  void SetUp() override;
+
+  static std::string_view GetTrustedSite();
+  static std::string_view GetRestrictedSite();
+  static std::string_view GetInternetSite();
+  static std::string_view GetLocalIntranetSite();
+
+ protected:
+  registry_util::RegistryOverrideManager registry_override_;
+  std::unique_ptr<ScopedZoneForSite> scoped_zone_for_trusted_site_;
+  std::unique_ptr<ScopedZoneForSite> scoped_zone_for_restricted_site_;
+  std::unique_ptr<ScopedZoneForSite> scoped_zone_for_internet_site_;
+  std::unique_ptr<ScopedZoneForSite> scoped_zone_for_local_intranet_site_;
+};
+}  // namespace quarantine
+#else
+namespace quarantine {
+using QuarantineTestBase = testing::Test;
+}  // namespace quarantine
+#endif
+
 class GURL;
 
 namespace base {

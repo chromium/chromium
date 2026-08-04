@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -133,7 +134,7 @@ void CheckQuarantineResult(QuarantineFileResult expected,
 
 }  // namespace
 
-class QuarantineWinTest : public ::testing::Test {
+class QuarantineWinTest : public QuarantineTestBase {
  public:
   QuarantineWinTest() = default;
 
@@ -143,44 +144,19 @@ class QuarantineWinTest : public ::testing::Test {
   ~QuarantineWinTest() override = default;
 
   void SetUp() override {
-    ASSERT_NO_FATAL_FAILURE(
-        registry_override_.OverrideRegistry(HKEY_CURRENT_USER));
+    QuarantineTestBase::SetUp();
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-
-    scoped_zone_for_trusted_site_ = std::make_unique<ScopedZoneForSite>(
-        GetTrustedSite(), L"https",
-        ScopedZoneForSite::ZoneIdentifierType::kTrustedSitesZone);
-    scoped_zone_for_restricted_site_ = std::make_unique<ScopedZoneForSite>(
-        GetRestrictedSite(), L"https",
-        ScopedZoneForSite::ZoneIdentifierType::kRestrictedSitesZone);
-    scoped_zone_for_internet_site_ = std::make_unique<ScopedZoneForSite>(
-        GetInternetSite(), L"https",
-        ScopedZoneForSite::ZoneIdentifierType::kInternetZone);
   }
 
   base::FilePath GetTempDir() { return scoped_temp_dir_.GetPath(); }
 
-  std::string_view GetTrustedSite() { return "thisisatrustedsite.com"; }
-
-  std::string_view GetRestrictedSite() { return "thisisarestrictedsite.com"; }
-
-  std::string_view GetInternetSite() { return "example.com"; }
-
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  registry_util::RegistryOverrideManager registry_override_;
 
   base::ScopedTempDir scoped_temp_dir_;
 
   base::win::ScopedCOMInitializer com_initializer_{
       base::win::ScopedCOMInitializer::Uninitialization::kBlockPremature};
-
-  // Due to caching, these sites zone must be set for all tests, so that the
-  // order the tests are run does not matter.
-  std::unique_ptr<ScopedZoneForSite> scoped_zone_for_trusted_site_;
-  std::unique_ptr<ScopedZoneForSite> scoped_zone_for_internet_site_;
-  std::unique_ptr<ScopedZoneForSite> scoped_zone_for_restricted_site_;
 };
 
 // If the file is missing, the QuarantineFile() call should return FILE_MISSING.
