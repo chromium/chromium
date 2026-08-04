@@ -131,15 +131,12 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private @Nullable OnBeforeWidthTransitionCallback mOnBeforeWidthTransitionCallback;
     private @Nullable BooleanSupplier mIsAnimationAllowedPredicate;
     private final Runnable mCollapseActionChipRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    assumeNonNull(mIsAnimationAllowedPredicate);
-                    if (mIsAnimationAllowedPredicate.getAsBoolean()) {
-                        animateActionChipCollapse();
-                    } else {
-                        showIcon(false);
-                    }
+            () -> {
+                assumeNonNull(mIsAnimationAllowedPredicate);
+                if (mIsAnimationAllowedPredicate.getAsBoolean()) {
+                    animateActionChipCollapse();
+                } else {
+                    showIcon(false);
                 }
             };
 

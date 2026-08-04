@@ -3386,19 +3386,16 @@ public class ToolbarPhone extends ToolbarLayout
             View optionalButton = optionalButtonStub.inflate();
 
             BooleanSupplier isAnimationAllowedPredicate =
-                    new BooleanSupplier() {
-                        @Override
-                        public boolean getAsBoolean() {
-                            boolean transitioningAwayFromLocationBarInNtp =
-                                    getToolbarDataProvider()
-                                            .getNewTabPageDelegate()
-                                            .transitioningAwayFromLocationBar();
+                    () -> {
+                        boolean transitioningAwayFromLocationBarInNtp =
+                                getToolbarDataProvider()
+                                        .getNewTabPageDelegate()
+                                        .transitioningAwayFromLocationBar();
 
-                            return mTabSwitcherState == STATIC_TAB
-                                    && !mUrlFocusChangeInProgress
-                                    && !urlHasFocus()
-                                    && !transitioningAwayFromLocationBarInNtp;
-                        }
+                        return mTabSwitcherState == STATIC_TAB
+                                && !mUrlFocusChangeInProgress
+                                && !urlHasFocus()
+                                && !transitioningAwayFromLocationBarInNtp;
                     };
 
             assert mUserEducationHelper != null

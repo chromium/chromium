@@ -1996,16 +1996,13 @@ class AutocompleteMediator
 
         cancelAutocompleteRequests();
         mCurrentAutocompleteRequest =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // TODO(crbug.com/475620206) carefully reenable.
-                        // mIsExecutingAutocompleteAction = true;
-                        action.run();
-                        // mIsExecutingAutocompleteAction = false;
-                        // Release completed Runnable.
-                        mCurrentAutocompleteRequest = null;
-                    }
+                () -> {
+                    // TODO(crbug.com/475620206) carefully reenable.
+                    // mIsExecutingAutocompleteAction = true;
+                    action.run();
+                    // mIsExecutingAutocompleteAction = false;
+                    // Release completed Runnable.
+                    mCurrentAutocompleteRequest = null;
                 };
 
         mHandler.postDelayed(mCurrentAutocompleteRequest, delayMillis);

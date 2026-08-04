@@ -185,20 +185,8 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             // of 0 to prevent that.
             mPopup.setVerticalOffset(0);
             mAnchorViewLayoutChangeListener =
-                    new OnLayoutChangeListener() {
-                        @Override
-                        public void onLayoutChange(
-                                View v,
-                                int left,
-                                int top,
-                                int right,
-                                int bottom,
-                                int oldLeft,
-                                int oldTop,
-                                int oldRight,
-                                int oldBottom) {
-                            centerPopupOverAnchorViewAndShow();
-                        }
+                    (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                        centerPopupOverAnchorViewAndShow();
                     };
         } else {
             mAnchorViewLayoutChangeListener = null;

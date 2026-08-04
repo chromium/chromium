@@ -179,17 +179,14 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mStatusView = findViewById(R.id.location_bar_status);
 
         mUrlBar.setOnHoverListener(
-                new View.OnHoverListener() {
-                    @Override
-                    public boolean onHover(View v, MotionEvent event) {
-                        switch (event.getAction()) {
-                            case MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_EXIT:
-                                mIsHovered = event.getAction() == MotionEvent.ACTION_HOVER_ENTER;
-                                updateForeground();
-                                return true;
-                            default:
-                                return false;
-                        }
+                (v, event) -> {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_EXIT:
+                            mIsHovered = event.getAction() == MotionEvent.ACTION_HOVER_ENTER;
+                            updateForeground();
+                            return true;
+                        default:
+                            return false;
                     }
                 });
 

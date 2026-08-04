@@ -294,17 +294,13 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         mToggleButtonView.setVisibility(View.VISIBLE);
         syncToggleButtonView();
         mToggleButtonView.setOnTouchListener(
-                new View.OnTouchListener() {
-                    @SuppressLint("ClickableViewAccessibility")
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() != MotionEvent.ACTION_UP) return false;
-                        assert mMediator != null;
-                        mMediator.setUserToggleHeaderAsOverlay(
-                                !mMediator.getUserToggleHeaderAsOverlay());
-                        syncToggleButtonView();
-                        return false;
-                    }
+                (v, event) -> {
+                    if (event.getAction() != MotionEvent.ACTION_UP) return false;
+                    assert mMediator != null;
+                    mMediator.setUserToggleHeaderAsOverlay(
+                            !mMediator.getUserToggleHeaderAsOverlay());
+                    syncToggleButtonView();
+                    return false;
                 });
         mToggleButtonView.setForegroundTintList(mThemeColorProvider.getTint());
 
