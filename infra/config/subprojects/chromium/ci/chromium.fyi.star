@@ -2866,7 +2866,7 @@ ci.builder(
             "chromium_gtests",
         ],
         additional_compile_targets = [
-            "all",
+            "chrome",
         ],
         mixins = [
             "win10",

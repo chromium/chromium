@@ -1,7 +1,7 @@
 {
   "win-separate-renderer-fyi-rel": {
     "additional_compile_targets": [
-      "all"
+      "chrome"
     ],
     "gtest_tests": [
       {
