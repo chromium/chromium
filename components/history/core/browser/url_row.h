@@ -157,6 +157,10 @@ typedef std::vector<URLRow> URLRows;
 //
 // These values are persisted in database. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// This enum is currently retained for potential future flags. If it remains
+// unused, we should consider removing the enum entirely along with the
+// `annotation_flags` database field (requires a DB migration).
 enum VisitContentAnnotationFlag : uint64_t {
   kNone = 0,
 
@@ -164,15 +168,8 @@ enum VisitContentAnnotationFlag : uint64_t {
   // test.
   kDeprecatedFlocEligibleRelaxed = 1ULL << 0,
 
-  // Indicates that the annotated page can be included in browsing topics
-  // calculation (https://github.com/jkarlin/topics). A page visit is eligible
-  // for browsing topics calculation if all of the conditions hold:
-  // 1. The IP of this visit is publicly routable, i.e. the IP is NOT within
-  // the ranges reserved for "private" internet
-  // (https://tools.ietf.org/html/rfc1918).
-  // 2. The browsing-topics Permissions Policy feature is allowed in the page.
-  // 3. Page opted in: document.browsingTopics() API is used in the page.
-  kBrowsingTopicsEligible = 1ULL << 1,
+  // Deprecated.
+  kDeprecatedBrowsingTopicsEligible = 1ULL << 1,
 };
 
 using VisitContentAnnotationFlags = uint64_t;

@@ -267,9 +267,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                              int nav_entry_id,
                              const GURL& url,
                              base::Time end_ts);
-  void SetBrowsingTopicsAllowed(ContextID context_id,
-                                int nav_entry_id,
-                                const GURL& url);
   void SetPageLanguageForVisit(ContextID context_id,
                                int nav_entry_id,
                                const GURL& url,

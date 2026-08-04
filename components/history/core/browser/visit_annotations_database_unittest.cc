@@ -114,7 +114,7 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
       123,
       {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
   VisitContentAnnotationFlags annotation_flags =
-      VisitContentAnnotationFlag::kBrowsingTopicsEligible;
+      VisitContentAnnotationFlag::kDeprecatedBrowsingTopicsEligible;
   std::vector<std::string> related_searches{"related searches",
                                             "búsquedas relacionadas"};
   VisitContentAnnotations content_annotations{
@@ -134,7 +134,7 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
   ASSERT_TRUE(
       GetContentAnnotationsForVisit(visit_id, &got_content_annotations));
 
-  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
+  EXPECT_EQ(VisitContentAnnotationFlag::kDeprecatedBrowsingTopicsEligible,
             got_content_annotations.annotation_flags);
   EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
   EXPECT_THAT(
@@ -264,7 +264,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
       {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
   std::vector<std::string> related_searches{"related searches"};
   VisitContentAnnotationFlags annotation_flags =
-      VisitContentAnnotationFlag::kBrowsingTopicsEligible;
+      VisitContentAnnotationFlag::kDeprecatedBrowsingTopicsEligible;
   VisitContentAnnotations original{
       annotation_flags,
       model_annotations,
@@ -292,7 +292,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   VisitContentAnnotations final;
   ASSERT_TRUE(GetContentAnnotationsForVisit(visit_id, &final));
 
-  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
+  EXPECT_EQ(VisitContentAnnotationFlag::kDeprecatedBrowsingTopicsEligible,
             final.annotation_flags);
   EXPECT_EQ(0.3f, final.model_annotations.visibility_score);
   EXPECT_THAT(

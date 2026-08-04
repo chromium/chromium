@@ -2204,56 +2204,6 @@ TEST_F(HistoryBackendTest, AddSearchMetadataWithNoEntryInVisitTable) {
       visit_id, &got_content_annotations));
 }
 
-TEST_F(HistoryBackendTest, SetBrowsingTopicsAllowed) {
-  ASSERT_TRUE(backend_.get());
-
-  GURL url("http://test-set-floc-allowed.com");
-  ContextID context_id = 1;
-  int nav_entry_id = 1;
-
-  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/std::nullopt, GURL(),
-                             RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
-                             SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
-                             false, true);
-  backend_->AddPage(request);
-
-  VisitVector visits;
-  URLRow row;
-  URLID id = backend_->db()->GetRowForURL(url, &row);
-  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
-  ASSERT_EQ(1U, visits.size());
-  VisitID visit_id = visits[0].visit_id;
-
-  backend_->SetBrowsingTopicsAllowed(context_id, nav_entry_id, url);
-
-  VisitContentAnnotations got_content_annotations;
-  ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
-      visit_id, &got_content_annotations));
-
-  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
-            got_content_annotations.annotation_flags);
-  EXPECT_EQ(-1, got_content_annotations.model_annotations.visibility_score);
-  EXPECT_TRUE(got_content_annotations.model_annotations.categories.empty());
-  EXPECT_EQ(
-      -1, got_content_annotations.model_annotations.page_topics_model_version);
-
-  QueryOptions options;
-  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
-  QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
-
-  ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
-            results[0].content_annotations().annotation_flags);
-  EXPECT_EQ(
-      -1, results[0].content_annotations().model_annotations.visibility_score);
-  EXPECT_TRUE(
-      results[0].content_annotations().model_annotations.categories.empty());
-  EXPECT_EQ(-1, results[0]
-                    .content_annotations()
-                    .model_annotations.page_topics_model_version);
-}
-
 TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
   ASSERT_TRUE(backend_.get());
 
@@ -2679,8 +2629,6 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   ASSERT_EQ(1U, visits.size());
   VisitID visit_id = visits[0].visit_id;
 
-  backend_->SetBrowsingTopicsAllowed(context_id, nav_entry_id, url);
-
   VisitContentModelAnnotations model_annotations = {
       0.5f,
       {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
@@ -2692,8 +2640,6 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
 
-  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
-            got_content_annotations.annotation_flags);
   EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
   EXPECT_THAT(
       got_content_annotations.model_annotations.categories,
@@ -2713,8 +2659,6 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
 
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
-            results[0].content_annotations().annotation_flags);
   EXPECT_EQ(
       0.5f,
       results[0].content_annotations().model_annotations.visibility_score);
