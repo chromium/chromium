@@ -3752,11 +3752,11 @@ const FeatureEntry::FeatureVariation kGlicOSIconVariantVariations[] = {
     {"Variant 2 (Square)", kGlicOSIconVariant_2, nullptr},
 };
 
-const FeatureEntry::FeatureParam kGlicTabGroups_NoFullTabEmbedder[] = {
-    {"use_full_tab_embedder", "false"}};
+const FeatureEntry::FeatureParam kGlicTabGroups_FullTabEmbedder[] = {
+    {"use_full_tab_embedder", "true"}};
 
 const FeatureEntry::FeatureVariation kGlicTabGroupsVariations[] = {
-    {"without full tab embedder", kGlicTabGroups_NoFullTabEmbedder, nullptr}};
+    {"with full tab embedder", kGlicTabGroups_FullTabEmbedder, nullptr}};
 
 const FeatureEntry::Choice kGlicSelectionPromptChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
