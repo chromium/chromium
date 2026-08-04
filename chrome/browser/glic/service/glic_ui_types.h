@@ -123,6 +123,7 @@ struct ShowOptions {
   mojom::InvocationSource invocation_source =
       mojom::InvocationSource::kUnsupported;
   mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified;
+  bool propagate_to_group = true;
 
   // Container for options that are different between side panel and floaty.
   EmbedderOptions embedder_options;

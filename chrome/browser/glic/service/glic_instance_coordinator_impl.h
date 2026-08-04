@@ -145,7 +145,6 @@ class GlicInstanceCoordinatorImpl
   void UnpinTabsFromAllInstances(base::span<const tabs::TabHandle> tab_handles,
                                  GlicUnpinTrigger trigger) override;
 
-
   // Toggles the side panel for the active tab if `browser` is provided,
   // otherwise toggles the floating window for the instance. Focus is given
   // to the new panel when opening through toggle since it is assumed all toggle
@@ -212,6 +211,8 @@ class GlicInstanceCoordinatorImpl
 
  private:
   void RemoveAllInstances();
+  void TransferTabGroupBinding(GlicInstanceImpl& source_instance,
+                               GlicInstanceImpl& target_instance);
   base::WeakPtr<GlicInstanceImpl> InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       GlicInvokeOptions options,

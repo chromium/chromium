@@ -390,12 +390,12 @@ GlicInstance* GlicInstanceCoordinatorImpl::ShowInstanceForTabGroup(
       existing_instance->Show(ShowOptions::ForTab(*glic_tab));
       return existing_instance;
     }
-    existing_instance->ShowForTabGroup(group_id);
+    existing_instance->ShowForTabGroup(group_id, /*options=*/std::nullopt);
     return existing_instance;
   }
 
   GlicInstanceImpl* instance = CreateGlicInstance();
-  instance->ShowForTabGroup(group_id);
+  instance->ShowForTabGroup(group_id, /*options=*/std::nullopt);
   return instance;
 }
 
@@ -1131,9 +1131,21 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
       target_instance->conversation_id(), active_instance_);
 
   target_instance->RegisterConversation(std::move(info), base::DoNothing());
+  TransferTabGroupBinding(source_instance, *target_instance);
   target_instance->Show(mutable_options);
   target_instance->instance_metrics().OnSwitchToConversation(mutable_options);
   std::move(callback).Run(std::nullopt);
+}
+
+void GlicInstanceCoordinatorImpl::TransferTabGroupBinding(
+    GlicInstanceImpl& source_instance,
+    GlicInstanceImpl& target_instance) {
+  std::optional<tab_groups::TabGroupId> group_id =
+      source_instance.GetTabGroup();
+  if (group_id.has_value() && &target_instance != &source_instance) {
+    source_instance.SwapGlicTabToPlaceholder();
+    target_instance.BindTabGroup(*group_id);
+  }
 }
 
 std::vector<glic::mojom::ConversationInfoPtr>
