@@ -11,9 +11,6 @@
 # b/512598250
 tast.crostini.AppAndroidStudio.bookworm_clamshell_stable
 
-# b/536064907
-tast.crostini.ShareFolderZipFile.baguette_stable
-
 # b/537158036
 tast.flex.HWIS
 
