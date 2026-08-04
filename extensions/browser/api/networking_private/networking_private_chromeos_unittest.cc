@@ -1185,6 +1185,43 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
   EXPECT_EQ(base::Value(std::move(expected_result)), *result);
 }
 
+// Verifies that getNetworks() correctly filters sensitive properties (like
+// Cellular.ICCID) for callers without networkingPrivate access, matching the
+// behavior of getState().
+TEST_F(NetworkingPrivateApiTest, GetNetworksFiltersCellularIccid) {
+  SetUpCellular();
+
+  std::optional<base::Value> list_result = RunFunctionAndReturnValue(
+      new NetworkingPrivateGetNetworksFunction(),
+      R"([{"networkType": "Cellular", "visible": true}])");
+  ASSERT_TRUE(list_result);
+  ASSERT_TRUE(list_result->is_list());
+
+  const base::DictValue* cellular_entry = nullptr;
+  for (const base::Value& v : list_result->GetList()) {
+    const base::DictValue& d = v.GetDict();
+    const std::string* guid = d.FindString("GUID");
+    if (guid && *guid == kCellularGuid) {
+      cellular_entry = &d;
+      break;
+    }
+  }
+  ASSERT_TRUE(cellular_entry) << "Cellular network not found in results.";
+
+  // Ensure sensitive properties are stripped from getNetworks() results.
+  EXPECT_FALSE(cellular_entry->FindStringByDottedPath("Cellular.ICCID"));
+
+  // Verify getState() also correctly filters the property as a control check.
+  std::optional<base::Value> state_result =
+      RunFunctionAndReturnValue(new NetworkingPrivateGetStateFunction(),
+                                base::StringPrintf(R"(["%s"])", kCellularGuid));
+  ASSERT_TRUE(state_result);
+  ASSERT_TRUE(state_result->is_dict());
+
+  EXPECT_FALSE(
+      state_result->GetDict().FindStringByDottedPath("Cellular.ICCID"));
+}
+
 TEST_F(NetworkingPrivateApiTest, ForgetSharedNetwork) {
   EXPECT_EQ(networking_private::kErrorAccessToSharedConfig,
             RunFunctionAndReturnError(
