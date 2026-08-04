@@ -803,6 +803,20 @@ BASE_FEATURE(kForceOnDeviceAppControlsForAllRegions,
 // For more info, see go/crosforest.
 BASE_FEATURE(kForestFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the new backend (uses `viz::ClientResourceProvider` +
+// `cc::ResourcePool`) for FrameSinkHost.
+BASE_FEATURE(kFrameSinkHostNewBackend, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the new backend for `ViewTreeHostRootView` backend.
+BASE_FEATURE(kViewTreeHostRootViewNewBackend,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the new backend for `FastInkHost` backend.
+BASE_FEATURE(kFastInkHostNewBackend, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the new backend for `RoundedDisplayHost` backend.
+BASE_FEATURE(kRoundedDisplayHostNewBackend, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, there will be an alert bubble showing up when the device
 // returns from low brightness (e.g., sleep, closed cover) without a lock screen
 // and the active window is in fullscreen.
@@ -2626,6 +2640,22 @@ bool ShouldForceEnableServerSideSpeechRecognition() {
 
 bool IsFullscreenAlertBubbleEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenAlertBubble);
+}
+
+bool IsFrameSinkHostNewBackendEnabled() {
+  return base::FeatureList::IsEnabled(kFrameSinkHostNewBackend);
+}
+
+bool IsViewTreeHostNewBackendEnabled() {
+  return base::FeatureList::IsEnabled(kViewTreeHostRootViewNewBackend);
+}
+
+bool IsFastInkHostNewBackendEnabled() {
+  return base::FeatureList::IsEnabled(kFastInkHostNewBackend);
+}
+
+bool IsRoundedDisplayHostNewBackendEnabled() {
+  return base::FeatureList::IsEnabled(kRoundedDisplayHostNewBackend);
 }
 
 bool IsBlockFwupdClientEnabled() {
