@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
@@ -84,7 +85,12 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
   ret.WriteBool(seq_hdr.enable_restoration);
 
   // AV1 spec section 5.5.2, color config syntax.
-  ret.WriteBool(false);  // Disable high bitdepth.
+  const bool high_bitdepth = seq_hdr.bit_depth > 8;
+  ret.WriteBool(high_bitdepth);
+  if (seq_hdr.profile == libgav1::BitstreamProfile::kProfile2 &&
+      high_bitdepth) {
+    ret.WriteBool(seq_hdr.bit_depth == 12);
+  }
   if (seq_hdr.profile != libgav1::BitstreamProfile::kProfile1) {
     ret.WriteBool(false);  // Disable monochrome.
   }
@@ -102,8 +108,25 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
   // Rec.709, transfer is sRGB and at the same time the identity
   // matrix is used.
   ret.WriteBool(seq_hdr.color_range);
-  if (seq_hdr.profile != libgav1::BitstreamProfile::kProfile1) {
-    ret.Write(0, 2);  // Chroma sample position = 0.
+  // Chroma subsampling is implied by the profile, except for 12 bit profile 2
+  // where it is signalled explicitly. We only ever emit 4:2:0 in that case.
+  bool subsampling_x = true;
+  bool subsampling_y = true;
+  if (seq_hdr.profile == libgav1::BitstreamProfile::kProfile1) {
+    // 4:4:4.
+    subsampling_x = false;
+    subsampling_y = false;
+  } else if (seq_hdr.profile == libgav1::BitstreamProfile::kProfile2) {
+    if (seq_hdr.bit_depth == 12) {
+      ret.WriteBool(subsampling_x);
+      ret.WriteBool(subsampling_y);
+    } else {
+      // 4:2:2.
+      subsampling_y = false;
+    }
+  }
+  if (subsampling_x && subsampling_y) {
+    ret.Write(seq_hdr.chroma_sample_position, 2);
   }
 
   ret.WriteBool(true);   // Separate uv delta q.
@@ -373,6 +396,34 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
   }
 
   ret.PutAlignBits();
+  return ret;
+}
+
+AV1BitstreamBuilder AV1BitstreamBuilder::BuildHDRCLLMetadataOBU(
+    const Libgav1ObuMetadataHdrCll& hdr_cll) {
+  AV1BitstreamBuilder ret;
+  ret.WriteValueInLeb128(libgav1::kMetadataTypeHdrContentLightLevel);
+  ret.Write(hdr_cll.max_cll, 16);
+  ret.Write(hdr_cll.max_fall, 16);
+  // A metadata OBU is neither a tile group, tile list nor frame OBU, so it
+  // carries trailing bits. Refer to AV1 spec section 5.3.1.
+  ret.PutTrailingBits();
+  return ret;
+}
+
+AV1BitstreamBuilder AV1BitstreamBuilder::BuildHDRMDCVMetadataOBU(
+    const Libgav1ObuMetadataHdrMdcv& hdr_mdcv) {
+  AV1BitstreamBuilder ret;
+  ret.WriteValueInLeb128(libgav1::kMetadataTypeHdrMasteringDisplayColorVolume);
+  for (size_t i = 0; i < std::size(hdr_mdcv.primary_chromaticity_x); i++) {
+    ret.Write(base::span(hdr_mdcv.primary_chromaticity_x)[i], 16);
+    ret.Write(base::span(hdr_mdcv.primary_chromaticity_y)[i], 16);
+  }
+  ret.Write(hdr_mdcv.white_point_chromaticity_x, 16);
+  ret.Write(hdr_mdcv.white_point_chromaticity_y, 16);
+  ret.Write(hdr_mdcv.luminance_max, 32);
+  ret.Write(hdr_mdcv.luminance_min, 32);
+  ret.PutTrailingBits();
   return ret;
 }
 
