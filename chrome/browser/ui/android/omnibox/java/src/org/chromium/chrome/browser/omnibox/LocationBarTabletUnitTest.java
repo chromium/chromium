@@ -381,8 +381,9 @@ public class LocationBarTabletUnitTest {
         assertNull(mLocationBarTablet.getForeground());
 
         mLocationBarTablet.onSpecializedFuseboxModeActivated(true);
+        assertNull(mLocationBarTablet.getForeground());
         GlifStrokeDrawable glifStrokeDrawable =
-                (GlifStrokeDrawable) mLocationBarTablet.getForeground();
+                (GlifStrokeDrawable) ((FrameLayout) mLocationBarTablet.getParent()).getForeground();
         float radius =
                 mLocationBarTablet
                         .getResources()
@@ -401,6 +402,9 @@ public class LocationBarTabletUnitTest {
                                 R.dimen.location_bar_tablet_fusebox_popover_top_padding),
                 mLocationBarTablet.getPaddingTop());
         assertEquals(0, urlBar.getTranslationY(), MathUtils.EPSILON);
+
+        mLocationBarTablet.onSpecializedFuseboxModeActivated(false);
+        assertNull(((FrameLayout) mLocationBarTablet.getParent()).getForeground());
     }
 
     @Test

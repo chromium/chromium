@@ -63,6 +63,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private View[] mTargets;
     private final Rect mCachedTargetBounds = new Rect();
     private final GlifStrokeDrawable mGlifBorderDrawable;
+    private @Nullable View mGlifForegroundTarget;
     private final Handler mHandler;
 
     // Variables needed for animating the location bar and toolbar buttons hiding/showing.
@@ -624,8 +625,24 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void updateForeground() {
+        // Clear any active GLIF border before updating foreground state.
+        if (mGlifForegroundTarget != null) {
+            mGlifForegroundTarget.setForeground(null);
+            mGlifForegroundTarget = null;
+        }
+
         if (mIsGlifActive) {
-            setForeground(mGlifBorderDrawable);
+            if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                    && mIsReparentedToPopover
+                    && getParent() instanceof View parentView) {
+                // Attach GLIF to the popover container so it traces the full window perimeter.
+                parentView.setForeground(mGlifBorderDrawable);
+                mGlifForegroundTarget = parentView;
+                setForeground(null);
+            } else {
+                setForeground(mGlifBorderDrawable);
+                mGlifForegroundTarget = this;
+            }
         } else if (mIsHovered
                 && (mLayoutMode != FuseboxLayoutMode.SUGGESTIONS_POPOVER
                         || !mUrlCoordinator.hasFocus())) {
