@@ -325,7 +325,7 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
     KeywordState keyword_state;
     std::u16string keyword;
     std::u16string keyword_placeholder;
-    match.GetKeywordUiState(const_cast<TemplateURLService*>(turl_service),
+    match.GetKeywordUiState(turl_service,
                             controller_->client()->IsHistoryEmbeddingsEnabled(),
                             &keyword_state, &keyword, &keyword_placeholder);
 
