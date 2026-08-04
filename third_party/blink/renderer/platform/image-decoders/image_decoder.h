@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -427,6 +428,14 @@ class PLATFORM_EXPORT ImageDecoder {
   ColorProfileTransform* ColorTransform() const {
     return embedded_to_sk_image_transform_.get();
   }
+
+  bool NeedsDecodeTimeColorTransform() const {
+    return embedded_to_sk_image_transform_ != nullptr;
+  }
+
+  // Performs color transformation on the specified rect of buffer if needed.
+  void DoDecodeTimeColorTransformIfNeeded(ImageFrame& buffer,
+                                          const SkIRect& rect);
 
   AlphaOption GetAlphaOption() const {
     return premultiply_alpha_ ? kAlphaPremultiplied : kAlphaNotPremultiplied;

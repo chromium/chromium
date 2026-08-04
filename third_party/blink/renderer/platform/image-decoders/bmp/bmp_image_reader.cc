@@ -1060,27 +1060,19 @@ void BMPImageReader::ColorCorrectCurrentRow() {
     return;
   }
   // Postprocess the image data according to the profile.
-  const ColorProfileTransform* const transform = parent_->ColorTransform();
-  if (!transform) {
+  if (!parent_->NeedsDecodeTimeColorTransform()) {
     return;
   }
+
   int decoder_width = parent_->Size().width();
-  // Enforce 0 ≤ current row < bitmap height.
+  // Enforce 0 ≤ current row < bitmap height.
   CHECK_GE(coord_.y(), 0);
   CHECK_LT(coord_.y(), buffer_->Bitmap().height());
   // Enforce decoder width == bitmap width exactly. (The bitmap rowbytes might
   // add a bit of padding, but we are only converting one row at a time.)
   CHECK_EQ(decoder_width, buffer_->Bitmap().width());
-  ImageFrame::PixelData* const row = buffer_->GetAddr(0, coord_.y());
-  const skcms_PixelFormat fmt = XformColorFormat();
-  const skcms_AlphaFormat alpha =
-      (buffer_->HasAlpha() && buffer_->PremultiplyAlpha())
-          ? skcms_AlphaFormat_PremulAsEncoded
-          : skcms_AlphaFormat_Unpremul;
-  const bool success =
-      skcms_Transform(row, fmt, alpha, transform->SrcProfile(), row, fmt, alpha,
-                      transform->DstProfile(), decoder_width);
-  DCHECK(success);
+  parent_->DoDecodeTimeColorTransformIfNeeded(
+      *buffer_, SkIRect::MakeXYWH(0, coord_.y(), decoder_width, 1));
   buffer_->SetPixelsChanged(true);
 }
 

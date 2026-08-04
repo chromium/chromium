@@ -971,7 +971,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
       GetColorSpace(container).ToSkYUVColorSpace(container->depth,
                                                  &yuv_color_space_) &&
       // TODO(crbug.com/911246): Support color space transforms for YUV decodes.
-      !ColorTransform();
+      !NeedsDecodeTimeColorTransform();
 
   // Record bpp information only for 8-bit, color, still images that do not have
   // alpha.
@@ -1196,33 +1196,8 @@ bool AVIFImageDecoder::RenderImage(const crabbyavif::avifImage* image,
 void AVIFImageDecoder::ColorCorrectImage(int from_row,
                                          int to_row,
                                          ImageFrame* buffer) {
-  // Postprocess the image data according to the profile.
-  const ColorProfileTransform* const transform = ColorTransform();
-  if (!transform) {
-    return;
-  }
-  const auto alpha_format = (buffer->HasAlpha() && buffer->PremultiplyAlpha())
-                                ? skcms_AlphaFormat_PremulAsEncoded
-                                : skcms_AlphaFormat_Unpremul;
-  if (decode_to_half_float_) {
-    const skcms_PixelFormat color_format = skcms_PixelFormat_RGBA_hhhh;
-    for (int y = from_row; y < to_row; ++y) {
-      ImageFrame::PixelDataF16* const row = buffer->GetAddrF16(0, y);
-      const bool success = skcms_Transform(
-          row, color_format, alpha_format, transform->SrcProfile(), row,
-          color_format, alpha_format, transform->DstProfile(), Size().width());
-      DCHECK(success);
-    }
-  } else {
-    const skcms_PixelFormat color_format = XformColorFormat();
-    for (int y = from_row; y < to_row; ++y) {
-      ImageFrame::PixelData* const row = buffer->GetAddr(0, y);
-      const bool success = skcms_Transform(
-          row, color_format, alpha_format, transform->SrcProfile(), row,
-          color_format, alpha_format, transform->DstProfile(), Size().width());
-      DCHECK(success);
-    }
-  }
+  DoDecodeTimeColorTransformIfNeeded(
+      *buffer, SkIRect::MakeLTRB(0, from_row, Size().width(), to_row));
 }
 
 bool AVIFImageDecoder::GetGainmapInfoAndData(

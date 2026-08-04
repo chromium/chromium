@@ -1186,6 +1186,38 @@ void ImageDecoder::SetEmbeddedColorProfile(
 
 ColorProfileTransform::~ColorProfileTransform() = default;
 
+void ImageDecoder::DoDecodeTimeColorTransformIfNeeded(ImageFrame& buffer,
+                                                      const SkIRect& rect) {
+  if (!NeedsDecodeTimeColorTransform()) {
+    return;
+  }
+  const ColorProfileTransform* transform = ColorTransform();
+
+  const auto alpha_format = (buffer.HasAlpha() && buffer.PremultiplyAlpha())
+                                ? skcms_AlphaFormat_PremulAsEncoded
+                                : skcms_AlphaFormat_Unpremul;
+
+  if (buffer.GetPixelFormat() == ImageFrame::kRGBA_F16) {
+    const skcms_PixelFormat color_format = skcms_PixelFormat_RGBA_hhhh;
+    for (int y = rect.top(); y < rect.bottom(); ++y) {
+      ImageFrame::PixelDataF16* const row = buffer.GetAddrF16(rect.left(), y);
+      const bool success = skcms_Transform(
+          row, color_format, alpha_format, transform->SrcProfile(), row,
+          color_format, alpha_format, transform->DstProfile(), rect.width());
+      DCHECK(success);
+    }
+  } else {
+    const skcms_PixelFormat color_format = XformColorFormat();
+    for (int y = rect.top(); y < rect.bottom(); ++y) {
+      ImageFrame::PixelData* const row = buffer.GetAddr(rect.left(), y);
+      const bool success = skcms_Transform(
+          row, color_format, alpha_format, transform->SrcProfile(), row,
+          color_format, alpha_format, transform->DstProfile(), rect.width());
+      DCHECK(success);
+    }
+  }
+}
+
 bool ImageDecoder::CanReusePreviousFrameBuffer(wtf_size_t) const {
   return false;
 }
