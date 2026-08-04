@@ -13157,9 +13157,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kInlineScriptCache)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"logo-view-refactor", flag_descriptions::kLogoViewRefactorName,
-     flag_descriptions::kLogoViewRefactorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kLogoViewRefactor)},
     {"enforce-incognito-isolation",
      flag_descriptions::kEnforceIncognitoIsolationName,
      flag_descriptions::kEnforceIncognitoIsolationDescription, kOsAndroid,
