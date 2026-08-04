@@ -166,6 +166,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       type === chrome.dictationPrivate.TranscriptionType.FINAL ||
       type === chrome.dictationPrivate.TranscriptionType.PARTIAL) {
     chrome.dictationPrivate.updateTranscription({streamId, type, data});
+
+    // Simulate speech audio level changes as the transcription updates.
+    chrome.dictationPrivate.updateAudioLevel(1.0);
+    setTimeout(() => {
+      chrome.dictationPrivate.updateAudioLevel(0.0);
+    }, 250);
   }
 });
 
