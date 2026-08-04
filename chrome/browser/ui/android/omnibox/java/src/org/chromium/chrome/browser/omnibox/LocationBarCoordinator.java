@@ -770,6 +770,13 @@ public class LocationBarCoordinator
         return mLocationBarLayout.getSecurityIconView();
     }
 
+    @Override
+    public @Nullable View getOptionalButtonViewForTesting() {
+        return mOptionalButtonCoordinator != null
+                ? mOptionalButtonCoordinator.getButtonView()
+                : null;
+    }
+
     /** Returns the {@link VoiceRecognitionHandler} associated with this LocationBar. */
     @Override
     public @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {

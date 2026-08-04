@@ -3524,14 +3524,9 @@ public class ToolbarPhone extends ToolbarLayout
     protected void updateOptionalButton(@Nullable ButtonData buttonData) {
         mButtonData = buttonData;
 
-        boolean isNtp = isNtpVisualState(mVisualState);
-        boolean shouldModifyButtons =
-                ToolbarVariationUtils.shouldModifyToolbarButtons(getContext(), isNtp);
-
         // Update location bar.
-        boolean showInLocationBar = shouldModifyButtons && !isNtp;
         if (mLocationBar != null) {
-            if (showInLocationBar) {
+            if (shouldShowOptionalButtonInLocationBar()) {
                 mLocationBar.updateOptionalButton(buttonData);
             } else {
                 mLocationBar.hideOptionalButton();
@@ -3539,18 +3534,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         // Update toolbar.
-        boolean showInToolbar;
-        boolean isSignInLevelUp = SigninFeatureMap.sSigninLevelUpButton.isEnabled();
-        if (shouldModifyButtons) {
-            // New IA: Only show the button on the NTP for the identity disk if needed.
-            showInToolbar =
-                    isNtp && !isSignInLevelUp && buttonData != null && buttonData.isIdentityDisc();
-        } else {
-            // Old IA: Show in toolbar except for NTP + SignInLevelUpButton which should hide it.
-            showInToolbar = !(isNtp && isSignInLevelUp);
-        }
-
-        if (showInToolbar) {
+        if (shouldShowOptionalButtonInToolbar(buttonData)) {
             if (mOptionalButtonCoordinator == null) {
                 initializeOptionalButton();
             }
@@ -3607,6 +3591,10 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public @Nullable View getOptionalButtonViewForTesting() {
+        if (shouldShowOptionalButtonInLocationBar() && mLocationBar != null) {
+            return mLocationBar.getOptionalButtonViewForTesting();
+        }
+
         if (mOptionalButtonCoordinator != null) {
             return mOptionalButtonCoordinator.getButtonView();
         }
@@ -3790,5 +3778,22 @@ public class ToolbarPhone extends ToolbarLayout
 
     private boolean inOrEnteringTabSwitcher() {
         return mTabSwitcherState == TAB_SWITCHER || mTabSwitcherState == ENTERING_TAB_SWITCHER;
+    }
+
+    private boolean shouldShowOptionalButtonInLocationBar() {
+        boolean isNtp = isNtpVisualState(mVisualState);
+        return !isNtp && ToolbarVariationUtils.shouldModifyToolbarButtons(getContext(), isNtp);
+    }
+
+    private boolean shouldShowOptionalButtonInToolbar(@Nullable ButtonData buttonData) {
+        boolean isNtp = isNtpVisualState(mVisualState);
+        boolean isSignInLevelUp = SigninFeatureMap.sSigninLevelUpButton.isEnabled();
+        if (ToolbarVariationUtils.shouldModifyToolbarButtons(getContext(), isNtp)) {
+            // New IA: Only show the button on the NTP for the identity disk if needed.
+            return isNtp && !isSignInLevelUp && buttonData != null && buttonData.isIdentityDisc();
+        } else {
+            // Old IA: Show in toolbar except for NTP + SignInLevelUpButton which should hide it.
+            return !(isNtp && isSignInLevelUp);
+        }
     }
 }

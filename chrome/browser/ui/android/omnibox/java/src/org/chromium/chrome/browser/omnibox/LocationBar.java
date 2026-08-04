@@ -142,6 +142,11 @@ public interface LocationBar {
      */
     default void onZoomLevelChanged(double zoomLevel) {}
 
+    /** Returns the optional button view for testing. */
+    default @Nullable View getOptionalButtonViewForTesting() {
+        return null;
+    }
+
     /** Destroys the LocationBar. */
     void destroy();
 }
