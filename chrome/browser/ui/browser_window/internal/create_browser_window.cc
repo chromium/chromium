@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 
+#include "base/check_deref.h"
 #include "content/public/browser/web_contents.h"
 
 BrowserWindowCreateParams::BrowserWindowCreateParams(
@@ -13,6 +14,20 @@ BrowserWindowCreateParams::BrowserWindowCreateParams(
     : type(type), from_user_gesture(from_user_gesture), profile(profile) {}
 
 BrowserWindowCreateParams::BrowserWindowCreateParams(Profile& profile,
+                                                     bool from_user_gesture)
+    : BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                profile,
+                                from_user_gesture) {}
+
+BrowserWindowCreateParams::BrowserWindowCreateParams(
+    BrowserWindowInterface::Type type,
+    Profile* profile,
+    bool from_user_gesture)
+    : type(type),
+      from_user_gesture(from_user_gesture),
+      profile(CHECK_DEREF(profile)) {}
+
+BrowserWindowCreateParams::BrowserWindowCreateParams(Profile* profile,
                                                      bool from_user_gesture)
     : BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
                                 profile,

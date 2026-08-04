@@ -42,3 +42,25 @@ IN_PROC_BROWSER_TEST_F(CreateBrowserWindowBrowserTest,
   EXPECT_EQ(new_browser->GetProfile(), browser()->GetProfile());
   EXPECT_EQ(BrowserWindowInterface::TYPE_NORMAL, new_browser->GetType());
 }
+
+IN_PROC_BROWSER_TEST_F(CreateBrowserWindowBrowserTest,
+                       CreateAppBrowserWindowAndClone) {
+  BrowserWindowCreateParams create_params =
+      BrowserWindowCreateParams::CreateForApp(
+          "TestApp", /*trusted_source=*/true, gfx::Rect(0, 0, 800, 600),
+          browser()->GetProfile(), /*user_gesture=*/true);
+  create_params.omit_from_session_restore = true;
+
+  BrowserWindowCreateParams cloned_params = create_params.Clone();
+  EXPECT_EQ(create_params.app_name, cloned_params.app_name);
+  EXPECT_EQ(create_params.is_trusted_source, cloned_params.is_trusted_source);
+  EXPECT_EQ(create_params.initial_bounds, cloned_params.initial_bounds);
+  EXPECT_EQ(create_params.omit_from_session_restore,
+            cloned_params.omit_from_session_restore);
+
+  BrowserWindowInterface* app_browser =
+      CreateBrowserWindow(std::move(create_params));
+  ASSERT_TRUE(app_browser);
+  EXPECT_EQ(BrowserWindowInterface::TYPE_APP, app_browser->GetType());
+}
+
