@@ -36,6 +36,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -76,6 +77,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -916,14 +918,18 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       //    Note, this may delete some of the WebContents created earlier.
       RestoreTabGroupMetadata(browser, new_group_ids, window->tab_groups);
 
-      // 8. Notify SessionService of restored tabs, so they can be saved to the
+      // 8. Restore the focused tab group for the window if one was previously
+      //    focused.
+      RestoreFocusedTabGroup(browser, new_group_ids);
+
+      // 9. Notify SessionService of restored tabs, so they can be saved to the
       //    current session.
       // TODO(fdoray): This seems redundant with the call to
       // SessionService::TabRestored() at the end of chrome::AddRestoredTab().
       // Consider removing it.
       NotifySessionServiceOfRestoredTabs(browser, initial_tab_count);
 
-      // 9. Close the tab that was active in the window prior to session
+      // 10. Close the tab that was active in the window prior to session
       //    restore, if needed.
       if (close_active_tab) {
         chrome::CloseWebContents(browser, active_tab, true);
@@ -1165,6 +1171,32 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     }
   }
 
+  void RestoreFocusedTabGroup(
+      Browser* browser,
+      const base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>&
+          new_group_ids) {
+    if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
+        !browser->tab_strip_model()->SupportsTabGroups()) {
+      return;
+    }
+    std::optional<tab_groups::TabGroupId> initial_group =
+        BrowserInitState::From(browser)->initial_focused_tab_group_id();
+    if (!initial_group.has_value()) {
+      return;
+    }
+    if (browser->tab_strip_model()->group_model()->ContainsTabGroup(
+            *initial_group)) {
+      browser->tab_strip_model()->SetFocusedGroup(*initial_group);
+      return;
+    }
+    auto it = new_group_ids.find(*initial_group);
+    if (it != new_group_ids.end() &&
+        browser->tab_strip_model()->group_model()->ContainsTabGroup(
+            it->second)) {
+      browser->tab_strip_model()->SetFocusedGroup(it->second);
+    }
+  }
+
   void RestoreTabGroupMetadata(
       Browser* browser,
       const base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>&
@@ -1277,6 +1309,18 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
                                   kUncollapsedWidthKey),
                 &uncollapsed_width)) {
           params.vertical_tab_strip_uncollapsed_width = uncollapsed_width;
+        }
+      }
+    }
+
+    if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+      auto it = extra_data.find(
+          tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey);
+      if (it != extra_data.end() && !it->second.empty()) {
+        std::optional<base::Token> token = base::Token::FromString(it->second);
+        if (token.has_value()) {
+          params.focused_tab_group_id =
+              tab_groups::TabGroupId::FromRawToken(*token);
         }
       }
     }

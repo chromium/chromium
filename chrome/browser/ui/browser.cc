@@ -108,6 +108,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -926,6 +927,22 @@ void Browser::TabStripEmpty() {
   // result in closing this Browser. This can happen in the case of closing
   // the last Browser with ongoing downloads.
   window_->Close();
+}
+
+void Browser::OnTabGroupFocusChanged(
+    std::optional<tab_groups::TabGroupId> new_focused_group,
+    std::optional<tab_groups::TabGroupId> old_focused_group) {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
+      tab_strip_model_->closing_all() || IsDeleteScheduled()) {
+    return;
+  }
+  SessionService* service = SessionServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->AddWindowExtraData(
+        session_id_, tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey,
+        new_focused_group.has_value() ? new_focused_group->ToString()
+                                      : std::string());
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -31,8 +31,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -42,6 +44,7 @@
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_service_commands.h"
 #include "components/sessions/core/session_types.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -748,6 +751,19 @@ void SessionServiceBase::BuildCommandsForBrowser(
       command_storage_manager()->AppendRebuildCommand(
           sessions::CreateSplitTabDataUpdateCommand(
               split_id, tab_strip->GetSplitData(split_id)->visual_data()));
+    }
+
+    if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+        tab_strip->SupportsTabGroups()) {
+      std::optional<tab_groups::TabGroupId> focused_group =
+          tab_strip->GetFocusedGroup();
+      if (focused_group.has_value()) {
+        command_storage_manager()->AppendRebuildCommand(
+            sessions::CreateAddWindowExtraDataCommand(
+                browser->GetSessionID(),
+                tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey,
+                focused_group->ToString()));
+      }
     }
 
     int index = 0;
