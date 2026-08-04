@@ -120,14 +120,20 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        Log.d(TAG, "GlicTrigger: ActorForegroundService onStartCommand");
+        boolean isFeatureEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING);
+        Log.d(
+                TAG,
+                "ActorForegroundService onStartCommand. mIsForeground: "
+                        + mIsForeground
+                        + ", featureEnabled: "
+                        + isFeatureEnabled);
         if (mStartTime == 0) {
             mStartTime = SystemClock.elapsedRealtime();
         }
 
-        if (!mIsForeground
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)) {
-            Log.d(TAG, "GlicTrigger: Promoting to foreground");
+        if (!mIsForeground && isFeatureEnabled) {
+            Log.d(TAG, "Promoting to foreground");
             NotificationWrapper taskStartsSoonNotificationWrapper =
                     ActorNotificationFactory.buildTaskStartsSoonNotification();
             Notification taskStartsSoonNotification =

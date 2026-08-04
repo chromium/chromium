@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.base;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -19,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class SplitCompatGcmListenerService extends FirebaseMessagingService {
+    private static final String TAG = "SplitCompatGcm";
     private final String mServiceClassName;
     private Impl mImpl;
 
@@ -45,6 +48,11 @@ public class SplitCompatGcmListenerService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage message) {
         String from = message.getFrom();
+        Log.d(
+                TAG,
+                "OS delivered FCM intent, from: %s, time: %d",
+                from,
+                SystemClock.elapsedRealtime());
         Bundle data = message.toIntent().getExtras();
         mImpl.onMessageReceived(from, data);
     }

@@ -44,6 +44,7 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
 
     @Override
     public void onMessageReceived(final @Nullable String from, final @Nullable Bundle data) {
+        Log.d(TAG, "ChromeGcmListenerServiceImpl: onMessageReceived");
         // Dispatch the message to the GCM Driver for native features.
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
@@ -95,6 +96,12 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
     private static boolean maybeBypassScheduler(GCMMessage message) {
         // Android only puts us on an allowlist for high priority messages.
         if (message.getOriginalPriority() != GCMMessage.Priority.HIGH) {
+            Log.d(
+                    TAG,
+                    "maybeBypassScheduler: NOT bypassing job scheduler. AppId=%s,"
+                            + " Priority=%s. FCM priority downgrade likely occurred.",
+                    message.getAppId(),
+                    message.getOriginalPriority());
             return false;
         }
 
@@ -102,10 +109,20 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
                 SubscriptionFlagManager.buildSubscriptionUniqueId(
                         assertNonNull(message.getAppId()), assertNonNull(message.getSenderId()));
         if (!SubscriptionFlagManager.hasFlags(subscriptionId, InstanceIDFlags.BYPASS_SCHEDULER)) {
+            Log.d(
+                    TAG,
+                    "maybeBypassScheduler: NOT bypassing. BYPASS_SCHEDULER flag not"
+                            + " found for %s",
+                    subscriptionId);
             return false;
         }
 
         try {
+            Log.d(
+                    TAG,
+                    "maybeBypassScheduler: Bypassing Job Scheduler. Starting"
+                            + " GCMBackgroundService for AppId=%s",
+                    message.getAppId());
             Context context = ContextUtils.getApplicationContext();
             Intent intent = new Intent(context, GCMBackgroundService.class);
             intent.putExtras(message.toBundle());
@@ -147,6 +164,10 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
      * delayed by Android if the device is currently in doze mode.
      */
     private static void scheduleBackgroundTask(GCMMessage message) {
+        Log.d(
+                TAG,
+                "scheduleBackgroundTask: Falling back to JobScheduler for AppId=%s",
+                message.getAppId());
         // TODO(peter): Add UMA for measuring latency introduced by the BackgroundTaskScheduler.
         TaskInfo backgroundTask =
                 TaskInfo.createOneOffTask(
@@ -207,13 +228,15 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
     }
 
     /**
-     * To be called when a GCM message is ready to be dispatched. Will initialise the native code
-     * of the browser process, and forward the message to the GCM Driver. Must be called on the UI
+     * To be called when a GCM message is ready to be dispatched. Will initialise the native code of
+     * the browser process, and forward the message to the GCM Driver. Must be called on the UI
      * thread.
      */
     static void dispatchMessageToDriver(GCMMessage message) {
         ThreadUtils.assertOnUiThread();
+        Log.d(TAG, "dispatchMessageToDriver: Native Library Init begin");
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+        Log.d(TAG, "dispatchMessageToDriver: Native Library Init complete");
         GCMDriver.dispatchMessage(message);
     }
 

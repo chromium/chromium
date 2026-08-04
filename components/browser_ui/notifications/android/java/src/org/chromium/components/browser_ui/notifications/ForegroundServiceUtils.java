@@ -9,6 +9,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
+import android.os.SystemClock;
 
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
@@ -51,7 +52,12 @@ public class ForegroundServiceUtils {
      * @param intent The {@link Intent} to fire to start the service.
      */
     public void startForegroundService(Intent intent) {
-        ContextCompat.startForegroundService(ContextUtils.getApplicationContext(), intent);
+        try {
+            ContextCompat.startForegroundService(ContextUtils.getApplicationContext(), intent);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to startForegroundService.", e);
+            throw e;
+        }
     }
 
     /**
@@ -69,11 +75,19 @@ public class ForegroundServiceUtils {
         // If android fail to build the notification, do nothing.
         if (notification == null) return;
 
+        Log.d(TAG, "startForeground called at time: %d", SystemClock.elapsedRealtime());
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             try {
                 service.startForeground(id, notification, foregroundServiceType);
             } catch (ForegroundServiceStartNotAllowedException e) {
-                Log.e(TAG, "channelId=%s notificationId=%s", notification.getChannelId(), id, e);
+                Log.e(
+                        TAG,
+                        "Failed to upgrades a service from background to foreground."
+                                + " channelId=%s notificationId=%s",
+                        notification.getChannelId(),
+                        id,
+                        e);
                 throw e;
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
