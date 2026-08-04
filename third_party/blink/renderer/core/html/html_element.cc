@@ -2439,8 +2439,6 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
   probe::WillHidePopover(this, &force_open);
   // DevTools may force a popover to stay open, even if hidePopover is called.
   if (force_open) {
-    DCHECK(
-        base::FeatureList::IsEnabled(features::kDevToolsAllowPopoverForcing));
     return PopoverHideResult::kForcedOpenByInspector;
   }
   if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,

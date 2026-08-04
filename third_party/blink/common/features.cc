@@ -2289,10 +2289,6 @@ BASE_FEATURE(kUACHOverrideBlank, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
              "kEmulateLoadStartedForInspectorOncePerResource",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Whether force-showing popovers is enabled.
-BASE_FEATURE(kDevToolsAllowPopoverForcing, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable the 'unframed' display override for IWAs. go/unframed-explainer-doc.
 BASE_FEATURE(kUnframedIwa, base::FEATURE_ENABLED_BY_DEFAULT);
 

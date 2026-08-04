@@ -378,9 +378,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDetectZhVariants);
 // DevTools Console.
 // See http://crbug.com/40788570.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsImprovedNetworkError);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsAllowPopoverForcing);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsWebMCPSupport);
 
 // Enables the DevTools 'Application > Application > Ads' panel.

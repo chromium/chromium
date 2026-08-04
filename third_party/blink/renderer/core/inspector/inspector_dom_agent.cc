@@ -2176,10 +2176,6 @@ protocol::Response InspectorDOMAgent::forceShowPopover(
     bool enable,
     std::optional<int> invoker_node_id,
     std::unique_ptr<protocol::Array<int>>* out_node_ids) {
-  if (!base::FeatureList::IsEnabled(features::kDevToolsAllowPopoverForcing)) {
-    return protocol::Response::ServerError("Feature is not enabled");
-  }
-
   Node* node = nullptr;
   protocol::Response response = AssertNode(node_id, node);
   if (!response.IsSuccess()) {
@@ -2215,8 +2211,7 @@ protocol::Response InspectorDOMAgent::forceShowPopover(
 
 void InspectorDOMAgent::WillHidePopover(HTMLElement* element,
                                         bool* force_open) {
-  if (base::FeatureList::IsEnabled(features::kDevToolsAllowPopoverForcing) &&
-      force_open && forced_popovers_.Contains(element)) {
+  if (force_open && forced_popovers_.Contains(element)) {
     *force_open = true;
   }
 }
