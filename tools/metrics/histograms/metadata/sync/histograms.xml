@@ -1827,7 +1827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.KeystoreDecryptionFailed"
-    enum="SyncKeystoreDecryptionFailure" expires_after="2026-09-13">
+    enum="SyncKeystoreDecryptionFailure" expires_after="2027-09-13">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>The reason for a failure decrypting the keystore Nigori.</summary>
