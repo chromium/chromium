@@ -63,6 +63,7 @@ class MockMultistepFilterService : public MultistepFilterService {
               (override));
   MOCK_METHOD(RetentionStateSnapshot, GetRetentionState, (), (const, override));
   MOCK_METHOD(bool, CanUseModelExecutionFeatures, (), (const, override));
+  MOCK_METHOD(bool, IsSmartSuggestionsEnabled, (), (const, override));
 };
 
 class MockMultistepFilterUiDelegate : public MultistepFilterUiDelegate {
@@ -150,6 +151,8 @@ class FilterTabControllerTest : public testing::Test {
     mock_service_ = std::make_unique<StrictMock<MockMultistepFilterService>>(
         std::move(params));
     EXPECT_CALL(*mock_service_, CanUseModelExecutionFeatures())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*mock_service_, IsSmartSuggestionsEnabled())
         .WillRepeatedly(Return(true));
     mock_delegate_ =
         std::make_unique<StrictMock<MockMultistepFilterUiDelegate>>();
@@ -445,6 +448,23 @@ TEST_F(FilterTabControllerTest,
   ExpectNoExtractionOrSuggestion();
 
   EXPECT_CALL(*mock_service_, CanUseModelExecutionFeatures())
+      .WillOnce(Return(false));
+
+  controller_->OnNavigationFinished(metadata);
+}
+
+// Tests that FilterTabController aborts immediately when smart suggestions are
+// disabled in settings.
+TEST_F(FilterTabControllerTest,
+       SuppressExtractionAndGenerationOnSmartSuggestionsDisabled) {
+  FilterNavigationMetadata metadata =
+      CreateMetadata(3, GURL("https://example.com"));
+  metadata.prev_url = GURL("https://different.com");
+  metadata.has_user_gesture = true;
+
+  ExpectNoExtractionOrSuggestion();
+
+  EXPECT_CALL(*mock_service_, IsSmartSuggestionsEnabled())
       .WillOnce(Return(false));
 
   controller_->OnNavigationFinished(metadata);

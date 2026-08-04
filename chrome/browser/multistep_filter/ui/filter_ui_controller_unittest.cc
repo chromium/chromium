@@ -11,7 +11,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller_test_api.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -26,12 +25,7 @@
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
-#include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -234,60 +228,6 @@ TEST_F(FilterUiControllerTest, SuggestionCallbackIgnoresNullopt) {
 
 TEST_F(FilterUiControllerTest, ShowSuggestionWithNullPageActionController) {
   test_api(*controller_).set_page_action_controller(nullptr);
-
-  UrlFilterSuggestion suggestion =
-      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
-  suggestion.suggestion_message = u"Test Message";
-
-  controller_->ShowSuggestion(suggestion, {});
-  EXPECT_FALSE(test_api(*controller_).suggestion_state().has_value());
-}
-
-TEST_F(FilterUiControllerTest, ShowSuggestionWithNullPrefService) {
-  test_api(*controller_).set_pref_service(nullptr);
-
-  UrlFilterSuggestion suggestion =
-      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
-  suggestion.suggestion_message = u"Test Message";
-
-  controller_->ShowSuggestion(suggestion, {});
-  EXPECT_FALSE(test_api(*controller_).suggestion_state().has_value());
-}
-
-TEST_F(FilterUiControllerTest, ShowSuggestionWhenSettingDisabled) {
-  profile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::UserVisibleFeatureKey::kContextualCueing),
-      std::to_underlying(
-          optimization_guide::prefs::FeatureOptInState::kDisabled));
-
-  UrlFilterSuggestion suggestion =
-      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
-  suggestion.suggestion_message = u"Test Message";
-
-  controller_->ShowSuggestion(suggestion, {});
-  EXPECT_FALSE(test_api(*controller_).suggestion_state().has_value());
-}
-
-TEST_F(FilterUiControllerTest, ShowSuggestionWhenSettingEnabled) {
-  profile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::UserVisibleFeatureKey::kContextualCueing),
-      std::to_underlying(optimization_guide::prefs::FeatureOptInState::kEnabled));
-
-  UrlFilterSuggestion suggestion =
-      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
-  suggestion.suggestion_message = u"Test Message";
-
-  controller_->ShowSuggestion(suggestion, {});
-  EXPECT_TRUE(test_api(*controller_).suggestion_state().has_value());
-}
-
-TEST_F(FilterUiControllerTest, ShowSuggestionWhenEnterprisePolicyDisabled) {
-  profile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::kChromeSuggestionsSettings,
-      std::to_underlying(
-          contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled));
 
   UrlFilterSuggestion suggestion =
       CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());

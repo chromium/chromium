@@ -15,7 +15,6 @@ namespace page_actions {
 class PageActionController;
 }  // namespace page_actions
 
-class PrefService;
 
 namespace multistep_filter {
 
@@ -38,10 +37,6 @@ class FilterUiControllerTestApi {
     if (controller) {
       controller_->RegisterAsPageActionObserver(*controller);
     }
-  }
-
-  void set_pref_service(PrefService* service) {
-    controller_->pref_service_ = service;
   }
 
   void set_favicon_service(favicon::FaviconService* service) {

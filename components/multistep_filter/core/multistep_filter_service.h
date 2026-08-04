@@ -55,6 +55,13 @@ class FilterSuggestionGenerator;
 class MultistepFilterService : public KeyedService,
                                public history::HistoryServiceObserver {
  public:
+  // Enterprise policy value for suggestions settings disabled.
+  // This matches `contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled`
+  // defined in chrome-level header `chrome/browser/contextual_cueing/prefs.h`.
+  // We define it as a class constant here because this component cannot import
+  // chrome-level headers.
+  static constexpr int kChromeSuggestionsSettingsDisabled = 1;
+
   struct Params {
     std::unique_ptr<AnnotationIndexClient> annotation_index_client;
     std::unique_ptr<FilterStore> filter_store;
@@ -82,6 +89,10 @@ class MultistepFilterService : public KeyedService,
   // check.
   virtual bool HasUserProvidedConsent(int64_t navigation_id,
                                       std::string_view host);
+
+  // Returns true if the user has enabled smart suggestions via settings
+  // and it is not disabled by enterprise policy.
+  virtual bool IsSmartSuggestionsEnabled() const;
 
   // Returns true if the user's account capabilities allow using model execution
   // features.

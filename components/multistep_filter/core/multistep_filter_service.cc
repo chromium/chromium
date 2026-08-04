@@ -25,6 +25,9 @@
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/multistep_filter/core/switches.h"
 #include "components/multistep_filter/core/verification/filter_application_verifier.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -135,6 +138,27 @@ bool MultistepFilterService::HasUserProvidedConsent(int64_t navigation_id,
                          url_keyed_data_collection_enabled,
                          history_sync_enabled);
   return consent_enabled;
+}
+
+bool MultistepFilterService::IsSmartSuggestionsEnabled() const {
+  // TODO(b/522733094): Clean this up once proper eligibility integration is
+  // complete.
+  int opt_in_state = pref_service_->GetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::kContextualCueing));
+  if (opt_in_state ==
+      std::to_underlying(
+          optimization_guide::prefs::FeatureOptInState::kDisabled)) {
+    return false;
+  }
+
+  if (pref_service_->GetInteger(
+          optimization_guide::prefs::kChromeSuggestionsSettings) ==
+      kChromeSuggestionsSettingsDisabled) {
+    return false;
+  }
+
+  return true;
 }
 
 bool MultistepFilterService::CanUseModelExecutionFeatures() const {

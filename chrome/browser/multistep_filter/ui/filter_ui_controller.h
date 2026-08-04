@@ -33,8 +33,6 @@ namespace page_actions {
 class PageActionController;
 }
 
-class PrefService;
-
 namespace multistep_filter {
 
 enum class SuggestionUserDecision;
@@ -149,8 +147,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
   void OnFaviconAvailable(const favicon_base::FaviconImageResult& result);
 
-  // Helper check to verify if the contextual cue feature is enabled.
-  bool ShouldShowCue() const;
 
   // Clears the cue UI.
   void ClearCue();
@@ -180,8 +176,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   // Controller for the page action.
   raw_ptr<page_actions::PageActionController> page_action_controller_ = nullptr;
 
-  // Service for user preferences.
-  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Service for fetching favicons.
   raw_ptr<favicon::FaviconService> favicon_service_ = nullptr;

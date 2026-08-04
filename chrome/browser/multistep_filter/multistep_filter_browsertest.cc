@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
-                       CueNotShownWhenPrefDisabled) {
+                       NoExtractionOrSuggestionWhenSmartSuggestionsDisabled) {
   browser()->GetProfile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::kContextualCueing),
@@ -442,51 +442,14 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
       embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
   GURL suggestion_trigger_url = embedded_test_server()->GetURL(
       kTestAllowedDomain2, kSuggestionTriggerUrlPath);
-  GURL suggestion_url =
-      embedded_test_server()->GetURL(kTestAllowedDomain2, kSuggestionUrlPath);
-
-  OptimizationMetadata supported_metadata = CreateOptimizationMetadata(
-      AnyWrapProto(CreateSupportedTasksResponse({kTestTaskType})));
-  OptimizationMetadata extract_metadata = CreateOptimizationMetadata(
-      AnyWrapProto(CreateExtractTaskAttributesResponse(
-          kTestTaskType, {{kTestAttributeKey, kTestAttributeValue},
-                          {kTestAttributeKey2, kTestAttributeValue2}})));
-
-  optimization_guide_decider_->AddHintWithMultipleOptimizationsForTesting(
-      extraction_url,
-      {{OptimizationType::FILTER_TASKS_SUPPORTED, supported_metadata},
-       {OptimizationType::FILTER_EXTRACT_ATTRIBUTES, extract_metadata}});
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extraction_url));
-
-  std::optional<base::Uuid> extraction_result = extraction_future_.Take();
-  ASSERT_TRUE(extraction_result.has_value());
-  base::Uuid annotation_id = std::move(extraction_result).value();
+  EXPECT_FALSE(extraction_future_.Take().has_value());
   EXPECT_FALSE(suggestion_future_.Take().has_value());
-
-  GetTaskExecutionStrategiesResponse execution_strategies_response =
-      CreateTaskExecutionStrategiesResponse(
-          suggestion_url, {{kTestAttributeKey, kTestAttributeValue},
-                           {kTestAttributeKey2, kTestAttributeValue2}});
-  execution_strategies_response.mutable_execution_strategies(0)
-      ->set_candidate_id(annotation_id.AsLowercaseString());
-  OptimizationMetadata execution_metadata = CreateOptimizationMetadata(
-      AnyWrapProto(execution_strategies_response));
-  OptimizationGuideDecisionWithMetadata execution_decision_with_metadata =
-      CreateDecisionWithMetadata(OptimizationGuideDecision::kTrue,
-                                 execution_metadata);
-
-  optimization_guide_decider_->AddOnDemandHintForTesting(
-      suggestion_trigger_url, OptimizationType::FILTER_EXECUTION_STRATEGY,
-      execution_decision_with_metadata);
-  optimization_guide_decider_->AddHintWithMultipleOptimizationsForTesting(
-      suggestion_trigger_url,
-      {{OptimizationType::FILTER_TASKS_SUPPORTED, supported_metadata},
-       {OptimizationType::FILTER_EXTRACT_ATTRIBUTES, std::nullopt}});
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), suggestion_trigger_url));
   EXPECT_FALSE(extraction_future_.Take().has_value());
-  EXPECT_TRUE(suggestion_future_.Take().has_value());
+  EXPECT_FALSE(suggestion_future_.Take().has_value());
 
   FilterUiController* ui_controller =
       FilterUiController::From(browser()->tab_strip_model()->GetActiveTab());

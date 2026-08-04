@@ -246,6 +246,12 @@ void FilterTabController::OnNavigationFinished(
     return;
   }
 
+  if (!service_->IsSmartSuggestionsEnabled()) {
+    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
+                           "smart_suggestions_disabled");
+    return;
+  }
+
   if (!service_->HasUserProvidedConsent(metadata.navigation_id,
                                         metadata.url.GetHost())) {
     LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,

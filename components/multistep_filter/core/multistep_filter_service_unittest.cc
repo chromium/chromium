@@ -26,6 +26,9 @@
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/switches.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -60,6 +63,9 @@ class MultistepFilterServiceTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     RegisterRetentionProfilePrefs(pref_service_.registry());
+    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
+        pref_service_.registry());
+    optimization_guide::prefs::RegisterProfilePrefs(pref_service_.registry());
     sync_service_.GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kHistory, true);
   }
@@ -278,6 +284,37 @@ TEST_F(MultistepFilterServiceTest, OnHistoryDeletions_NoOpDeletionsIgnored) {
       history::DeletionInfo::ForUrls(/*deleted_rows=*/{},
                                      /*favicon_urls=*/{});
   service_->OnHistoryDeletions(/*history_service=*/nullptr, deletion_info);
+}
+
+// Tests that IsSmartSuggestionsEnabled returns true by default (when prefs are
+// default/enabled).
+TEST_F(MultistepFilterServiceTest, IsSmartSuggestionsEnabled_DefaultEnabled) {
+  CreateService();
+  EXPECT_TRUE(service_->IsSmartSuggestionsEnabled());
+}
+
+// Tests that IsSmartSuggestionsEnabled returns false when the user-controlled
+// contextual cueing pref is disabled.
+TEST_F(MultistepFilterServiceTest,
+       IsSmartSuggestionsEnabled_OptInPrefDisabled) {
+  pref_service_.SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::kContextualCueing),
+      static_cast<int>(
+          optimization_guide::prefs::FeatureOptInState::kDisabled));
+  CreateService();
+  EXPECT_FALSE(service_->IsSmartSuggestionsEnabled());
+}
+
+// Tests that IsSmartSuggestionsEnabled returns false when the enterprise policy
+// ChromeSuggestionsSettings is set to disabled.
+TEST_F(MultistepFilterServiceTest,
+       IsSmartSuggestionsEnabled_EnterprisePolicyDisabled) {
+  pref_service_.SetInteger(
+      optimization_guide::prefs::kChromeSuggestionsSettings,
+      MultistepFilterService::kChromeSuggestionsSettingsDisabled);
+  CreateService();
+  EXPECT_FALSE(service_->IsSmartSuggestionsEnabled());
 }
 
 }  // namespace multistep_filter

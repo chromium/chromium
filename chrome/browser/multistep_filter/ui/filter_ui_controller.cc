@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,10 +29,6 @@
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
-#include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
@@ -150,7 +145,6 @@ FilterUiController::FilterUiController(tabs::TabInterface& tab)
     log_router_ = MultistepFilterLogRouterFactory::GetForProfile(profile);
     favicon_service_ = FaviconServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);
-    pref_service_ = profile->GetPrefs();
   }
   if (tab.GetTabFeatures()) {
     page_action_controller_ = tab.GetTabFeatures()->page_action_controller();
@@ -170,15 +164,9 @@ void FilterUiController::ShowSuggestion(
   if (!suggestion) {
     return;
   }
-  if (!tab().GetContents() || !page_action_controller_ || !favicon_service_ ||
-      !pref_service_) {
+  if (!tab().GetContents() || !page_action_controller_ || !favicon_service_) {
     LogSuggestionUiShown(log_router_, *suggestion, false,
                          "missing_dependencies");
-    return;
-  }
-  if (!ShouldShowCue()) {
-    LogSuggestionUiShown(log_router_, *suggestion, false,
-                         "smart_suggestions_disabled");
     return;
   }
 
@@ -314,28 +302,7 @@ void FilterUiController::OpenFeedback() {
   }
 }
 
-bool FilterUiController::ShouldShowCue() const {
-  // TODO(b/522733094): Clean this up once proper eligibility integration is
-  // complete.
-  int opt_in_state = pref_service_->GetInteger(
-      optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::UserVisibleFeatureKey::kContextualCueing));
-  if (opt_in_state ==
-      std::to_underlying(
-          optimization_guide::prefs::FeatureOptInState::kDisabled)) {
-    return false;
-  }
 
-  // Check enterprise policy.
-  if (pref_service_->GetInteger(
-          optimization_guide::prefs::kChromeSuggestionsSettings) ==
-      std::to_underlying(
-          contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled)) {
-    return false;
-  }
-
-  return true;
-}
 
 void FilterUiController::ShowCue(const UrlFilterSuggestion& suggestion) {
   // Fetch favicon for the suggestion source host.

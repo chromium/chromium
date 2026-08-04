@@ -6,6 +6,7 @@ include_rules = [
   "+components/sync/base",
   "+components/sync/service",
   "+components/unified_consent",
+  "+components/optimization_guide/core",
   "+net/base",
   "+net/base/registry_controlled_domains",
   "+services/metrics/public/cpp",
