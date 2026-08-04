@@ -19,7 +19,8 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/viz/common/features.h"
-#include "perfetto/tracing/track_event.h"
+#include "components/viz/service/display/frame_deadline_decider.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/android/achoreographer_compat.h"
 #include "ui/gl/gl_features.h"
 
@@ -192,29 +193,32 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
   // When `viz` is enabled all the possible deadlines are emitted as trace event
   // arguments. In case `viz` is not enabled, we do not emit them to save some
   // trace buffer space.
-  TRACE_EVENT_END("toplevel,graphics.pipeline,viz", [&](perfetto::EventContext
-                                                            ctx) {
-    auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                     ->set_android_choreographer_frame_callback_data();
+  TRACE_EVENT_END(
+      "toplevel,graphics.pipeline,viz",
+      perfetto::Flow::ProcessScoped(FrameDeadlineDecider::GetTraceFlowId(
+          base::TimeTicks::FromJavaNanoTime(frame_time_nanos).since_origin())),
+      [&](perfetto::EventContext ctx) {
+        auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                         ->set_android_choreographer_frame_callback_data();
 
-    bool viz_enabled = false;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz", &viz_enabled);
+        bool viz_enabled = false;
+        TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz", &viz_enabled);
 
-    auto frame_time_us = base::TimeTicks::FromJavaNanoTime(frame_time_nanos)
-                             .since_origin()
-                             .InMicroseconds();
-    data->set_frame_time_us(frame_time_us);
+        auto frame_time_us = base::TimeTicks::FromJavaNanoTime(frame_time_nanos)
+                                 .since_origin()
+                                 .InMicroseconds();
+        data->set_frame_time_us(frame_time_us);
 
-    if (!viz_enabled) {
-      return;
-    }
+        if (!viz_enabled) {
+          return;
+        }
 
-    for (const auto& deadline : possible_deadlines.deadlines) {
-      auto* timeline = data->add_frame_timeline();
-      deadline.SetTraceTimelineData(*timeline);
-    }
-    data->set_preferred_frame_timeline_index(os_preferred_index);
-  });
+        for (const auto& deadline : possible_deadlines.deadlines) {
+          auto* timeline = data->add_frame_timeline();
+          deadline.SetTraceTimelineData(*timeline);
+        }
+        data->set_preferred_frame_timeline_index(os_preferred_index);
+      });
 }
 
 // static

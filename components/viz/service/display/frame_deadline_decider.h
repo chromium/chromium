@@ -19,6 +19,18 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   static constexpr base::TimeDelta kPerceptibleLatencyThreshold =
       base::Milliseconds(100);
 
+  // Generates a process-scoped Perfetto flow ID for frame deadline selection
+  // tracking. Uses the top 8 bits for a constant tag (0xFD for Frame Deadline)
+  // and the lower 56 bits for the microsecond timestamp.
+  static constexpr uint64_t GetTraceFlowId(base::TimeDelta frame_time) {
+    constexpr uint64_t kFrameDeadlineTag = 0xFDULL << 56;
+    constexpr uint64_t kFrameTimeBitMask = 0x00FFFFFFFFFFFFFFULL;
+    static_assert((kFrameDeadlineTag & kFrameTimeBitMask) == 0ULL);
+    return kFrameDeadlineTag |
+           (static_cast<uint64_t>(frame_time.InMicroseconds()) &
+            kFrameTimeBitMask);
+  }
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // LINT.IfChange(SelectionReason)
