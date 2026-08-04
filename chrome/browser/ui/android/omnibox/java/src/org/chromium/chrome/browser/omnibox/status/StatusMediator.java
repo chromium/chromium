@@ -404,10 +404,7 @@ public class StatusMediator
             mInputSessionState
                     .getAutocompleteInput()
                     .getPreviewMatchUrlSupplier()
-                    .addSyncObserver(mOnPreviewMatchUrlChanged);
-
-            onPreviewMatchUrlChanged(
-                    mInputSessionState.getAutocompleteInput().getPreviewMatchUrl());
+                    .addSyncObserverAndCall(mOnPreviewMatchUrlChanged);
         }
     }
 

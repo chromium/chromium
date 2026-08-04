@@ -207,6 +207,10 @@ public final class StatusMediatorUnitTest {
         mWindowAndroid.destroy();
     }
 
+    private int getModelIconID() {
+        return mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes();
+    }
+
     @Test
     @SmallTest
     public void testPermissionIconShown() {
@@ -301,6 +305,27 @@ public final class StatusMediatorUnitTest {
         assertNotEquals(
                 R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
+    public void beginInput_newSessionNullUrl_clearsFavicon() {
+        // Start with globe showing.
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mMediator.beginInput(mFuseboxSessionState);
+        assertEquals(R.drawable.ic_globe_24dp, getModelIconID());
+
+        // End the session.
+        mMediator.endInput();
+        assertFalse(mPreviewMatchUrlSupplier.hasObservers());
+
+        // Start a new session with a null preview url.
+        mPreviewMatchUrlSupplier.set(null);
+        mMediator.beginInput(mFuseboxSessionState);
+
+        // The globe should be cleared since the url is null.
+        assertEquals(R.drawable.ic_logo_googleg_20dp, getModelIconID());
     }
 
     @Test
