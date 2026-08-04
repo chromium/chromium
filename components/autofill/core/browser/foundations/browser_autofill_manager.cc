@@ -1502,6 +1502,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   // autocomplete.
   if (otp_manager_ && autofill_field &&
       autofill_field->Type().GetTypes().contains(ONE_TIME_CODE)) {
+    if (!client().IsContextSecure()) {
+      std::move(generate_suggestions_and_maybe_show_ui_phase2).Run({});
+      return;
+    }
     otp_manager_->GetOtpSuggestions(
         std::move(generate_suggestions_and_maybe_show_ui_phase2));
     return;
@@ -3291,7 +3295,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       }
       break;
     case FillingProduct::kOneTimePassword:
-      suggestions = BuildOtpSuggestions(one_time_passwords);
+      if (client().IsContextSecure()) {
+        suggestions = BuildOtpSuggestions(one_time_passwords);
+      }
       break;
     case FillingProduct::kAtMemory:
       return {};

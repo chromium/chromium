@@ -15,9 +15,6 @@
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#if BUILDFLAG(IS_ANDROID)
-#include "components/strings/grit/components_strings.h"
-#endif
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
@@ -79,6 +76,11 @@ void OtpSuggestionGenerator::GenerateSuggestions(
   }
 
   if (!trigger_autofill_field->Type().GetTypes().contains(ONE_TIME_CODE)) {
+    std::move(callback).Run({SuggestionDataSource::kOneTimePassword, {}});
+    return;
+  }
+
+  if (!client.IsContextSecure()) {
     std::move(callback).Run({SuggestionDataSource::kOneTimePassword, {}});
     return;
   }

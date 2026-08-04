@@ -19,16 +19,19 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
 using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Pair;
 
 class OtpSuggestionGeneratorTest : public testing::Test {
  protected:
   OtpSuggestionGeneratorTest() = default;
 
-  AutofillClient& client() { return autofill_client_; }
+  TestAutofillClient& client() { return autofill_client_; }
   OtpSuggestionGenerator& generator() { return generator_; }
   MockOtpManager& otp_manager() { return otp_manager_; }
 
@@ -92,6 +95,30 @@ TEST_F(OtpSuggestionGeneratorTest, Otps) {
   EXPECT_EQ(suggestions[1].voice_over, u"Verification Code: 789012");
   EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");
 #endif
+}
+
+// Test that OTP suggestions are silently suppressed on insecure contexts.
+TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions_InsecureContext) {
+  client().set_last_committed_primary_main_frame_url(
+      GURL("http://example.com"));
+  FormData form = test::GetFormData({.fields = {{.role = ONE_TIME_CODE}}});
+  FormStructure form_structure(form);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions).Times(0);
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(Pair(SuggestionGenerator::SuggestionDataSource::kOneTimePassword,
+               IsEmpty())));
+
+  generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
+                                  form_structure.field(0), client(),
+                                  suggestions_generated_callback.Get());
 }
 
 }  // namespace autofill
