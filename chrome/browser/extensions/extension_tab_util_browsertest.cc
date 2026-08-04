@@ -245,9 +245,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, DoesNotSupportTabGroups) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/41370170): Fix and re-enable.
-IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
-                       DISABLED_OpenExtensionsOptionsPage) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, OpenExtensionsOptionsPage) {
   // Load an extension with an options page that opens in a tab and one that
   // opens in the chrome://extensions page in a view.
   const Extension* options_in_tab =
@@ -281,12 +279,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 
-  // Navigate to google.com (something non-newtab, non-options). Calling
+  // Navigate to chrome://version (something non-newtab, non-options). Calling
   // OpenOptionsPage() should create a new tab and navigate it to the options
   // page. So we should have two total tabs, with the active tab pointing to
   // options.
   ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com/")));
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_tab, browser()));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
