@@ -71,7 +71,11 @@ TestPaymentsAutofillClient::~TestPaymentsAutofillClient() = default;
 void TestPaymentsAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   risk_data_loaded_ = true;
-  std::move(callback).Run("some risk data");
+  if (defer_load_risk_data_responses_) {
+    load_risk_data_callbacks_.push_back(std::move(callback));
+  } else {
+    std::move(callback).Run("some risk data");
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -175,6 +179,7 @@ void TestPaymentsAutofillClient::ConfirmUploadIbanToCloud(
   confirm_upload_iban_to_cloud_called_ = true;
   legal_message_lines_ = std::move(legal_message_lines);
   offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
+  confirm_upload_iban_to_cloud_callbacks_.push_back(std::move(callback));
 }
 
 void TestPaymentsAutofillClient::IbanUploadCompleted(bool iban_saved,

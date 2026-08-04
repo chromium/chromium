@@ -9,16 +9,19 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/buildflag.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -28,19 +31,34 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
-#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/strike_database/strike_database.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
 namespace autofill {
 
+namespace {
+
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+
+// Applies `nickname` to `candidate` if `nickname` contains non-whitespace
+// characters.
+void ApplyNicknameIfPresent(Iban& candidate, std::u16string_view nickname) {
+  const std::u16string_view trimmed_nickname =
+      base::TrimWhitespace(nickname, base::TRIM_ALL);
+  if (!trimmed_nickname.empty()) {
+    candidate.set_nickname(std::u16string(trimmed_nickname));
+  }
+}
+
+}  // namespace
 
 IbanSaveManager::IbanSaveManager(AutofillClient* client)
     : client_(CHECK_DEREF(client)) {}
@@ -188,7 +206,7 @@ bool IbanSaveManager::MatchesExistingServerIban(
       });
 }
 
-bool IbanSaveManager::AttemptToOfferLocalSave(Iban& import_candidate) {
+bool IbanSaveManager::AttemptToOfferLocalSave(const Iban& import_candidate) {
   if (observer_for_testing_) {
     observer_for_testing_->OnOfferLocalSave();
   }
@@ -208,7 +226,7 @@ bool IbanSaveManager::AttemptToOfferLocalSave(Iban& import_candidate) {
   return show_save_prompt;
 }
 
-bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
+bool IbanSaveManager::AttemptToOfferUploadSave(const Iban& import_candidate) {
   autofill_metrics::LogUploadIbanMetric(
       import_candidate.record_type() == Iban::kLocalIban
           ? autofill_metrics::UploadIbanOriginMetric::kLocalIban
@@ -216,25 +234,25 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
       autofill_metrics::UploadIbanActionMetric::kOffered);
   bool show_save_prompt = !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(
       GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value())));
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
 #if BUILDFLAG(IS_ANDROID)
-  upload_request_details_.client_behavior_signals.push_back(
+  client_behavior_signals.push_back(
       ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
 #else
   if (base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2)) {
-    upload_request_details_.client_behavior_signals.push_back(
+    client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
   }
 #endif
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->GetIbanUploadDetails(
-          payments_data_manager().app_locale(),
-          upload_request_details_.client_behavior_signals,
+          payments_data_manager().app_locale(), client_behavior_signals,
           payments::GetBillingCustomerId(payments_data_manager()),
           import_candidate.GetCountryCode(),
           base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
-                         weak_ptr_factory_.GetWeakPtr(), show_save_prompt,
-                         import_candidate));
+                         weak_ptr_factory_.GetWeakPtr(), import_candidate,
+                         client_behavior_signals, show_save_prompt));
   return show_save_prompt;
 }
 
@@ -250,11 +268,7 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
     Iban import_candidate,
     payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
-  const std::u16string_view trimmed_nickname =
-      base::TrimWhitespace(nickname, base::TRIM_ALL);
-  if (!trimmed_nickname.empty()) {
-    import_candidate.set_nickname(std::u16string(trimmed_nickname));
-  }
+  ApplyNicknameIfPresent(import_candidate, nickname);
 
   const std::string& partial_iban_hash =
       GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value()));
@@ -284,30 +298,21 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
   }
 }
 
-void IbanSaveManager::OnUserDidDecideOnUploadSave(
+std::unique_ptr<Iban> IbanSaveManager::OnUserDidDecideOnUploadSave(
     Iban import_candidate,
-    bool show_save_prompt,
     payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
-  CHECK_NE(import_candidate.record_type(), Iban::kServerIban);
-  const std::u16string_view trimmed_nickname =
-      base::TrimWhitespace(nickname, base::TRIM_ALL);
-  if (!trimmed_nickname.empty()) {
-    import_candidate.set_nickname(std::u16string(trimmed_nickname));
-  }
-
+  const Iban::RecordType record_type = import_candidate.record_type();
+  CHECK_NE(record_type, Iban::kServerIban);
+  ApplyNicknameIfPresent(import_candidate, nickname);
   autofill_metrics::UploadIbanActionMetric action_metric;
+  std::unique_ptr<Iban> accepted_candidate;
   switch (user_decision) {
     case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kAccepted:
       action_metric = autofill_metrics::UploadIbanActionMetric::kAccepted;
       autofill_metrics::LogIbanSaveAcceptedCountry(
           import_candidate.GetCountryCode());
-      user_did_accept_upload_prompt_ = true;
-      if (!upload_request_details_.risk_data.empty()) {
-        // Risk data has already been gathered, so the server request can be
-        // sent.
-        SendUploadRequest(import_candidate, show_save_prompt);
-      }
+      accepted_candidate = std::make_unique<Iban>(std::move(import_candidate));
       break;
     case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kIgnored:
       action_metric = autofill_metrics::UploadIbanActionMetric::kIgnored;
@@ -324,15 +329,17 @@ void IbanSaveManager::OnUserDidDecideOnUploadSave(
       break;
   }
   autofill_metrics::LogUploadIbanMetric(
-      import_candidate.record_type() == Iban::kLocalIban
+      record_type == Iban::kLocalIban
           ? autofill_metrics::UploadIbanOriginMetric::kLocalIban
           : autofill_metrics::UploadIbanOriginMetric::kNewIban,
       action_metric);
+  return accepted_candidate;
 }
 
 void IbanSaveManager::OnDidGetUploadDetails(
+    const Iban& import_candidate,
+    std::vector<ClientBehaviorConstants> client_behavior_signals,
     bool show_save_prompt,
-    Iban import_candidate,
     PaymentsRpcResult result,
     const std::u16string& validation_regex,
     const std::u16string& context_token,
@@ -351,26 +358,55 @@ void IbanSaveManager::OnDidGetUploadDetails(
     LegalMessageLines parsed_legal_message_lines;
     if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
                                 /*escape_apostrophes=*/true)) {
-      // Reset `risk_data` and `user_did_accept_upload_prompt_` so that the risk
-      // data and prompt acceptance state from a previous upload IBAN flow are
-      // not re-used, which could potentially result in saves without the user's
-      // consent.
-      upload_request_details_.risk_data.clear();
-      upload_request_details_.app_locale.clear();
-      upload_request_details_.context_token.clear();
-      upload_request_details_.value.clear();
-      upload_request_details_.nickname.clear();
-      user_did_accept_upload_prompt_ = false;
-      context_token_ = context_token;
+      // `risk_data` and `accepted_candidate` are owned by the barrier
+      // completion closure, guaranteeing raw pointers remain valid until all
+      // tasks complete.
+      auto risk_data = std::make_unique<std::string>();
+      std::string* raw_risk_data = risk_data.get();
+      auto accepted_candidate = std::make_unique<Iban>();
+      Iban* raw_accepted_candidate = accepted_candidate.get();
+
+      // Synchronizes completion of ConfirmUploadIbanToCloud and LoadRiskData.
+      // Both currently run on the UI thread, but using a barrier prepares for
+      // future offloading to parallel task runners (crbug.com/537394697).
+      base::RepeatingClosure barrier = base::BarrierClosure(
+          2, base::BindOnce(&IbanSaveManager::SendUploadRequest,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            std::move(accepted_candidate), context_token,
+                            std::move(client_behavior_signals),
+                            show_save_prompt, std::move(risk_data)));
+
       client_->GetPaymentsAutofillClient()->ConfirmUploadIbanToCloud(
           import_candidate, std::move(parsed_legal_message_lines),
           show_save_prompt,
-          base::BindOnce(&IbanSaveManager::OnUserDidDecideOnUploadSave,
-                         weak_ptr_factory_.GetWeakPtr(), import_candidate,
-                         show_save_prompt));
+          base::BindOnce(
+              [](base::WeakPtr<IbanSaveManager> iban_save_manager,
+                 Iban import_candidate, Iban* raw_accepted_candidate,
+                 base::RepeatingClosure barrier,
+                 payments::PaymentsAutofillClient::SaveIbanOfferUserDecision
+                     user_decision,
+                 std::u16string_view nickname) {
+                if (iban_save_manager) {
+                  std::unique_ptr<Iban> accepted_candidate =
+                      iban_save_manager->OnUserDidDecideOnUploadSave(
+                          std::move(import_candidate), user_decision, nickname);
+                  if (accepted_candidate) {
+                    *raw_accepted_candidate = std::move(*accepted_candidate);
+                  }
+                }
+                barrier.Run();
+              },
+              weak_ptr_factory_.GetWeakPtr(), import_candidate,
+              raw_accepted_candidate, barrier));
+
       client_->GetPaymentsAutofillClient()->LoadRiskData(base::BindOnce(
-          &IbanSaveManager::OnDidGetUploadRiskData,
-          weak_ptr_factory_.GetWeakPtr(), show_save_prompt, import_candidate));
+          [](std::string* risk_data, base::RepeatingClosure barrier,
+             const std::string& loaded_risk_data) {
+            *risk_data = loaded_risk_data;
+            barrier.Run();
+          },
+          raw_risk_data, barrier));
+
       // If `show_save_prompt`'s value is false, desktop builds will still offer
       // save in the omnibox without popping-up the bubble.
       if (observer_for_testing_) {
@@ -386,42 +422,42 @@ void IbanSaveManager::OnDidGetUploadDetails(
   }
 }
 
-void IbanSaveManager::OnDidGetUploadRiskData(bool show_save_prompt,
-                                             const Iban& import_candidate,
-                                             const std::string& risk_data) {
-  upload_request_details_.risk_data = risk_data;
-  // Populating risk data and offering upload occur asynchronously.
-  // If the dialog has already been accepted, send the upload IBAN request.
-  // Otherwise, continue to wait for the user to accept the save dialog.
-  if (user_did_accept_upload_prompt_) {
-    SendUploadRequest(import_candidate, show_save_prompt);
+void IbanSaveManager::SendUploadRequest(
+    std::unique_ptr<Iban> import_candidate,
+    std::u16string context_token,
+    std::vector<ClientBehaviorConstants> client_behavior_signals,
+    bool show_save_prompt,
+    std::unique_ptr<std::string> risk_data) {
+  if (import_candidate->value().empty()) {
+    return;
   }
-}
-
-void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
-                                        bool show_save_prompt) {
   if (observer_for_testing_) {
     observer_for_testing_->OnSentUploadRequest();
   }
-  upload_request_details_.app_locale = payments_data_manager().app_locale();
-  upload_request_details_.billing_customer_number =
+  payments::UploadIbanRequestDetails upload_request_details;
+  upload_request_details.app_locale = payments_data_manager().app_locale();
+  upload_request_details.billing_customer_number =
       payments::GetBillingCustomerId(payments_data_manager());
-  upload_request_details_.context_token = context_token_;
-  upload_request_details_.value = import_candidate.value();
-  upload_request_details_.nickname = import_candidate.nickname();
+  upload_request_details.context_token = std::move(context_token);
+  upload_request_details.value = import_candidate->value();
+  upload_request_details.nickname = import_candidate->nickname();
+  upload_request_details.risk_data = std::move(*risk_data);
+  upload_request_details.client_behavior_signals =
+      std::move(client_behavior_signals);
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
-      ->UploadIban(upload_request_details_,
-                   base::BindOnce(&IbanSaveManager::OnDidUploadIban,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  import_candidate, show_save_prompt));
+      ->UploadIban(
+          upload_request_details,
+          base::BindOnce(&IbanSaveManager::OnDidUploadIban,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(import_candidate), show_save_prompt));
 }
 
-void IbanSaveManager::OnDidUploadIban(const Iban& import_candidate,
+void IbanSaveManager::OnDidUploadIban(std::unique_ptr<Iban> import_candidate,
                                       bool show_save_prompt,
                                       PaymentsRpcResult result) {
   const std::string& partial_iban_hash =
-      GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value()));
+      GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate->value()));
   if (result == PaymentsRpcResult::kSuccess) {
     // Clear all IbanSave strikes for this IBAN, so that if it's later removed
     // the strike count starts over with respect to re-saving it.
@@ -433,9 +469,9 @@ void IbanSaveManager::OnDidUploadIban(const Iban& import_candidate,
     // If upload save failed, check if the IBAN already exists locally. If not,
     // automatically save the IBAN locally so that the IBAN is not left unsaved
     // since the user intended to save it.
-    bool should_local_save = !MatchesExistingLocalIban(import_candidate);
+    bool should_local_save = !MatchesExistingLocalIban(*import_candidate);
     if (should_local_save) {
-      payments_data_manager().AddAsLocalIban(import_candidate);
+      payments_data_manager().AddAsLocalIban(*import_candidate);
     }
     autofill_metrics::LogIbanUploadSaveFailed(should_local_save);
 
