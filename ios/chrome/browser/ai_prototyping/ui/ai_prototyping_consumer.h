@@ -31,6 +31,9 @@ enum class AIPrototypingFeature : NSInteger;
 - (void)updateRawBytes:(NSString*)rawBytes
             forFeature:(AIPrototypingFeature)feature;
 
+// Updates the window ID.
+- (void)updateWindowId:(NSString*)windowId;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UI_AI_PROTOTYPING_CONSUMER_H_

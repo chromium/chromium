@@ -28,7 +28,7 @@
 - (void)start {
   _viewController = [[AIPrototypingViewController alloc] init];
   _mediator = [[AIPrototypingMediator alloc]
-               initWithWebStateList:self.browser->GetWebStateList()
+                    initWithBrowser:self.browser
       persistTabContextBrowserAgent:PersistTabContextBrowserAgent::FromBrowser(
                                         self.browser)];
 

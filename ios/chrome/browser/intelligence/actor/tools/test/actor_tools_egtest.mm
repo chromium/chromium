@@ -1514,4 +1514,52 @@ FindNodeResult FindNodeWithText(
   [self executeActions:actions];
 }
 
+// Tests that the create tab tool successfully creates a new tab in the
+// foreground.
+- (void)testCreateTabTool_foreground {
+  int initialTabCount = [ChromeEarlGrey mainTabCount];
+  NSString* initialTabID = [ChromeEarlGrey currentTabID];
+
+  optimization_guide::proto::Action action;
+  action.mutable_create_tab()->set_foreground(true);
+  action.mutable_create_tab()->set_window_id(
+      [ActorAppInterface currentWindowID]);
+
+  [self executeAction:action];
+
+  int finalTabCount = [ChromeEarlGrey mainTabCount];
+  GREYAssertEqual(finalTabCount, initialTabCount + 1,
+                  @"Expected tab count to increase by 1, was %d -> %d",
+                  initialTabCount, finalTabCount);
+
+  NSString* finalTabID = [ChromeEarlGrey currentTabID];
+  GREYAssertNotEqualObjects(
+      finalTabID, initialTabID,
+      @"Expected active tab to change (foreground tab created).");
+}
+
+// Tests that the create tab tool successfully creates a new tab in the
+// background.
+- (void)testCreateTabTool_background {
+  int initialTabCount = [ChromeEarlGrey mainTabCount];
+  NSString* initialTabID = [ChromeEarlGrey currentTabID];
+
+  optimization_guide::proto::Action action;
+  action.mutable_create_tab()->set_foreground(false);
+  action.mutable_create_tab()->set_window_id(
+      [ActorAppInterface currentWindowID]);
+
+  [self executeAction:action];
+
+  int finalTabCount = [ChromeEarlGrey mainTabCount];
+  GREYAssertEqual(finalTabCount, initialTabCount + 1,
+                  @"Expected tab count to increase by 1, was %d -> %d",
+                  initialTabCount, finalTabCount);
+
+  NSString* finalTabID = [ChromeEarlGrey currentTabID];
+  GREYAssertEqualObjects(
+      finalTabID, initialTabID,
+      @"Expected active tab to remain the same (background tab created).");
+}
+
 @end

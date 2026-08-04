@@ -27,6 +27,8 @@ enum class ActionType {
   kScrollTo,
   kSelect,
   kAttemptLogin,
+  kCreateTab,
+  kCloseTab,
 };
 
 // Based on the field names in
@@ -61,6 +63,12 @@ ActionType GetActionType(const std::string& key) {
   }
   if (key == "attempt_login") {
     return ActionType::kAttemptLogin;
+  }
+  if (key == "create_tab") {
+    return ActionType::kCreateTab;
+  }
+  if (key == "close_tab") {
+    return ActionType::kCloseTab;
   }
   return ActionType::kUnknown;
 }
@@ -272,6 +280,27 @@ bool MapAttemptLoginAction(const base::DictValue& dict,
   return attempt_login->ByteSizeLong() > 0;
 }
 
+bool MapCreateTabAction(const base::DictValue& dict,
+                        optimization_guide::proto::Action* action) {
+  auto* create_tab = action->mutable_create_tab();
+  if (std::optional<int> window_id = dict.FindInt("window_id")) {
+    create_tab->set_window_id(*window_id);
+  }
+  if (std::optional<bool> foreground = dict.FindBool("foreground")) {
+    create_tab->set_foreground(*foreground);
+  }
+  return create_tab->ByteSizeLong() > 0;
+}
+
+bool MapCloseTabAction(const base::DictValue& dict,
+                       optimization_guide::proto::Action* action) {
+  auto* close_tab = action->mutable_close_tab();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    close_tab->set_tab_id(*tab_id);
+  }
+  return close_tab->ByteSizeLong() > 0;
+}
+
 }  // namespace
 
 bool ParseActionFromDict(const base::DictValue& dict,
@@ -310,6 +339,10 @@ bool ParseActionFromDict(const base::DictValue& dict,
       return MapSelectAction(value.GetDict(), action);
     case ActionType::kAttemptLogin:
       return MapAttemptLoginAction(value.GetDict(), action);
+    case ActionType::kCreateTab:
+      return MapCreateTabAction(value.GetDict(), action);
+    case ActionType::kCloseTab:
+      return MapCloseTabAction(value.GetDict(), action);
     case ActionType::kUnknown:
       return false;
   }

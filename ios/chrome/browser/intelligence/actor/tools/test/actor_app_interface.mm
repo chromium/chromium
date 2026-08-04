@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
@@ -255,4 +256,15 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   }
 }
 
++ (int32_t)currentWindowID {
+  Browser* browser = chrome_test_util::GetCurrentBrowser();
+  if (!browser) {
+    return -1;
+  }
+  ActorBrowserAgent* agent = ActorBrowserAgent::FromBrowser(browser);
+  if (!agent) {
+    return -1;
+  }
+  return agent->browser_id().id();
+}
 @end

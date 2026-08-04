@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/ai_prototyping/utils/json_action_parser.h"
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -48,6 +49,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/mojom/enhanced_calendar_service.mojom-forward.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
@@ -108,6 +110,8 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
 }  // namespace
 
 @implementation AIPrototypingMediator {
+  // The browser.
+  raw_ptr<Browser> _browser;
   // Browser agent responsible for persisting and retrieving tab context data.
   raw_ptr<PersistTabContextBrowserAgent> _persistTabContextBrowserAgent;
   // The list of web states in the current browser window.
@@ -146,13 +150,15 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
   BOOL _storePageContextLocally;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-       persistTabContextBrowserAgent:
-           (PersistTabContextBrowserAgent*)persistTabContextBrowserAgent {
+- (instancetype)initWithBrowser:(Browser*)browser
+    persistTabContextBrowserAgent:
+        (PersistTabContextBrowserAgent*)persistTabContextBrowserAgent {
+  DCHECK(browser);
   self = [super init];
   if (self) {
+    _browser = browser;
     _persistTabContextBrowserAgent = persistTabContextBrowserAgent;
-    _webStateList = webStateList;
+    _webStateList = browser->GetWebStateList();
 
     bool startOnDevice = false;
 
@@ -657,6 +663,15 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
 }
 
 - (void)listTabs {
+  if ([self.consumer respondsToSelector:@selector(updateWindowId:)]) {
+    ActorBrowserAgent* agent = ActorBrowserAgent::FromBrowser(_browser);
+    if (agent) {
+      NSString* windowIdString =
+          [NSString stringWithFormat:@"%d", agent->browser_id().id()];
+      [self.consumer updateWindowId:windowIdString];
+    }
+  }
+
   NSMutableArray<NSDictionary*>* tabs = [NSMutableArray array];
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {

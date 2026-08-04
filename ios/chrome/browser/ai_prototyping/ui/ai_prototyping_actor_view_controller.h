@@ -16,6 +16,9 @@
 // Use `initWithFeature` from AIPrototypingViewControllerProtocol instead.
 - (instancetype)init NS_UNAVAILABLE;
 
+// Updates the window ID.
+- (void)updateWindowId:(NSString*)windowId;
+
 // Updates the list of tabs available for selection.
 - (void)updateTabList:(NSArray<NSDictionary*>*)tabs;
 

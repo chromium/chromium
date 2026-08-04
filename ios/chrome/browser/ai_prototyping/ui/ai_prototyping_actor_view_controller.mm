@@ -26,9 +26,13 @@ NSString* const kToolScrollTo = @"Scroll To";
 NSString* const kToolSelect = @"Select";
 NSString* const kToolCloseTab = @"Close Tab";
 NSString* const kToolAttemptLogin = @"Attempt Login";
+NSString* const kToolCreateTab = @"Create Tab";
 
 // Placeholder macro for tab ID.
 NSString* const kTabIdMacro = @"{{tab_id}}";
+
+// Placeholder macro for window ID.
+NSString* const kWindowIdMacro = @"{{window_id}}";
 
 // Whether the tool injects custom JavaScript on the page. For debugging
 // purposes, more tab related information will be exposed and available for
@@ -61,6 +65,7 @@ bool IsWebActuationTool(NSString* tool) {
   NSString* _selectedTabId;
   NSString* _activeTabId;
   NSString* _selectedFrameId;
+  NSString* _windowId;
 
   // Completion handler for deferred menu element.
   void (^_menuCompletion)(NSArray<UIMenuElement*>*);
@@ -545,6 +550,15 @@ bool IsWebActuationTool(NSString* tool) {
         }
       }
     },
+    kToolCreateTab : @{
+      @"ui" : @[ _jsonContainer ],
+      @"template" : @{
+        @"create_tab" : @{
+          @"foreground" : @YES,
+          @"window_id" : kWindowIdMacro,
+        }
+      }
+    },
   };
 
   _toolPickerButton.menu = [self createToolPickerMenu];
@@ -577,7 +591,8 @@ bool IsWebActuationTool(NSString* tool) {
     return;
   }
   // 2. Update Tab ID.
-  if (tabId) {
+  if (tabId &&
+      (toolDict[@"tab_id"] || (configTemplate && configTemplate[@"tab_id"]))) {
     toolDict[@"tab_id"] = @([tabId intValue]);
   }
 
@@ -648,17 +663,29 @@ bool IsWebActuationTool(NSString* tool) {
     inputData = [_jsonInputView.text dataUsingEncoding:NSUTF8StringEncoding];
   }
 
-  // 2. Replace the tab ID placeholder.
-  if (tabId) {
-    NSMutableString* jsonString =
-        [[NSMutableString alloc] initWithData:inputData
-                                     encoding:NSUTF8StringEncoding];
-    NSString* tabIdMacroAndQuotes =
-        [NSString stringWithFormat:@"\"%@\"", kTabIdMacro];
-    [jsonString replaceOccurrencesOfString:tabIdMacroAndQuotes
-                                withString:tabId
-                                   options:0
-                                     range:NSMakeRange(0, [jsonString length])];
+  // 2. Replace the placeholders.
+  NSMutableString* jsonString =
+      [[NSMutableString alloc] initWithData:inputData
+                                   encoding:NSUTF8StringEncoding];
+  if (jsonString) {
+    if (tabId) {
+      NSString* tabIdMacroAndQuotes =
+          [NSString stringWithFormat:@"\"%@\"", kTabIdMacro];
+      [jsonString
+          replaceOccurrencesOfString:tabIdMacroAndQuotes
+                          withString:tabId
+                             options:0
+                               range:NSMakeRange(0, [jsonString length])];
+    }
+    if (_windowId) {
+      NSString* windowIdMacroAndQuotes =
+          [NSString stringWithFormat:@"\"%@\"", kWindowIdMacro];
+      [jsonString
+          replaceOccurrencesOfString:windowIdMacroAndQuotes
+                          withString:_windowId
+                             options:0
+                               range:NSMakeRange(0, [jsonString length])];
+    }
     inputData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
   }
 
@@ -787,7 +814,7 @@ bool IsWebActuationTool(NSString* tool) {
   NSArray<NSString*>* orderedTools = @[
     kToolMultiTool, kToolNavigate, kToolClick, kToolType, kToolHistoryBack,
     kToolHistoryForward, kToolWait, kToolScroll, kToolScrollTo, kToolSelect,
-    kToolCloseTab, kToolAttemptLogin
+    kToolCloseTab, kToolAttemptLogin, kToolCreateTab
   ];
 
   for (NSString* toolName in orderedTools) {
@@ -824,6 +851,10 @@ bool IsWebActuationTool(NSString* tool) {
   [self.mutator executeAPCExtractionWithRichExtraction:YES
                                         actionableMode:YES
                                       includeDebugData:YES];
+}
+
+- (void)updateWindowId:(NSString*)windowId {
+  _windowId = windowId;
 }
 
 #pragma mark - AIPrototypingViewControllerProtocol
