@@ -1017,7 +1017,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     }
     case ItemTypeSuggestionsFromGemini: {
       CHECK(self.navigationController);
-      // TODO(crbug.com/539811785): Implement navigation metrics.
+      base::RecordAction(
+          base::UserMetricsAction("Settings.SuggestionsFromGemini"));
       [self stopSuggestionsFromGeminiCoordinator];
       _suggestionsFromGeminiCoordinator =
           [[SuggestionsFromGeminiCoordinator alloc]

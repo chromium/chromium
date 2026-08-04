@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -133,6 +134,31 @@ TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestMutatorInteraction) {
   [geminiController tableView:geminiController.tableView
       didSelectRowAtIndexPath:helpImproveIndexPath];
   EXPECT_OCMOCK_VERIFY(mockMutator);
+}
+
+// Tests that the view controller reports the expected user action when
+// dismissed.
+TEST_F(SuggestionsFromGeminiTableViewControllerTest,
+       TestReportDismissalUserAction) {
+  base::UserActionTester user_action_tester;
+  SuggestionsFromGeminiTableViewController* geminiController =
+      base::apple::ObjCCastStrict<SuggestionsFromGeminiTableViewController>(
+          controller());
+  [geminiController reportDismissalUserAction];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SuggestionsFromGeminiSettingsClose"));
+}
+
+// Tests that the view controller reports the expected user action when going
+// back.
+TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestReportBackUserAction) {
+  base::UserActionTester user_action_tester;
+  SuggestionsFromGeminiTableViewController* geminiController =
+      base::apple::ObjCCastStrict<SuggestionsFromGeminiTableViewController>(
+          controller());
+  [geminiController reportBackUserAction];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SuggestionsFromGeminiSettingsBack"));
 }
 
 }  // namespace

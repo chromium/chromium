@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_help_improve_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -78,6 +79,32 @@ TEST_F(SuggestionsFromGeminiHelpImproveTableViewControllerTest,
   CheckDetailIconItem(2, 1, IDS_SETTINGS_SUGGESTIONS_FROM_GEMINI_CONSIDER_2);
   // TODO(crbug.com/541220712): Verify the enterprise item is added based on
   // the correct policy.
+}
+
+// Tests that the view controller reports the expected user action when
+// dismissed.
+TEST_F(SuggestionsFromGeminiHelpImproveTableViewControllerTest,
+       TestReportDismissalUserAction) {
+  base::UserActionTester user_action_tester;
+  SuggestionsFromGeminiHelpImproveTableViewController* helpImproveController =
+      base::apple::ObjCCastStrict<
+          SuggestionsFromGeminiHelpImproveTableViewController>(controller());
+  [helpImproveController reportDismissalUserAction];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SuggestionsFromGeminiHelpImproveClose"));
+}
+
+// Tests that the view controller reports the expected user action when going
+// back.
+TEST_F(SuggestionsFromGeminiHelpImproveTableViewControllerTest,
+       TestReportBackUserAction) {
+  base::UserActionTester user_action_tester;
+  SuggestionsFromGeminiHelpImproveTableViewController* helpImproveController =
+      base::apple::ObjCCastStrict<
+          SuggestionsFromGeminiHelpImproveTableViewController>(controller());
+  [helpImproveController reportBackUserAction];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SuggestionsFromGeminiHelpImproveBack"));
 }
 
 }  // namespace

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_help_improve_table_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -140,11 +142,13 @@ TableViewDetailIconItem* HelpImproveDetailItem(NSInteger titleId,
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/539811785): Implement navigation metrics.
+  base::RecordAction(
+      base::UserMetricsAction("SuggestionsFromGeminiHelpImproveClose"));
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/539811785): Implement navigation metrics.
+  base::RecordAction(
+      base::UserMetricsAction("SuggestionsFromGeminiHelpImproveBack"));
 }
 
 - (void)settingsWillBeDismissed {

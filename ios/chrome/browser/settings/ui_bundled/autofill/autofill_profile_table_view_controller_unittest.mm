@@ -9,6 +9,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/with_feature_override.h"
 #import "base/uuid.h"
@@ -60,6 +61,7 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -535,6 +537,40 @@ TEST_F(AutofillProfileTableViewControllerTest,
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       false);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF), item.detailText);
+}
+
+// Tests that selecting the Suggestions from Gemini row reports the expected
+// user action.
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestSelectSuggestionsFromGeminiRowReportsUserAction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{autofill::features::kAutofillAmbientAutofill,
+        {{"ambient_autofill_eligible_tiers", "1"}}},
+       {autofill::features::kAutofillAiAvailableByDefault, {}}},
+      /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
+  SignIn();
+  profile_->GetPrefs()->SetInteger("sync.ai_subscription_tier", 1);
+
+  CreateController();
+  CheckController();
+
+  base::UserActionTester user_action_tester;
+
+  id mockNavigationController = OCMClassMock([UINavigationController class]);
+  AutofillProfileTableViewController* partialMockController =
+      OCMPartialMock(controller());
+  OCMStub([partialMockController navigationController])
+      .andReturn(mockNavigationController);
+
+  // The suggestions from gemini section should be index 1.
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
+  [partialMockController tableView:partialMockController.tableView
+           didSelectRowAtIndexPath:indexPath];
+
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("Settings.SuggestionsFromGemini"));
 }
 
 class AutofillProfileTableViewControllerYourSavedInfoEnabledTest

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_mediator.h"
@@ -87,6 +89,8 @@
 
 - (void)suggestionsFromGeminiMediatorDidSelectHelpImprove:
     (SuggestionsFromGeminiMediator*)mediator {
+  base::RecordAction(
+      base::UserMetricsAction("Settings.SuggestionsFromGeminiHelpImprove"));
   SuggestionsFromGeminiHelpImproveTableViewController* viewController =
       [[SuggestionsFromGeminiHelpImproveTableViewController alloc] init];
   [_baseNavigationController pushViewController:viewController animated:YES];

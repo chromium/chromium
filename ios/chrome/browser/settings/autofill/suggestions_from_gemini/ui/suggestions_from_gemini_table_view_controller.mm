@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
@@ -121,11 +123,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/539811785): Implement navigation metrics.
+  base::RecordAction(
+      base::UserMetricsAction("SuggestionsFromGeminiSettingsClose"));
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/539811785): Implement navigation metrics.
+  base::RecordAction(
+      base::UserMetricsAction("SuggestionsFromGeminiSettingsBack"));
 }
 
 - (void)settingsWillBeDismissed {

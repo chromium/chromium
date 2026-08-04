@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -74,6 +75,19 @@ TEST_F(SuggestionsFromGeminiCoordinatorTest, TestManageConnectedAppsOpensUrl) {
   [coordinator_ suggestionsFromGeminiMediatorDidSelectConnectedApps:nil];
 
   EXPECT_OCMOCK_VERIFY(mockSceneCommandsHandler);
+}
+
+// Tests that opening the help improve page logs the correct user action.
+TEST_F(SuggestionsFromGeminiCoordinatorTest,
+       TestOpenHelpImproveReportsUserAction) {
+  [coordinator_ start];
+
+  base::UserActionTester user_action_tester;
+
+  [coordinator_ suggestionsFromGeminiMediatorDidSelectHelpImprove:nil];
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.SuggestionsFromGeminiHelpImprove"));
 }
 
 }  // namespace

@@ -44612,6 +44612,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.SuggestionsFromGemini">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when user navigates to Suggestions from Gemini Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.SuggestionsFromGeminiHelpImprove">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when user navigates to Suggestions from Gemini Help Improve Notice
+    UI. iOS only.
+  </description>
+</action>
+
 <action name="Settings.Sync">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@google.com</owner>
@@ -51509,6 +51526,41 @@ should be able to be added at any place in this file.
     recorded when 1) user clicks on most visited tiles; 2) long press on most
     visited tiles to open in a new incognito tab. This is consistent with
     Suggestions.Tile.Tapped.NewTabPage on NTP. Android-only.
+  </description>
+</action>
+
+<action name="SuggestionsFromGeminiHelpImproveBack">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when the user goes back from Suggestions from Gemini Help Improve
+    Notice UI. iOS only.
+  </description>
+</action>
+
+<action name="SuggestionsFromGeminiHelpImproveClose">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when Suggestions from Gemini Help Improve notice UI was dismissed.
+    iOS only.
+  </description>
+</action>
+
+<action name="SuggestionsFromGeminiSettingsBack">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when the user goes back from Suggestions from Gemini Settings UI to
+    root Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="SuggestionsFromGeminiSettingsClose">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when Suggestions from Gemini Settings UI was dismissed. iOS only.
   </description>
 </action>
 
