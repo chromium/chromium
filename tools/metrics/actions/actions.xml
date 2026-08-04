@@ -51564,6 +51564,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SuggestionsFromGeminiSettingsManageConnectedAppsClick">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when the user taps on the Manage Connected Apps row in the
+    Suggestions from Gemini Settings UI. iOS only.
+  </description>
+</action>
+
+<action name="SuggestionsFromGeminiSettingsToggleOff">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when the user toggles off the Suggestions from Gemini preference
+    switch. iOS only.
+  </description>
+</action>
+
+<action name="SuggestionsFromGeminiSettingsToggleOn">
+  <owner>alimariam@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Reported when the user toggles on the Suggestions from Gemini preference
+    switch. iOS only.
+  </description>
+</action>
+
 <action name="SupervisedUserProfileSignIn_IPHPromo_ParentalControlsPageOpened">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>

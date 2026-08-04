@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_constants.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -15,21 +16,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-namespace {
-
-typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSuggestionsFromGemini = kSectionIdentifierEnumZero,
-  SectionIdentifierHelpImprove,
-};
-
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeFindAndFillSwitch = kItemTypeEnumZero,
-  ItemTypeManageConnectedApps,
-  ItemTypeHelpImprove,
-};
-
-}  // namespace
 
 @implementation SuggestionsFromGeminiTableViewController {
   BOOL _settingsAreDismissed;
@@ -106,6 +92,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypeManageConnectedApps:
+      base::RecordAction(base::UserMetricsAction(
+          "SuggestionsFromGeminiSettingsManageConnectedAppsClick"));
       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       [self.mutator didSelectManageConnectedApps];
       return;
@@ -140,6 +128,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Callback invoked when the Suggestions from Gemini setting switch is toggled.
 - (void)personalContextSwitchChanged:(UISwitch*)switchView {
+  if (switchView.on) {
+    base::RecordAction(
+        base::UserMetricsAction("SuggestionsFromGeminiSettingsToggleOn"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("SuggestionsFromGeminiSettingsToggleOff"));
+  }
   _suggestionsFromGeminiSwitchOn = switchView.isOn;
 
   [self updateSwitchItemState:switchView.isOn];
