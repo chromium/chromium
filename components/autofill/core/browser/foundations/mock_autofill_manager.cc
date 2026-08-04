@@ -7,7 +7,11 @@
 namespace autofill {
 
 MockAutofillManager::MockAutofillManager(AutofillDriver* driver)
-    : AutofillManager(driver) {}
+    : AutofillManager(driver) {
+  ON_CALL(*this, ReparseKnownForms).WillByDefault([this] {
+    AutofillManager::ReparseKnownForms();
+  });
+}
 
 MockAutofillManager::~MockAutofillManager() = default;
 

@@ -223,6 +223,9 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   AutofillManager& GetAutofillManager() override;
   ukm::SourceId GetPageUkmSourceId() const override;
   ukm::SourceId GetPageUkmSourceId();
+  void TriggerFormExtractionInAllFrames(
+      base::OnceCallback<void(bool)> form_extraction_finished_callback)
+      override;
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
     autofill_manager_ = std::move(autofill_manager);

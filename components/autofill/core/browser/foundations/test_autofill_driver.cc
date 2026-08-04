@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 
 #include "base/check_deref.h"
+#include "base/task/sequenced_task_runner.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 
 namespace autofill {
@@ -39,6 +41,22 @@ ukm::SourceId TestAutofillDriver::GetPageUkmSourceId() {
     GetAutofillClient().GetUkmRecorder()->UpdateSourceURL(ukm_source_id_, url_);
   }
   return ukm_source_id_;
+}
+
+void TestAutofillDriver::TriggerFormExtractionInAllFrames(
+    base::OnceCallback<void(bool)> form_extraction_finished_callback) {
+  std::vector<FormData> forms;
+  GetAutofillManager().ForEachCachedForm(
+      [&forms](const FormStructure& form_structure) {
+        forms.push_back(form_structure.ToFormData());
+      });
+  GetAutofillManager().OnFormsSeen(forms, /*removed_form_ids=*/{},
+                                   AutofillManagerTestApi::pass_key());
+  if (form_extraction_finished_callback) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(form_extraction_finished_callback), true));
+  }
 }
 
 }  // namespace autofill

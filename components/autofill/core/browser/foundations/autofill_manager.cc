@@ -27,6 +27,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
@@ -642,16 +643,7 @@ void AutofillManager::TriggerFormExtractionInAllFrames(
 }
 
 void AutofillManager::ReparseKnownForms() {
-  auto ProcessParsedForms = [](AutofillManager& self,
-                               const std::vector<FormData>& parsed_forms) {
-    if (!parsed_forms.empty()) {
-      self.OnFormsParsed(parsed_forms, base::TimeTicks());
-    }
-  };
-  ParseFormsAsync(
-      base::ToVector(form_structures_,
-                     [](const auto& p) { return p.second->ToFormData(); }),
-      base::BindOnce(ProcessParsedForms));
+  TriggerFormExtractionInAllFrames(base::DoNothing());
 }
 
 base::flat_map<FieldGlobalId, AutofillServerPrediction>

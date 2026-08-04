@@ -61,7 +61,15 @@ using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  using TestAutofillDriver::TestAutofillDriver;
+  explicit MockAutofillDriver(TestAutofillClient* client)
+      : TestAutofillDriver(client) {
+    ON_CALL(*this, TriggerFormExtractionInAllFrames)
+        .WillByDefault([this](base::OnceCallback<void(bool)>
+                                  form_extraction_finished_callback) {
+          TestAutofillDriver::TriggerFormExtractionInAllFrames(
+              std::move(form_extraction_finished_callback));
+        });
+  }
   MockAutofillDriver(const MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
   ~MockAutofillDriver() override = default;
@@ -554,6 +562,25 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     autofill_manager().OnFormSubmitted(form,
                                        mojom::SubmissionSource::FORM_SUBMISSION,
                                        AutofillManagerTestApi::pass_key());
+    std::move(run_loop).Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer(),
+                OnBeforeFormsSeen(m, UnorderedElementsAre(f, g), IsEmpty()));
+    EXPECT_CALL(observer(),
+                OnBeforeLoadedServerPredictions(m, UnorderedElementsAre(f, g)));
+    EXPECT_CALL(observer(),
+                OnAfterLoadedServerPredictions(m, UnorderedElementsAre(f, g)));
+    EXPECT_CALL(observer(),
+                OnFieldTypesDetermined(m, f, heuristics, small_forms_parsing));
+    EXPECT_CALL(observer(),
+                OnFieldTypesDetermined(m, g, heuristics, small_forms_parsing));
+    EXPECT_CALL(observer(),
+                OnAfterFormsSeen(m, UnorderedElementsAre(f, g), IsEmpty()))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    autofill_manager().ReparseKnownForms();
     std::move(run_loop).Run();
   }
 

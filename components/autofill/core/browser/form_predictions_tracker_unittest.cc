@@ -9,8 +9,10 @@
 #include "components/autofill/core/browser/form_predictions_tracker_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -490,6 +492,36 @@ TEST_F(FormPredictionsTrackerTest, Wait_NoActiveActor) {
   base::test::TestFuture<void> future;
   tracker().Wait(future.GetCallback(), base::Milliseconds(1000));
   EXPECT_TRUE(future.Wait());
+}
+
+// Verifies that calling AutofillManager::ReparseKnownForms() triggers form
+// parsing observer events.
+//
+// Note: In unit tests, `autofill_manager()` is a `TestBrowserAutofillManager`,
+// which overrides `OnFormsSeen()` to block until asynchronous parsing finishes
+// and `OnAfterFormsSeen()` has fired. Therefore, `forms_in_parsing_state_` is
+// empty immediately after `OnFormsSeen()` (and `ReparseKnownForms()`) returns.
+// We use a `MockAutofillManagerObserver` to verify that `ReparseKnownForms()`
+// fires both `OnBeforeFormsSeen()` and `OnAfterFormsSeen()` during its
+// execution.
+TEST_F(FormPredictionsTrackerTest, Wait_ReparseKnownForms) {
+  FormData form = test::CreateTestAddressFormData();
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(test_api(tracker()).forms_in_parsing_state().empty());
+
+  MockAutofillManagerObserver observer;
+  autofill_manager().AddObserver(&observer);
+  EXPECT_CALL(
+      observer,
+      OnBeforeFormsSeen(::testing::_, ::testing::ElementsAre(form.global_id()),
+                        ::testing::IsEmpty()));
+  EXPECT_CALL(
+      observer,
+      OnAfterFormsSeen(::testing::_, ::testing::ElementsAre(form.global_id()),
+                       ::testing::IsEmpty()));
+  autofill_manager().ReparseKnownForms();
+  autofill_manager().RemoveObserver(&observer);
 }
 
 }  // namespace
