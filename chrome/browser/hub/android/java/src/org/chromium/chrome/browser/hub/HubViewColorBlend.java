@@ -26,4 +26,14 @@ public interface HubViewColorBlend {
     /** Creates a color blend animation for a hub color scheme change. */
     Animator createAnimationForTransition(
             @HubColorScheme int startScheme, @HubColorScheme int endScheme);
+
+    /**
+     * Updates the color for a real-time blend progress fraction between two color schemes.
+     *
+     * @param startScheme The starting color scheme (fraction = 0.0f).
+     * @param endScheme The target color scheme (fraction = 1.0f).
+     * @param fraction Blend progress fraction between 0.0f and 1.0f.
+     */
+    default void updateProgress(
+            @HubColorScheme int startScheme, @HubColorScheme int endScheme, float fraction) {}
 }

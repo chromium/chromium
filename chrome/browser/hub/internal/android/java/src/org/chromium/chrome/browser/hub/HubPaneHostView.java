@@ -334,10 +334,14 @@ public class HubPaneHostView extends FrameLayout {
                     public void onAnimationEnd(Animator animation) {
                         if (isSwitch) {
                             if (mPaneViewProvider != null) {
+                                mPaneViewProvider.onSwipeDragProgress(
+                                        /* progress= */ 1.0f, mSwipeDirectionIsLeft);
                                 mPaneViewProvider.onSwipeSwitchComplete(mSwipeDirectionIsLeft);
                             }
                         } else {
                             if (mPaneViewProvider != null) {
+                                mPaneViewProvider.onSwipeDragProgress(
+                                        /* progress= */ 0.0f, mSwipeDirectionIsLeft);
                                 mPaneViewProvider.onSwipeSwitchCancel(mSwipeDirectionIsLeft);
                             }
                             mPaneFrame.removeView(adjacentView);

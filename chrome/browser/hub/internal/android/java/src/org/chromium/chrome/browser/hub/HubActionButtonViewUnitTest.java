@@ -105,7 +105,10 @@ public class HubActionButtonViewUnitTest {
         mColorMixer =
                 spy(
                         new HubColorMixerImpl(
-                                mActivity, ObservableSuppliers.alwaysTrue(), mFocusedPaneSupplier));
+                                mActivity,
+                                ObservableSuppliers.alwaysTrue(),
+                                mFocusedPaneSupplier,
+                                ObservableSuppliers.alwaysNull()));
         mPropertyModel =
                 new PropertyModel.Builder(HubActionButtonProperties.ALL_ACTION_BUTTON_KEYS)
                         .with(ACTION_BUTTON_VISIBLE, true)

@@ -12,6 +12,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.ColorUtils;
 
 /** Helper class to manage Animator object creation for views during a hub color scheme change. */
 @NullMarked
@@ -45,5 +46,14 @@ public class SingleHubViewColorBlend implements HubViewColorBlend {
                         mDurationMs, startColor, endColor, mColorSetter::setColorInt);
         animation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
         return animation;
+    }
+
+    @Override
+    public void updateProgress(
+            @HubColorScheme int startScheme, @HubColorScheme int endScheme, float fraction) {
+        @ColorInt int startColor = mColorGetter.colorIntFromColorScheme(startScheme);
+        @ColorInt int endColor = mColorGetter.colorIntFromColorScheme(endScheme);
+        @ColorInt int blendedColor = ColorUtils.blendColorsMultiply(startColor, endColor, fraction);
+        mColorSetter.setColorInt(blendedColor);
     }
 }

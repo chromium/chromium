@@ -20,11 +20,13 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.hub.HubColorMixer.ColorBlendProgress;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -77,6 +79,8 @@ public class HubManagerImpl implements HubManager, HubController {
     private final HubShowPaneHelper mHubShowPaneHelper;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final SearchActivityClient mSearchActivityClient;
+    private final SettableNullableObservableSupplier<ColorBlendProgress>
+            mSwipeAnimationProgressSupplier = ObservableSuppliers.createNullable();
     private final HubColorMixer mHubColorMixer;
     private final @Nullable BottomBarHostManager mBottomBarHostManager;
     private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
@@ -133,7 +137,10 @@ public class HubManagerImpl implements HubManager, HubController {
                 .addSyncObserverAndPostIfNonNull(mOnFocusedPaneChanged);
         mHubColorMixer =
                 new HubColorMixerImpl(
-                        mActivity, mHubVisibilitySupplier, mPaneManager.getFocusedPaneSupplier());
+                        mActivity,
+                        mHubVisibilitySupplier,
+                        mPaneManager.getFocusedPaneSupplier(),
+                        mSwipeAnimationProgressSupplier);
         mHubColorMixer.registerBlend(
                 new SingleHubViewColorBlend(
                         HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
@@ -295,6 +302,7 @@ public class HubManagerImpl implements HubManager, HubController {
                         mSearchActivityClient,
                         mEdgeToEdgeSupplier,
                         mHubColorMixer,
+                        mSwipeAnimationProgressSupplier,
                         mXrSpaceModeObservableSupplier,
                         mDefaultPaneId);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);

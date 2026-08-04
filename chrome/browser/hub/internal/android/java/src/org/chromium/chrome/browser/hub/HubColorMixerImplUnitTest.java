@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,8 +41,10 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.chrome.browser.hub.HubColorMixer.ColorBlendProgress;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.util.ColorUtils;
 
@@ -64,6 +67,8 @@ public class HubColorMixerImplUnitTest {
             ObservableSuppliers.createNonNull(false);
     private final SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier =
             ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<ColorBlendProgress>
+            mSwipeAnimationProgressSupplier = ObservableSuppliers.createNullable();
     private HubColorMixerImpl mHubColorMixer;
 
     private void initialize(boolean isTablet) {
@@ -71,6 +76,7 @@ public class HubColorMixerImplUnitTest {
                 new HubColorMixerImpl(
                         mHubVisibilitySupplier,
                         mFocusedPaneSupplier,
+                        mSwipeAnimationProgressSupplier,
                         mAnimatorSetBuilder,
                         mAnimationHandler,
                         HubColorMixerImplUnitTest::getBackgroundColorForTests,
@@ -90,11 +96,13 @@ public class HubColorMixerImplUnitTest {
     public void testDestroy() {
         assertTrue(mHubVisibilitySupplier.hasObservers());
         assertTrue(mFocusedPaneSupplier.hasObservers());
+        assertTrue(mSwipeAnimationProgressSupplier.hasObservers());
 
         mHubColorMixer.destroy();
 
         assertFalse(mHubVisibilitySupplier.hasObservers());
         assertFalse(mFocusedPaneSupplier.hasObservers());
+        assertFalse(mSwipeAnimationProgressSupplier.hasObservers());
     }
 
     @Test
@@ -119,6 +127,7 @@ public class HubColorMixerImplUnitTest {
                 new HubColorMixerImpl(
                         mHubVisibilitySupplier,
                         mFocusedPaneSupplier,
+                        mSwipeAnimationProgressSupplier,
                         mAnimatorSetBuilder,
                         mAnimationHandler,
                         HubColorMixerImplUnitTest::getBackgroundColorForTests,
@@ -355,6 +364,42 @@ public class HubColorMixerImplUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mColorBlend).createAnimationForTransition(anyInt(), anyInt());
         verify(mAnimationHandler).startAnimation(any());
+    }
+
+    @Test
+    public void testOnSwipeAnimationProgressChanged() {
+        mHubColorMixer.registerBlend(mColorBlend);
+        mSwipeAnimationProgressSupplier.set(
+                new ColorBlendProgress(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, 0.4f));
+        verify(mColorBlend).updateProgress(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, 0.4f);
+    }
+
+    @Test
+    public void testOnSwipeAnimationProgressChanged_updatesColorSchemeUpdate() {
+        mSwipeAnimationProgressSupplier.set(
+                new ColorBlendProgress(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, 0.5f));
+        assertNotNull(mHubColorMixer.getColorSchemeUpdateForTesting());
+        assertEquals(
+                HubColorScheme.DEFAULT,
+                mHubColorMixer.getColorSchemeUpdateForTesting().newColorScheme);
+        assertEquals(
+                HubColorScheme.DEFAULT,
+                mHubColorMixer.getColorSchemeUpdateForTesting().previousColorScheme);
+
+        mSwipeAnimationProgressSupplier.set(
+                new ColorBlendProgress(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, 0.8f));
+        assertEquals(
+                HubColorScheme.DEFAULT,
+                mHubColorMixer.getColorSchemeUpdateForTesting().newColorScheme);
+
+        mSwipeAnimationProgressSupplier.set(null);
+        assertNotNull(mHubColorMixer.getColorSchemeUpdateForTesting());
+        assertEquals(
+                HubColorScheme.INCOGNITO,
+                mHubColorMixer.getColorSchemeUpdateForTesting().newColorScheme);
+        assertEquals(
+                HubColorScheme.INCOGNITO,
+                mHubColorMixer.getColorSchemeUpdateForTesting().previousColorScheme);
     }
 
     private void enableOverviewMode() {

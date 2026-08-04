@@ -50,13 +50,13 @@ public class HubColorBlendAnimatorSetHelper {
         return this;
     }
 
-    /** Set the previous color scheme of the Hub which will be used in animations. */
+    /** Set the new color scheme of the Hub which will be used in animations. */
     public HubColorBlendAnimatorSetHelper setNewColorScheme(@HubColorScheme int colorScheme) {
         mNewColorScheme = colorScheme;
         return this;
     }
 
-    /** Set the new color scheme of the Hub which will be used in animations. */
+    /** Set the previous color scheme of the Hub which will be used in animations. */
     public HubColorBlendAnimatorSetHelper setPreviousColorScheme(@HubColorScheme int colorScheme) {
         mPrevColorScheme = colorScheme;
         return this;
@@ -82,5 +82,13 @@ public class HubColorBlendAnimatorSetHelper {
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(animatorsList);
         return animatorSet;
+    }
+
+    /** Updates real-time color blend progress across all registered blends. */
+    public void updateColorBlendProgress(
+            @HubColorScheme int startScheme, @HubColorScheme int endScheme, float fraction) {
+        for (HubViewColorBlend colorBlend : mColorBlendList) {
+            colorBlend.updateProgress(startScheme, endScheme, fraction);
+        }
     }
 }

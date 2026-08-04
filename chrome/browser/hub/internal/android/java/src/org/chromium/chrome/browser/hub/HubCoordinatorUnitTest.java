@@ -48,6 +48,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.hub.HubColorMixer.ColorBlendProgress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -117,6 +118,8 @@ public class HubCoordinatorUnitTest {
             new OneshotSupplierImpl<>();
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<ColorBlendProgress>
+            mSwipeAnimationProgressSupplier = ObservableSuppliers.createNullable();
     private PaneManager mPaneManager;
     private FrameLayout mRootView;
     private HubCoordinator mHubCoordinator;
@@ -196,6 +199,7 @@ public class HubCoordinatorUnitTest {
                         mSearchActivityClient,
                         mEdgeToEdgeSupplier,
                         mHubColorMixer,
+                        mSwipeAnimationProgressSupplier,
                         /* xrSpaceModeObservableSupplier= */ null,
                         /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -427,6 +431,7 @@ public class HubCoordinatorUnitTest {
                                             mSearchActivityClient,
                                             mEdgeToEdgeSupplier,
                                             mHubColorMixer,
+                                            mSwipeAnimationProgressSupplier,
                                             null,
                                             /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
@@ -470,6 +475,7 @@ public class HubCoordinatorUnitTest {
                                             mSearchActivityClient,
                                             mEdgeToEdgeSupplier,
                                             mHubColorMixer,
+                                            mSwipeAnimationProgressSupplier,
                                             null,
                                             /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
@@ -526,5 +532,19 @@ public class HubCoordinatorUnitTest {
 
         mHubCoordinator.onSwipeSwitchCancel(false);
         verify(mIncognitoTabSwitcherPane, times(2)).notifyLoadHint(LoadHint.WARM);
+    }
+
+    @Test
+    public void testOnSwipeDragProgress_blendsColors() {
+        mHubCoordinator.onSwipeDragProgress(0.5f, true);
+        assertEquals(
+                new ColorBlendProgress(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, 0.5f),
+                mSwipeAnimationProgressSupplier.get());
+    }
+
+    @Test
+    public void testOnSwipeSwitchCancel_resetsColorBlendProgress() {
+        mHubCoordinator.onSwipeSwitchCancel(true);
+        assertNull(mSwipeAnimationProgressSupplier.get());
     }
 }

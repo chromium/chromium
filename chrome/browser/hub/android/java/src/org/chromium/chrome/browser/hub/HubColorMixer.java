@@ -17,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 import java.util.function.DoubleConsumer;
 
 /**
@@ -106,4 +107,34 @@ public interface HubColorMixer {
 
     /** Gets the observer for overview mode alpha changes. */
     OverviewModeAlphaObserver getOverviewModeAlphaObserver();
+
+    /** Data object representing an active color scheme blend transition. */
+    class ColorBlendProgress {
+        public final @HubColorScheme int startScheme;
+        public final @HubColorScheme int endScheme;
+        public final float fraction;
+
+        public ColorBlendProgress(
+                @HubColorScheme int startScheme, @HubColorScheme int endScheme, float fraction) {
+            this.startScheme = startScheme;
+            this.endScheme = endScheme;
+            this.fraction = fraction;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o instanceof ColorBlendProgress that) {
+                return startScheme == that.startScheme
+                        && endScheme == that.endScheme
+                        && Float.compare(fraction, that.fraction) == 0;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(startScheme, endScheme, fraction);
+        }
+    }
 }
