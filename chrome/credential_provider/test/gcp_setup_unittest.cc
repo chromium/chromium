@@ -6,6 +6,7 @@
 
 #include <datetimeapi.h>
 #include <lmerr.h>
+#include <shlobj.h>
 #include <wrl/client.h>
 
 #include <memory>
@@ -353,6 +354,10 @@ void GcpSetupTest::SetUp() {
   ASSERT_TRUE(scoped_temp_progdata_dir_.CreateUniqueTempDir());
   programdata_override_ = std::make_unique<base::ScopedPathOverride>(
       base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath());
+
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP() << "Test requires administrative privileges.";
+  }
 
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 

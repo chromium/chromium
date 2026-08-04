@@ -4,6 +4,10 @@
 
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 
+#include <windows.h>
+
+#include <shlobj.h>
+
 #include <algorithm>
 #include <array>
 #include <string_view>
@@ -11,21 +15,36 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/test_file_util.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/values.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/security_descriptor.h"
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
 #include "build/build_config.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
+
+using ::testing::AllOf;
+using ::testing::HasSubstr;
+using ::testing::Not;
+using ::testing::Optional;
+using ::testing::StartsWith;
 
 TEST(GcpPasswordTest, GenerateRandomPassword) {
   wchar_t password[64];
@@ -614,5 +633,87 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values("machine_guid", ""),
                        ::testing::Values("true"),
                        ::testing::Values("device_resource_id", "")));
+
+class GcpUtilsSecureCreateDirectoryTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    if (!::IsUserAnAdmin()) {
+      GTEST_SKIP() << "Test requires administrative privileges.";
+    }
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  }
+
+  void TearDown() override {
+    if (temp_dir_.IsValid() && ::IsUserAnAdmin()) {
+      if (auto token = base::win::AccessToken::FromCurrentProcess(); token) {
+        std::vector<base::win::Sid> sids;
+        sids.push_back(token->User().Clone());
+        base::win::GrantAccessToPath(
+            temp_dir_.GetPath(), sids, GENERIC_ALL | STANDARD_RIGHTS_ALL,
+            CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
+      }
+    }
+  }
+
+  base::ScopedTempDir temp_dir_;
+};
+
+TEST_F(GcpUtilsSecureCreateDirectoryTest, NewDirectory) {
+  base::FilePath new_dir = temp_dir_.GetPath().Append(L"NewSecureDir");
+  EXPECT_FALSE(base::DirectoryExists(new_dir));
+  EXPECT_TRUE(SecureCreateDirectory(new_dir));
+  EXPECT_TRUE(base::DirectoryExists(new_dir));
+  EXPECT_THAT(base::GetFileDacl(new_dir),
+              AllOf(StartsWith(L"D:P"), HasSubstr(L";;;BA)"),
+                    HasSubstr(L";;;SY)"), Not(HasSubstr(L";;;WD)"))));
+}
+
+TEST_F(GcpUtilsSecureCreateDirectoryTest, ExistingDirectory) {
+  base::FilePath existing_dir = temp_dir_.GetPath().Append(L"ExistingDir");
+  EXPECT_TRUE(base::CreateDirectory(existing_dir));
+  EXPECT_TRUE(base::DirectoryExists(existing_dir));
+  EXPECT_TRUE(SecureCreateDirectory(existing_dir));
+  EXPECT_THAT(base::GetFileDacl(existing_dir),
+              AllOf(StartsWith(L"D:P"), HasSubstr(L";;;BA)"),
+                    HasSubstr(L";;;SY)"), Not(HasSubstr(L";;;WD)"))));
+}
+
+TEST_F(GcpUtilsSecureCreateDirectoryTest,
+       IdempotentOnExistingSecuredDirectory) {
+  base::FilePath target_dir = temp_dir_.GetPath().Append(L"SecuredDir");
+  EXPECT_TRUE(SecureCreateDirectory(target_dir));
+  EXPECT_THAT(base::GetFileDacl(target_dir),
+              AllOf(StartsWith(L"D:P"), HasSubstr(L";;;BA)"),
+                    HasSubstr(L";;;SY)"), Not(HasSubstr(L";;;WD)"))));
+
+  // Apply SecureCreateDirectory a second time to an already secured directory.
+  EXPECT_TRUE(SecureCreateDirectory(target_dir));
+  EXPECT_THAT(base::GetFileDacl(target_dir),
+              AllOf(StartsWith(L"D:P"), HasSubstr(L";;;BA)"),
+                    HasSubstr(L";;;SY)"), Not(HasSubstr(L";;;WD)"))));
+}
+
+TEST_F(GcpUtilsSecureCreateDirectoryTest, FailOnExistingFileConflict) {
+  base::FilePath file_path = temp_dir_.GetPath().Append(L"ConflictingFile");
+  ASSERT_TRUE(base::WriteFile(file_path, "dummy data"));
+  EXPECT_TRUE(base::PathExists(file_path));
+  EXPECT_FALSE(base::DirectoryExists(file_path));
+
+  // Should fail because file_path exists as a file, not a directory.
+  EXPECT_FALSE(SecureCreateDirectory(file_path));
+}
+
+TEST_F(GcpUtilsSecureCreateDirectoryTest, FailOnReparsePoint) {
+  base::FilePath target_dir = temp_dir_.GetPath().Append(L"TargetDir");
+  base::FilePath link_dir = temp_dir_.GetPath().Append(L"LinkDir");
+  ASSERT_TRUE(base::CreateDirectory(target_dir));
+  if (::CreateSymbolicLinkW(link_dir.value().c_str(),
+                            target_dir.value().c_str(),
+                            SYMBOLIC_LINK_FLAG_DIRECTORY)) {
+    // If symlink/reparse point creation succeeded, SecureCreateDirectory must
+    // reject it.
+    EXPECT_FALSE(SecureCreateDirectory(link_dir));
+  }
+}
 
 }  // namespace credential_provider

@@ -49,6 +49,8 @@
 #include "base/win/current_module.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/ntsecapi_shim.h"
+#include "base/win/security_descriptor.h"
+#include "base/win/sid.h"
 #include "base/win/wbemidl_shim.h"
 #include "base/win/win_util.h"
 #include "base/win/wincred_shim.h"
@@ -150,15 +152,10 @@ constexpr base::win::i18n::LanguageSelector::LangToOffset
 };
 
 base::FilePath GetStartupSentinelLocation(const std::wstring& version) {
-  base::FilePath sentinel_path;
-  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &sentinel_path)) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-    LOGFN(ERROR) << "PathService::Get(DIR_COMMON_APP_DATA) hr=" << putHR(hr);
+  base::FilePath sentinel_path = GetDataDirectory();
+  if (sentinel_path.empty()) {
     return base::FilePath();
   }
-
-  sentinel_path = sentinel_path.Append(GetInstallParentDirectoryName())
-                      .Append(kCredentialProviderFolder);
 
   return sentinel_path.Append(version).AppendASCII(kSentinelFilename);
 }
@@ -274,17 +271,11 @@ HRESULT GetGCPWDmTokenInternal(const std::wstring& sid,
 // and |file_dir|.
 base::FilePath GetDirectoryFilePath(const std::wstring& sid,
                                     const std::wstring& file_dir) {
-  base::FilePath path;
-  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &path)) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-    LOGFN(ERROR) << "PathService::Get(DIR_COMMON_APP_DATA) hr=" << putHR(hr);
+  base::FilePath path = GetDataDirectory();
+  if (path.empty()) {
     return base::FilePath();
   }
-  path = path.Append(GetInstallParentDirectoryName())
-             .Append(kCredentialProviderFolder)
-             .Append(file_dir)
-             .Append(sid);
-  return path;
+  return path.Append(file_dir).Append(sid);
 }
 
 }  // namespace
@@ -924,6 +915,101 @@ bool IsSentinelOlderThanSetTime(const base::File::Info info) {
          kHoursToDisableGCPW;
 }
 
+bool SecureCreateDirectory(const base::FilePath& path) {
+  if (path.empty()) {
+    return false;
+  }
+
+  // Create the parent directory, allowing ordinary inherited permissions.
+  base::File::Error error = base::File::FILE_OK;
+  if (base::FilePath parent = path.DirName();
+      !parent.empty() && parent != path &&
+      !base::CreateDirectoryAndGetError(parent, &error)) {
+    LOGFN(ERROR) << "Failed to create parent directory for " << path << "; "
+                 << base::File::ErrorToString(error);
+    return false;
+  }
+
+  base::win::SecurityDescriptor sd;
+  sd.set_dacl_protected(true);  // Protects from inheriting parent DACLs
+
+  // Add DACL entries strictly for SYSTEM and BuiltinAdministrators with full
+  // control.
+  if (!sd.SetDaclEntry(base::win::WellKnownSid::kLocalSystem,
+                       base::win::SecurityAccessMode::kGrant,
+                       GENERIC_ALL | STANDARD_RIGHTS_ALL,
+                       SUB_CONTAINERS_AND_OBJECTS_INHERIT) ||
+      !sd.SetDaclEntry(base::win::WellKnownSid::kBuiltinAdministrators,
+                       base::win::SecurityAccessMode::kGrant,
+                       GENERIC_ALL | STANDARD_RIGHTS_ALL,
+                       SUB_CONTAINERS_AND_OBJECTS_INHERIT)) {
+    LOGFN(ERROR) << "Failed to set DACL entries for " << path;
+    return false;
+  }
+
+  // Attempt to create the directory with the security descriptor attached.
+  auto self_relative = sd.ToSelfRelative();
+  if (!self_relative) {
+    LOGFN(ERROR) << "Failed to convert SecurityDescriptor to self-relative for "
+                 << path;
+    return false;
+  }
+  SECURITY_ATTRIBUTES sa{sizeof(SECURITY_ATTRIBUTES), self_relative->get(),
+                         FALSE};
+
+  if (::CreateDirectory(path.value().c_str(), &sa)) {
+    return true;
+  }
+
+  // If CreateDirectory failed (e.g., because the directory already exists),
+  // open a handle to the directory to set the DACL.
+  base::File handle(::CreateFile(
+      path.value().c_str(), WRITE_DAC | READ_CONTROL,
+      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+      OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
+      nullptr));
+  if (!handle.IsValid()) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "Failed to open handle for existing path " << path
+                 << " hr=" << putHR(hr);
+    return false;
+  }
+
+  BY_HANDLE_FILE_INFORMATION file_info = {};
+  if (!::GetFileInformationByHandle(handle.GetPlatformFile(), &file_info)) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "GetFileInformationByHandle failed for " << path
+                 << " hr=" << putHR(hr);
+    return false;
+  }
+
+  // Verify that a directory (not a file) was just opened.
+  if ((file_info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
+    LOGFN(ERROR) << "Path exists but is not a directory: " << path;
+    return false;
+  }
+
+  // Verify that the directory does not have a reparse point (e.g., it's not a
+  // symlink or a junction point).
+  if ((file_info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0) {
+    LOGFN(ERROR) << "Path exists but is a reparse point (junction/symlink): "
+                 << path;
+    return false;
+  }
+
+  // Apply the DACL to the directory.
+  if (!sd.WriteToHandle(handle.GetPlatformFile(),
+                        base::win::SecurityObjectType::kFile,
+                        DACL_SECURITY_INFORMATION)) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "Failed to write SecurityDescriptor to handle for " << path
+                 << " hr=" << putHR(hr);
+    return false;
+  }
+
+  return true;
+}
+
 bool WriteToStartupSentinel() {
   LOGFN(VERBOSE);
   // Always try to write to the startup sentinel file. If writing or opening
@@ -942,14 +1028,11 @@ bool WriteToStartupSentinel() {
       GetStartupSentinelLocation(TEXT(CHROME_VERSION_STRING));
   if (!startup_sentinel_path.empty()) {
     base::FilePath startup_sentinel_directory = startup_sentinel_path.DirName();
-    if (!base::DirectoryExists(startup_sentinel_directory)) {
-      base::File::Error error;
-      if (!base::CreateDirectoryAndGetError(startup_sentinel_directory,
-                                            &error)) {
-        LOGFN(ERROR) << "Could not create sentinel directory='"
-                     << startup_sentinel_directory << "' error=" << error;
-        return false;
-      }
+    base::File::Error error;
+    if (!base::CreateDirectoryAndGetError(startup_sentinel_directory, &error)) {
+      LOGFN(ERROR) << "Could not create sentinel directory='"
+                   << startup_sentinel_directory << "' error=" << error;
+      return false;
     }
     base::File startup_sentinel(
         startup_sentinel_path,
@@ -1115,6 +1198,24 @@ HRESULT SearchForListInStringDictUTF8(
     }
   }
   return S_OK;
+}
+
+base::FilePath GetDataDirectory() {
+  base::FilePath path;
+  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &path)) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "PathService::Get(DIR_COMMON_APP_DATA) hr=" << putHR(hr);
+    return base::FilePath();
+  }
+  path = path.Append(GetInstallParentDirectoryName())
+             .Append(kCredentialProviderFolder);
+  if (!SecureCreateDirectory(path)) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "Could not create or secure directory " << path
+                 << "; hr=" << putHR(hr);
+    return base::FilePath();
+  }
+  return path;
 }
 
 base::FilePath::StringType GetInstallParentDirectoryName() {
@@ -1406,13 +1507,11 @@ std::unique_ptr<base::File> GetOpenedFileForUser(
     const std::wstring& file_dir,
     const std::wstring& file_name) {
   base::FilePath experiments_dir = GetDirectoryFilePath(sid, file_dir);
-  if (!base::DirectoryExists(experiments_dir)) {
-    base::File::Error error;
-    if (!CreateDirectoryAndGetError(experiments_dir, &error)) {
-      LOGFN(ERROR) << "Experiments data directory could not be created for "
-                   << sid << " Error: " << error;
-      return nullptr;
-    }
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(experiments_dir, &error)) {
+    LOGFN(ERROR) << "Experiments data directory could not be created for "
+                 << sid << " Error: " << error;
+    return nullptr;
   }
 
   base::FilePath experiments_file_path = experiments_dir.Append(file_name);
