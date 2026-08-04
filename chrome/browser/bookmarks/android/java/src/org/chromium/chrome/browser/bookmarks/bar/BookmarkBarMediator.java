@@ -334,6 +334,10 @@ class BookmarkBarMediator
 
     // TODO(crbug.com/394614779): Open in popup window instead of bookmark manager.
     private void onAllBookmarksButtonClick(int metaState, int buttonState) {
+        if ((buttonState & MotionEvent.BUTTON_SECONDARY) != 0) {
+            return;
+        }
+
         // Open the manager iff the active profile and model are unchanged to prevent accidentally
         // opening the manager for the wrong profile/model. We will only record the click event if
         // this guard passes, so the data shows only actions that resulted in a change.

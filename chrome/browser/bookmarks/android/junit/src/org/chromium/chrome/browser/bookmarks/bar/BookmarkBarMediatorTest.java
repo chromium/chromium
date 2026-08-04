@@ -712,8 +712,9 @@ public class BookmarkBarMediatorTest {
         // Simulate right click or long press (BUTTON_SECONDARY).
         clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
 
-        // Context menu should NOT be shown for the All Bookmarks button.
+        // No response should happen for right click on the All bookmarks button.
         verify(mPopupCoordinator, never()).showContextMenuPopup(any(), any(), any(), anyBoolean());
+        verify(mBookmarkManagerOpener, never()).showBookmarkManager(any(), any(), any(), any());
     }
 
     @Test
