@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
@@ -765,6 +766,12 @@ public class RootUiCoordinator
                             @Override
                             public boolean isCurrentTabNull() {
                                 return mActivityTabProvider.get() == null;
+                            }
+
+                            @Override
+                            public boolean isActivityFocused() {
+                                return ApplicationStatus.getLastTrackedFocusedActivity()
+                                        == mActivity;
                             }
                         });
 

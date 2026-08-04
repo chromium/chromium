@@ -43,4 +43,7 @@ public interface PageZoomManagerDelegate {
     void enterImmersiveMode();
 
     boolean isCurrentTabNull();
+
+    /** Returns true if the window/activity for this manager currently has window focus. */
+    boolean isActivityFocused();
 }

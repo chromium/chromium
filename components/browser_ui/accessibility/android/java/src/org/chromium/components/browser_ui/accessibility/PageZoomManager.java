@@ -129,6 +129,11 @@ public class PageZoomManager {
         return mDelegate.isCurrentTabNull();
     }
 
+    /** Returns true if the window/activity for this manager currently has window focus. */
+    public boolean isActivityFocused() {
+        return mDelegate.isActivityFocused();
+    }
+
     // Snaps the zoom level of the current WebContents to the zoom factor at the given index in the
     // cached available values.
     @VisibleForTesting

@@ -27,10 +27,12 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -38,6 +40,7 @@ import java.util.function.Supplier;
 /** Unit tests for {@link PageZoomIndicatorCoordinator}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(qualifiers = "sw600dp")
 public class PageZoomIndicatorCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -60,6 +63,8 @@ public class PageZoomIndicatorCoordinatorUnitTest {
         when(mManager.getWebContents()).thenReturn(mWebContents);
         when(mManager.getZoomLevel()).thenReturn(0.0);
         when(mManager.getDefaultZoomLevel()).thenReturn(0.0);
+        when(mManager.isActivityFocused()).thenReturn(true);
+        DeviceFormFactor.setIsTabletForTesting(true);
 
         mCoordinator = new PageZoomIndicatorCoordinator(anchorViewSupplier, mManager);
         mCoordinator.onNativeInitialized();
@@ -168,6 +173,31 @@ public class PageZoomIndicatorCoordinatorUnitTest {
 
         assertFalse(mCoordinator.isPopupWindowShowing());
         verify(mManager).removeZoomEventsObserver(mObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testOnZoomLevelChanged_InactiveWindow_DoesNotShowPopup() {
+        when(mManager.isActivityFocused()).thenReturn(false);
+        assertFalse(mCoordinator.isPopupWindowShowing());
+
+        mObserverCaptor.getValue().onZoomLevelChanged("example.com", 0.52);
+        assertFalse(mCoordinator.isPopupWindowShowing());
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testOnZoomLevelChanged_PhoneFormFactor_DoesNotShowPopup() {
+        assertFalse(mCoordinator.isPopupWindowShowing());
+
+        mObserverCaptor.getValue().onZoomLevelChanged("example.com", 0.52);
+        assertFalse(mCoordinator.isPopupWindowShowing());
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testShow_PhoneFormFactor_DoesNotShowPopup() {
+        mCoordinator.show();
+        assertFalse(mCoordinator.isPopupWindowShowing());
     }
 }
 

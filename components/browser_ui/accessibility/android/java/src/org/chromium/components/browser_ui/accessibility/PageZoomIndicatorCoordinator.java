@@ -20,6 +20,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.function.Supplier;
 
@@ -57,6 +58,7 @@ public class PageZoomIndicatorCoordinator {
                     @Override
                     public void onZoomLevelChanged(String host, double newZoomLevel) {
                         setTooltip();
+                        if (!mManager.isActivityFocused()) return;
                         WebContents webContents = mManager.getWebContents();
                         if (webContents != null && !isPopupWindowShowing()) {
                             showInternal(/* shouldHaveDismissalTimer= */ true);
@@ -103,12 +105,15 @@ public class PageZoomIndicatorCoordinator {
     }
 
     private void showInternal(boolean shouldHaveDismissalTimer) {
+        View anchorView = mZoomIndicatorViewSupplier.get();
+        if (anchorView == null
+                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(anchorView.getContext())) {
+            return;
+        }
         mShouldHaveDismissalTimer = shouldHaveDismissalTimer;
-        // This cannot be null, since this is called after the zoom button is clicked.
-        assumeNonNull(mZoomIndicatorViewSupplier.get());
         if (mPopupWindow == null) {
             mView =
-                    LayoutInflater.from(mZoomIndicatorViewSupplier.get().getContext())
+                    LayoutInflater.from(anchorView.getContext())
                             .inflate(R.layout.page_zoom_indicator_view, null);
 
             mView.setOnHoverListener(this::onHover);
@@ -128,7 +133,7 @@ public class PageZoomIndicatorCoordinator {
         // the announcement is made. This prevents a race condition where TalkBack might focus on an
         // intermediate, unlabeled view.
         mView.post(() -> sendPaneChangeAccessibilityEvent(/* isShowing= */ true));
-        mMediator.showPopupWindow(mZoomIndicatorViewSupplier.get(), mPopupWindow);
+        mMediator.showPopupWindow(anchorView, mPopupWindow);
         if (shouldHaveDismissalTimer) {
             resetDismissalTimer();
         }
