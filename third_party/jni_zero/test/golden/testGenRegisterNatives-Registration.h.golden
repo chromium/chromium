@@ -65,12 +65,16 @@ bool RegisterNative_org_jni_1zero_SampleForLinker(JNIEnv* env) {
 }  // namespace
 
 // Main Register Function.
+namespace {
+
 bool RegisterNativesForTest(JNIEnv* env) {
   if (!RegisterNative_org_jni_1zero_SampleForLinker(env))
     return false;
 
   return true;
 }
+
+}  // namespace
 
 #pragma clang diagnostic pop
 #endif  // TEMP_DIR_HEADER_

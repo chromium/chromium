@@ -1339,12 +1339,15 @@ template("webview_chromium_library") {
 # The shared library used by standalone WebView. Make sure we don't define it
 # in the default toolchain if we're using the WebView PGO profile, as the target
 # should always be built with a dedicated toolchain in these circumstances.
-webview_chromium_library("libwebviewchromium") {
-  use_webview_orderfile = true
-  enable_target = !(_is_default_toolchain && use_webview_pgo_profile)
-}
-
-if (_is_default_toolchain && use_webview_pgo_profile) {
+if (!(_is_default_toolchain && use_webview_pgo_profile)) {
+  webview_chromium_library("libwebviewchromium") {
+    use_webview_orderfile = true
+    if (use_webview_pgo_profile_default_toolchain) {
+      force_current_toolchain = current_toolchain == webview_toolchain
+      jni_registration_toolchain = webview_toolchain
+    }
+  }
+} else {
   copy("copy_webview_lib_unstripped") {
     _webview_toolchain_out_dir =
         get_label_info(":libwebviewchromium($webview_toolchain)",

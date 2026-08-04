@@ -136,6 +136,9 @@ def _Generate(args,
   present_jni_objs = list(
       _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))
 
+  def RemoveTestOnlyNatives(self):
+    self.natives = [n for n in self.natives if not n.is_test_only]
+
   # Can contain path not in present_jni_objs.
   priority_sources_list = priority_java_sources.get(
       args.module_name, []) if priority_java_sources else []
@@ -188,24 +191,19 @@ def _Generate(args,
       package_prefix=args.package_prefix,
       package_prefix_filter=args.package_prefix_filter)
 
-  if not args.include_test_only:
-    for jni_obj in present_jni_objs:
-      jni_obj.RemoveTestOnlyNatives()
-
-  if jni_mode.is_hashing or jni_mode.is_muxing:
-    gen_jni_class = short_gen_jni_class
-  else:
-    gen_jni_class = full_gen_jni_class
-
-  if args.impl_path:
-    impl_content = _CreateImpl(jni_mode, present_jni_objs,
-                               boundary_proxy_natives, gen_jni_class, args,
-                               muxed_aliases_by_sig, whole_hash, priority_hash)
-    with common.atomic_output(args.impl_path, mode='w') as f:
-      f.write(impl_content)
-
   if args.header_path:
-    header_content = _CreateHeader(args)
+    if not args.include_test_only:
+      for jni_obj in present_jni_objs:
+        jni_obj.RemoveTestOnlyNatives()
+
+    if jni_mode.is_hashing or jni_mode.is_muxing:
+      gen_jni_class = short_gen_jni_class
+    else:
+      gen_jni_class = full_gen_jni_class
+    header_content = _CreateHeader(jni_mode, present_jni_objs,
+                                   boundary_proxy_natives, gen_jni_class, args,
+                                   muxed_aliases_by_sig, whole_hash,
+                                   priority_hash)
     with common.atomic_output(args.header_path, mode='w') as f:
       f.write(header_content)
 
@@ -318,31 +316,13 @@ def _GenerateHashes(jni_objs, priority_set, *, never_omit_switch_num):
   return whole_ret, priority_ret
 
 
-def _CreateHeader(args):
+def _CreateHeader(jni_mode, jni_objs, boundary_proxy_natives, gen_jni_class,
+                  args, muxed_aliases_by_sig, whole_hash, priority_hash):
   """Returns the content of the header file."""
   header_guard = os.path.splitext(args.header_path)[0].upper() + '_'
   header_guard = re.sub(r'[/.-]', '_', header_guard)
 
-  preamble, epilogue = header_common.header_preamble(
-      jni_generator.GetScriptName(),
-      system_includes=['jni.h'],
-      header_guard=header_guard,
-      is_shared_header=True)
-
-  sb = common.StringBuilder()
-  sb(preamble)
-  with sb.namespace(args.namespace):
-    sb(f'bool {args.register_natives_name}(JNIEnv* env);\n')
-  sb(epilogue)
-  return sb.to_string()
-
-
-def _CreateImpl(jni_mode, jni_objs, boundary_proxy_natives, gen_jni_class, args,
-                muxed_aliases_by_sig, whole_hash, priority_hash):
-  """Returns the content of the implementation file (.cc)."""
   user_includes = [f'{args.include_path_prefix}jni_zero_internal.h']
-  if args.header_path:
-    user_includes.append(os.path.basename(args.header_path))
   if args.extra_includes:
     user_includes += args.extra_includes
 
@@ -351,13 +331,12 @@ def _CreateImpl(jni_mode, jni_objs, boundary_proxy_natives, gen_jni_class, args,
       java_class=gen_jni_class,
       system_includes=['iterator'],  # For std::size().
       user_includes=user_includes,
-      header_guard=False,
-      is_shared_header=True)
+      header_guard=header_guard)
 
   module_name = args.module_name or ''
 
   sb = common.StringBuilder()
-  sb(preamble)
+  sb.line(preamble)
   if jni_mode.is_muxing:
     sb(f"""\
 extern const int64_t kJniZeroHash{module_name}Whole = {whole_hash}LL;
@@ -369,19 +348,16 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
   ]
   non_proxy_natives_java_classes.sort()
 
-  if args.manual_jni_registration and non_proxy_natives_java_classes:
+  if non_proxy_natives_java_classes:
     with sb.section('Class Accessors.'):
       header_common.class_accessors(sb, non_proxy_natives_java_classes)
 
-  if jni_mode.is_muxing or args.manual_jni_registration:
-    with sb.section('Forward Declarations.'):
-      for jni_obj in jni_objs:
-        natives = (jni_obj.natives
-                   if args.manual_jni_registration else jni_obj.proxy_natives)
-        for native in natives:
-          with sb.statement():
-            natives_header.entry_point_declaration(sb, jni_mode, jni_obj,
-                                                   native, gen_jni_class)
+  with sb.section('Forward Declarations.'):
+    for jni_obj in jni_objs:
+      for native in jni_obj.natives:
+        with sb.statement():
+          natives_header.entry_point_declaration(sb, jni_mode, jni_obj, native,
+                                                 gen_jni_class)
 
   if jni_mode.is_muxing and boundary_proxy_natives:
     with sb.section('Multiplexing Methods.'):
@@ -391,7 +367,7 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
                                                     gen_jni_class)
 
   if args.manual_jni_registration:
-    # Helper methods use presence of gen_jni_class to denote presence of proxy
+    # Helper methods use presence of gen_jni_class to denote presense of proxy
     # methods.
     if not boundary_proxy_natives:
       gen_jni_class = None
@@ -452,14 +428,10 @@ def _write_depfile(depfile_path, first_gn_output, inputs):
 
 
 def main(parser, args, jni_mode):
-  if args.header_path and not args.manual_jni_registration:
-    parser.error('--header-path requires --manual-jni-registration.')
-  if args.manual_jni_registration and not args.header_path:
+  if not args.header_path and args.manual_jni_registration:
     parser.error('--manual-jni-registration requires --header-path.')
-  if args.manual_jni_registration and not args.impl_path:
-    parser.error('--manual-jni-registration requires --impl-path.')
-  if jni_mode.is_muxing and not args.impl_path:
-    parser.error('--enable-jni-multiplexing requires --impl-path.')
+  if not args.header_path and jni_mode.is_muxing:
+    parser.error('--enable-jni-multiplexing requires --header-path.')
   if args.remove_uncalled_methods and not args.native_sources_file:
     parser.error('--remove-uncalled-methods requires --native-sources-file.')
   if args.priority_java_sources_file:
