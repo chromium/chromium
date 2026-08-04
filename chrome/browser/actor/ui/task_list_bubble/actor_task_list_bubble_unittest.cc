@@ -121,7 +121,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
   views::Widget* CreateBubbleView(
       absl::flat_hash_map<actor::TaskId, bool> task_list) {
     bubble_ = std::make_unique<ActorTaskListBubble>(
-        profile_.get(), *controller_, task_list,
+        profile_.get(), browser_window_interface_.get(), task_list,
         base::BindRepeating(&ActorTaskListBubbleTest::OnTaskClicked,
                             base::Unretained(this)));
     bubble_->Show(anchor_widget_->GetContentsView());

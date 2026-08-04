@@ -44,7 +44,7 @@ ActorTaskListBubbleController::ActorTaskListBubbleController(
           base::BindRepeating(&ActorTaskListBubbleController::OnStateUpdate,
                               base::Unretained(this))));
   bubble_ = std::make_unique<ActorTaskListBubble>(
-      browser_->GetProfile(), *this, manager->actor_task_list_bubble_rows(),
+      browser_->GetProfile(), browser_, manager->actor_task_list_bubble_rows(),
       base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
                           base::Unretained(this)));
 }

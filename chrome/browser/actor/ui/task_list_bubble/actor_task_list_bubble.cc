@@ -54,11 +54,11 @@ int GetPriorityForTaskState(actor::ActorTask::State task_state,
 
 ActorTaskListBubble::ActorTaskListBubble(
     Profile* profile,
-    ActorTaskListBubbleController& controller,
+    BrowserWindowInterface* browser,
     const absl::flat_hash_map<actor::TaskId, bool>& task_list,
     OnTaskClickedCallback on_row_clicked)
     : profile_(profile),
-      controller_(controller),
+      browser_(browser),
       task_list_(task_list),
       on_row_clicked_(std::move(on_row_clicked)) {}
 
@@ -123,7 +123,9 @@ bool ActorTaskListBubble::IsShowing() const {
 void ActorTaskListBubble::OnWidgetDestroyed(views::Widget* widget) {
   widget_observation_.Reset();
   widget_ = nullptr;
-  controller_->OnBubbleDestroyed();
+  if (auto* controller = ActorTaskListBubbleController::From(browser_)) {
+    controller->OnBubbleDestroyed();
+  }
 }
 
 // TODO(crbug.com/518584352): share the non-Views parts of this function with

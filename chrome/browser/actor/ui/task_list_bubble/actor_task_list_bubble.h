@@ -23,7 +23,7 @@ class Widget;
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleView);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleScrollView);
 
-class ActorTaskListBubbleController;
+class BrowserWindowInterface;
 class Profile;
 
 // Bubble that displays notifications about the user's ongoing tasks.
@@ -32,7 +32,7 @@ class ActorTaskListBubble : public views::WidgetObserver {
   using OnTaskClickedCallback = base::RepeatingCallback<void(actor::TaskId)>;
   explicit ActorTaskListBubble(
       Profile* profile,
-      ActorTaskListBubbleController& controller,
+      BrowserWindowInterface* browser,
       const absl::flat_hash_map<actor::TaskId, bool>& task_list,
       OnTaskClickedCallback on_row_clicked);
   ~ActorTaskListBubble() override;
@@ -50,8 +50,7 @@ class ActorTaskListBubble : public views::WidgetObserver {
   std::unique_ptr<views::View> CreateContentsView();
 
   raw_ptr<Profile> profile_;
-  // Browser window scoped.
-  raw_ref<ActorTaskListBubbleController> controller_;
+  raw_ptr<BrowserWindowInterface> browser_;
   // From GlicActorTaskIconManager, profile scoped.
   raw_ref<const absl::flat_hash_map<actor::TaskId, bool>> task_list_;
   OnTaskClickedCallback on_row_clicked_;
