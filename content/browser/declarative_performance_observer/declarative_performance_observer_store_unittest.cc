@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +23,8 @@ namespace content {
 
 class DeclarativePerformanceObserverStoreTest : public testing::Test {
  public:
-  DeclarativePerformanceObserverStoreTest() = default;
+  DeclarativePerformanceObserverStoreTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~DeclarativePerformanceObserverStoreTest() override = default;
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
@@ -833,6 +835,140 @@ TEST_F(DeclarativePerformanceObserverStoreTest,
   histogram_tester.ExpectUniqueSample(
       "Storage.DeclarativePerformanceObserver.ReadReportResult",
       /*sample=*/3, /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeclarativePerformanceObserverStoreTest, HandlesVersion1AndRazes) {
+  base::FilePath db_path =
+      temp_dir_.GetPath().AppendASCII("declarative_performance_observer.db");
+
+  // Create a v1 version of the database.
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(db_path));
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&db, 1, 1));
+
+    // Create the old version table (without created_at).
+    ASSERT_TRUE(
+        db.Execute("CREATE TABLE declarative_performance_observer_policies ("
+                   "origin TEXT PRIMARY KEY NOT NULL, "
+                   "capture_early_failures BOOLEAN NOT NULL)"));
+    ASSERT_TRUE(db.Execute(
+        "INSERT INTO declarative_performance_observer_policies "
+        "(origin, capture_early_failures) VALUES ('https://old.com', 1)"));
+  }
+
+  auto store = CreateStore();
+
+  // Set a new policy which forces the DB to initialize to version 2 and raze
+  // the old.
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com/"));
+  base::RunLoop run_loop;
+  store->SetEarlyFailurePolicy(
+      kOrigin, true,
+      base::BindOnce([](base::OnceClosure quit) { std::move(quit).Run(); },
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  base::RunLoop run_loop_close;
+  store->Close(run_loop_close.QuitClosure());
+  run_loop_close.Run();
+  store.reset();
+
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(db_path));
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&db, 2, 2));
+    EXPECT_EQ(2, meta_table.GetVersionNumber());
+
+    // Verify that the V1 data ('https://old.com') was razed and is no longer
+    // readable.
+    sql::Statement statement(
+        db.GetUniqueStatement("SELECT COUNT(*) FROM "
+                              "declarative_performance_observer_policies "
+                              "WHERE origin = 'https://old.com'"));
+    ASSERT_TRUE(statement.Step());
+    EXPECT_EQ(0, statement.ColumnInt(0));
+
+    // Verify that the newly inserted V2 policy ('https://example.com') exists.
+    sql::Statement new_statement(
+        db.GetUniqueStatement("SELECT COUNT(*) FROM "
+                              "declarative_performance_observer_policies "
+                              "WHERE origin = 'https://example.com'"));
+    ASSERT_TRUE(new_statement.Step());
+    EXPECT_EQ(1, new_statement.ColumnInt(0));
+  }
+}
+
+TEST_F(DeclarativePerformanceObserverStoreTest, EnforcesPolicyTTL) {
+  base::FilePath db_path =
+      temp_dir_.GetPath().AppendASCII("declarative_performance_observer.db");
+
+  const url::Origin kOriginExpired =
+      url::Origin::Create(GURL("https://expired.com/"));
+  const url::Origin kOriginValid =
+      url::Origin::Create(GURL("https://valid.com/"));
+
+  // 1. Create a store and insert two policies.
+  {
+    auto store = CreateStore();
+    base::RunLoop run_loop1;
+    store->SetEarlyFailurePolicy(kOriginExpired, true, run_loop1.QuitClosure());
+    run_loop1.Run();
+
+    base::RunLoop run_loop2;
+    store->SetEarlyFailurePolicy(kOriginValid, true, run_loop2.QuitClosure());
+    run_loop2.Run();
+
+    base::RunLoop run_loop_close;
+    store->Close(run_loop_close.QuitClosure());
+    run_loop_close.Run();
+  }
+
+  // 2. Manually alter the creation timestamp of the first policy to 8 days ago
+  // in the DB.
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(db_path));
+    int64_t expired_time = (base::Time::Now() - base::Days(8))
+                               .ToDeltaSinceWindowsEpoch()
+                               .InMicroseconds();
+    sql::Statement statement(db.GetUniqueStatement(
+        "UPDATE declarative_performance_observer_policies SET created_at = ? "
+        "WHERE origin = ?"));
+    statement.BindInt64(0, expired_time);
+    statement.BindString(1, kOriginExpired.Serialize());
+    ASSERT_TRUE(statement.Run());
+  }
+
+  // 3. Re-open the store. The expired policy should be cleaned up.
+  auto store = CreateStore();
+
+  EXPECT_FALSE(store->HasEarlyFailurePolicy(kOriginExpired));
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(kOriginValid));
+}
+
+TEST_F(DeclarativePerformanceObserverStoreTest, EnforcesPolicyTTLInMemory) {
+  auto store = CreateStore();
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com/"));
+
+  // 1. Set the policy. It should be active immediately.
+  base::RunLoop run_loop;
+  store->SetEarlyFailurePolicy(
+      kOrigin, true,
+      base::BindOnce([](base::OnceClosure quit) { std::move(quit).Run(); },
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin));
+
+  // 2. Fast forward time by 8 days.
+  task_environment_.FastForwardBy(base::Days(8));
+
+  // 3. Check again. The cache lookup should detect the expiration, remove it
+  // from the memory cache, and return false.
+  EXPECT_FALSE(store->HasEarlyFailurePolicy(kOrigin));
 }
 
 }  // namespace content

@@ -90,23 +90,32 @@ class DeclarativePerformanceObserverStore::Backend
 
   void LoadPoliciesOnDbSequence(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      base::OnceCallback<void(std::vector<url::Origin>)> on_loaded_callback) {
+      base::OnceCallback<void(
+          std::vector<DeclarativePerformanceObserverStore::LoadedPolicy>)>
+          on_loaded_callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(db_sequence_checker_);
     if (!InitOnDbSequence()) {
-      ui_task_runner->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(on_loaded_callback),
-                                              std::vector<url::Origin>()));
+      ui_task_runner->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              std::move(on_loaded_callback),
+              std::vector<
+                  DeclarativePerformanceObserverStore::LoadedPolicy>()));
       return;
     }
 
-    std::vector<url::Origin> loaded;
+    std::vector<DeclarativePerformanceObserverStore::LoadedPolicy> loaded;
     sql::Statement statement(
-        db_->GetUniqueStatement("SELECT origin, capture_early_failures FROM "
+        db_->GetUniqueStatement("SELECT origin, capture_early_failures, "
+                                "created_at FROM "
                                 "declarative_performance_observer_policies"));
     while (statement.Step()) {
       if (statement.ColumnBool(1)) {
-        loaded.emplace_back(
-            url::Origin::Create(GURL(statement.ColumnString(0))));
+        url::Origin origin =
+            url::Origin::Create(GURL(statement.ColumnString(0)));
+        base::Time created_at = base::Time::FromDeltaSinceWindowsEpoch(
+            base::Microseconds(statement.ColumnInt64(2)));
+        loaded.push_back({std::move(origin), created_at});
       }
     }
 
@@ -125,8 +134,10 @@ class DeclarativePerformanceObserverStore::Backend
       sql::Statement statement(db_->GetCachedStatement(
           SQL_FROM_HERE,
           "INSERT OR REPLACE INTO declarative_performance_observer_policies "
-          "(origin, capture_early_failures) VALUES (?, 1)"));
+          "(origin, capture_early_failures, created_at) VALUES (?, 1, ?)"));
       statement.BindString(0, origin.Serialize());
+      statement.BindInt64(
+          1, base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
       statement.Run();
     } else {
       sql::Statement statement(db_->GetCachedStatement(
@@ -398,8 +409,12 @@ class DeclarativePerformanceObserverStore::Backend
     }
 
     sql::MetaTable meta_table;
-    static constexpr int kVersionNumber = 1;
-    static constexpr int kCompatibleVersionNumber = 1;
+    static constexpr int kVersionNumber = 2;
+    static constexpr int kCompatibleVersionNumber = 2;
+
+    std::ignore = sql::MetaTable::RazeIfIncompatible(
+        db_.get(), kCompatibleVersionNumber, kVersionNumber);
+
     if (!meta_table.Init(db_.get(), kVersionNumber, kCompatibleVersionNumber)) {
       return false;
     }
@@ -407,7 +422,8 @@ class DeclarativePerformanceObserverStore::Backend
     static constexpr char kCreatePoliciesTable[] =
         "CREATE TABLE IF NOT EXISTS declarative_performance_observer_policies ("
         "origin TEXT PRIMARY KEY NOT NULL, "
-        "capture_early_failures BOOLEAN NOT NULL)";
+        "capture_early_failures BOOLEAN NOT NULL, "
+        "created_at INTEGER NOT NULL)";
     if (!db_->Execute(kCreatePoliciesTable)) {
       return false;
     }
@@ -429,15 +445,27 @@ class DeclarativePerformanceObserverStore::Backend
       return false;
     }
 
+    // Clean up expired policies (TTL = 7 days).
+    static constexpr char kCleanExpiredPolicies[] =
+        "DELETE FROM declarative_performance_observer_policies WHERE "
+        "created_at < ?";
+    sql::Statement clean_policies_statement(
+        db_->GetUniqueStatement(kCleanExpiredPolicies));
+    int64_t threshold_us = (base::Time::Now() - kReportsTimeToLive)
+                               .ToDeltaSinceWindowsEpoch()
+                               .InMicroseconds();
+    clean_policies_statement.BindInt64(0, threshold_us);
+    clean_policies_statement.Run();
+
     // Clean up expired reports (TTL = 7 days).
     static constexpr char kCleanExpiredReports[] =
         "DELETE FROM declarative_performance_observer_reports WHERE "
         "created_at < ?";
     sql::Statement clean_statement(
         db_->GetUniqueStatement(kCleanExpiredReports));
-    int64_t threshold_us = (base::Time::Now() - kReportsTimeToLive)
-                               .ToDeltaSinceWindowsEpoch()
-                               .InMicroseconds();
+    threshold_us = (base::Time::Now() - kReportsTimeToLive)
+                       .ToDeltaSinceWindowsEpoch()
+                       .InMicroseconds();
     clean_statement.BindInt64(0, threshold_us);
     if (clean_statement.Run()) {
       int expired_rows = db_->GetLastChangeCount();
@@ -571,12 +599,12 @@ DeclarativePerformanceObserverStore::~DeclarativePerformanceObserverStore() =
 
 void DeclarativePerformanceObserverStore::OnPoliciesLoadedOnUISequence(
     base::OnceClosure on_loaded_callback,
-    std::vector<url::Origin> loaded) {
+    std::vector<LoadedPolicy> loaded) {
   if (!clear_all_pending_) {
     // 1. Filter out loaded origins using pending filters that ran during load:
-    std::erase_if(loaded, [this](const url::Origin& origin) {
+    std::erase_if(loaded, [this](const LoadedPolicy& entry) {
       for (const auto& filter : pending_filters_) {
-        if (filter.Run(origin)) {
+        if (filter.Run(entry.origin)) {
           return true;
         }
       }
@@ -584,10 +612,12 @@ void DeclarativePerformanceObserverStore::OnPoliciesLoadedOnUISequence(
     });
 
     // 2. Discard loaded origins that were modified during load:
-    std::erase_if(loaded, [this](const url::Origin& origin) {
-      return modified_during_load_.contains(origin);
+    std::erase_if(loaded, [this](const LoadedPolicy& entry) {
+      return modified_during_load_.contains(entry.origin);
     });
-    cached_policies_.insert(loaded.begin(), loaded.end());
+    for (const auto& entry : loaded) {
+      cached_policies_.emplace(entry.origin, entry.created_at);
+    }
   }
   loaded_ = true;
   modified_during_load_.clear();
@@ -609,7 +639,7 @@ void DeclarativePerformanceObserverStore::SetEarlyFailurePolicy(
     modified_during_load_.insert(origin);
   }
   if (enabled) {
-    cached_policies_.insert(origin);
+    cached_policies_[origin] = base::Time::Now();
   } else {
     cached_policies_.erase(origin);
   }
@@ -622,7 +652,15 @@ void DeclarativePerformanceObserverStore::SetEarlyFailurePolicy(
 
 bool DeclarativePerformanceObserverStore::HasEarlyFailurePolicy(
     const url::Origin& origin) {
-  return cached_policies_.contains(origin);
+  auto it = cached_policies_.find(origin);
+  if (it == cached_policies_.end()) {
+    return false;
+  }
+  if (base::Time::Now() - it->second > kReportsTimeToLive) {
+    cached_policies_.erase(it);
+    return false;
+  }
+  return true;
 }
 
 void DeclarativePerformanceObserverStore::StoreEarlyFailureReport(
@@ -668,15 +706,17 @@ void DeclarativePerformanceObserverStore::ClearDataWithFilter(
   }
 
   // 1. Filter and remove from in-memory policy cache immediately:
-  base::EraseIf(cached_policies_, [&](const url::Origin& origin) {
-    if (filter.Run(origin)) {
-      if (!loaded_) {
-        modified_during_load_.erase(origin);
-      }
-      return true;
-    }
-    return false;
-  });
+  auto removed = std::ranges::remove_if(
+      cached_policies_, [&](const auto& entry) {
+        if (filter.Run(entry.first)) {
+          if (!loaded_) {
+            modified_during_load_.erase(entry.first);
+          }
+          return true;
+        }
+        return false;
+      });
+  cached_policies_.erase(removed.begin(), removed.end());
 
   // 2. Post to DB sequence to perform the actual database deletions:
   db_task_runner_->PostTaskAndReply(

@@ -9,12 +9,14 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
@@ -97,16 +99,22 @@ class CONTENT_EXPORT DeclarativePerformanceObserverStore {
       base::OnceCallback<void(bool, bool)> callback);
 
  private:
+  struct LoadedPolicy {
+    url::Origin origin;
+    base::Time created_at;
+  };
+
   class Backend;
 
-  void OnPoliciesLoadedOnUISequence(base::OnceClosure on_loaded_callback,
-                                    std::vector<url::Origin> loaded);
+  void OnPoliciesLoadedOnUISequence(
+      base::OnceClosure on_loaded_callback,
+      std::vector<LoadedPolicy> loaded);
 
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
   scoped_refptr<Backend> backend_;
 
   // UI-thread In-Memory Policy Cache for instant 0ns lookups:
-  base::flat_set<url::Origin> cached_policies_;
+  base::flat_map<url::Origin, base::Time> cached_policies_;
 
   // True if the initial database loading has completed.
   bool loaded_ = false;
