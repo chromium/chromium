@@ -64,7 +64,8 @@
   padding-bottom: 3px;
 }
 
-:host([is-top-chrome-searchbox_]:is([has-action],[has-keyword])) .container {
+:host([is-top-chrome-searchbox_]:is([has-action],[has-keyword-chip]))
+    .container {
   height: 40px;
   padding-top: 0;
   padding-bottom: 0;
