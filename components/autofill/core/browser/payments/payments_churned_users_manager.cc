@@ -41,6 +41,10 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
     FormGlobalId form,
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
+  if (client_->IsOffTheRecord()) {
+    return;
+  }
+
   const FormStructure* form_structure = manager.FindCachedFormById(form);
   if (!form_structure) {
     return;

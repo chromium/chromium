@@ -139,6 +139,21 @@ TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackTurnsOnPref) {
       prefs::kAutofillCreditCardEnabled));
 }
 
+// Tests that the Payments Churned Users UI is not shown if the user is off the
+// record.
+TEST_F(PaymentsChurnedUsersManagerTest, OffTheRecord_ShowUiNotTriggered) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+  autofill_client().set_is_off_the_record(true);
+
+  EXPECT_CALL(*payments_client(), ShowPaymentsChurnedUsersUI).Times(0);
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+}
+
 // Tests that the Payments Churned Users UI is not shown if the feature flag is
 // off.
 TEST_F(PaymentsChurnedUsersManagerTest, FeatureFlagOff_ShowUiNotTriggered) {
