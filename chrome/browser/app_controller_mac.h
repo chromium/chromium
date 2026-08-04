@@ -22,6 +22,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/ui/startup/startup_tab.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class BookmarkMenuBridge;
@@ -131,8 +132,6 @@ typedef NS_ENUM(NSInteger, ConfirmQuitResult) {
 // Delegate method to return the dock menu.
 - (NSMenu*)applicationDockMenu:(NSApplication*)sender;
 
-// Get the URLs that Launch Services expects the browser to open at startup.
-- (const std::vector<GURL>&)startupUrls;
 
 - (BookmarkMenuBridge*)bookmarkMenuBridge;
 - (HistoryMenuBridge*)historyMenuBridge;
