@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -73,7 +74,17 @@ class AssistantAIMUIStateProvider
   explicit AssistantAIMUIStateProvider(AssistantAIMCoordinator* coordinator)
       : coordinator_(coordinator) {}
 
-  bool IsTabGridVisible() override { return [coordinator_ isTabGridVisible]; }
+  bool IsAssistantHiddenByUIState(web::WebState* web_state) override {
+    if ([coordinator_ isTabGridVisible]) {
+      return true;
+    }
+    if (!web_state) {
+      return true;
+    }
+    NewTabPageTabHelper* ntp_helper =
+        NewTabPageTabHelper::FromWebState(web_state);
+    return ntp_helper && ntp_helper->ShouldShowStartSurface();
+  }
 
  private:
   __weak AssistantAIMCoordinator* coordinator_;

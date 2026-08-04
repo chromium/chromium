@@ -28,6 +28,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/metrics/model:activity_reporter",
+    "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",

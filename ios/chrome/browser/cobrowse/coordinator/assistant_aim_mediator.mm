@@ -204,7 +204,6 @@
   _webState.reset();
   _urlLoader = nullptr;
   _context = nil;
-  [self endSession];
   _cobrowseBrowserAgent = nullptr;
   _capabilities = std::nullopt;
   _logger = nil;

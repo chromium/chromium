@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/scene/ui/scene_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/home_surface_egtest_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -190,6 +191,7 @@ id<GREYMatcher> CloseButton() {
     [ComposeboxAppInterface setTabUploadAutoSucceed:NO];
   }];
   [super setUp];
+  ResetMakeHomeSurfaceOpenImmediately();
   [ComposeboxAppInterface enableAllTools];
   self.testServer->ServeFilesFromSourceDirectory(
       base::FilePath("ios/testing/data/http_server_files"));
@@ -804,6 +806,45 @@ id<GREYMatcher> CloseButton() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityLabel(
                                                           @"persisted_query")];
+}
+
+// Tests that the Co-browse assistant is hidden on the New Tab Page (NTP)
+// when an NTP is opened after the app restarts with an active session.
+- (void)testAssistantHiddenOnNTPAfterColdStart {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  // 1. Start a cobrowse session on a normal URL.
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  MakeHomeSurfaceOpenImmediately();
+
+  // 2. Cold start the app. This simulates returning to the app after it was
+  // force-closed, which natively triggers the Start Surface NTP to open,
+  // preserving the cobrowse session on the background tab.
+  [ChromeEarlGrey saveSessionImmediately];
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // The app will automatically open a Start Surface NTP upon cold start.
+  // Wait for the fake omnibox to appear, indicating the NTP has loaded.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::FakeOmnibox()];
+
+  // Verify the assistant is NOT visible on the Start Surface NTP.
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Navigate to a normal URL to ensure the assistant reappears.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  ResetMakeHomeSurfaceOpenImmediately();
 }
 
 // Tests that the CoBrowse assistant is only shown in the window where it was

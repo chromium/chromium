@@ -3,6 +3,7 @@ include_rules = [
   "+components/contextual_tasks/public/contextual_task.h",
   "+components/contextual_tasks/public/contextual_tasks_service.h",
   "+components/contextual_tasks/public/features.h",
+  "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/signin/model/system_identity.h"

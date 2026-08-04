@@ -55,6 +55,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/scene/ui:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/snackbar:constants",
+    "//ios/chrome/browser/start_surface/ui_bundled:test_utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
@@ -89,8 +90,8 @@ bool CobrowseBrowserAgent::CanShowAssistantForWebState(
   // A WebState is loaded when it becomes the active WebState while the Tab
   // Grid is visible, which triggers DidStartNavigation. To avoid UI conflicts
   // or crashes, do not show the assistant if the Tab Grid is currently
-  // displayed.
-  if (ui_state_provider_ && ui_state_provider_->IsTabGridVisible()) {
+  // displayed. We also check if the Start Surface is visible.
+  if (ShouldHideAssistantForWebState(web_state)) {
     return false;
   }
 
@@ -144,19 +145,28 @@ void CobrowseBrowserAgent::SetSessionActive(bool active) {
   }
 }
 
-void CobrowseBrowserAgent::OnEligibilityChanged() {
-  if (!IsAimCobrowseEligible(browser_->GetProfile())) {
-    if (is_session_active_) {
-      id<SceneCommands> scene_commands_handler =
-          HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
-      [scene_commands_handler hideAssistant];
-      SetSessionActive(false);
-    }
+void CobrowseBrowserAgent::TerminateSession() {
+  if (is_session_active_) {
+    id<SceneCommands> scene_commands_handler =
+        HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
+    [scene_commands_handler hideAssistant];
+    SetSessionActive(false);
   }
 }
 
-bool CobrowseBrowserAgent::IsTabGridVisible() {
-  return ui_state_provider_ && ui_state_provider_->IsTabGridVisible();
+void CobrowseBrowserAgent::OnEligibilityChanged() {
+  if (!IsAimCobrowseEligible(browser_->GetProfile())) {
+    TerminateSession();
+  }
+}
+
+bool CobrowseBrowserAgent::ShouldHideAssistantForWebState(
+    web::WebState* web_state) {
+  if (ui_state_provider_ &&
+      ui_state_provider_->IsAssistantHiddenByUIState(web_state)) {
+    return true;
+  }
+  return false;
 }
 
 #pragma mark - TabsDependencyInstaller
