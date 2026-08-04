@@ -271,6 +271,9 @@ namespace features {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDoNotEvictOnAXLocationChange);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kDefaultToMainFrameFocusWhenNoSubframeFocused);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnforceUserActivationForBeforeUnload);
 }  // namespace features
 
@@ -1714,10 +1717,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // END IPC REVIEW BOUNDARY
 
-  // Returns whether the frame is focused. A frame is considered focused when it
-  // is the parent chain of the focused frame within the frame tree. In
-  // addition, its associated RenderWidgetHost has to be focused.
-  bool IsFocused();
+  bool IsFocused() override;
 
   // Sets the WebUI owned by `request` as the WebUI for this RenderFrameHost,
   // which is based on the provided `request`'s URL.

@@ -16,6 +16,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
@@ -231,6 +232,32 @@ TEST_F(RenderFrameHostImplTest, InvalidURL) {
   EXPECT_FALSE(invalid_url.is_valid());
   NavigateAndCommit(invalid_url);
   EXPECT_EQ(GURL(url::kAboutBlankURL), main_rfh()->GetLastCommittedURL());
+}
+
+TEST_F(RenderFrameHostImplTest, DefaultToMainFrameWhenNoSubframeFocused) {
+  NavigateAndCommit(GURL("https://test.example.com"));
+
+  // Ensure top-level widget has OS focus.
+  RenderWidgetHostImpl* widget =
+      static_cast<RenderWidgetHostImpl*>(main_rfh()->GetRenderWidgetHost());
+  widget->Focus();
+  EXPECT_TRUE(widget->is_focused());
+
+  // In a unit test, FrameTree::GetFocusedFrame() starts as nullptr before any
+  // subframe focus IPC has been received.
+  EXPECT_EQ(nullptr, contents()->GetPrimaryFrameTree().GetFocusedFrame());
+
+  // By default (with killswitch kDefaultToMainFrameFocusWhenNoSubframeFocused
+  // enabled), the main frame is treated as focused when GetFocusedFrame() is
+  // null.
+  EXPECT_TRUE(main_test_rfh()->IsFocused());
+
+  // Disabling the killswitch falls back to returning false when
+  // GetFocusedFrame() is null.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kDefaultToMainFrameFocusWhenNoSubframeFocused);
+  EXPECT_FALSE(main_test_rfh()->IsFocused());
 }
 
 TEST_F(RenderFrameHostImplTest, ExitFullscreenDestruction) {

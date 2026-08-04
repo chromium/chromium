@@ -813,6 +813,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // DisallowActivationReasonId.kMinEmbedderDisallowActivationReason.
   virtual bool IsInactiveAndDisallowActivation(uint64_t reason) = 0;
 
+  // Returns whether the frame is focused. A frame is considered focused when it
+  // is the parent chain of the focused frame within the frame tree. In
+  // addition, its associated RenderWidgetHost has to be focused.
+  virtual bool IsFocused() = 0;
+
   // Get the number of proxies to this frame, in all processes. Exposed for
   // use by resource metrics.
   virtual size_t GetProxyCount() = 0;

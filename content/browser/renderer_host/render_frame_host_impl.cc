@@ -385,6 +385,12 @@ namespace features {
 
 BASE_FEATURE(kDoNotEvictOnAXLocationChange, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, RenderFrameHost::IsFocused() treats the main frame as focused
+// by default when the top-level widget has OS focus but FrameTree does not yet
+// have a focused subframe (e.g., in newly opened windows or tabs).
+BASE_FEATURE(kDefaultToMainFrameFocusWhenNoSubframeFocused,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnforceUserActivationForBeforeUnload,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
@@ -13688,13 +13694,22 @@ void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
 }
 
 bool RenderFrameHostImpl::IsFocused() {
-  if (!GetMainFrame()->GetRenderWidgetHost()->is_focused() ||
-      !frame_tree_->GetFocusedFrame()) {
+  if (!GetMainFrame()->GetRenderWidgetHost()->is_focused()) {
     return false;
   }
 
-  RenderFrameHostImpl* focused_rfh =
-      frame_tree_->GetFocusedFrame()->current_frame_host();
+  // If the top-level widget has OS focus but FrameTree does not yet have a
+  // focused subframe, treat the main frame as focused by default.
+  FrameTreeNode* focused_frame = frame_tree_->GetFocusedFrame();
+  if (!focused_frame) {
+    if (base::FeatureList::IsEnabled(
+            features::kDefaultToMainFrameFocusWhenNoSubframeFocused)) {
+      return this == GetMainFrame();
+    }
+    return false;
+  }
+
+  RenderFrameHostImpl* focused_rfh = focused_frame->current_frame_host();
   return focused_rfh == this ||
          focused_rfh->IsDescendantOfWithinFrameTree(this);
 }

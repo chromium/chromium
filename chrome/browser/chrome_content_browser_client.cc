@@ -862,6 +862,15 @@ GURL ReplaceURLHostAndPath(const GURL& url,
   return url.ReplaceComponents(replacements);
 }
 
+bool IsIsolatedWebAppUrl(const GURL& url) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return url.SchemeIs(webapps::kIsolatedAppScheme);
+#else
+  return false;
+#endif
+}
+
 // Handles the rewriting of the new tab page URL based on group policy.
 bool HandleNewTabPageLocationOverride(
     GURL* url,
@@ -7922,7 +7931,25 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
                   blink::PermissionType::CLIPBOARD_READ_WRITE),
           render_frame_host);
   if (status == blink::mojom::PermissionStatus::GRANTED) {
-    return true;
+    // Standard web pages must hold frame focus to read clipboard data,
+    // preventing background tabs and subframes from scraping the clipboard.
+    //
+    // Trusted WebUI system apps (e.g., ChromeOS Files App), Isolated Web Apps,
+    // and DevTools are exempted because they often invoke clipboard commands
+    // via context menus, background UIs, or standalone windows where the page
+    // lacks focus (including in automated browser tests).
+    //
+    // We check the main frame's committed origin URL (rather than
+    // GetLastCommittedURL) to preserve origin inheritance for initial empty
+    // documents (e.g., about:blank popups created by trusted system apps),
+    // while ensuring sandboxed frames with opaque origins evaluate to an empty
+    // GURL and are safely excluded (see docs/security/origin-vs-url.md).
+    const GURL& url =
+        render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL();
+    if (content::HasWebUIScheme(url) || IsIsolatedWebAppUrl(url) ||
+        render_frame_host->IsFocused()) {
+      return true;
+    }
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

@@ -24,6 +24,7 @@
 #include "chrome/browser/accessibility/page_colors_controller_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -50,6 +51,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -1773,6 +1775,102 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest,
 }
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+class ChromeContentBrowserClientClipboardTest : public InProcessBrowserTest {
+ public:
+  ChromeContentBrowserClientClipboardTest() = default;
+
+  void SetPermission(const GURL& url,
+                     ContentSettingsType type,
+                     ContentSetting setting) {
+    HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+        ->SetContentSettingDefaultScope(url, url, type, setting);
+  }
+
+  bool IsClipboardPasteAllowed(content::RenderFrameHost* rfh) {
+    return content::GetContentClientForTesting()
+        ->browser()
+        ->IsClipboardPasteAllowed(rfh);
+  }
+};
+
+// Verifies that even when persistent clipboard permission is granted,
+// IsClipboardPasteAllowed requires the requesting frame to be focused.
+// If a page loses focus (e.g., when a popup window is opened), clipboard
+// access is disallowed until focus is restored.
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
+                       PasteAllowedByPermission_RequiresFrameFocus) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::RenderFrameHost* rfh = browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame();
+  SetPermission(test_url, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                CONTENT_SETTING_ALLOW);
+  rfh->GetRenderWidgetHost()->Focus();
+
+  // Active, focused foreground tab with permission granted returns true.
+  EXPECT_TRUE(IsClipboardPasteAllowed(rfh));
+
+  // Even with permission granted, clipboard access is disallowed while
+  // unfocused.
+  rfh->GetRenderWidgetHost()->Blur();
+  EXPECT_FALSE(rfh->IsFocused());
+  EXPECT_FALSE(IsClipboardPasteAllowed(rfh));
+
+  // Restoring focus allows clipboard access again.
+  rfh->GetRenderWidgetHost()->Focus();
+  EXPECT_TRUE(rfh->IsFocused());
+  EXPECT_TRUE(IsClipboardPasteAllowed(rfh));
+}
+
+// Verifies that IsClipboardPasteAllowed mirrors Blink's Document::hasFocus()
+// for subframes:
+// - Unfocused child iframes are blocked from reading the clipboard.
+// - Focused child iframes are allowed to read the clipboard.
+// - When a child iframe is focused, its ancestor main frame is also allowed.
+// - When the top-level tab loses focus, all frames are blocked.
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
+                       PasteAllowedByPermission_Subframes) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/iframe.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* parent_rfh = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_rfh = content::ChildFrameAt(parent_rfh, 0);
+  ASSERT_TRUE(child_rfh);
+
+  SetPermission(test_url, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                CONTENT_SETTING_ALLOW);
+  parent_rfh->GetRenderWidgetHost()->Focus();
+
+  // An unfocused child iframe is not allowed to read the clipboard.
+  EXPECT_FALSE(child_rfh->IsFocused());
+  EXPECT_FALSE(IsClipboardPasteAllowed(child_rfh));
+
+  // Focusing the child iframe in the frame tree allows clipboard access.
+  ASSERT_TRUE(
+      content::ExecJs(parent_rfh, "document.getElementById('test').focus();"));
+  ASSERT_TRUE(content::ExecJs(child_rfh, "window.focus();"));
+  EXPECT_TRUE(child_rfh->IsFocused());
+  EXPECT_TRUE(IsClipboardPasteAllowed(child_rfh));
+
+  // When a child iframe is focused, its ancestor main frame is also allowed.
+  EXPECT_TRUE(parent_rfh->IsFocused());
+  EXPECT_TRUE(IsClipboardPasteAllowed(parent_rfh));
+
+  // When the top-level tab loses focus, both child and parent are blocked.
+  child_rfh->GetRenderWidgetHost()->Blur();
+  EXPECT_FALSE(child_rfh->IsFocused());
+  EXPECT_FALSE(IsClipboardPasteAllowed(child_rfh));
+  EXPECT_FALSE(parent_rfh->IsFocused());
+  EXPECT_FALSE(IsClipboardPasteAllowed(parent_rfh));
+}
 
 class TopChromeChromeContentBrowserClientTest
     : public ChromeContentBrowserClientBrowserTest {
