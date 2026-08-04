@@ -1229,10 +1229,7 @@ public class KeyboardShortcuts {
                         // bulk selection or already confirmed by the manager.
                         boolean canClose =
                                 PinnedTabClosureManagerFactory.getInstance()
-                                        .shouldCloseTab(
-                                                tabModelSelector,
-                                                tab,
-                                                /* isBulkClose= */ tabsToClose.size() > 1);
+                                        .shouldCloseTab(tabModelSelector, tab, tabsToClose);
                         if (canClose) {
                             currentTabModel
                                     .getTabRemover()
