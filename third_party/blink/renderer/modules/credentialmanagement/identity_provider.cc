@@ -87,7 +87,7 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
   if (!provider_url.IsValid() || client_id == "") {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
-        String::Format("Provider information is incomplete.")));
+        "Provider information is incomplete."));
     return promise;
   }
 

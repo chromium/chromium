@@ -203,8 +203,7 @@ void IncomingStream::ProcessClose() {
   {
     ScriptState::Scope scope(script_state_);
     DOMExceptionCode code = DOMExceptionCode::kNetworkError;
-    String message =
-        String::Format("The stream was aborted by the remote server");
+    String message = "The stream was aborted by the remote server";
 
     error = ScriptValue(script_state_->GetIsolate(),
                         V8ThrowDOMException::CreateOrEmpty(
