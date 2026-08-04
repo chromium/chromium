@@ -40,13 +40,19 @@ class RealtimeEventUploadHelper {
   // Returns nullopt and logs errors if the pipeline is not ready.
   std::optional<ReportingContext> PrepareUpload(bool per_profile);
 
+  bool IsRealTimeReportingClientAvailable() const;
+
+  // Returns true if reporting is enabled via feature flag and a valid DM
+  // token is available for the given scope.
+  bool IsEligibleForUpload(bool per_profile) const;
+
   std::string_view reporting_scope() const { return reporting_scope_; }
   std::string_view event_name() const { return event_name_; }
 
  private:
-  std::optional<std::string> GetDMToken(bool per_profile);
+  std::optional<std::string> GetDMToken(bool per_profile) const;
   enterprise_connectors::RealtimeReportingClientBase*
-  GetRealTimeReportingClient();
+  GetRealTimeReportingClient() const;
 
   // The scope of the report (e.g., "browser" or "profile"). Used for logging.
   const std::string reporting_scope_;

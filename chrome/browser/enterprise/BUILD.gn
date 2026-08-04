@@ -421,6 +421,7 @@ static_library("browser_launch_reporting") {
       ":enterprise",
       "//base",
       "//chrome/browser:browser_process",
+      "//chrome/browser/enterprise/connectors/reporting:reporting",
       "//chrome/browser/profiles:profile",
       "//components/enterprise",
       "//components/enterprise/common/proto:browser_events_proto",
