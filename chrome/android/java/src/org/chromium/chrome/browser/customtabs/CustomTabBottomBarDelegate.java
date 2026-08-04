@@ -425,13 +425,10 @@ public class CustomTabBottomBarDelegate
                 .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                 .setDuration(SLIDE_ANIMATION_DURATION_MS)
                 .withEndAction(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                assumeNonNull(mBottomBarView);
-                                ((ViewGroup) mBottomBarView.getParent()).removeView(mBottomBarView);
-                                mBottomBarView = null;
-                            }
+                        () -> {
+                            assumeNonNull(mBottomBarView);
+                            ((ViewGroup) mBottomBarView.getParent()).removeView(mBottomBarView);
+                            mBottomBarView = null;
                         })
                 .start();
         setBottomControlsHeight(0);

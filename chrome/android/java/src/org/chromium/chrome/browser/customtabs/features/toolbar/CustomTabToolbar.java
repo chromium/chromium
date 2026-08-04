@@ -1010,12 +1010,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private CustomTabToolbarAnimationDelegate mAnimDelegate;
         private final Runnable mTitleAnimationStarter =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mAnimDelegate.startTitleAnimation(getContext());
-                    }
-                };
+                () -> mAnimDelegate.startTitleAnimation(getContext());
 
         private final @Nullable Runnable[] mAfterBrandingRunnables =
                 new Runnable[TOTAL_POST_BRANDING_KEYS];
