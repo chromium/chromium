@@ -924,6 +924,10 @@ inline constexpr char kGeminiUpdatedEligibilityName[] =
 inline constexpr char kGeminiUpdatedEligibilityDescription[] =
     "Enables the updated eligibility checks for Gemini users.";
 
+inline constexpr char kGeminiVisualRichFREName[] = "Gemini Visual Rich FRE";
+inline constexpr char kGeminiVisualRichFREDescription[] =
+    "Enables the Visual Rich experimental flow in Gemini First Run Experience.";
+
 inline constexpr char kGeneralizedGeminiEntryFlowName[] =
     "Generalized Gemini Entry Flow";
 inline constexpr char kGeneralizedGeminiEntryFlowDescription[] =

@@ -859,3 +859,9 @@ BASE_FEATURE(kGeminiCoordinatorTeardownFix, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsGeminiCoordinatorTeardownFixEnabled() {
   return base::FeatureList::IsEnabled(kGeminiCoordinatorTeardownFix);
 }
+
+BASE_FEATURE(kGeminiVisualRichFRE, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiVisualRichFREEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiVisualRichFRE);
+}

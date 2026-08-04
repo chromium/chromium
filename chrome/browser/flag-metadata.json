@@ -5454,6 +5454,11 @@
     "expiry_milestone": 156
   },
   {
+    "name": "gemini-visual-rich-fre",
+    "owners": [ "hamzamoh@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemma4-for-built-in-ai",
     "owners": [ "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com" ],
     "expiry_milestone": 160

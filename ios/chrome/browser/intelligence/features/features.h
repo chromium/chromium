@@ -449,4 +449,10 @@ BASE_DECLARE_FEATURE(kGeminiCoordinatorTeardownFix);
 // Returns true if the Gemini coordinator teardown crash fix is enabled.
 bool IsGeminiCoordinatorTeardownFixEnabled();
 
+// Feature flag to enable the Gemini Visual Rich FRE experiment.
+BASE_DECLARE_FEATURE(kGeminiVisualRichFRE);
+
+// Returns true if the Gemini Visual Rich FRE experiment is enabled.
+bool IsGeminiVisualRichFREEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
