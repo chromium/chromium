@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"

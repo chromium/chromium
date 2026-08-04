@@ -14,7 +14,6 @@
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
