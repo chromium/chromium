@@ -2970,6 +2970,13 @@ void Widget::HandleWidgetDestroying() {
 }
 
 void Widget::HandleWidgetDestroyed() {
+  // This check may fail if Automation Framework manipulates the window hierarchy
+  // on Windows. Specifically, if Chrome's hwnd is re-parented to a hwnd created
+  // by a different thread and then the parent hwnd is closed, Chrome will
+  // receive WM_NCDESTROY (which calls OnNativeWidgetDestroying) without a
+  // preceding WM_DESTROY (which calls OnNativeWidgetDestroyed).
+  // We intentionally leave this failure. Please see crbug.com/540755275 for the
+  // discussion.
   CHECK(widget_destroying_handled_);
   if (native_widget_destroyed_) {
     return;
