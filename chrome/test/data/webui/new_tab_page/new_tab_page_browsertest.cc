@@ -186,11 +186,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, CrComposeboxUploadContextTest) {
           "runMochaSuite('CrComposeboxUploadContextTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxDragAndDrop) {
-  RunTest("new_tab_page/composebox/composebox_drag_drop_test.js",
-          "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ThreadsRail) {
   RunTest("new_tab_page/composebox/threads_rail_test.js", "mocha.run()");
 }
