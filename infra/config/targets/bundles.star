@@ -3114,7 +3114,7 @@ targets.bundle(
 targets.bundle(
     name = "gpu_all_linux_release_gtests",
     targets = [
-        "gpu_desktop_passthrough_gtests",
+        "gpu_linux_release_gtests",
         "gpu_fyi_linux_release_gtests",
     ],
 )
@@ -3125,6 +3125,11 @@ targets.bundle(
         "gpu_linux_release_telemetry_tests",
         "gpu_fyi_linux_release_telemetry_tests",
     ],
+    per_test_modifications = {
+        "webgl_conformance_tests": targets.remove(
+            reason = "Only run default behavior tests on the non-FYI testers",
+        ),
+    },
 )
 
 targets.bundle(
@@ -4161,6 +4166,7 @@ targets.bundle(
     name = "gpu_fyi_linux_release_telemetry_tests",
     targets = [
         "gpu_webcodecs_telemetry_test",
+        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "webrtc_tests",
     ],
@@ -4322,11 +4328,19 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_linux_release_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+    ],
+)
+
+targets.bundle(
     name = "gpu_linux_release_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_telemetry_tests",
     ],
 )
 
