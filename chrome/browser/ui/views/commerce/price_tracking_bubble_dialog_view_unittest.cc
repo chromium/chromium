@@ -11,14 +11,18 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_widget.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -35,10 +39,28 @@ const char kTestURL[] = "http://www.google.com";
 const char16_t kTestBookmarkTitle[] = u"Bookmark title";
 }  // namespace
 
-class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
+class PriceTrackingBubbleDialogViewUnitTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ChromeViewsTestBase::SetUp();
+
+    constrained_window::SetConstrainedWindowViewsClient(
+        CreateChromeConstrainedWindowViewsClient());
+
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactories(
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+                {TestingProfile::TestingFactory{
+                     BookmarkModelFactory::GetInstance(),
+                     BookmarkModelFactory::GetDefaultFactory()},
+                 TestingProfile::TestingFactory{
+                     commerce::ShoppingServiceFactory::GetInstance(),
+                     base::BindRepeating([](content::BrowserContext* context) {
+                       return commerce::MockShoppingService::Build();
+                     })}}));
+    profile_ = profile_builder.Build();
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
 
     anchor_widget_ =
         views::UniqueWidgetPtr(std::make_unique<ChromeTestWidget>());
@@ -62,22 +84,16 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
       destroyed_waiter.Wait();
     }
 
+    bubble_coordinator_.reset();
     anchor_widget_.reset();
+    content::WebContents* web_contents = web_contents_;
+    web_contents_ = nullptr;
+    web_contents_factory_.DestroyWebContents(web_contents);
+    bookmark_model_ = nullptr;
+    profile_.reset();
+    constrained_window::SetConstrainedWindowViewsClient(nullptr);
 
-    BrowserWithTestWindowTest::TearDown();
-  }
-
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-            {TestingProfile::TestingFactory{
-                 BookmarkModelFactory::GetInstance(),
-                 BookmarkModelFactory::GetDefaultFactory()},
-             TestingProfile::TestingFactory{
-                 commerce::ShoppingServiceFactory::GetInstance(),
-                 base::BindRepeating([](content::BrowserContext* context) {
-                   return commerce::MockShoppingService::Build();
-                 })}});
+    ChromeViewsTestBase::TearDown();
   }
 
   void CreateBubbleViewAndShow(
@@ -85,13 +101,14 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
       std::optional<std::u16string> bookmark_folder_name = std::nullopt) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(1, 1);
-    bubble_coordinator_->Show(browser()->tab_strip_model()->GetWebContentsAt(0),
-                              profile(), GURL(kTestURL),
+    bubble_coordinator_->Show(web_contents_, profile(), GURL(kTestURL),
                               ui::ImageModel::FromImage(gfx::Image(
                                   gfx::ImageSkia::CreateFrom1xBitmap(bitmap))),
                               Callback().Get(), OnDialogClosingCallback().Get(),
                               type, bookmark_folder_name);
   }
+
+  Profile* profile() { return profile_.get(); }
 
   base::MockCallback<PriceTrackingBubbleDialogView::OnTrackPriceCallback>&
   Callback() {
@@ -119,14 +136,16 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
     // tracking.
     commerce::MockShoppingService* mock_shopping_service =
         static_cast<commerce::MockShoppingService*>(
-            commerce::ShoppingServiceFactory::GetForBrowserContext(
-                browser()->GetProfile()));
+            commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
     mock_shopping_service->SetIsShoppingListEligible(true);
   }
 
   raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
 
  private:
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_;
   views::UniqueWidgetPtr anchor_widget_;
   base::MockCallback<PriceTrackingBubbleDialogView::OnTrackPriceCallback>
       callback_;
@@ -287,8 +306,13 @@ TEST_F(PriceTrackingBubbleDialogViewActionUnitTest,
 
   EXPECT_CALL(OnDialogClosingCallback(), Run());
   bubble->GetBodyLabelForTesting()->ClickFirstLinkForTesting();
-  EXPECT_TRUE(bookmark_editor_waiter.WaitIfNeededAndGet());
+  auto* bookmark_editor_widget = bookmark_editor_waiter.WaitIfNeededAndGet();
+  EXPECT_TRUE(bookmark_editor_widget);
 
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(BubbleCoordinator()->GetBubble());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bookmark_editor_widget);
+  bookmark_editor_widget->Close();
+  destroyed_waiter.Wait();
 }
