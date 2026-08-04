@@ -603,6 +603,24 @@ public class KeyboardShortcutsTest {
 
     @Test
     @SmallTest
+    public void testMoveToNextTab() {
+        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON));
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(eq(R.id.select_next_tab), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testMoveToPreviousTab() {
+        assertTrue(
+                dispatchKeyEvent(
+                        KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(eq(R.id.select_previous_tab), eq(false));
+    }
+
+    @Test
+    @SmallTest
     public void testOpenStripContextMenu() {
         keyDown(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON, true);
         verify(mMenuOrKeyboardActionController, times(1))

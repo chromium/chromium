@@ -887,6 +887,31 @@ public class KeyboardShortcuts {
                     }
                 }
                 return true;
+            case KeyEvent.KEYCODE_TAB:
+            case KeyEvent.KEYCODE_PAGE_DOWN:
+            case KeyEvent.KEYCODE_PAGE_UP:
+            case KeyEvent.KEYCODE_BUTTON_R1:
+            case KeyEvent.KEYCODE_BUTTON_L1:
+                @KeyboardShortcutsSemanticMeaning int meaning = getKeyboardSemanticMeaning(event);
+
+                if (meaning != KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT
+                        && meaning != KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT) {
+                    break;
+                }
+
+                if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() != 0) {
+                    return true;
+                }
+
+                if (meaning == KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT) {
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.select_next_tab, false);
+                } else {
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.select_previous_tab, false);
+                }
+
+                return true;
             case KeyEvent.KEYCODE_TV:
             case KeyEvent.KEYCODE_GUIDE:
             case KeyEvent.KEYCODE_DVR:
@@ -1194,19 +1219,6 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB:
                     if (tabSwitchingEnabled && tabCount != 0) {
                         TabModelUtils.setIndex(currentTabModel, tabCount - 1);
-                    }
-                    return true;
-                case KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT:
-                    if (tabSwitchingEnabled && tabCount > 1) {
-                        TabModelUtils.setIndex(
-                                currentTabModel, (currentTabModel.index() + 1) % tabCount);
-                    }
-                    return true;
-                case KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT:
-                    if (tabSwitchingEnabled && tabCount > 1) {
-                        TabModelUtils.setIndex(
-                                currentTabModel,
-                                (currentTabModel.index() + tabCount - 1) % tabCount);
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.CLOSE_TAB:

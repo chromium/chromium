@@ -4625,6 +4625,19 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 newTabPage.listenToFeed(mRootUiCoordinator.getReadAloudControllerSupplier());
                 RecordUserAction.record("MobileMenuListenToFeed");
             }
+        } else if (id == R.id.select_next_tab) {
+            TabModel currentTabModel = getCurrentTabModel();
+            int tabCount = currentTabModel.getCount();
+            if (tabCount > 1) {
+                TabModelUtils.setIndex(currentTabModel, (currentTabModel.index() + 1) % tabCount);
+            }
+        } else if (id == R.id.select_previous_tab) {
+            TabModel currentTabModel = getCurrentTabModel();
+            int tabCount = currentTabModel.getCount();
+            if (tabCount > 1) {
+                TabModelUtils.setIndex(
+                        currentTabModel, (currentTabModel.index() + tabCount - 1) % tabCount);
+            }
         } else if (id == R.id.toggle_caret_browsing) {
             if (CaretBrowsingDialog.shouldShowDialogForKeyboardShortcut(
                     getCurrentTabModel().getProfile())) {
