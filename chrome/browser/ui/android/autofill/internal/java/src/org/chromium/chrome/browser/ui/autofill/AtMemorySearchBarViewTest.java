@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -82,11 +84,14 @@ public class AtMemorySearchBarViewTest {
         assertEquals(View.GONE, mClearButton.getVisibility());
 
         mSearchEditText.setText("hello");
+        mSearchEditText.clearFocus();
+        assertFalse(mSearchEditText.hasFocus());
         assertEquals(View.VISIBLE, mClearButton.getVisibility());
 
         mClearButton.performClick();
         assertEquals("", mSearchEditText.getText().toString());
         assertEquals(View.GONE, mClearButton.getVisibility());
+        assertTrue(mSearchEditText.hasFocus());
     }
 
     @Test
