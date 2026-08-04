@@ -77,6 +77,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
+  views::View* GetInitiallyFocusedView() override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

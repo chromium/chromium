@@ -125,7 +125,7 @@ class ExtensionViewHost
       ExtensionHost* extension_host) override;
 
  private:
-  // Returns whether the provided event is a raw escape keypress in a
+  // Returns whether the provided event is an escape keypress in a
   // mojom::ViewType::kExtensionPopup.
   bool IsEscapeInPopup(const input::NativeWebKeyboardEvent& event) const;
 

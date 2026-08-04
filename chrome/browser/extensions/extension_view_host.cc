@@ -149,7 +149,10 @@ bool ExtensionViewHost::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
   if (IsEscapeInPopup(event)) {
-    Close();
+    if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown ||
+        event.GetType() == input::NativeWebKeyboardEvent::Type::kKeyDown) {
+      Close();
+    }
     return true;
   }
   return UnhandledKeyboardEvent(source, event);
@@ -215,7 +218,6 @@ void ExtensionViewHost::OnExtensionHostDocumentElementAvailable(
 bool ExtensionViewHost::IsEscapeInPopup(
     const input::NativeWebKeyboardEvent& event) const {
   return extension_host_type() == mojom::ViewType::kExtensionPopup &&
-         event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
 

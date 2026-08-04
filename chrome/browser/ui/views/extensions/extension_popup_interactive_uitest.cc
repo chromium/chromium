@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/extensions/extension_popup.h"
+
 #include "base/strings/strcat.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
-#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -22,6 +25,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -691,4 +695,97 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
 
   // The extension should be destroyed without showing.
   popup_waiter.WaitForHostDestroyed();
+}
+
+// Tests that pressing Escape in an extension popup does not close the popup
+// if the keydown event is default-prevented by JavaScript.
+IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
+                       EscapeKeyDoesNotClosePopupWhenPreventedInJS) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" },
+           "version": "0.1"
+         })";
+  static constexpr char kPopupHtml[] =
+      R"(<!DOCTYPE html>
+         <html>
+         <body>
+           <script src="popup.js"></script>
+         </body>
+         </html>)";
+  static constexpr char kPopupJs[] =
+      R"(window.escapeHandled = false;
+         window.addEventListener('keydown', (e) => {
+           if (e.key === 'Escape') {
+             e.preventDefault();
+           }
+         });
+         window.addEventListener('keyup', (e) => {
+           if (e.key === 'Escape') {
+             window.escapeHandled = true;
+           }
+         });)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJs);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  base::WeakPtr<views::Widget> widget =
+      OpenExtensionPopup(browser(), extension);
+  ASSERT_TRUE(widget);
+
+  content::WebContents* host_contents =
+      ExtensionPopup::last_popup_for_testing()->host()->host_contents();
+
+  // Send Escape key press directly to the popup bubble window.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      widget->GetNativeWindow(), ui::VKEY_ESCAPE, false, false, false, false));
+
+  // Wait for JavaScript to process the key event.
+  EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+    return content::EvalJs(host_contents, "window.escapeHandled")
+               .ExtractBool() == true;
+  }));
+
+  // The popup widget should still be open and visible.
+  EXPECT_TRUE(widget);
+  EXPECT_FALSE(widget->IsClosed());
+}
+
+// Tests that pressing Escape in an extension popup closes the popup when not
+// default-prevented by JavaScript.
+IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
+                       EscapeKeyClosesPopupWhenNotPreventedInJS) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" },
+           "version": "0.1"
+         })";
+  static constexpr char kPopupHtml[] = "<html><body>Popup</body></html>";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  base::WeakPtr<views::Widget> widget =
+      OpenExtensionPopup(browser(), extension);
+  ASSERT_TRUE(widget);
+
+  // Send Escape key press directly to the popup bubble window.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      widget->GetNativeWindow(), ui::VKEY_ESCAPE, false, false, false, false));
+
+  // Wait until the popup widget is destroyed.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget; }));
 }

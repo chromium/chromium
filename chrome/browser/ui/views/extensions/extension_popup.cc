@@ -27,6 +27,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_client_view.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -127,6 +128,14 @@ gfx::Size ExtensionPopup::CalculatePreferredSize(
 void ExtensionPopup::AddedToWidget() {
   BubbleDialogDelegateView::AddedToWidget();
 
+  // Remove the Escape accelerator from DialogClientView so that key events for
+  // Escape are passed to the contained WebContents / ExtensionViewHost rather
+  // than being intercepted by views::FocusManager.
+  if (auto* client_view = GetDialogClientView()) {
+    client_view->RemoveAccelerator(
+        ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  }
+
   const gfx::RoundedCornersF& radii = GetBubbleFrameView()->GetRoundedCorners();
   CHECK_EQ(radii.upper_left(), radii.upper_right());
   CHECK_EQ(radii.lower_left(), radii.lower_right());
@@ -136,6 +145,10 @@ void ExtensionPopup::AddedToWidget() {
   SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       contents_has_rounded_corners ? 0 : radii.upper_left(), 0,
       contents_has_rounded_corners ? 0 : radii.lower_left(), 0)));
+}
+
+views::View* ExtensionPopup::GetInitiallyFocusedView() {
+  return extension_view_;
 }
 
 void ExtensionPopup::OnWidgetDestroying(views::Widget* widget) {
