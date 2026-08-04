@@ -1770,7 +1770,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.SmartCharging.Messages" enum="SmartChargingMessages"
-    expires_after="2026-08-01">
+    expires_after="2027-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>Type of messages that are reported by smart charging.</summary>
@@ -1919,7 +1919,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
-    expires_after="2026-09-08">
+    expires_after="2027-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
@@ -2034,7 +2034,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.Result"
-    enum="PowerMLSmartDimModelResult" expires_after="2026-08-01">
+    enum="PowerMLSmartDimModelResult" expires_after="2027-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
