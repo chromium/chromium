@@ -38,6 +38,5 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/support_tool",
   "+chrome/browser/ui/ash/login",
-  "+chrome/browser/ui/webui/support_tool",
   "+chrome/test/base",
 ]
