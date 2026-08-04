@@ -6,10 +6,10 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {convertDateToWindowsEpoch, ExceptionAddDialogTabs, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
-import type {ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
+import type {ExceptionEditDialogElement, ExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
@@ -206,17 +206,22 @@ suite('TabDiscardExceptionsDialog', function() {
 
   function assertRulesListEquals(
       dialog: ExceptionTabbedAddDialogElement, rules: string[]) {
-    const actual = dialog.$.list.$.list.items!;
+    const actual =
+        [
+          ...dialog.$.list.$.list.querySelectorAll('cr-checkbox:not([hidden])'),
+        ]
+            .map(
+                entry => entry.querySelector('.checkbox-label')
+                             ?.textContent?.trim() ??
+                    '');
     assertDeepEquals(rules, actual);
   }
 
   function getRulesListEntry(
-      dialog: ExceptionTabbedAddDialogElement,
-      idx: number): SettingsCheckboxListEntryElement {
+      dialog: ExceptionTabbedAddDialogElement, idx: number): HTMLElement {
     const entry = [
-      ...dialog.$.list.$.list
-          .querySelectorAll<SettingsCheckboxListEntryElement>(
-              'settings-checkbox-list-entry:not([hidden])'),
+      ...dialog.$.list.$.list.querySelectorAll<HTMLElement>(
+          'cr-checkbox:not([hidden])'),
     ][idx];
     assertTrue(!!entry);
     return entry;
@@ -259,7 +264,6 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.setCurrentOpenSites(
         [EXISTING_RULE, ...expectedRules]);
     dialog = await setupTabbedAddDialog();
-    await eventToPromise('iron-resize', dialog);
     await microtasksFinished();
 
     assertEquals(ExceptionAddDialogTabs.CURRENT_SITES, dialog.$.tabs.selected);
@@ -267,13 +271,23 @@ suite('TabDiscardExceptionsDialog', function() {
     assertTrue(dialog.$.actionButton.disabled);
     let checkbox = getRulesListEntry(dialog, 2);
     checkbox.click();
-    await checkbox.$.checkbox.updateComplete;
+    await microtasksFinished();
 
     assertFalse(dialog.$.actionButton.disabled);
     checkbox = getRulesListEntry(dialog, 4);
     checkbox.click();
-    await checkbox.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertSubmit([EXISTING_RULE, 'rule2', 'rule4']);
+  });
+
+  test('ExceptionTabbedAddDialogFocusgroup', async function() {
+    const expectedRules = ['rule0', 'rule1', 'rule2'];
+    performanceBrowserProxy.setCurrentOpenSites(expectedRules);
+    dialog = await setupTabbedAddDialog();
+    await microtasksFinished();
+
+    assertEquals(
+        'listbox block', dialog.$.list.$.list.getAttribute('focusgroup'));
   });
 
   function switchAddDialogTab(
@@ -293,7 +307,7 @@ suite('TabDiscardExceptionsDialog', function() {
 
     const checkbox = getRulesListEntry(dialog, 0);
     checkbox.click();
-    await checkbox.$.checkbox.updateComplete;
+    await microtasksFinished();
     assertFalse(dialog.$.actionButton.disabled);
     await switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     assertTrue(dialog.$.actionButton.disabled);
@@ -301,7 +315,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertFalse(dialog.$.actionButton.disabled);
 
     checkbox.click();
-    await checkbox.$.checkbox.updateComplete;
+    await microtasksFinished();
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await assertUserInputValidated(VALID_RULE);
     assertFalse(dialog.$.actionButton.disabled);
@@ -323,7 +337,6 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.setCurrentOpenSites([INITIAL_SITE]);
     dialog = await setupTabbedAddDialog();
     dialog.$.list.setUpdateIntervalForTesting(UPDATE_INTERVAL_MS);
-    await eventToPromise('iron-resize', dialog.$.list.$.list);
     await microtasksFinished();
 
     assertTrue(dialog.$.list.getIsUpdatingForTesting());
@@ -344,7 +357,7 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
-    await eventToPromise('iron-resize', dialog.$.list.$.list);
+    await microtasksFinished();
     assertTrue(dialog.$.list.getIsUpdatingForTesting());
     await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
     assertRulesListEquals(dialog, [CHANGED_SITE_SWITCH_TAB]);
@@ -366,7 +379,7 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     document.dispatchEvent(new Event('visibilitychange'));
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
-    await eventToPromise('iron-resize', dialog.$.list.$.list);
+    await microtasksFinished();
     assertTrue(dialog.$.list.getIsUpdatingForTesting());
     await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
     assertRulesListEquals(dialog, [CHANGED_SITE_DOCUMENT_HIDDEN]);

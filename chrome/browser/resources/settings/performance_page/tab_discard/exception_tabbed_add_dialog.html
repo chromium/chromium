@@ -61,8 +61,7 @@
     </cr-tabs>
   </div>
   <div id="body" slot="body">
-    <cr-page-selector selected="[[selectedTab_]]"
-        on-iron-select="onSelectedTabChanged_">
+    <cr-page-selector selected="[[selectedTab_]]">
       <tab-discard-exception-current-sites-list id="list"
           on-sites-populated="onSitesPopulated_"
           visible="[[isAddCurrentSitesTabSelected_(selectedTab_)]]"

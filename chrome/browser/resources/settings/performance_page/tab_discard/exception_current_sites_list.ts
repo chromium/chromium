@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../../controls/settings_checkbox_list_entry.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_scrollable.css.js';
 import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {ScrollableMixinInterface} from '../../scrollable_mixin.js';
-import {ScrollableMixin} from '../../scrollable_mixin.js';
 import {convertDateToWindowsEpoch} from '../../time.js';
 import type {PerformanceBrowserProxy} from '../performance_browser_proxy.js';
 import {PerformanceBrowserProxyImpl} from '../performance_browser_proxy.js';
@@ -27,20 +24,13 @@ import {TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
 
 export interface ExceptionCurrentSitesListElement {
   $: {
-    list: IronListElement,
+    list: HTMLElement,
   };
 }
 
 type Site = string;
 
-type Constructor<T> = new (...args: any[]) => T;
-const ExceptionCurrentSitesListElementBase =
-    ListPropertyUpdateMixin(ScrollableMixin(PolymerElement)) as
-    Constructor<ListPropertyUpdateMixinInterface&ScrollableMixinInterface&
-                PolymerElement>;
-
-export class ExceptionCurrentSitesListElement extends
-    ExceptionCurrentSitesListElementBase {
+export class ExceptionCurrentSitesListElement extends PolymerElement {
   static get is() {
     return 'tab-discard-exception-current-sites-list';
   }
@@ -101,6 +91,13 @@ export class ExceptionCurrentSitesListElement extends
       detail: {length: this.currentSites_.length},
     }));
 
+    // TODO(crbug.com/540914692): Workaround for Blink bug, by resetting
+    // focusgroup attribute restores FocusgroupData that was wiped out during
+    // detachment/attachment. Can probably remove this after migrating to Lit,
+    // since detachment/attachment happens due to the parent chain using dom-if.
+    this.$.list.setAttribute(
+        'focusgroup', this.$.list.getAttribute('focusgroup')!);
+
     this.onVisibilityChanged_();
     this.onVisibilityChangedListener_ = this.onVisibilityChanged_.bind(this);
     document.addEventListener(
@@ -111,12 +108,6 @@ export class ExceptionCurrentSitesListElement extends
     document.removeEventListener(
         'visibilitychange', this.onVisibilityChangedListener_);
     this.stopUpdatingCurrentSites_();
-  }
-
-  // Notifies the iron-list child that it should resize (generally because this
-  // element's visibility has changed).
-  notifyResize() {
-    this.$.list.notifyResize();
   }
 
   private onVisibilityChanged_() {
@@ -167,20 +158,13 @@ export class ExceptionCurrentSitesListElement extends
         new Set(currentSites.filter(this.isSelectedSite_.bind(this)));
     this.computeSubmitDisabled_();
 
-    this.updateList('currentSites_', x => x, currentSites);
-    if (this.currentSites_.length) {
-      this.updateScrollableContents();
-    }
+    this.currentSites_ = currentSites;
   }
 
   private computeSubmitDisabled_() {
     this.submitDisabled = !this.selectedSites_.size;
   }
 
-  // Convert iron-list index (0-indexed) to aria-posinset (1-indexed).
-  private getAriaPosinset_(index: number): number {
-    return index + 1;
-  }
 
   // Called to recalculate checked status of entries when the site changes due
   // to list updates.
@@ -188,8 +172,9 @@ export class ExceptionCurrentSitesListElement extends
     return this.selectedSites_.has(site);
   }
 
-  private onToggleSelection_(e: {model: {item: Site}, detail: boolean}) {
-    if (e.detail) {
+  private onToggleSelection_(e: DomRepeatEvent<Site>) {
+    const checkbox = e.target as CrCheckboxElement;
+    if (checkbox.checked) {
       this.selectedSites_.add(e.model.item);
     } else {
       this.selectedSites_.delete(e.model.item);

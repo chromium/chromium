@@ -1,4 +1,4 @@
-<style include="settings-shared">
+<style include="settings-shared cr-scrollable">
   #container {
     height: calc(5 * var(--cr-section-min-height));
   }
@@ -21,24 +21,26 @@
   .checkbox-label {
     margin-inline-start: 10px;
   }
+
+  cr-checkbox {
+    padding: 7px var(--cr-section-padding);
+  }
 </style>
-<div id="container" scrollable>
-  <iron-list id="list" scroll-target="container" role="listbox"
-      items="[[currentSites_]]" hidden$="[[!currentSites_.length]]">
-    <template>
-      <settings-checkbox-list-entry role="option"
-          checked="[[isSelectedSite_(item)]]" tabindex="[[tabIndex]]"
-          aria-posinset$="[[getAriaPosinset_(index)]]"
-          aria-setsize$="[[currentSites_.length]]"
-          aria-description="$i18n{tabDiscardingExceptionsActiveSiteAriaDescription}"
+<div id="container" class="cr-scrollable" scrollable>
+  <div class="cr-scrollable-top"></div>
+  <div id="list" role="listbox" focusgroup="listbox block"
+      hidden$="[[!currentSites_.length]]">
+    <template is="dom-repeat" items="[[currentSites_]]">
+      <cr-checkbox checked="[[isSelectedSite_(item)]]"
           on-change="onToggleSelection_">
         <div class="label-slot">
           <site-favicon url="[[item]]"></site-favicon>
           <div class="checkbox-label text-elide">[[item]]</div>
         </div>
-      </settings-checkbox-list-entry>
+      </cr-checkbox>
     </template>
-  </iron-list>
+    <div class="cr-scrollable-bottom"></div>
+  </div>
   <div id="emptyText" hidden="[[currentSites_.length]]">
     $i18n{tabDiscardingExceptionsAddDialogCurrentTabsEmpty}
   </div>

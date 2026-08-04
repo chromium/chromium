@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
-import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MemorySaverModeExceptionListAction, PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -417,15 +417,13 @@ suite('TabDiscardExceptionList', function() {
     await microtasksFinished();
 
     const addDialog = await getTabbedAddDialog();
-    await eventToPromise('iron-resize', addDialog);
     await microtasksFinished();
 
-    const listEntries = addDialog.$.list.$.list
-                            .querySelectorAll<SettingsCheckboxListEntryElement>(
-                                'settings-checkbox-list-entry:not([hidden])');
+    const listEntries = addDialog.$.list.$.list.querySelectorAll<HTMLElement>(
+        'cr-checkbox:not([hidden])');
     for (const entry of listEntries) {
-      entry.$.checkbox.click();
-      await entry.$.checkbox.updateComplete;
+      entry.click();
+      await microtasksFinished();
     }
 
     assertFalse(addDialog.$.actionButton.disabled);
