@@ -28,7 +28,9 @@ export function matcherForOrigin(originPattern: string): URLPattern|null {
 
 function isInternalOnlyOrigin(origin: string): boolean {
   return origin === 'https://login.corp.google.com' ||
-      origin === 'https://accounts.googlers.com';
+      origin === 'https://accounts.googlers.com' ||
+      origin === 'https://gaiastaging.corp.google.com' ||
+      origin.endsWith('.proxy.googlers.com');
 }
 
 export function urlMatchesApiAllowedOrigin(url: URL): boolean {

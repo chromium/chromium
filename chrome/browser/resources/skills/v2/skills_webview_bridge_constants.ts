@@ -67,6 +67,8 @@ export function getSkillsApiAllowedOrigins(): string[] {
     // Only allowed for internal users.
     'https://login.corp.google.com',
     'https://accounts.googlers.com',
+    'https://gaiastaging.corp.google.com',
+    'https://*.proxy.googlers.com',
   ];
 }
 
