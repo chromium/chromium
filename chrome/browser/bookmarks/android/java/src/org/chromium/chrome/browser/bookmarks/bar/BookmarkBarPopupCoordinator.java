@@ -138,6 +138,10 @@ public class BookmarkBarPopupCoordinator {
 
     private void highlightContextMenuAnchor(View anchorView) {
         clearContextMenuAnchorHighlight();
+        // Do not apply highlighting if anchor is the bookmark bar empty space.
+        if (anchorView instanceof BookmarkBar) {
+            return;
+        }
         mContextMenuAnchorView = anchorView;
         anchorView.setSelected(true);
     }

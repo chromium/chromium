@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +51,7 @@ public class BookmarkBarPopupCoordinatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mBookmarkBarView;
+    @Mock private BookmarkBar mBookmarkBarView;
     @Mock private View mAnchorView;
     @Mock private ChromePopupWindow mMockPopupWindow;
     @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
@@ -169,5 +170,18 @@ public class BookmarkBarPopupCoordinatorTest {
         dismissListenerCaptor.getValue().onDismiss();
 
         verify(subitemView).setSelected(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowContextMenuPopup_doesNotSetSelectedStateOnBookmarkBar() {
+        View rootView = new View(mActivity);
+        when(mBookmarkBarView.getRootView()).thenReturn(rootView);
+        when(mBookmarkBarView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
+
+        mCoordinator.showContextMenuPopup(
+                new ModelList(), mBookmarkBarView, /* offset= */ null, /* isIncognito= */ false);
+
+        verify(mBookmarkBarView, never()).setSelected(true);
     }
 }
