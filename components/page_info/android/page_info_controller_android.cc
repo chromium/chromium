@@ -219,8 +219,10 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   permissions_to_display.push_back(
       ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
-  if (cmd->HasSwitch(switches::kEnableExperimentalWebPlatformFeatures))
+  permissions_to_display.push_back(ContentSettingsType::SERIAL_GUARD);
+  if (cmd->HasSwitch(switches::kEnableExperimentalWebPlatformFeatures)) {
     permissions_to_display.push_back(ContentSettingsType::BLUETOOTH_SCANNING);
+  }
   permissions_to_display.push_back(ContentSettingsType::VR);
   permissions_to_display.push_back(ContentSettingsType::AR);
 #if BUILDFLAG(ENABLE_VR)
