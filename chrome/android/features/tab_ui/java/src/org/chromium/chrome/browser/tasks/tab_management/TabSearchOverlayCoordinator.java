@@ -161,6 +161,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
         mModel.set(TabSearchOverlayProperties.ON_SCRIM_CLICK, (v) -> hide());
         mModel.set(TabSearchOverlayProperties.ON_CLOSE_CLICK, (v) -> hide());
+        mModel.set(TabSearchOverlayProperties.ON_HIDE_FINISHED, this::onHideFinished);
 
         mSearchBoxDataProvider = new SearchBoxDataProvider();
         mSearchBoxDataProvider.setPageClassification(
@@ -239,7 +240,11 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
                         }
                         return forwardEvent(v, event, false);
                     }
-                    return false;
+                    // Consume non-scroll generic motion events (such as pointer clicks or hover)
+                    // to prevent them from falling through to the background web contents and
+                    // stealing focus from the UrlBar, which would cause the suggestions dropdown to
+                    // dismiss on focus loss and cause animation flicker during panel hide.
+                    return true;
                 });
 
         if (mSearchUiCoordinator == null) {
@@ -349,11 +354,11 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     }
 
     private void onSuggestionsChanged(boolean hasSuggestions) {
-        String query =
-                assumeNonNull(mSearchUiCoordinator)
-                        .getLocationBarCoordinator()
-                        .getUrlBarCoordinator()
-                        .getTextWithoutAutocomplete();
+        // Guard against empty-state updates from input clearing during the hide animation.
+        if (!isVisible()) return;
+
+        var locationBar = assumeNonNull(mSearchUiCoordinator).getLocationBarCoordinator();
+        String query = locationBar.getUrlBarCoordinator().getTextWithoutAutocomplete();
         boolean showEmptyState = query != null && !query.isEmpty() && !hasSuggestions;
         mModel.set(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE, showEmptyState);
     }
@@ -442,6 +447,9 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         ensureInitialized();
         if (mModel.get(TabSearchOverlayProperties.VISIBLE)) return;
 
+        // Ensure that transient properties (like empty state visibility) are reset to their
+        // default states before showing the search UI.
+        mModel.set(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE, false);
         mModel.set(TabSearchOverlayProperties.VISIBLE, true);
         mBackPressStateSupplier.set(true);
         assumeNonNull(mSearchUiCoordinator)
@@ -453,10 +461,6 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     public void hide() {
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
         mBackPressStateSupplier.set(false);
-        if (mSearchUiCoordinator != null) {
-            var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
-            locationBar.clearOmniboxFocus();
-        }
         updateExclusionRects();
     }
 
@@ -509,6 +513,14 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         mSearchBoxDataProvider.initialize(mActivity, isIncognito);
         if (mSearchUiCoordinator != null) {
             mSearchUiCoordinator.setColorScheme(isIncognito);
+        }
+    }
+
+    private void onHideFinished() {
+        // Clear focus only after the hide animation finishes to prevent animation flicker.
+        if (mSearchUiCoordinator != null) {
+            var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
+            locationBar.clearOmniboxFocus();
         }
     }
 

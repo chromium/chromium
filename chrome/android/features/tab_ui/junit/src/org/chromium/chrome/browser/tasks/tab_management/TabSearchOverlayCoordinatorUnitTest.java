@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
@@ -103,6 +104,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private SearchUiCoordinator mSearchUiCoordinator;
     @Mock private LocationBarCoordinator mLocationBarCoordinator;
     @Mock private UrlBarCoordinator mUrlBarCoordinator;
+    @Mock private OmniboxStub mOmniboxStub;
     @Mock private SearchActivityLocationBarLayout mSearchBox;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
@@ -149,6 +151,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
         when(mSearchUiCoordinator.getLocationBarCoordinator()).thenReturn(mLocationBarCoordinator);
         when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlBarCoordinator);
+        when(mLocationBarCoordinator.getOmniboxStub()).thenReturn(mOmniboxStub);
+        when(mOmniboxStub.isUrlBarFocused()).thenReturn(true);
         when(mSearchUiCoordinator.getSearchBox()).thenReturn(mSearchBox);
         when(mLocationBarCoordinator.getSuggestionsListNonEmptySupplier())
                 .thenReturn(mSuggestionsListNonEmptySupplier);
@@ -222,6 +226,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     public void testClickScrim_hidesOverlay() {
         showOverlay();
         mScrim.performClick();
+        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
         assertOverlayHidden();
     }
 
@@ -231,6 +236,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         View closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
         assertNotNull(closeButton);
         closeButton.performClick();
+        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
         assertOverlayHidden();
     }
 
@@ -262,6 +268,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     public void testHide_hidesOverlayAndClearsFocus() {
         showOverlay();
         mCoordinator.hide();
+        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
         assertOverlayHidden();
     }
 
@@ -482,6 +489,50 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     @Test
+    public void testScrimClick_dismissalSequence() {
+        showOverlay();
+        // Setup state: search query is not empty, suggestions list is not empty (empty state not
+        // visible).
+        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
+        mSuggestionsListNonEmptySupplier.set(true);
+        assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
+
+        // 1. Click scrim to dismiss.
+        mScrim.performClick();
+
+        // 2. During the hide animation (before idling looper):
+        // - Overlay visibility property is set to false.
+        assertFalse(mCoordinator.isVisible());
+        // - Suggestions list is STILL non-empty.
+        assertTrue(mSuggestionsListNonEmptySupplier.get());
+        // - Empty state is NOT visible.
+        assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
+
+        // 3. Complete the animation by idling the looper.
+        ShadowLooper.idleMainLooper(1, TimeUnit.SECONDS);
+
+        // 4. After the animation completes:
+        // - Focus is cleared.
+        verify(mLocationBarCoordinator).clearOmniboxFocus();
+        // - Simulate the location bar updating its focus status.
+        when(mOmniboxStub.isUrlBarFocused()).thenReturn(false);
+        // - Simulate suggestions list becoming empty due to focus loss.
+        mSuggestionsListNonEmptySupplier.set(false);
+
+        // - Empty state remains NOT visible.
+        assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
+    }
+
+    @Test
     public void testScrimScrollForwardedToCompositorViewHolder() {
         showOverlay();
         MotionEvent scrollEvent =
@@ -665,5 +716,16 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Hide overlay and verify exclusion rect is cleared.
         mCoordinator.hide();
         assertTrue(panelView.getSystemGestureExclusionRects().isEmpty());
+    }
+
+    @Test
+    public void testScrimNonScrollGenericMotionEvent_ConsumedAndNotForwarded() {
+        showOverlay();
+        MotionEvent clickEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_BUTTON_PRESS, 100f, 150f, 0);
+        assertTrue(mScrim.dispatchGenericMotionEvent(clickEvent));
+
+        verify(mCompositorViewHolder, never()).dispatchGenericMotionEvent(any(MotionEvent.class));
+        clickEvent.recycle();
     }
 }

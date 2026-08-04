@@ -59,7 +59,7 @@ public class TabSearchOverlayViewBinder {
                 runShowAnimation(view);
             } else {
                 if (view.panelContainer.getVisibility() == View.VISIBLE) {
-                    runHideAnimation(view);
+                    runHideAnimation(model, view);
                 } else {
                     // If the overlay is already hidden (e.g. during startup or redundant hide
                     // calls), immediately set visibility to GONE instead of running the hide
@@ -88,7 +88,7 @@ public class TabSearchOverlayViewBinder {
                 .start();
     }
 
-    private static void runHideAnimation(ViewHolder view) {
+    private static void runHideAnimation(PropertyModel model, ViewHolder view) {
         // Cancel any active animation (e.g. an ongoing show transition) to prevent conflicts.
         view.panel.animate().cancel();
 
@@ -112,6 +112,11 @@ public class TabSearchOverlayViewBinder {
                             public void onAnimationEnd(Animator animation) {
                                 if (!mCancelled) {
                                     view.panelContainer.setVisibility(View.GONE);
+                                    Runnable onHideFinished =
+                                            model.get(TabSearchOverlayProperties.ON_HIDE_FINISHED);
+                                    if (onHideFinished != null) {
+                                        onHideFinished.run();
+                                    }
                                 }
                             }
                         })
