@@ -44,6 +44,8 @@ static_library("autofill") {
     "ml_log_router_factory.h",
     "one_time_token_service_factory.cc",
     "one_time_token_service_factory.h",
+    "otp_filling_safe_browsing_checker_client.cc",
+    "otp_filling_safe_browsing_checker_client.h",
     "personal_data_manager_factory.cc",
     "personal_data_manager_factory.h",
     "subkey_requester_factory.cc",
@@ -94,6 +96,10 @@ static_library("autofill") {
     "//components/image_fetcher/core",
     "//components/personal_context/core",
     "//components/prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/strings:components_strings_grit",
     "//components/variations/service",
     "//components/wallet/core/browser",
@@ -405,7 +411,10 @@ if (!is_android) {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "automated_tests/cache_replayer_unittest.cc" ]
+  sources = [
+    "automated_tests/cache_replayer_unittest.cc",
+    "otp_filling_safe_browsing_checker_client_unittest.cc",
+  ]
 
   deps = [
     ":autofill",
@@ -413,6 +422,12 @@ source_set("unit_tests") {
     "//base",
     "//chrome/test:test_support",
     "//components/autofill/core/browser/proto",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

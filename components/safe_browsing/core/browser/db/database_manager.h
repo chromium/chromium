@@ -31,6 +31,10 @@ class AutoPictureInPictureSafeBrowsingCheckerClient;
 class CrowdDenySafeBrowsingRequest;
 class SafeBrowsingRequest;
 
+namespace autofill {
+class OtpFillingSafeBrowsingCheckerClient;
+}
+
 namespace extensions {
 class Blocklist;
 }  // namespace extensions
@@ -131,6 +135,7 @@ class SafeBrowsingDatabaseManager
 
     // External clients:
     friend class ::AbusiveNotificationPermissionsManager;
+    friend class autofill::OtpFillingSafeBrowsingCheckerClient;
     friend class ::AutoPictureInPictureSafeBrowsingCheckerClient;
     friend class ::CrowdDenySafeBrowsingRequest;
     friend class extensions::Blocklist;
