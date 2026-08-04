@@ -592,7 +592,9 @@ if (!limit_android_deps) {
     info_path = "../androidx/committed/libs/androidx_core_core_pip/androidx_core_core_pip.info"
     enable_bytecode_checks = false
     deps = [
+      ":androidx_activity_activity_java",
       ":androidx_core_core_java",
+      ":androidx_lifecycle_lifecycle_common_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }

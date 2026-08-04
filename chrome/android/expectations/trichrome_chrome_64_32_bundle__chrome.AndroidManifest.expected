@@ -24,6 +24,16 @@
   <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
   <application>
+    <activity  # DIFF-ANCHOR: f7a9141e
+        android:name="androidx.core.pip.contentpip.ContentPipInternalActivity"
+        android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="standard"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="androidx.core.pip.contentpip.isolated"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar">
+    </activity>  # DIFF-ANCHOR: f7a9141e
     <activity  # DIFF-ANCHOR: 28dc9019
         android:name="com.google.ar.core.InstallActivity"
         android:configChanges="keyboardHidden|orientation|screenSize"
