@@ -37,7 +37,7 @@ class MockUiDelegate : public MultistepFilterUiDelegate {
  public:
   MOCK_METHOD(void, ClearSuggestion, (), (override));
   MOCK_METHOD(void,
-              OnSuggestionGenerated,
+              ShowSuggestion,
               (std::optional<UrlFilterSuggestion> suggestion,
                SuggestionUiCallbacks callbacks),
               (override));

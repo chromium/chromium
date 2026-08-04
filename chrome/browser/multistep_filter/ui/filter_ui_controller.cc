@@ -164,7 +164,7 @@ FilterUiController::~FilterUiController() {
   ClearSuggestion(SuggestionUserDecision::kIgnored);
 }
 
-void FilterUiController::OnSuggestionGenerated(
+void FilterUiController::ShowSuggestion(
     std::optional<UrlFilterSuggestion> suggestion,
     MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks) {
   if (!suggestion) {

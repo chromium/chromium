@@ -26,12 +26,11 @@ void MultistepFilterUiDelegateImpl::ClearSuggestion() {
   }
 }
 
-void MultistepFilterUiDelegateImpl::OnSuggestionGenerated(
+void MultistepFilterUiDelegateImpl::ShowSuggestion(
     std::optional<UrlFilterSuggestion> suggestion,
     SuggestionUiCallbacks callbacks) {
   if (FilterUiController* controller = GetController()) {
-    controller->OnSuggestionGenerated(std::move(suggestion),
-                                      std::move(callbacks));
+    controller->ShowSuggestion(std::move(suggestion), std::move(callbacks));
   }
 }
 

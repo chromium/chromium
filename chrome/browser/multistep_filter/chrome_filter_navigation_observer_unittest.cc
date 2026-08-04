@@ -51,7 +51,7 @@ class MockFilterUiController : public FilterUiController {
   ~MockFilterUiController() override = default;
 
   MOCK_METHOD(void,
-              OnSuggestionGenerated,
+              ShowSuggestion,
               (std::optional<UrlFilterSuggestion> suggestion,
                MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks),
               (override));
@@ -182,7 +182,7 @@ TEST_F(ChromeFilterNavigationObserverTest, WebContentsDestruction) {
 
 // Tests that the UI delegate correctly forwards generated suggestions to the
 // tab's UI controller.
-TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
+TEST_F(ChromeFilterNavigationObserverTest, DelegateShowSuggestion) {
   auto mock_controller =
       std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
 
@@ -202,8 +202,8 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
       .triggering_host = suggestion_url.GetHost(),
       .task_type = "task1"});
   EXPECT_CALL(*mock_controller,
-              OnSuggestionGenerated(testing::Optional(suggestion), _));
-  delegate->OnSuggestionGenerated(suggestion, {});
+              ShowSuggestion(testing::Optional(suggestion), _));
+  delegate->ShowSuggestion(suggestion, {});
 }
 
 // Tests that the UI delegate handles a null UI controller on the tab without
@@ -217,7 +217,7 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateHandlesNullUiController) {
 
   // Verify that the delegate call is handled gracefully without crashing when
   // no UI controller is attached to the tab.
-  delegate->OnSuggestionGenerated(std::nullopt, {});
+  delegate->ShowSuggestion(std::nullopt, {});
 }
 
 // Tests that the observer behaves safely and doesn't crash when the

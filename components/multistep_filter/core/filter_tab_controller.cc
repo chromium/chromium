@@ -318,7 +318,7 @@ void FilterTabController::OnSupportedTasksFetched(
 void FilterTabController::OnSuggestionGenerated(
     std::optional<UrlFilterSuggestion> suggestion) {
   if (suggestion) {
-    delegate_->OnSuggestionGenerated(
+    delegate_->ShowSuggestion(
         suggestion,
         MultistepFilterUiDelegate::SuggestionUiCallbacks{
             .on_suggestion_shown =
@@ -330,7 +330,7 @@ void FilterTabController::OnSuggestionGenerated(
                 &FilterTabController::OnUserDecision, GetWeakPtr()),
         });
   } else {
-    delegate_->OnSuggestionGenerated(std::nullopt, {});
+    delegate_->ShowSuggestion(std::nullopt, {});
     metrics_tracker_.OnPreservedSuggestionCleared();
   }
   if (observer_for_test_) {

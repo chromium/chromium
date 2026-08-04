@@ -30,8 +30,8 @@ class MultistepFilterUiDelegateImpl final : public MultistepFilterUiDelegate {
 
   // MultistepFilterUiDelegate:
   void ClearSuggestion() override;
-  void OnSuggestionGenerated(std::optional<UrlFilterSuggestion> suggestion,
-                             SuggestionUiCallbacks callbacks) override;
+  void ShowSuggestion(std::optional<UrlFilterSuggestion> suggestion,
+                      SuggestionUiCallbacks callbacks) override;
 
  private:
   FilterUiController* GetController() const;

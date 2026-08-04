@@ -32,7 +32,7 @@ class MockFilterUiController : public FilterUiController {
   ~MockFilterUiController() override = default;
 
   MOCK_METHOD(void,
-              OnSuggestionGenerated,
+              ShowSuggestion,
               (std::optional<UrlFilterSuggestion> suggestion,
                MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks),
               (override));
@@ -80,8 +80,7 @@ TEST_F(MultistepFilterUiDelegateImplTest, ClearSuggestion_WithoutController) {
   delegate_->ClearSuggestion();
 }
 
-TEST_F(MultistepFilterUiDelegateImplTest,
-       OnSuggestionGenerated_WithController) {
+TEST_F(MultistepFilterUiDelegateImplTest, ShowSuggestion_WithController) {
   auto mock_controller =
       std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
 
@@ -96,12 +95,11 @@ TEST_F(MultistepFilterUiDelegateImplTest,
       .task_type = "task1"});
 
   EXPECT_CALL(*mock_controller,
-              OnSuggestionGenerated(testing::Optional(suggestion), _));
-  delegate_->OnSuggestionGenerated(suggestion, {});
+              ShowSuggestion(testing::Optional(suggestion), _));
+  delegate_->ShowSuggestion(suggestion, {});
 }
 
-TEST_F(MultistepFilterUiDelegateImplTest,
-       OnSuggestionGenerated_WithoutController) {
+TEST_F(MultistepFilterUiDelegateImplTest, ShowSuggestion_WithoutController) {
   const GURL suggestion_url("https://suggestion.com");
   UrlFilterSuggestion suggestion(UrlFilterSuggestion::Params{
       .navigation_url = suggestion_url,
@@ -112,7 +110,7 @@ TEST_F(MultistepFilterUiDelegateImplTest,
       .triggering_host = "suggestion.com",
       .task_type = "task1"});
   // Should not crash when there is no controller.
-  delegate_->OnSuggestionGenerated(suggestion, {});
+  delegate_->ShowSuggestion(suggestion, {});
 }
 
 }  // namespace

@@ -71,7 +71,7 @@ class MockMultistepFilterUiDelegate : public MultistepFilterUiDelegate {
   ~MockMultistepFilterUiDelegate() override = default;
 
   MOCK_METHOD(void,
-              OnSuggestionGenerated,
+              ShowSuggestion,
               (std::optional<UrlFilterSuggestion>, SuggestionUiCallbacks),
               (override));
   MOCK_METHOD(void, ClearSuggestion, (), (override));
@@ -198,8 +198,7 @@ class FilterTabControllerTest : public testing::Test {
                                    metadata.navigation_id))
         .WillOnce(base::test::RunOnceCallback<2>(suggestion));
 
-    EXPECT_CALL(*mock_delegate_,
-                OnSuggestionGenerated(std::optional(suggestion), _))
+    EXPECT_CALL(*mock_delegate_, ShowSuggestion(std::optional(suggestion), _))
         .WillOnce(testing::SaveArgByMove<1>(&out_callbacks));
 
     EXPECT_CALL(observer_,
@@ -241,7 +240,7 @@ class FilterTabControllerTest : public testing::Test {
 
     EXPECT_CALL(*mock_generator_, GenerateSuggestion)
         .WillOnce(base::test::RunOnceCallback<2>(std::nullopt));
-    EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+    EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
     EXPECT_CALL(observer_, OnExtractionFinishedForTest(
                                std::optional(extraction_annotation.id)));
     EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
@@ -336,7 +335,7 @@ class FilterTabControllerTest : public testing::Test {
     EXPECT_CALL(*mock_annotation_client(),
                 GetSupportedTasks(metadata.url, _, metadata.navigation_id))
         .WillOnce(base::test::RunOnceCallback<1>(std::vector<std::string>()));
-    EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+    EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
     EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
     EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
 
@@ -372,7 +371,7 @@ class FilterTabControllerTest : public testing::Test {
 
   void ExpectNoExtractionOrSuggestion() {
     EXPECT_CALL(*mock_delegate_, ClearSuggestion());
-    EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+    EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
     EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
     EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
   }
@@ -461,7 +460,7 @@ TEST_F(FilterTabControllerTest, SameDocumentNavigationConsentFalse) {
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
 
   EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata.navigation_id,
                                                      metadata.url.GetHost()))
@@ -482,7 +481,7 @@ TEST_F(FilterTabControllerTest, SameUrlReCommitNavigation) {
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated).Times(0);
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion).Times(0);
 
   controller_->OnNavigationFinished(metadata);
 }
@@ -510,7 +509,7 @@ TEST_F(FilterTabControllerTest,
   second_metadata.has_user_gesture = false;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated).Times(0);
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion).Times(0);
   EXPECT_CALL(observer_, OnExtractionFinishedForTest).Times(0);
   EXPECT_CALL(observer_, OnSuggestionGeneratedForTest).Times(0);
 
@@ -540,7 +539,7 @@ TEST_F(FilterTabControllerTest,
   second_metadata.has_user_gesture = false;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(1);
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
   EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
   EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
 
@@ -570,7 +569,7 @@ TEST_F(FilterTabControllerTest,
   second_metadata.has_user_gesture = false;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(1);
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
   EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
   EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
 
@@ -602,7 +601,7 @@ TEST_F(FilterTabControllerTest, BackgroundRedirectDoesNotInterruptOngoingFlow) {
   metadata2.has_user_gesture = false;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated).Times(0);
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion).Times(0);
 
   controller_->OnNavigationFinished(metadata2);
 
@@ -621,7 +620,7 @@ TEST_F(FilterTabControllerTest, BackgroundRedirectDoesNotInterruptOngoingFlow) {
                                  metadata1.navigation_id))
       .WillOnce(base::test::RunOnceCallback<2>(expected_suggestion));
   EXPECT_CALL(*mock_delegate_,
-              OnSuggestionGenerated(std::optional(expected_suggestion), _));
+              ShowSuggestion(std::optional(expected_suggestion), _));
   EXPECT_CALL(observer_,
               OnExtractionFinishedForTest(std::optional(expected_id)));
   EXPECT_CALL(observer_,
@@ -679,7 +678,7 @@ TEST_F(FilterTabControllerTest, BackgroundRedirectDoesNotResetLatencyBase) {
 
   MultistepFilterUiDelegate::SuggestionUiCallbacks captured_callbacks;
   EXPECT_CALL(*mock_delegate_,
-              OnSuggestionGenerated(std::optional(expected_suggestion), _))
+              ShowSuggestion(std::optional(expected_suggestion), _))
       .WillOnce(testing::SaveArgByMove<1>(&captured_callbacks));
 
   EXPECT_CALL(observer_,
@@ -742,7 +741,7 @@ TEST_F(FilterTabControllerTest, SameDocumentNavigationSuccess) {
       .WillOnce(base::test::RunOnceCallback<2>(expected_suggestion));
 
   EXPECT_CALL(*mock_delegate_,
-              OnSuggestionGenerated(std::optional(expected_suggestion), _));
+              ShowSuggestion(std::optional(expected_suggestion), _));
   EXPECT_CALL(observer_,
               OnExtractionFinishedForTest(std::optional(expected_id)));
   EXPECT_CALL(observer_,
@@ -760,7 +759,7 @@ TEST_F(FilterTabControllerTest,
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
 
   EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata.navigation_id,
                                                      metadata.url.GetHost()))
@@ -788,7 +787,7 @@ TEST_F(FilterTabControllerTest, SuppressGenerationOnFilterInitiatedNavigation) {
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
   // Suggestion failsafe will still trigger for the generator since we don't
   // start it.
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
 
   EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata.navigation_id,
                                                      metadata.url.GetHost()))
@@ -852,7 +851,7 @@ TEST_F(FilterTabControllerTest, SuccessfulExtractionAndGenerationCascade) {
       .WillOnce(base::test::RunOnceCallback<2>(expected_suggestion));
 
   EXPECT_CALL(*mock_delegate_,
-              OnSuggestionGenerated(std::optional(expected_suggestion), _));
+              ShowSuggestion(std::optional(expected_suggestion), _));
 
   EXPECT_CALL(observer_,
               OnExtractionFinishedForTest(std::optional(expected_id)));
@@ -899,7 +898,7 @@ TEST_F(FilterTabControllerTest, HttpNavigationWithTestingSwitch) {
       .WillOnce(base::test::RunOnceCallback<2>(expected_suggestion));
 
   EXPECT_CALL(*mock_delegate_,
-              OnSuggestionGenerated(std::optional(expected_suggestion), _));
+              ShowSuggestion(std::optional(expected_suggestion), _));
 
   EXPECT_CALL(observer_,
               OnExtractionFinishedForTest(std::optional(expected_id)));
@@ -918,7 +917,7 @@ TEST_F(FilterTabControllerTest,
   metadata.has_user_gesture = false;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
 
   EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
   EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
@@ -1006,7 +1005,7 @@ TEST_F(FilterTabControllerTest, SuggestionCallbacksWiredCorrectly) {
 
   MultistepFilterUiDelegate::SuggestionUiCallbacks captured_callbacks;
   EXPECT_CALL(*mock_delegate_,
-              OnSuggestionGenerated(std::optional(expected_suggestion), _))
+              ShowSuggestion(std::optional(expected_suggestion), _))
       .WillOnce(testing::SaveArgByMove<1>(&captured_callbacks));
 
   EXPECT_CALL(observer_,
@@ -1110,8 +1109,7 @@ TEST_F(FilterTabControllerTest,
   new_metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(1);
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _))
-      .Times(1);
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _)).Times(1);
   EXPECT_CALL(*mock_service_,
               HasUserProvidedConsent(new_metadata.navigation_id,
                                      new_metadata.url.GetHost()))
@@ -1269,7 +1267,7 @@ TEST_F(FilterTabControllerTest, SameDocumentNavigationFailureLogsIgnored) {
                                  same_doc_metadata.navigation_id))
       .WillOnce(base::test::RunOnceCallback<2>(std::nullopt));
 
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(*mock_delegate_, ShowSuggestion(Eq(std::nullopt), _));
   EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
 
   controller_->OnNavigationFinished(same_doc_metadata);
