@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -103,9 +104,9 @@ void ContextSharingBorderView::PopulateShaderUniforms(
 
   // The BrowserView's contents_border_widget() is in its own Widget tree so we
   // need the special treatment.
-  gfx::Insets uniform_insets =
-      GetContentsBorderInsets(browser_->GetBrowserView(),
-                              controller_->contents_web_view()->web_contents());
+  gfx::Insets uniform_insets = GetContentsBorderInsets(
+      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser_)),
+      controller_->contents_web_view()->web_contents());
   // Check the contents's border widget insets is uniform.
   CHECK_EQ(uniform_insets.left(), uniform_insets.top());
   CHECK_EQ(uniform_insets.left(), uniform_insets.right());
@@ -148,7 +149,7 @@ void ContextSharingBorderView::DrawSimplifiedEffect(gfx::Canvas* canvas) const {
   // container).
   bounds.Inset(std::floor(kBorderWidth * 0.5f));
   auto content_border_insets = gfx::InsetsF(GetContentsBorderInsets(
-      browser_->GetBrowserView(),
+      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser_)),
       controller_->contents_web_view()->web_contents()));
   bounds.Inset(content_border_insets);
 
@@ -184,9 +185,9 @@ void ContextSharingBorderView::DrawSimplifiedEffect(gfx::Canvas* canvas) const {
 void ContextSharingBorderView::DrawEffect(gfx::Canvas* canvas,
                                           const cc::PaintFlags& flags) {
   auto bounds = GetLocalBounds();
-  gfx::Insets uniform_insets =
-      GetContentsBorderInsets(browser_->GetBrowserView(),
-                              controller_->contents_web_view()->web_contents());
+  gfx::Insets uniform_insets = GetContentsBorderInsets(
+      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser_)),
+      controller_->contents_web_view()->web_contents());
   bounds.Inset(uniform_insets);
 
   // TODO(liuwilliam): This will create a hard clip at the boundary. Figure out

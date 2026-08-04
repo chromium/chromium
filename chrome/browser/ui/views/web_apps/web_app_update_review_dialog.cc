@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -139,12 +140,13 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
     install_manager_observation_.Observe(
         &WebAppProvider::GetForWebApps(browser_->GetProfile())
              ->install_manager());
-    browser_->GetBrowserView().SetProperty(kIsPwaUpdateDialogShowingKey, true);
+    CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(&browser_.get()))
+        .SetProperty(kIsPwaUpdateDialogShowingKey, true);
   }
   ~UpdateDialogDelegate() override {
     if (browser_->GetWindow()) {
-      browser_->GetBrowserView().SetProperty(kIsPwaUpdateDialogShowingKey,
-                                             false);
+      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(&browser_.get()))
+          .SetProperty(kIsPwaUpdateDialogShowingKey, false);
     }
   }
 
@@ -257,7 +259,8 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
   CHECK(!callback.is_null());
 
   // Abort if a review update dialog is already being shown in this browser.
-  if (browser->GetBrowserView().GetProperty(kIsPwaUpdateDialogShowingKey)) {
+  if (CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser))
+          .GetProperty(kIsPwaUpdateDialogShowingKey)) {
     std::move(callback).Run(WebAppIdentityUpdateResult::kUnexpectedError);
     return;
   }

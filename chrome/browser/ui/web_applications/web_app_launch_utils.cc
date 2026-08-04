@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -933,7 +934,7 @@ void FocusAppContainer(BrowserWindowInterface* browser, int tab_index) {
     tab_strip_model->ActivateTabAt(tab_index);
   }
   // This call will un-minimize the window.
-  browser->GetBrowserForMigrationOnly()->GetBrowserView().Activate();
+  CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser)).Activate();
 }
 
 }  // namespace web_app

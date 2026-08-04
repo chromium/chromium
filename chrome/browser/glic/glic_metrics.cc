@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -958,14 +959,18 @@ ChromeRelativePosition GlicMetrics::GetChromeRelativePositionOfPoint(
 
   // Check if the center point is on a different display
   std::optional<display::Display> browser_display =
-      browser->GetBrowserView().GetWidget()->GetNearestDisplay();
+      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser))
+          .GetWidget()
+          ->GetNearestDisplay();
   if (browser_display &&
       !browser_display->work_area().Contains(glic_center_point)) {
     return ChromeRelativePosition::kChromeOnOtherDisplay;
   }
 
   gfx::Rect browser_bounds =
-      browser->GetBrowserView().GetWidget()->GetWindowBoundsInScreen();
+      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser))
+          .GetWidget()
+          ->GetWindowBoundsInScreen();
   int x_index;
   if (glic_center_point.x() < browser_bounds.x()) {
     x_index = 0;

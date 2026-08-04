@@ -771,8 +771,7 @@ void BrowserActions::InitializePageActionIconActions() {
                   return;
                 }
                 auto anchor =
-                    bwi->GetBrowserForMigrationOnly()
-                        ->GetBrowserView()
+                    CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi))
                         .toolbar_button_provider()
                         ->GetBubbleAnchor(kActionShowJsOptimizationsIcon);
 
@@ -1389,9 +1388,9 @@ void BrowserActions::InitializeChromeMenuActions() {
                 auto* controller =
                     CookieControlsPageActionController::From(tab);
                 CHECK(controller);
-                controller->ExecutePageAction(bwi->GetBrowserForMigrationOnly()
-                                                  ->GetBrowserView()
-                                                  .toolbar_button_provider());
+                controller->ExecutePageAction(
+                    CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi))
+                        .toolbar_button_provider());
               },
               bwi))
           .SetActionId(kActionShowCookieControls)
@@ -1817,8 +1816,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 ToolbarButtonProvider* toolbar_button_provider =
-                    bwi->GetBrowserForMigrationOnly()
-                        ->GetBrowserView()
+                    CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi))
                         .toolbar_button_provider();
                 CHECK(toolbar_button_provider);
 
@@ -1956,8 +1954,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* toolbar_button_provider =
-                    bwi->GetBrowserForMigrationOnly()
-                        ->GetBrowserView()
+                    CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi))
                         .toolbar_button_provider();
                 if (toolbar_button_provider) {
                   toolbar_button_provider->GetPinnedToolbarActions()
@@ -1981,8 +1978,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* toolbar_button_provider =
-                    bwi->GetBrowserForMigrationOnly()
-                        ->GetBrowserView()
+                    CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi))
                         .toolbar_button_provider();
                 if (toolbar_button_provider) {
                   toolbar_button_provider->GetPinnedToolbarActions()
@@ -2061,7 +2057,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                bwi->GetBrowserForMigrationOnly()->GetBrowserView().Cut();
+                CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi)).Cut();
               },
               bwi))
           .SetActionId(actions::kActionCut)
@@ -2071,7 +2067,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                bwi->GetBrowserForMigrationOnly()->GetBrowserView().Copy();
+                CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi)).Copy();
               },
               bwi))
           .SetActionId(actions::kActionCopy)
@@ -2081,7 +2077,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                bwi->GetBrowserForMigrationOnly()->GetBrowserView().Paste();
+                CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi)).Paste();
               },
               bwi))
           .SetActionId(actions::kActionPaste)

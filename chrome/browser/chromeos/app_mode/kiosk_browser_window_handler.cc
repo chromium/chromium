@@ -113,7 +113,9 @@ class NavigationWaiter : public content::WebContentsObserver,
       Observe(GetActiveWebContents(browser));
       // Observe the browser's widget visibility changes if someone wants to
       // show it in between.
-      widget_observation_.Observe(browser->GetBrowserView().GetWidget());
+      widget_observation_.Observe(
+          CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser))
+              .GetWidget());
     } else {
       RunCallback();
     }
