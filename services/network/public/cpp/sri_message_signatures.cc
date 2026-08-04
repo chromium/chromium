@@ -7,11 +7,12 @@
 #include <algorithm>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/types/optional_util.h"
 #include "net/base/url_util.h"
 #include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
@@ -80,9 +81,11 @@ bool IsBinaryWrappedComponent(
 
 bool ItemHasBooleanParam(const net::structured_headers::ParameterizedItem& item,
                          std::string_view name) {
-  for (const auto& param : item.params) {
-    if (param.first == name && param.second.is_boolean() &&
-        param.second.GetBoolean()) {
+  for (const auto& [key, value] : item.params) {
+    if (key != name) {
+      continue;
+    }
+    if (const bool* v = value.GetIfBoolean(); v && *v) {
       return true;
     }
   }
@@ -91,8 +94,8 @@ bool ItemHasBooleanParam(const net::structured_headers::ParameterizedItem& item,
 
 bool ItemHasStringParam(const net::structured_headers::ParameterizedItem& item,
                         std::string_view name) {
-  for (const auto& param : item.params) {
-    if (param.first == name && param.second.is_string()) {
+  for (const auto& [key, value] : item.params) {
+    if (key == name && value.is_string()) {
       return true;
     }
   }
@@ -111,18 +114,18 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     const net::structured_headers::ParameterizedItem& component,
     std::vector<mojom::SRIMessageSignatureIssuePtr>& issues) {
   // https://wicg.github.io/signature-based-sri/#profile
-  if (!component.item.is_string()) {
+  const std::string* name = component.item.GetIfString();
+  if (!name) {
     AddIssueFromErrorEnum(mojom::SRIMessageSignatureError::
                               kSignatureInputHeaderInvalidComponentType,
                           issues);
     return std::nullopt;
   }
 
-  std::string name = component.item.GetString();
   auto result = mojom::SRIMessageSignatureComponent::New();
-  result->name = name;
+  result->name = *name;
 
-  if (name == "unencoded-digest") {
+  if (*name == "unencoded-digest") {
     // The "unencoded-digest" component requires a single `sf` parameter with
     // a `true` boolean value.
     if (!ItemHasBooleanParam(component, "sf") ||
@@ -136,14 +139,15 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     result->params.push_back(ComponentParameter::New(
         ParameterType::kStrictStructuredFieldSerialization, std::nullopt));
     return result;
-  } else if (!name.starts_with('@') && net::HttpUtil::IsValidHeaderName(name) &&
-             name == base::ToLowerASCII(name)) {
+  } else if (!name->starts_with('@') &&
+             net::HttpUtil::IsValidHeaderName(*name) &&
+             *name == base::ToLowerASCII(*name)) {
     // All other headers may specify the `req` and `bs` parameters.
-    for (const auto& param : component.params) {
-      if (param.second.is_boolean() && param.second.GetBoolean() &&
-          (param.first == "req" || param.first == "bs")) {
-        result->params.push_back(ComponentParameter::New(
-            ParamNameToType(param.first), std::nullopt));
+    for (const auto& [key, value] : component.params) {
+      if (const bool* v = value.GetIfBoolean();
+          v && *v && (key == "req" || key == "bs")) {
+        result->params.push_back(
+            ComponentParameter::New(ParamNameToType(key), std::nullopt));
       } else {
         AddIssueFromErrorEnum(
             mojom::SRIMessageSignatureError::
@@ -153,10 +157,10 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
       }
     }
     return result;
-  } else if (std::ranges::contains(kDerivedComponents, name)) {
+  } else if (std::ranges::contains(kDerivedComponents, *name)) {
     // The `@status` derived component must not have any parameters (as it's
     // pulled from the response, not the request).
-    if (name == "@status") {
+    if (*name == "@status") {
       if (!component.params.empty()) {
         AddIssueFromErrorEnum(
             mojom::SRIMessageSignatureError::
@@ -169,7 +173,7 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
 
     // The `@query-param` derived component must have only a `name` parameter
     // with a string value, and a `req` parameter.
-    if (name == "@query-param") {
+    if (*name == "@query-param") {
       std::string name_value;
       if (!ItemHasStringParam(component, "name") ||
           !ItemHasBooleanParam(component, "req") ||
@@ -180,13 +184,9 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
             issues);
         return std::nullopt;
       }
-      for (const auto& param : component.params) {
-        std::optional<std::string> value;
-        if (param.second.is_string()) {
-          value = param.second.GetString();
-        }
-        result->params.push_back(
-            ComponentParameter::New(ParamNameToType(param.first), value));
+      for (const auto& [key, value] : component.params) {
+        result->params.push_back(ComponentParameter::New(
+            ParamNameToType(key), base::OptionalFromPtr(value.GetIfString())));
       }
       return result;
     }
@@ -220,17 +220,15 @@ std::optional<std::string> SerializeByteSequence(std::string_view input) {
 // net::StructuredHeaders doesn't expose the ability to serialize a parameter
 // list outside the context of a parameterized item. So, we'll do it ourselves
 // by serializing each individually as an Item.
-std::string SerializeParams(const net::structured_headers::Parameters params) {
+std::string SerializeParams(const net::structured_headers::Parameters& params) {
   std::stringstream param_list;
-  for (const auto& param : params) {
-    const std::string& name = param.first;
-    const net::structured_headers::Item& value = param.second;
+  for (const auto& [name, value] : params) {
     param_list << ';' << name;
 
     // For boolean parameters, we're done if the parameter's value is true (as
     // per https://www.rfc-editor.org/rfc/rfc9651#section-3.1.2-6). For any
     // other value or type, we'll serialize the value explicitly.
-    if (value.is_boolean() && value.GetBoolean()) {
+    if (const bool* v = value.GetIfBoolean(); v && *v) {
       continue;
     }
     std::optional<std::string> serialized_item =
@@ -238,7 +236,7 @@ std::string SerializeParams(const net::structured_headers::Parameters params) {
     DCHECK(serialized_item.has_value());
     param_list << '=' << serialized_item.value();
   }
-  return param_list.str();
+  return std::move(param_list).str();
 }
 
 std::string SerializeComponentParams(
@@ -262,7 +260,7 @@ std::string SerializeComponentParams(
         break;
     }
   }
-  return param_list.str();
+  return std::move(param_list).str();
 }
 
 // net::StructuredHeaders gives us the ability to serialize a list, but not an
@@ -271,7 +269,7 @@ std::string SerializeComponentParams(
 //
 // https://www.rfc-editor.org/rfc/rfc9421#section-2.3
 std::string SerializeInnerList(
-    const std::vector<net::structured_headers::ParameterizedItem> list) {
+    const std::vector<net::structured_headers::ParameterizedItem>& list) {
   std::stringstream inner_list;
   // 1. Let the output be an empty string.
   // 2. Determine an order for the component identifiers of the covered
@@ -282,18 +280,17 @@ std::string SerializeInnerList(
   // 3. Serialize the component identifiers ... as an ordered Inner List of
   //    String values ... append this to the output.
   inner_list << '(';
-  for (const auto& component : list) {
-    DCHECK(component.item.is_string());
-    inner_list << '"' << component.item.GetString() << '"';
-    inner_list << SerializeParams(component.params);
+  for (const char* separator = ""; const auto& component : list) {
+    const std::string* v = component.item.GetIfString();
+    DCHECK(v);
+    inner_list << separator << '"' << *v << '"'
+               << SerializeParams(component.params);
 
     // Put a space between each component, avoiding an extra space at the end.
-    if (&component != &list.back()) {
-      inner_list << ' ';
-    }
+    separator = " ";
   }
   inner_list << ')';
-  return inner_list.str();
+  return std::move(inner_list).str();
 }
 
 // Serialize the value of a single key from a `Signature-Input` header's
@@ -323,7 +320,7 @@ std::string SerializeSignatureParams(
   //    signature.
   signature_params << SerializeParams(input.params);
 
-  return signature_params.str();
+  return std::move(signature_params).str();
 }
 
 std::string SerializeDerivedComponent(
@@ -429,32 +426,35 @@ bool ValidateDictionaryStructure(
   return true;
 }
 
-bool ValidateSignatureValue(
-    const net::structured_headers::DictionaryMember& signature_entry,
+const std::string* GetSignatureValue(
+    const net::structured_headers::ParameterizedMember& signature_entry
+        LIFETIME_BOUND,
     std::vector<mojom::SRIMessageSignatureIssuePtr>& issues) {
   // The value must be an unparameterized byte-sequence:
-  if (signature_entry.second.member.empty() ||
-      signature_entry.second.member_is_inner_list ||
-      !signature_entry.second.member[0].item.is_byte_sequence()) {
+  const std::string* signature =
+      (signature_entry.member.empty() || signature_entry.member_is_inner_list)
+          ? nullptr
+          : signature_entry.member[0].item.GetIfByteSequence();
+
+  if (!signature) {
     AddIssueFromErrorEnum(
         mojom::SRIMessageSignatureError::kSignatureHeaderValueIsNotByteSequence,
         issues);
-    return false;
-  } else if (signature_entry.second.params.size() != 0u) {
+    return nullptr;
+  } else if (!signature_entry.params.empty()) {
     AddIssueFromErrorEnum(
         mojom::SRIMessageSignatureError::kSignatureHeaderValueIsParameterized,
         issues);
-    return false;
+    return nullptr;
   }
 
-  std::string signature = signature_entry.second.member[0].item.GetString();
-  if (signature.size() != kEd25519SigLength) {
+  if (signature->size() != kEd25519SigLength) {
     AddIssueFromErrorEnum(
         mojom::SRIMessageSignatureError::kSignatureHeaderValueIsIncorrectLength,
         issues);
-    return false;
+    return nullptr;
   }
-  return true;
+  return signature;
 }
 
 bool MatchExpectedPublicKeys(
@@ -519,27 +519,29 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
   // guidance on severity.
   //
   // https://datatracker.ietf.org/doc/html/rfc9421#section-4-4
-  for (const net::structured_headers::DictionaryMember& signature_entry :
-       signature_dictionary.value()) {
+  for (const auto& [label, signature_value] : signature_dictionary.value()) {
     auto message_signature = mojom::SRIMessageSignature::New();
-    message_signature->label = signature_entry.first;
+    message_signature->label = label;
 
-    if (!ValidateSignatureValue(signature_entry, parsed_headers->issues)) {
+    const std::string* signature =
+        GetSignatureValue(signature_value, parsed_headers->issues);
+    if (!signature) {
       continue;
     }
-    std::string signature = signature_entry.second.member[0].item.GetString();
     message_signature->signature =
-        std::vector<uint8_t>(signature.begin(), signature.end());
+        std::vector<uint8_t>(signature->begin(), signature->end());
 
     // Grab the relevant `Signature-Input` entry, punting early if none exists
     // or if its value is not a non-empty parameterized inner-list.
-    if (!input_dictionary->contains(signature_entry.first)) {
+    auto input_it = input_dictionary->find(label);
+    if (input_it == input_dictionary->end()) {
       AddIssueFromErrorEnum(
           mojom::SRIMessageSignatureError::kSignatureInputHeaderMissingLabel,
           parsed_headers->issues);
       continue;
     }
-    auto input_entry = input_dictionary->at(signature_entry.first);
+
+    const auto& input_entry = input_it->second;
     if (!input_entry.member_is_inner_list) {
       AddIssueFromErrorEnum(mojom::SRIMessageSignatureError::
                                 kSignatureInputHeaderValueNotInnerList,
@@ -558,10 +560,10 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     //
     // https://wicg.github.io/signature-based-sri/#abstract-opdef-validating-an-integrity-signature
     if (!std::ranges::any_of(input_entry.params, [](const auto& param) {
-      return (param.first == "tag" && param.second.is_string() &&
-          (param.second.GetString() == "ed25519-integrity" ||
-           param.second.GetString() == "sri"));
-    })) {
+          const std::string* v = param.second.GetIfString();
+          return param.first == "tag" && v &&
+                 (*v == "ed25519-integrity" || *v == "sri");
+        })) {
       continue;
     }
 
@@ -593,35 +595,53 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
 
     // Process the parameters, according to the validation requirements at
     // https://wicg.github.io/signature-based-sri/#profile
-    for (const auto& param : input_entry.params) {
-      if (param.first == "created" && param.second.is_integer() &&
-          param.second.GetInteger() >= 0) {
-        message_signature->created = param.second.GetInteger();
-      } else if (param.first == "expires" && param.second.is_integer() &&
-                 param.second.GetInteger() >= 0) {
-        message_signature->expires = param.second.GetInteger();
-      } else if (param.first == "keyid" && param.second.is_string()) {
-        std::string value = param.second.GetString();
-        std::optional<std::vector<uint8_t>> decoded = base::Base64Decode(value);
-        if (!decoded || decoded->size() != kEd25519KeyLength) {
-          AddIssueFromErrorEnum(
-              mojom::SRIMessageSignatureError::kSignatureInputHeaderKeyIdLength,
-              parsed_headers->issues);
-          message_signature.reset();
-          break;
+    for (const auto& [key, value] : input_entry.params) {
+      bool ok = true;
+
+      if (key == "created") {
+        if (const int64_t* v = value.GetIfInteger(); v && *v >= 0) {
+          message_signature->created = *v;
+        } else {
+          ok = false;
         }
-        message_signature->keyid = std::move(*decoded);
-      } else if (param.first == "nonce" && param.second.is_string()) {
-        message_signature->nonce = param.second.GetString();
-      } else if (param.first == "tag" && param.second.is_string() &&
-                 (param.second.GetString() == "ed25519-integrity" ||
-                  param.second.GetString() == "sri")) {
-        // TODO(crbug.com/419149647): Drop support for `sri` once tests are
-        // updated and OT participants have adopted the new `tag`.
-        message_signature->tag = param.second.GetString();
-      } else if (param.first == "alg" || param.first == "created" ||
-                 param.first == "expires" || param.first == "keyid" ||
-                 param.first == "nonce" || param.first == "tag") {
+      } else if (key == "expires") {
+        if (const int64_t* v = value.GetIfInteger(); v && *v >= 0) {
+          message_signature->expires = *v;
+        } else {
+          ok = false;
+        }
+      } else if (key == "keyid") {
+        if (const std::string* v = value.GetIfString()) {
+          std::optional<std::vector<uint8_t>> decoded = base::Base64Decode(*v);
+          if (!decoded || decoded->size() != kEd25519KeyLength) {
+            AddIssueFromErrorEnum(mojom::SRIMessageSignatureError::
+                                      kSignatureInputHeaderKeyIdLength,
+                                  parsed_headers->issues);
+            message_signature.reset();
+            break;
+          }
+          message_signature->keyid = std::move(*decoded);
+        } else {
+          ok = false;
+        }
+      } else if (key == "nonce") {
+        if (const std::string* v = value.GetIfString()) {
+          message_signature->nonce = *v;
+        } else {
+          ok = false;
+        }
+      } else if (key == "tag") {
+        if (const std::string* v = value.GetIfString();
+            v && (*v == "ed25519-integrity" || *v == "sri")) {
+          // TODO(crbug.com/419149647): Drop support for `sri` once tests are
+          // updated and OT participants have adopted the new `tag`.
+          message_signature->tag = *v;
+        } else {
+          ok = false;
+        }
+      }
+
+      if (!ok || key == "alg") {
         // The `alg` parameter must not be included in the signature input, and
         // we'll only reach this branch for other known parameter names if they
         // didn't meet the type constraints tested above. In either case, we'll
@@ -669,8 +689,7 @@ base::expected<std::string, mojom::SRIMessageSignatureError>
 ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
                        const net::URLRequest& url_request,
                        const net::HttpResponseHeaders& headers) {
-  const GURL request_url = url_request.url();
-  DCHECK(request_url.is_valid());
+  DCHECK(url_request.url().is_valid());
 
   if (!signature) {
     return base::unexpected(
@@ -775,7 +794,7 @@ ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
 
   // 4.   Produce an error if the output string contains non-ASCII characters.
   //      (This shouldn't be possible given the parsing rules for this profile.)
-  std::string result = signature_base.str();
+  std::string result = std::move(signature_base).str();
   DCHECK(base::IsStringASCII(result));
 
   // 5.   Return the output string.
@@ -786,11 +805,10 @@ bool ValidateSRIMessageSignaturesOverHeaders(
     mojom::SRIMessageSignaturesPtr& message_signatures,
     const net::URLRequest& url_request,
     const net::HttpResponseHeaders& headers) {
-  const GURL request_url = url_request.url();
   DCHECK(url_request.url().is_valid());
 
   // If no signatures are present, validation automatically succeeds.
-  if (!message_signatures->signatures.size()) {
+  if (message_signatures->signatures.empty()) {
     return true;
   }
 
@@ -856,13 +874,13 @@ MaybeBlockResponseForSRIMessageSignature(
     const raw_ptr<mojom::DevToolsObserver> devtools_observer,
     const std::string& devtools_request_id) {
   // No headers, no URL: no blocking.
-  const GURL request_url = url_request.url();
+  const GURL& request_url = url_request.url();
   if (!response.headers || !request_url.is_valid()) {
     return std::nullopt;
   }
   auto parsed_headers = ParseSRIMessageSignaturesFromHeaders(*response.headers);
   bool passed_validation =
-      !parsed_headers->signatures.size() ||
+      parsed_headers->signatures.empty() ||
       (ValidateSRIMessageSignaturesOverHeaders(parsed_headers, url_request,
                                                *response.headers) &&
        MatchExpectedPublicKeys(parsed_headers, expected_public_keys));
@@ -877,8 +895,7 @@ MaybeBlockResponseForSRIMessageSignature(
     // usable unencoded-digest. ParseSRIMessageSignaturesFromHeaders enforces
     // that all parsed signatures cover `unencoded-digest`. If we don't have
     // any supported digests, we can't verify the body, so we must fail.
-    if (!expected_public_keys.empty() &&
-        parsed_headers->signatures.size() > 0 &&
+    if (!expected_public_keys.empty() && !parsed_headers->signatures.empty() &&
         (!response.unencoded_digests ||
          response.unencoded_digests->digests.empty())) {
       return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;
