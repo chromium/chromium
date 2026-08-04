@@ -134,6 +134,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         ModelList sheetItems = mHomeModel.get(HomeProperties.SHEET_ITEMS);
         sheetItems.clear();
 
+        boolean isNoticeVisible = hasNotice(suggestions);
         if (screenState.showZeroState) {
             sheetItems.add(
                     new ListItem(
@@ -141,7 +142,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         }
         if (screenState.showAtMemorySuggestions) {
             for (int i = 0; i < suggestions.size(); i++) {
-                if (suggestions.get(i).getSuggestionType() != SuggestionType.SEPARATOR) {
+                if (shouldShowSuggestion(suggestions.get(i), isNoticeVisible)) {
                     sheetItems.add(createListItemForSuggestion(suggestions.get(i), i));
                 }
             }
@@ -153,6 +154,29 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
             mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, List.of());
             sheetItems.clear();
         }
+    }
+
+    private static boolean shouldShowSuggestion(
+            AutofillSuggestion suggestion, boolean isNoticeVisible) {
+        if (suggestion.getSuggestionType() == SuggestionType.SEPARATOR) {
+            return false;
+        }
+        // Do not show the fetching illustration card if the notice is visible to avoid displaying
+        // multiple card banners simultaneously.
+        if (suggestion.getSuggestionType() == SuggestionType.AT_MEMORY_FETCHING
+                && isNoticeVisible) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean hasNotice(List<AutofillSuggestion> suggestions) {
+        for (AutofillSuggestion suggestion : suggestions) {
+            if (suggestion.getSuggestionType() == SuggestionType.PERSONAL_CONTEXT_NOTICE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private ListItem createListItemForSuggestion(AutofillSuggestion suggestion, int position) {

@@ -430,6 +430,27 @@ public class AtMemoryBottomSheetMediatorTest {
     }
 
     @Test
+    public void testShow_fetchingSuggestionWithNotice_skipsIllustrationCard() {
+        AutofillSuggestion noticeSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setSuggestionType(SuggestionType.PERSONAL_CONTEXT_NOTICE)
+                        .setSubLabel("")
+                        .build();
+        AutofillSuggestion fetchingSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Find and fill with Gemini")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AT_MEMORY_FETCHING)
+                        .setIsAcceptable(false)
+                        .build();
+
+        mMediator.show(List.of(noticeSuggestion, fetchingSuggestion));
+
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.NOTICE, mModelList.get(0).type);
+    }
+
+    @Test
     public void testNoticeShownAndDismissedAfterClick() {
         AutofillSuggestion noticeSuggestion =
                 new AutofillSuggestion.Builder()
