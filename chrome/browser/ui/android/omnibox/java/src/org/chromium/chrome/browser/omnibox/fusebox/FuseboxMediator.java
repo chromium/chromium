@@ -1061,7 +1061,7 @@ import java.util.function.Supplier;
                                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER
                         && mInput.getRequestType() == AutocompleteRequestType.SEARCH
                         && mInput.getSiteSearchData() == null
-                        && (mInput.getPreviewMatchUrl() == null);
+                        && (mInput.getPreviewMatchUrl() == null || mInput.isInZeroPrefixContext());
         if (mProfile != null
                 && !UserPrefs.get(mProfile).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON)) {
             showActivationChip = false;

@@ -2560,6 +2560,11 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
+        // Initial zero-prefix focus on a webpage.
+        mInput.setInitialUserText("page.com");
+        mInput.setUserText("page.com");
+        mInput.setPreviewMatchUrl(new GURL("https://page.com"));
+
         mMediator.beginInput(createSession());
         assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
@@ -2569,6 +2574,8 @@ public class FuseboxMediatorUnitTest {
         mInput.setSiteSearchData(null);
         assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
+        // When user types a new URL, it hides the chip.
+        mInput.setUserText("https://example.com");
         mInput.setPreviewMatchUrl(new GURL("https://example.com"));
         assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 

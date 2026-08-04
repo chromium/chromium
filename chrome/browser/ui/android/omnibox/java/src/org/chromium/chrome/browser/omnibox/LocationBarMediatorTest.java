@@ -398,6 +398,13 @@ public class LocationBarMediatorTest {
                 .when(mAppBannerManagerJni)
                 .getJavaBannerManagerForWebContents(mWebContents);
         doReturn(mScrimVisibilitySupplier).when(mScrimHandler).getScrimVisibilitySupplier();
+        doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
+        doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
+        doReturn(mActivationChip).when(mLocationBarLayout).getActivationChip();
+        doReturn(mPlusButton).when(mLocationBarLayout).findViewById(R.id.fusebox_plus_button);
+        doReturn(mMicButton).when(mLocationBarLayout).getMicButton();
+        doReturn(mNavigateButton).when(mLocationBarLayout).getNavigateButton();
+
         mMediator =
                 new LocationBarMediator(
                         mContext,
@@ -433,14 +440,6 @@ public class LocationBarMediatorTest {
                 .when(mAutocompleteCoordinator)
                 .setupSuggestionsListShowAnimation();
 
-        doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
-        doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
-        doReturn(mActivationChip)
-                .when(mLocationBarLayout)
-                .findViewById(R.id.fusebox_activation_chip);
-        doReturn(mPlusButton).when(mLocationBarLayout).findViewById(R.id.fusebox_plus_button);
-        doReturn(mMicButton).when(mLocationBarLayout).getMicButton();
-        doReturn(mNavigateButton).when(mLocationBarLayout).getNavigateButton();
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
@@ -469,6 +468,13 @@ public class LocationBarMediatorTest {
     }
 
     private LocationBarMediator createTabletMediator() {
+        doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
+        doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
+        doReturn(mActivationChip).when(mLocationBarTablet).getActivationChip();
+        doReturn(mPlusButton).when(mLocationBarTablet).findViewById(R.id.fusebox_plus_button);
+        doReturn(mMicButton).when(mLocationBarTablet).getMicButton();
+        doReturn(mNavigateButton).when(mLocationBarTablet).getNavigateButton();
+
         var tabletMediator =
                 new LocationBarMediator(
                         mContext,
@@ -496,14 +502,6 @@ public class LocationBarMediatorTest {
                         /* omniboxChipManager= */ null,
                         /* scrimHandler= */ null,
                         mWindowHasFocusSupplier);
-        doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
-        doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
-        doReturn(mActivationChip)
-                .when(mLocationBarTablet)
-                .findViewById(R.id.fusebox_activation_chip);
-        doReturn(mPlusButton).when(mLocationBarTablet).findViewById(R.id.fusebox_plus_button);
-        doReturn(mMicButton).when(mLocationBarTablet).getMicButton();
-        doReturn(mNavigateButton).when(mLocationBarTablet).getNavigateButton();
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         return tabletMediator;
@@ -3946,6 +3944,25 @@ public class LocationBarMediatorTest {
 
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
         verify(mUrlCoordinator).maybeAcceptInlineSuggestion(mKeyEvent);
+    }
+
+    @Test
+    public void testHandleKeyNavigationEvent_tabToActivationChipNotifiesFusebox() {
+        doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
+        doReturn(true).when(mKeyEvent).hasNoModifiers();
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+
+        doReturn(View.VISIBLE).when(mUrlBar).getVisibility();
+        doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
+
+        var input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.beginInput(input);
+
+        // Tab from UrlBar to ActivationChip.
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        verify(mFuseboxCoordinator).onActivationChipSelectionChanged(true);
+        verify(mActivationChip).setSelected(true);
     }
 
     @Test

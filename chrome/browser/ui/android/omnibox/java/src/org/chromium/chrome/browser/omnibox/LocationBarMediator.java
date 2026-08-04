@@ -540,7 +540,8 @@ class LocationBarMediator
                 List.of(
                         mUrlBarSelectableView,
                         wrapSelectableView(
-                                mLocationBarLayout.findViewById(R.id.fusebox_activation_chip)),
+                                mLocationBarLayout.getActivationChip(),
+                                mFuseboxCoordinator::onActivationChipSelectionChanged),
                         wrapSelectableView(mLocationBarLayout.getDeleteButton()),
                         autocompleteSelectableView,
                         wrapSelectableView(
@@ -560,7 +561,8 @@ class LocationBarMediator
         mLocationBarLayout.getUrlBar().setOnDragListener(dragDropHandler);
     }
 
-    private SelectableView wrapSelectableView(View view) {
+    private SelectableView wrapSelectableView(
+            View view, @Nullable Callback<Boolean> onSelectionChanged) {
         return new SelectableView() {
             @Override
             public boolean isVisible() {
@@ -570,6 +572,9 @@ class LocationBarMediator
             @Override
             public void setSelected(boolean isSelected) {
                 view.setSelected(isSelected);
+                if (onSelectionChanged != null) {
+                    onSelectionChanged.onResult(isSelected);
+                }
             }
 
             @Override
@@ -577,6 +582,10 @@ class LocationBarMediator
                 view.performClick();
             }
         };
+    }
+
+    private SelectableView wrapSelectableView(View view) {
+        return wrapSelectableView(view, null);
     }
 
     @SuppressWarnings("NullAway")
