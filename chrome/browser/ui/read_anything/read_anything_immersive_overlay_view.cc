@@ -109,6 +109,12 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
         contents_wrapper,
     ReadAnythingOpenTrigger trigger) {
   CHECK(!immersive_web_view_);
+  // Record has_shown_ui() before constructing ReadAnythingImmersiveWebView,
+  // because attaching the WebContents inside the constructor will trigger
+  // OnVisibilityChanged and set has_shown_ui() to true even on first open.
+  const bool has_shown_ui_before_attaching =
+      controller_ && controller_->has_shown_ui();
+
   auto immersive_web_view = std::make_unique<ReadAnythingImmersiveWebView>(
       base::BindOnce(&ReadAnythingImmersiveOverlayView::OnShowUI,
                      base::Unretained(this)),
@@ -127,7 +133,7 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
   // attached to the view hierarchy so that RequestFocus() executes within the
   // active user gesture. This synchronous focus transition is required by
   // macOS.
-  if (controller_ && controller_->has_shown_ui()) {
+  if (has_shown_ui_before_attaching) {
     immersive_web_view_->ShowUI();
   }
 }
