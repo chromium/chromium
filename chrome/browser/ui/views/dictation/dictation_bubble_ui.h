@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DICTATION_DICTATION_BUBBLE_UI_H_
 
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/views/dictation/ui_state.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -21,8 +22,6 @@ namespace dictation {
 // This class implements the agent toast UI for dictation.
 class DictationBubbleUi : public views::BubbleDialogDelegate {
  public:
-  enum class State { kInactive, kInitializing, kTranscribing, kFinalizing };
-
   explicit DictationBubbleUi(
       views::View* anchor_view,
       base::RepeatingClosure close_callback,
@@ -30,7 +29,7 @@ class DictationBubbleUi : public views::BubbleDialogDelegate {
   ~DictationBubbleUi() override;
 
   void Show();
-  void SetState(State state);
+  void SetState(UiState state);
   void UpdateAudioLevel(float audio_level);
 
   // views::BubbleDialogDelegate:
@@ -44,7 +43,7 @@ class DictationBubbleUi : public views::BubbleDialogDelegate {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  State state_ = State::kInactive;
+  UiState state_ = UiState::kInactive;
 };
 
 }  // namespace dictation

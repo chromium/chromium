@@ -11,6 +11,7 @@ source_set("dictation") {
     "dictation_bubble_ui.h",
     "dictation_overlay_view.h",
     "onboarding_dialog_controller.h",
+    "ui_state.h",
     "waveform_view.h",
   ]
   sources = [

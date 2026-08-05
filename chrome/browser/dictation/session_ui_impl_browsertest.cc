@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/browser/ui/views/dictation/dictation_overlay_view.h"
+#include "chrome/browser/ui/views/dictation/ui_state.h"
+#include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -540,6 +542,88 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
           const gfx::Rect overlay_bounds = overlay_view->GetBoundsInScreen();
           return target_bounds.Contains(overlay_bounds.origin());
         }))
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       OverlayButtonUpdatesOnStreamStateChange) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
+
+    // Initial state (kStreamInitializing): Mic icon button present, others absent.
+    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
+    InAnyContext(EnsurePresent(
+        DictationOverlayView::kMicButtonElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kWaveformElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kFinalizingButtonElementIdForTesting)),
+
+    // Transition to kTranscribing: WaveformView shown, others absent.
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    CheckResult(GetSessionState(), SessionState::kTranscribing),
+    InAnyContext(WaitForShow(
+        DictationOverlayView::kWaveformElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kMicButtonElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kFinalizingButtonElementIdForTesting)),
+
+    // Transition to kFinalizing: 3-dot finalizing button shown, others absent.
+    Do([this] {
+      dictation_service().session_controller()->EndDictationStream();
+    }),
+    CheckResult(GetSessionState(), SessionState::kFinalizing),
+    InAnyContext(WaitForShow(
+        DictationOverlayView::kFinalizingButtonElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kMicButtonElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kWaveformElementIdForTesting)),
+
+    // Transition to kInactive: Mic icon button shown again, others absent.
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
+    CheckResult(GetSessionState(), SessionState::kInactive),
+    InAnyContext(WaitForShow(
+        DictationOverlayView::kMicButtonElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kWaveformElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kFinalizingButtonElementIdForTesting))
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       OverlayWaveformReceivesAudioLevelUpdates) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    InAnyContext(WaitForShow(
+        DictationOverlayView::kWaveformElementIdForTesting)),
+    Do([this] {
+      static_cast<SessionUi*>(session_ui())->UpdateAudioLevel(0.05f);
+    }),
+    InAnyContext(CheckViewProperty(
+        DictationOverlayView::kWaveformElementIdForTesting,
+        &WaveformView::audio_level_for_testing, 0.5f))
   );
   // clang-format on
 }

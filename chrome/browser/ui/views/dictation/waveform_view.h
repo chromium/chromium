@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
+#include "chrome/browser/ui/views/dictation/ui_state.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
@@ -20,21 +20,23 @@ class InfiniteAnimation;
 
 namespace dictation {
 
-// A custom View that draws an animated voice waveform consisting of 11 vertical
+// A custom View that draws an animated voice waveform consisting of vertical
 // rounded bars. The animation only plays during transcribing, using a
 // spring-damper physics simulation driven by the audio level.
 class WaveformView : public views::View, public gfx::AnimationDelegate {
   METADATA_HEADER(WaveformView, views::View)
 
  public:
-  WaveformView();
+  explicit WaveformView(bool full_size);
   WaveformView(const WaveformView&) = delete;
   WaveformView& operator=(const WaveformView&) = delete;
   ~WaveformView() override;
 
+  bool full_size() const { return full_size_; }
+
   // Set the current dictation state to control the animation behavior.
-  void SetState(DictationBubbleUi::State state);
-  DictationBubbleUi::State state() const { return state_; }
+  void SetState(UiState state);
+  UiState state() const { return state_; }
 
   float audio_level_for_testing() const { return audio_level_; }
 
@@ -59,7 +61,11 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
                               float min_height,
                               float max_height) const;
 
-  DictationBubbleUi::State state_ = DictationBubbleUi::State::kInactive;
+  size_t GetCenterBarIndex() const;
+
+  const bool full_size_;
+
+  UiState state_ = UiState::kInactive;
 
   // Animation timer and tracking.
   std::unique_ptr<gfx::InfiniteAnimation> animation_;
@@ -70,7 +76,7 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   std::vector<float> audio_history_;
   base::TimeDelta history_timer_;
 
-  // Physics state for the 11 bars.
+  // Physics state for the bars.
   struct BarState {
     float height = 3.0f;
     float target_height = 3.0f;
