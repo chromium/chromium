@@ -44,6 +44,7 @@ group("extensions_resources") {
 
 grit("extensions_resources_grd") {
   source = "extensions_resources.grd"
+  inputs = [ "common/api/_api_features.json" ]
   outputs = [
     "grit/extensions_resources.h",
     "extensions_resources.pak",
@@ -52,6 +53,18 @@ grit("extensions_resources_grd") {
 
 grit("extensions_browser_resources") {
   source = "browser/resources/extensions_browser_resources.grd"
+  inputs = [
+    "browser/resources/default_100_percent/app_default_icon.png",
+    "browser/resources/default_100_percent/extension_action_plain_background.png",
+    "browser/resources/default_100_percent/extension_default_icon.png",
+    "browser/resources/default_100_percent/extension_icon_plain_background.png",
+    "browser/resources/default_100_percent/favicon_extensions.png",
+    "browser/resources/default_200_percent/app_default_icon.png",
+    "browser/resources/default_200_percent/extension_action_plain_background.png",
+    "browser/resources/default_200_percent/extension_default_icon.png",
+    "browser/resources/default_200_percent/extension_icon_plain_background.png",
+    "browser/resources/default_200_percent/favicon_extensions.png",
+  ]
   outputs = [
     "grit/extensions_browser_resources.h",
     "grit/extensions_browser_resources_map.cc",

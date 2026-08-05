@@ -10,6 +10,19 @@ assert(enable_extensions_core)
 
 grit("extensions_renderer_resources") {
   source = "extensions_renderer_resources.grd"
+  inputs = [
+    "//ui/webui/resources/images/check.png",
+    "//ui/webui/resources/images/disabled_select.png",
+    "//ui/webui/resources/images/select.png",
+    "extension.css",
+  ]
+  if (!is_android) {
+    inputs += [
+      "//ui/webui/resources/images/2x/check.png",
+      "//ui/webui/resources/images/2x/disabled_select.png",
+      "//ui/webui/resources/images/2x/select.png",
+    ]
+  }
   outputs = [
     "grit/extensions_renderer_resources.h",
     "extensions_renderer_resources.pak",
