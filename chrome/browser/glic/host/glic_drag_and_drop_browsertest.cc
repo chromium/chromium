@@ -269,6 +269,10 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testAllTestsAreRegistered) {
+  AssertAllTestsRegistered({"GlicDragAndDropPolicyTest"});
+}
+
 IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlp) {
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(
