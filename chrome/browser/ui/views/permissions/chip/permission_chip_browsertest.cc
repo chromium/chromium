@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/permissions/permission_prompt.h"
@@ -23,6 +28,8 @@
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/enums_to_string.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
@@ -226,22 +233,26 @@ class MockPermissionRequestManager
 };
 }  // namespace test
 
-class PermissionChipUnitTest : public TestWithBrowserView {
+class PermissionChipBrowserTest : public InProcessBrowserTest {
  public:
-  PermissionChipUnitTest()
-      : TestWithBrowserView(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
+  PermissionChipBrowserTest()
+      : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
 
-  PermissionChipUnitTest(const PermissionChipUnitTest&) = delete;
-  PermissionChipUnitTest& operator=(const PermissionChipUnitTest&) = delete;
+  PermissionChipBrowserTest(const PermissionChipBrowserTest&) = delete;
+  PermissionChipBrowserTest& operator=(const PermissionChipBrowserTest&) =
+      delete;
 
-  void SetUp() override {
-    TestWithBrowserView::SetUp();
-    browser_view()->Show();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/title1.html")));
+    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+  }
 
-    AddTab(browser(), GURL("http://a.com"));
-    web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
+  BrowserView* browser_view() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
   void ClickOnChip(ChipController* controller) {
@@ -266,14 +277,9 @@ class PermissionChipUnitTest : public TestWithBrowserView {
   // Some of these tests rely on animation being enabled. This forces
   // animation on even if it's turned off in the OS.
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
-
-  base::TimeDelta kChipCollapseDuration = base::Seconds(12);
-  base::TimeDelta kNormalChipDismissDuration = base::Seconds(6);
-  base::TimeDelta kQuietChipDismissDuration = base::Seconds(18);
-  base::TimeDelta kLongerThanAllTimersDuration = base::Seconds(50);
 };
 
-TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, AlreadyDisplayedRequestTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       false, web_contents_);
@@ -293,24 +299,13 @@ TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  // The default dismiss timer is 6 seconds. The chip should be still displayed
-  // after 5 seconds.
-  task_environment()->AdvanceClock(kNormalChipDismissDuration -
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(delegate.IsRequestInProgress());
-
-  // Wait 2 more seconds for the dismiss timer to finish.
-  task_environment()->AdvanceClock(base::Seconds(2));
-  base::RunLoop().RunUntilIdle();
-
   // All chips are feature auto popup bubble. They should not resolve a prompt
   // automatically.
   EXPECT_TRUE(delegate.IsRequestInProgress());
   delegate.ClearRequests();
 }
 
-TEST_F(PermissionChipUnitTest, AccessibleName) {
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, AccessibleName) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       false, web_contents_);
@@ -322,7 +317,10 @@ TEST_F(PermissionChipUnitTest, AccessibleName) {
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
 
-  AddTab(browser(), GURL("http://a.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   std::u16string tab_title =
       WindowMetadataController::From(browser())->GetTitleForTab(
@@ -333,7 +331,7 @@ TEST_F(PermissionChipUnitTest, AccessibleName) {
   chip_controller->ShowPermissionUi(delegate.GetWeakPtr());
   chip_controller->AnimateExpand();
   ui::AXNodeData data;
-  BrowserView::GetBrowserViewForBrowser(browser())
+  browser_view()
       ->tab_strip_view()
       ->GetTabAnchorViewAt(0)
       ->GetViewAccessibility()
@@ -344,7 +342,7 @@ TEST_F(PermissionChipUnitTest, AccessibleName) {
 
   chip_controller->HideChip();
   data = ui::AXNodeData();
-  BrowserView::GetBrowserViewForBrowser(browser())
+  browser_view()
       ->tab_strip_view()
       ->GetTabAnchorViewAt(0)
       ->GetViewAccessibility()
@@ -356,7 +354,7 @@ TEST_F(PermissionChipUnitTest, AccessibleName) {
   delegate.ClearRequests();
 }
 
-TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, ClickOnRequestChipTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, web_contents_);
@@ -368,8 +366,6 @@ TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  // Animation does not work. Most probably it is unit tests limitations.
-  // `chip.IsFullyCollapsed()` will not work as well.
   EXPECT_TRUE(chip_controller->IsAnimating());
   views::AsViewClass<PermissionChipView>(
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -382,8 +378,6 @@ TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  task_environment()->AdvanceClock(kLongerThanAllTimersDuration);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(delegate.IsRequestInProgress());
   // Bubble is showing automatically.
   EXPECT_TRUE(chip_controller->IsBubbleShowing());
@@ -401,7 +395,8 @@ TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {
   EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
-TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
+                       DisplayQuietChipNoAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kEnabledInPrefs, web_contents_);
@@ -418,8 +413,6 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  // Animation does not work. Most probably it is unit tests limitations.
-  // `chip.IsFullyCollapsed()` will not work as well.
   EXPECT_TRUE(chip_controller->IsAnimating());
   views::AsViewClass<PermissionChipView>(
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -431,17 +424,10 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
 
   EXPECT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kChipCollapseDuration - base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
   EXPECT_TRUE(chip_controller->chip()->GetVisible());
 
-  // Wait 2 more seconds for the collapse timer to finish.
-  task_environment()->AdvanceClock(base::Seconds(2));
+  // Fire collapse timer and verify state transitions to dismiss timer.
+  chip_controller->fire_collapse_timer_for_testing();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(delegate.IsRequestInProgress());
 
@@ -453,14 +439,14 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
   EXPECT_CALL(delegate, Ignore(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
-  task_environment()->AdvanceClock(kNormalChipDismissDuration +
-                                   base::Seconds(1));
+  chip_controller->fire_dismiss_timer_for_testing();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(chip_controller->chip()->GetVisible());
   EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
-TEST_F(PermissionChipUnitTest, ClickOnQuietChipNoAbusiveTest) {
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
+                       ClickOnQuietChipNoAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kEnabledInPrefs, web_contents_);
@@ -486,10 +472,6 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipNoAbusiveTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  // After 30 seconds the permission prompt popup bubble should still be
-  // visible.
-  task_environment()->AdvanceClock(kLongerThanAllTimersDuration);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(chip_controller->IsBubbleShowing());
   EXPECT_TRUE(delegate.IsRequestInProgress());
 
@@ -499,13 +481,13 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipNoAbusiveTest) {
   EXPECT_CALL(delegate, Dismiss(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
-  // The seconds click on the chip hides the popup bubble.
+  // The second click on the chip hides the popup bubble.
   ClickOnChip(chip_controller);
   EXPECT_FALSE(chip_controller->IsBubbleShowing());
   EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
-TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, DisplayQuietChipAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kTriggeredDueToAbusiveRequests, web_contents_);
@@ -523,29 +505,18 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
   EXPECT_FALSE(chip_controller->IsAnimating());
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  // The dismiss timer is 18 seconds by default. After 17 seconds, the
-  // chip should be there.
-  task_environment()->AdvanceClock(kQuietChipDismissDuration -
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
   EXPECT_TRUE(chip_controller->chip()->GetVisible());
 
   EXPECT_CALL(delegate, Ignore(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
-  // Wait 2 more seconds for the dismiss timer to finish.
-  task_environment()->AdvanceClock(base::Seconds(2));
+  chip_controller->fire_dismiss_timer_for_testing();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(chip_controller->chip()->GetVisible());
   EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
-TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, ClickOnQuietChipAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kTriggeredDueToAbusiveRequests, web_contents_);
@@ -563,12 +534,6 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  task_environment()->AdvanceClock(kLongerThanAllTimersDuration);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
   EXPECT_TRUE(delegate.IsRequestInProgress());
   EXPECT_TRUE(chip_controller->IsBubbleShowing());
 
@@ -581,11 +546,11 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
   EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
-class PermissionPromiseLifetimeModulationTest : public PermissionChipUnitTest {
-};
+class PermissionPromiseLifetimeModulationTest
+    : public PermissionChipBrowserTest {};
 
-TEST_F(PermissionPromiseLifetimeModulationTest,
-       NotificationsRequestsNotPreignoredForNonQuietPrompts) {
+IN_PROC_BROWSER_TEST_F(PermissionPromiseLifetimeModulationTest,
+                       NotificationsRequestsNotPreignoredForNonQuietPrompts) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true,
@@ -596,8 +561,8 @@ TEST_F(PermissionPromiseLifetimeModulationTest,
   delegate.ClearRequests();
 }
 
-TEST_F(PermissionPromiseLifetimeModulationTest,
-       GeolocationRequestsNotPreignoredForNonQuietPrompts) {
+IN_PROC_BROWSER_TEST_F(PermissionPromiseLifetimeModulationTest,
+                       GeolocationRequestsNotPreignoredForNonQuietPrompts) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kGeolocation},
       true, /*quiet_ui_reason=*/std::nullopt, web_contents_);
@@ -635,8 +600,8 @@ INSTANTIATE_TEST_SUITE_P(
     /*name_generator=*/
     TestNameGenerator<QuietUiPreignoreTest::ParamType>);
 
-TEST_P(QuietUiPreignoreTest,
-       PermissionRequestsForAllQuietUiReasonsGetPreignored) {
+IN_PROC_BROWSER_TEST_P(QuietUiPreignoreTest,
+                       PermissionRequestsForAllQuietUiReasonsGetPreignored) {
   auto [request_type, quiet_ui_reason] = GetParam();
 
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
@@ -664,7 +629,7 @@ INSTANTIATE_TEST_SUITE_P(
     /*name_generator=*/
     TestNameGenerator<QuietUiAbusiveRequestsTest::ParamType>);
 
-TEST_P(QuietUiAbusiveRequestsTest, GetsDenied) {
+IN_PROC_BROWSER_TEST_P(QuietUiAbusiveRequestsTest, GetsDenied) {
   auto [request_type, quiet_ui_reason] = GetParam();
   InfoBarObserver infobar_observer(web_contents_);
 
@@ -705,7 +670,7 @@ INSTANTIATE_TEST_SUITE_P(
     /*name_generator=*/
     TestNameGenerator<QuietUiNonAbusiveRequestsTest::ParamType>);
 
-TEST_P(QuietUiNonAbusiveRequestsTest, GetsAccepted) {
+IN_PROC_BROWSER_TEST_P(QuietUiNonAbusiveRequestsTest, GetsAccepted) {
   auto [request_type, quiet_ui_reason] = GetParam();
 
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
@@ -731,6 +696,7 @@ TEST_P(QuietUiNonAbusiveRequestsTest, GetsAccepted) {
   ClickOnAcceptPermissionRequestQuietChip(chip_controller);
   EXPECT_FALSE(delegate.IsRequestInProgress());
 }
+
 class InfobarTest
     : public PermissionPromiseLifetimeModulationTest,
       public testing::WithParamInterface<permissions::RequestType> {};
@@ -747,7 +713,7 @@ INSTANTIATE_TEST_SUITE_P(
       return std::string(test::ToString(info.param));
     });
 
-TEST_P(InfobarTest, ShowInfobarIfNecessary) {
+IN_PROC_BROWSER_TEST_P(InfobarTest, ShowInfobarIfNecessary) {
   base::HistogramTester histogram_tester;
   InfoBarObserver infobar_observer(web_contents_);
 

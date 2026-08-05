@@ -164,6 +164,11 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
     return dismiss_timer_.IsRunning();
   }
 
+  void fire_dismiss_timer_for_testing() {
+    CHECK_IS_TEST();
+    dismiss_timer_.FireNow();
+  }
+
   views::View* get_prompt_bubble_view_for_testing() {
     CHECK_IS_TEST();
     return bubble_tracker_.view();
@@ -188,7 +193,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void DoNotCollapseForTesting() { do_no_collapse_for_testing_ = true; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(PermissionChipBrowserTest, AccessibleName);
 
   bool ShouldWaitForConfirmationToComplete() const;
   bool ShouldWaitForLHSIndicatorToCollapse() const;
