@@ -93,6 +93,7 @@ class BookmarkBarContextMenuMediator {
 
         listItems.add(BasicListMenu.buildMenuDivider(isIncognito));
         addCommonActions(listItems, id, parentId, isIncognito, canEditOrMoveOrDelete);
+        addVisibilityControlActions(listItems, isIncognito);
 
         return listItems;
     }
@@ -118,6 +119,7 @@ class BookmarkBarContextMenuMediator {
         listItems.add(BasicListMenu.buildMenuDivider(isIncognito));
         addCommonActions(
                 listItems, /* id= */ null, parentId, isIncognito, /* modifyEnabled= */ false);
+        addVisibilityControlActions(listItems, isIncognito);
 
         return listItems;
     }
@@ -254,7 +256,7 @@ class BookmarkBarContextMenuMediator {
     /**
      * Adds actions common to all bookmarks bar context menus, including folder/bookmark
      * modification options (edit, move, delete) and bar-level settings (add page, add folder, open
-     * manager, show bar).
+     * manager).
      */
     private void addCommonActions(
             ModelList listItems,
@@ -294,6 +296,13 @@ class BookmarkBarContextMenuMediator {
                         isIncognito,
                         /* enabled= */ true,
                         v -> openBookmarksManager(parentId)));
+    }
+
+    /**
+     * Adds actions common to all bookmarks bar context menus that are specific to the visibility of
+     * the bookmarks bar, which may appear in different ways based on feature flags.
+     */
+    private void addVisibilityControlActions(ModelList listItems, boolean isIncognito) {
         listItems.add(
                 buildContextMenuItem(
                         mContext.getString(R.string.contextmenu_show_bookmarks_bar),
