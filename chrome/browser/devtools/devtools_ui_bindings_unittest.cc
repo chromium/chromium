@@ -982,12 +982,19 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   EXPECT_FALSE(
       initial_instrumentation_breakpoints->FindBool("enabled").value_or(true));
 
+  const base::DictValue* initial_source_map_scopes =
+      initial_config.FindDict("devToolsSourceMapScopesInSourcesPanel");
+  ASSERT_TRUE(initial_source_map_scopes);
+  EXPECT_FALSE(
+      initial_source_map_scopes->FindBool("enabled").value_or(true));
+
   // Enable features.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {::features::kDevToolsProtocolMonitor, ::features::kDevToolsFreestyler,
        ::features::kDevToolsAiV2Architecture,
-       ::features::kDevToolsInstrumentationBreakpoints},
+       ::features::kDevToolsInstrumentationBreakpoints,
+       ::features::kDevToolsSourceMapScopesInSourcesPanel},
       {});
 
   // Verify state of features after enabling them.
@@ -1013,6 +1020,11 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   ASSERT_TRUE(instrumentation_breakpoints);
   EXPECT_TRUE(
       instrumentation_breakpoints->FindBool("enabled").value_or(false));
+
+  const base::DictValue* source_map_scopes =
+      result.FindDict("devToolsSourceMapScopesInSourcesPanel");
+  ASSERT_TRUE(source_map_scopes);
+  EXPECT_TRUE(source_map_scopes->FindBool("enabled").value_or(false));
 }
 
 TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigGdpProfiles) {

@@ -15745,6 +15745,7 @@ from previous Chrome versions.
   <int value="375485858" label="EnableZeroStateMixedTypesRanker:disabled"/>
   <int value="375785554" label="UserActivationV2:disabled"/>
   <int value="375934458" label="PortalsCrossOrigin:enabled"/>
+  <int value="376298077" label="DevToolsSourceMapScopesInSourcesPanel:enabled"/>
   <int value="376825548" label="CloudGamingDevice:enabled"/>
   <int value="377093001" label="WebRtcHWH264Encoding:disabled"/>
   <int value="378034668" label="ChromeDarkNeutrals26:disabled"/>
@@ -17512,6 +17513,8 @@ from previous Chrome versions.
       label="ApplyClientsideModelPredictionsForPasswordTypes:disabled"/>
   <int value="938191241" label="VrShell:enabled"/>
   <int value="938846889" label="EnableShouldShowPromotion:disabled"/>
+  <int value="938982717"
+      label="DevToolsSourceMapScopesInSourcesPanel:disabled"/>
   <int value="939050961" label="OnTheFlyMhtmlHashComputation:disabled"/>
   <int value="939366135" label="DownloadsLocationChange:disabled"/>
   <int value="939509221" label="AndroidPinnedTabsTabletTabStrip:enabled"/>

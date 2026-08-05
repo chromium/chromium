@@ -240,4 +240,9 @@ BASE_FEATURE(kDevToolsPlusButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDevToolsInstrumentationBreakpoints,
              "DevToolsInstrumentationBreakpoints",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether source map scopes are enabled in the DevTools Sources panel.
+BASE_FEATURE(kDevToolsSourceMapScopesInSourcesPanel,
+             "DevToolsSourceMapScopesInSourcesPanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

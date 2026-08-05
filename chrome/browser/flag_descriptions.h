@@ -2026,6 +2026,11 @@ inline constexpr char kDevToolsProtocolMonitorDescription[] =
     "Enables the protocol monitor panel, which displays the Chrome DevTools "
     "Protocol (CDP) traffic between DevTools and the browser.";
 
+inline constexpr char kDevToolsSourceMapScopesInSourcesPanelName[] =
+    "Source map scopes in the Sources panel";
+inline constexpr char kDevToolsSourceMapScopesInSourcesPanelDescription[] =
+    "Enables source map scopes in the DevTools Sources panel.";
+
 inline constexpr char kDevToolsWebMCPSupportName[] =
     "WebMCP support in DevTools";
 inline constexpr char kDevToolsWebMCPSupportDescription[] =

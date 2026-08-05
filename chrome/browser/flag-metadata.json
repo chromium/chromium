@@ -2625,6 +2625,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "devtools-source-map-scopes-in-sources-panel",
+    "owners": [ "szuend@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "devtools-webmcp-support",
     "owners": [ "pfaffe@chromium.org" ],
     "expiry_milestone": 155
