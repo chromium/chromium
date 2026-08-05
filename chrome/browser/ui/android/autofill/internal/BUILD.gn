@@ -184,7 +184,7 @@ android_resources("java_resources") {
     "java/res/drawable/at_memory_flyout_buttons_bg.xml",
     "java/res/drawable/at_memory_illustration_card_illustration.xml",
     "java/res/drawable/at_memory_search_bar_background.xml",
-    "java/res/drawable/at_memory_suggestions_bg.xml",
+    "java/res/drawable/at_memory_notice_bg.xml",
     "java/res/layout/at_memory_bottom_sheet.xml",
     "java/res/layout/at_memory_bottom_sheet_illustration_card_item.xml",
     "java/res/layout/at_memory_bottom_sheet_notice_item.xml",
