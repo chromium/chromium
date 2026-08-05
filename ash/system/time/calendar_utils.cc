@@ -88,8 +88,8 @@ std::u16string FormatInterval(const icu::DateIntervalFormat* formatter,
 }
 
 std::u16string GetMonthDayYear(const base::Time date) {
-  return calendar_utils::FormatDate(
-      DateHelper::GetInstance()->month_day_year_formatter(), date);
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      date, base::i18n::datetime_options::YMD::Long());
 }
 
 std::u16string GetMonthDayYearWeek(const base::Time date) {
