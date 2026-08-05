@@ -5666,6 +5666,16 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Not Phishing"/>
 </enum>
 
+<!-- LINT.IfChange(OtpFillingSafeBrowsingCheckResult) -->
+
+<enum name="OtpFillingSafeBrowsingCheckResult">
+  <int value="0" label="Safe"/>
+  <int value="1" label="Unsafe"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/otp_filling_safe_browsing_checker_client.h:OtpFillingSafeBrowsingCheckResult) -->
+
 <!-- LINT.IfChange(PayLaterTabsFormEvent) -->
 
 <enum name="PayLaterTabsFormEvent">

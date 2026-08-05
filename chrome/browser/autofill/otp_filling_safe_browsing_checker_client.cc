@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
@@ -105,6 +106,7 @@ void OtpFillingSafeBrowsingCheckerClient::CheckNextUrl() {
 
   if (is_safe_synchronously) {
     timer_.Stop();
+    LogCheckResult(CheckResult::kSafe);
     current_url_index_++;
     // Use PostTask to advance to the next URL to avoid synchronous recursion
     // or reentrancy when `CheckBrowseUrl` returns true.
@@ -122,10 +124,12 @@ void OtpFillingSafeBrowsingCheckerClient::OnCheckBrowseUrlResult(
   timer_.Stop();
 
   if (threat_types_.contains(threat_type)) {
+    LogCheckResult(CheckResult::kUnsafe);
     RunCallback(/*is_malicious=*/true);
     return;
   }
 
+  LogCheckResult(CheckResult::kSafe);
   current_url_index_++;
   // Use PostTask to advance to the next URL to avoid unexpected stack depth or
   // reentrancy issues if a database manager implementation invokes the callback
@@ -146,6 +150,7 @@ void OtpFillingSafeBrowsingCheckerClient::OnCheckBlocklistTimeout() {
   CHECK(database_manager_);
 
   database_manager_->CancelCheck(this);
+  LogCheckResult(CheckResult::kTimeout);
   RunCallback(/*is_malicious=*/true);
 }
 
@@ -156,6 +161,11 @@ void OtpFillingSafeBrowsingCheckerClient::RunCallback(bool is_malicious) {
   // callback may destroy `this`.
   auto callback = std::move(callback_);
   std::move(callback).Run(is_malicious);
+}
+
+void OtpFillingSafeBrowsingCheckerClient::LogCheckResult(CheckResult result) {
+  base::UmaHistogramEnumeration("Autofill.OtpFilling.SafeBrowsingCheckResult",
+                                result);
 }
 
 }  // namespace autofill

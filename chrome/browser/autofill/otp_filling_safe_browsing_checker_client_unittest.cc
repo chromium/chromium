@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
@@ -103,6 +104,7 @@ class OtpFillingSafeBrowsingCheckerClientTest : public testing::Test {
 // Test that when both URLs are safe synchronously, the callback is run with
 // false (not malicious).
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, BothUrlsSafeSynchronously) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
       .WillOnce(Return(true));
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(frame_to_fill_url_, _, _, _))
@@ -114,11 +116,15 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, BothUrlsSafeSynchronously) {
       main_frame_url_, frame_to_fill_url_, future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpFilling.SafeBrowsingCheckResult",
+      OtpFillingSafeBrowsingCheckerClient::CheckResult::kSafe, 2);
 }
 
 // Test that when the main frame URL and target frame-to-fill URL are identical,
 // Safe Browsing only checks the URL once.
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, IdenticalUrlsCheckedOnlyOnce) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
       .WillOnce(Return(true));
 
@@ -128,11 +134,15 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, IdenticalUrlsCheckedOnlyOnce) {
       main_frame_url_, main_frame_url_, future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpFilling.SafeBrowsingCheckResult",
+      OtpFillingSafeBrowsingCheckerClient::CheckResult::kSafe, 1);
 }
 
 // Test that when the first URL is unsafe asynchronously, the check stops and
 // reports unsafe without checking the second URL.
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlUnsafeAsynchronously) {
+  base::HistogramTester histogram_tester;
   safe_browsing::SafeBrowsingDatabaseManager::Client* sb_client = nullptr;
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
       .WillOnce(DoAll(SaveArg<2>(&sb_client), Return(false)));
@@ -153,12 +163,16 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlUnsafeAsynchronously) {
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
 
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpFilling.SafeBrowsingCheckResult",
+      OtpFillingSafeBrowsingCheckerClient::CheckResult::kUnsafe, 1);
 }
 
 // Test that when the first URL is safe asynchronously, it proceeds to check the
 // second URL.
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest,
        FirstUrlSafeAsynchronouslySecondUrlSafe) {
+  base::HistogramTester histogram_tester;
   safe_browsing::SafeBrowsingDatabaseManager::Client* sb_client = nullptr;
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
       .WillOnce(DoAll(SaveArg<2>(&sb_client), Return(false)));
@@ -177,11 +191,15 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest,
       main_frame_url_, safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
 
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpFilling.SafeBrowsingCheckResult",
+      OtpFillingSafeBrowsingCheckerClient::CheckResult::kSafe, 2);
 }
 
 // Test that when a check times out, it cancels the check and reports true
 // (malicious/unsafe).
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlTimeout) {
+  base::HistogramTester histogram_tester;
   safe_browsing::SafeBrowsingDatabaseManager::Client* sb_client = nullptr;
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
       .WillOnce(DoAll(SaveArg<2>(&sb_client), Return(false)));
@@ -196,11 +214,15 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlTimeout) {
   task_environment_.FastForwardBy(kCheckDelay);
 
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpFilling.SafeBrowsingCheckResult",
+      OtpFillingSafeBrowsingCheckerClient::CheckResult::kTimeout, 1);
 }
 
 // Test that when first is safe, but second times out, it cancels check and
 // reports true (malicious/unsafe).
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, SecondUrlTimeout) {
+  base::HistogramTester histogram_tester;
   safe_browsing::SafeBrowsingDatabaseManager::Client* sb_client = nullptr;
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
       .WillOnce(DoAll(SaveArg<2>(&sb_client), Return(false)));
@@ -226,6 +248,12 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, SecondUrlTimeout) {
   task_environment_.FastForwardBy(kCheckDelay);
 
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.OtpFilling.SafeBrowsingCheckResult",
+      OtpFillingSafeBrowsingCheckerClient::CheckResult::kSafe, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.OtpFilling.SafeBrowsingCheckResult",
+      OtpFillingSafeBrowsingCheckerClient::CheckResult::kTimeout, 1);
 }
 
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, GetV5GetHashProtocolManager) {

@@ -40,6 +40,20 @@ class OtpFillingSafeBrowsingCheckerClient
  public:
   using ResultCallback = base::OnceCallback<void(bool is_malicious)>;
 
+  // LINT.IfChange(OtpFillingSafeBrowsingCheckResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CheckResult {
+    // The check completed and the URL was classified as safe.
+    kSafe = 0,
+    // The check completed and the URL was classified as unsafe.
+    kUnsafe = 1,
+    // The check timed out before a result was received.
+    kTimeout = 2,
+    kMaxValue = kTimeout,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:OtpFillingSafeBrowsingCheckResult)
+
   static constexpr base::TimeDelta kDefaultCheckDelay = base::Seconds(2);
 
   // Creates an instance and starts checking the URL safety. The caller owns the
@@ -89,6 +103,7 @@ class OtpFillingSafeBrowsingCheckerClient
 
   void CheckNextUrl();
   void RunCallback(bool is_malicious);
+  void LogCheckResult(CheckResult result);
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   base::WeakPtr<safe_browsing::V5GetHashProtocolManager>

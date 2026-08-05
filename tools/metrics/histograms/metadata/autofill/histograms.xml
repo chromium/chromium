@@ -6383,6 +6383,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
 </histogram>
 
+<histogram name="Autofill.OtpFilling.SafeBrowsingCheckResult"
+    enum="OtpFillingSafeBrowsingCheckResult" expires_after="2027-02-28">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of the Safe Browsing blocklist check for each URL checked
+    during OTP filling. Logged when a check completes (safe, unsafe, or
+    timeout).
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.OtpInputDialog.{CardType}.{OtpAuthType}.ErrorMessageShown"
     enum="AutofillOtpInputDialogError" expires_after="2027-04-30">
