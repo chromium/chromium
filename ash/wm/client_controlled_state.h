@@ -92,6 +92,8 @@ class ASH_EXPORT ClientControlledState : public BaseState {
   bool EnterNextState(WindowState* window_state,
                       chromeos::WindowStateType next_state_type);
 
+  Delegate* delegate_for_testing() { return delegate_.get(); }
+
  private:
   chromeos::WindowStateType GetResolvedNextWindowStateType(
       WindowState* window_state,
