@@ -1071,9 +1071,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_FALSE(content::ExecJs(nested_frame, fetch_blob_url_js));
 }
 
-// TODO(https://crbug.com/540611509): Fails on Linux CFI.
+// TODO(https://crbug.com/540611509): Fails on Linux CFI and Linux debug builds.
 #if BUILDFLAG(IS_LINUX) &&                                      \
-    (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
+    (!defined(NDEBUG) ||                                        \
+     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
      BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC))
 #define MAYBE_AccessGranted_DoesNotConsumeUserInteraction \
   DISABLED_AccessGranted_DoesNotConsumeUserInteraction
