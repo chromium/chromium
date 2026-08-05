@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/win/win_util.h"
@@ -236,8 +237,10 @@ HRESULT SinkInputPin::Receive(IMediaSample* sample) {
     timestamp = base::Microseconds(start_time / 10);
   }
 
-  observer_->FrameReceived(buffer, length, resulting_format_, timestamp,
-                           flip_y_);
+  // SAFETY: DirectShow IMediaSample buffer has valid length bytes.
+  auto buffer_span =
+      UNSAFE_BUFFERS(base::span(buffer, static_cast<size_t>(length)));
+  observer_->FrameReceived(buffer_span, resulting_format_, timestamp, flip_y_);
   return S_OK;
 }
 

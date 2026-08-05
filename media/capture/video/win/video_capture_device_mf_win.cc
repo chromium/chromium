@@ -19,6 +19,7 @@
 #include <thread>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -275,6 +276,16 @@ class ScopedBufferLock {
 
   BYTE* data() const { return data_; }
   DWORD length() const { return length_; }
+
+  base::span<const uint8_t> as_span() const {
+    if (!data_) {
+      return {};
+    }
+    // SAFETY: IMFMediaBuffer lock guarantees valid memory of at least `length_`
+    // bytes.
+    return UNSAFE_BUFFERS(
+        base::span(data_.get(), static_cast<size_t>(length_)));
+  }
 
  private:
   ComPtr<IMFMediaBuffer> buffer_;
@@ -2467,9 +2478,9 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
 
   if (!delivered_texture && client_.get()) {
     client_->OnIncomingCapturedData(
-        locked_buffer.data(), locked_buffer.length(),
-        selected_video_capability_->supported_format, color_space_,
-        camera_rotation_.value(), false /* flip_y */, reference_time, timestamp,
+        locked_buffer.as_span(), selected_video_capability_->supported_format,
+        color_space_, camera_rotation_.value(), false /* flip_y */,
+        reference_time, timestamp,
         MaybeForwardCaptureBeginTime(capture_begin_time),
         /*metadata=*/std::nullopt);
   }

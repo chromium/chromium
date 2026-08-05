@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -874,8 +875,7 @@ bool VideoCaptureDeviceWin::GetCameraAndVideoControls(
 }
 
 // Implements SinkFilterObserver::SinkFilterObserver.
-void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
-                                          int length,
+void VideoCaptureDeviceWin::FrameReceived(base::span<const uint8_t> buffer,
                                           const VideoCaptureFormat& format,
                                           base::TimeDelta timestamp,
                                           bool flip_y) {
@@ -907,15 +907,16 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
   // DXVA_VideoTransferMatrix, DXVA_VideoTransferFunction and
   // DXVA_NominalRangeto build a gfx::ColorSpace. See http://crbug.com/959992.
   client_->OnIncomingCapturedData(
-      buffer, length, format, gfx::ColorSpace(), camera_rotation_.value(),
-      flip_y, base::TimeTicks::Now(), timestamp,
+      buffer, format, gfx::ColorSpace(), camera_rotation_.value(), flip_y,
+      base::TimeTicks::Now(), timestamp,
       /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 
   while (!take_photo_callbacks_.empty()) {
     TakePhotoCallback cb = std::move(take_photo_callbacks_.front());
     take_photo_callbacks_.pop();
 
-    mojom::BlobPtr blob = RotateAndBlobify(buffer, length, format, 0);
+    mojom::BlobPtr blob =
+        RotateAndBlobify(buffer.data(), buffer.size(), format, 0);
     if (blob) {
       std::move(cb).Run(std::move(blob));
     }
