@@ -2284,7 +2284,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(HasAdClickMainFrameNavigationUseCounterForUrl(main_url));
 }
 
-IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, AdImageHDRUseCounter) {
+// TODO(crbug.com/541062235): This test is flaky.
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, DISABLED_AdImageHDRUseCounter) {
   base::HistogramTester histogram_tester;
 
   GURL main_url = GetURL("frame_factory.html");
@@ -2387,8 +2388,9 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, AdImageHDRUseCounter_NonAdFrame) {
                                      blink::mojom::WebFeature::kAdImageHDR, 0);
 }
 
+// TODO(crbug.com/541062235): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
-                       AdCSSBackgroundImageHDRUseCounter) {
+                       DISABLED_AdCSSBackgroundImageHDRUseCounter) {
   base::HistogramTester histogram_tester;
 
   GURL main_url = GetURL("frame_factory.html");
@@ -2426,8 +2428,9 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
                                      blink::mojom::WebFeature::kAdImageHDR, 1);
 }
 
+// TODO(crbug.com/541062235): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
-                       AdCSSBackgroundImageHDRUseCounter_AdScript) {
+                       DISABLED_AdCSSBackgroundImageHDRUseCounter_AdScript) {
   base::HistogramTester histogram_tester;
 
   GURL main_url = GetURL("frame_factory.html");
