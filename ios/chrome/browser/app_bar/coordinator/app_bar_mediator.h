@@ -25,10 +25,10 @@ class GeminiBrowserAgent;
 @protocol GeminiCommands;
 class GeminiService;
 @class IncognitoState;
-@class LayoutState;
 @protocol LensOverlayCommands;
 @class LensOverlayStateNotifier;
 class PrefService;
+@class SceneLayoutState;
 @protocol SceneCommands;
 @protocol SettingsCommands;
 @protocol TabGridCommands;
@@ -79,7 +79,7 @@ class WebStateList;
 @property(nonatomic, weak) id<LensOverlayCommands> lensOverlayHandler;
 
 // The layout state of the scene.
-@property(nonatomic, strong) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 // The regular FullscreenCommands handler.
 @property(nonatomic, weak) id<FullscreenCommands> regularFullscreenHandler;

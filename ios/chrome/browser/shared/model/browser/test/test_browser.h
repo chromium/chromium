@@ -8,10 +8,11 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "ios/chrome/browser/shared/model/browser/browser.h"
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 
+@class BrowserLayoutState;
 class WebStateListDelegate;
 
 class TestBrowser final : public Browser {
@@ -46,6 +47,7 @@ class TestBrowser final : public Browser {
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
   SceneState* GetSceneState() final;
+  BrowserLayoutState* GetBrowserLayoutState() final;
   void AddObserver(BrowserObserver* observer) final;
   void RemoveObserver(BrowserObserver* observer) final;
   base::WeakPtr<Browser> AsWeakPtr() final;
@@ -65,6 +67,7 @@ class TestBrowser final : public Browser {
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_ = nil;
+  __strong BrowserLayoutState* browser_layout_state_ = nil;
   std::unique_ptr<TestBrowser> inactive_browser_;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
 

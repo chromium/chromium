@@ -14,8 +14,8 @@
 @protocol AppBarMutator;
 @protocol GeminiCommands;
 @class LayoutGuideCenter;
-@class LayoutState;
 @protocol SceneCommands;
+@class SceneLayoutState;
 @protocol TabGridCommands;
 
 // View controller for the App Bar.
@@ -25,7 +25,7 @@
                         FullscreenUIElement>
 
 // The layout state.
-@property(nonatomic, weak) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 // The mutator.
 @property(nonatomic, weak) id<AppBarMutator> mutator;

@@ -236,7 +236,8 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -471,6 +472,7 @@ const char kChromeAppStoreUrl[] =
     PriceTrackedItemsCommands,
     PromosManagerCommands,
     QuickDeleteCommands,
+    ReSigninPresenter,
     ReaderModeBrowserAgentDelegate,
     ReaderModeCommands,
     ReaderModeCoordinatorDelegate,
@@ -480,7 +482,6 @@ const char kChromeAppStoreUrl[] =
     ReminderNotificationsCoordinatorDelegate,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
-    ReSigninPresenter,
     SaveToDriveCommands,
     SaveToPhotosCommands,
     SearchEngineChoiceCommands,
@@ -492,9 +493,9 @@ const char kChromeAppStoreUrl[] =
     SnackbarCoordinatorDelegate,
     SnapshotGeneratorDelegate,
     StoreKitCoordinatorDelegate,
+    SyncPresenterCommands,
     SyncedSetUpCommands,
     SyncedSetUpCoordinatorDelegate,
-    SyncPresenterCommands,
     TabPickerCommands,
     TextZoomCommands,
     TipsPasswordsCommands,
@@ -1489,7 +1490,7 @@ const char kChromeAppStoreUrl[] =
 
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
       initWithIsIncognito:profile->IsOffTheRecord()
-              layoutState:browser->GetSceneState().layoutState];
+       browserLayoutState:browser->GetBrowserLayoutState()];
   _toolbarAccessoryPresenter.topToolbarLayoutGuide =
       [_layoutGuideCenter makeLayoutGuideNamed:kPrimaryToolbarGuide];
   _toolbarAccessoryPresenter.bottomToolbarLayoutGuide =

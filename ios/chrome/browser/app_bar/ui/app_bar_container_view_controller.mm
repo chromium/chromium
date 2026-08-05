@@ -12,13 +12,19 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 @interface AppBarContainerViewController () <AppBarContainerViewDelegate,
-                                             LayoutStateObserver>
+                                             BrowserLayoutStateObserver,
+                                             IncognitoStateObserver,
+                                             SceneLayoutStateObserver>
+@property(nonatomic, readonly, weak)
+    BrowserLayoutState* currentBrowserLayoutState;
 @property(nonatomic, strong) AppBarContainerView* view;
 @end
 
@@ -28,38 +34,7 @@
   CGFloat _fullscreenProgress;
 }
 
-- (void)setLayoutState:(LayoutState*)layoutState {
-  if (_layoutState == layoutState) {
-    return;
-  }
-  [_layoutState removeObserver:self];
-  _layoutState = layoutState;
-  [_layoutState addObserver:self];
-  [self updateLayout];
-}
-
-#pragma mark - LayoutStateObserver
-
-- (void)layoutState:(LayoutState*)layoutState
-    didChangeAppBarPosition:(AppBarPosition)appBarPosition {
-  [self updateLayout];
-}
-
-- (void)layoutState:(LayoutState*)layoutState
-    didChangeAssistantContainerCutoutRadius:
-        (CGFloat)assistantContainerCutoutRadius {
-  [self updateCutoutRadius:assistantContainerCutoutRadius];
-}
-
-- (void)layoutState:(LayoutState*)layoutState
-    didChangeAssistantContainerInvoked:(BOOL)assistantContainerInvoked {
-  [self updateAndApplyLayout];
-}
-
-- (void)layoutState:(LayoutState*)layoutState
-    didChangeToolbarPosition:(ToolbarPosition)toolbarPosition {
-  [self updateLayout];
-}
+#pragma mark - Properties
 
 @dynamic view;
 
@@ -76,6 +51,89 @@
   [self addChildViewController:_appBar];
   [self.view setAppBar:_appBar.view];
   [_appBar didMoveToParentViewController:self];
+}
+
+- (void)setRegularBrowserLayoutState:
+    (BrowserLayoutState*)regularBrowserLayoutState {
+  if (_regularBrowserLayoutState == regularBrowserLayoutState) {
+    return;
+  }
+  [_regularBrowserLayoutState removeObserver:self];
+  _regularBrowserLayoutState = regularBrowserLayoutState;
+  [_regularBrowserLayoutState addObserver:self];
+  [self updateLayout];
+}
+
+- (void)setIncognitoBrowserLayoutState:
+    (BrowserLayoutState*)incognitoBrowserLayoutState {
+  if (_incognitoBrowserLayoutState == incognitoBrowserLayoutState) {
+    return;
+  }
+  [_incognitoBrowserLayoutState removeObserver:self];
+  _incognitoBrowserLayoutState = incognitoBrowserLayoutState;
+  [_incognitoBrowserLayoutState addObserver:self];
+  [self updateLayout];
+}
+
+- (void)setIncognitoState:(IncognitoState*)incognitoState {
+  if (_incognitoState == incognitoState) {
+    return;
+  }
+  [_incognitoState removeObserver:self];
+  _incognitoState = incognitoState;
+  [_incognitoState addObserver:self];
+  [self updateLayout];
+}
+
+- (BrowserLayoutState*)currentBrowserLayoutState {
+  return self.incognitoState.incognitoContentVisible
+             ? self.incognitoBrowserLayoutState
+             : self.regularBrowserLayoutState;
+}
+
+- (void)setSceneLayoutState:(SceneLayoutState*)sceneLayoutState {
+  if (_sceneLayoutState == sceneLayoutState) {
+    return;
+  }
+  [_sceneLayoutState removeObserver:self];
+  _sceneLayoutState = sceneLayoutState;
+  [_sceneLayoutState addObserver:self];
+  [self updateLayout];
+}
+
+#pragma mark - IncognitoStateObserver
+
+- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
+  [self updateLayout];
+}
+
+- (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
+  [self updateLayout];
+}
+
+#pragma mark - SceneLayoutStateObserver
+
+- (void)layoutState:(SceneLayoutState*)layoutState
+    didChangeAppBarPosition:(AppBarPosition)appBarPosition {
+  [self updateLayout];
+}
+
+- (void)layoutState:(SceneLayoutState*)layoutState
+    didChangeAssistantContainerCutoutRadius:
+        (CGFloat)assistantContainerCutoutRadius {
+  [self updateCutoutRadius:assistantContainerCutoutRadius];
+}
+
+- (void)layoutState:(SceneLayoutState*)layoutState
+    didChangeAssistantContainerInvoked:(BOOL)assistantContainerInvoked {
+  [self updateAndApplyLayout];
+}
+
+#pragma mark - BrowserLayoutStateObserver
+
+- (void)browserLayoutState:(BrowserLayoutState*)browserLayoutState
+    didChangeToolbarPosition:(ToolbarPosition)toolbarPosition {
+  [self updateLayout];
 }
 
 #pragma mark - UIViewController
@@ -96,7 +154,7 @@
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
-  if (self.layoutState.assistantContainerInvoked) {
+  if (self.sceneLayoutState.assistantContainerInvoked) {
     return;
   }
   [self updateAndApplyLayout];
@@ -105,7 +163,7 @@
 #pragma mark - FullscreenBrowserAgentObserving
 
 - (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
-  AppBarPosition position = self.layoutState.appBarPosition;
+  AppBarPosition position = self.sceneLayoutState.appBarPosition;
   switch (position) {
     case AppBarPosition::kBottom: {
       CGFloat minHeight =
@@ -128,14 +186,14 @@
 }
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
-  if (self.layoutState.assistantContainerInvoked &&
+  if (self.sceneLayoutState.assistantContainerInvoked &&
       !IsAppBarHiddenInFullscreen()) {
     _fullscreenProgress = agent->bottom_progress();
     agent->AddObscuredInset(UIRectEdgeBottom, kAppBarHeightFullscreen);
     return;
   }
 
-  AppBarPosition position = self.layoutState.appBarPosition;
+  AppBarPosition position = self.sceneLayoutState.appBarPosition;
   switch (position) {
     case AppBarPosition::kBottom: {
       _fullscreenProgress = agent->bottom_progress();
@@ -177,7 +235,7 @@
     return;
   }
 
-  AppBarPosition position = self.layoutState.appBarPosition;
+  AppBarPosition position = self.sceneLayoutState.appBarPosition;
   CGFloat angle = 0;
 
   switch (position) {
@@ -196,22 +254,23 @@
 
   self.view.transform = CGAffineTransformMakeRotation(angle);
   CGFloat progress = _fullscreenProgress;
-  if (self.layoutState.assistantContainerInvoked &&
+  if (self.sceneLayoutState.assistantContainerInvoked &&
       !IsAppBarHiddenInFullscreen()) {
     progress = 0.0;
   }
   self.view.assistantContainerInvoked =
-      self.layoutState.assistantContainerInvoked;
+      self.sceneLayoutState.assistantContainerInvoked;
   self.view.fullscreenProgress = progress;
   self.view.appBarPosition = position;
   [_appBar updateForAngle:-angle];
-  [self updateCutoutRadius:self.layoutState.assistantContainerCutoutRadius];
+  [self
+      updateCutoutRadius:self.sceneLayoutState.assistantContainerCutoutRadius];
 }
 
 - (void)updateCutoutRadius:(CGFloat)cutoutRadius {
   CGFloat clampedRadius = kAppBarCornerRadius;
-  if (self.layoutState.appBarPosition == AppBarPosition::kBottom &&
-      self.layoutState.toolbarPosition == ToolbarPosition::kTop) {
+  if (self.sceneLayoutState.appBarPosition == AppBarPosition::kBottom &&
+      self.currentBrowserLayoutState.toolbarPosition == ToolbarPosition::kTop) {
     clampedRadius =
         std::clamp(cutoutRadius, kAppBarCornerRadius, kAppBarCornerRadiusMax);
   }

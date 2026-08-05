@@ -57,8 +57,8 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -109,17 +109,17 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 }  // namespace
 
-@interface LensOverlayCoordinator () <LayoutStateObserver,
+@interface LensOverlayCoordinator () <LensOverlayCommands,
                                       LensOverlayConsentPresenterDelegate,
                                       LensOverlayConsentViewControllerDelegate,
-                                      LensOverlayCommands,
-                                      LensOverlayNetworkIssuePresenterDelegate,
+                                      LensOverlayContainerPresenterDelegate,
                                       LensOverlayMediatorDelegate,
+                                      LensOverlayNetworkIssuePresenterDelegate,
                                       LensOverlayOverflowMenuDelegate,
                                       LensOverlayResultConsumer,
-                                      LensOverlayContainerPresenterDelegate,
                                       LensOverlayResultsPagePresenterDelegate,
-                                      LensOverlayTabChangeAudience>
+                                      LensOverlayTabChangeAudience,
+                                      SceneLayoutStateObserver>
 
 /// Whether the `_containerViewController` is currently presented.
 @property(nonatomic, assign, readonly, getter=isLensOverlayVisible)
@@ -1793,9 +1793,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       indicateLensOverlayVisible:lensOverlayVisible];
 }
 
-#pragma mark - LayoutStateObserver
+#pragma mark - SceneLayoutStateObserver
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
   [self updateInitialVisibleAreaLayoutGuide];
 }

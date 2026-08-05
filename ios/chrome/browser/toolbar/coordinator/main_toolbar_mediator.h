@@ -7,15 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
-@class LayoutState;
+@class BrowserLayoutState;
 class PrefService;
 
 /// Mediator for the main toolbar, observing omnibox position.
 @interface MainToolbarMediator : NSObject
 
-/// Initializes the mediator with the preference service and layout state.
+/// Initializes the mediator with the preference service and browser layout
+/// state.
 - (instancetype)initWithPrefService:(PrefService*)prefService
-                        layoutState:(LayoutState*)layoutState
+                 browserLayoutState:(BrowserLayoutState*)browserLayoutState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

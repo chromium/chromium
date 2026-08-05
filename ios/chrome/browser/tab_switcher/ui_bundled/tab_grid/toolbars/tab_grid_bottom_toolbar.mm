@@ -10,7 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -55,7 +55,7 @@ CGFloat CompactButtonHorizontalPadding() {
 
 }  // namespace
 
-@interface TabGridBottomToolbar () <LayoutStateObserver>
+@interface TabGridBottomToolbar () <SceneLayoutStateObserver>
 @end
 
 @implementation TabGridBottomToolbar {
@@ -213,9 +213,9 @@ CGFloat CompactButtonHorizontalPadding() {
   _addToButton.enabled = enabled;
 }
 
-#pragma mark - LayoutStateObserver
+#pragma mark - SceneLayoutStateObserver
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
   [self updateLayout];
 }
@@ -654,7 +654,7 @@ CGFloat CompactButtonHorizontalPadding() {
   [self updateBackgroundVisibility];
 }
 
-- (void)setLayoutState:(LayoutState*)layoutState {
+- (void)setLayoutState:(SceneLayoutState*)layoutState {
   if (_layoutState == layoutState) {
     return;
   }

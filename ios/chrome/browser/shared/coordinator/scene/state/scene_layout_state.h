@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_STATE_LAYOUT_STATE_H_
-#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_STATE_LAYOUT_STATE_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_STATE_SCENE_LAYOUT_STATE_H_
+#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_STATE_SCENE_LAYOUT_STATE_H_
 
 #import <UIKit/UIKit.h>
 
@@ -18,16 +18,10 @@ enum class AppBarPosition {
   kRight,
 };
 
-// The position of the main toolbar (omnibox).
-enum class ToolbarPosition {
-  kTop,
-  kBottom,
-};
+@class SceneLayoutState;
 
-@class LayoutState;
-
-// Protocol for observers of the layout state.
-@protocol LayoutStateObserver <NSObject>
+// Protocol for observers of the scene layout state.
+@protocol SceneLayoutStateObserver <NSObject>
 
 @optional
 
@@ -35,46 +29,42 @@ enum class ToolbarPosition {
 // Observers can use the coordinator to animate alongside the transition.
 // If the change is not animated, `coordinator` will be `nil`, and observers
 // should apply changes immediately.
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     willChangeContainedLayout:(BOOL)containedLayoutActive
     withTransitionCoordinator:(id<LayoutTransitionCoordinating>)coordinator;
 
 // Called when the contained layout supported state changes.
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeContainedLayoutSupported:(BOOL)supported;
 
 // Called when the windowed mode state changes.
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeWindowedMode:(BOOL)windowedMode;
 
 // Called when the App Bar position changes.
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition;
 
 // Called when the assistant container cutout radius changes.
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAssistantContainerCutoutRadius:
         (CGFloat)assistantContainerCutoutRadius;
 
 // Called when the Assistant container invoked state changes.
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAssistantContainerInvoked:(BOOL)assistantContainerInvoked;
 
-// Called when the toolbar position changes.
-- (void)layoutState:(LayoutState*)layoutState
-    didChangeToolbarPosition:(ToolbarPosition)toolbarPosition;
-
 // Called when the Gemini Floaty invocation state changes.
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeGeminiFloatyInvoked:(BOOL)geminiFloatyInvoked;
 
 @end
 
-// Object containing the state of the layout.
+// Object containing the state of the scene layout.
 // This class acts as a pure state holder and transition coordinator.
 // Observers reacting to state changes will have their UI updates captured by
 // the caller's animation block or transition coordinator.
-@interface LayoutState : NSObject
+@interface SceneLayoutState : NSObject
 
 // Indicates whether the contained layout is active.
 @property(nonatomic, readonly) BOOL containedLayoutActive;
@@ -95,9 +85,6 @@ enum class ToolbarPosition {
 // Indicates whether the Assistant container is currently invoked.
 @property(nonatomic, readonly) BOOL assistantContainerInvoked;
 
-// The position of the toolbar (omnibox).
-@property(nonatomic, readonly) ToolbarPosition toolbarPosition;
-
 // Indicates whether the Gemini Floaty is currently invoked.
 @property(nonatomic, readonly) BOOL geminiFloatyInvoked;
 
@@ -116,8 +103,6 @@ enum class ToolbarPosition {
                              passKey:(LayoutStateAssistantPassKey)passKey;
 - (void)setGeminiFloatyInvoked:(BOOL)invoked
                        passKey:(LayoutStateAssistantPassKey)passKey;
-- (void)setToolbarPosition:(ToolbarPosition)position
-                   passKey:(LayoutStateToolbarPassKey)passKey;
 - (void)setAppBarPosition:(AppBarPosition)position
                   passKey:(LayoutStateScenePassKey)passKey;
 
@@ -137,10 +122,10 @@ enum class ToolbarPosition {
                              passKey:(LayoutStateScenePassKey)passKey;
 
 // Adds an observer to be notified of layout state changes.
-- (void)addObserver:(id<LayoutStateObserver>)observer;
+- (void)addObserver:(id<SceneLayoutStateObserver>)observer;
 // Removes a previously added observer.
-- (void)removeObserver:(id<LayoutStateObserver>)observer;
+- (void)removeObserver:(id<SceneLayoutStateObserver>)observer;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_STATE_LAYOUT_STATE_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_STATE_SCENE_LAYOUT_STATE_H_

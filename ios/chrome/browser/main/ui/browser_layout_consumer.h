@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class LayoutState;
-
 // Protocol for consumers of layout updates from the browser container.
 @protocol BrowserLayoutConsumer <NSObject>
 

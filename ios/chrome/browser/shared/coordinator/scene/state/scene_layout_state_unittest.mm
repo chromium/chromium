@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
@@ -25,25 +25,22 @@ inline LayoutStateScenePassKey ScenePassKey() {
 inline LayoutStateAssistantPassKey AssistantPassKey() {
   return LayoutStateTestPassKeyFactory::CreateAssistantKey();
 }
-inline LayoutStateToolbarPassKey ToolbarPassKey() {
-  return LayoutStateTestPassKeyFactory::CreateToolbarKey();
-}
 
-// Tests for LayoutState.
+// Tests for SceneLayoutState.
 class LayoutStateTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    layout_state_ = [[LayoutState alloc] init];
+    layout_state_ = [[SceneLayoutState alloc] init];
   }
 
   base::test::TaskEnvironment task_environment_;
-  LayoutState* layout_state_;
+  SceneLayoutState* layout_state_;
 };
 
 // Tests that adding an observer works and it receives updates.
 TEST_F(LayoutStateTest, AddObserver) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  id mock_observer = OCMProtocolMock(@protocol(SceneLayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer layoutState:layout_state_
@@ -66,7 +63,7 @@ TEST_F(LayoutStateTest, AddObserver) {
 
 // Tests that willChangeContainedLayout is called with the provided coordinator.
 TEST_F(LayoutStateTest, WillChangeWithCoordinator) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  id mock_observer = OCMProtocolMock(@protocol(SceneLayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   id mock_coordinator =
@@ -95,7 +92,7 @@ TEST_F(LayoutStateTest, WillChangeWithCoordinator) {
 
 // Tests that containedLayoutSupported updates observers.
 TEST_F(LayoutStateTest, ContainedLayoutSupported) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  id mock_observer = OCMProtocolMock(@protocol(SceneLayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer layoutState:layout_state_
@@ -108,7 +105,7 @@ TEST_F(LayoutStateTest, ContainedLayoutSupported) {
 
 // Tests that windowedMode updates observers.
 TEST_F(LayoutStateTest, WindowedMode) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  id mock_observer = OCMProtocolMock(@protocol(SceneLayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer layoutState:layout_state_
@@ -121,7 +118,7 @@ TEST_F(LayoutStateTest, WindowedMode) {
 
 // Tests that appBarPosition updates observers.
 TEST_F(LayoutStateTest, AppBarPosition) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  id mock_observer = OCMProtocolMock(@protocol(SceneLayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer layoutState:layout_state_
@@ -133,25 +130,9 @@ TEST_F(LayoutStateTest, AppBarPosition) {
   [mock_observer verify];
 }
 
-// Tests that toolbarPosition updates observers.
-TEST_F(LayoutStateTest, ToolbarPosition) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
-  [layout_state_ addObserver:mock_observer];
-
-  OCMExpect([mock_observer layoutState:layout_state_
-              didChangeToolbarPosition:ToolbarPosition::kBottom]);
-
-  [layout_state_ setToolbarPosition:ToolbarPosition::kBottom
-                            passKey:ToolbarPassKey()];
-
-  EXPECT_EQ(layout_state_.toolbarPosition, ToolbarPosition::kBottom);
-
-  [mock_observer verify];
-}
-
 // Tests that assistantContainerCutoutRadius updates observers.
 TEST_F(LayoutStateTest, CutoutRadius) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  id mock_observer = OCMProtocolMock(@protocol(SceneLayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer layoutState:layout_state_
@@ -167,7 +148,7 @@ TEST_F(LayoutStateTest, CutoutRadius) {
 
 // Tests that assistantContainerInvoked updates observers.
 TEST_F(LayoutStateTest, AssistantContainerInvoked) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  id mock_observer = OCMProtocolMock(@protocol(SceneLayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer layoutState:layout_state_
@@ -182,7 +163,7 @@ TEST_F(LayoutStateTest, AssistantContainerInvoked) {
 
 // Tests that geminiFloatyInvoked updates observers.
 TEST_F(LayoutStateTest, GeminiFloatyInvoked) {
-  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  id mock_observer = OCMProtocolMock(@protocol(SceneLayoutStateObserver));
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer layoutState:layout_state_

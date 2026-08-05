@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
@@ -28,7 +27,8 @@
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -170,10 +170,10 @@ inline LayoutStateToolbarPassKey PassKey() {
 }
 }  // namespace
 
-@interface MainToolbarCoordinator () <ContextualPanelEntrypointCommands,
+@interface MainToolbarCoordinator () <BrowserLayoutStateObserver,
+                                      ContextualPanelEntrypointCommands,
                                       FullscreenBrowserAgentObserving,
                                       GuidedTourCommands,
-                                      LayoutStateObserver,
                                       LocationBarBadgeCommands,
                                       PageActionMenuEntryPointCommands,
                                       PrimaryToolbarViewControllerDelegate,
@@ -204,8 +204,8 @@ inline LayoutStateToolbarPassKey PassKey() {
 @implementation MainToolbarCoordinator {
   // The mediator for this coordinator.
   MainToolbarMediator* _mainToolbarMediator;
-  // The layout state for the scene.
-  __weak LayoutState* _layoutState;
+  // The layout state for the browser.
+  __weak BrowserLayoutState* _browserLayoutState;
   /// Type of toolbar containing the omnibox. Unlike
   /// `_steadyStateOmniboxPosition`, this tracks the omnibox position at all
   /// time.
@@ -271,7 +271,8 @@ inline LayoutStateToolbarPassKey PassKey() {
   _omniboxPosition = ToolbarType::kPrimary;
 
   Browser* browser = self.browser;
-  _layoutState = browser->GetSceneState().layoutState;
+  _browserLayoutState = browser->GetBrowserLayoutState();
+  [_browserLayoutState addObserver:self];
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
@@ -289,13 +290,11 @@ inline LayoutStateToolbarPassKey PassKey() {
 
   _mainToolbarMediator = [[MainToolbarMediator alloc]
       initWithPrefService:GetApplicationContext()->GetLocalState()
-              layoutState:_layoutState];
+       browserLayoutState:_browserLayoutState];
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(ReaderModeChipCommands)];
   BOOL isToolbarAtBottom = [self isToolbarPositionBottom];
-
-  [_layoutState addObserver:self];
 
   if (IsChromeNextIaEnabled()) {
     _topLocationBarCoordinator =
@@ -363,7 +362,7 @@ inline LayoutStateToolbarPassKey PassKey() {
           startDispatchingToTarget:self
                        forProtocol:@protocol(PageActionMenuEntryPointCommands)];
     }
-    [self updateLayoutForToolbarPosition:_layoutState.toolbarPosition];
+    [self updateLayoutForToolbarPosition:_browserLayoutState.toolbarPosition];
     self.started = YES;
     return;
   }
@@ -399,7 +398,7 @@ inline LayoutStateToolbarPassKey PassKey() {
   // Force the initial layout setup to ensure the view hierarchy is constructed
   // and the location bar view is loaded before setting up the command
   // dispatchers.
-  [self updateLayoutForToolbarPosition:_layoutState.toolbarPosition];
+  [self updateLayoutForToolbarPosition:_browserLayoutState.toolbarPosition];
 
   if (IsPageActionMenuEnabled()) {
     [self.locationBarCoordinator setPageActionMenuEntryPointDispatcher];
@@ -457,7 +456,8 @@ inline LayoutStateToolbarPassKey PassKey() {
   [_mainToolbarMediator disconnect];
   _mainToolbarMediator = nil;
 
-  [_layoutState removeObserver:self];
+  [_browserLayoutState removeObserver:self];
+  _browserLayoutState = nil;
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   self.started = NO;
 }
@@ -699,7 +699,8 @@ inline LayoutStateToolbarPassKey PassKey() {
     }
     if ([self isToolbarPositionBottom]) {
       if (IsAppBarHiddenInFullscreen() &&
-          _layoutState.appBarPosition == AppBarPosition::kBottom) {
+          self.browser->GetSceneState().layoutState.appBarPosition ==
+              AppBarPosition::kBottom) {
         CGFloat safeAreaBottom = 0.0;
         if (self.browser->GetSceneState().window) {
           safeAreaBottom =
@@ -1175,21 +1176,12 @@ inline LayoutStateToolbarPassKey PassKey() {
     return;
   }
 
-  // Only the visible coordinator (normal vs. incognito) is allowed to update
-  // the shared LayoutState.
-  Browser* activeBrowser = self.browser->GetSceneState()
-                               .browserProviderInterface
-                               .currentBrowserProvider.browser;
-  if (activeBrowser && self.browser != activeBrowser) {
-    return;
-  }
-
   ToolbarPosition position = (toolbarType == ToolbarType::kSecondary)
                                  ? ToolbarPosition::kBottom
                                  : ToolbarPosition::kTop;
   // When Chrome Next is disabled, the active toolbar position changes
   // dynamically during focus/NTP transitions (managed by
-  // LegacyToolbarMediator). Update the LayoutState to keep it in sync.
+  // LegacyToolbarMediator). Update the BrowserLayoutState to keep it in sync.
   [self updateLayoutStateToolbarPosition:position];
 }
 
@@ -1199,7 +1191,8 @@ inline LayoutStateToolbarPassKey PassKey() {
 
 - (CGFloat)keyboardAttachedBottomOmniboxHeight {
   if (IsChromeNextIaEnabled()) {
-    if (_layoutState.appBarPosition == AppBarPosition::kBottom) {
+    if (self.browser->GetSceneState().layoutState.appBarPosition ==
+        AppBarPosition::kBottom) {
       return kKeyboardAttachedOmniboxBottomPadding;
     } else {
       return kKeyboardAttachedOmniboxBottomPaddingLandscape;
@@ -1235,9 +1228,9 @@ inline LayoutStateToolbarPassKey PassKey() {
       updateForFullscreenProgress:agent->bottom_progress()];
 }
 
-#pragma mark - LayoutStateObserver
+#pragma mark - BrowserLayoutStateObserver
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)browserLayoutState:(BrowserLayoutState*)layoutState
     didChangeToolbarPosition:(ToolbarPosition)toolbarPosition {
   [self updateLayoutForToolbarPosition:toolbarPosition];
 }
@@ -1354,7 +1347,6 @@ inline LayoutStateToolbarPassKey PassKey() {
                                          topPosition:topPosition];
   toolbarViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(browser);
-  toolbarViewController.layoutState = _layoutState;
   ToolbarButtonFactory* toolbarButtonFactory =
       [[ToolbarButtonFactory alloc] initWithIncognito:incognito];
   if (!incognito) {
@@ -1454,7 +1446,7 @@ inline LayoutStateToolbarPassKey PassKey() {
 // Returns whether the toolbar position is currently at the bottom of the
 // screen.
 - (BOOL)isToolbarPositionBottom {
-  return _layoutState.toolbarPosition == ToolbarPosition::kBottom;
+  return _browserLayoutState.toolbarPosition == ToolbarPosition::kBottom;
 }
 
 // Returns whether `point` in window coordinates is inside the frame of
@@ -1470,10 +1462,10 @@ inline LayoutStateToolbarPassKey PassKey() {
   return CGRectContainsPoint(toolbarBounds, pointInToolbarCoordinates);
 }
 
-// Updates the LayoutState's toolbarPosition property.
+// Updates the BrowserLayoutState's toolbarPosition property.
 - (void)updateLayoutStateToolbarPosition:(ToolbarPosition)position {
   CHECK(!IsChromeNextIaEnabled());
-  [_layoutState setToolbarPosition:position passKey:PassKey()];
+  [_browserLayoutState setToolbarPosition:position passKey:PassKey()];
 }
 
 // Updates the visual layout and child coordinators to match the given position.

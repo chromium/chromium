@@ -29,7 +29,8 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -135,9 +136,9 @@ const CGFloat kIconPointSize = 16.0;
     progress =
         self.topPosition ? agent->top_progress() : agent->bottom_progress();
   } else {
-    CHECK(self.layoutState);
+    CHECK(self.browserLayoutState);
     BOOL isBottomOmnibox =
-        self.layoutState.toolbarPosition == ToolbarPosition::kBottom;
+        self.browserLayoutState.toolbarPosition == ToolbarPosition::kBottom;
     progress =
         isBottomOmnibox ? agent->bottom_progress() : agent->top_progress();
   }

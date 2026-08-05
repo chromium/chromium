@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter.h"
 
-@class LayoutState;
+@class BrowserLayoutState;
 
 /// Presenter that displays accessories over or next to the toolbar. Note that
 /// there are different presentations styles for iPhone (Compact Toolbar) vs.
@@ -29,7 +29,7 @@
 @property(nonatomic, strong) UILayoutGuide* bottomToolbarLayoutGuide;
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito
-                        layoutState:(LayoutState*)layoutState
+                 browserLayoutState:(BrowserLayoutState*)browserLayoutState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

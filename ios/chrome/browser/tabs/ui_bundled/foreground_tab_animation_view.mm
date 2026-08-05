@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/tabs/ui_bundled/foreground_tab_animation_view.h"
 
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/ui/util/layout_constants.h"
 #import "ios/chrome/browser/shared/ui/util/property_animator_group.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

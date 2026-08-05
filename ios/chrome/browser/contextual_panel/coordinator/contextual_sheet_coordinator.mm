@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_presenter.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_view_controller.h"
@@ -11,8 +12,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
-@interface ContextualSheetCoordinator () <LayoutStateObserver,
+@interface ContextualSheetCoordinator () <BrowserLayoutStateObserver,
                                           TraitCollectionChangeDelegate>
 
 @end
@@ -36,13 +36,13 @@
   std::unique_ptr<AnimatedScopedFullscreenDisabler>
       _legacyAnimatedFullscreenDisabler;
 
-  // The LayoutState observed by this coordinator.
-  __weak LayoutState* _layoutState;
+  // The BrowserLayoutState observed by this coordinator.
+  __weak BrowserLayoutState* _browserLayoutState;
 }
 
 - (void)start {
-  _layoutState = self.browser->GetSceneState().layoutState;
-  [_layoutState addObserver:self];
+  _browserLayoutState = self.browser->GetBrowserLayoutState();
+  [_browserLayoutState addObserver:self];
 
   // On iPad, let the panel coordinator present directly using iOS's built-in
   // UISheetController.
@@ -70,8 +70,8 @@
 
   _fullscreenDisabler = nullptr;
   _legacyAnimatedFullscreenDisabler = nullptr;
-  [_layoutState removeObserver:self];
-  _layoutState = nil;
+  [_browserLayoutState removeObserver:self];
+  _browserLayoutState = nil;
 }
 
 - (void)traitCollectionDidChangeForViewController:
@@ -139,7 +139,7 @@
 
   [_viewController didMoveToParentViewController:self.baseViewController];
 
-  if (_layoutState.toolbarPosition == ToolbarPosition::kBottom) {
+  if (_browserLayoutState.toolbarPosition == ToolbarPosition::kBottom) {
     [self disableFullscreen];
   }
 
@@ -170,9 +170,9 @@
   _legacyAnimatedFullscreenDisabler = nullptr;
 }
 
-#pragma mark - LayoutStateObserver
+#pragma mark - BrowserLayoutStateObserver
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)browserLayoutState:(BrowserLayoutState*)layoutState
     didChangeToolbarPosition:(ToolbarPosition)toolbarPosition {
   if (toolbarPosition == ToolbarPosition::kBottom) {
     [self disableFullscreen];

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -28,6 +29,7 @@ BrowserImpl::BrowserImpl(ProfileIOS* profile,
       web_state_list_(this, TabGroupServiceFactory::GetForProfile(profile)),
       scene_state_(scene_state),
       command_dispatcher_(command_dispatcher),
+      browser_layout_state_([[BrowserLayoutState alloc] init]),
       active_browser_(active_browser ?: this) {
   DCHECK(profile);
   DCHECK(active_browser_);
@@ -67,6 +69,10 @@ CommandDispatcher* BrowserImpl::GetCommandDispatcher() {
 
 SceneState* BrowserImpl::GetSceneState() {
   return scene_state_;
+}
+
+BrowserLayoutState* BrowserImpl::GetBrowserLayoutState() {
+  return browser_layout_state_;
 }
 
 void BrowserImpl::AddObserver(BrowserObserver* observer) {

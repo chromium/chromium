@@ -18,8 +18,8 @@ class FullscreenController;
 @protocol GeminiCommands;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
-@class LayoutState;
 class OverlayPresenter;
+@class SceneLayoutState;
 @protocol PageActionMenuEntryPointCommands;
 @protocol PopupMenuCommands;
 @protocol TabStripCommands;
@@ -47,7 +47,7 @@ class DeviceSwitcherResultDispatcher;
                      webStateList:(raw_ptr<WebStateList>)webStateList
              fullscreenController:
                  (raw_ptr<FullscreenController>)fullscreenController
-                      layoutState:(LayoutState*)layoutState
+                      layoutState:(SceneLayoutState*)layoutState
     overlayPresenterForWebContent:
         (raw_ptr<OverlayPresenter>)webContentOverlayPresenter
                     infobarBanner:(raw_ptr<OverlayPresenter>)bannerPresenter

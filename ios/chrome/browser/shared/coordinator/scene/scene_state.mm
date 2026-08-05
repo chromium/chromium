@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 
@@ -66,7 +66,7 @@
     _uiBlockerState = [[SceneUIBlockerState alloc] init];
     _tabGridState = [[TabGridState alloc] init];
     _incognitoState = [[IncognitoState alloc] initWithSceneState:self];
-    _layoutState = [[LayoutState alloc] init];
+    _layoutState = [[SceneLayoutState alloc] init];
     _lensOverlayStateNotifier = [[LensOverlayStateNotifier alloc] init];
     _prefs = nil;
   }

@@ -9,12 +9,12 @@
 
 @protocol AssistantContainerAnimatable;
 @protocol AssistantContainerPresenter;
-@class LayoutState;
+@class SceneLayoutState;
 
 @interface AssistantContainerAnimator : NSObject
 
 // Designated initializer with layout state.
-- (instancetype)initWithLayoutState:(LayoutState*)layoutState
+- (instancetype)initWithLayoutState:(SceneLayoutState*)layoutState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

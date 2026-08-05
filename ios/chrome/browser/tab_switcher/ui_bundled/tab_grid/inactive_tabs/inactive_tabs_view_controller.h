@@ -9,7 +9,7 @@
 
 @class InactiveGridViewController;
 @class InactiveTabsViewController;
-@class LayoutState;
+@class SceneLayoutState;
 
 // Protocol used to relay relevant user interactions from the
 // InactiveTabsViewController.
@@ -30,7 +30,7 @@
 @interface InactiveTabsViewController : UIViewController
 
 // The layout state of the scene.
-@property(nonatomic, weak) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 // The embedded grid view controller.
 @property(nonatomic, readonly) InactiveGridViewController* gridViewController;

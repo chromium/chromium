@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -127,7 +127,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 }  // namespace
 
 @interface AppBarViewController () <AppBarViewDelegate,
-                                    LayoutStateObserver,
+                                    SceneLayoutStateObserver,
                                     UIContextMenuInteractionDelegate>
 @end
 
@@ -213,7 +213,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   BOOL _geminiFloatyInvoked;
 }
 
-- (void)setLayoutState:(LayoutState*)layoutState {
+- (void)setLayoutState:(SceneLayoutState*)layoutState {
   if (_layoutState == layoutState) {
     return;
   }
@@ -223,9 +223,9 @@ UIColor* AssistantHighlightBackgroundColor() {
   _geminiFloatyInvoked = layoutState ? layoutState.geminiFloatyInvoked : NO;
 }
 
-#pragma mark - LayoutStateObserver
+#pragma mark - SceneLayoutStateObserver
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
   // Update the alpha with a duration of 0 as it is already in an animation
   // block.
@@ -240,7 +240,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   }
 }
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAssistantContainerInvoked:(BOOL)assistantContainerInvoked {
   // Synchronize titles (which may set them to nil when labels are hidden).
   // This replicates the behavior previously handled by
@@ -275,7 +275,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   }
 }
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeGeminiFloatyInvoked:(BOOL)geminiFloatyInvoked {
   if (_geminiFloatyInvoked == geminiFloatyInvoked) {
     return;

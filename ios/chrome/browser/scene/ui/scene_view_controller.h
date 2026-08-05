@@ -16,7 +16,7 @@
 @class AssistantContainerViewController;
 @protocol GeminiCommands;
 @class LayoutGuideCenter;
-@class LayoutState;
+@class SceneLayoutState;
 @protocol SceneMutator;
 @protocol SceneViewControllerDelegate;
 
@@ -28,7 +28,7 @@
                                           SceneConsumer>
 
 // The layout state to observe.
-@property(nonatomic, weak) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 // This view controller's LayoutGuideCenter.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;

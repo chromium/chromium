@@ -43,6 +43,7 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
   SceneState* GetSceneState() final;
+  BrowserLayoutState* GetBrowserLayoutState() final;
   void AddObserver(BrowserObserver* observer) final;
   void RemoveObserver(BrowserObserver* observer) final;
   base::WeakPtr<Browser> AsWeakPtr() final;
@@ -63,6 +64,7 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   // Will both be nil for a temporary Browser.
   __weak SceneState* scene_state_;
   __strong CommandDispatcher* command_dispatcher_;
+  __strong BrowserLayoutState* browser_layout_state_;
 
   // Used to maintain the relationship between the regular and the inactive
   // Browser. For a regular Browser, `active_browser_` will be set to `this`.

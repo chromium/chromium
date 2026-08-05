@@ -29,11 +29,11 @@ class GURL;
 @protocol IncognitoReauthConsumer;
 enum class IPHDismissalReasonType;
 @class LayoutGuideCenter;
-@class LayoutState;
 @class PinnedTabsViewController;
 @protocol PriceCardDataSource;
 @class RegularGridViewController;
 @protocol SceneCommands;
+@class SceneLayoutState;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
 @protocol TabContextMenuProvider;
@@ -157,7 +157,7 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // The layout state of the scene.
-@property(nonatomic, weak) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 // Top and bottom toolbars. Those must be set before -viewDidLoad is called.
 @property(nonatomic, strong) TabGridTopToolbar* topToolbar;

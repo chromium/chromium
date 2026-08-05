@@ -21,7 +21,8 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -123,7 +124,9 @@ enum class TransitionState {
     _containerViewController.detents = _detents;
   }
 
-  _containerViewController.layoutState = self.sceneState.layoutState;
+  _containerViewController.browserLayoutState =
+      self.browser->GetBrowserLayoutState();
+  _containerViewController.sceneLayoutState = self.sceneState.layoutState;
 
   // Resolve initial layout guide name.
   LayoutGuideCenter* center = LayoutGuideCenterForBrowser(self.browser);

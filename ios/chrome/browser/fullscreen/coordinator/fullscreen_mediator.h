@@ -9,8 +9,8 @@
 
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 
+@class BrowserLayoutState;
 class FullscreenBrowserAgent;
-@class LayoutState;
 class WebStateList;
 
 // The mediator for the fullscreen feature.
@@ -19,7 +19,7 @@ class WebStateList;
 // Initializer for the mediator.
 - (instancetype)initWithBrowserAgent:(FullscreenBrowserAgent*)browserAgent
                         webStateList:(WebStateList*)webStateList
-                         layoutState:(LayoutState*)layoutState
+                  browserLayoutState:(BrowserLayoutState*)browserLayoutState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

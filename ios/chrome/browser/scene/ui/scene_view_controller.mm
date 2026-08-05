@@ -26,8 +26,8 @@
 #import "ios/chrome/browser/scene/ui/scene_view.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/scene/ui/scene_view_delegate.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_passkey.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/app_bar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -62,7 +62,7 @@ inline LayoutStateScenePassKey PassKey() {
 }
 }  // namespace
 
-@interface SceneViewController () <LayoutStateObserver, SceneViewDelegate>
+@interface SceneViewController () <SceneLayoutStateObserver, SceneViewDelegate>
 @end
 
 @implementation SceneViewController {
@@ -415,7 +415,7 @@ inline LayoutStateScenePassKey PassKey() {
 
 #pragma mark - Accessors
 
-- (void)setLayoutState:(LayoutState*)layoutState {
+- (void)setLayoutState:(SceneLayoutState*)layoutState {
   if (_layoutState == layoutState) {
     return;
   }
@@ -424,9 +424,9 @@ inline LayoutStateScenePassKey PassKey() {
   [_layoutState addObserver:self];
 }
 
-#pragma mark - LayoutStateObserver
+#pragma mark - SceneLayoutStateObserver
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     willChangeContainedLayout:(BOOL)containedLayoutActive
     withTransitionCoordinator:(id<LayoutTransitionCoordinating>)coordinator {
   __weak __typeof(self) weakSelf = self;
@@ -442,7 +442,7 @@ inline LayoutStateScenePassKey PassKey() {
   }
 }
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeContainedLayoutSupported:(BOOL)supported {
   if (supported && _assistantContainerViewController) {
     [layoutState setContainedLayoutActive:YES scenePassKey:PassKey()];
@@ -452,17 +452,17 @@ inline LayoutStateScenePassKey PassKey() {
   [self updateAssistantLayout];
 }
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeWindowedMode:(BOOL)windowedMode {
   [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
 }
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
   [self updateLayoutForViews];
 }
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     didChangeGeminiFloatyInvoked:(BOOL)geminiFloatyInvoked {
   [self updateLayoutForViews];
 }

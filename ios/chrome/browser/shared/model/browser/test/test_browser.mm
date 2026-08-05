@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -21,7 +22,8 @@ TestBrowser::TestBrowser(
       profile_(profile),
       scene_state_(scene_state),
       web_state_list_delegate_(std::move(web_state_list_delegate)),
-      command_dispatcher_([[CommandDispatcher alloc] init]) {
+      command_dispatcher_([[CommandDispatcher alloc] init]),
+      browser_layout_state_([[BrowserLayoutState alloc] init]) {
   DCHECK(profile_);
   DCHECK(web_state_list_delegate_);
   web_state_list_ =
@@ -80,6 +82,10 @@ CommandDispatcher* TestBrowser::GetCommandDispatcher() {
 
 SceneState* TestBrowser::GetSceneState() {
   return scene_state_;
+}
+
+BrowserLayoutState* TestBrowser::GetBrowserLayoutState() {
+  return browser_layout_state_;
 }
 
 void TestBrowser::AddObserver(BrowserObserver* observer) {

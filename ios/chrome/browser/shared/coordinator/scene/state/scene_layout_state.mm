@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 
 #import <cmath>
 
@@ -69,21 +69,22 @@ UIInterfaceOrientation GetTargetInterfaceOrientation(
 
 }  // namespace
 
-@interface LayoutStateObserverList : CRBProtocolObservers <LayoutStateObserver>
+@interface SceneLayoutStateObserverList
+    : CRBProtocolObservers <SceneLayoutStateObserver>
 @end
 
-@implementation LayoutStateObserverList
+@implementation SceneLayoutStateObserverList
 @end
 
-@implementation LayoutState {
-  LayoutStateObserverList* _observers;
+@implementation SceneLayoutState {
+  SceneLayoutStateObserverList* _observers;
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _observers = [LayoutStateObserverList
-        observersWithProtocol:@protocol(LayoutStateObserver)];
+    _observers = [SceneLayoutStateObserverList
+        observersWithProtocol:@protocol(SceneLayoutStateObserver)];
   }
   return self;
 }
@@ -157,15 +158,6 @@ UIInterfaceOrientation GetTargetInterfaceOrientation(
   [_observers layoutState:self didChangeGeminiFloatyInvoked:invoked];
 }
 
-- (void)setToolbarPosition:(ToolbarPosition)position
-                   passKey:(LayoutStateToolbarPassKey)passKey {
-  if (_toolbarPosition == position) {
-    return;
-  }
-  _toolbarPosition = position;
-  [_observers layoutState:self didChangeToolbarPosition:position];
-}
-
 - (void)setAppBarPosition:(AppBarPosition)position
                   passKey:(LayoutStateScenePassKey)passKey {
   if (_appBarPosition == position) {
@@ -218,11 +210,11 @@ UIInterfaceOrientation GetTargetInterfaceOrientation(
   [_observers layoutState:self didChangeAppBarPosition:position];
 }
 
-- (void)addObserver:(id<LayoutStateObserver>)observer {
+- (void)addObserver:(id<SceneLayoutStateObserver>)observer {
   [_observers addObserver:observer];
 }
 
-- (void)removeObserver:(id<LayoutStateObserver>)observer {
+- (void)removeObserver:(id<SceneLayoutStateObserver>)observer {
   [_observers removeObserver:observer];
 }
 

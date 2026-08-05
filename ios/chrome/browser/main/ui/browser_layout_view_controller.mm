@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/main/ui/browser_layout_consumer.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
@@ -31,7 +31,7 @@ namespace {
 constexpr CGFloat kContainedLayoutTabStripTopMargin = 4.0;
 }  // namespace
 
-@interface BrowserLayoutViewController () <LayoutStateObserver>
+@interface BrowserLayoutViewController () <SceneLayoutStateObserver>
 @end
 
 @implementation BrowserLayoutViewController {
@@ -407,7 +407,7 @@ constexpr CGFloat kContainedLayoutTabStripTopMargin = 4.0;
   _staticStatusBarView.overrideUserInterfaceStyle = style;
 }
 
-- (void)setLayoutState:(LayoutState*)layoutState {
+- (void)setLayoutState:(SceneLayoutState*)layoutState {
   if (_layoutState == layoutState) {
     return;
   }
@@ -495,9 +495,9 @@ constexpr CGFloat kContainedLayoutTabStripTopMargin = 4.0;
                               view:self.browserViewController.view];
 }
 
-#pragma mark - LayoutStateObserver
+#pragma mark - SceneLayoutStateObserver
 
-- (void)layoutState:(LayoutState*)layoutState
+- (void)layoutState:(SceneLayoutState*)layoutState
     willChangeContainedLayout:(BOOL)containedLayoutActive
     withTransitionCoordinator:(id<LayoutTransitionCoordinating>)coordinator {
   CGFloat targetTopInset =

@@ -9,14 +9,14 @@
 
 #import "ios/chrome/browser/main/ui/browser_layout_consumer.h"
 
-@class LayoutState;
+@class SceneLayoutState;
 
 // Fake ViewController implementing BrowserLayoutConsumer for testing.
 @interface FakeBrowserViewController : UIViewController <BrowserLayoutConsumer>
 
 // Direct access to the properties from the protocol.
 @property(nonatomic, assign) CGFloat topToolbarInset;
-@property(nonatomic, weak) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 @end
 

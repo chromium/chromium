@@ -11,7 +11,9 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
 @class AppBarViewController;
-@class LayoutState;
+@class BrowserLayoutState;
+@class IncognitoState;
+@class SceneLayoutState;
 
 // View controller for the App Bar container. This is the view controller in
 // charge of making sure the app stays at the physical bottom of the screen.
@@ -20,8 +22,17 @@
 @interface AppBarContainerViewController
     : UIViewController <FullscreenBrowserAgentObserving, FullscreenUIElement>
 
-// The layout state.
-@property(nonatomic, weak) LayoutState* layoutState;
+// The regular browser layout state.
+@property(nonatomic, weak) BrowserLayoutState* regularBrowserLayoutState;
+
+// The incognito browser layout state.
+@property(nonatomic, weak) BrowserLayoutState* incognitoBrowserLayoutState;
+
+// The incognito state.
+@property(nonatomic, weak) IncognitoState* incognitoState;
+
+// The scene layout state.
+@property(nonatomic, weak) SceneLayoutState* sceneLayoutState;
 
 // Sets the App Bar view controller to be contained.
 - (void)setAppBar:(AppBarViewController*)appBar;

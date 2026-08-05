@@ -17,11 +17,11 @@
 @class AppState;
 @protocol BrowserProviderInterface;
 @class IncognitoState;
-@class LayoutState;
 @class LensOverlayStateNotifier;
 @class ProfileState;
 @protocol SceneAgent;
 @class SceneController;
+@class SceneLayoutState;
 @class SceneState;
 @protocol SceneStateAnimator;
 @class SceneStatePrefs;
@@ -107,7 +107,7 @@ class SigninInProgress;
 @property(nonatomic, strong, readonly) TabGridState* tabGridState;
 
 // Object containing the state of the layout.
-@property(nonatomic, strong, readonly) LayoutState* layoutState;
+@property(nonatomic, strong, readonly) SceneLayoutState* layoutState;
 
 // Object used to notify of changes to the LensOverlay state.
 @property(nonatomic, strong, readonly)

@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_context_provider.h"
 
 @protocol BrowserLayoutConsumer;
-@class LayoutState;
 @class SafeAreaProvider;
+@class SceneLayoutState;
 
 // A container view controller that manages the layout of the browser.
 // It is designed to contain an instance of BrowserViewController ("BVC") as a
@@ -52,7 +52,7 @@
 @property(nonatomic, weak) UIViewController* tabStripViewController;
 
 // The layout state.
-@property(nonatomic, strong) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 @end
 

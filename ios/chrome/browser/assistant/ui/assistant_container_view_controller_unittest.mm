@@ -11,11 +11,16 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -379,23 +384,34 @@ TEST_F(AssistantContainerViewControllerTest, CyclesThroughDetentsOnTap) {
   view_controller_.isAnimating = NO;
 }
 
-// Tests that LayoutState updates trigger layout updates.
+// Tests that SceneLayoutState updates trigger layout updates.
 TEST_F(AssistantContainerViewControllerTest, UpdatesLayoutOnLayoutStateChange) {
-  LayoutState* layout_state = [[LayoutState alloc] init];
-  view_controller_.layoutState = layout_state;
+  web::WebTaskEnvironment task_environment;
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  FakeSceneState* scene_state =
+      [[FakeSceneState alloc] initWithProfile:profile.get()];
+  std::unique_ptr<TestBrowser> browser =
+      std::make_unique<TestBrowser>(profile.get(), scene_state);
+  BrowserLayoutState* layout_state = browser->GetBrowserLayoutState();
+
+  view_controller_.browserLayoutState = layout_state;
+  view_controller_.sceneLayoutState = scene_state.layoutState;
 
   // Initially unsupported, should be in sheet mode.
   EXPECT_EQ(view_controller_.presentationContext,
             AssistantPresentationContext::kSheet);
 
   // Update state to supported.
-  [layout_state setContainedLayoutSupported:YES
-                                    passKey:LayoutStateTestPassKeyFactory::
-                                                CreateSceneKey()];
+  [scene_state.layoutState
+      setContainedLayoutSupported:YES
+                          passKey:LayoutStateTestPassKeyFactory::
+                                      CreateSceneKey()];
 
   // Should switch to panel mode.
   EXPECT_EQ(view_controller_.presentationContext,
             AssistantPresentationContext::kPanel);
+  view_controller_.browserLayoutState = nil;
+  [scene_state shutdown];
 }
 
 // Tests that performing accessibility escape when in the large detent moves

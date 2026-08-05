@@ -13,10 +13,11 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_presentation_context.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 
-@protocol AssistantContainerDelegate;
 enum class AssistantContainerDetent : NSInteger;
+@protocol AssistantContainerDelegate;
+@class BrowserLayoutState;
 @class LayoutGuideCenter;
-@class LayoutState;
+@class SceneLayoutState;
 
 // View Controller for the Assistant Container.
 @interface AssistantContainerViewController
@@ -42,8 +43,11 @@ enum class AssistantContainerDetent : NSInteger;
 // The delegate for the container events.
 @property(nonatomic, weak) id<AssistantContainerDelegate> delegate;
 
-// The layout state.
-@property(nonatomic, weak) LayoutState* layoutState;
+// The browser layout state.
+@property(nonatomic, weak) BrowserLayoutState* browserLayoutState;
+
+// The scene layout state.
+@property(nonatomic, weak) SceneLayoutState* sceneLayoutState;
 
 // Accessibility property. Whether to only announce the arrival of the assistant
 // instead of moving VoiceOver focus to it.

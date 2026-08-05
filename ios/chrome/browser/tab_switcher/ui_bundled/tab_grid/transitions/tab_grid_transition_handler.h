@@ -20,8 +20,8 @@ enum class TabGridTransitionDirection {
   kFromBrowserToTabGrid,
 };
 
+@class BrowserLayoutState;
 @class LayoutGuideCenter;
-@class LayoutState;
 @class TabGridTransitionHandler;
 @protocol TabGridTransitionLayoutProviding;
 
@@ -66,7 +66,7 @@ struct TabGridTransitionHandlerInitParams {
                 (LayoutGuideCenter*)browserLayoutGuideCenter
                  isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                            incognito:(BOOL)incognito
-                         layoutState:(LayoutState*)layoutState
+                  browserLayoutState:(BrowserLayoutState*)browserLayoutState
     NS_DESIGNATED_INITIALIZER;
 
 // Creates a transition handler with disabled animations (Reduced Motion).

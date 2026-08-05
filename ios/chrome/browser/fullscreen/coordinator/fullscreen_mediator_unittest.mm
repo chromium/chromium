@@ -8,7 +8,8 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -47,6 +48,7 @@ class FullscreenMediatorTest : public PlatformTest {
  protected:
   FullscreenMediatorTest() {
     scene_state_ = [[SceneState alloc] init];
+
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());
@@ -55,7 +57,7 @@ class FullscreenMediatorTest : public PlatformTest {
     mediator_ = [[FullscreenMediator alloc]
         initWithBrowserAgent:agent_
                 webStateList:browser_->GetWebStateList()
-                 layoutState:scene_state_.layoutState];
+          browserLayoutState:browser_->GetBrowserLayoutState()];
   }
 
   void TearDown() override {

@@ -37,8 +37,8 @@ class FullscreenController;
 @protocol IncognitoReauthCommands;
 @class KeyCommandsProvider;
 @class LayoutGuideCenter;
-@class LayoutState;
 @class MainToolbarCoordinator;
+@class SceneLayoutState;
 @class NewTabPageCoordinator;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
@@ -127,7 +127,7 @@ typedef struct {
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
 // The layout state.
-@property(nonatomic, weak) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 // The lens overlay state notifier.
 @property(nonatomic, weak) LensOverlayStateNotifier* lensOverlayStateNotifier;

@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -66,6 +66,7 @@ void LogOmniboxPosition(PrefService* local_state) {
 inline LayoutStateToolbarPassKey PassKey() {
   return layout_state::MainToolbarMediatorPassKeyFactory::CreateKey();
 }
+
 }  // namespace
 
 @interface MainToolbarMediator () <BooleanObserver>
@@ -73,16 +74,16 @@ inline LayoutStateToolbarPassKey PassKey() {
 
 @implementation MainToolbarMediator {
   PrefBackedBoolean* _bottomOmniboxPref;
-  __weak LayoutState* _layoutState;
+  __weak BrowserLayoutState* _browserLayoutState;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
-                        layoutState:(LayoutState*)layoutState {
+                 browserLayoutState:(BrowserLayoutState*)browserLayoutState {
   self = [super init];
   if (self) {
     CHECK(prefService);
-    CHECK(layoutState);
-    _layoutState = layoutState;
+    CHECK(browserLayoutState);
+    _browserLayoutState = browserLayoutState;
     _bottomOmniboxPref = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:omnibox::kIsOmniboxInBottomPosition];
@@ -93,10 +94,10 @@ inline LayoutStateToolbarPassKey PassKey() {
 
     if (IsChromeNextIaEnabled()) {
       // Set the initial toolbar position.
-      [_layoutState setToolbarPosition:[self isBottomOmniboxPrefEnabled]
-                                           ? ToolbarPosition::kBottom
-                                           : ToolbarPosition::kTop
-                               passKey:PassKey()];
+      [_browserLayoutState setToolbarPosition:[self isBottomOmniboxPrefEnabled]
+                                                  ? ToolbarPosition::kBottom
+                                                  : ToolbarPosition::kTop
+                                      passKey:PassKey()];
     }
   }
   return self;
@@ -105,6 +106,7 @@ inline LayoutStateToolbarPassKey PassKey() {
 - (void)disconnect {
   [_bottomOmniboxPref stop];
   _bottomOmniboxPref = nil;
+  _browserLayoutState = nil;
 }
 
 #pragma mark - BooleanObserver
@@ -112,10 +114,10 @@ inline LayoutStateToolbarPassKey PassKey() {
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   if (observableBoolean == _bottomOmniboxPref) {
     if (IsChromeNextIaEnabled()) {
-      [_layoutState setToolbarPosition:[self isBottomOmniboxPrefEnabled]
-                                           ? ToolbarPosition::kBottom
-                                           : ToolbarPosition::kTop
-                               passKey:PassKey()];
+      [_browserLayoutState setToolbarPosition:[self isBottomOmniboxPrefEnabled]
+                                                  ? ToolbarPosition::kBottom
+                                                  : ToolbarPosition::kTop
+                                      passKey:PassKey()];
     }
   }
 }

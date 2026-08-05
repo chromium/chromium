@@ -15,8 +15,8 @@
 @protocol BannerPromoViewDelegate;
 @protocol BrowserCoordinatorCommands;
 @class LayoutGuideCenter;
-@class LayoutState;
 @protocol PopupMenuCommands;
+@class SceneLayoutState;
 @protocol SceneCommands;
 @class TabGroupIndicatorView;
 @class ToolbarButtonFactory;
@@ -54,7 +54,7 @@
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // The layout state.
-@property(nonatomic, weak) LayoutState* layoutState;
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 // Whether this toolbar contains the omnibox.
 @property(nonatomic, readonly) BOOL hasOmnibox;

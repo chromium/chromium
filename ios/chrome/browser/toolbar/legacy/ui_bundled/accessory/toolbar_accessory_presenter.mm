@@ -6,9 +6,9 @@
 
 #import "base/i18n/rtl.h"
 #import "base/logging.h"
-#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/accessory/toolbar_accessory_constants.h"
@@ -56,8 +56,8 @@ const CGFloat kAnimationDuration = 0.15;
   /// Whether the accessory is presented above the bottom toolbar.
   BOOL _isPresentedAboveBottomToolbar;
 
-  // LayoutState to query the omnibox position.
-  __weak LayoutState* _layoutState;
+  // BrowserLayoutState to query the omnibox position.
+  __weak BrowserLayoutState* _browserLayoutState;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -67,16 +67,16 @@ const CGFloat kAnimationDuration = 0.15;
 #pragma mark - Public
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito
-                        layoutState:(LayoutState*)layoutState {
+                 browserLayoutState:(BrowserLayoutState*)browserLayoutState {
   if ((self = [super init])) {
     _isIncognito = isIncognito;
-    _layoutState = layoutState;
+    _browserLayoutState = browserLayoutState;
   }
   return self;
 }
 
 - (void)disconnect {
-  _layoutState = nil;
+  _browserLayoutState = nil;
 }
 
 - (BOOL)isPresentingViewController:(UIViewController*)viewController {
@@ -179,9 +179,9 @@ const CGFloat kAnimationDuration = 0.15;
 
 // Positions the view into its initial, pre-animation position on iPhone.
 - (void)prepareForPresentationOnIPhone {
-  if (_layoutState) {
+  if (_browserLayoutState) {
     _isPresentedAboveBottomToolbar =
-        _layoutState.toolbarPosition == ToolbarPosition::kBottom;
+        _browserLayoutState.toolbarPosition == ToolbarPosition::kBottom;
   }
 
   if (_isPresentedAboveBottomToolbar) {

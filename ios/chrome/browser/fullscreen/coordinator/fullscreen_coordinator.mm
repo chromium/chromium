@@ -7,7 +7,8 @@
 #import "ios/chrome/browser/fullscreen/coordinator/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
@@ -22,7 +23,7 @@
   _mediator = [[FullscreenMediator alloc]
       initWithBrowserAgent:FullscreenBrowserAgent::FromBrowser(self.browser)
               webStateList:self.browser->GetWebStateList()
-               layoutState:self.browser->GetSceneState().layoutState];
+        browserLayoutState:self.browser->GetBrowserLayoutState()];
 
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:_mediator

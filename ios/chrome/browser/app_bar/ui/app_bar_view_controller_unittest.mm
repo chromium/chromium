@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +52,7 @@ class AppBarViewControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    layout_state_ = [[LayoutState alloc] init];
+    layout_state_ = [[SceneLayoutState alloc] init];
     [layout_state_
         setAppBarPosition:AppBarPosition::kBottom
                   passKey:LayoutStateTestPassKeyFactory::CreateSceneKey()];
@@ -68,7 +68,7 @@ class AppBarViewControllerTest : public PlatformTest {
   }
 
   AppBarViewController* view_controller_;
-  LayoutState* layout_state_;
+  SceneLayoutState* layout_state_;
 
   // Helper to access the private `_openNewTabButton` ivar using KVC.
   UIButton* openNewTabButton() {

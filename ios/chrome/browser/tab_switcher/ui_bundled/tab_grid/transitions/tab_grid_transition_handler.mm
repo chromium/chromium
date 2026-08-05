@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -62,13 +62,12 @@ enum class TabGridTransitionType {
 
   // Whether the transition is for an incognito tab.
   BOOL _incognito;
-
   // The top and bottom toolbar snapshot views.
   UIView* _topToolbarSnapshotView;
   UIView* _bottomToolbarSnapshotView;
 
-  // The layout state.
-  LayoutState* _layoutState;
+  // The browser layout state.
+  __weak BrowserLayoutState* _browserLayoutState;
 }
 
 #pragma mark - Public
@@ -81,7 +80,7 @@ enum class TabGridTransitionType {
                 (LayoutGuideCenter*)browserLayoutGuideCenter
                  isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                            incognito:(BOOL)incognito
-                         layoutState:(LayoutState*)layoutState {
+                  browserLayoutState:(BrowserLayoutState*)browserLayoutState {
   self = [super init];
   if (self) {
     _transitionType = TabGridTransitionType::kNormal;
@@ -98,7 +97,7 @@ enum class TabGridTransitionType {
     _browserLayoutGuideCenter = browserLayoutGuideCenter;
     _isRegularBrowserNTP = isRegularBrowserNTP;
     _incognito = incognito;
-    _layoutState = layoutState;
+    _browserLayoutState = browserLayoutState;
   }
   return self;
 }
@@ -161,9 +160,9 @@ enum class TabGridTransitionType {
                                   middleRect:contentAreaFrame];
   }
 
-  CHECK(_layoutState, base::NotFatalUntil::M155);
+  CHECK(_browserLayoutState, base::NotFatalUntil::M155);
   if (!IsChromeNextIaEnabled() ||
-      _layoutState.toolbarPosition == ToolbarPosition::kBottom) {
+      _browserLayoutState.toolbarPosition == ToolbarPosition::kBottom) {
     _bottomToolbarSnapshotView =
         [self snapshotOfViewPortionBelowRect:browserLayout.view
                                   middleRect:contentAreaFrame];
