@@ -860,8 +860,7 @@ void OmniboxEditModel::OpenAiMode(AimActivation activation) {
         "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Omnibox"));
     base::UmaHistogramEnumeration(
         "ContextualSearch.UserAction.SubmitQueryV2.Omnibox",
-        contextual_search::ContextualSearchContextState::kWithoutContext,
-        contextual_search::ContextualSearchContextState::kMaxValue);
+        contextual_search::ContextualSearchContextState::kWithoutContext);
   }
 
   InitializeQueryContextualizerIfNeeded();
