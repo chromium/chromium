@@ -227,6 +227,9 @@ found in the LICENSE file.
     <item name="home_surface_search_box_background_alpha" format="float" type="dimen">0.15</item>
     <dimen name="home_surface_ui_background_radius">24dp</dimen>
     <dimen name="home_surface_search_box_background_radius">100dp</dimen>
+    <!-- Spacing between sections. -->
+    <dimen name="ntp_section_top_margin">12dp</dimen>
+    <dimen name="ntp_section_top_margin_small">8dp</dimen>
 
     <!-- Single Tab module -->
     <dimen name="single_tab_module_tab_thumbnail_size_big">114dp</dimen>

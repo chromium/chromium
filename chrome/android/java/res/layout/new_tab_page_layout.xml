@@ -65,7 +65,7 @@ found in the LICENSE file.
     <ViewStub
         android:id="@+id/home_modules_recycler_view_stub"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/ntp_section_top_margin"
         android:layout_marginBottom="@dimen/ntp_section_bottom_margin"
         android:layout="@layout/home_modules_recycler_view_layout"

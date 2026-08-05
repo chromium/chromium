@@ -169,7 +169,6 @@ found in the LICENSE file.
 
     <!-- NTP dimensions -->
     <!-- Spacing between sections. -->
-    <dimen name="ntp_section_top_margin">12dp</dimen>
     <dimen name="ntp_section_bottom_margin">4dp</dimen>
     <!-- Specific margins and paddings, ordered by appearance. -->
     <dimen name="ntp_search_box_transition_start_offset">16dp</dimen>

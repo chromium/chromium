@@ -32,6 +32,7 @@ import android.view.View.OnCreateContextMenuListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -59,6 +60,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
@@ -82,6 +84,9 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HomeModulesCoordinatorUnitTest {
+    private static final int INITIAL_TOP_MARGIN = 12;
+    private static final int SMALL_TOP_MARGIN = 8;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Activity mActivity;
@@ -520,6 +525,41 @@ public class HomeModulesCoordinatorUnitTest {
 
         mHomeModulesStateListener.getValue().allCardsConfigChanged(true);
         verify(mRecyclerView, never()).setVisibility(eq(View.VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testAuroraPaddingStyle_Default() {
+        testAuroraPaddingStyleImpl(
+                PaddingStyle.DEFAULT, INITIAL_TOP_MARGIN, /* expectChange= */ false);
+    }
+
+    @Test
+    @SmallTest
+    public void testAuroraPaddingStyle_NonDefault() {
+        testAuroraPaddingStyleImpl(PaddingStyle.SMALL, SMALL_TOP_MARGIN, /* expectChange= */ true);
+    }
+
+    private void testAuroraPaddingStyleImpl(
+            int paddingStyle, int expectedTopMargin, boolean expectChange) {
+        MarginLayoutParams marginLayoutParams =
+                new MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        marginLayoutParams.topMargin = INITIAL_TOP_MARGIN;
+        when(mRecyclerView.getLayoutParams()).thenReturn(marginLayoutParams);
+        when(mResources.getDimensionPixelSize(R.dimen.ntp_section_top_margin_small))
+                .thenReturn(SMALL_TOP_MARGIN);
+
+        FeatureOverrides.overrideParam(ChromeFeatureList.NTP_AURORA, "padding_style", paddingStyle);
+
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
+
+        assertEquals(expectedTopMargin, marginLayoutParams.topMargin);
+        if (expectChange) {
+            verify(mRecyclerView).setLayoutParams(marginLayoutParams);
+        } else {
+            verify(mRecyclerView, never()).setLayoutParams(any());
+        }
     }
 
     private void setupAndVerifyTablets() {
