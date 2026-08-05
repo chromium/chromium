@@ -31,8 +31,8 @@
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -128,11 +128,11 @@ ui::ImageModel GetFaviconForNode(BookmarkModel* model,
 // BookmarkMenuDelegate and needs a separate class.
 class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
  public:
-  BookmarkModelDropObserver(Browser* browser,
+  BookmarkModelDropObserver(BrowserWindowInterface* browser,
                             const bookmarks::BookmarkNodeData drop_data,
                             const BookmarkParentFolder& drop_parent,
                             const size_t index_to_drop_at)
-      : browser_(browser->AsWeakPtr()),
+      : browser_(browser->GetWeakPtr()),
         drop_data_(std::move(drop_data)),
         drop_parent_(drop_parent),
         index_to_drop_at_(index_to_drop_at),
@@ -161,7 +161,7 @@ class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
             .DropBookmarks(browser_->GetProfile(), drop_data_,
                            index_to_drop_at_, copy,
                            chrome::BookmarkReorderDropTarget::kBookmarkMenu,
-                           browser_.get());
+                           browser_->GetBrowserForMigrationOnly());
   }
 
  private:
@@ -199,7 +199,7 @@ class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
     bookmark_service_ = nullptr;
   }
 
-  const base::WeakPtr<Browser> browser_;
+  const base::WeakPtr<BrowserWindowInterface> browser_;
   const bookmarks::BookmarkNodeData drop_data_;
   BookmarkParentFolder drop_parent_;
   const size_t index_to_drop_at_;
@@ -285,7 +285,7 @@ BookmarkMenuDelegate::BookmarkFolderOrURL::GetFromNode(
   return BookmarkParentFolder::FromFolderNode(node);
 }
 
-BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
+BookmarkMenuDelegate::BookmarkMenuDelegate(BrowserWindowInterface* browser,
                                            views::Widget* parent,
                                            views::MenuDelegate* real_delegate,
                                            BookmarkLaunchLocation location)
@@ -473,8 +473,8 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selection =
       menu_id_to_node_map_.find(id)->second.GetUnderlyingNodes(
           GetBookmarkMergedSurfaceService());
-  bookmarks::OpenAllIfAllowed(browser_, selection, initial_disposition,
-                              context);
+  bookmarks::OpenAllIfAllowed(browser_->GetBrowserForMigrationOnly(), selection,
+                              initial_disposition, context);
 }
 
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
@@ -656,8 +656,8 @@ void BookmarkMenuDelegate::RunContextMenuAt(
 
   bookmark_context_menu_observation_.Reset();
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      parent_, browser_, profile_, location_, nodes, close_on_remove,
-      can_paste);
+      parent_, browser_->GetBrowserForMigrationOnly(), profile_, location_,
+      nodes, close_on_remove, can_paste);
   bookmark_context_menu_observation_.Observe(context_menu_.get());
   context_menu_->RunMenuAt(p, source_type);
 }

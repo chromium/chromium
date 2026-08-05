@@ -26,7 +26,7 @@
 #include "ui/views/view.h"
 
 class BookmarkMergedSurfaceService;
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace bookmarks {
@@ -56,7 +56,7 @@ class Widget;
 class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
                              public BookmarkContextMenuObserver {
  public:
-  BookmarkMenuDelegate(Browser* browser,
+  BookmarkMenuDelegate(BrowserWindowInterface* browser,
                        views::Widget* parent,
                        views::MenuDelegate* real_delegate,
                        BookmarkLaunchLocation location);
@@ -313,7 +313,7 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   views::MenuItemView* UpdateOtherNodeSeparator();
   void BuildOtherNodeMenuHeader(views::MenuItemView* menu);
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<Profile> profile_;
 
   // Parent of menus.

@@ -27,7 +27,7 @@ using content::PageNavigator;
 using views::MenuItemView;
 
 BookmarkMenuController::BookmarkMenuController(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     views::Widget* parent,
     const BookmarkParentFolder& folder,
     size_t start_child_index,

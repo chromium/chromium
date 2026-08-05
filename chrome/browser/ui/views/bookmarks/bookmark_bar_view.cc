@@ -2001,9 +2001,8 @@ void BookmarkBarView::ShowDropFolderForNode(
   }
 
   drop_info_->is_menu_showing = true;
-  bookmark_drop_menu_ =
-      new BookmarkMenuController(browser_->GetBrowserForMigrationOnly(),
-                                 GetWidget(), folder, start_index, true);
+  bookmark_drop_menu_ = new BookmarkMenuController(browser_, GetWidget(),
+                                                   folder, start_index, true);
   bookmark_drop_menu_->set_observer(this);
   bookmark_drop_menu_->RunMenuAt(this);
 
@@ -2159,9 +2158,8 @@ void BookmarkBarView::ShowFolderMenuForFolder(
       (folder.as_permanent_folder() == PermanentFolderType::kBookmarkBarNode)
           ? first_hidden_node_idx_
           : 0;
-  bookmark_menu_ =
-      new BookmarkMenuController(browser_->GetBrowserForMigrationOnly(),
-                                 GetWidget(), folder, start_index, false);
+  bookmark_menu_ = new BookmarkMenuController(browser_, GetWidget(), folder,
+                                              start_index, false);
   bookmark_menu_->set_observer(this);
   bookmark_menu_->RunMenuAt(this);
 }
