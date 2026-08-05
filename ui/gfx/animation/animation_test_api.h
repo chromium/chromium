@@ -20,11 +20,18 @@ class AnimationTestApi {
  public:
   using RenderModeResetter =
       std::unique_ptr<base::AutoReset<Animation::RichAnimationRenderMode>>;
+  using PrefersReducedMotionResetter =
+      std::unique_ptr<base::AutoReset<std::optional<bool>>>;
 
   // Sets the rich animation rendering mode, if it is currently set to PLATFORM.
   // Allows rich animations to be force enabled/disabled during tests.
   [[nodiscard]] static RenderModeResetter SetRichAnimationRenderMode(
       Animation::RichAnimationRenderMode mode);
+
+  // Sets whether reduced motion is preferred, returning a scoper that resets
+  // the setting back to its previous value upon destruction.
+  [[nodiscard]] static PrefersReducedMotionResetter
+  SetPrefersReducedMotionForTesting(bool prefers_reduced_motion);
 
   explicit AnimationTestApi(Animation* animation);
 

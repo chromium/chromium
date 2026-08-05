@@ -129,6 +129,10 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    prefers_reduced_motion_reset_ =
+        gfx::AnimationTestApi::SetPrefersReducedMotionForTesting(false);
+    SetAnimationModeForTesting(
+        gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
     feature_list_.InitWithFeaturesAndParameters(EnabledFeaturesAndParameters(),
                                                 {});
     SetRTL(false);
@@ -159,10 +163,19 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
     controller_.reset();
     drop_target_view_ = nullptr;
     multi_contents_view_ = nullptr;
+    animation_mode_reset_.reset();
+    prefers_reduced_motion_reset_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
   void ResetController() { controller_.reset(); }
+
+  void SetAnimationModeForTesting(
+      gfx::Animation::RichAnimationRenderMode mode) {
+    animation_mode_reset_.reset();
+    animation_mode_reset_ =
+        gfx::AnimationTestApi::SetRichAnimationRenderMode(mode);
+  }
 
   MultiContentsViewDropTargetController& controller() { return *controller_; }
   MultiContentsDropTargetView& drop_target_view() { return *drop_target_view_; }
@@ -347,6 +360,10 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<views::View> multi_contents_view_;
   raw_ptr<MultiContentsDropTargetView> drop_target_view_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  gfx::AnimationTestApi::PrefersReducedMotionResetter
+      prefers_reduced_motion_reset_;
+  std::optional<gfx::AnimationTestApi::RenderModeResetter>
+      animation_mode_reset_;
 };
 
 struct DropSideRTL {
@@ -984,7 +1001,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest, DragDelegateMethods) {
 
 TEST_P(MultiContentsViewDropTargetControllerParamTest,
        ShowsFullDropTargetWhenAnimationsDisabled) {
-  auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+  SetAnimationModeForTesting(
       gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   ASSERT_FALSE(drop_target_view().ShouldShowAnimation());
   ASSERT_FALSE(drop_target_view().GetVisible());
