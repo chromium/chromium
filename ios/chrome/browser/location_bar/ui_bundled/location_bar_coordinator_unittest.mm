@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -213,6 +214,10 @@ class LocationBarCoordinatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
     [dispatcher startDispatchingToTarget:mock_browser_coordinator_handler_
                              forProtocol:@protocol(BrowserCoordinatorCommands)];
+    mock_send_tab_to_self_handler_ =
+        OCMProtocolMock(@protocol(SendTabToSelfCommands));
+    [dispatcher startDispatchingToTarget:mock_send_tab_to_self_handler_
+                             forProtocol:@protocol(SendTabToSelfCommands)];
 
     delegate_ = [[TestOmniboxFocusDelegate alloc] init];
 
@@ -238,6 +243,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
   TestOmniboxFocusDelegate* delegate_;
   SceneState* scene_state_;
   id mock_browser_coordinator_handler_;
+  id mock_send_tab_to_self_handler_;
 };
 
 TEST_F(LocationBarCoordinatorTest, Stops) {
@@ -447,7 +453,7 @@ TEST_F(LocationBarCoordinatorTest, SendTabToSelfTapped) {
   OCMStub([partial_mock_coordinator webState]).andReturn(fake_web_state.get());
 
   // Note: `ignoringNonObjectArgs` because OCMock cannot handle C++ references.
-  [[[mock_browser_coordinator_handler_ expect] ignoringNonObjectArgs]
+  [[[mock_send_tab_to_self_handler_ expect] ignoringNonObjectArgs]
       showSendTabToSelfUI:GURL()
                     title:@"Test Title"
                entryPoint:send_tab_to_self::ShareEntryPoint::kOmniboxMenu];
@@ -456,7 +462,7 @@ TEST_F(LocationBarCoordinatorTest, SendTabToSelfTapped) {
 
   // `self` is needed by OCMVerifyAll macro in C++ tests.
   id self = nil;
-  OCMVerifyAll(mock_browser_coordinator_handler_);
+  OCMVerifyAll(mock_send_tab_to_self_handler_);
 }
 
 }  // namespace

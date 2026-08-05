@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -761,12 +762,12 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   }
   GURL url = self.webState->GetVisibleURL();
   NSString* title = base::SysUTF16ToNSString(self.webState->GetTitle());
-  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  id<SendTabToSelfCommands> sendTabToSelfHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SendTabToSelfCommands);
 
   ExecuteWhenTransitionsComplete(
       ^{
-        [browserCoordinatorHandler
+        [sendTabToSelfHandler
             showSendTabToSelfUI:url
                           title:title
                      entryPoint:send_tab_to_self::ShareEntryPoint::

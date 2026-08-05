@@ -298,6 +298,7 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_engine_choice_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
@@ -484,6 +485,7 @@ const char kChromeAppStoreUrl[] =
     SaveToPhotosCommands,
     SearchEngineChoiceCommands,
     SearchEngineChoiceCoordinatorDelegate,
+    SendTabToSelfCommands,
     SendTabToSelfCoordinatorDelegate,
     SharedTabGroupLastTabAlertCommands,
     SigninPresenter,
@@ -1392,6 +1394,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
     @protocol(SearchEngineChoiceCommands),
+    @protocol(SendTabToSelfCommands),
     @protocol(SharedTabGroupLastTabAlertCommands),
     @protocol(SyncedSetUpCommands),
     @protocol(SyncPresenterCommands),
@@ -2811,6 +2814,8 @@ const char kChromeAppStoreUrl[] =
   self.addCreditCardCoordinator.delegate = self;
   [self.addCreditCardCoordinator start];
 }
+
+#pragma mark - SendTabToSelfCommands
 
 - (void)showSendTabToSelfUI:(const GURL&)url
                       title:(NSString*)title

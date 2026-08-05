@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/bookmark_activity.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
@@ -46,8 +47,9 @@
   NSMutableArray<ChromeActivity*>* _activities;
 }
 
-@property(nonatomic, weak) id<BrowserCoordinatorCommands, FindInPageCommands>
-    handler;
+@property(nonatomic, weak)
+    id<BrowserCoordinatorCommands, FindInPageCommands, SendTabToSelfCommands>
+        handler;
 
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
@@ -72,8 +74,9 @@
 
 #pragma mark - Public
 
-- (instancetype)initWithHandler:
-                    (id<BrowserCoordinatorCommands, FindInPageCommands>)handler
+- (instancetype)initWithHandler:(id<BrowserCoordinatorCommands,
+                                    FindInPageCommands,
+                                    SendTabToSelfCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
                     helpHandler:(id<HelpCommands>)helpHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler

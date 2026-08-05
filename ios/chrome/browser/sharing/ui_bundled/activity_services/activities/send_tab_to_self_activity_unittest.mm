@@ -6,6 +6,7 @@
 
 #import "components/send_tab_to_self/metrics_util.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -20,8 +21,7 @@ class SendTabToSelfActivityTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    mocked_handler_ =
-        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    mocked_handler_ = OCMStrictProtocolMock(@protocol(SendTabToSelfCommands));
   }
 
   // Creates a ShareToData instance with `can_send_tab_to_self` set.

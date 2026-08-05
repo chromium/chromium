@@ -15,7 +15,11 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -49,8 +53,9 @@ constexpr CGFloat kAppIconPointSize = 80;
 
 @interface ActivityServiceCoordinator ()
 
-@property(nonatomic, weak) id<BrowserCoordinatorCommands, FindInPageCommands>
-    handler;
+@property(nonatomic, weak)
+    id<BrowserCoordinatorCommands, FindInPageCommands, SendTabToSelfCommands>
+        handler;
 
 @property(nonatomic, strong) ActivityServiceMediator* mediator;
 
@@ -112,9 +117,9 @@ constexpr CGFloat kAppIconPointSize = 80;
                         name:UIApplicationDidEnterBackgroundNotification
                       object:nil];
 
-  self.handler =
-      static_cast<id<BrowserCoordinatorCommands, FindInPageCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.handler = static_cast<id<BrowserCoordinatorCommands, FindInPageCommands,
+                                SendTabToSelfCommands>>(
+      self.browser->GetCommandDispatcher());
 
   ProfileIOS* profile = self.profile;
   self.incognito = profile->IsOffTheRecord();

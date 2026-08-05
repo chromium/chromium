@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/chrome_activity.h"
 
-@protocol BrowserCoordinatorCommands;
+@protocol SendTabToSelfCommands;
 @class ShareToData;
 
 // Activity that sends the tab to another of the user's devices.
@@ -16,7 +16,7 @@
 // Initializes the send tab to self activity with the given `data` and the
 // `handler` that is used to add the tab to the other device.
 - (instancetype)initWithData:(ShareToData*)data
-                     handler:(id<BrowserCoordinatorCommands>)handler
+                     handler:(id<SendTabToSelfCommands>)handler
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

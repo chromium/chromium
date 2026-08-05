@@ -23,6 +23,7 @@ class BookmarkModel;
 @class NonModalDefaultBrowserPromoSchedulerSceneAgent;
 @protocol FindInPageCommands;
 @protocol HelpCommands;
+@protocol SendTabToSelfCommands;
 class PrefService;
 class ReadingListBrowserAgent;
 @protocol QRGenerationCommands;
@@ -39,8 +40,9 @@ class WebNavigationBrowserAgent;
 // execute QR generation actions, a `prefService` to read settings and policies,
 // and a `bookmarkModel` to retrieve bookmark states. `baseViewController` can
 // be passed to activities which need to present VCs.
-- (instancetype)initWithHandler:
-                    (id<BrowserCoordinatorCommands, FindInPageCommands>)handler
+- (instancetype)initWithHandler:(id<BrowserCoordinatorCommands,
+                                    FindInPageCommands,
+                                    SendTabToSelfCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
                     helpHandler:(id<HelpCommands>)helpHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler

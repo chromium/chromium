@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/bookmark_activity.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/copy_activity.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/find_in_page_activity.h"
@@ -37,7 +38,9 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-@protocol HandlerProtocols <FindInPageCommands>
+@protocol HandlerProtocols <BrowserCoordinatorCommands,
+                            FindInPageCommands,
+                            SendTabToSelfCommands>
 @end
 
 class ActivityServiceMediatorTest : public PlatformTest {
