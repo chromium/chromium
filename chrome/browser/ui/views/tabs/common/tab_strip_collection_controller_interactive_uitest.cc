@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
         ASSERT_TRUE(model->GetTabAtIndex(0)->GetGroup().has_value());
 
         auto* base_region = views::AsViewClass<BaseTabStripRegionView>(
-            browser()->GetBrowserView().tab_strip_view());
+            BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
         ASSERT_NE(base_region, nullptr);
         auto* controller = base_region->GetTabStripCollectionController();
         ASSERT_NE(controller, nullptr);

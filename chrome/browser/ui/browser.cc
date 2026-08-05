@@ -500,9 +500,6 @@ Browser::~Browser() {
 ///////////////////////////////////////////////////////////////////////////////
 // Getters & Setters
 
-BrowserView& Browser::GetBrowserView() {
-  return CHECK_DEREF(window_->AsBrowserView());
-}
 
 base::WeakPtr<Browser> Browser::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
