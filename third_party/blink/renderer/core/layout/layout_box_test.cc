@@ -2065,6 +2065,42 @@ TEST_F(LayoutBoxTest, ContentBoxFragmentedVrl) {
   EXPECT_EQ(box->PhysicalContentBoxRect(), PhysicalRect(24, 6, 200, 50));
 }
 
+TEST_F(LayoutBoxTest, StitchedBlockSize) {
+  SetBodyInnerHTML(R"HTML(
+<div style="columns:3; column-fill:auto; block-size:100px;">
+  <div id="outer" style="block-size:90px;">
+    <div id="middle" style="block-size:100px;">
+      <div id="inner" style="block-size:350px;"></div>
+    </div>
+  </div>
+</div>
+)HTML");
+  const LayoutBox* outer = GetLayoutBoxByElementId("outer");
+  EXPECT_EQ(outer->StitchedBlockSize(), LayoutUnit(90));
+  const LayoutBox* middle = GetLayoutBoxByElementId("middle");
+  EXPECT_EQ(middle->StitchedBlockSize(), LayoutUnit(100));
+  const LayoutBox* inner = GetLayoutBoxByElementId("inner");
+  EXPECT_EQ(inner->StitchedBlockSize(), LayoutUnit(350));
+}
+
+TEST_F(LayoutBoxTest, StitchedBlockSizeVrl) {
+  SetBodyInnerHTML(R"HTML(
+<div style="columns:3; column-fill:auto; block-size:100px; writing-mode:vertical-rl;">
+  <div id="outer" style="block-size:90px;">
+    <div id="middle" style="block-size:100px;">
+      <div id="inner" style="block-size:350px;"></div>
+    </div>
+  </div>
+</div>
+)HTML");
+  const LayoutBox* outer = GetLayoutBoxByElementId("outer");
+  EXPECT_EQ(outer->StitchedBlockSize(), LayoutUnit(90));
+  const LayoutBox* middle = GetLayoutBoxByElementId("middle");
+  EXPECT_EQ(middle->StitchedBlockSize(), LayoutUnit(100));
+  const LayoutBox* inner = GetLayoutBoxByElementId("inner");
+  EXPECT_EQ(inner->StitchedBlockSize(), LayoutUnit(350));
+}
+
 class ElasticOverscrollTestingPlatformSupport : public TestingPlatformSupport {
  public:
   bool IsElasticOverscrollEnabledOnRoot() override {

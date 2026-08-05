@@ -3700,23 +3700,23 @@ LayoutUnit LayoutBox::StitchedBlockSize() const {
   // and the block-size of the last fragment. If it is overflowed, on the
   // other hand, we need to search backwards until we find the end of the
   // block-end border edge.
-  LayoutUnit stitched_block_size;
+  PhysicalSize last_content_fragment_size = GetPhysicalFragment(idx)->Size();
+  LayoutUnit previously_consumed_block_size;
   while (idx) {
-    const PhysicalBoxFragment* walker = GetPhysicalFragment(idx);
-    stitched_block_size =
-        LogicalFragment(writing_direction, *walker).BlockSize();
-
     // Look at the preceding break token.
     idx--;
     const BlockBreakToken* break_token =
         GetPhysicalFragment(idx)->GetBreakToken();
     if (!break_token->IsAtBlockEnd()) {
-      stitched_block_size += break_token->ConsumedBlockSize();
+      previously_consumed_block_size = break_token->ConsumedBlockSize();
       break;
     }
+    last_content_fragment_size = GetPhysicalFragment(idx)->Size();
   }
 
-  return stitched_block_size;
+  LogicalSize logical_size(
+      ToLogicalSize(last_content_fragment_size, StyleRef().GetWritingMode()));
+  return previously_consumed_block_size + logical_size.block_size;
 }
 
 PhysicalSize LayoutBox::StitchedSize() const {
