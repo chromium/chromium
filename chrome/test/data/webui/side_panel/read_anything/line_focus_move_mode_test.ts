@@ -15,8 +15,7 @@ suite('LineFocusMoveMode', () => {
   let styleMode: LineFocusLineStyleMode;
   let windowMode: LineFocusWindowStyleMode;
   let delegate: MoveModeDelegate;
-  let notifiedContentPositionChange: boolean;
-  let notifiedVisualPositionChange: boolean;
+  let notifiedMove: boolean;
   let scrollDiffReceived: number;
   let bufferValReceived: boolean|undefined;
   let speechLines: number;
@@ -67,16 +66,12 @@ suite('LineFocusMoveMode', () => {
     styleMode = new LineFocusLineStyleMode(LineFocusStyle.UNDERLINE, model);
     windowMode =
         new LineFocusWindowStyleMode(LineFocusStyle.MEDIUM_WINDOW, model);
-    notifiedContentPositionChange = false;
-    notifiedVisualPositionChange = false;
+    notifiedMove = false;
     scrollDiffReceived = 0;
     bufferValReceived = undefined;
     delegate = {
-      notifyMoveWithContentPositionChange() {
-        notifiedContentPositionChange = true;
-      },
-      notifyMoveWithVisualPositionChange() {
-        notifiedVisualPositionChange = true;
+      notifyMove() {
+        notifiedMove = true;
       },
       notifyScroll(diff) {
         scrollDiffReceived = diff;
@@ -140,7 +135,7 @@ suite('LineFocusMoveMode', () => {
 
       const expectedFocalPoint = model.getMaxY() / 2;
       assertEquals(expectedFocalPoint, model.getFocalPoint());
-      assertTrue(notifiedContentPositionChange);
+      assertTrue(notifiedMove);
     });
 
     test('onActivated notifies delegate of scroll buffer', () => {
@@ -175,7 +170,7 @@ suite('LineFocusMoveMode', () => {
       mode.onWordBoundary(segments);
 
       assertLT(0, scrollDiffReceived);
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
       assertTrue(model.getInitiatedScroll());
     });
 
@@ -191,7 +186,7 @@ suite('LineFocusMoveMode', () => {
       mode.onWordBoundary(segments);
 
       assertLT(0, scrollDiffReceived);
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
       assertTrue(model.getInitiatedScroll());
     });
 
@@ -223,12 +218,12 @@ suite('LineFocusMoveMode', () => {
 
     test('onMouseMove does nothing', () => {
       mode.onMouseMove(101);
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
     });
 
     test('onMouseMoveInToolbar does nothing', () => {
       mode.onMouseMoveInToolbar(101);
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
     });
 
     test('onScrollEnd adds scroll distance', () => {
@@ -260,15 +255,15 @@ suite('LineFocusMoveMode', () => {
       assertEquals(top2 - top3, scrollDistance);
     });
 
-    test('onScrollEnd notifies content position change for user scroll', () => {
+    test('onScrollEnd notifies of move for user scroll', () => {
       model.setInitiatedScroll(false);
       mode.onScrollEnd(100);
 
-      assertTrue(notifiedContentPositionChange);
+      assertTrue(notifiedMove);
     });
 
     test(
-        'onScrollEnd notifies content position change for single-line window only on line focus scroll',
+        'onScrollEnd notifies of move for single-line window only on line focus scroll',
         () => {
           const rect1 = new DOMRect(0, 10, 100, 20);
           const rect2 = new DOMRect(0, 30, 100, 20);
@@ -281,13 +276,13 @@ suite('LineFocusMoveMode', () => {
           // Underline style does nothing.
           model.setInitiatedScroll(true);
           mode.onScrollEnd(100);
-          assertFalse(notifiedContentPositionChange);
+          assertFalse(notifiedMove);
 
           // Medium window does nothing.
           model.setInitiatedScroll(true);
           mode = new LineFocusStaticMoveMode(model, windowMode, delegate);
           mode.onScrollEnd(100);
-          assertFalse(notifiedContentPositionChange);
+          assertFalse(notifiedMove);
 
           // Small window notifies of move.
           model.setInitiatedScroll(true);
@@ -295,7 +290,7 @@ suite('LineFocusMoveMode', () => {
               new LineFocusWindowStyleMode(LineFocusStyle.SMALL_WINDOW, model);
           mode = new LineFocusStaticMoveMode(model, singleWindow, delegate);
           mode.onScrollEnd(100);
-          assertTrue(notifiedContentPositionChange);
+          assertTrue(notifiedMove);
         });
 
     test('onTextLocationsChange updates scroll buffer', () => {
@@ -319,7 +314,7 @@ suite('LineFocusMoveMode', () => {
 
       mode.onTextLocationsChange(container, defaultHeight);
 
-      assertTrue(notifiedVisualPositionChange);
+      assertTrue(notifiedMove);
       const center = model.getMaxY() / 2;
       assertEquals(center, model.getFocalPoint());
     });
@@ -453,7 +448,7 @@ suite('LineFocusMoveMode', () => {
 
       assertLT(model.getMinY(), model.getFocalPoint());
       assertEquals(0, model.getCurrentLineIndex());
-      assertTrue(notifiedContentPositionChange);
+      assertTrue(notifiedMove);
     });
 
     test('onActivated from on does not move to first line', () => {
@@ -466,7 +461,7 @@ suite('LineFocusMoveMode', () => {
 
       assertEquals(focalPoint, model.getFocalPoint());
       assertEquals(null, model.getCurrentLineIndex());
-      assertTrue(notifiedVisualPositionChange);
+      assertTrue(notifiedMove);
     });
 
     test('onActivated notifies delegate of no scroll buffer', () => {
@@ -501,7 +496,7 @@ suite('LineFocusMoveMode', () => {
       mode.onWordBoundary(segments);
 
       assertEquals(0, scrollDiffReceived);
-      assertTrue(notifiedContentPositionChange);
+      assertTrue(notifiedMove);
     });
 
     test('onWordBoundary scrolls if line would go off screen', () => {
@@ -517,7 +512,7 @@ suite('LineFocusMoveMode', () => {
       mode.onWordBoundary(segments);
 
       assertLT(0, scrollDiffReceived);
-      assertTrue(notifiedContentPositionChange);
+      assertTrue(notifiedMove);
       assertTrue(model.getInitiatedScroll());
     });
 
@@ -574,7 +569,7 @@ suite('LineFocusMoveMode', () => {
 
     test('onMouseMove notifies listeners', () => {
       mode.onMouseMove(101);
-      assertTrue(notifiedContentPositionChange);
+      assertTrue(notifiedMove);
     });
 
     test('onMouseMove sets new line position', () => {
@@ -625,7 +620,7 @@ suite('LineFocusMoveMode', () => {
 
     test('onMouseMoveInToolbar does not notify listeners', () => {
       mode.onMouseMoveInToolbar(101);
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
     });
 
     test('onMouseMoveInToolbar sets new line position', () => {
@@ -737,7 +732,7 @@ suite('LineFocusMoveMode', () => {
       mode.onTextLocationsChange(container, defaultHeight);
 
       assertLT(0, model.getFocalPoint());
-      assertTrue(notifiedVisualPositionChange);
+      assertTrue(notifiedMove);
     });
 
     test('onTextLocationsChange moves to new focal point with window', () => {
@@ -756,7 +751,7 @@ suite('LineFocusMoveMode', () => {
       assertGT(focalPoint, model.getTop());
       assertLT(0, model.getWindowHeight());
       assertLT(focalPoint, model.getTop() + model.getWindowHeight());
-      assertTrue(notifiedVisualPositionChange);
+      assertTrue(notifiedMove);
     });
 
     test('snapToNextLine moves by line', () => {
@@ -1019,19 +1014,19 @@ suite('LineFocusMoveMode', () => {
 
       mode.onWordBoundary(segments);
 
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
       assertFalse(model.getInitiatedScroll());
       assertEquals(0, scrollDiffReceived);
     });
 
     test('onMouseMove does nothing', () => {
       mode.onMouseMove(101);
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
     });
 
     test('onScrollEnd does nothing', () => {
       mode.onScrollEnd(101);
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
     });
 
     test('onTextLocationsChange does nothing', () => {
@@ -1040,8 +1035,7 @@ suite('LineFocusMoveMode', () => {
       mode.onTextLocationsChange(container, defaultHeight);
 
       assertFalse(!!bufferValReceived);
-      assertFalse(notifiedVisualPositionChange);
-      assertFalse(notifiedContentPositionChange);
+      assertFalse(notifiedMove);
       assertEquals(0, scrollDiffReceived);
       assertEquals(0, model.getMaxY());
       assertEquals(0, model.getMinY());

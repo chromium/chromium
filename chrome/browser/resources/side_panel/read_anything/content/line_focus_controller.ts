@@ -13,15 +13,8 @@ import {LineFocusLineStyleMode, LineFocusNoneStyleMode, LineFocusWindowStyleMode
 import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} from './read_anything_types.js';
 
 export interface LineFocusListener {
-  // Called when the line focus position has been changed due to a direct,
-  // intentional user movement. For example, scrolling or keyboard navigation.
-  onLineFocusContentPositionChange(
-      newTop: number, newHeight: number, newFocalPoint: number): void;
-
-  // Called when the line focus position has been changed due to an automatic
-  // adjustment. For example, changing settings such as font size or line focus
-  // type.
-  onLineFocusVisualPositionChange(newTop: number, newHeight: number): void;
+  onLineFocusMove(newTop: number, newHeight: number, newFocalPoint: number):
+      void;
   onNeedScrollForLineFocus(scrollDiff: number, instant?: boolean): void;
   onNeedScrollToTop(): void;
   onLineFocusModesChanged(): void;
@@ -108,11 +101,10 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   onAllMenusClose() {
-    // Notify listeners when all menus close so the visual Line Focus highlight
-    // adapts to layout changes made in settings menus (e.g. font size) while
-    // not resetting paused speech when changing voices or menu settings.
+    // TODO(b/533169480): When line focus is enabled, ensure voice playback
+    // works seamlessly after onAllMenusClose is called.
     if (this.isEnabled()) {
-      this.notifyMoveWithVisualPositionChange();
+      this.notifyMove();
     }
   }
 
@@ -229,17 +221,11 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   // MoveModeDelegate methods.
-  notifyMoveWithContentPositionChange(): void {
+  notifyMove(): void {
     this.listeners_.forEach(
-        l => l.onLineFocusContentPositionChange(
+        l => l.onLineFocusMove(
             this.model_.getTop(), this.model_.getWindowHeight(),
             this.model_.getFocalPoint()));
-  }
-
-  notifyMoveWithVisualPositionChange(): void {
-    this.listeners_.forEach(
-        l => l.onLineFocusVisualPositionChange(
-            this.model_.getTop(), this.model_.getWindowHeight()));
   }
 
   notifyScroll(scrollDiff: number, instant?: boolean): void {

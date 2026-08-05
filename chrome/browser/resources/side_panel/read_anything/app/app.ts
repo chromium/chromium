@@ -526,15 +526,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   ///////////////////////// LineFocusListener methods //////////////////////////
-  onLineFocusVisualPositionChange(newTop: number, newHeight: number): void {
-    if (!chrome.readingMode.isLineFocusEnabled) {
-      return;
-    }
-    this.styleUpdater_.setLineFocusPos(newTop, newHeight);
-  }
-
-  onLineFocusContentPositionChange(
-      newTop: number, newHeight: number, newFocalPoint: number): void {
+  onLineFocusMove(newTop: number, newHeight: number, newFocalPoint: number):
+      void {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
