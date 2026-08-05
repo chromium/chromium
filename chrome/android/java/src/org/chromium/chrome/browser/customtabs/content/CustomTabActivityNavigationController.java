@@ -425,7 +425,11 @@ public class CustomTabActivityNavigationController
                 IntentHandler.startChromeLauncherActivityForTrustedIntent(intent);
             } else if (PackageManagerUtils.canResolveActivity(intent)) {
                 mActivity.startActivity(intent, startActivityOptions);
-                finish(FinishReason.OPEN_IN_BROWSER);
+                // When the tab is hosted by a TWA/Webapp/WebAPK, finishing the activity would
+                // close (and thus crash) the installed app, so only finish plain Custom Tabs.
+                if (canFinishActivity) {
+                    finish(FinishReason.OPEN_IN_BROWSER);
+                }
             } else {
                 Toast.makeText(
                                 mActivity,

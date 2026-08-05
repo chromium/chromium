@@ -304,6 +304,37 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
+        // The TWA client app must be kept alive, so the activity must not be finished.
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void doesNotFinish_WhenOpenInBrowserCalled_AndIsWebapp() {
+        // Regression test for crbug.com/41495930 / crbug.com/510460240: "Open in
+        // browser" from an installed webapp must open the URL in the browser without
+        // finishing (and thus closing) the webapp.
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
+        when(env.intentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
+
+        mNavigationController.openCurrentUrlInBrowser();
+
+        verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
+        verify(env.activity).startActivity(any(), any());
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void doesNotFinish_WhenOpenInBrowserCalled_AndIsWebApk() {
+        // Regression test for crbug.com/41495930: "Open in browser" from a WebAPK must
+        // open the URL in the browser without finishing (and thus crashing) the WebAPK.
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
+        when(env.intentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
+
+        mNavigationController.openCurrentUrlInBrowser();
+
+        verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
+        verify(env.activity).startActivity(any(), any());
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
     @Test
