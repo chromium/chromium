@@ -6,10 +6,13 @@
 #define CHROME_SERVICES_READALOUD_AUDIO_RENDERER_READ_ALOUD_AUDIO_RENDERER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
+#include "media/base/media_util.h"
+#include "media/filters/audio_renderer_algorithm.h"
 
 namespace media {
 class AudioBus;
@@ -49,6 +52,10 @@ class ReadAloudAudioRenderer final
 
   void OnRenderError() override;
 
+  // Sets the playback rate for time-stretching.
+  // Must be called on the owning sequence.
+  void SetPlaybackRate(double rate);
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -58,6 +65,15 @@ class ReadAloudAudioRenderer final
   media::AudioParameters params_;
   raw_ptr<AudioSegmentQueue> queue_ = nullptr;
   bool initialized_ = false;
+
+  // Read and written on the owning sequence (during Initialize() /
+  // SetPlaybackRate()), read on the real-time audio thread during Render().
+  // Using an atomic or a simple variable is safe because the parameter changes
+  // are simple writes and we do not require strict synchronization.
+  double playback_rate_ = 1.0;
+
+  media::NullMediaLog media_log_;
+  media::AudioRendererAlgorithm algorithm_;
 };
 
 }  // namespace readaloud
