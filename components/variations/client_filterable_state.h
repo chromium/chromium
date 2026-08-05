@@ -77,6 +77,10 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // The country code to use for studies configured with session consistency.
   std::string session_consistency_country;
 
+  // The administrative area code (geo_level1) to use for studies configured
+  // with session consistency.
+  std::string session_consistency_geolevel1;
+
   // The country code to use for studies configured with permanent consistency.
   std::string permanent_consistency_country;
 

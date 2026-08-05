@@ -448,6 +448,7 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   state->session_consistency_country = GetLatestCountry();
   state->permanent_consistency_country = LoadPermanentConsistencyCountry(
       version, state->session_consistency_country);
+  state->session_consistency_geolevel1 = GetLatestGeoLevel1();
   // Update the stored permanent consistency country
   permanent_consistency_country_ = state->permanent_consistency_country;
   permanent_consistency_country_initialized_ = true;
