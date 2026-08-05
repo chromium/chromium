@@ -300,7 +300,7 @@
        <ph name="EMAIL">$1<ex>jessica@gmail.com</ex></ph>. <ph name="MANAGED_STATUS">$2<ex>Your account is managed</ex></ph>. <ph name="AI_TIER">$3<ex>Google AI Foo membership</ex></ph>.
       </message>
       <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER" desc="Part of the accessibility label letting the user know which membership tier they have. Used in strings such as IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS_AI_TIER. [iOS only]">
-        <ph name="AI_TIER_NAME">$1<ex>Tier name</ex> membership</ph>
+        <ph name="AI_TIER_NAME">$1<ex>Tier name</ex></ph> membership
       </message>
       <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME" desc="The accessibility label for the cell containing user’s name and email. [iOS only]">
         <ph name="USER_NAME">$1<ex>Jessica</ex></ph>, <ph name="EMAIL">$2<ex>jessica@gmail.com</ex></ph>.
