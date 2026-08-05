@@ -1020,10 +1020,7 @@
   },
   {
     "name": "autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
-    "owners": [
-      "jialihuang@google.com","yiwenqian@google.com",
-      "payments-autofill-team@google.com"
-    ],
+    "owners": ["jialihuang@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 150
   },
   {

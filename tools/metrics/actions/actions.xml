@@ -19167,7 +19167,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.CreditCardScanner.DismissedByUser">
-  <owner>yiwenqian@google.com</owner>
   <owner>qihuizhao@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <description>
@@ -19177,7 +19176,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.CreditCardScanner.Error">
-  <owner>yiwenqian@google.com</owner>
   <owner>qihuizhao@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <description>
@@ -19186,7 +19184,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.CreditCardScanner.ScannedCard">
-  <owner>yiwenqian@google.com</owner>
   <owner>qihuizhao@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <description>

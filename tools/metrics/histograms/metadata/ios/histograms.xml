@@ -7189,7 +7189,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScanCard.EndToEndLatency" units="ms"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the total elapsed time from the initiation of the scan card session
@@ -7201,7 +7200,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScanCardBottomSheet.ExitReason"
     enum="ScanCardSuggestionBottomSheetExitReason" expires_after="2027-03-31">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks the reason the Scan Card bottom sheet suggestion was dismissed or
@@ -7213,7 +7211,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScanCardBottomSheet.TimeToSelection" units="ms"
     expires_after="2027-03-31">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the elapsed time between displaying the Scan Card bottom sheet
@@ -7224,7 +7221,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.ScanCardBottomSheet.TimeToTrigger.{Outcome}" units="ms"
     expires_after="2027-04-01">
-  <owner>yiwenqian@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the elapsed time between receiving the signal to trigger the Scan
@@ -7240,7 +7237,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.ScanCardBottomSheet.Triggered" enum="Boolean"
     expires_after="2027-04-01">
-  <owner>yiwenqian@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the outcome of attempting to trigger the Scan Card and Autofill
@@ -7254,7 +7251,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScanCardFinished" enum="Boolean"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the card scan flow was successfully completed (saved) or
@@ -7266,7 +7262,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScanCardOfferToSave" enum="ScanCardOfferToSaveAction"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the user action on the scanned card save dialog (Accept, Reject, or
@@ -7277,7 +7272,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScanCardOfferToSave.ValidExpMonth" enum="Boolean"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the scanned credit card expiration month was valid. Recorded
@@ -7288,7 +7282,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScanCardOfferToSave.ValidExpYear" enum="Boolean"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the scanned credit card expiration year was valid. Recorded
@@ -7299,7 +7292,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScanCardOfferToSave.ValidNumber" enum="Boolean"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the scanned credit card number was valid. Recorded when the
@@ -7310,7 +7302,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScannedCard.ExpMonthEdited" enum="Boolean"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the user manually edited the card expiration month after
@@ -7321,7 +7312,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScannedCard.ExpYearEdited" enum="Boolean"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the user manually edited the card expiration year after
@@ -7332,7 +7322,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.ScannedCard.NumberEdited" enum="Boolean"
     expires_after="2027-04-01">
   <owner>qihuizhao@google.com</owner>
-  <owner>yiwenqian@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records whether the user manually edited the card number after scanning.
