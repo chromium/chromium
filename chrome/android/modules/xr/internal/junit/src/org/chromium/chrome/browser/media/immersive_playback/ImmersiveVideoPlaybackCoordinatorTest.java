@@ -71,6 +71,7 @@ import java.util.function.Consumer;
 /** Tests for {@link ImmersiveVideoPlaybackCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("unchecked")
 public class ImmersiveVideoPlaybackCoordinatorTest {
     @Mock private ImmersiveVideoControlCoordinator.Delegate mVideoControlDelegate;
     @Mock private WindowAndroid mWindowAndroid;
@@ -324,6 +325,25 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
 
         verify(mControlPanelHolder).setEntityEnabled(false);
         assertFalse(panel.isFormatButtonSelectedForTesting());
+    }
+
+    @Test
+    @UiThreadTest
+    public void testFormatPanelAccessibilityFocusLoss_DismissesPanel() {
+        XrPanelEntityHolder formatPanelHolder = mock(XrPanelEntityHolder.class);
+        when(formatPanelHolder.getEntitySize()).thenReturn(new SizeF(1f, 1f));
+        when(mControlPanelHolder.getParent()).thenReturn(mControlPanelHolder);
+        when(formatPanelHolder.getParent()).thenReturn(formatPanelHolder);
+        when(mXrSceneCoreSessionManager.createPanelEntity(any(), any()))
+                .thenReturn(formatPanelHolder);
+
+        mCoordinator.onFormatClicked();
+        assertTrue(mCoordinator.getFormatCoordinatorForTesting().isShowing());
+
+        mCoordinator.onFormatPanelAccessibilityFocusChanged(false);
+
+        verify(formatPanelHolder).setEntityEnabled(false);
+        verify(formatPanelHolder).setParent(null);
     }
 
     /**

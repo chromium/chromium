@@ -33,10 +33,20 @@ public class ImmersiveVideoFormatView extends ImmersiveVideoHoverLayout {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         LayoutInflater.from(context).inflate(R.layout.immersive_video_format_view, this, true);
+        setAccessibilityPaneTitle(
+                context.getString(R.string.immersive_playback_confirmation_format_title));
     }
 
     /** Exposes the internal radio button group for format selections. */
     public ImmersiveVideoFormatRadioGroup getRadioGroup() {
         return findViewById(R.id.format_radio_group);
+    }
+
+    /** Requests accessibility focus on the format selection options. */
+    public void requestFocusForAccessibility() {
+        ImmersiveVideoFormatRadioGroup radioGroup = getRadioGroup();
+        if (radioGroup != null) {
+            radioGroup.requestFocusForAccessibility();
+        }
     }
 }

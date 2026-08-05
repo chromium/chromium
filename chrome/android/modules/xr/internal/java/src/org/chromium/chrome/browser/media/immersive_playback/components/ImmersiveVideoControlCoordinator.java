@@ -250,6 +250,31 @@ public class ImmersiveVideoControlCoordinator {
         }
     }
 
+    /** Requests accessibility focus on the format button. */
+    public void requestFormatButtonAccessibilityFocus() {
+        if (mView != null) {
+            mView.requestFormatButtonAccessibilityFocus();
+        }
+    }
+
+    /** Cancels any pending accessibility focus requests. */
+    public void cancelPendingAccessibilityFocusRequests() {
+        if (mView != null) {
+            mView.cancelPendingAccessibilityFocusRequests();
+        }
+    }
+
+    /**
+     * Sets the importance of the control panel for accessibility.
+     *
+     * @param mode The accessibility importance mode.
+     */
+    public void setImportantForAccessibility(int mode) {
+        if (mView != null) {
+            mView.setImportantForAccessibility(mode);
+        }
+    }
+
     public ImmersiveVideoControlView getControlPanelForTesting() {
         return assumeNonNull(mView);
     }

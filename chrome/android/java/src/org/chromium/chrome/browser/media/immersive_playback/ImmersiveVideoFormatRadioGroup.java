@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.media.immersive_playback;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 
 import androidx.annotation.StringRes;
+
+import com.google.common.collect.ImmutableMap;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -20,8 +24,6 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
-
-import com.google.common.collect.ImmutableMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,8 @@ public class ImmersiveVideoFormatRadioGroup extends FrameLayout {
     private final List<RadioButtonWithDescription> mRadioButtons = new ArrayList<>();
     private final RadioButtonWithDescriptionLayout mLayout;
     private final RadioButtonWithDescription mRecommendedButton;
+    private @Nullable RadioButtonWithDescription mFocusTarget;
+    private @Nullable Runnable mFocusRunnable;
 
     public ImmersiveVideoFormatRadioGroup(Context context) {
         this(context, null);
@@ -128,10 +132,79 @@ public class ImmersiveVideoFormatRadioGroup extends FrameLayout {
 
     /** Returns the selected format option. */
     public @Nullable FormatOption getSelectedOption() {
+        RadioButtonWithDescription checked = getSelectedButton();
+        return checked != null ? (FormatOption) checked.getTag() : null;
+    }
+
+    private @Nullable RadioButtonWithDescription getSelectedButton() {
         for (RadioButtonWithDescription rb : mRadioButtons) {
             if (rb.isChecked()) {
-                FormatOption option = (FormatOption) rb.getTag();
-                if (option != null) return option;
+                return rb;
+            }
+        }
+        return null;
+    }
+
+    /** Requests accessibility focus on the selected radio button option. */
+    public void requestFocusForAccessibility() {
+        cancelPendingFocusRequests();
+        final RadioButtonWithDescription target = findTargetForAccessibility();
+        if (target != null) {
+            mFocusTarget = target;
+            mFocusRunnable = this::requestFocusForAccessibilityInternal;
+            target.postDelayed(mFocusRunnable, 150);
+        }
+    }
+
+    @SuppressLint("AccessibilityFocus")
+    private void requestFocusForAccessibilityInternal() {
+        if (mFocusTarget != null && mFocusTarget.isAttachedToWindow() && mFocusTarget.isShown()) {
+            mFocusTarget.requestFocus();
+            mFocusTarget.performAccessibilityAction(
+                    AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+        }
+        mFocusRunnable = null;
+        mFocusTarget = null;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (getVisibility() == View.VISIBLE) {
+            requestFocusForAccessibility();
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        cancelPendingFocusRequests();
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibility != VISIBLE) {
+            cancelPendingFocusRequests();
+        }
+    }
+
+    private void cancelPendingFocusRequests() {
+        if (mFocusTarget != null && mFocusRunnable != null) {
+            mFocusTarget.removeCallbacks(mFocusRunnable);
+        }
+        mFocusRunnable = null;
+        mFocusTarget = null;
+    }
+
+    private @Nullable RadioButtonWithDescription findTargetForAccessibility() {
+        RadioButtonWithDescription checked = getSelectedButton();
+        if (checked != null && checked.getVisibility() == View.VISIBLE) {
+            return checked;
+        }
+        for (RadioButtonWithDescription rb : mRadioButtons) {
+            if (rb.getVisibility() == View.VISIBLE) {
+                return rb;
             }
         }
         return null;

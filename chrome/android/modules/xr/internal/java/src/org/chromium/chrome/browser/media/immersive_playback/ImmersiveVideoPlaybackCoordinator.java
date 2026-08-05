@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.media.immersive_playback.ImmersiveVide
 
 import android.app.Activity;
 import android.os.Build;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -276,6 +277,9 @@ public class ImmersiveVideoPlaybackCoordinator
     @Override
     public void onFormatPanelAccessibilityFocusChanged(boolean focused) {
         mAutoHideManager.onFormatPanelAccessibilityFocusChanged(focused);
+        if (!focused && mFormatCoordinator.isShowing()) {
+            hideFormatSelectionPanel();
+        }
     }
 
     // =========================================================================
@@ -339,11 +343,17 @@ public class ImmersiveVideoPlaybackCoordinator
                 mStereoMode,
                 mProjectionType);
         mControlCoordinator.setFormatButtonSelected(true);
+        mControlCoordinator.cancelPendingAccessibilityFocusRequests();
+        mControlCoordinator.setImportantForAccessibility(
+                View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        mFormatCoordinator.requestFocusForAccessibility();
     }
 
     private void hideFormatSelectionPanel() {
         mFormatCoordinator.dismiss();
         mControlCoordinator.setFormatButtonSelected(false);
+        mControlCoordinator.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        mControlCoordinator.requestFormatButtonAccessibilityFocus();
     }
 
     // =========================================================================

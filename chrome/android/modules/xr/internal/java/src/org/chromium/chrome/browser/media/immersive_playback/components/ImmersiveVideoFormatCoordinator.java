@@ -184,6 +184,13 @@ public class ImmersiveVideoFormatCoordinator {
         }
     }
 
+    /** Requests accessibility focus on the format panel. */
+    public void requestFocusForAccessibility() {
+        if (mView != null) {
+            mView.requestFocusForAccessibility();
+        }
+    }
+
     /** Returns true if the panel is showing, false otherwise. */
     public boolean isShowing() {
         return mHolder != null && mHolder.getParent() != null;

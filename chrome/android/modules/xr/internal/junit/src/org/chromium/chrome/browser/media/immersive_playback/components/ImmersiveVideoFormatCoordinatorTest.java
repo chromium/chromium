@@ -128,4 +128,16 @@ public class ImmersiveVideoFormatCoordinatorTest {
 
         verify(mHolder).dispose();
     }
+
+    @Test
+    public void testRequestFocusForAccessibility() {
+        mCoordinator.show(
+                mParentEntity,
+                new SizeF(1f, 1f),
+                ImmersiveStereoMode.MONO,
+                ImmersiveProjectionType.QUAD);
+        mCoordinator.requestFocusForAccessibility();
+
+        verify(mFormatView).requestFocusForAccessibility();
+    }
 }

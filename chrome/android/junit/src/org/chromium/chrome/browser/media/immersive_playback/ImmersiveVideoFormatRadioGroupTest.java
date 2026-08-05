@@ -9,9 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
-import android.content.Context;
+import android.os.Looper;
 import android.view.View;
 
 import org.junit.Before;
@@ -27,18 +28,27 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
 
+import java.util.concurrent.TimeUnit;
+
 /** Tests for {@link ImmersiveVideoFormatRadioGroup}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ImmersiveVideoFormatRadioGroupTest {
-    private Context mContext;
+    private Activity mActivity;
     private ImmersiveVideoFormatRadioGroup mRadioGroup;
 
     @Before
     public void setUp() {
-        mContext = Robolectric.buildActivity(Activity.class).create().get();
-        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mRadioGroup = new ImmersiveVideoFormatRadioGroup(mContext);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mRadioGroup = new ImmersiveVideoFormatRadioGroup(mActivity);
+        mActivity.setContentView(mRadioGroup);
+
+        mRadioGroup.findViewById(R.id.standard_option).setFocusableInTouchMode(true);
+        mRadioGroup.findViewById(R.id.stereoscopic_option).setFocusableInTouchMode(true);
+        mRadioGroup.findViewById(R.id.hemisphere_option).setFocusableInTouchMode(true);
+        mRadioGroup.findViewById(R.id.sphere_option).setFocusableInTouchMode(true);
+        mRadioGroup.findViewById(R.id.recommended_option).setFocusableInTouchMode(true);
     }
 
     @Test
@@ -138,5 +148,47 @@ public class ImmersiveVideoFormatRadioGroupTest {
         assertTrue(recommendedBtn.isChecked());
         assertFalse(standardBtn.isChecked());
         assertEquals(recommendedBtn.getTag(), mRadioGroup.getSelectedOption());
+    }
+
+    @Test
+    public void testRequestFocusForAccessibility_withCheckedButton() {
+        RadioButtonWithDescription sphereBtn = mRadioGroup.findViewById(R.id.sphere_option);
+        sphereBtn.setChecked(true);
+
+        mRadioGroup.requestFocusForAccessibility();
+
+        shadowOf(Looper.getMainLooper()).idleFor(150, TimeUnit.MILLISECONDS);
+
+        assertTrue(sphereBtn.isFocused());
+    }
+
+    @Test
+    public void testRequestFocusForAccessibility_fallbackToFirstVisible() {
+        RadioButtonWithDescription standardBtn = mRadioGroup.findViewById(R.id.standard_option);
+
+        mRadioGroup.requestFocusForAccessibility();
+
+        shadowOf(Looper.getMainLooper()).idleFor(150, TimeUnit.MILLISECONDS);
+
+        assertTrue(standardBtn.isFocused());
+    }
+
+    @Test
+    public void testOnAttachedToWindow_RequestsFocus() {
+        ImmersiveVideoFormatRadioGroup unattachedGroup =
+                new ImmersiveVideoFormatRadioGroup(mActivity);
+        RadioButtonWithDescription sphereBtn = unattachedGroup.findViewById(R.id.sphere_option);
+        sphereBtn.setFocusableInTouchMode(true);
+        sphereBtn.setChecked(true);
+
+        mActivity.setContentView(unattachedGroup);
+        unattachedGroup.measure(
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+        unattachedGroup.layout(0, 0, 100, 100);
+
+        shadowOf(Looper.getMainLooper()).idleFor(150, TimeUnit.MILLISECONDS);
+
+        assertTrue(sphereBtn.isFocused());
     }
 }

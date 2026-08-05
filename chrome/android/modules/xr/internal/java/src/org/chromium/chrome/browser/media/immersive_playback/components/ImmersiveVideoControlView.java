@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.media.immersive_playback.components;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import com.google.android.material.slider.Slider;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.modules.xr.R;
 
 /**
@@ -63,6 +66,7 @@ public class ImmersiveVideoControlView extends ImmersiveVideoHoverLayout {
     private final ImageButton mPauseButton;
     private final ImageButton mFormatButton;
     private final ImageButton mExitButton;
+    private @Nullable Runnable mFocusRunnable;
 
     /**
      * Creates a new {@link ImmersiveVideoControlView}.
@@ -206,5 +210,32 @@ public class ImmersiveVideoControlView extends ImmersiveVideoHoverLayout {
 
     public boolean isFormatButtonSelectedForTesting() {
         return mFormatButton.isSelected();
+    }
+
+    /** Requests accessibility focus on the format button. */
+    public void requestFormatButtonAccessibilityFocus() {
+        if (mFocusRunnable != null) {
+            mFormatButton.removeCallbacks(mFocusRunnable);
+        }
+        mFocusRunnable = this::requestFormatButtonAccessibilityFocusInternal;
+        mFormatButton.postDelayed(mFocusRunnable, 150);
+    }
+
+    @SuppressLint("AccessibilityFocus")
+    private void requestFormatButtonAccessibilityFocusInternal() {
+        if (mFormatButton.isAttachedToWindow() && mFormatButton.isShown()) {
+            mFormatButton.requestFocus();
+            mFormatButton.performAccessibilityAction(
+                    AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+        }
+        mFocusRunnable = null;
+    }
+
+    /** Cancels any pending accessibility focus requests. */
+    public void cancelPendingAccessibilityFocusRequests() {
+        if (mFocusRunnable != null) {
+            mFormatButton.removeCallbacks(mFocusRunnable);
+            mFocusRunnable = null;
+        }
     }
 }
