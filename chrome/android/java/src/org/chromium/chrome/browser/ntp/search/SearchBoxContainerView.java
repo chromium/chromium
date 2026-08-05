@@ -137,9 +137,24 @@ public class SearchBoxContainerView extends LinearLayout {
 
         ComposeplateUtils.applyWhiteBackground(
                 getContext(), searchBoxShadowContainerView, applyWhiteBackground);
-        NtpCustomizationUtils.applyShadow(
-                getContext(), searchBoxShadowContainerView, mIsNtpAuroraEnabled);
+        applyShadow(searchBoxShadowContainerView);
         updateSearchBoxPaddingAndMarginForShadow(mIsNtpAuroraEnabled);
+    }
+
+    private void applyShadow(View searchBoxShadowContainerView) {
+        if (mIsNtpAuroraEnabled) {
+            NtpCustomizationUtils.applyShadow(
+                    getContext(), searchBoxShadowContainerView, mIsNtpAuroraEnabled);
+            // Disable clipping to allow the shadow to be drawn outside the view bounds. This
+            // provides a solution without adding margins to the top/bottom of the view.
+            setClipToPadding(false);
+            setClipChildren(false);
+            return;
+        }
+
+        // Reset clipping to default to avoid unexpected behavior.
+        setClipToPadding(true);
+        setClipChildren(true);
     }
 
     private void updateSearchBoxPaddingAndMarginForShadow(boolean applyShadow) {

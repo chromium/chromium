@@ -1901,7 +1901,7 @@ public class NtpCustomizationUtils {
             float elevation =
                     context.getResources().getDimensionPixelSize(R.dimen.fake_search_box_elevation);
             view.setElevation(elevation);
-            int shadowColor = context.getColor(R.color.color_primary_with_alpha_30);
+            int shadowColor = context.getColor(R.color.color_primary_with_alpha_50);
             view.setOutlineAmbientShadowColor(shadowColor);
             view.setOutlineSpotShadowColor(shadowColor);
         } else {

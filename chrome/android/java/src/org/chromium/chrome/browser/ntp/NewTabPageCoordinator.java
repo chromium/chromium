@@ -560,11 +560,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mComposeplateCoordinator.setComposeplateButtonClickListener(
                 this::onComposeplateButtonClicked);
 
-        if (shouldApplyWhiteBackgroundOnSearchBox()) {
-            // It is safe to call mComposeplateCoordinator.applyWhiteBackground() again since it is
-            // no-op if the white background has been applied.
-            mComposeplateCoordinator.applyWhiteBackground(/* apply= */ true);
-        }
+        updateComposeplateBackground();
     }
 
     private void onComposeplateButtonClicked(View view) {

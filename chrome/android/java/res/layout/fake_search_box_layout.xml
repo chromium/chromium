@@ -11,9 +11,7 @@ found in the LICENSE file.
     android:id="@+id/search_box"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="@dimen/search_box_padding_for_shadow_vertical"
-    android:clipChildren="false"
-    android:clipToPadding="false">
+    android:paddingVertical="@dimen/search_box_padding_for_shadow_vertical">
     <LinearLayout
         android:id="@+id/search_box_shadow_container"
         android:layout_width="match_parent"
