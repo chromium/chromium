@@ -18,6 +18,7 @@
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -152,11 +153,17 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
        MarkPersonalContextAmbientAutofillNoticeAsAcknowledgedSetsPrefs) {
   pref_service()->SetBoolean(
       prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, true);
+  EXPECT_TRUE(pref_service()
+                  ->GetTime(prefs::kAmbientAutofillNoticeAcknowledgedTimestamp)
+                  .is_null());
 
   service()->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
 
   EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown));
+  EXPECT_FALSE(pref_service()
+                   ->GetTime(prefs::kAmbientAutofillNoticeAcknowledgedTimestamp)
+                   .is_null());
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest,

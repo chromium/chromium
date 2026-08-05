@@ -15,6 +15,10 @@ inline constexpr char kPersonalContextAmbientAutofillNoticeShouldBeShown[] =
 inline constexpr char kPersonalContextAmbientAutofillNoticeImpressionCount[] =
     "autofill.personal_context.ambient_autofill_notice_impression_count";
 
+// Timestamp when the user acknowledged the Ambient Autofill notice UI.
+inline constexpr char kAmbientAutofillNoticeAcknowledgedTimestamp[] =
+    "autofill.ambient_autofill_notice_acknowledged_timestamp";
+
 inline constexpr char kPersonalContextAtMemoryNoticeShouldBeShown[] =
     "autofill.personal_context.at_memory_notice_should_be_shown";
 

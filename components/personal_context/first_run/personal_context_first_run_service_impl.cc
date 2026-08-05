@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_features.h"
@@ -91,6 +92,8 @@ void PersonalContextFirstRunServiceImpl::
 
     pref_service_->SetBoolean(
         prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
+    pref_service_->SetTime(prefs::kAmbientAutofillNoticeAcknowledgedTimestamp,
+                           base::Time::Now());
   }
 }
 

@@ -125,11 +125,6 @@ inline constexpr char kAutofillHasSeenIban[] = "autofill.has_seen_iban";
 inline constexpr char kAutofillLastVersionDeduped[] =
     "autofill.last_version_deduped";
 
-// Timestamp when the user Ambient Autofill intelligence notice
-// UI.
-inline constexpr char kAmbientAutofillNoticeAcknowledgedTimestamp[] =
-    "autofill.ambiente_autofill_notice_acknowledged_timestamp";
-
 // Boolean that is true if the user enabled fetching OTPs from the signed in
 // Gmail account.
 inline constexpr char kAutofillGmailOtpFillingEnabled[] =

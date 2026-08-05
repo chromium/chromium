@@ -33,6 +33,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2321,7 +2322,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   // Because the acked was done 7 days ago, creating private inference notice
   // suggestion is allowed.
   client().GetPrefs()->SetTime(
-      prefs::kAmbientAutofillNoticeAcknowledgedTimestamp,
+      personal_context::prefs::kAmbientAutofillNoticeAcknowledgedTimestamp,
       base::Time::Now() - base::Days(7));
 
   SetEntities({GetPassportEntityInstanceWithRandomGuid()});
@@ -2334,6 +2335,31 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice)));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       PrivateInferenceNoticeNotShownWhenPersonalContextNoticeIsAdded) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAiUsePrivateAi);
+  SetEntities({GetFlightReservationEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext})});
+  SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER});
+
+  client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(true);
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+
+  EXPECT_THAT(
+      suggestions,
+      Contains(EqualsSuggestion(SuggestionType::kPersonalContextNotice)));
+  EXPECT_THAT(suggestions,
+              Not(Contains(EqualsSuggestion(
+                  SuggestionType::kAutofillAiPrivateInferenceNotice))));
+}
+#endif
+
 TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenAmbientAutofillShownButNotAcked) {
   base::test::ScopedFeatureList scoped_feature_list(
@@ -2341,6 +2367,26 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   client().GetPrefs()->SetTime(
       prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
       base::Time::Now());
+
+  SetEntities({GetPassportEntityInstanceWithRandomGuid()});
+  SetForm({PASSPORT_NUMBER});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(suggestions,
+              Not(Contains(EqualsSuggestion(
+                  SuggestionType::kAutofillAiPrivateInferenceNotice))));
+}
+
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    PrivateInferenceNoticeNotShownWhenPersonalContextAmbientNoticeImpressionSeenButNotAcked) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAiUsePrivateAi);
+  client().GetPrefs()->SetInteger(
+      personal_context::prefs::
+          kPersonalContextAmbientAutofillNoticeImpressionCount,
+      1);
 
   SetEntities({GetPassportEntityInstanceWithRandomGuid()});
   SetForm({PASSPORT_NUMBER});
@@ -2362,7 +2408,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   // Because the acked was done 1 day ago, creating private inference notice
   // suggestion is not allowed.
   client().GetPrefs()->SetTime(
-      prefs::kAmbientAutofillNoticeAcknowledgedTimestamp,
+      personal_context::prefs::kAmbientAutofillNoticeAcknowledgedTimestamp,
       base::Time::Now() - base::Days(1));
 
   SetEntities({GetPassportEntityInstanceWithRandomGuid()});
