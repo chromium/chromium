@@ -2250,6 +2250,17 @@ void TabStripModel::NotifyTabGroupFocusChanged(
   const std::optional<tab_groups::TabGroupId> new_focused_group =
       selection_model_.focused_group();
   if (old_focused_group != new_focused_group) {
+    if (old_focused_group.has_value() &&
+        focus_mode_session_start_time_.has_value()) {
+      base::UmaHistogramLongTimes(
+          "TabGroups.Focus.SessionDuration",
+          base::TimeTicks::Now() - *focus_mode_session_start_time_);
+      focus_mode_session_start_time_.reset();
+    }
+    if (new_focused_group.has_value()) {
+      focus_mode_session_start_time_ = base::TimeTicks::Now();
+    }
+
     for (auto& observer : observers_) {
       observer.OnTabGroupFocusChanged(new_focused_group, old_focused_group);
     }

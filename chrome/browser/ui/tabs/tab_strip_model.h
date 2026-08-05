@@ -23,6 +23,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -1477,6 +1478,9 @@ class TabStripModel {
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
+
+  // Timestamp when the current focus mode session began, if active.
+  std::optional<base::TimeTicks> focus_mode_session_start_time_;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
 };
