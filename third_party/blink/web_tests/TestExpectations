@@ -2599,8 +2599,6 @@ crbug.com/494341371 [ Linux ] external/wpt/html/cross-origin-opener-policy/ifram
 # Flakily fails due to cookie leakage between unrelated tests
 crbug.com/438309773 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Crash Failure Pass ]
 
-crbug.com/499074021 external/wpt/paint-timing/fcp-only/fcp-broken-image.html [ Failure ]
-
 # UUID in `*-expected.txt`
 crbug.com/499074020 external/wpt/fetch/metadata/text.https.html [ Failure ]
 
