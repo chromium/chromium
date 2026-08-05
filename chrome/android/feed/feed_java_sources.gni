@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 feed_deps = [
+  "//chrome/android:new_tab_page_utils_java",
   "//chrome/android/feed:chrome_feed_java_resources",
   "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
   "//third_party/android_deps:javax_inject_javax_inject_java",

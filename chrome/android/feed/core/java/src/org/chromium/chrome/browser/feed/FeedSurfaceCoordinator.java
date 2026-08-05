@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
@@ -519,8 +520,7 @@ public class FeedSurfaceCoordinator
         mHeaderView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
 
         if (mNtpHeader != null && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
-            int bottomPadding =
-                    mActivity.getResources().getDimensionPixelSize(R.dimen.ntp_section_top_margin);
+            int bottomPadding = NewTabPageUtils.getNtpSectionPaddingPx(activity.getResources());
             mNtpHeader.setPadding(
                     mNtpHeader.getPaddingLeft(),
                     mNtpHeader.getPaddingTop(),

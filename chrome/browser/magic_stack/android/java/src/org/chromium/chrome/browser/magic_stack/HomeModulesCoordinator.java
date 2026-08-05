@@ -177,8 +177,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     (ViewGroup.MarginLayoutParams) mRecyclerView.getLayoutParams();
             if (marginLayoutParams != null) {
                 marginLayoutParams.topMargin =
-                        activity.getResources()
-                                .getDimensionPixelSize(R.dimen.ntp_section_top_margin_small);
+                        NewTabPageUtils.getNtpSectionPaddingPx(activity.getResources());
                 mRecyclerView.setLayoutParams(marginLayoutParams);
             }
         }
