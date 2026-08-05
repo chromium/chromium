@@ -102,7 +102,9 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
                 int64_t bytes,
                 bool complete);
   void TruncateImpl(uint64_t length, TruncateCallback callback);
+  void DidTruncate(TruncateCallback callback, base::File::Error result);
   void CloseImpl(CloseCallback callback);
+  void MaybeStartClose();
   void AbortImpl(AbortCallback callback);
   void DidReplaceSwapFile(
       std::unique_ptr<content::FileSystemAccessSafeMoveHelper>
@@ -145,6 +147,9 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   // active swap file of a different writer.
   bool should_purge_swap_file_on_destruction_
       GUARDED_BY_CONTEXT(sequence_checker_) = true;
+
+  int pending_operations_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  bool did_start_close_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
