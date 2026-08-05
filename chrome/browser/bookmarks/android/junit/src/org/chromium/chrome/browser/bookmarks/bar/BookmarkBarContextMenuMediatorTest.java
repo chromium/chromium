@@ -83,6 +83,8 @@ public class BookmarkBarContextMenuMediatorTest {
                         mDismissRunnable);
     }
 
+    // Tests for the layout of the context menu.
+
     @Test
     @SmallTest
     public void testBookmarkItem() {
@@ -231,51 +233,6 @@ public class BookmarkBarContextMenuMediatorTest {
         assertFalse(delete.get(ListMenuItemProperties.ENABLED));
     }
 
-    private PropertyModel getMenuItem(ModelList list, int titleResId) {
-        return getMenuItemByTitle(list, mActivity.getString(titleResId));
-    }
-
-    private PropertyModel getMenuItem(ModelList list, int pluralResId, int quantity) {
-        return getMenuItemByTitle(
-                list, mActivity.getResources().getQuantityString(pluralResId, quantity, quantity));
-    }
-
-    private PropertyModel getMenuItemByTitle(ModelList list, String expectedTitle) {
-        for (ListItem item : list) {
-            if (item.model.containsKey(ListMenuItemProperties.TITLE)) {
-                String title = item.model.get(ListMenuItemProperties.TITLE).toString();
-                if (expectedTitle.equals(title)) {
-                    return item.model;
-                }
-            }
-        }
-        return null;
-    }
-
-    @Test
-    @SmallTest
-    public void testFolder_OpenAllInNewTabGroup_PropagatesTitle() {
-        BookmarkId folderId =
-                mBookmarkModel.addFolder(
-                        mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
-        mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
-        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
-        assertNotNull(list);
-
-        PropertyModel openTabGroup =
-                getMenuItem(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
-        assertNotNull(openTabGroup);
-
-        View.OnClickListener clickListener =
-                openTabGroup.get(ListMenuItemProperties.CLICK_LISTENER);
-        assertNotNull(clickListener);
-        clickListener.onClick(null);
-
-        verify(mContextMenuDelegate).openAllInNewTabGroup(anyList(), eq("My Special Folder"));
-    }
-
     @Test
     @SmallTest
     public void testEmptySpaceContextMenu_NtpFeatureDisabled() {
@@ -341,6 +298,8 @@ public class BookmarkBarContextMenuMediatorTest {
         assertNull(getMenuItem(list, R.string.bookmark_item_delete));
     }
 
+    // Tests for actions of the items in the context menu.
+
     @Test
     @SmallTest
     public void testContextMenu_ClickListenersDismissAndInvokeMediator() {
@@ -357,6 +316,30 @@ public class BookmarkBarContextMenuMediatorTest {
 
         verify(mContextMenuDelegate).deleteBookmark(eq(bookmarkId));
         verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testFolder_OpenAllInNewTabGroup_PropagatesTitle() {
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
+        mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        assertNotNull(list);
+
+        PropertyModel openTabGroup =
+                getMenuItem(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
+        assertNotNull(openTabGroup);
+
+        View.OnClickListener clickListener =
+                openTabGroup.get(ListMenuItemProperties.CLICK_LISTENER);
+        assertNotNull(clickListener);
+        clickListener.onClick(null);
+
+        verify(mContextMenuDelegate).openAllInNewTabGroup(anyList(), eq("My Special Folder"));
     }
 
     @Test
@@ -411,5 +394,28 @@ public class BookmarkBarContextMenuMediatorTest {
         alwaysShow.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
         verify(mContextMenuDelegate).toggleBookmarksBar();
         verify(mDismissRunnable).run();
+    }
+
+    // Helper methods for fetching menu items.
+
+    private PropertyModel getMenuItem(ModelList list, int titleResId) {
+        return getMenuItemByTitle(list, mActivity.getString(titleResId));
+    }
+
+    private PropertyModel getMenuItem(ModelList list, int pluralResId, int quantity) {
+        return getMenuItemByTitle(
+                list, mActivity.getResources().getQuantityString(pluralResId, quantity, quantity));
+    }
+
+    private PropertyModel getMenuItemByTitle(ModelList list, String expectedTitle) {
+        for (ListItem item : list) {
+            if (item.model.containsKey(ListMenuItemProperties.TITLE)) {
+                String title = item.model.get(ListMenuItemProperties.TITLE).toString();
+                if (expectedTitle.equals(title)) {
+                    return item.model;
+                }
+            }
+        }
+        return null;
     }
 }
