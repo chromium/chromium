@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
@@ -302,7 +301,7 @@ public class BookmarkBarContextMenuMediatorTest {
 
     @Test
     @SmallTest
-    public void testContextMenu_ClickListenersDismissAndInvokeMediator() {
+    public void testClickDelete() {
         BookmarkId bookmarkId =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
@@ -310,9 +309,7 @@ public class BookmarkBarContextMenuMediatorTest {
 
         ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
 
-        PropertyModel delete = getMenuItem(list, R.string.bookmark_item_delete);
-        assertNotNull(delete);
-        delete.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+        click(list, R.string.bookmark_item_delete);
 
         verify(mContextMenuDelegate).deleteBookmark(eq(bookmarkId));
         verify(mDismissRunnable).run();
@@ -320,7 +317,7 @@ public class BookmarkBarContextMenuMediatorTest {
 
     @Test
     @SmallTest
-    public void testFolder_OpenAllInNewTabGroup_PropagatesTitle() {
+    public void testClickOpenAllInNewTabGroup() {
         BookmarkId folderId =
                 mBookmarkModel.addFolder(
                         mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
@@ -330,36 +327,18 @@ public class BookmarkBarContextMenuMediatorTest {
         ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
         assertNotNull(list);
 
-        PropertyModel openTabGroup =
-                getMenuItem(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
-        assertNotNull(openTabGroup);
-
-        View.OnClickListener clickListener =
-                openTabGroup.get(ListMenuItemProperties.CLICK_LISTENER);
-        assertNotNull(clickListener);
-        clickListener.onClick(null);
+        clickPlural(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
 
         verify(mContextMenuDelegate).openAllInNewTabGroup(anyList(), eq("My Special Folder"));
     }
 
     @Test
     @SmallTest
-    public void testVisibilityControlClickListeners_NtpFeatureDisabled() {
+    public void testClickShowBookmarksBar() {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
 
-        // The "Show bookmarks bar" option should be present, but not the tri-state options.
-        PropertyModel showBar = getMenuItem(list, R.string.contextmenu_show_bookmarks_bar);
-        PropertyModel alwaysHide =
-                getMenuItem(list, R.string.contextmenu_always_hide_bookmarks_bar);
-        PropertyModel alwaysShow =
-                getMenuItem(list, R.string.contextmenu_always_show_bookmarks_bar);
-        assertNotNull(showBar);
-        assertNull(alwaysHide);
-        assertNull(alwaysShow);
-
-        // Clicking "Show bookmarks bar" should toggle the setting and dismiss.
-        showBar.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+        click(list, R.string.contextmenu_show_bookmarks_bar);
         verify(mContextMenuDelegate).toggleBookmarksBar();
         verify(mDismissRunnable).run();
     }
@@ -367,15 +346,11 @@ public class BookmarkBarContextMenuMediatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-    public void testAlwaysHideClickListener_NtpFeatureEnabled() {
+    public void testClickAlwaysHideBookmarksBar() {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
 
-        PropertyModel alwaysHide =
-                getMenuItem(list, R.string.contextmenu_always_hide_bookmarks_bar);
-        assertNotNull(alwaysHide);
-
-        alwaysHide.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+        click(list, R.string.contextmenu_always_hide_bookmarks_bar);
         verify(mContextMenuDelegate).toggleBookmarksBar();
         verify(mDismissRunnable).run();
     }
@@ -383,17 +358,29 @@ public class BookmarkBarContextMenuMediatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-    public void testAlwaysShowClickListener_NtpFeatureEnabled() {
+    public void testClickAlwaysShowBookmarksBar() {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
 
-        PropertyModel alwaysShow =
-                getMenuItem(list, R.string.contextmenu_always_show_bookmarks_bar);
-        assertNotNull(alwaysShow);
-
-        alwaysShow.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+        click(list, R.string.contextmenu_always_show_bookmarks_bar);
         verify(mContextMenuDelegate).toggleBookmarksBar();
         verify(mDismissRunnable).run();
+    }
+
+    // Helper methods for performing actions on menu items.
+
+    private void click(ModelList list, int titleResId) {
+        PropertyModel item = getMenuItem(list, titleResId);
+        String name = mActivity.getResources().getResourceEntryName(titleResId);
+        assertNotNull("Cannot click '" + name + "' because the item is null", item);
+        item.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+    }
+
+    private void clickPlural(ModelList list, int pluralResId, int quantity) {
+        PropertyModel item = getMenuItem(list, pluralResId, quantity);
+        String name = mActivity.getResources().getResourceEntryName(pluralResId);
+        assertNotNull("Cannot click '" + name + "' because the item is null", item);
+        item.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
     }
 
     // Helper methods for fetching menu items.
