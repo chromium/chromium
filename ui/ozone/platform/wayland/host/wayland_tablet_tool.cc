@@ -141,8 +141,11 @@ void WaylandTabletTool::DispatchBufferedEvents() {
 }
 
 void WaylandTabletTool::ResetFrameData() {
+  // Tablet tool axes are sticky: the compositor sends an axis event only when
+  // the value changes, so the last known details must survive the frame reset.
+  PointerDetails details = frame_data_.pointer_details;
   frame_data_ = FrameData();
-  frame_data_.pointer_details.pointer_type = pointer_type_;
+  frame_data_.pointer_details = details;
 }
 
 // static
@@ -195,6 +198,13 @@ void WaylandTabletTool::ProximityIn(void* data,
                                     zwp_tablet_v2* tablet,
                                     wl_surface* surface) {
   auto* self = static_cast<WaylandTabletTool*>(data);
+
+  // A tool entering proximity begins a new interaction, so axis state persisted
+  // from the previous one must not leak into it. proximity_in is the first
+  // event in its frame, so a same-frame axis event still takes effect.
+  self->frame_data_.pointer_details = PointerDetails();
+  self->frame_data_.pointer_details.pointer_type = self->pointer_type_;
+
   if (!self->cursor_shape_device_) {
     if (auto* shape = self->connection_->wayland_cursor_shape()) {
       self->cursor_shape_device_ =
@@ -254,6 +264,10 @@ void WaylandTabletTool::Up(void* data, zwp_tablet_tool_v2* tool) {
   auto* self = static_cast<WaylandTabletTool*>(data);
   self->frame_data_.up = true;
   self->frame_data_.down = false;
+  // The tip is no longer in contact, so force is zero for the remainder of this
+  // frame. Without this, a persisted force would survive into the release event
+  // if the compositor omits a pressure event from the frame carrying `up`.
+  self->frame_data_.pointer_details.force = 0.0f;
 }
 
 // static
