@@ -39,7 +39,7 @@ found in the LICENSE file.
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginBottom="36dp"
                     android:importantForAccessibility="no">
                     <ImageView
                         android:id="@+id/fre_icon"
@@ -113,6 +113,7 @@ found in the LICENSE file.
                     android:id="@+id/fre_bottom_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="48dp"
                     android:orientation="vertical">
                     <include layout="@layout/fullscreen_signin_bottom_group_view" />
                 </LinearLayout>
@@ -133,7 +134,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="center_horizontal"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
