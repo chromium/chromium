@@ -1128,6 +1128,20 @@ public class TabStripTransitionCoordinatorUnitTest {
                 mTestHandler.heightRequested);
     }
 
+    @Test
+    public void destroyBeforeDelegateAvailable() {
+        setUpTabStripTransitionCoordinator(
+                /* isInDesktopWindow= */ false,
+                LARGE_NORMAL_WINDOW_WIDTH,
+                /* initDelegate= */ false);
+        mCoordinator.destroy();
+
+        // Fulfilling the delegate supplier after destruction should not execute callbacks
+        // or crash. See https://crbug.com/531591505.
+        mDelegateSupplier.set(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+    }
+
     private void doTestDesktopWindowModeChanged(
             boolean enterDesktopWindow,
             boolean smallSourceWindow,
