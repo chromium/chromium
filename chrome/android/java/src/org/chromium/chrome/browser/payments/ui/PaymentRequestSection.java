@@ -556,15 +556,12 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
         /** The runnable used to fade out the mUpdatedView. */
         private final Runnable mFadeOutRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Animation out = new AlphaAnimation(mUpdatedView.getAlpha(), 0.0f);
-                        out.setDuration(UPDATE_TEXT_ANIMATION_DURATION_MS);
-                        out.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
-                        out.setFillAfter(true);
-                        mUpdatedView.startAnimation(out);
-                    }
+                () -> {
+                    Animation out = new AlphaAnimation(mUpdatedView.getAlpha(), 0.0f);
+                    out.setDuration(UPDATE_TEXT_ANIMATION_DURATION_MS);
+                    out.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
+                    out.setFillAfter(true);
+                    mUpdatedView.startAnimation(out);
                 };
 
         /** The Handler used to post the mFadeOutRunnables. */

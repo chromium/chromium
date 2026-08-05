@@ -963,52 +963,47 @@ public class PaymentUiService
         assumeNonNull(mContactEditor)
                 .showEditPrompt(
                         toEdit,
-                        new Callback<>() {
-                            @Override
-                            public void onResult(@Nullable AutofillContact editedContact) {
-                                if (mPaymentRequestUi == null) return;
+                        (@Nullable AutofillContact editedContact) -> {
+                            if (mPaymentRequestUi == null) return;
 
-                                if (editedContact != null) {
-                                    assumeNonNull(mContactEditor).setPayerErrors(null);
+                            if (editedContact != null) {
+                                assumeNonNull(mContactEditor).setPayerErrors(null);
 
-                                    // A partial or complete contact came back from the editor
-                                    // (could have
-                                    // been from adding/editing or cancelling out of the edit flow).
-                                    if (!editedContact.isComplete()) {
-                                        // If the contact is not complete according to the
-                                        // requirements of
-                                        // the flow, unselect it (editor can return incomplete
-                                        // information
-                                        // when cancelled).
-                                        assumeNonNull(mContactSection)
-                                                .setSelectedItemIndex(
-                                                        SectionInformation.NO_SELECTION);
-                                    } else if (toEdit == null) {
-                                        // Contact is complete and we were in the "Add flow": add an
-                                        // item to
-                                        // the list.
-                                        assumeNonNull(mContactSection)
-                                                .addAndSelectItem(editedContact);
-                                    } else {
-                                        mDelegate.dispatchPayerDetailChangeEventIfNeeded(
-                                                editedContact.toPayerDetail());
-                                    }
-                                    // If contact is complete and (toEdit != null), no action
-                                    // needed: the
-                                    // contact was already selected in the UI.
+                                // A partial or complete contact came back from the editor
+                                // (could have
+                                // been from adding/editing or cancelling out of the edit flow).
+                                if (!editedContact.isComplete()) {
+                                    // If the contact is not complete according to the
+                                    // requirements of
+                                    // the flow, unselect it (editor can return incomplete
+                                    // information
+                                    // when cancelled).
+                                    assumeNonNull(mContactSection)
+                                            .setSelectedItemIndex(SectionInformation.NO_SELECTION);
+                                } else if (toEdit == null) {
+                                    // Contact is complete and we were in the "Add flow": add an
+                                    // item to
+                                    // the list.
+                                    assumeNonNull(mContactSection).addAndSelectItem(editedContact);
+                                } else {
+                                    mDelegate.dispatchPayerDetailChangeEventIfNeeded(
+                                            editedContact.toPayerDetail());
                                 }
-                                // If |editedContact| is null, the user has cancelled out of the
-                                // "Add flow".
-                                // No action to take (if a contact was selected in the UI, it will
-                                // stay
-                                // selected).
-
-                                mPaymentRequestUi.updateSection(
-                                        PaymentRequestUi.DataType.CONTACT_DETAILS,
-                                        assumeNonNull(mContactSection));
-
-                                if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
+                                // If contact is complete and (toEdit != null), no action
+                                // needed: the
+                                // contact was already selected in the UI.
                             }
+                            // If |editedContact| is null, the user has cancelled out of the
+                            // "Add flow".
+                            // No action to take (if a contact was selected in the UI, it will
+                            // stay
+                            // selected).
+
+                            mPaymentRequestUi.updateSection(
+                                    PaymentRequestUi.DataType.CONTACT_DETAILS,
+                                    assumeNonNull(mContactSection));
+
+                            if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
                         });
     }
 
@@ -1020,51 +1015,47 @@ public class PaymentUiService
     private void editAddress(@Nullable final AutofillAddress toEdit) {
         mAddressEditor.showEditPrompt(
                 toEdit,
-                new Callback<>() {
-                    @Override
-                    public void onResult(AutofillAddress editedAddress) {
-                        if (mPaymentRequestUi == null) return;
+                (@Nullable AutofillAddress editedAddress) -> {
+                    if (mPaymentRequestUi == null) return;
 
-                        if (editedAddress != null) {
-                            mAddressEditor.setAddressErrors(null);
+                    if (editedAddress != null) {
+                        mAddressEditor.setAddressErrors(null);
 
-                            // Sets or updates the shipping address label.
-                            editedAddress.setShippingAddressLabelWithCountry();
+                        // Sets or updates the shipping address label.
+                        editedAddress.setShippingAddressLabelWithCountry();
 
-                            // A partial or complete address came back from the editor (could have
-                            // been from adding/editing or cancelling out of the edit flow).
-                            if (!editedAddress.isComplete()) {
-                                // If the address is not complete, unselect it (editor can return
-                                // incomplete information when cancelled).
-                                assumeNonNull(mShippingAddressesSection)
-                                        .setSelectedItemIndex(SectionInformation.NO_SELECTION);
-                                providePaymentInformationToPaymentRequestUi();
-                            } else {
-                                if (toEdit == null) {
-                                    // Address is complete and user was in the "Add flow": add an
-                                    // item to the list.
-                                    assumeNonNull(mShippingAddressesSection)
-                                            .addAndSelectItem(editedAddress);
-                                }
-
-                                if (mContactSection != null) {
-                                    // Update |mContactSection| with the new/edited
-                                    // address, which will update an existing item or add a new one
-                                    // to the end of the list.
-                                    mContactSection.addOrUpdateWithAutofillAddress(editedAddress);
-                                    mPaymentRequestUi.updateSection(
-                                            PaymentRequestUi.DataType.CONTACT_DETAILS,
-                                            mContactSection);
-                                }
-
-                                startShippingAddressChangeNormalization(editedAddress);
-                            }
-                        } else {
+                        // A partial or complete address came back from the editor (could have
+                        // been from adding/editing or cancelling out of the edit flow).
+                        if (!editedAddress.isComplete()) {
+                            // If the address is not complete, unselect it (editor can return
+                            // incomplete information when cancelled).
+                            assumeNonNull(mShippingAddressesSection)
+                                    .setSelectedItemIndex(SectionInformation.NO_SELECTION);
                             providePaymentInformationToPaymentRequestUi();
-                        }
+                        } else {
+                            if (toEdit == null) {
+                                // Address is complete and user was in the "Add flow": add an
+                                // item to the list.
+                                assumeNonNull(mShippingAddressesSection)
+                                        .addAndSelectItem(editedAddress);
+                            }
 
-                        if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
+                            if (mContactSection != null) {
+                                // Update |mContactSection| with the new/edited
+                                // address, which will update an existing item or add a new one
+                                // to the end of the list.
+                                mContactSection.addOrUpdateWithAutofillAddress(editedAddress);
+                                mPaymentRequestUi.updateSection(
+                                        PaymentRequestUi.DataType.CONTACT_DETAILS, mContactSection);
+                            }
+
+                            startShippingAddressChangeNormalization(editedAddress);
+                        }
+                    } else {
+                        providePaymentInformationToPaymentRequestUi();
                     }
+
+                    if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
                 });
 
         @PaymentRequestAddressEditorMode

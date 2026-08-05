@@ -257,12 +257,9 @@ public class PaymentRequestUi
         public NotifierForTest(final Runnable notification) {
             mHandler = new Handler();
             mNotification =
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            notification.run();
-                            mNotificationPending = false;
-                        }
+                    () -> {
+                        notification.run();
+                        mNotificationPending = false;
                     };
         }
 
@@ -378,43 +375,36 @@ public class PaymentRequestUi
 
         mReadyToPayNotifierForTest =
                 new NotifierForTest(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (sPaymentRequestObserverForTest != null
-                                        && isAcceptingUserInput()
-                                        && mPayButton.isEnabled()) {
-                                    sPaymentRequestObserverForTest.onPaymentRequestReadyToPay(
-                                            PaymentRequestUi.this);
-                                }
+                        () -> {
+                            if (sPaymentRequestObserverForTest != null
+                                    && isAcceptingUserInput()
+                                    && mPayButton.isEnabled()) {
+                                sPaymentRequestObserverForTest.onPaymentRequestReadyToPay(
+                                        PaymentRequestUi.this);
                             }
                         });
 
         // This callback will be fired if mIsClientCheckingSelection is true.
         mUpdateSectionsCallback =
-                new Callback<>() {
-                    @Override
-                    public void onResult(PaymentInformation result) {
-                        mIsClientCheckingSelection = false;
-                        updateOrderSummarySection(result.getShoppingCart());
-                        if (mClient.shouldShowShippingSection()) {
-                            updateSection(
-                                    DataType.SHIPPING_ADDRESSES, result.getShippingAddresses());
-                            updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
-                        }
-                        if (mClient.shouldShowContactSection()) {
-                            updateSection(DataType.CONTACT_DETAILS, result.getContactDetails());
-                        }
-                        updateSection(DataType.PAYMENT_METHODS, result.getPaymentMethods());
-                        if (mShippingAddressSectionInformation != null
-                                && mShippingAddressSectionInformation.getSelectedItem() == null) {
-                            expand(mShippingAddressSection);
-                        } else {
-                            expand(null);
-                        }
-                        updatePayButtonEnabled();
-                        notifySelectionChecked();
+                (PaymentInformation result) -> {
+                    mIsClientCheckingSelection = false;
+                    updateOrderSummarySection(result.getShoppingCart());
+                    if (mClient.shouldShowShippingSection()) {
+                        updateSection(DataType.SHIPPING_ADDRESSES, result.getShippingAddresses());
+                        updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
                     }
+                    if (mClient.shouldShowContactSection()) {
+                        updateSection(DataType.CONTACT_DETAILS, result.getContactDetails());
+                    }
+                    updateSection(DataType.PAYMENT_METHODS, result.getPaymentMethods());
+                    if (mShippingAddressSectionInformation != null
+                            && mShippingAddressSectionInformation.getSelectedItem() == null) {
+                        expand(mShippingAddressSection);
+                    } else {
+                        expand(null);
+                    }
+                    updatePayButtonEnabled();
+                    notifySelectionChecked();
                 };
 
         mShippingStrings = shippingStrings;
@@ -450,31 +440,27 @@ public class PaymentRequestUi
         mPaymentUisShowStateReconciler.showPaymentRequestDialogWhenNoBottomSheet();
         mClient.getDefaultPaymentInformation(
                 waitForUpdatedDetails,
-                new Callback<>() {
-                    @Override
-                    public void onResult(PaymentInformation result) {
-                        updateOrderSummarySection(result.getShoppingCart());
+                (PaymentInformation result) -> {
+                    updateOrderSummarySection(result.getShoppingCart());
 
-                        if (mClient.shouldShowShippingSection()) {
-                            updateSection(
-                                    DataType.SHIPPING_ADDRESSES, result.getShippingAddresses());
-                            updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
-                        }
-
-                        if (mClient.shouldShowContactSection()) {
-                            updateSection(DataType.CONTACT_DETAILS, result.getContactDetails());
-                        }
-
-                        mPaymentMethodSection.setDisplaySummaryInSingleLineInNormalMode(
-                                result.getPaymentMethods()
-                                        .getDisplaySelectedItemSummaryInSingleLineInNormalMode());
-                        updateSection(DataType.PAYMENT_METHODS, result.getPaymentMethods());
-                        updatePayButtonEnabled();
-
-                        // Hide the loading indicators and show the real sections.
-                        changeSpinnerVisibility(false);
-                        mRequestView.addOnLayoutChangeListener(new SheetEnlargingAnimator(false));
+                    if (mClient.shouldShowShippingSection()) {
+                        updateSection(DataType.SHIPPING_ADDRESSES, result.getShippingAddresses());
+                        updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
                     }
+
+                    if (mClient.shouldShowContactSection()) {
+                        updateSection(DataType.CONTACT_DETAILS, result.getContactDetails());
+                    }
+
+                    mPaymentMethodSection.setDisplaySummaryInSingleLineInNormalMode(
+                            result.getPaymentMethods()
+                                    .getDisplaySelectedItemSummaryInSingleLineInNormalMode());
+                    updateSection(DataType.PAYMENT_METHODS, result.getPaymentMethods());
+                    updatePayButtonEnabled();
+
+                    // Hide the loading indicators and show the real sections.
+                    changeSpinnerVisibility(false);
+                    mRequestView.addOnLayoutChangeListener(new SheetEnlargingAnimator(false));
                 });
         if (sPaymentRequestObserverForTest != null) {
             sPaymentRequestObserverForTest.onPaymentRequestUiShow(PaymentRequestUi.this);
@@ -1132,12 +1118,9 @@ public class PaymentRequestUi
         mSelectedSection = section;
         if (mSelectedSection == mOrderSummarySection) {
             mClient.getShoppingCart(
-                    new Callback<>() {
-                        @Override
-                        public void onResult(ShoppingCart result) {
-                            updateOrderSummarySection(result);
-                            updateSectionVisibility();
-                        }
+                    (ShoppingCart result) -> {
+                        updateOrderSummarySection(result);
+                        updateSectionVisibility();
                     });
         } else if (mSelectedSection == mShippingAddressSection) {
             mClient.getSectionInformation(
@@ -1216,12 +1199,9 @@ public class PaymentRequestUi
     }
 
     private Callback<SectionInformation> createUpdateSectionCallback(@DataType final int type) {
-        return new Callback<>() {
-            @Override
-            public void onResult(SectionInformation result) {
-                updateSection(type, result);
-                updateSectionVisibility();
-            }
+        return (SectionInformation result) -> {
+            updateSection(type, result);
+            updateSectionVisibility();
         };
     }
 
@@ -1328,13 +1308,10 @@ public class PaymentRequestUi
      */
     private void startSectionResizeAnimation() {
         Runnable animationEndRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mSectionAnimator = null;
-                        notifyReadyForInput();
-                        mReadyToPayNotifierForTest.run();
-                    }
+                () -> {
+                    mSectionAnimator = null;
+                    notifyReadyForInput();
+                    mReadyToPayNotifierForTest.run();
                 };
 
         mSectionAnimator =
