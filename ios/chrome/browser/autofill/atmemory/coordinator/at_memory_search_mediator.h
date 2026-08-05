@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol AtMemorySearchConsumer;
+
 namespace autofill {
 class AtMemoryQueryService;
 }
@@ -22,6 +24,9 @@ class WebState;
 
 // Handler for filling commands.
 @property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
+
+// The consumer for this mediator.
+@property(nonatomic, weak) id<AtMemorySearchConsumer> consumer;
 
 // The designated initializer. `atMemoryQueryService` takes the string provided
 // by the user and provides results to the user if available. If not, the

@@ -18,6 +18,7 @@ source_set("coordinator") {
     "scoped_at_memory_search_provider_override.mm",
   ]
   deps = [
+    "//components/autofill/core/browser",
     "//ios/chrome/browser/autofill/atmemory/model",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui",
@@ -29,5 +30,22 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "at_memory_search_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/autofill/atmemory/ui",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

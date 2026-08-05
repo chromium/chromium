@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_search_mediator.h"
 
-#import <utility>
+#import <optional>
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/web/public/web_state.h"
 
 @implementation AtMemorySearchMediator {
@@ -19,6 +20,9 @@
   raw_ptr<autofill::AtMemoryQueryService> _atMemoryQueryService;
   // The WebState for the active tab.
   base::WeakPtr<web::WebState> _webState;
+
+  // Results from the AtMemory query service.
+  std::optional<autofill::MemorySearchResults> _searchResults;
 }
 
 - (instancetype)initWithAtMemoryQueryService:
@@ -35,24 +39,50 @@
 - (void)disconnect {
   _atMemoryQueryService = nullptr;
   _webState = nullptr;
+  _searchResults.reset();
+}
+
+#pragma mark - Consumer
+
+- (void)setConsumer:(id<AtMemorySearchConsumer>)consumer {
+  if (_consumer == consumer) {
+    return;
+  }
+  _consumer = consumer;
+
+  [_consumer updateTableViewBackgroundStyle:[self tableViewBackgroundStyle]];
 }
 
 #pragma mark - Private
 
-// Handles the `results` returned by the AtMemory query service.
+// Handles the `results` returned by the AtMemory query service. If the results
+// are empty, the error type is provided to the consumer.
 - (void)handleAtMemorySearchResults:
     (const autofill::MemorySearchResults&)results {
-  // TODO(crbug.com/540126524): Handle the search results when the consumer is
-  // available.
+  _searchResults = results;
   switch (results.status) {
     case autofill::MemorySearchStatus::kNoConnectionFailure:
+      [self.consumer setErrorType:AtMemoryErrorType::kNoConnectionError];
+      break;
     case autofill::MemorySearchStatus::kUnsupportedQuery:
+      [self.consumer setErrorType:AtMemoryErrorType::kUnsupportedQueryError];
+      break;
     case autofill::MemorySearchStatus::kFinalResponseSuccess:
     case autofill::MemorySearchStatus::kPartialResponseSuccess:
+      if (results.entries.empty()) {
+        [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
+      } else {
+        // TODO(crbug.com/543036121): Add a method to push results to the
+        // consumer once `AtMemorySearchItem` has been created.
+      }
+      break;
     case autofill::MemorySearchStatus::kInferenceFailure:
     case autofill::MemorySearchStatus::kInternalFailure:
+      [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
       break;
   }
+  // TODO(crbug.com/543036121): Here, an array with the results will be provided
+  // to the consumer. If the array is nil, there was an error.
 }
 
 // TODO(crbug.com/540127498): This method will be updated to be used by the
@@ -71,6 +101,12 @@
   _atMemoryQueryService->Query(base::SysNSStringToUTF16(query),
                                _webState->GetVisibleURL(),
                                _webState->GetTitle(), callback);
+}
+
+- (AtMemoryBackgroundStyle)tableViewBackgroundStyle {
+  // TODO(crbug.com/541207744): Update the logic to set the background style to
+  // kDefaultStyle when the notice or recent fills should be visible.
+  return AtMemoryBackgroundStyle::kEmptyStyle;
 }
 
 @end
