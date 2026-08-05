@@ -57,6 +57,7 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,6 +81,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
@@ -154,6 +156,8 @@ public class ClearBrowsingDataFragmentTest {
 
     @Mock private TemplateUrl mTemplateUrlMock;
 
+    private UserActionTester mUserActionTester;
+
     private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
     @TimePeriod private static final int DEFAULT_TIME_PERIOD = TimePeriod.ALL_TIME;
@@ -182,6 +186,7 @@ public class ClearBrowsingDataFragmentTest {
         doReturn(true).when(mTemplateUrlServiceMock).isDefaultSearchEngineGoogle();
 
         mActivityTestRule.startOnBlankPage();
+        mUserActionTester = new UserActionTester();
 
 
         // There can be some left-over notification channels from other tests.
@@ -192,6 +197,11 @@ public class ClearBrowsingDataFragmentTest {
                     SiteChannelsManager manager = SiteChannelsManager.getInstance();
                     manager.deleteAllSiteChannels();
                 });
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     /** Waits for the progress dialog to disappear from the given CBD preference. */
@@ -958,6 +968,10 @@ public class ClearBrowsingDataFragmentTest {
         verifyPrefWithTextVisible(fragment.getString(R.string.my_activity_link_out_title));
         clickOnPrefWithTitle(fragment.getString(R.string.my_activity_link_out_title));
         verify(mCustomTabLauncherMock).openUrlInCct(any(), eq(UrlConstants.MY_ACTIVITY_URL_IN_CBD));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.DeleteBrowsingData.MyActivityLinkClick"));
     }
 
     @Test
@@ -993,6 +1007,10 @@ public class ClearBrowsingDataFragmentTest {
         clickOnPrefWithTitle(searchHistoryPref.getTitle().toString());
         verify(mCustomTabLauncherMock)
                 .openUrlInCct(any(), eq(UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.DeleteBrowsingData.GoogleSearchHistoryLinkClick"));
     }
 
     @Test
@@ -1069,6 +1087,10 @@ public class ClearBrowsingDataFragmentTest {
         clickOnPrefWithTitle(title);
 
         assertNotNull(successCallbackHelper.getOnlyPayloadBlocking());
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.DeleteBrowsingData.PasswordManagerLinkClick"));
     }
 
     @Test
