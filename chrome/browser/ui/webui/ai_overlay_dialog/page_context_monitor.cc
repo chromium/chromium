@@ -28,6 +28,16 @@ ai_overlay_dialog::mojom::PageContentNodePtr ConvertContentNodeToMojo(
   if (proto_node.has_content_attributes()) {
     const auto& attrs = proto_node.content_attributes();
     mojo_node->dom_node_id = attrs.common_ancestor_dom_node_id();
+
+    if (attrs.attribute_type() ==
+        optimization_guide::proto::ContentAttributeType::
+            CONTENT_ATTRIBUTE_IMAGE) {
+      mojo_node->tag_name = "img";
+      if (attrs.has_image_data()) {
+        mojo_node->text = attrs.image_data().image_caption();
+      }
+    }
+
     if (attrs.has_text_data()) {
       mojo_node->text = attrs.text_data().text_content();
     }
