@@ -35,6 +35,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 
 namespace base::i18n {
 extern bool g_icu_initialized;
@@ -65,14 +66,22 @@ void DumpNormalizationFailure(bool retry_worked) {
   }
 
   int64_t file_size = -1;
+  std::string apk_path;
   base::MemoryMappedFile::Region region;
   base::ScopedFD fd(base::android::OpenApkAsset("assets/icudtl.dat", &region));
   if (fd.is_valid()) {
     file_size = static_cast<int64_t>(region.size);
+    base::FilePath target_path;
+    if (base::ReadSymbolicLink(
+            base::FilePath(base::StringPrintf("/proc/self/fd/%d", fd.get())),
+            &target_path)) {
+      apk_path = target_path.value();
+    }
   }
 
   SCOPED_CRASH_KEY_STRING256("bookmarks", "fallback_asset_path",
                              fallback_asset_path);
+  SCOPED_CRASH_KEY_STRING256("bookmarks", "apk_path", apk_path);
   SCOPED_CRASH_KEY_NUMBER("bookmarks", "file_size", file_size);
   SCOPED_CRASH_KEY_BOOL("bookmarks", "icu_init", base::i18n::g_icu_initialized);
   SCOPED_CRASH_KEY_BOOL("bookmarks", "retry_worked", retry_worked);
