@@ -4,12 +4,14 @@
 
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 
+#include <libkern/OSByteOrder.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <array>
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -220,6 +222,250 @@ TEST_P(HFSFileReadTest, DecmpfsFile) {
   auto maybe_data = ReadEntireStream(*stream);
   ASSERT_TRUE(maybe_data.has_value());
   EXPECT_EQ(0u, maybe_data->size());
+}
+
+// Builds a minimal HFS+ image in memory whose catalog leaf node lays out
+// records using the trailing record-offset table and a `keyLength` larger than
+// the catalog key's name would imply. The iterator must locate records via the
+// offset table and locate each record's data via `keyLength`, as described in
+// TN1150 "Node Structure".
+TEST(HFSBTreeIteratorTest, LeafRecordsLocatedByOffsetTableAndKeyLength) {
+  constexpr uint32_t kBlockSize = 4096;
+  constexpr uint16_t kNodeSize = 4096;
+  constexpr uint32_t kCatalogStartBlock = 1;
+  constexpr uint32_t kCatalogBlockCount = 2;
+  constexpr uint32_t kFileDataBlock = 3;
+  constexpr size_t kCatalogOffset = kCatalogStartBlock * kBlockSize;
+  constexpr size_t kLeafOffset = kCatalogOffset + kNodeSize;
+  constexpr std::string_view kFileData = "hello";
+
+  std::vector<uint8_t> image(4 * kBlockSize, 0);
+
+  auto put16 = [&](size_t at, uint16_t v) {
+    v = OSSwapHostToBigInt16(v);
+    base::span(image).subspan(at).copy_prefix_from(base::byte_span_from_ref(v));
+  };
+  auto put32 = [&](size_t at, uint32_t v) {
+    v = OSSwapHostToBigInt32(v);
+    base::span(image).subspan(at).copy_prefix_from(base::byte_span_from_ref(v));
+  };
+
+  // HFSPlusVolumeHeader at byte 1024.
+  constexpr size_t kVH = 1024;
+  HFSPlusVolumeHeader header = {};
+  header.signature = OSSwapHostToBigInt16(kHFSPlusSigWord);  // signature
+  header.version = OSSwapHostToBigInt16(kHFSPlusVersion);    // version
+  header.blockSize = OSSwapHostToBigInt32(kBlockSize);       // blockSize
+  header.totalBlocks =
+      OSSwapHostToBigInt32(image.size() / kBlockSize);  // totalBlocks
+
+  header.catalogFile.logicalSize =
+      OSSwapHostToBigInt64(kCatalogBlockCount * kBlockSize);
+  header.catalogFile.totalBlocks = OSSwapHostToBigInt32(kCatalogBlockCount);
+  header.catalogFile.extents[0].startBlock =
+      OSSwapHostToBigInt32(kCatalogStartBlock);
+  header.catalogFile.extents[0].blockCount =
+      OSSwapHostToBigInt32(kCatalogBlockCount);
+  base::span(image)
+      .subspan(kVH, sizeof(header))
+      .copy_from(base::byte_span_from_ref(header));
+
+  // Catalog header node (node 0): BTNodeDescriptor + BTHeaderRec.
+  BTNodeDescriptor header_descriptor = {};
+  header_descriptor.kind = kBTHeaderNode;
+  header_descriptor.numRecords = OSSwapHostToBigInt16(3);
+  base::span(image)
+      .subspan(kCatalogOffset, sizeof(header_descriptor))
+      .copy_from(base::byte_span_from_ref(header_descriptor));
+
+  BTHeaderRec header_rec = {};
+  header_rec.treeDepth = OSSwapHostToBigInt16(1);
+  header_rec.rootNode = OSSwapHostToBigInt32(1);
+  header_rec.leafRecords = OSSwapHostToBigInt32(2);
+  header_rec.firstLeafNode = OSSwapHostToBigInt32(1);
+  header_rec.lastLeafNode = OSSwapHostToBigInt32(1);
+  header_rec.nodeSize = OSSwapHostToBigInt16(kNodeSize);
+  header_rec.maxKeyLength =
+      OSSwapHostToBigInt16(kHFSPlusCatalogKeyMaximumLength);
+  header_rec.totalNodes = OSSwapHostToBigInt32(2);
+  base::span(image)
+      .subspan(kCatalogOffset + sizeof(header_descriptor), sizeof(header_rec))
+      .copy_from(base::byte_span_from_ref(header_rec));
+
+  // Catalog leaf node (node 1).
+  BTNodeDescriptor leaf_descriptor = {};
+  leaf_descriptor.kind = static_cast<uint8_t>(kBTLeafNode);
+  leaf_descriptor.height = 1;
+  leaf_descriptor.numRecords = OSSwapHostToBigInt16(2);
+  base::span(image)
+      .subspan(kLeafOffset, sizeof(leaf_descriptor))
+      .copy_from(base::byte_span_from_ref(leaf_descriptor));
+
+  // Record 0: root folder. The key declares a length larger than the bytes
+  // occupied by parentID + nodeName, leaving padding before the data.
+  constexpr uint16_t kRecord0 = sizeof(leaf_descriptor);
+  constexpr uint16_t kRecord0KeyLength = 32;
+  put16(kLeafOffset + kRecord0, kRecord0KeyLength);     // keyLength
+  put32(kLeafOffset + kRecord0 + 2, kHFSRootParentID);  // parentID
+  put16(kLeafOffset + kRecord0 + 6, 1);                 // nodeName.length
+  put16(kLeafOffset + kRecord0 + 8, 'V');               // nodeName.unicode[0]
+
+  constexpr size_t kFolderData =
+      kLeafOffset + kRecord0 + sizeof(uint16_t) + kRecord0KeyLength;
+  HFSPlusCatalogFolder folder = {};
+  folder.recordType = OSSwapHostToBigInt16(kHFSPlusFolderRecord);
+  folder.folderID = OSSwapHostToBigInt32(kHFSRootFolderID);
+  base::span(image)
+      .subspan(kFolderData, sizeof(folder))
+      .copy_from(base::byte_span_from_ref(folder));
+  static_assert(sizeof(HFSPlusCatalogFolder) == 88);
+  constexpr uint16_t kRecord0End = kRecord0 + sizeof(uint16_t) +
+                                   kRecord0KeyLength +
+                                   sizeof(HFSPlusCatalogFolder);
+
+  // Record 1: file. Placed at a non-contiguous offset relative to record 0.
+  constexpr uint16_t kRecord1 = 600;
+  static_assert(kRecord1 > kRecord0End);
+  constexpr uint16_t kRecord1KeyLength = 8;
+  put16(kLeafOffset + kRecord1, kRecord1KeyLength);     // keyLength
+  put32(kLeafOffset + kRecord1 + 2, kHFSRootFolderID);  // parentID
+  put16(kLeafOffset + kRecord1 + 6, 1);                 // nodeName.length
+  put16(kLeafOffset + kRecord1 + 8, 'f');               // nodeName.unicode[0]
+
+  constexpr size_t kFileRec =
+      kLeafOffset + kRecord1 + sizeof(uint16_t) + kRecord1KeyLength;
+  HFSPlusCatalogFile file = {};
+  file.recordType = OSSwapHostToBigInt16(kHFSPlusFileRecord);
+  file.fileID = OSSwapHostToBigInt32(kHFSFirstUserCatalogNodeID);
+  file.dataFork.logicalSize = OSSwapHostToBigInt64(kFileData.size());
+  file.dataFork.totalBlocks = OSSwapHostToBigInt32(1);
+  file.dataFork.extents[0].startBlock = OSSwapHostToBigInt32(kFileDataBlock);
+  file.dataFork.extents[0].blockCount = OSSwapHostToBigInt32(1);
+  base::span(image)
+      .subspan(kFileRec, sizeof(file))
+      .copy_from(base::byte_span_from_ref(file));
+
+  static_assert(sizeof(file) == 248);
+  constexpr uint16_t kRecord1End =
+      kRecord1 + sizeof(uint16_t) + kRecord1KeyLength + sizeof(file);
+
+  // Record offset table at the end of the leaf, in reverse order.
+  put16(kLeafOffset + kNodeSize - 2, kRecord0);
+  put16(kLeafOffset + kNodeSize - 4, kRecord1);
+  put16(kLeafOffset + kNodeSize - 6, kRecord1End);
+
+  // File data fork contents.
+  base::span(image)
+      .subspan(kFileDataBlock * kBlockSize)
+      .copy_prefix_from(base::as_byte_span(kFileData));
+
+  MemoryReadStream stream(image);
+  HFSIterator hfs_reader(&stream);
+  EXPECT_TRUE(hfs_reader.Open());
+
+  bool next1 = hfs_reader.Next();
+  EXPECT_TRUE(next1);
+  if (next1) {
+    EXPECT_TRUE(hfs_reader.IsDirectory());
+    EXPECT_FALSE(hfs_reader.IsFile());
+    EXPECT_EQ(u"V", hfs_reader.GetPath());
+  }
+
+  bool next2 = hfs_reader.Next();
+  EXPECT_TRUE(next2);
+  if (next2) {
+    EXPECT_FALSE(hfs_reader.IsDirectory());
+    EXPECT_TRUE(hfs_reader.IsFile());
+    EXPECT_FALSE(hfs_reader.IsHardLink());
+    EXPECT_EQ(u"V/f", hfs_reader.GetPath());
+
+    std::unique_ptr<ReadStream> file_stream = hfs_reader.GetReadStream();
+    EXPECT_TRUE(file_stream);
+    if (file_stream) {
+      auto data = ReadEntireStream(*file_stream);
+      EXPECT_TRUE(data.has_value());
+      if (data.has_value()) {
+        EXPECT_EQ(kFileData, base::as_string_view(*data));
+      }
+    }
+  }
+
+  EXPECT_FALSE(hfs_reader.Next());
+}
+
+TEST(HFSBTreeIteratorTest, InconsistentOffsetTableRejected) {
+  constexpr uint32_t kBlockSize = 4096;
+  constexpr uint16_t kNodeSize = 4096;
+  constexpr uint32_t kCatalogStartBlock = 1;
+  constexpr uint32_t kCatalogBlockCount = 2;
+  constexpr size_t kCatalogOffset = kCatalogStartBlock * kBlockSize;
+  constexpr size_t kLeafOffset = kCatalogOffset + kNodeSize;
+
+  std::vector<uint8_t> image(3 * kBlockSize, 0);
+
+  auto put16 = [&](size_t at, uint16_t v) {
+    v = OSSwapHostToBigInt16(v);
+    base::span(image).subspan(at).copy_prefix_from(base::byte_span_from_ref(v));
+  };
+
+  // HFSPlusVolumeHeader at byte 1024.
+  constexpr size_t kVH = 1024;
+  HFSPlusVolumeHeader header = {};
+  header.signature = OSSwapHostToBigInt16(kHFSPlusSigWord);
+  header.version = OSSwapHostToBigInt16(kHFSPlusVersion);
+  header.blockSize = OSSwapHostToBigInt32(kBlockSize);
+  header.totalBlocks = OSSwapHostToBigInt32(image.size() / kBlockSize);
+
+  header.catalogFile.logicalSize =
+      OSSwapHostToBigInt64(kCatalogBlockCount * kBlockSize);
+  header.catalogFile.totalBlocks = OSSwapHostToBigInt32(kCatalogBlockCount);
+  header.catalogFile.extents[0].startBlock =
+      OSSwapHostToBigInt32(kCatalogStartBlock);
+  header.catalogFile.extents[0].blockCount =
+      OSSwapHostToBigInt32(kCatalogBlockCount);
+  base::span(image)
+      .subspan(kVH, sizeof(header))
+      .copy_from(base::byte_span_from_ref(header));
+
+  // Catalog header node (node 0): BTNodeDescriptor + BTHeaderRec.
+  BTNodeDescriptor header_descriptor = {};
+  header_descriptor.kind = kBTHeaderNode;
+  header_descriptor.numRecords = OSSwapHostToBigInt16(3);
+  base::span(image)
+      .subspan(kCatalogOffset, sizeof(header_descriptor))
+      .copy_from(base::byte_span_from_ref(header_descriptor));
+
+  BTHeaderRec header_rec = {};
+  header_rec.treeDepth = OSSwapHostToBigInt16(1);
+  header_rec.rootNode = OSSwapHostToBigInt32(1);
+  header_rec.leafRecords = OSSwapHostToBigInt32(1);
+  header_rec.firstLeafNode = OSSwapHostToBigInt32(1);
+  header_rec.lastLeafNode = OSSwapHostToBigInt32(1);
+  header_rec.nodeSize = OSSwapHostToBigInt16(kNodeSize);
+  header_rec.maxKeyLength =
+      OSSwapHostToBigInt16(kHFSPlusCatalogKeyMaximumLength);
+  header_rec.totalNodes = OSSwapHostToBigInt32(2);
+  base::span(image)
+      .subspan(kCatalogOffset + sizeof(header_descriptor), sizeof(header_rec))
+      .copy_from(base::byte_span_from_ref(header_rec));
+
+  // Catalog leaf node (node 1).
+  BTNodeDescriptor leaf_descriptor = {};
+  leaf_descriptor.kind = static_cast<uint8_t>(kBTLeafNode);
+  leaf_descriptor.height = 1;
+  leaf_descriptor.numRecords = OSSwapHostToBigInt16(1);
+  base::span(image)
+      .subspan(kLeafOffset, sizeof(leaf_descriptor))
+      .copy_from(base::byte_span_from_ref(leaf_descriptor));
+
+  // Record offset table: set offset[0] to an invalid small value (< 14).
+  put16(kLeafOffset + kNodeSize - 2, 10);
+  put16(kLeafOffset + kNodeSize - 4, 100);
+
+  MemoryReadStream stream(image);
+  HFSIterator hfs_reader(&stream);
+  EXPECT_TRUE(hfs_reader.Open());
+  EXPECT_FALSE(hfs_reader.Next());
 }
 
 INSTANTIATE_TEST_SUITE_P(HFSIteratorTest,

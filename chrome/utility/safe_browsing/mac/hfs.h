@@ -55,9 +55,11 @@ class HFSIterator {
   // is not legal to call any other methods.
   bool Next();
 
-  // Returns true if the current iterator item is a directory and false if it
-  // is a file.
+  // Returns true if the current iterator item is a directory.
   bool IsDirectory();
+
+  // Returns true if the current iterator item is a file.
+  bool IsFile();
 
   // Returns true if the current iterator item is a symbolic link.
   bool IsSymbolicLink();

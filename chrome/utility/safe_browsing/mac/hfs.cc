@@ -227,12 +227,6 @@ class HFSBTreeIterator {
   template <typename T>
   const T* GetLeafObjectHostEndian();
 
-  // Advances the position of `leaf_iterator_` past the next sizeof(T) bytes, if
-  // possible, and returns true. Returns false if the new position would exceed
-  // the total size of the `leaf_data_`.
-  template <typename T>
-  bool AdvanceLeafPast();
-
   // Checks if the HFS+ catalog key is a Mac OS X reserved key that should not
   // have it or its contents iterated over.
   bool IsKeyUnexported(const std::u16string& path);
@@ -266,6 +260,11 @@ class HFSBTreeIterator {
 
   // Keeps track of our current position within the current `leaf_data_`.
   std::unique_ptr<base::BufferIterator<uint8_t>> leaf_iterator_;
+
+  // The per-record byte offsets into `leaf_data_` for the current leaf, taken
+  // from the offset table at the end of the node. There are `numRecords + 1`
+  // entries; the last entry marks the start of the node's free space.
+  std::vector<uint16_t> record_offsets_;
 
   // Points to the BTNodeDescriptor at the start of `leaf_data_`.
   raw_ptr<const BTNodeDescriptor> current_leaf_ = nullptr;
@@ -326,8 +325,7 @@ bool HFSIterator::Next() {
     keep_going = catalog_->Next();
     if (keep_going) {
       if (!catalog_->current_record()->unexported &&
-          (catalog_->current_record()->record_type == kHFSPlusFolderRecord ||
-           catalog_->current_record()->record_type == kHFSPlusFileRecord)) {
+          (IsDirectory() || IsFile())) {
         return true;
       }
       keep_going = catalog_->HasNext();
@@ -338,27 +336,38 @@ bool HFSIterator::Next() {
 }
 
 bool HFSIterator::IsDirectory() {
-  return catalog_->current_record()->record_type == kHFSPlusFolderRecord;
+  return catalog_->current_record()->record_type == kHFSPlusFolderRecord &&
+         catalog_->current_record()->folder;
+}
+
+bool HFSIterator::IsFile() {
+  return catalog_->current_record()->record_type == kHFSPlusFileRecord &&
+         catalog_->current_record()->file;
 }
 
 bool HFSIterator::IsSymbolicLink() {
-  if (IsDirectory())
+  if (IsDirectory()) {
     return S_ISLNK(catalog_->current_record()->folder->bsdInfo.fileMode);
-  else
+  }
+  if (IsFile()) {
     return S_ISLNK(catalog_->current_record()->file->bsdInfo.fileMode);
+  }
+  return false;
 }
 
 bool HFSIterator::IsHardLink() {
-  if (IsDirectory())
+  if (IsDirectory()) {
     return false;
+  }
   const HFSPlusCatalogFile* file = catalog_->current_record()->file;
   return file->userInfo.fdType == kHardLinkFileType &&
          file->userInfo.fdCreator == kHFSPlusCreator;
 }
 
 bool HFSIterator::IsDecmpfsCompressed() {
-  if (IsDirectory())
+  if (IsDirectory()) {
     return false;
+  }
   const HFSPlusCatalogFile* file = catalog_->current_record()->file;
   return file->bsdInfo.ownerFlags & UF_COMPRESSED;
 }
@@ -368,8 +377,9 @@ std::u16string HFSIterator::GetPath() {
 }
 
 std::unique_ptr<ReadStream> HFSIterator::GetReadStream() {
-  if (IsDirectory() || IsHardLink())
+  if (IsDirectory() || IsHardLink()) {
     return nullptr;
+  }
 
   DCHECK_EQ(kHFSPlusFileRecord, catalog_->current_record()->record_type);
   return std::make_unique<HFSForkReadStream>(
@@ -569,8 +579,28 @@ bool HFSBTreeIterator::Next() {
 
   CHECK(leaf_iterator_);
 
-  // Skip keyLength.
-  if (!AdvanceLeafPast<uint16_t>()) {
+  // Position at the start of the current record using the node's offset table.
+  if (static_cast<size_t>(current_leaf_records_read_) + 1u >=
+      record_offsets_.size()) {
+    return false;
+  }
+  const uint16_t record_offset = record_offsets_[current_leaf_records_read_];
+  const uint16_t record_end = record_offsets_[current_leaf_records_read_ + 1];
+  leaf_iterator_->Seek(record_offset);
+
+  auto key_length = CopyLeafDataHostEndian<uint16_t>();
+  if (!key_length.has_value()) {
+    return false;
+  }
+
+  // The data portion of a keyed record begins immediately after the key,
+  // located at `record_offset + sizeof(keyLength) + keyLength`.
+  base::CheckedNumeric<size_t> data_offset = record_offset;
+  data_offset += sizeof(uint16_t);
+  data_offset += *key_length;
+  if (*key_length > header_.maxKeyLength || !data_offset.IsValid() ||
+      data_offset.ValueOrDie() > record_end) {
+    DLOG(ERROR) << "Catalog record key extends past record";
     return false;
   }
 
@@ -581,6 +611,12 @@ bool HFSBTreeIterator::Next() {
 
   auto key_string_length = CopyLeafDataHostEndian<uint16_t>();
   if (!key_string_length.has_value()) {
+    return false;
+  }
+  if (leaf_iterator_->position() +
+          static_cast<size_t>(*key_string_length) * sizeof(uint16_t) >
+      data_offset.ValueOrDie()) {
+    DLOG(ERROR) << "Catalog key node name extends past key";
     return false;
   }
 
@@ -597,6 +633,7 @@ bool HFSBTreeIterator::Next() {
 
   // Read the record type and then rewind as the field is part of the catalog
   // structure that is read next.
+  leaf_iterator_->Seek(data_offset.ValueOrDie());
   size_t rewind_to = leaf_iterator_->position();
   auto record_type = CopyLeafDataHostEndian<int16_t>();
   if (!record_type.has_value()) {
@@ -609,6 +646,11 @@ bool HFSBTreeIterator::Next() {
 
   switch (current_record_.record_type) {
     case kHFSPlusFolderRecord: {
+      if ((data_offset + sizeof(HFSPlusCatalogFolder))
+              .ValueOrDefault(SIZE_MAX) > record_end) {
+        DLOG(ERROR) << "Folder record data extends past record";
+        return false;
+      }
       const HFSPlusCatalogFolder* folder =
           GetLeafObjectHostEndian<HFSPlusCatalogFolder>();
       if (!folder) {
@@ -642,6 +684,11 @@ bool HFSBTreeIterator::Next() {
       break;
     }
     case kHFSPlusFileRecord: {
+      if ((data_offset + sizeof(HFSPlusCatalogFile)).ValueOrDefault(SIZE_MAX) >
+          record_end) {
+        DLOG(ERROR) << "File record data extends past record";
+        return false;
+      }
       const HFSPlusCatalogFile* file =
           GetLeafObjectHostEndian<HFSPlusCatalogFile>();
       if (!file) {
@@ -661,22 +708,8 @@ bool HFSBTreeIterator::Next() {
     case kHFSPlusFolderThreadRecord:
     case kHFSPlusFileThreadRecord: {
       // Thread records are used to quickly locate a file or folder just by
-      // CNID. As these are not necessary for the iterator, skip past the data.
-      if (!AdvanceLeafPast<uint16_t>() ||  // recordType
-          !AdvanceLeafPast<uint16_t>() ||  // reserved
-          !AdvanceLeafPast<uint32_t>()) {  // parentID
-        return false;
-      }
-      // Skip past the nodeName string.
-      auto string_length = CopyLeafDataHostEndian<uint16_t>();
-      if (!string_length.has_value()) {
-        return false;
-      }
-      for (uint16_t i = 0u; i < *string_length; ++i) {
-        if (!AdvanceLeafPast<uint16_t>()) {
-          return false;
-        }
-      }
+      // CNID. These are not necessary for the iterator; the next record is
+      // located via the node's offset table.
       ++leaf_records_read_;
       ++current_leaf_records_read_;
       break;
@@ -693,6 +726,7 @@ bool HFSBTreeIterator::Next() {
     current_leaf_number_ = current_leaf_->fLink;
     read_current_leaf_ = false;
     leaf_iterator_.reset();
+    record_offsets_.clear();
   }
 
   return true;
@@ -721,12 +755,14 @@ bool HFSBTreeIterator::ReadCurrentLeaf() {
 
   if (!SeekToNode(current_leaf_number_)) {
     DLOG(ERROR) << "Failed to seek to node " << current_leaf_number_;
+    record_offsets_.clear();
     return false;
   }
 
   CHECK_EQ(leaf_data_.size(), header_.nodeSize);
   if (!stream_->ReadExact(leaf_data_)) {
     DLOG(ERROR) << "Failed to read node " << current_leaf_number_;
+    record_offsets_.clear();
     return false;
   }
 
@@ -736,14 +772,50 @@ bool HFSBTreeIterator::ReadCurrentLeaf() {
   if (!current_leaf_) {
     DLOG(ERROR) << "Failed to read node " << current_leaf_number_;
     leaf_iterator_.reset();
+    record_offsets_.clear();
     return false;
   }
   if (current_leaf_->kind != kBTLeafNode) {
     DLOG(ERROR) << "Node " << current_leaf_number_ << " is not a leaf";
     current_leaf_ = nullptr;
     leaf_iterator_.reset();
+    record_offsets_.clear();
     return false;
   }
+
+  // Each B-tree node ends with a table of `numRecords + 1` big-endian uint16
+  // offsets, stored in reverse order at the end of the node. Entry `i` gives
+  // the byte offset of record `i` within the node and the final entry marks
+  // the start of free space. Records must lie between the node descriptor and
+  // the offset table itself.
+  const size_t num_offsets =
+      static_cast<size_t>(current_leaf_->numRecords) + 1u;
+  const size_t table_size = num_offsets * sizeof(uint16_t);
+  if (table_size > leaf_data_.size() - sizeof(BTNodeDescriptor)) {
+    DLOG(ERROR) << "Node " << current_leaf_number_
+                << " offset table overflows node";
+    current_leaf_ = nullptr;
+    leaf_iterator_.reset();
+    record_offsets_.clear();
+    return false;
+  }
+  const size_t records_end = leaf_data_.size() - table_size;
+  record_offsets_.resize(num_offsets);
+  for (size_t i = 0; i < num_offsets; ++i) {
+    leaf_iterator_->Seek(leaf_data_.size() - (i + 1) * sizeof(uint16_t));
+    auto offset = CopyLeafDataHostEndian<uint16_t>();
+    if (!offset.has_value() || *offset < sizeof(BTNodeDescriptor) ||
+        *offset > records_end || (i > 0 && *offset < record_offsets_[i - 1])) {
+      DLOG(ERROR) << "Node " << current_leaf_number_
+                  << " has inconsistent record offset table";
+      current_leaf_ = nullptr;
+      leaf_iterator_.reset();
+      record_offsets_.clear();
+      return false;
+    }
+    record_offsets_[i] = *offset;
+  }
+
   current_leaf_records_read_ = 0u;
   read_current_leaf_ = true;
   return true;
@@ -767,19 +839,6 @@ const T* HFSBTreeIterator::GetLeafObjectHostEndian() {
     ConvertBigEndian(object);
   }
   return object;
-}
-
-template <typename T>
-bool HFSBTreeIterator::AdvanceLeafPast() {
-  CHECK(leaf_iterator_);
-  base::CheckedNumeric<size_t> size = sizeof(T);
-  auto new_position = size + leaf_iterator_->position();
-  if (!new_position.IsValid() ||
-      new_position.ValueOrDie() > leaf_iterator_->total_size()) {
-    return false;
-  }
-  leaf_iterator_->Seek(new_position.ValueOrDie());
-  return true;
 }
 
 bool HFSBTreeIterator::IsKeyUnexported(const std::u16string& key) {
