@@ -432,6 +432,25 @@ suite('NewTabPageRealboxNextTest', () => {
     assertFalse(pasteEvent.defaultPrevented);
     assertFalse(openComposeboxCalled);
     assertTrue(realbox.$.input.preventInlineAutocomplete(''));
+    assertEquals(1, metrics.count('NewTabPage.Realbox.Paste', 1));
+    assertEquals(1, metrics.count('NewTabPage.Realbox.Paste', 0));
+  });
+
+  test('pasting into realbox records NewTabPage.Realbox.Paste', async () => {
+    realbox = await createAndAppendRealbox();
+    assertEquals(0, metrics.count('NewTabPage.Realbox.Paste'));
+
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: new DataTransfer(),
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    realbox.$.input.inputElement.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+
+    assertEquals(1, metrics.count('NewTabPage.Realbox.Paste', 1));
+    assertEquals(1, metrics.count('NewTabPage.Realbox.Paste', 0));
   });
 
   test('useWebKitSearchboxIcons with compose button enabled', async () => {
