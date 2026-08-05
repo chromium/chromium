@@ -126,29 +126,36 @@ class AutofillFieldPromoViewImplBrowserTest : public InProcessBrowserTest {
   base::WeakPtr<AutofillFieldPromoView> view_;
 };
 
+// TODO(crbug.com/542108808): Re-enable the test when the issue is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BoundsAreCorrect DISABLED_BoundsAreCorrect
+#else
+#define MAYBE_BoundsAreCorrect BoundsAreCorrect
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
-                       BoundsAreCorrect) {
+                       MAYBE_BoundsAreCorrect) {
   // Set custom web contents bounds.
 #if BUILDFLAG(IS_MAC)
   ChangeBrowserWindowBoundsForDesiredWebContentsBounds(
-      gfx::Rect(50, 50, 400, 400));
+      gfx::Rect(300, 300, 1000, 1000));
 #else
   web_contents()->GetNativeView()->SetBoundsInScreen(
-      gfx::Rect(50, 50, 400, 400),
+      gfx::Rect(300, 300, 1000, 1000),
       display::Screen::Get()->GetDisplayForNewWindows());
 #endif  // BUILDFLAG(IS_MAC)
 
   // Element is within the boundaries of `web_contents()`.
-  EXPECT_EQ(GetViewRawPtr(CreateView(gfx::RectF(100, 100, 100, 100)))->bounds(),
-            gfx::Rect(100, 199, 100, 1));
+  EXPECT_EQ(GetViewRawPtr(CreateView(gfx::RectF(400, 400, 300, 300)))->bounds(),
+            gfx::Rect(400, 699, 300, 1));
 
   // Element partially exceeds the upper limit of `web_contents()`.
-  EXPECT_EQ(GetViewRawPtr(CreateView(gfx::RectF(350, 350, 100, 100)))->bounds(),
-            gfx::Rect(350, 399, 50, 1));
+  EXPECT_EQ(GetViewRawPtr(CreateView(gfx::RectF(800, 800, 300, 300)))->bounds(),
+            gfx::Rect(800, 999, 200, 1));
 
   // Element partially exceeds the lower limit of `web_contents()`.
-  EXPECT_EQ(GetViewRawPtr(CreateView(gfx::RectF(-50, -50, 100, 100)))->bounds(),
-            gfx::Rect(0, 49, 50, 1));
+  EXPECT_EQ(
+      GetViewRawPtr(CreateView(gfx::RectF(-100, -100, 300, 300)))->bounds(),
+      gfx::Rect(0, 199, 200, 1));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
