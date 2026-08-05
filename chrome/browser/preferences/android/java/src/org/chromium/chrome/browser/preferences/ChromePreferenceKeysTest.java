@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import androidx.test.filters.SmallTest;
 
@@ -19,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.base.shared_preferences.PreferenceKeyRegistry;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +48,7 @@ public class ChromePreferenceKeysTest {
     @Test
     @SmallTest
     public void testKeysAreNotReused() {
+        assumeTrue(BuildConfig.ENABLE_ASSERTS);
         // Build sets of all keys combined between registries and check for any intersections
         // between registries.
         Set<String> allKeysInUse = new HashSet<>();
