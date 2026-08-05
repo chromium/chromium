@@ -7,5 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OrganizerPanelAppElement} from './app.js';
 
 export function getHtml(this: OrganizerPanelAppElement) {
-  return html``;
+  return html`<!--_html_template_start_-->
+<!--_html_template_end_-->`;
 }

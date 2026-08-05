@@ -33,6 +33,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/focus/focus_search.h"
@@ -93,6 +94,8 @@ OrganizerPanelView::OrganizerPanelView(
 
   if (browser_ && browser_->GetProfile()) {
     auto web_view = std::make_unique<views::WebView>(browser_->GetProfile());
+    views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+        web_view->GetWebContents(), SK_ColorTRANSPARENT);
     web_view->LoadInitialURL(GURL(chrome::kChromeUIOrganizerPanelURL));
     web_view->SetProperty(
         views::kFlexBehaviorKey,
