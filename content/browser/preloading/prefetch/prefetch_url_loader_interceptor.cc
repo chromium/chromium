@@ -130,6 +130,15 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     return;
   }
 
+  PrefetchService* prefetch_service =
+      PrefetchService::GetFromFrameTreeNodeId(frame_tree_node_id_);
+  if (!prefetch_service) {
+    redirect_serving_handle_ = PrefetchServingHandle();
+    TRACE_EVENT_END("loading");
+    std::move(loader_callback_).Run(std::nullopt);
+    return;
+  }
+
   if (redirect_serving_handle_ &&
       redirect_serving_handle_.DoesCurrentURLToServeMatch(
           tentative_resource_request.url)) {
@@ -184,7 +193,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
 
   TRACE_EVENT_END("loading");
   GetPrefetch(
-      tentative_resource_request.url,
+      *prefetch_service, tentative_resource_request.url,
       base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
                      weak_factory_.GetWeakPtr(), tentative_resource_request.url,
 
@@ -194,6 +203,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
 }
 
 void PrefetchURLLoaderInterceptor::GetPrefetch(
+    PrefetchService& prefetch_service,
     const GURL& url,
     base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback)
     const {
@@ -201,21 +211,12 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
                     perfetto::Flow::FromPointer(
                         const_cast<PrefetchURLLoaderInterceptor*>(this)));
 
-  PrefetchService* prefetch_service =
-      PrefetchService::GetFromFrameTreeNodeId(frame_tree_node_id_);
-  if (!prefetch_service) {
-    TRACE_EVENT_END("loading");
-    std::move(get_prefetch_callback).Run({});
-    return;
-  }
-
-
   auto callback = base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
                                  url, std::move(get_prefetch_callback));
   auto key = PrefetchKey(initiator_document_token_, url);
   TRACE_EVENT_END("loading");
   PrefetchMatchResolver::FindPrefetch(
-      frame_tree_node_id_, *prefetch_service, std::move(key),
+      frame_tree_node_id_, prefetch_service, std::move(key),
       expected_service_worker_state_, std::move(callback),
       perfetto::Flow::FromPointer(
           const_cast<PrefetchURLLoaderInterceptor*>(this)));

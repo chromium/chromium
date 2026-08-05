@@ -18,6 +18,7 @@
 namespace content {
 
 class PrefetchContainer;
+class PrefetchService;
 class ServiceWorkerMainResourceHandle;
 
 using PrefetchCompleteCallbackForTesting =
@@ -60,7 +61,8 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
   // from `PrefetchService` and then goes through other checks in
   // `PrefetchUrlLoaderHelper`.
   // The |get_prefetch_callback| is called with this associated prefetch.
-  void GetPrefetch(const GURL& url,
+  void GetPrefetch(PrefetchService& prefetch_service,
+                   const GURL& url,
                    base::OnceCallback<void(PrefetchServingHandle)>
                        get_prefetch_callback) const;
 
