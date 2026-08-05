@@ -69,6 +69,14 @@ void ReadAloudPlaybackController::SetTextContent(
   uint32_t last_index = 0;
   for (size_t i = 0; i < segments.size(); ++i) {
     const read_aloud::mojom::TextSegmentPtr& segment = segments[i];
+    if (!segment) {
+      controller_receiver_.ReportBadMessage(
+          "ReadAloudPlaybackController: Null TextSegment in SetTextContent");
+      return;
+    }
+    if (segment->text.empty()) {
+      continue;
+    }
     if (i > 0 && segment->segment_index <= last_index) {
       controller_receiver_.ReportBadMessage(
           "ReadAloudPlaybackController: segment_index must be "
@@ -93,6 +101,8 @@ void ReadAloudPlaybackController::SetTextContent(
     return;
   }
   segments_ = std::move(segments);
+  // Initialize document-bound prefetch cache and canonical sentence timeline.
+  prefetch_manager_.SetTextContent(segments_);
   // Setting new text content invalidates pending audio synthesis buffers from
   // the previous document segment, so FlushBuffers() resets internal queues.
   FlushBuffers();
@@ -200,6 +210,7 @@ void ReadAloudPlaybackController::ResetSession() {
   // TODO(b/527526096): Reset stored audio stream and data pipe handles:
   // audio_output_stream_.reset();
   // audio_data_pipe_.reset();
+  prefetch_manager_.ResetSession();
   segments_.clear();
   playback_rate_ = 1.0f;
   session_weak_factory_.InvalidateWeakPtrs();

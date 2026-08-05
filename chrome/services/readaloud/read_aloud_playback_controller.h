@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
+#include "chrome/services/readaloud/prefetch/prefetch_manager.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -80,6 +81,9 @@ class ReadAloudPlaybackController
   // Current playback rate multiplier (clamped between kMinPlaybackRate and
   // kMaxPlaybackRate).
   float playback_rate_ = 1.0f;
+
+  // Manages document-bound speech synthesis caching and sentence timeline.
+  PrefetchManager prefetch_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ReadAloudPlaybackController> session_weak_factory_{this};
