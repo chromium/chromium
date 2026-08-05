@@ -9,11 +9,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/test/unknown_field_util.h"
@@ -798,6 +800,39 @@ TEST(EntitySyncUtilTest, EntityTypeToPassType) {
             sync_pb::AutofillValuableMetadataSpecifics::ORDER);
   EXPECT_EQ(EntityTypeToPassType(EntityType(kShipment)),
             sync_pb::AutofillValuableMetadataSpecifics::SHIPMENT);
+}
+
+// Tests that no attributes are created for fields with unset or empty values.
+TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_EmptyFields) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillAiImportConstraintsForSync};
+  // Passport is used as an example here. This is representative of the general
+  // case because the implementation uses generic helpers across all entities.
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.mutable_passport()->set_owner_name("florian");
+  // Empty, explicitly set values are expected to be omitted.
+  specifics.mutable_passport()->set_country_code("");
+  // Incomplete dates and unset values like passport number and issue date are
+  // expected to be omitted.
+  specifics.mutable_passport()->mutable_expiration_date()->set_year(2030);
+  std::optional<EntityInstance> passport =
+      CreateEntityInstanceFromSpecifics(specifics);
+  ASSERT_TRUE(passport.has_value());
+  EXPECT_EQ(GetStringValue(*passport, AttributeTypeName::kPassportName),
+            "florian");
+  EXPECT_FALSE(
+      passport->attribute(AttributeType(AttributeTypeName::kPassportCountry))
+          .has_value());
+  EXPECT_FALSE(
+      passport->attribute(AttributeType(AttributeTypeName::kPassportNumber))
+          .has_value());
+  EXPECT_FALSE(
+      passport->attribute(AttributeType(AttributeTypeName::kPassportIssueDate))
+          .has_value());
+  EXPECT_FALSE(
+      passport
+          ->attribute(AttributeType(AttributeTypeName::kPassportExpirationDate))
+          .has_value());
 }
 
 // Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes

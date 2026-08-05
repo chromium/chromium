@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -32,6 +33,7 @@
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -163,6 +165,10 @@ void AddAttribute(
     std::optional<AttributeInstance::MarkAsMaskedPasskey> passkey,
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
         attributes) {
+  if (value.empty() && base::FeatureList::IsEnabled(
+                           features::kAutofillAiImportConstraintsForSync)) {
+    return;
+  }
   AttributeInstance attribute{AttributeType(type)};
   // The VerificationStatus is set to `kNoStatus` because it is irrelevant for
   // string types or will be overwritten by metadata deserialization.
@@ -189,6 +195,11 @@ void AddDateAttribute(
     const sync_pb::NaiveDate& date,
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
         attributes) {
+  if ((!date.has_year() || !date.has_month() || !date.has_day()) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillAiImportConstraintsForSync)) {
+    return;
+  }
   AddAttribute(type,
                base::StringPrintf("%04d-%02d-%02d", date.year(), date.month(),
                                   date.day()),

@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_test_utils.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/data_type.h"
@@ -66,19 +67,16 @@ std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
   }
   return loyalty_cards;
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
-std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCardSpecifics(
-    const sync_pb::AutofillValuableSpecifics& card_specifics) {
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
+    sync_pb::AutofillValuableSpecifics specifics) {
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
-  entity_data->name = card_specifics.id();
-  sync_pb::AutofillValuableSpecifics* specifics =
-      entity_data->specifics.mutable_autofill_valuable();
-  specifics->CopyFrom(card_specifics);
-
+  entity_data->name = specifics.id();
+  entity_data->specifics.mutable_autofill_valuable()->CopyFrom(specifics);
   return entity_data;
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 std::vector<EntityInstance> ExtractEntitiesFromDataBatch(
     std::unique_ptr<syncer::DataBatch> batch) {
@@ -122,7 +120,8 @@ class ValuableSyncBridgeTest : public testing::Test {
   // Creates the `bridge()` and mocks its `ValuablesTable`.
   void SetUp() override {
     feature_list_.InitWithFeatures({syncer::kSyncWalletFlightReservations,
-                                    syncer::kSyncWalletVehicleRegistrations},
+                                    syncer::kSyncWalletVehicleRegistrations,
+                                    features::kAutofillAiWalletShopping},
                                    /*disabled_features=*/{});
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&valuables_table_);
@@ -233,8 +232,32 @@ TEST_F(ValuableSyncBridgeTest, InitializationFailure) {
   ValuableSyncBridge(mock_processor().CreateForwardingProcessor(), &backend());
 }
 
+// Tests that for specifics that represent AutofillAi entities, import
+// constraints are enforced by the bridge's IsEntityDataValid().
+TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ImportConstraints) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillAiImportConstraintsForSync};
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id("client-tag");
+  // One way for an order to meet its import constraints is by having (at least)
+  // an order id, merchant name and order date.
+  sync_pb::Order& order = *specifics.mutable_order();
+  order.set_id("123");
+  order.set_merchant_name("Amazon");
+  order.mutable_order_date()->set_day(30);
+  order.mutable_order_date()->set_month(1);
+  order.mutable_order_date()->set_year(2026);
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+
+  // Without an order date, expect the specifics to be considered invalid.
+  order.clear_order_date();
+  EXPECT_FALSE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+}
+
 #if !BUILDFLAG(IS_IOS)
-TEST_F(ValuableSyncBridgeTest, IsEntityDataValid) {
+TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_NonEmptyId) {
   // Valid case.
   std::unique_ptr<syncer::EntityData> entity =
       CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1),
@@ -247,31 +270,28 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid) {
 
 TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataValid) {
   sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
-  EXPECT_TRUE(bridge().IsEntityDataValid(
-      *CreateEntityDataFromLoyaltyCardSpecifics(specifics)));
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
 
   specifics.mutable_loyalty_card()->clear_program_logo();
-  EXPECT_TRUE(bridge().IsEntityDataValid(
-      *CreateEntityDataFromLoyaltyCardSpecifics(specifics)));
   EXPECT_TRUE(
-      bridge().IsEntityDataValid(*CreateEntityDataFromLoyaltyCardSpecifics(
-          TestLoyaltyCardSpecifics(kId1, /*program_logo=*/""))));
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  EXPECT_TRUE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestLoyaltyCardSpecifics(kId1, /*program_logo=*/""))));
 }
 
 TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataInvalid) {
   // Invalid id.
-  EXPECT_FALSE(
-      bridge().IsEntityDataValid(*CreateEntityDataFromLoyaltyCardSpecifics(
-          TestLoyaltyCardSpecifics(kInvalidId))));
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(TestLoyaltyCardSpecifics(kInvalidId))));
 
   // Invalid program logo.
-  EXPECT_FALSE(
-      bridge().IsEntityDataValid(*CreateEntityDataFromLoyaltyCardSpecifics(
-          TestLoyaltyCardSpecifics(kId1, /*program_logo=*/"logo.png"))));
+  EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
+      TestLoyaltyCardSpecifics(kId1, /*program_logo=*/"logo.png"))));
 
   // Invalid number.
   EXPECT_FALSE(bridge().IsEntityDataValid(
-      *CreateEntityDataFromLoyaltyCardSpecifics(TestLoyaltyCardSpecifics(
+      *CreateEntityDataFromSpecifics(TestLoyaltyCardSpecifics(
           kId1, /*program_logo=*/"http://foobar.com/logo.png",
           /*number=*/""))));
 
@@ -279,9 +299,8 @@ TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataInvalid) {
   sync_pb::AutofillValuableSpecifics empty_merchant_name_specifics =
       TestLoyaltyCardSpecifics(kId1);
   empty_merchant_name_specifics.mutable_loyalty_card()->clear_merchant_name();
-  EXPECT_FALSE(
-      bridge().IsEntityDataValid(*CreateEntityDataFromLoyaltyCardSpecifics(
-          empty_merchant_name_specifics)));
+  EXPECT_FALSE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(empty_merchant_name_specifics)));
 }
 
 // Tests that during the initial sync, `MergeFullSyncData()` incorporates remote

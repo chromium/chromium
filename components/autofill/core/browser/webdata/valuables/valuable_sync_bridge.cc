@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
@@ -31,6 +33,7 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -92,6 +95,20 @@ bool AreAutofillLoyaltyCardSpecificsValid(
          !specifics.loyalty_card().loyalty_card_number().empty() &&
          !specifics.loyalty_card().merchant_name().empty() &&
          HasEmptyOrValidProgramLogo(specifics);
+}
+
+// Tests whether the `EntityInstance` represented by the `specifics` meets the
+// AutofillAi import constraints.
+bool AreAutofillAiSpecificsValid(
+    const sync_pb::AutofillValuableSpecifics& specifics) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAiImportConstraintsForSync)) {
+    return true;
+  }
+  EntityInstance entity =
+      CHECK_DEREF(CreateEntityInstanceFromSpecifics(specifics));
+  return AttributesMeetImportConstraints(
+      entity.type(), DenseSet(entity.attributes(), &AttributeInstance::type));
 }
 
 bool IsSyncWalletFlightReservationsEnabled() {
@@ -489,18 +506,22 @@ bool ValuableSyncBridge::IsEntityDataValid(
       return IsLoyaltyCardSyncEnabled() &&
              AreAutofillLoyaltyCardSpecificsValid(autofill_valuable);
     case sync_pb::AutofillValuableSpecifics::kFlightReservation:
-      return IsSyncWalletFlightReservationsEnabled();
+      return IsSyncWalletFlightReservationsEnabled() &&
+             AreAutofillAiSpecificsValid(autofill_valuable);
     case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
-      return IsSyncWalletVehicleRegistrationsEnabled();
+      return IsSyncWalletVehicleRegistrationsEnabled() &&
+             AreAutofillAiSpecificsValid(autofill_valuable);
     case sync_pb::AutofillValuableSpecifics::kPassport:
     case sync_pb::AutofillValuableSpecifics::kDriverLicense:
     case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
     case sync_pb::AutofillValuableSpecifics::kRedressNumber:
     case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
-      return IsSyncWalletPrivatePassesEnabled();
+      return IsSyncWalletPrivatePassesEnabled() &&
+             AreAutofillAiSpecificsValid(autofill_valuable);
     case sync_pb::AutofillValuableSpecifics::kOrder:
     case sync_pb::AutofillValuableSpecifics::kShipment:
-      return IsSyncWalletShoppingEnabled();
+      return IsSyncWalletShoppingEnabled() &&
+             AreAutofillAiSpecificsValid(autofill_valuable);
     case sync_pb::AutofillValuableSpecifics::kEventTicket:
     case sync_pb::AutofillValuableSpecifics::kTransitPass:
     case sync_pb::AutofillValuableSpecifics::kOffer:
