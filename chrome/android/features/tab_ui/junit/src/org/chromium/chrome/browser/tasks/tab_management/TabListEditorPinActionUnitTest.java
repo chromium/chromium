@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -238,5 +240,65 @@ public class TabListEditorPinActionUnitTest {
     @Test
     public void testShouldHideEditorAfterAction() {
         assertTrue(mAction.shouldHideEditorAfterAction());
+    }
+
+    @Test
+    public void testActionOrdering_Pinning() {
+        // Create tabs in order: tab5 at index 0, tab3 at index 1, tab7 at index 2.
+        Tab tab5 = mTabModel.addTab(5);
+        Tab tab3 = mTabModel.addTab(3);
+        Tab tab7 = mTabModel.addTab(7);
+
+        // Select tabs in non-chronological order: tab7, tab5, tab3.
+        List<TabListEditorItemSelectionId> selectedItems =
+                Arrays.asList(
+                        TabListEditorItemSelectionId.createTabId(7),
+                        TabListEditorItemSelectionId.createTabId(5),
+                        TabListEditorItemSelectionId.createTabId(3));
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(Set.copyOf(selectedItems));
+
+        mAction.onSelectionStateChange(selectedItems);
+        assertTrue(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+
+        assertTrue(mAction.perform());
+
+        // Verify pinning occurred in ascending TabModel index order: tab5 (0), tab3 (1), tab7 (2).
+        InOrder inOrder = inOrder(mTabModel);
+        inOrder.verify(mTabModel).pinTab(5, false);
+        inOrder.verify(mTabModel).pinTab(3, false);
+        inOrder.verify(mTabModel).pinTab(7, false);
+    }
+
+    @Test
+    public void testActionOrdering_Unpinning() {
+        // Create pinned tabs in order: tab5 at index 0, tab3 at index 1, tab7 at index 2.
+        Tab tab5 = mTabModel.addTab(5);
+        tab5.setIsPinned(true);
+        Tab tab3 = mTabModel.addTab(3);
+        tab3.setIsPinned(true);
+        Tab tab7 = mTabModel.addTab(7);
+        tab7.setIsPinned(true);
+
+        // Select tabs in non-chronological order: tab7, tab5, tab3.
+        List<TabListEditorItemSelectionId> selectedItems =
+                Arrays.asList(
+                        TabListEditorItemSelectionId.createTabId(7),
+                        TabListEditorItemSelectionId.createTabId(5),
+                        TabListEditorItemSelectionId.createTabId(3));
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(Set.copyOf(selectedItems));
+
+        mAction.onSelectionStateChange(selectedItems);
+        assertTrue(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+
+        assertTrue(mAction.perform());
+
+        // Verify unpinning occurred in descending TabModel index order: tab7 (2), tab3 (1), tab5
+        // (0).
+        // Since unpinTab inserts each tab at the start of unpinned tabs, reversing the unpin order
+        // ensures tab5 ends up first, followed by tab3, then tab7.
+        InOrder inOrder = inOrder(mTabModel);
+        inOrder.verify(mTabModel).unpinTab(7);
+        inOrder.verify(mTabModel).unpinTab(3);
+        inOrder.verify(mTabModel).unpinTab(5);
     }
 }
