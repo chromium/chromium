@@ -1,0 +1,45 @@
+description: >-
+  Verify experimental-code-coverage-build-invoker skill triggers standard LUCI
+  try jobs via git cl try and updates triage_state.json.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-build-invoker
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-build-invoker/setup_triage_state.patch
+      mocks:
+        - command: git-cl
+          rules:
+            - args: ["try", "*"]
+              stdout: >-
+                https://ci.chromium.org/b/875812345678 (linux-rel)
+                https://ci.chromium.org/b/875812345679 (android-x86-rel)
+              exit_code: 0
+
+tests:
+  - description: >-
+      Functional: Mode 1 - Standard CL Verification via git cl try
+    vars:
+      query: >-
+        Trigger standard LUCI try jobs for builders linux-rel and
+        android-x86-rel on Gerrit CL
+        https://chromium-review.googlesource.com/c/chromium/src/+/7916168
+        using experimental-code-coverage-build-invoker.
+    assert:
+      - type: contains
+        value: "git cl try"
+      - type: python
+        value: >-
+          file://../../../testing/asserts/check_changes.py:check_file_content
+        config:
+          files:
+            - path: scratch/triage_state.json
+              present:
+                - "control_builds"

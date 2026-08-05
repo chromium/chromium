@@ -1,0 +1,62 @@
+description: >-
+  Verify experimental-code-coverage-build-invoker skill packages uncommitted
+  recipe modifications alongside source-side Gerrit CL using LED.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-build-invoker
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-build-invoker/setup_triage_state.patch
+      mocks:
+        - command: led
+          rules:
+            - args: ["get-builder", "*"]
+              stdout: >-
+                {"buildbucket": {"bbagent_args": {"build": {"infra":
+                {"backend": {"config": {}}}}}}}
+              exit_code: 0
+            - args: ["edit-recipe-bundle"]
+              stdout: >-
+                {"buildbucket": {"bbagent_args": {"build": {"infra":
+                {"backend": {"config": {}}}}}}}
+              exit_code: 0
+            - args: ["edit-gerrit-cl", "*"]
+              stdout: >-
+                {"buildbucket": {"bbagent_args": {"build": {"infra":
+                {"backend": {"config": {}}}}}}}
+              exit_code: 0
+            - args: ["launch"]
+              stdout: "Launched job: https://ci.chromium.org/b/875812345680\n"
+              exit_code: 0
+
+tests:
+  - description: >-
+      Functional: Mode 2 - LED Recipe + Source CL Packaging
+    vars:
+      query: >-
+        Test uncommitted local recipe modifications for builder linux-rel
+        alongside Gerrit CL
+        https://chromium-review.googlesource.com/c/chromium/src/+/7916168
+        using LED.
+    assert:
+      - type: contains
+        value: "led edit-recipe-bundle"
+      - type: contains
+        value: "led edit-gerrit-cl"
+      - type: contains
+        value: "led launch"
+      - type: python
+        value: >-
+          file://../../../testing/asserts/check_changes.py:check_file_content
+        config:
+          files:
+            - path: scratch/triage_state.json
+              present:
+                - "control_builds"

@@ -1,0 +1,35 @@
+description: >-
+  Verify experimental-code-coverage-build-invoker skill triggers LUCI try
+  jobs.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-build-invoker
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-build-invoker/setup_triage_state.patch
+      mocks:
+        - command: git-cl
+          rules:
+            - args: ["try", "*"]
+              stdout: >-
+                https://ci.chromium.org/b/875812345678 (linux-rel)
+                https://ci.chromium.org/b/875812345679 (android-x86-rel)
+              exit_code: 0
+
+tests:
+  - description: >-
+      Trigger: Implicit query to trigger try jobs for builders
+    vars:
+      query: >-
+        Trigger try jobs for builders linux-rel and android-x86-rel for bug
+        378464314.
+    assert:
+      - type: contains
+        value: "git cl try"
