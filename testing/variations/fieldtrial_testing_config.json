@@ -5111,6 +5111,7 @@
                     "name": "Enabled",
                     "params": {
                         "MigratedCollectedCookies": "true",
+                        "MigratedGoogleApiKeys": "true",
                         "MigratedInstallerDownloader": "true",
                         "MigratedPageInfo": "true",
                         "MigratedPdf": "true"
