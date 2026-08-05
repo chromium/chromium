@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "storage/browser/file_system/watcher_manager.h"

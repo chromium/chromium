@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/extensions/chrome_extension_function_details.h",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",

@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/storage_partition.h"

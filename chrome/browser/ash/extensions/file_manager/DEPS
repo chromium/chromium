@@ -33,7 +33,6 @@ include_rules = [
   "+chrome/browser/devtools",
   "+chrome/browser/download",
   "+chrome/browser/extensions/api/file_system",
-  "+chrome/browser/extensions/chrome_extension_function_details.h",
   "+chrome/browser/extensions/devtools_util.h",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/extension_service.h",
