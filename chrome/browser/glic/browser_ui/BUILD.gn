@@ -15,6 +15,7 @@ source_set("browser_ui") {
     "glic_nudge_controller.h",
     "glic_split_button_controller.h",
     "glic_split_button_delegate.h",
+    "glic_tab_indicator_helper.h",
   ]
 
   public_deps = [
@@ -25,6 +26,7 @@ source_set("browser_ui") {
     "//chrome/browser/tab_list",
     "//components/keyed_service/core",
     "//components/skills/public",
+    "//ui/base/unowned_user_data",
   ]
   deps = [
     "//base",
@@ -36,14 +38,12 @@ source_set("browser_ui") {
     sources += [
       "glic_iph_controller.h",
       "glic_selection_widget.h",
-      "glic_tab_indicator_helper.h",
       "glic_vector_icon_manager.h",
     ]
 
     public_deps += [
       "//chrome/browser/actor:types",
       "//components/actor/core:task_id",
-      "//ui/base/unowned_user_data",
     ]
   } else {
     sources += [ "glic_toast.h" ]
@@ -63,12 +63,12 @@ source_set("impl") {
     "glic_nudge_controller_impl.h",
     "glic_split_button_controller.cc",
     "glic_split_button_delegate.cc",
+    "glic_tab_indicator_helper.cc",
   ]
   if (!is_android) {
     sources += [
       "glic_iph_controller.cc",
       "glic_selection_widget.cc",
-      "glic_tab_indicator_helper.cc",
       "glic_vector_icon_manager.cc",
     ]
   } else {

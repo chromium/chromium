@@ -113,7 +113,6 @@ TabAlertController::TabAlertController(TabInterface& tab)
   }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   glic::GlicTabIndicatorHelper* const glic_tab_indicator_helper =
       glic::GlicTabIndicatorHelper::From(&tab);
   if (glic_tab_indicator_helper) {
@@ -126,7 +125,6 @@ TabAlertController::TabAlertController(TabInterface& tab)
             base::BindRepeating(&TabAlertController::OnGlicAccessingStateChange,
                                 base::Unretained(this))));
   }
-#endif
 }
 
 TabAlertController::~TabAlertController() = default;
