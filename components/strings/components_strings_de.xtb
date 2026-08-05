@@ -1750,7 +1750,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Wenn du den Google Passwortmanager mit dem macOS-Schlüsselbund verwenden möchtest, starte Chrome neu und erlaube den Zugriff auf den Schlüsselbund. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
-<translation id="3728173127485570463">Der Chrome-Browser benötigt deinen Fingerabdruck nicht mehr, um Passwörter automatisch auszufüllen</translation>
+<translation id="3728173127485570463">Der Chrome-Browser benötigt deinen Fingerabdruck nicht mehr, um Passwörter automatisch einzutragen</translation>
 <translation id="3736564442532774454">Der Chrome-Browser versucht, deine vertraulichen Daten auf <ph name="APP_NAME" /> auszufüllen.</translation>
 <translation id="3738166223076830879">Dein Browser wird von deinem Administrator verwaltet.</translation>
 <translation id="3739842843727261045">Mit „Mag ich“ gibst du an, dass dir diese Ergebnisse gefallen.</translation>
@@ -5176,7 +5176,7 @@ Weitere Details:
 <translation id="9138037198177304356">Benachrichtigungen zulässig</translation>
 <translation id="913846191326613072">Wenn Tabs geteilt werden, werden ihre Inhalte und URLs an Google gesendet.</translation>
 <translation id="9139318394846604261">Shopping</translation>
-<translation id="9140198744651252040">Der Chrome-Browser möchte den Fingerabdruck zum automatischen Ausfüllen von Passwörtern verwenden</translation>
+<translation id="9140198744651252040">Der Chrome-Browser möchte den Fingerabdruck zum automatischen Eintragen von Passwörtern verwenden</translation>
 <translation id="9141013498910525015">Adressen verwalten</translation>
 <translation id="9141435142213469335">Adresse mit weiteren Informationen speichern</translation>
 <translation id="9141510259469546089">Mindestkaufbetrag: <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

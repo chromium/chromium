@@ -353,7 +353,7 @@
 <translation id="2164946989711475905">Anmelden…</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="2180338296831857171">Adressen löschen</translation>
-<translation id="218350106843433823">Passwörter und Passkeys automatisch ausfüllen lassen</translation>
+<translation id="218350106843433823">Passwörter und Passkeys automatisch eintragen</translation>
 <translation id="2184272387334793084">Melde dich an, um Passwörter und mehr auf allen Geräten abzurufen</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Tippe auf <ph name="BEGIN_BOLD" />In Downloads speichern<ph name="END_BOLD" /></translation>
@@ -1404,7 +1404,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5857770089550859117">Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
 <translation id="5859715514067755465">Weiter</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
-<translation id="5868644772996939262">Passwörter und Passkeys automatisch ausfüllen lassen</translation>
+<translation id="5868644772996939262">Passwörter und Passkeys automatisch eintragen</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5873179562631407582">Geöffnete Tabs gedrückt halten</translation>
 <translation id="5887400589839399685">Karte gespeichert</translation>
@@ -2411,7 +2411,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="9149866541089851383">Bearbeiten...</translation>
 <translation id="9152637745605628097">Du kannst Designs und Farben auswählen oder ein Bild hochladen</translation>
 <translation id="9159628751968616911">Webseite senden</translation>
-<translation id="9162432979321511934">Aktiviere die Option zum automatischen Ausfüllen von Passwörtern</translation>
+<translation id="9162432979321511934">Aktiviere die Option zum automatischen Eintragen von Passwörtern</translation>
 <translation id="9165320910061267720">Wenn du Benachrichtigungen zu Preisnachlässen erhalten möchtest, musst du Benachrichtigungen in den iOS-Einstellungen aktivieren.</translation>
 <translation id="9179151630575358778">Blendet dieses Element aus</translation>
 <translation id="9183563643084679152">Du hast einen QR-Code gescannt, um dich in Chrome anzumelden. Du erhältst die Passwörter, Lesezeichen und mehr aus diesem Konto.</translation>
