@@ -340,11 +340,6 @@ BASE_FEATURE(kAutofillPreferBuyNowPayLaterBlocklists,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-// When enabled, this feature prioritizes showing the save card bubble over the
-// mandatory re-auth bubble when both are applicable.
-BASE_FEATURE(kAutofillPrioritizeSaveCardOverMandatoryReauth,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will try to fetch payment account image resources again
 // upon failure. The number of attempts is a controllable parameter. This is a
 // kill-switch.

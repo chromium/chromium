@@ -315,26 +315,17 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
     const std::optional<CreditCard>& extracted_credit_card,
     bool is_credit_card_upstream_enabled,
     ukm::SourceId ukm_source_id) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
-      ProceedWithCardMandatoryReauthOptInIfApplicable()) {
-    return true;
-  }
-
   // All of following processing requires the extracted credit card to exist.
   if (!extracted_credit_card.has_value()) {
     return false;
   }
 
   // If a virtual card was extracted from the form, we do not do anything with
-  // virtual cards beyond this point. If
-  // `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled, try to offer
-  // mandatory re-auth before returning.
+  // virtual cards beyond this point. Try to offer mandatory re-auth before
+  // returning.
   if (credit_card_import_type_ ==
       PaymentsFormDataImporter::CreditCardImportType::kVirtualCard) {
-    return base::FeatureList::IsEnabled(
-               features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
-           ProceedWithCardMandatoryReauthOptInIfApplicable();
+    return ProceedWithCardMandatoryReauthOptInIfApplicable();
   }
 
   // Do not offer upload save for google domain.
@@ -373,9 +364,7 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
-      ProceedWithCardMandatoryReauthOptInIfApplicable()) {
+  if (ProceedWithCardMandatoryReauthOptInIfApplicable()) {
     // Try to offer mandatory re-auth as the last step.
     return true;
   }

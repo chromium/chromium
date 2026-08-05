@@ -1155,11 +1155,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-prioritize-save-card-over-mandatory-reauth",
-    "owners": [ "averina@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "autofill-reject-form-submissions-without-user-gesture",
     "owners": [
       "sugoi@chromium.org",

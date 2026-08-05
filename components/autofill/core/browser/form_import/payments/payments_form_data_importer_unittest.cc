@@ -1818,52 +1818,11 @@ TEST_F(PaymentsFormDataImporterTest,
                                   ukm_source_id());
 }
 
-// Verifies the legacy behavior when
-// `kAutofillPrioritizeSaveCardOverMandatoryReauth` is disabled. Verifies that
-// when the conditions for offering mandatory re-auth are met, the re-auth
-// bubble is offered immediately and the save card flow is not attempted.
-TEST_F(PaymentsFormDataImporterTest,
-       ProcessExtractedCreditCard_PrioritizeSaveCard_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillPrioritizeSaveCardOverMandatoryReauth);
-  CreditCard extracted_credit_card = test::GetCreditCard2();
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  payments_form_data_importer()
-      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
-          NonInteractivePaymentMethodType::kLocalCard);
-  test_api(payments_form_data_importer())
-      .set_credit_card_import_type(
-          PaymentsFormDataImporter::CreditCardImportType::kLocalCard);
-
-  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
-      .Times(0);
-  EXPECT_CALL(reauth_manager(), ShouldOfferOptin).WillOnce(Return(true));
-  EXPECT_CALL(reauth_manager(), StartOptInFlow);
-
-  EXPECT_TRUE(
-      test_api(payments_form_data_importer())
-          .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
-                                      /*is_credit_card_upstream_enabled=*/true,
-                                      ukm_source_id()));
-
-  // Ensure that we reset the record type at the end of the flow.
-  EXPECT_FALSE(
-      test_api(payments_form_data_importer())
-          .payment_method_type_if_non_interactive_authentication_flow_completed()
-          .has_value());
-}
-
-// Test that when `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled,
-// the save card bubble is prioritized. If that bubble is shown, the mandatory
-// re-auth bubble is not offered.
+// Test that the save card bubble is prioritized. If that bubble is shown, the
+// mandatory re-auth bubble is not offered.
 TEST_F(
     PaymentsFormDataImporterTest,
     ProcessExtractedCreditCard_PrioritizeSaveCard_SaveSucceedsMandatoryReauthNotOffered) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillPrioritizeSaveCardOverMandatoryReauth);
-
   CreditCard card = test::GetCreditCard();
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
@@ -1886,15 +1845,11 @@ TEST_F(
                                   ukm_source_id());
 }
 
-// Test that when `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled,
-// offering the save card bubble is prioritized. If it fails, we offer the
-// mandatory re-auth bubble as a fallback.
+// Test that offering the save card bubble is prioritized. If it fails, we offer
+// the mandatory re-auth bubble as a fallback.
 TEST_F(
     PaymentsFormDataImporterTest,
     ProcessExtractedCreditCard_PrioritizeSaveCard_SaveCardFailsMandatoryReauthOffered) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillPrioritizeSaveCardOverMandatoryReauth);
-
   CreditCard card = test::GetCreditCard();
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();

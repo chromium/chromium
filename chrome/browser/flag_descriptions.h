@@ -1191,12 +1191,6 @@ inline constexpr char kAutofillPreferBuyNowPayLaterBlocklistsDescription[] =
     "corresponding issuer's blocklist instead of allowlist to check for "
     "website eligibility.";
 
-inline constexpr char kAutofillPrioritizeSaveCardOverMandatoryReauthName[] =
-    "Prioritize save card bubble over mandatory re-auth";
-inline constexpr char
-    kAutofillPrioritizeSaveCardOverMandatoryReauthDescription[] =
-        "When enabled, this flag prioritizes showing the save card bubble over "
-        "the mandatory re-auth bubble when both are applicable.";
 inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixName[] =
     "Ensures showing of the BNPL VCN on manual fallback sheet in the Touch To "
     "Fill flow";
