@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/confirm_quit_panel_controller.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/test/run_until.h"
@@ -10,9 +12,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/confirm_quit.h"
-#import "chrome/browser/ui/cocoa/confirm_quit_panel_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -33,6 +35,15 @@ class ConfirmQuitControllerPanelInteractiveUITest
                  charactersIgnoringModifiers:@"q"
                                    isARepeat:NO
                                      keyCode:kQKeyCode];
+    // The `kAlphaInsteadOfCATransaction` causes the browser window to have an
+    // alpha of 0 until the compositor provides a first frame. Wait for the
+    // window to be made visible if we need to.
+    if (base::FeatureList::IsEnabled(features::kAlphaInsteadOfCATransaction)) {
+      NSWindow* browserWindow =
+          browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
+      EXPECT_TRUE(base::test::RunUntil(
+          [=] { return browserWindow.alphaValue == 1.0; }));
+    }
   }
 
   void TearDownOnMainThread() override {
