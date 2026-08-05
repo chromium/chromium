@@ -8685,9 +8685,6 @@ crbug.com/41378979 [ Mac ] external/wpt/client-hints/viewport-size/viewport-size
 #Gardener 2025-02-19
 crbug.com/396687592 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importScripts/report-error-same-origin.sub.any.worker.html [ Failure Pass ]
 
-# Gardener 2025-02-20
-crbug.com/397870172 [ Linux ] external/wpt/css/css-scroll-snap/selection-target.html [ Failure ]
-
 # Gardener 2025-03-05
 crbug.com/400811282 [ Mac ] external/wpt/media-source/URL-createObjectURL-revoke.html [ Failure ]
 crbug.com/400811282 [ Win11 ] external/wpt/media-source/URL-createObjectURL-revoke.html [ Failure ]
