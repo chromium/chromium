@@ -1,54 +1,62 @@
-From 6a0bad1113abd7ea6e14ff403e825bfd93a7bfc3 Mon Sep 17 00:00:00 2001
-From: Zekun Jiang <zekunjiang@google.com>
-Date: Thu, 16 Jul 2026 19:57:16 +0000
-Subject: [PATCH] Patch 0003
-
----
- third_party/libzip/src/config.h  | 21 ++++++++++++++++++++-
- third_party/libzip/src/zipconf.h |  8 +++++++-
- 2 files changed, 27 insertions(+), 2 deletions(-)
-
 diff --git a/third_party/libzip/src/config.h b/third_party/libzip/src/config.h
-index 536e20b32e6fe..f7bc239cf25d9 100644
+index 55672c73f51c0..0f8bca4571063 100644
 --- a/third_party/libzip/src/config.h
 +++ b/third_party/libzip/src/config.h
-@@ -3,6 +3,9 @@
+@@ -3,6 +3,8 @@
  #ifndef _HAD_ZIPCONF_H
  #include "zipconf.h"
  #endif
 +
 +#include "build/build_config.h"
-+
  /* BEGIN DEFINES */
+ #define ENABLE_FDOPEN
  /* #undef HAVE___PROGNAME */
- /* #undef HAVE__CLOSE */
-@@ -23,28 +26,44 @@
- /* #undef HAVE_CRYPTO */
- /* #undef HAVE_FICLONERANGE */
+@@ -23,41 +25,53 @@
+ /* #undef HAVE__STRTOI64 */
+ /* #undef HAVE__STRTOUI64 */
+ /* #undef HAVE__UNLINK */
+-#define HAVE_ARC4RANDOM
++/* #undef HAVE_ARC4RANDOM */
+ /* #undef HAVE_CLONEFILE */
+ /* #undef HAVE_COMMONCRYPTO */
+-#define HAVE_CRYPTO
+-#define HAVE_FICLONERANGE
++/* #undef HAVE_CRYPTO */
++/* #undef HAVE_FICLONERANGE */
  #define HAVE_FILENO
 +#if !BUILDFLAG(IS_WIN)
+ #define HAVE_FCHMOD
  #define HAVE_FSEEKO
  #define HAVE_FTELLO
 +#endif
  /* #undef HAVE_GETPROGNAME */
+ /* #undef HAVE_GETSECURITYINFO */
  /* #undef HAVE_GNUTLS */
- /* #undef HAVE_LIBBZ2 */
- /* #undef HAVE_LIBLZMA */
-+/* #undef HAVE_LOCALTIME_R */
+-#define HAVE_LIBBZ2
+-#define HAVE_LIBLZMA
+-#define HAVE_LIBZSTD
++/* #undef HAVE_LIBBZ2 */
++/* #undef HAVE_LIBLZMA */
++/* #undef HAVE_LIBZSTD */
 +#if !BUILDFLAG(IS_WIN)
  #define HAVE_LOCALTIME_R
 +#endif
- /* #undef HAVE_MBEDTLS */
+ /* #undef HAVE_LOCALTIME_S */
+ /* #undef HAVE_MEMCPY_S */
  /* #undef HAVE_MKSTEMP */
- /* #undef HAVE_NULLABLE */
- /* #undef HAVE_OPENSSL */
+-#define HAVE_OPENSSL
++/* #undef HAVE_OPENSSL */
  /* #undef HAVE_SETMODE */
  #define HAVE_SNPRINTF
+ /* #undef HAVE_SNPRINTF_S */
 +#if !BUILDFLAG(IS_WIN)
  #define HAVE_STRCASECMP
 +#endif
  #define HAVE_STRDUP
+-/* #undef HAVE_STRERROR_S */
+-/* #undef HAVE_STRERRORLEN_S */
 -/* #undef HAVE_STRICMP */
+-/* #undef HAVE_STRNCPY_S */
 +#if BUILDFLAG(IS_WIN)
 +#define HAVE_STRICMP
 +#define HAVE_MEMCPY_S
@@ -68,8 +76,21 @@ index 536e20b32e6fe..f7bc239cf25d9 100644
  /* #undef HAVE_WINDOWS_CRYPTO */
  #define SIZEOF_OFF_T 8
  #define SIZEOF_SIZE_T 8
+diff --git a/third_party/libzip/src/zip_err_str.c b/third_party/libzip/src/zip_err_str.c
+index 927ce73fda3ed..8dc98679800c3 100644
+--- a/third_party/libzip/src/zip_err_str.c
++++ b/third_party/libzip/src/zip_err_str.c
+@@ -3,7 +3,7 @@
+   from zip.h and zipint.h; make changes there.
+ */
+ 
+-#include "zipint.h"
++#include "lib/zipint.h"
+ 
+ #define L ZIP_ET_LIBZIP
+ #define N ZIP_ET_NONE
 diff --git a/third_party/libzip/src/zipconf.h b/third_party/libzip/src/zipconf.h
-index cc5abcc681ffe..fe6dcfe1a7498 100644
+index 14dbfc2e74ed6..638c34c325f84 100644
 --- a/third_party/libzip/src/zipconf.h
 +++ b/third_party/libzip/src/zipconf.h
 @@ -8,12 +8,14 @@
@@ -78,17 +99,17 @@ index cc5abcc681ffe..fe6dcfe1a7498 100644
  
 +#include "build/build_config.h"
 +
- #define LIBZIP_VERSION "1.7.3"
+ #define LIBZIP_VERSION "1.11.4"
  #define LIBZIP_VERSION_MAJOR 1
- #define LIBZIP_VERSION_MINOR 7
- #define LIBZIP_VERSION_MICRO 3
+ #define LIBZIP_VERSION_MINOR 11
+ #define LIBZIP_VERSION_MICRO 4
  
 -/* #undef ZIP_STATIC */
 +#define ZIP_STATIC
  
- #define _Nullable
- #define _Nonnull
-@@ -32,6 +34,10 @@ typedef uint32_t zip_uint32_t;
+ #if !defined(__STDC_FORMAT_MACROS)
+ #define __STDC_FORMAT_MACROS 1
+@@ -29,6 +31,10 @@ typedef uint32_t zip_uint32_t;
  typedef int64_t zip_int64_t;
  typedef uint64_t zip_uint64_t;
  
@@ -99,6 +120,3 @@ index cc5abcc681ffe..fe6dcfe1a7498 100644
  #define ZIP_INT8_MIN	 (-ZIP_INT8_MAX-1)
  #define ZIP_INT8_MAX	 0x7f
  #define ZIP_UINT8_MAX	 0xff
--- 
-2.55.0.229.g6434b31f56-goog
-

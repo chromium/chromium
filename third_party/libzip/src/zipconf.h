@@ -10,15 +10,12 @@
 
 #include "build/build_config.h"
 
-#define LIBZIP_VERSION "1.7.3"
+#define LIBZIP_VERSION "1.11.4"
 #define LIBZIP_VERSION_MAJOR 1
-#define LIBZIP_VERSION_MINOR 7
-#define LIBZIP_VERSION_MICRO 3
+#define LIBZIP_VERSION_MINOR 11
+#define LIBZIP_VERSION_MICRO 4
 
 #define ZIP_STATIC
-
-#define _Nullable
-#define _Nonnull
 
 #if !defined(__STDC_FORMAT_MACROS)
 #define __STDC_FORMAT_MACROS 1

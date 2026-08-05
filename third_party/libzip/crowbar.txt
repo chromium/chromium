@@ -1,0 +1,49 @@
+How to update libzip:
+
+Note: all commands below are run from the Chromium root directory (src/).
+01. Prepare a fresh Chromium branch.
+02. Navigate to https://github.com/nih-at/libzip/commits/main/ in a browser and
+    choose a commit hash to update to and copy it.
+03. Delete all of the existing libzip third_party code with:
+    `rm -rf third_party/libzip/src/*`.
+04. From the Chromium src/ directory, run
+    ```
+    curl -L https://github.com/nih-at/libzip/archive/<COMMIT_HASH>.tar.gz | \
+    tar -xz -C third_party/libzip/src --strip-components=1
+    ```
+05. Unset executable bit for a script with
+    `chmod 644 third_party/libzip/src/android/do.sh`. This is necessary because
+    Chromium does not allow executable files without a shebang/ELF/Mach-O header.
+06. Delete unneeded .github folder by running
+    `rm -rf third_party/libzip/src/.github`.
+07. Generate additional necessary code files by running this command from src/:
+    ```
+    cmake -S third_party/libzip/src -B /tmp/libzip_build && \
+    cmake -DPROJECT_SOURCE_DIR=third_party/libzip/src \
+          -P third_party/libzip/src/cmake/GenerateZipErrorStrings.cmake && \
+    mv /tmp/libzip_build/config.h /tmp/libzip_build/zipconf.h zip_err_str.c \
+       third_party/libzip/src/ && \
+    rm -rf /tmp/libzip_build
+    ```
+    This command executes the following in order:
+    a. Runs cmake to generate the additional files using a /tmp/ folder as a
+       temporary build folder.
+    b. Moves the files from the temporary build folder to libzip.
+    c. Delete the temporary build folder.
+08. Apply the patch by running
+    `git apply third_party/libzip/patches/0001-patch-configs.patch`.
+    This patch modifies the files generated in step 07 to handle Chromium's
+    cross-platform builds.
+09. Try building chrome with `autoninja`, using your typical `args.gn` setup.
+    a. If the build fails with a `undefined symbol` error at the linking stage,
+       the update likely contains a new file that needs to be added to
+       `third_party/libzip/BUILD.gn`. Find the file containing the referenced
+       symbol and add it to the BUILD.gn to fix.
+    b. If the build fails with a `file required but not found` error, the update
+       likely deleted a code file that needs to be removed in
+       `third_party/libzip/BUILD.gn` as well. Remove the file in the BUILD.gn to
+       fix.
+10. Repeat step 9 until the build succeeds.
+11. Update the `Date` and `Revision` line in third_party/libzip/README.chromium
+    to match the update.
+12. Commit the changes and upload to gerrit for review.
