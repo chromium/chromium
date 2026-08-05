@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
-import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {ActionChipClickDetail, ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter as PageCallbackRouter, IconType, SuggestInventory} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
@@ -22,12 +22,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {installMock} from '../test_support.js';
 
-type ActionChipClickEvent = CustomEvent<{
-  text: string,
-  files: TabUpload[],
-  mode?: ToolMode,
-  suggestInventory?: SuggestInventory,
-}>;
+type ActionChipClickEvent = CustomEvent<ActionChipClickDetail>;
 
 suite('NewTabPageActionChipsTest', () => {
   let chips: ActionChipsElement;
@@ -207,7 +202,7 @@ suite('NewTabPageActionChipsTest', () => {
       origin: TabUploadOrigin.ACTION_CHIP,
     };
 
-    assertEquals('Suggestion for recent tab', event.detail.text);
+    assertEquals('Suggestion for recent tab', event.detail.suggestion);
     assertTrue(!!event.detail.files);
     assertEquals(1, event.detail.files.length);
     assertDeepEquals(expectedTab, event.detail.files[0]);
@@ -291,7 +286,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for image', event.detail.text);
+      assertEquals('Suggestion for image', event.detail.suggestion);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1, metrics.count('NewTabPage.ActionChips.Click2', IconType.kBanana));
@@ -309,7 +304,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for deep search', event.detail.text);
+      assertEquals('Suggestion for deep search', event.detail.suggestion);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,
@@ -329,7 +324,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for recent tab', event.detail.text);
+      assertEquals('Suggestion for recent tab', event.detail.suggestion);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1, metrics.count('NewTabPage.ActionChips.Click2', IconType.kFavicon));
@@ -370,7 +365,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for deep dive', event.detail.text);
+      assertEquals('Suggestion for deep dive', event.detail.suggestion);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,
@@ -408,7 +403,7 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('Suggestion for canvas', event.detail.text);
+      assertEquals('Suggestion for canvas', event.detail.suggestion);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,
@@ -432,23 +427,23 @@ suite('NewTabPageActionChipsTest', () => {
           tab: null,
         }],
       });
-      const canvasChip = chips.shadowRoot.querySelector<HTMLDivElement>(
+      const conversationChip = chips.shadowRoot.querySelector<HTMLDivElement>(
           '.icon-type-search-spark');
-      assertTrue(!!canvasChip);
+      assertTrue(!!conversationChip);
 
       const whenActionChipClicked = eventToPromise<ActionChipClickEvent>(
           'action-chip-click', document.body);
 
       // Act.
-      canvasChip.click();
+      conversationChip.click();
 
       // Assert.
       const event = await whenActionChipClicked;
 
-      assertEquals('', event.detail.text);
+      assertEquals('', event.detail.suggestion);
       assertEquals(
           SuggestInventory.kConversationStarters,
-          event.detail.suggestInventory);
+          event.detail.fuseboxAction?.preferredInventory);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,
