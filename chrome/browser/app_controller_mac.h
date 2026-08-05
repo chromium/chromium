@@ -17,9 +17,6 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Cocoa/Cocoa.h>
 
-#include <memory>
-#include <vector>
-
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/startup/startup_tab.h"

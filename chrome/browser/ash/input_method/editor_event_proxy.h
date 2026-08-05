@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_EVENT_PROXY_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_EVENT_PROXY_H_
 
-#include <string>
-
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"

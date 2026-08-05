@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/cocoa/tab_group_menu_bridge.h"
 
+#include <vector>
+
 #include "base/apple/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
 
+#include <memory>
 #include <queue>
 
 #include "ash/accessibility/accessibility_controller.h"

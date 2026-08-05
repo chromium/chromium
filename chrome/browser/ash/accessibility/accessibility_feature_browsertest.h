@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_FEATURE_BROWSERTEST_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_FEATURE_BROWSERTEST_H_
 
-#include <memory>
-
 #include "chrome/test/base/in_process_browser_test.h"
 
 class Profile;

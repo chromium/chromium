@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_CHILD_ACCOUNT_SERVICE_ANDROID_H_
 #define CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_CHILD_ACCOUNT_SERVICE_ANDROID_H_
 
-#include <string>
-
 #include "base/functional/callback_forward.h"
 #include "components/signin/public/identity_manager/account_info.h"
 

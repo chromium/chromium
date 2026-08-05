@@ -4,8 +4,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_INSECURE_DOWNLOAD_BLOCKING_H_
 #define CHROME_BROWSER_DOWNLOAD_INSECURE_DOWNLOAD_BLOCKING_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"

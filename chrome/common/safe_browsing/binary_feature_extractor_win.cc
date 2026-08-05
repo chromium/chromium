@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <wintrust.h>
 
+#include <string>
+
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"

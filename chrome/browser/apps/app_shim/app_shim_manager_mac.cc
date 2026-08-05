@@ -7,9 +7,11 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "apps/app_lifetime_monitor_factory.h"
 #include "base/apple/bundle_locations.h"

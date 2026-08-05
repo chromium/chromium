@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
