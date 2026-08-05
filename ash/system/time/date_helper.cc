@@ -208,9 +208,7 @@ base::Time DateHelper::GetLocalMidnight(base::Time date) {
 }
 
 DateHelper::DateHelper()
-    : month_day_year_week_formatter_(
-          CreateSimpleDateFormatter("MMMMEEEEdyyyy")),
-      month_name_formatter_(CreateSimpleDateFormatter("MMMM")),
+    : month_name_formatter_(CreateSimpleDateFormatter("MMMM")),
       month_name_year_formatter_(CreateSimpleDateFormatter("MMMM yyyy")),
       time_zone_formatter_(CreateSimpleDateFormatter("zzzz")),
       twelve_hour_clock_formatter_(CreateSimpleDateFormatter("h:mm a")),
@@ -251,7 +249,6 @@ DateHelper::~DateHelper() {
 }
 
 void DateHelper::ResetFormatters() {
-  month_day_year_week_formatter_ = CreateSimpleDateFormatter("MMMMEEEEdyyyy");
   month_name_formatter_ = CreateSimpleDateFormatter("MMMM");
   month_name_year_formatter_ = CreateSimpleDateFormatter("MMMM yyyy");
   time_zone_formatter_ = CreateSimpleDateFormatter("zzzz");
