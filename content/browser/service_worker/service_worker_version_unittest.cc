@@ -2873,5 +2873,114 @@ TEST_P(ServiceWorkerVersionFencedFrameTest, OpenPaymentHandlerWindow_Rejected) {
       bad_message_observer.WaitForBadMessage());
 }
 
+// Verifies that OpenNewTab() rejects calls for a service worker that doesn't
+// have a pending event that allows window interaction, and kills the renderer.
+TEST_P(ServiceWorkerVersionTest, OpenNewTab_NoPendingEvent) {
+  auto* service_worker =
+      helper_->AddNewPendingServiceWorker<FakeServiceWorker>(helper_.get());
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  service_worker->RunUntilInitializeGlobalScope();
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  GURL url = scope_.Resolve("page.html");
+  base::test::TestFuture<bool, ServiceWorkerClientInfoPtr,
+                         const std::optional<std::string>&>
+      future;
+
+  service_worker->host()->OpenNewTab(url, future.GetCallback());
+
+  EXPECT_EQ(
+      "Received Clients#openWindow() request without a pending event that "
+      "allows window interaction.",
+      bad_message_observer.WaitForBadMessage());
+}
+
+// Verifies that OpenNewTab() accepts calls for a service worker that has a
+// pending NOTIFICATION_CLICK event.
+TEST_P(ServiceWorkerVersionTest, OpenNewTab_WithPendingNotificationClickEvent) {
+  auto* service_worker =
+      helper_->AddNewPendingServiceWorker<FakeServiceWorker>(helper_.get());
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  service_worker->RunUntilInitializeGlobalScope();
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  // Simulate a pending NOTIFICATION_CLICK event.
+  int request_id = version_->StartRequest(
+      ServiceWorkerMetrics::EventType::NOTIFICATION_CLICK, base::DoNothing());
+
+  GURL url = scope_.Resolve("page.html");
+  base::test::TestFuture<bool, ServiceWorkerClientInfoPtr,
+                         const std::optional<std::string>&>
+      future;
+
+  service_worker->host()->OpenNewTab(url, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+
+  // Clean up the pending request.
+  version_->FinishRequest(request_id, /*was_handled=*/true);
+}
+
+// Verifies that OpenNewTab() accepts calls for a service worker that has a
+// pending BACKGROUND_FETCH_CLICK event.
+TEST_P(ServiceWorkerVersionTest,
+       OpenNewTab_WithPendingBackgroundFetchClickEvent) {
+  auto* service_worker =
+      helper_->AddNewPendingServiceWorker<FakeServiceWorker>(helper_.get());
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  service_worker->RunUntilInitializeGlobalScope();
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  // Simulate a pending BACKGROUND_FETCH_CLICK event.
+  int request_id = version_->StartRequest(
+      ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_CLICK,
+      base::DoNothing());
+
+  GURL url = scope_.Resolve("page.html");
+  base::test::TestFuture<bool, ServiceWorkerClientInfoPtr,
+                         const std::optional<std::string>&>
+      future;
+
+  service_worker->host()->OpenNewTab(url, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+
+  // Clean up the pending request.
+  version_->FinishRequest(request_id, /*was_handled=*/true);
+}
+
+// Verifies that FocusClient() rejects calls for a service worker that doesn't
+// have a pending event that allows window interaction, and kills the renderer.
+TEST_P(ServiceWorkerVersionTest, FocusClient_NoPendingEvent) {
+  auto* service_worker =
+      helper_->AddNewPendingServiceWorker<FakeServiceWorker>(helper_.get());
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  service_worker->RunUntilInitializeGlobalScope();
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  base::test::TestFuture<blink::mojom::FocusResultPtr> future;
+  service_worker->host()->FocusClient(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), future.GetCallback());
+
+  EXPECT_EQ(
+      "Received WindowClient#focus() request without a pending event that "
+      "allows window interaction.",
+      bad_message_observer.WaitForBadMessage());
+}
+
 }  // namespace service_worker_version_unittest
 }  // namespace content

@@ -1874,6 +1874,13 @@ void ServiceWorkerVersion::OpenNewTab(const GURL& url,
     receiver_.reset();
     return;
   }
+  if (!HasPendingWindowInteractionEvent()) {
+    associated_interface_receiver_.ReportBadMessage(
+        "Received Clients#openWindow() request without a pending event that "
+        "allows window interaction.");
+    receiver_.reset();
+    return;
+  }
   // TODO(crbug.com/40177656): After StorageKey implements partitioning update
   // this to reject with InvalidAccessError if key_ is partitioned.
   OpenWindow(url, service_worker_client_utils::WindowType::NEW_TAB_WINDOW,
@@ -1967,6 +1974,55 @@ bool ServiceWorkerVersion::HasPendingPaymentRequestEvent() {
     if (iter.GetCurrentValue()->event_type ==
         ServiceWorkerMetrics::EventType::PAYMENT_REQUEST) {
       return true;
+    }
+    iter.Advance();
+  }
+  return false;
+}
+
+bool ServiceWorkerVersion::HasPendingWindowInteractionEvent() {
+  // Despite using a const_iterator, this method cannot be const because
+  // base::IDMap::Iterator always modifies the Map object it is iterating
+  // over (to update bookkeeping state).
+  base::IDMap<std::unique_ptr<InflightRequest>>::const_iterator iter(
+      &inflight_requests_);
+  while (!iter.IsAtEnd()) {
+    switch (iter.GetCurrentValue()->event_type) {
+      case ServiceWorkerMetrics::EventType::NOTIFICATION_CLICK:
+      case ServiceWorkerMetrics::EventType::PAYMENT_REQUEST:
+      case ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_CLICK:
+        return true;
+      case ServiceWorkerMetrics::EventType::ACTIVATE:
+      case ServiceWorkerMetrics::EventType::INSTALL:
+      case ServiceWorkerMetrics::EventType::SYNC:
+      case ServiceWorkerMetrics::EventType::PUSH:
+      case ServiceWorkerMetrics::EventType::MESSAGE:
+      case ServiceWorkerMetrics::EventType::NOTIFICATION_CLOSE:
+      case ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME:
+      case ServiceWorkerMetrics::EventType::FETCH_SUB_FRAME:
+      case ServiceWorkerMetrics::EventType::FETCH_SHARED_WORKER:
+      case ServiceWorkerMetrics::EventType::FETCH_SUB_RESOURCE:
+      case ServiceWorkerMetrics::EventType::UNKNOWN:
+      case ServiceWorkerMetrics::EventType::FETCH_WAITUNTIL:
+      case ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST:
+      case ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_ABORT:
+      case ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_FAIL:
+      case ServiceWorkerMetrics::EventType::NAVIGATION_HINT:
+      case ServiceWorkerMetrics::EventType::CAN_MAKE_PAYMENT:
+      case ServiceWorkerMetrics::EventType::ABORT_PAYMENT:
+      case ServiceWorkerMetrics::EventType::COOKIE_CHANGE:
+      case ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_SUCCESS:
+      case ServiceWorkerMetrics::EventType::PERIODIC_SYNC:
+      case ServiceWorkerMetrics::EventType::CONTENT_DELETE:
+      case ServiceWorkerMetrics::EventType::PUSH_SUBSCRIPTION_CHANGE:
+      case ServiceWorkerMetrics::EventType::FETCH_FENCED_FRAME:
+      case ServiceWorkerMetrics::EventType::BYPASS_MAIN_RESOURCE:
+      case ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER:
+      case ServiceWorkerMetrics::EventType::
+          BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED:
+      case ServiceWorkerMetrics::EventType::WARM_UP:
+      case ServiceWorkerMetrics::EventType::STATIC_ROUTER:
+        break;
     }
     iter.Advance();
   }
@@ -2102,6 +2158,13 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
   if (ancestor_frame_type_ == blink::mojom::AncestorFrameType::kFencedFrame) {
     associated_interface_receiver_.ReportBadMessage(
         "Received WindowClient#focus() request from a fenced frame.");
+    receiver_.reset();
+    return;
+  }
+  if (!HasPendingWindowInteractionEvent()) {
+    associated_interface_receiver_.ReportBadMessage(
+        "Received WindowClient#focus() request without a pending event that "
+        "allows window interaction.");
     receiver_.reset();
     return;
   }

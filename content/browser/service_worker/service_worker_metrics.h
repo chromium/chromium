@@ -84,6 +84,9 @@ class ServiceWorkerMetrics {
   };
 
   // Used for UMA. Append-only.
+  // Note: This enum is also used for behavioral checks, such as verifying
+  // if a service worker has a pending event that allows window interaction.
+  //
   // This class is used to indicate which event is fired/finished. Most events
   // have only one request that starts the event and one response that finishes
   // the event, but the fetch event has two responses, so there are two types of

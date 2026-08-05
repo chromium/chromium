@@ -1146,6 +1146,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // for the current service worker version.
   bool HasPendingPaymentRequestEvent();
 
+  // Checks if there is an active and pending event that allows the worker to
+  // open a new window or focus an existing one.
+  bool HasPendingWindowInteractionEvent();
+
   void DidShowPaymentHandlerWindow(
       const GURL& url,
       const blink::StorageKey& key,
