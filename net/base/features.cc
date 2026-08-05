@@ -797,7 +797,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Seconds(quic::kInitialIdleTimeoutSecs));
 
 BASE_FEATURE(kQuicIgnoreRedundantOnNetworkMadeDefault,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuicLongerIdleConnectionTimeout,
              base::FEATURE_DISABLED_BY_DEFAULT);
