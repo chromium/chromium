@@ -208,8 +208,7 @@ base::Time DateHelper::GetLocalMidnight(base::Time date) {
 }
 
 DateHelper::DateHelper()
-    : twelve_hour_clock_formatter_(CreateSimpleDateFormatter("h:mm a")),
-      twenty_four_hour_clock_formatter_(CreateSimpleDateFormatter("HH:mm")),
+    : twenty_four_hour_clock_formatter_(CreateSimpleDateFormatter("HH:mm")),
       day_of_week_formatter_(CreateSimpleDateFormatter("ee")),
       week_title_formatter_(CreateSimpleDateFormatter("EEEEE")),
       // Note: "yyyy" represents a four-digit calendar year (e.g. "2023"),
@@ -246,7 +245,6 @@ DateHelper::~DateHelper() {
 }
 
 void DateHelper::ResetFormatters() {
-  twelve_hour_clock_formatter_ = CreateSimpleDateFormatter("h:mm a");
   twenty_four_hour_clock_formatter_ = CreateSimpleDateFormatter("HH:mm");
   day_of_week_formatter_ = CreateSimpleDateFormatter("ee");
   week_title_formatter_ = CreateSimpleDateFormatter("EEEEE");

@@ -118,8 +118,12 @@ std::u16string GetMonthNameAndDayOfMonth(const base::Time date) {
 }
 
 std::u16string GetTwelveHourClockTime(const base::Time date) {
-  return calendar_utils::FormatDate(
-      DateHelper::GetInstance()->twelve_hour_clock_formatter(), date);
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      date,
+      base::i18n::datetime_options::T::Short()
+          .with_hour_clock_type(base::k12HourClock)
+          .with_time_precision(
+              base::i18n::DateTimeFormatterOptions::TimePrecision::kMinute));
 }
 
 std::u16string GetTwentyFourHourClockTime(const base::Time date) {
