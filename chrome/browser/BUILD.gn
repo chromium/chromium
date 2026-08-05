@@ -2194,6 +2194,7 @@ source_set("browser") {
     "//chrome/browser/invalidation:impl",
     "//chrome/browser/language",
     "//chrome/browser/language:impl",
+    "//chrome/browser/lens/sapisid",
     "//chrome/browser/lifetime",
     "//chrome/browser/lifetime:impl",
     "//chrome/browser/lifetime:termination_notification",
