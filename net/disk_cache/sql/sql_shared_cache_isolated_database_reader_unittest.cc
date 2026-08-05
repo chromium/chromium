@@ -51,8 +51,9 @@ class SqlSharedCacheIsolatedDatabaseReaderTest
                                               std::string_view header_data,
                                               std::string_view body_data,
                                               bool set_ready = true) {
-    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(),
-                                      SqlSharedCacheDbId(1));
+    SqlSharedCacheIsolatedDatabase db(
+        "nik", temp_dir_.GetPath(), SqlSharedCacheDbId(1),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     EXPECT_TRUE(db.Init().has_value());
 
     auto headers =

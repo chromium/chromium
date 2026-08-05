@@ -20,6 +20,7 @@
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/sql_backend_aliases.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/sql_shared_cache_blob_handle.h"
 #include "sql/database.h"
 #include "sql/streaming_blob_handle.h"
 
@@ -71,9 +72,11 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
   using ReadResult = SqlPersistentStore::ReadResult;
   using ReadResultOrError = base::expected<ReadResult, Error>;
 
-  SqlSharedCacheIsolatedDatabase(std::string nik_string,
-                                 const base::FilePath& directory,
-                                 SqlSharedCacheDbId shared_cache_db_id);
+  SqlSharedCacheIsolatedDatabase(
+      std::string nik_string,
+      const base::FilePath& directory,
+      SqlSharedCacheDbId shared_cache_db_id,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~SqlSharedCacheIsolatedDatabase();
 
   // Returns a PendingFileSet that represents a read-only connection to the
@@ -115,6 +118,14 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
                          int body_size,
                          int offset,
                          scoped_refptr<net::IOBuffer> buffer);
+
+  // Returns a handle to the entry's body blob, allowing streaming reads.
+  // The entry must be in the `ready` state, otherwise this operation will fail
+  // and return an Error.
+  base::expected<scoped_refptr<SqlSharedCacheBlobHandle>, Error> GetBlobHandle(
+      const CacheEntryKey& entry_key,
+      SqlSharedCacheRowId shared_cache_row_id,
+      int body_size);
 
   // Deletes an entry by its row ID. Used for cleaning up partial entries.
   void DeleteEntry(SqlSharedCacheRowId shared_cache_row_id);
@@ -171,6 +182,54 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
     sql::Database db_;
   };
 
+  class SqlSharedCacheBlobHandleImpl : public SqlSharedCacheBlobHandle {
+   public:
+    SqlSharedCacheBlobHandleImpl(
+        base::OnceClosure decrement_closure,
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+   private:
+    ~SqlSharedCacheBlobHandleImpl() override;
+
+    base::OnceClosure decrement_closure_;
+    scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  };
+
+  class BlobHandleHolder {
+   public:
+    BlobHandleHolder(sql::StreamingBlobHandle blob_handle,
+                     const CacheEntryKey& entry_key,
+                     int body_size);
+    ~BlobHandleHolder();
+
+    BlobHandleHolder(const BlobHandleHolder&) = delete;
+    BlobHandleHolder& operator=(const BlobHandleHolder&) = delete;
+
+    sql::StreamingBlobHandle& blob_handle() { return blob_handle_; }
+
+    void IncrementRefCount() { ++ref_count_; }
+    void DecrementRefCount() { --ref_count_; }
+    size_t ref_count() const { return ref_count_; }
+
+    const std::string_view resource_url() const {
+      return entry_key_.resource_url();
+    }
+    int body_size() const { return body_size_; }
+
+   private:
+    sql::StreamingBlobHandle blob_handle_;
+    const CacheEntryKey entry_key_;
+    const int body_size_;
+    size_t ref_count_ = 1;
+  };
+
+  void DecrementBlobHandleRefCount(SqlSharedCacheRowId shared_cache_row_id);
+
+  base::expected<BlobHandleHolder*, Error> GetCachedBlobHandleHolder(
+      const CacheEntryKey& entry_key,
+      SqlSharedCacheRowId shared_cache_row_id,
+      int body_size);
+
   base::expected<sql::StreamingBlobHandle, Error> GetStreamingBlobHandle(
       const CacheEntryKey& entry_key,
       SqlSharedCacheRowId shared_cache_row_id,
@@ -189,6 +248,12 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
   std::string nik_string_;
   std::unique_ptr<DatabaseAssets> db_assets_;
   SimFailedCallback simulate_db_failure_callback_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  absl::flat_hash_map<SqlSharedCacheRowId, std::unique_ptr<BlobHandleHolder>>
+      blob_handle_holders_;
+
+  base::WeakPtrFactory<SqlSharedCacheIsolatedDatabase> weak_factory_{this};
 };
 
 }  // namespace disk_cache
