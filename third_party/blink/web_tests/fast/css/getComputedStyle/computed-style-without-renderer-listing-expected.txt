@@ -427,6 +427,7 @@ text-box-trim: none
 text-combine-upright: none
 text-decoration: none
 text-decoration-color: rgb(0, 0, 0)
+text-decoration-inset: 0px
 text-decoration-line: none
 text-decoration-skip-ink: auto
 text-decoration-skip-spaces: none

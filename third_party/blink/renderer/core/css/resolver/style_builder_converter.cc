@@ -101,6 +101,7 @@
 #include "third_party/blink/renderer/core/style/style_timeline_scope.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/core/style/superellipse.h"
+#include "third_party/blink/renderer/core/style/text_decoration_inset.h"
 #include "third_party/blink/renderer/core/style/text_overflow_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
@@ -3175,6 +3176,19 @@ TextDecorationThickness StyleBuilderConverter::ConvertTextDecorationThickness(
   }
 
   return TextDecorationThickness(ConvertLengthOrAuto(state, value));
+}
+
+TextDecorationInset StyleBuilderConverter::ConvertTextDecorationInset(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kAuto);
+    return TextDecorationInset(Length::Auto(), Length::Auto());
+  }
+
+  const auto& pair = To<CSSValuePair>(value);
+  return TextDecorationInset(ConvertLength(state, pair.First()),
+                             ConvertLength(state, pair.Second()));
 }
 
 TextEmphasisPosition StyleBuilderConverter::ConvertTextTextEmphasisPosition(

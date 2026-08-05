@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
+#include "third_party/blink/renderer/core/style/text_decoration_inset.h"
 #include "third_party/blink/renderer/core/style/text_indent_flags.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
@@ -9871,6 +9872,50 @@ const CSSValue* TextDecorationLine::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
       style.GetTextDecorationLine());
+}
+
+const CSSValue* TextDecorationInset::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) const {
+  if (const CSSValue* auto_ident =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream)) {
+    return auto_ident;
+  }
+
+  CSSValue* start = css_parsing_utils::ConsumeLengthOrPercent(
+      stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
+  if (!start) {
+    return nullptr;
+  }
+
+  CSSValue* end = css_parsing_utils::ConsumeLengthOrPercent(
+      stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
+  if (!end) {
+    end = start;
+  }
+
+  return MakeGarbageCollected<CSSValuePair>(start, end,
+                                            CSSValuePair::kDropIdenticalValues);
+}
+
+const CSSValue* TextDecorationInset::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const blink::TextDecorationInset& inset = style.GetTextDecorationInset();
+  if (inset.GetStart().IsAuto()) {
+    DCHECK(inset.GetEnd().IsAuto());
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+
+  return MakeGarbageCollected<CSSValuePair>(
+      ComputedStyleUtils::ZoomAdjustedPixelValueForLength(inset.GetStart(),
+                                                          style),
+      ComputedStyleUtils::ZoomAdjustedPixelValueForLength(inset.GetEnd(),
+                                                          style),
+      CSSValuePair::kDropIdenticalValues);
 }
 
 const CSSValue* TextDecorationSkipInk::CSSValueFromComputedStyleInternal(

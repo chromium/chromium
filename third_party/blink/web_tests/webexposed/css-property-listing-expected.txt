@@ -431,6 +431,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-box-trim
     text-combine-upright
     text-decoration-color
+    text-decoration-inset
     text-decoration-line
     text-decoration-skip-ink
     text-decoration-skip-spaces

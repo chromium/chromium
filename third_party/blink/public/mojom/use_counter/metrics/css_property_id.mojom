@@ -1033,6 +1033,7 @@ enum CSSSampleId {
     kCornerInlineEnd = 961,
     kWindowDrag = 962,
     kMaxContentSizing = 963,
+    kTextDecorationInset = 964,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

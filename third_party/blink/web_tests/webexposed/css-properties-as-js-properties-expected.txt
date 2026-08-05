@@ -560,6 +560,7 @@ textBoxTrim
 textCombineUpright
 textDecoration
 textDecorationColor
+textDecorationInset
 textDecorationLine
 textDecorationSkipInk
 textDecorationSkipSpaces

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/text_decoration_inset.h"
 #include "third_party/blink/renderer/core/style/text_decoration_thickness.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -23,7 +24,9 @@ class CORE_EXPORT AppliedTextDecoration {
                         ETextDecorationStyle,
                         Color,
                         TextDecorationThickness,
-                        Length);
+                        Length,
+                        TextDecorationInset,
+                        EBoxDecorationBreak);
 
   TextDecorationLine Lines() const {
     return static_cast<TextDecorationLine>(lines_);
@@ -36,15 +39,23 @@ class CORE_EXPORT AppliedTextDecoration {
 
   TextDecorationThickness Thickness() const { return thickness_; }
   Length UnderlineOffset() const { return underline_offset_; }
+  const TextDecorationInset& DecorationInset() const {
+    return decoration_inset_;
+  }
+  EBoxDecorationBreak BoxDecorationBreak() const {
+    return static_cast<EBoxDecorationBreak>(box_decoration_break_);
+  }
 
   bool operator==(const AppliedTextDecoration&) const;
 
  private:
   unsigned lines_ : kTextDecorationLineBits;
   unsigned style_ : 3;  // ETextDecorationStyle
+  unsigned box_decoration_break_ : 1;
   Color color_;
   TextDecorationThickness thickness_;
   Length underline_offset_;
+  TextDecorationInset decoration_inset_;
 };
 
 using AppliedTextDecorationVector = GCedHeapVector<AppliedTextDecoration, 1>;

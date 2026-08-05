@@ -1,150 +1,82 @@
 This is a testharness.js-based test.
-Found 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] `auto` computes to a length when interpolating with length values
   assert_false: expected false got true
 [FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [10px -20px] at (-1) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [10px -20px] at (0) should be [NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [10px -20px] at (0.125) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [10px -20px] at (0.875) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [10px -20px] at (1) should be [10px -20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [10px -20px] at (1.5) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [10px -20px] at (-1) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [10px -20px] at (0) should be [NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [10px -20px] at (0.125) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [10px -20px] at (0.875) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [10px -20px] at (1) should be [10px -20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [10px -20px] at (1.5) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (-1) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "auto "
 [FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (0) should be [NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "auto "
 [FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (0.125) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "auto "
 [FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (0.875) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (1) should be [10px -20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (1.5) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] Web Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (-1) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "auto "
 [FAIL] Web Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (0) should be [NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "auto "
 [FAIL] Web Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (0.125) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "auto "
 [FAIL] Web Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (0.875) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (1) should be [10px -20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] Web Animations: property <text-decoration-inset> from [auto] to [10px -20px] at (1.5) should be [NaNpx NaNpx]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [0px] to [10px -20px] at (-1) should be [-10px 20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "- 10px 20px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [0px] to [10px -20px] at (0) should be [0px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [0px] to [10px -20px] at (0.125) should be [1.25px -2.5px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "1.25px - 2.5px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [0px] to [10px -20px] at (0.875) should be [8.75px -17.5px]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <text-decoration-inset> from [0px] to [10px -20px] at (1) should be [10px -20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "8.75px - 17.5px " but got "10px - 20px "
 [FAIL] CSS Transitions: property <text-decoration-inset> from [0px] to [10px -20px] at (1.5) should be [15px -30px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "15px - 30px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [0px] to [10px -20px] at (-1) should be [-10px 20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "- 10px 20px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [0px] to [10px -20px] at (0) should be [0px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "0px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [0px] to [10px -20px] at (0.125) should be [1.25px -2.5px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "1.25px - 2.5px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [0px] to [10px -20px] at (0.875) should be [8.75px -17.5px]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [0px] to [10px -20px] at (1) should be [10px -20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "8.75px - 17.5px " but got "10px - 20px "
 [FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [0px] to [10px -20px] at (1.5) should be [15px -30px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "15px - 30px " but got "10px - 20px "
 [FAIL] CSS Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (-1) should be [-10px 20px]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (0) should be [0px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "- 10px 20px " but got "0px "
 [FAIL] CSS Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (0.125) should be [1.25px -2.5px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "1.25px - 2.5px " but got "0px "
 [FAIL] CSS Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (0.875) should be [8.75px -17.5px]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (1) should be [10px -20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "8.75px - 17.5px " but got "10px - 20px "
 [FAIL] CSS Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (1.5) should be [15px -30px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "15px - 30px " but got "10px - 20px "
 [FAIL] Web Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (-1) should be [-10px 20px]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (0) should be [0px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "- 10px 20px " but got "0px "
 [FAIL] Web Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (0.125) should be [1.25px -2.5px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "1.25px - 2.5px " but got "0px "
 [FAIL] Web Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (0.875) should be [8.75px -17.5px]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (1) should be [10px -20px]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "8.75px - 17.5px " but got "10px - 20px "
 [FAIL] Web Animations: property <text-decoration-inset> from [0px] to [10px -20px] at (1.5) should be [15px -30px]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [auto] at (-1) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [auto] at (0) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [auto] at (0.125) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [auto] at (0.875) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [auto] at (1) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <text-decoration-inset> from [auto] to [auto] at (1.5) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [auto] at (-1) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [auto] at (0) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [auto] at (0.125) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [auto] at (0.875) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [auto] at (1) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <text-decoration-inset> from [auto] to [auto] at (1.5) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [auto] at (-1) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [auto] at (0) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [auto] at (0.125) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [auto] at (0.875) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [auto] at (1) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <text-decoration-inset> from [auto] to [auto] at (1.5) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [auto] to [auto] at (-1) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [auto] to [auto] at (0) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [auto] to [auto] at (0.125) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [auto] to [auto] at (0.875) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [auto] to [auto] at (1) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <text-decoration-inset> from [auto] to [auto] at (1.5) should be [auto]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "15px - 30px " but got "10px - 20px "
 Harness: the test ran to completion.
 

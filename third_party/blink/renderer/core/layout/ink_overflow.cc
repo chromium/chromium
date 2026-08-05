@@ -749,7 +749,9 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
             {},
             HighlightPainter::ColorFor(type),
             {},
-            {}};
+            {},
+            TextDecorationInset(),
+            EBoxDecorationBreak::kClone};
         decoration_bound = ComputeAppliedDecorationOverflow(
             style, used_font, offset_in_container, ink_overflow, inline_context,
             &synthesised);

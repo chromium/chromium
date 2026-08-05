@@ -68,6 +68,7 @@ ALIGNMENT_ORDER = [
     'StyleOffsetRotation',
     'StylePositionAnchor',
     'TabSize',
+    'TextDecorationInset',
     'TextDecorationThickness',
     'TextFit',
     'TextSizeAdjust',

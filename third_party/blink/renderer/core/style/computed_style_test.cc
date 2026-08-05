@@ -1469,6 +1469,8 @@ TEST_F(ComputedStyleTest,
 TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
+  ScopedCSSTextDecorationInsetForTest text_decoration_inset(true);
+
   Document& document = GetDocument();
   document.body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
@@ -1484,6 +1486,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
     <div id="thickness" style="text-decoration-thickness: 3px;"></div>
     <div id="offset" style="text-underline-offset: 4px;"></div>
     <div id="position" style="text-underline-position: left;"></div>
+    <div id="inset" style="text-decoration-inset: 6px;"></div>
   )HTML",
                                                    ASSERT_NO_EXCEPTION);
   document.View()->UpdateAllLifecyclePhasesForTest();
@@ -1500,6 +1503,8 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
       document.getElementById(AtomicString("offset"))->GetComputedStyle();
   const ComputedStyle* position =
       document.getElementById(AtomicString("position"))->GetComputedStyle();
+  const ComputedStyle* inset =
+      document.getElementById(AtomicString("inset"))->GetComputedStyle();
 
   // Change decoration style
   StyleDifference diff_decoration_style =
@@ -1525,6 +1530,11 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   StyleDifference diff_underline_position =
       style->VisualInvalidationDiff(GetDocument(), *position);
   EXPECT_TRUE(diff_underline_position.needs_recompute_visual_overflow);
+
+  // Change text-decoration-inset
+  StyleDifference diff_inset =
+      style->VisualInvalidationDiff(GetDocument(), *inset);
+  EXPECT_TRUE(diff_inset.needs_recompute_visual_overflow);
 }
 
 // Verify that cloned ComputedStyle is independent from source, i.e.

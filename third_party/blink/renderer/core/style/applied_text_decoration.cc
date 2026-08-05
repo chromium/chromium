@@ -6,21 +6,24 @@
 
 namespace blink {
 
-AppliedTextDecoration::AppliedTextDecoration(TextDecorationLine line,
-                                             ETextDecorationStyle style,
-                                             Color color,
-                                             TextDecorationThickness thickness,
-                                             Length underline_offset)
+AppliedTextDecoration::AppliedTextDecoration(
+    TextDecorationLine line,
+    ETextDecorationStyle style,
+    Color color,
+    TextDecorationThickness thickness,
+    Length underline_offset,
+    TextDecorationInset decoration_inset,
+    EBoxDecorationBreak box_decoration_break)
 
     : lines_(static_cast<unsigned>(line)),
       style_(static_cast<unsigned>(style)),
+      box_decoration_break_(static_cast<unsigned>(box_decoration_break)),
       color_(color),
       thickness_(thickness),
-      underline_offset_(underline_offset) {}
+      underline_offset_(underline_offset),
+      decoration_inset_(decoration_inset) {}
 
-bool AppliedTextDecoration::operator==(const AppliedTextDecoration& o) const {
-  return color_ == o.color_ && lines_ == o.lines_ && style_ == o.style_ &&
-         thickness_ == o.thickness_ && underline_offset_ == o.underline_offset_;
-}
+bool AppliedTextDecoration::operator==(const AppliedTextDecoration&) const =
+    default;
 
 }  // namespace blink

@@ -2183,7 +2183,11 @@ bool ComputedStyle::TextDecorationVisualOverflowChanged(
         decoration_from_this.UnderlineOffset() !=
             decoration_from_other.UnderlineOffset() ||
         decoration_from_this.Style() != decoration_from_other.Style() ||
-        decoration_from_this.Lines() != decoration_from_other.Lines()) {
+        decoration_from_this.Lines() != decoration_from_other.Lines() ||
+        decoration_from_this.DecorationInset() !=
+            decoration_from_other.DecorationInset() ||
+        decoration_from_this.BoxDecorationBreak() !=
+            decoration_from_other.BoxDecorationBreak()) {
       return true;
     }
   }
@@ -2220,7 +2224,8 @@ AppliedTextDecorationVector* ComputedStyle::EnsureAppliedTextDecorationsCache()
     decorations->emplace_back(
         GetTextDecorationLine(), TextDecorationStyle(),
         VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
-        GetTextDecorationThickness(), TextUnderlineOffset());
+        GetTextDecorationThickness(), TextUnderlineOffset(),
+        GetTextDecorationInset(), BoxDecorationBreak());
     EnsureCachedData().applied_text_decorations_ = decorations;
   }
 
