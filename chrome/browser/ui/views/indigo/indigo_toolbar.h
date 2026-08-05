@@ -117,8 +117,8 @@ class IndigoToolbar {
   // Called when the user starts or stops interacting with the compact spark
   // icon. Unlike OnToolbarInteractionChanged which tracks global interaction to
   // pause auto-compaction, this strictly drives the transition from compact
-  // to collapsed state upon hovering the expand button.
-  void OnExpandButtonInteractionChanged(bool interacting);
+  // to collapsed state upon hovering the spark button.
+  void OnSparkButtonInteractionChanged(bool interacting);
 
   void OnCloseButtonClicked();
   void OnExpandButtonClicked();

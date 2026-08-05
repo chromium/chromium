@@ -265,16 +265,16 @@ TEST_F(IndigoToolbarTest, AutoCompactsAndHoverExpands) {
       GetButtonFromToolbar(toolbar_view, IndigoToolbar::kExpandButtonElementId);
   ASSERT_NE(expand_button, nullptr);
 
-  views::View* spark_icon =
-      toolbar_view->GetViewByElementId(IndigoToolbar::kSparkIconElementId);
-  ASSERT_NE(spark_icon, nullptr);
+  auto* spark_button =
+      GetButtonFromToolbar(toolbar_view, IndigoToolbar::kSparkIconElementId);
+  ASSERT_NE(spark_button, nullptr);
 
   auto* regenerate_button = GetButtonFromToolbar(
       toolbar_view, IndigoToolbar::kRegenerateButtonElementId);
   ASSERT_NE(regenerate_button, nullptr);
 
   EXPECT_TRUE(expand_button->IsDrawn());
-  EXPECT_FALSE(spark_icon->IsDrawn());
+  EXPECT_FALSE(spark_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
   const int collapsed_width = toolbar_view->width();
 
@@ -287,19 +287,19 @@ TEST_F(IndigoToolbarTest, AutoCompactsAndHoverExpands) {
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
 
-  EXPECT_TRUE(expand_button->IsDrawn());
-  EXPECT_TRUE(spark_icon->IsDrawn());
+  EXPECT_FALSE(expand_button->IsDrawn());
+  EXPECT_TRUE(spark_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
   EXPECT_LT(toolbar_view->width(), collapsed_width);
 
-  event_generator.MoveMouseTo(expand_button->GetBoundsInScreen().CenterPoint());
+  event_generator.MoveMouseTo(spark_button->GetBoundsInScreen().CenterPoint());
 
   task_environment()->FastForwardBy(kToolbarAnimationDuration +
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
 
   EXPECT_TRUE(expand_button->IsDrawn());
-  EXPECT_FALSE(spark_icon->IsDrawn());
+  EXPECT_FALSE(spark_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
 
   event_generator.MoveMouseTo(gfx::Point(1000, 1000));
@@ -308,8 +308,8 @@ TEST_F(IndigoToolbarTest, AutoCompactsAndHoverExpands) {
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
 
-  EXPECT_TRUE(expand_button->IsDrawn());
-  EXPECT_TRUE(spark_icon->IsDrawn());
+  EXPECT_FALSE(expand_button->IsDrawn());
+  EXPECT_TRUE(spark_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
 }
 
@@ -325,9 +325,9 @@ TEST_F(IndigoToolbarTest, CompactToolbarExpandsOnKeyboardFocus) {
   auto* expand_button =
       GetButtonFromToolbar(toolbar_view, IndigoToolbar::kExpandButtonElementId);
   ASSERT_NE(expand_button, nullptr);
-  views::View* spark_icon =
-      toolbar_view->GetViewByElementId(IndigoToolbar::kSparkIconElementId);
-  ASSERT_NE(spark_icon, nullptr);
+  auto* spark_button =
+      GetButtonFromToolbar(toolbar_view, IndigoToolbar::kSparkIconElementId);
+  ASSERT_NE(spark_button, nullptr);
   auto* regenerate_button = GetButtonFromToolbar(
       toolbar_view, IndigoToolbar::kRegenerateButtonElementId);
   ASSERT_NE(regenerate_button, nullptr);
@@ -336,16 +336,17 @@ TEST_F(IndigoToolbarTest, CompactToolbarExpandsOnKeyboardFocus) {
                                     kToolbarAnimationDuration +
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
-  EXPECT_TRUE(expand_button->IsDrawn());
-  EXPECT_TRUE(spark_icon->IsDrawn());
+  EXPECT_FALSE(expand_button->IsDrawn());
+  EXPECT_TRUE(spark_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
 
   views::test::WaitForWidgetActive(widget(), true);
   widget()->GetFocusManager()->SetKeyboardAccessible(true);
-  expand_button->RequestFocus();
+  spark_button->RequestFocus();
   overlay_view()->DeprecatedLayoutImmediately();
   EXPECT_TRUE(expand_button->HasFocus());
-  EXPECT_FALSE(spark_icon->IsDrawn());
+  EXPECT_TRUE(expand_button->IsDrawn());
+  EXPECT_FALSE(spark_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
 
   widget()->GetFocusManager()->ClearFocus();
@@ -353,7 +354,8 @@ TEST_F(IndigoToolbarTest, CompactToolbarExpandsOnKeyboardFocus) {
                                     kToolbarAnimationDuration +
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
-  EXPECT_TRUE(spark_icon->IsDrawn());
+  EXPECT_FALSE(expand_button->IsDrawn());
+  EXPECT_TRUE(spark_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
 }
 
@@ -369,15 +371,15 @@ TEST_F(IndigoToolbarTest, HoverCloseButtonInCompactDoesNotExpand) {
   auto* close_button =
       GetButtonFromToolbar(toolbar_view, IndigoToolbar::kCloseButtonElementId);
   ASSERT_NE(close_button, nullptr);
-  views::View* spark_icon =
-      toolbar_view->GetViewByElementId(IndigoToolbar::kSparkIconElementId);
-  ASSERT_NE(spark_icon, nullptr);
+  auto* spark_button =
+      GetButtonFromToolbar(toolbar_view, IndigoToolbar::kSparkIconElementId);
+  ASSERT_NE(spark_button, nullptr);
 
   task_environment()->FastForwardBy(kInitialAutoCompactDelay +
                                     kToolbarAnimationDuration +
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
-  EXPECT_TRUE(spark_icon->IsDrawn());
+  EXPECT_TRUE(spark_button->IsDrawn());
 
   ui::test::EventGenerator event_generator(GetRootWindow(widget()),
                                            widget()->GetNativeWindow());
@@ -396,7 +398,7 @@ TEST_F(IndigoToolbarTest, HoverCloseButtonInCompactDoesNotExpand) {
   overlay_view()->DeprecatedLayoutImmediately();
 
   // It should STILL be in compact mode because hover was over close button
-  EXPECT_TRUE(spark_icon->IsDrawn());
+  EXPECT_TRUE(spark_button->IsDrawn());
   EXPECT_TRUE(close_button->IsDrawn());
 }
 
@@ -415,9 +417,9 @@ TEST_F(IndigoToolbarTest, HoverExpandThenHoverCloseKeepsExpanded) {
   auto* close_button =
       GetButtonFromToolbar(toolbar_view, IndigoToolbar::kCloseButtonElementId);
   ASSERT_NE(close_button, nullptr);
-  views::View* spark_icon =
-      toolbar_view->GetViewByElementId(IndigoToolbar::kSparkIconElementId);
-  ASSERT_NE(spark_icon, nullptr);
+  auto* spark_button =
+      GetButtonFromToolbar(toolbar_view, IndigoToolbar::kSparkIconElementId);
+  ASSERT_NE(spark_button, nullptr);
   auto* regenerate_button = GetButtonFromToolbar(
       toolbar_view, IndigoToolbar::kRegenerateButtonElementId);
   ASSERT_NE(regenerate_button, nullptr);
@@ -431,16 +433,17 @@ TEST_F(IndigoToolbarTest, HoverExpandThenHoverCloseKeepsExpanded) {
                                     kToolbarAnimationDuration +
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
-  EXPECT_TRUE(spark_icon->IsDrawn());
+  EXPECT_TRUE(spark_button->IsDrawn());
+  EXPECT_FALSE(expand_button->IsDrawn());
 
-  // Hover over expand button
-  event_generator.MoveMouseTo(expand_button->GetBoundsInScreen().CenterPoint());
+  // Hover over spark button (since it's compact)
+  event_generator.MoveMouseTo(spark_button->GetBoundsInScreen().CenterPoint());
 
   // Manually and synchronously dispatch the enter event to bypass flaky
   // asynchronous event delivery across POSIX test environments.
   ui::MouseEvent mouse_event(ui::EventType::kMouseEntered, gfx::Point(),
                              gfx::Point(), base::TimeTicks::Now(), 0, 0);
-  expand_button->OnMouseEntered(mouse_event);
+  spark_button->OnMouseEntered(mouse_event);
   toolbar_view->OnMouseEntered(mouse_event);
 
   // Forward time for expand animation
@@ -449,13 +452,15 @@ TEST_F(IndigoToolbarTest, HoverExpandThenHoverCloseKeepsExpanded) {
   overlay_view()->DeprecatedLayoutImmediately();
 
   // It should be expanded (uncompacted)
-  EXPECT_FALSE(spark_icon->IsDrawn());
+  EXPECT_FALSE(spark_button->IsDrawn());
+  EXPECT_TRUE(expand_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
 
   // Hover over close button
   event_generator.MoveMouseTo(close_button->GetBoundsInScreen().CenterPoint());
 
-  // Synchronously update hover state
+  // Synchronously update hover state (Note we exit expand_button since it got
+  // mapped visibly under mouse)
   ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
                             gfx::Point(), base::TimeTicks::Now(), 0, 0);
   expand_button->OnMouseExited(exit_event);
@@ -467,9 +472,10 @@ TEST_F(IndigoToolbarTest, HoverExpandThenHoverCloseKeepsExpanded) {
                                     kAnimationSettleDuration);
   overlay_view()->DeprecatedLayoutImmediately();
 
-  // It should STILL be uncompacted because we moved to another element in the
-  // toolbar
-  EXPECT_FALSE(spark_icon->IsDrawn());
+  // Toolbar should remain expanded because we are still hovering on it (close
+  // button).
+  EXPECT_FALSE(spark_button->IsDrawn());
+  EXPECT_TRUE(expand_button->IsDrawn());
   EXPECT_FALSE(regenerate_button->IsDrawn());
 }
 
@@ -539,6 +545,8 @@ TEST_F(IndigoToolbarTest, Accessibility) {
   views::Button* expand_button = verify_button_a11y(
       IndigoToolbar::kExpandButtonElementId, IDS_INDIGO_TOOLBAR_EXPAND);
   ASSERT_NE(expand_button, nullptr);
+  verify_button_a11y(IndigoToolbar::kSparkIconElementId,
+                     IDS_INDIGO_TOOLBAR_EXPAND);
   verify_button_a11y(IndigoToolbar::kCloseButtonElementId, IDS_CLOSE);
 
   ui::AXNodeData collapsed_data;
