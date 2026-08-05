@@ -34,7 +34,6 @@
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
-#include "third_party/blink/renderer/core/css/active_navigation_condition.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
@@ -758,7 +757,6 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoRightPage:
     case CSSSelector::kPseudoRoot:
     case CSSSelector::kPseudoLinkTo:
-    case CSSSelector::kPseudoActiveNavigation:
     case CSSSelector::kPseudoScrollbar:
     case CSSSelector::kPseudoScrollbarButton:
     case CSSSelector::kPseudoScrollbarCorner:
@@ -2285,16 +2283,6 @@ bool SelectorChecker::CheckPseudoLinkTo(const SelectorCheckingContext& context,
   return context.selector->GetRouteLocation()->CheckSelectorMatch(element);
 }
 
-bool SelectorChecker::CheckPseudoActiveNavigation(
-    const SelectorCheckingContext& context,
-    MatchResult& result) const {
-  DCHECK(context.selector);
-  DCHECK(context.selector->GetActiveNavigationCondition());
-  Element& element = GetCandidateElement(context, result);
-  return context.selector->GetActiveNavigationCondition()->CheckSelectorMatch(
-      element);
-}
-
 bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                                        MatchResult& result) const {
   Element& element = GetCandidateElement(context, result);
@@ -2929,9 +2917,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoLinkTo:
       DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
       return CheckPseudoLinkTo(context, result);
-    case CSSSelector::kPseudoActiveNavigation:
-      DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
-      return CheckPseudoActiveNavigation(context, result);
     case CSSSelector::kPseudoNavSource:
       DCHECK(RuntimeEnabledFeatures::NavigationStateEnabled());
       if (const auto* state = NavigationState::Get(&element.GetDocument())) {

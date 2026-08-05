@@ -43,7 +43,6 @@
 
 namespace blink {
 
-class ActiveNavigationCondition;
 class CSSParserContext;
 class CSSSelectorList;
 class Document;
@@ -426,8 +425,6 @@ class CORE_EXPORT CSSSelector {
 
     // :link-to(<route-location>)
     kPseudoLinkTo,
-    // :active-navigation(<active-navigation-condition>)
-    kPseudoActiveNavigation,
 
     // https://drafts.csswg.org/selectors/#video-state
     kPseudoPlaying,
@@ -550,12 +547,6 @@ class CORE_EXPORT CSSSelector {
     }
     return data_.rare_data_->route_location_.Get();
   }
-  const ActiveNavigationCondition* GetActiveNavigationCondition() const {
-    if (!HasRareData()) {
-      return nullptr;
-    }
-    return data_.rare_data_->active_navigation_condition_.Get();
-  }
   unsigned NthAValue() const {
     CHECK_EQ(GetPseudoType(), kPseudoNthChild);
     return data_.rare_data_->NthAValue();
@@ -598,7 +589,6 @@ class CORE_EXPORT CSSSelector {
   void SetArgumentList(std::unique_ptr<Vector<AtomicString>>);
   void SetSelectorList(CSSSelectorList*);
   void SetRouteLocation(RouteLocation*);
-  void SetActiveNavigationCondition(ActiveNavigationCondition*);
   void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
   void SetContainsPseudoInsideHasPseudoClass();
   void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
@@ -858,8 +848,6 @@ class CORE_EXPORT CSSSelector {
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
     Member<RouteLocation> route_location_;  // Used for :link-to().
-    Member<ActiveNavigationCondition>
-        active_navigation_condition_;  // Used for :active-navigation().
     std::unique_ptr<Vector<AtomicString>>
         ident_list_;  // Used for ::part(), :active-view-transition-type().
 

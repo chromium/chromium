@@ -18,7 +18,6 @@
 
 namespace blink {
 
-class ActiveNavigationCondition;
 class CSSParserContext;
 class CSSParserTokenStream;
 class CSSParserObserver;
@@ -106,9 +105,6 @@ class CORE_EXPORT CSSSelectorParser {
       const StyleRule* parent_rule_for_nesting,
       StyleSheetContents*,
       HeapVector<CSSSelector>&);
-
-  static ActiveNavigationCondition* ParseActiveNavigationCondition(
-      CSSParserTokenStream&);
 
  private:
   enum ResultFlag {

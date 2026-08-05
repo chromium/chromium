@@ -47,9 +47,6 @@ class Route : public GarbageCollected<Route> {
   // current state.
   void UpdateMatchStatus(const NavigationState*);
 
-  bool URLPatternMatchesURLAndHref(const KURL& active_navigation_url,
-                                   const KURL& href_url) const;
-
  private:
   Member<Document> document_;
   HeapVector<Member<URLPattern>> patterns_;

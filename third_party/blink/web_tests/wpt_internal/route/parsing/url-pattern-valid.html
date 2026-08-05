@@ -11,16 +11,4 @@
     test_valid_rule(canonical);
     test_valid_rule("@Navigation  ( At:url-Pattern( '/foo/' )){ \n}", canonical);
   }, "<navigation-location-test>");
-
-  test(()=> {
-    const canonical = ":active-navigation(at url-pattern(\"/foo/\")) { }";
-    test_valid_rule(canonical);
-    test_valid_rule(":active-navigation( At url-Pattern( '/foo/' ) ){}", canonical);
-  }, ":active-navigation()");
-
-  test(()=> {
-    const canonical = ":active-navigation(with url-pattern(\"/foo/\")) { }";
-    test_valid_rule(canonical);
-    test_valid_rule(":active-navigation(url-Pattern( '/foo/' ) ){}", canonical);
-  }, ":active-navigation() default 'with'");
 </script>

@@ -27,26 +27,6 @@ bool MatchesPatterns(const KURL& url,
   return false;
 }
 
-bool MatchesAllPatternParams(const Vector<std::pair<String, String>>& params1,
-                             const Vector<std::pair<String, String>>& params2) {
-  if (params1.size() != params2.size()) {
-    return false;
-  }
-  for (wtf_size_t idx = 0; idx < params1.size(); idx++) {
-    if (params1[idx].first != params2[idx].first) {
-      return false;
-    }
-    if (params1[idx].first == "0") {
-      // Not a :param, but rather a wildcard etc.
-      continue;
-    }
-    if (params1[idx].second != params2[idx].second) {
-      return false;
-    }
-  }
-  return true;
-}
-
 }  // anonymous namespace
 
 void Route::Trace(Visitor* v) const {
@@ -89,34 +69,6 @@ void Route::UpdateMatchStatus(const NavigationState* navigation_state) {
     matches_from_ = false;
     matches_with_ = false;
   }
-}
-
-bool Route::URLPatternMatchesURLAndHref(const KURL& active_navigation_url,
-                                        const KURL& href_url) const {
-  const URLPattern* url_pattern = pattern();
-  if (!url_pattern) {
-    return false;
-  }
-
-  URLPattern::MatchResult r1;
-  if (!url_pattern->Match(active_navigation_url, &r1)) {
-    return false;
-  }
-
-  URLPattern::MatchResult r2;
-  if (!url_pattern->Match(href_url, &r2)) {
-    return false;
-  }
-
-  // Certain components are deliberately omitted here.
-  //
-  // See https://drafts.csswg.org/css-navigation-1/#typedef-init-descriptor-name
-  return MatchesAllPatternParams(r1.protocol, r2.protocol) &&
-         MatchesAllPatternParams(r1.hostname, r2.hostname) &&
-         MatchesAllPatternParams(r1.port, r2.port) &&
-         MatchesAllPatternParams(r1.pathname, r2.pathname) &&
-         MatchesAllPatternParams(r1.search, r2.search) &&
-         MatchesAllPatternParams(r1.hash, r2.hash);
 }
 
 }  // namespace blink

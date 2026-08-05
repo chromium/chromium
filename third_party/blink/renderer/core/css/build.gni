@@ -20,8 +20,6 @@ blink_core_hot_sources_css = [
 blink_core_sources_css = [
   "abstract_property_set_css_style_declaration.cc",
   "abstract_property_set_css_style_declaration.h",
-  "active_navigation_condition.cc",
-  "active_navigation_condition.h",
   "active_style_sheets.cc",
   "active_style_sheets.h",
   "anchor_evaluator.h",

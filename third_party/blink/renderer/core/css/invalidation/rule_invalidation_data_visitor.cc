@@ -194,7 +194,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoInterestTarget:
     case CSSSelector::kPseudoHasSlotted:
     case CSSSelector::kPseudoLinkTo:
-    case CSSSelector::kPseudoActiveNavigation:
     case CSSSelector::kPseudoPlaying:
     case CSSSelector::kPseudoPaused:
     case CSSSelector::kPseudoSeeking:
