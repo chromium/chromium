@@ -6,12 +6,19 @@ source_set("ui") {
   sources = [
     "at_memory_granular_fill_view_controller.h",
     "at_memory_granular_fill_view_controller.mm",
+    "at_memory_inline_notice_view.h",
+    "at_memory_inline_notice_view.mm",
     "at_memory_search_view_controller.h",
     "at_memory_search_view_controller.mm",
   ]
   deps = [
+    "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
 }
