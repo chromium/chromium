@@ -12,7 +12,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/media_effects/test/fake_audio_service.h"
@@ -20,6 +21,7 @@
 #include "components/media_effects/test/scoped_media_device_info.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,10 +60,10 @@ blink::mojom::MediaStreamType GetStreamTypeFromSettingsType(
 // view (e.g. web contents, PageInfo, ...), as well as media previews (e.g.
 // audio service, video service, ...).
 class PageInfoPermissionContentViewTestMediaPreview
-    : public TestWithBrowserView {
+    : public ChromeViewsTestBase {
  protected:
   void SetUp() override {
-    TestWithBrowserView::SetUp();
+    ChromeViewsTestBase::SetUp();
     base::test::TestFuture<void> mic_infos, camera_infos;
     audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
         mic_infos.GetCallback());
@@ -111,7 +113,8 @@ class PageInfoPermissionContentViewTestMediaPreview
     presenter_ui_.reset();
     web_contents_tester_ = nullptr;
     web_contents_.reset();
-    TestWithBrowserView::TearDown();
+    media_device_info_.reset();
+    ChromeViewsTestBase::TearDown();
   }
 
   std::u16string GetExpectedCameraLabelText(size_t devices) {
@@ -130,6 +133,10 @@ class PageInfoPermissionContentViewTestMediaPreview
                                       base::NumberToString16(devices));
   }
 
+  Profile* profile() { return &profile_; }
+
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  TestingProfile profile_;
   media_effects::ScopedFakeAudioService audio_service_;
   media_effects::ScopedFakeVideoCaptureService video_service_;
   std::optional<media_effects::ScopedMediaDeviceInfo> media_device_info_;
