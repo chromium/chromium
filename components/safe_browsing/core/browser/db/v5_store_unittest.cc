@@ -379,6 +379,35 @@ class V5StoreTest : public PlatformTest {
     return updated_store;
   }
 
+  SBStorePtr ApplyUpdateAndVerifyCategory(
+      V5Store& store,
+      bool is_partial_update,
+      SafeBrowsingUpdateCategory expected_category,
+      const std::string& version) {
+    base::HistogramTester histogram_tester;
+    auto hash_list = std::make_unique<V5::HashList>();
+    hash_list->set_version(version);
+    hash_list->set_partial_update(is_partial_update);
+    std::array<uint8_t, crypto::hash::kSha256Size> empty_checksum;
+    crypto::hash::Hash(crypto::hash::HashKind::kSha256,
+                       base::span<const uint8_t>(), empty_checksum);
+    hash_list->set_sha256_checksum(std::string(
+        reinterpret_cast<char*>(empty_checksum.data()), empty_checksum.size()));
+
+    SBStorePtr updated_store = RunApplyUpdateTest(store, std::move(hash_list));
+    EXPECT_TRUE(updated_store);
+
+    histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.Category",
+                                        expected_category, 1);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V5Update.Category.V5StoreTest_v5", expected_category, 1);
+    histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Category",
+                                        expected_category, 1);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.SBUpdate.Category.V5StoreTest", expected_category, 1);
+    return updated_store;
+  }
+
   void CheckApplyUpdateHistograms(
       const std::string& partial_or_full,
       V5ApplyUpdateResult expected_apply_update_result,
@@ -2678,6 +2707,73 @@ TEST_F(V5StoreTest, TestHashPrefixDoesNotMatchOverlappingBoundary) {
   CreateAndInitializeV5StoreWithPrefixes(store, "111122223333");
   FullHashStr full_hash = std::string("1122") + std::string(28, 'a');
   EXPECT_TRUE(store.GetMatchingHashPrefix(full_hash).empty());
+}
+
+TEST_F(V5StoreTest, UpdateCategory_PostMigrationPartialUpdate) {
+  WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version", "",
+                               {});
+  base::FilePath store_path =
+      temp_dir_.GetPath().AppendASCII("V5StoreTest_v5.store");
+  V5Store store(task_runner(), store_path, /*prefix_size=*/4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+
+  ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/true,
+      SafeBrowsingUpdateCategory::kPostMigrationPartialUpdate, "v5_version_1");
+}
+
+TEST_F(V5StoreTest, UpdateCategory_PostMigrationFullUpdate) {
+  WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version", "",
+                               {});
+  base::FilePath store_path =
+      temp_dir_.GetPath().AppendASCII("V5StoreTest_v5.store");
+  V5Store store(task_runner(), store_path, /*prefix_size=*/4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+  EXPECT_EQ("v4_version", store.GetStoreState());
+
+  ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/false,
+      SafeBrowsingUpdateCategory::kPostMigrationFullUpdate, "v5_version_1");
+}
+
+TEST_F(V5StoreTest, UpdateCategory_FullUpdate) {
+  base::FilePath store_path =
+      temp_dir_.GetPath().AppendASCII("V5StoreTest_v5.store");
+  V5Store store(task_runner(), store_path, /*prefix_size=*/4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+
+  SBStorePtr updated_store = ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/false,
+      SafeBrowsingUpdateCategory::kNewDatabaseFullUpdate, "v5_version_1");
+  ASSERT_TRUE(updated_store);
+
+  ApplyUpdateAndVerifyCategory(
+      *static_cast<V5Store*>(updated_store.get()), /*is_partial_update=*/false,
+      SafeBrowsingUpdateCategory::kRegularFullUpdate, "v5_version_2");
+}
+
+TEST_F(V5StoreTest, UpdateCategory_PartialUpdate) {
+  base::FilePath store_path =
+      temp_dir_.GetPath().AppendASCII("V5StoreTest_v5.store");
+  V5Store store(task_runner(), store_path, /*prefix_size=*/4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+
+  SBStorePtr updated_store = ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/true,
+      SafeBrowsingUpdateCategory::kNewDatabasePartialUpdate, "v5_version_1");
+  ASSERT_TRUE(updated_store);
+
+  ApplyUpdateAndVerifyCategory(
+      *static_cast<V5Store*>(updated_store.get()), /*is_partial_update=*/true,
+      SafeBrowsingUpdateCategory::kRegularPartialUpdate, "v5_version_2");
 }
 
 }  // namespace safe_browsing

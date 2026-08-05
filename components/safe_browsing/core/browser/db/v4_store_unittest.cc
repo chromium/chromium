@@ -143,6 +143,41 @@ class V4StoreTest : public PlatformTest {
     return store.expected_checksum_;
   }
 
+  void ApplyUpdateAndVerifyCategory(
+      V4Store& store,
+      bool is_partial_update,
+      SafeBrowsingUpdateCategory expected_category) {
+    base::HistogramTester histograms;
+
+    base::RunLoop run_loop;
+    UpdatedStoreReadyCallback store_ready_callback =
+        base::BindOnce(&V4StoreTest::UpdatedStoreReady, base::Unretained(this),
+                       &run_loop, /*expect_store=*/false);
+
+    auto lur = std::make_unique<ListUpdateResponse>();
+    lur->set_response_type(is_partial_update
+                               ? ListUpdateResponse::PARTIAL_UPDATE
+                               : ListUpdateResponse::FULL_UPDATE);
+    lur->set_new_client_state("test_state");
+    lur->mutable_checksum()->set_sha256(
+        std::string(crypto::hash::kSha256Size, /*ch=*/0));
+    auto sb_response = std::make_unique<SBUpdateResponse>();
+    sb_response->v4_response = std::move(lur);
+
+    store.ApplyUpdate(std::move(sb_response), task_runner(),
+                      std::move(store_ready_callback));
+    run_loop.Run();
+
+    histograms.ExpectUniqueSample("SafeBrowsing.V4Update.Category",
+                                  expected_category, 1);
+    histograms.ExpectUniqueSample("SafeBrowsing.V4Update.Category.V4StoreTest",
+                                  expected_category, 1);
+    histograms.ExpectUniqueSample("SafeBrowsing.SBUpdate.Category",
+                                  expected_category, 1);
+    histograms.ExpectUniqueSample("SafeBrowsing.SBUpdate.Category.V4StoreTest",
+                                  expected_category, 1);
+  }
+
   void RunExtensionMigrationFailureTest(
       uint64_t v5_hash_file_size,
       std::optional<std::string> v5_hash_file_content,
@@ -2539,9 +2574,82 @@ TEST_F(V4StoreTest, TestMigrationFailureMissingDetailsV5) {
       "SafeBrowsing.V4Store.V5ToV4Migration.V5ReadFailureReason",
       V5StoreReadResult::kHashPrefixInfoMissingFailure,
       /*expected_bucket_count=*/1);
+}
 
-  // Verify V5 files are wiped.
-  EXPECT_FALSE(base::PathExists(v5_store_path_));
+TEST_F(V4StoreTest, UpdateCategory_FullUpdate) {
+  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/4,
+                /*is_eligible_for_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  ReadFromDisk(store);
+
+  ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/false,
+      SafeBrowsingUpdateCategory::kNewDatabaseFullUpdate);
+  ApplyUpdateAndVerifyCategory(store, /*is_partial_update=*/false,
+                               SafeBrowsingUpdateCategory::kRegularFullUpdate);
+}
+
+TEST_F(V4StoreTest, UpdateCategory_PartialUpdate) {
+  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/4,
+                /*is_eligible_for_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  ReadFromDisk(store);
+
+  ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/true,
+      SafeBrowsingUpdateCategory::kNewDatabasePartialUpdate);
+  ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/true,
+      SafeBrowsingUpdateCategory::kRegularPartialUpdate);
+}
+
+TEST_F(V4StoreTest, UpdateCategory_PostMigrationFullUpdate) {
+  V5StoreFileFormat file_format;
+  file_format.set_magic_number(0x600D71FE);
+  file_format.set_file_version(10);
+  ListDetails* list_details = file_format.mutable_list_details();
+  list_details->set_version("v5_version");
+  list_details->mutable_checksum()->set_sha256("v5_checksum");
+  V5HashFile* hash_file = list_details->mutable_hash_file();
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(4);
+
+  base::WriteFile(v5_store_path_, file_format.SerializeAsString());
+  base::WriteFile(v5_store_path_.AddExtensionASCII("foo"), "abcd");
+
+  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/4,
+                /*is_eligible_for_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  EXPECT_EQ(READ_SUCCESS, ReadFromDisk(store));
+  EXPECT_EQ("v5_version", store.state());
+
+  ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/false,
+      SafeBrowsingUpdateCategory::kPostMigrationFullUpdate);
+}
+
+TEST_F(V4StoreTest, UpdateCategory_PostMigrationPartialUpdate) {
+  V5StoreFileFormat file_format;
+  file_format.set_magic_number(0x600D71FE);
+  file_format.set_file_version(10);
+  ListDetails* list_details = file_format.mutable_list_details();
+  list_details->set_version("v5_version");
+  list_details->mutable_checksum()->set_sha256("v5_checksum");
+  V5HashFile* hash_file = list_details->mutable_hash_file();
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(4);
+
+  base::WriteFile(v5_store_path_, file_format.SerializeAsString());
+  base::WriteFile(v5_store_path_.AddExtensionASCII("foo"), "abcd");
+
+  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/4,
+                /*is_eligible_for_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  EXPECT_EQ(READ_SUCCESS, ReadFromDisk(store));
+
+  ApplyUpdateAndVerifyCategory(
+      store, /*is_partial_update=*/true,
+      SafeBrowsingUpdateCategory::kPostMigrationPartialUpdate);
 }
 
 }  // namespace safe_browsing

@@ -4484,6 +4484,19 @@ parsed correctly. -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V5Update.Category{Store}"
+    enum="SafeBrowsingUpdateCategory" expires_after="2027-08-01">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the category of update received from the Safe Browsing v5 update
+    service. Logged whenever an update is processed.
+  </summary>
+  <token key="Store" variants="SafeBrowsing_V5Store_Metrics">
+    <variant name=""/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.V5Update.Parse.Result" enum="V5ParseResult"
     expires_after="never">
 <!-- expires-never: This reports the reason for the failure to parse the Safe
@@ -4739,6 +4752,20 @@ failing to fetch the updates which puts users' security at risk. -->
     at the time of backoff window expiry.
   </summary>
   <token key="SafeBrowsingV4OrSB" variants="SafeBrowsingV4OrSB"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrSB}Update.Category{Store}"
+    enum="SafeBrowsingUpdateCategory" expires_after="2027-08-01">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the category of update received from the {SafeBrowsingV4OrSB} update
+    service. Logged whenever an update is processed.
+  </summary>
+  <token key="SafeBrowsingV4OrSB" variants="SafeBrowsingV4OrSB"/>
+  <token key="Store" variants="SafeBrowsing_SBStore_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.{SafeBrowsingV4OrSB}Update.Result"

@@ -530,6 +530,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="UnsetStillWaiting"/>
 </enum>
 
+<!-- LINT.IfChange(SafeBrowsingUpdateCategory) -->
+
+<enum name="SafeBrowsingUpdateCategory">
+  <int value="0" label="Post-migration partial update"/>
+  <int value="1" label="Post-migration full update"/>
+  <int value="2" label="New database partial update"/>
+  <int value="3" label="New database full update"/>
+  <int value="4" label="Regular partial update"/>
+  <int value="5" label="Regular full update"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/sb_store.h:SafeBrowsingUpdateCategory) -->
+
 <enum name="SafeBrowsingUrlScheme">
   <int value="0" label="Unknown scheme"/>
   <int value="1" label="about"/>

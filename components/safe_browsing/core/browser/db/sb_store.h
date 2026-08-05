@@ -67,6 +67,38 @@ enum class SBStoreWriteResult {
   kUnableToRenameFailure = 2,
 };
 
+// Categories of update responses received from the Safe Browsing service.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SafeBrowsingUpdateCategory)
+enum class SafeBrowsingUpdateCategory {
+  // First update after an attempted disk migration, server returned partial
+  // update.
+  kPostMigrationPartialUpdate = 0,
+
+  // First update after an attempted disk migration, server returned full
+  // update.
+  kPostMigrationFullUpdate = 1,
+
+  // New database (clean install where no old store existed on disk at startup),
+  // server returned partial update. Note: this is never expected to be logged,
+  // and including it validates that.
+  kNewDatabasePartialUpdate = 2,
+
+  // New database (clean install where no old store existed on disk at startup),
+  // server returned full update.
+  kNewDatabaseFullUpdate = 3,
+
+  // Steady-state database, server returned partial update.
+  kRegularPartialUpdate = 4,
+
+  // Steady-state database, server returned full update.
+  kRegularFullUpdate = 5,
+
+  kMaxValue = kRegularFullUpdate
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingUpdateCategory)
+
 // A ZeroCopyOutputStream that writes to a file using base::File. Any errors
 // during serialization close the file.
 class BaseFileOutputStream

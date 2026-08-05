@@ -101,6 +101,18 @@ void RecordApplyUpdateResult(const std::string& base_metric,
                                  APPLY_UPDATE_RESULT_MAX, file_path);
 }
 
+void RecordUpdateCategory(SafeBrowsingUpdateCategory category,
+                          const base::FilePath& file_path) {
+  std::string suffix = GetUmaSuffixForStore(file_path);
+  base::UmaHistogramEnumeration("SafeBrowsing.V4Update.Category", category);
+  base::UmaHistogramEnumeration("SafeBrowsing.V4Update.Category" + suffix,
+                                category);
+
+  base::UmaHistogramEnumeration("SafeBrowsing.SBUpdate.Category", category);
+  base::UmaHistogramEnumeration("SafeBrowsing.SBUpdate.Category" + suffix,
+                                category);
+}
+
 void RecordAdditionsHashesCount(const std::string& base_metric,
                                 int32_t count,
                                 const base::FilePath& file_path) {
@@ -417,6 +429,27 @@ void V4Store::ApplyUpdate(
   ApplyUpdateResult apply_update_result;
   std::optional<std::string> metric;
   ApplyUpdateType apply_update_type;
+  bool is_full_update =
+      (v4_response->response_type() == ListUpdateResponse::FULL_UPDATE);
+  SafeBrowsingUpdateCategory category;
+  if (is_first_update_after_v5_migration_) {
+    category = is_full_update
+                   ? SafeBrowsingUpdateCategory::kPostMigrationFullUpdate
+                   : SafeBrowsingUpdateCategory::kPostMigrationPartialUpdate;
+  } else if (is_new_database_) {
+    category = is_full_update
+                   ? SafeBrowsingUpdateCategory::kNewDatabaseFullUpdate
+                   : SafeBrowsingUpdateCategory::kNewDatabasePartialUpdate;
+  } else {
+    category = is_full_update
+                   ? SafeBrowsingUpdateCategory::kRegularFullUpdate
+                   : SafeBrowsingUpdateCategory::kRegularPartialUpdate;
+  }
+  RecordUpdateCategory(category, store_path_);
+
+  is_first_update_after_v5_migration_ = false;
+  is_new_database_ = false;
+
   if (v4_response->response_type() == ListUpdateResponse::PARTIAL_UPDATE) {
     metric = kProcessPartialUpdate;
     apply_update_type = ApplyUpdateType::kPartial;
@@ -775,6 +808,12 @@ StoreReadResult V4Store::ReadFromDisk() {
   V5ToV4MigrationResult migration_result = AttemptV5ToV4Migration();
   base::UmaHistogramEnumeration("SafeBrowsing.V4Store.V5ToV4MigrationResult",
                                 migration_result);
+  if (migration_result == V5ToV4MigrationResult::kV5StoreNotFound) {
+    is_new_database_ = true;
+  } else if (migration_result != V5ToV4MigrationResult::kDiskAlreadyV4) {
+    is_first_update_after_v5_migration_ = true;
+  }
+
   switch (migration_result) {
     case V5ToV4MigrationResult::kDiskAlreadyV4:
     case V5ToV4MigrationResult::kV5ToV4MigrationSucceeded:

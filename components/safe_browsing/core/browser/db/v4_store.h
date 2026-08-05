@@ -544,6 +544,14 @@ class V4Store : public SBStore {
   // The state of the store as returned by the PVer4 server in the last applied
   // update response.
   std::string state_;
+
+  // True if the store was migrated from V5 and no update has been applied yet
+  // since migration.
+  bool is_first_update_after_v5_migration_ = false;
+
+  // True if the database is new (clean install where no store existed on disk
+  // at startup) and no update has been applied yet.
+  bool is_new_database_ = false;
 };
 
 std::ostream& operator<<(std::ostream& os, const V4Store& store);

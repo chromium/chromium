@@ -280,6 +280,14 @@ class V5Store : public SBStore {
   // Records the status of the update being applied to the database.
   V5ApplyUpdateResult last_apply_update_result_ = V5ApplyUpdateResult::kUnknown;
 
+  // True if the store was migrated from V4 and no update has been applied yet
+  // since migration.
+  bool is_first_update_after_v4_migration_ = false;
+
+  // True if the database is new (clean install where no store existed on disk
+  // at startup) and no update has been applied yet.
+  bool is_new_database_ = false;
+
   // The number of database checks attempted against this store.
   size_t checks_attempted_ = 0;
 };
