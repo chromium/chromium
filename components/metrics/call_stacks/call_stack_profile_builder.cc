@@ -75,6 +75,17 @@ CallStackProfileBuilder::CallStackProfileBuilder(
   sampled_profile_.set_thread(ToExecutionContextThread(profile_params.thread));
   sampled_profile_.set_trigger_event(
       ToSampledProfileTriggerEvent(profile_params.trigger));
+  if (profile_params.trigger == sampling_profiler::CallStackProfileParams::
+                                    Trigger::kPeriodicHeapCollection) {
+    profile_type_ = mojom::ProfileType::kHeap;
+  } else if (profile_params.trigger ==
+             sampling_profiler::CallStackProfileParams::Trigger::
+                 kPeriodicHeapChurnCollection) {
+    profile_type_ = mojom::ProfileType::kHeapChurn;
+  } else {
+    profile_type_ = mojom::ProfileType::kCPU;
+  }
+
   if (!profile_params.time_offset.is_zero()) {
     DCHECK(profile_params.time_offset.is_positive());
     CallStackProfile* call_stack_profile =
@@ -312,8 +323,8 @@ void CallStackProfileBuilder::PassProfilesToMetricsProvider(
     GetBrowserProcessReceiverCallbackInstance().Run(profile_start_time,
                                                     std::move(sampled_profile));
   } else {
-    GetChildCallStackProfileCollector()->Collect(profile_start_time,
-                                                 std::move(sampled_profile));
+    GetChildCallStackProfileCollector()->Collect(
+        profile_start_time, profile_type_, std::move(sampled_profile));
   }
 }
 

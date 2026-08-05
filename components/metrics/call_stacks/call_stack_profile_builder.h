@@ -152,6 +152,9 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
 
   // Maintains the current metadata to apply to samples.
   CallStackProfileMetadata metadata_;
+
+  // The type of profile being collected.
+  mojom::ProfileType profile_type_ = mojom::ProfileType::kCPU;
 };
 
 }  // namespace metrics

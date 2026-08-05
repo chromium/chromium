@@ -75,6 +75,9 @@ SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
     case sampling_profiler::CallStackProfileParams::Trigger::
         kPeriodicHeapCollection:
       return SampledProfile::PERIODIC_HEAP_COLLECTION;
+    case sampling_profiler::CallStackProfileParams::Trigger::
+        kPeriodicHeapChurnCollection:
+      return SampledProfile::PERIODIC_HEAP_CHURN_COLLECTION;
   }
   NOTREACHED();
 }

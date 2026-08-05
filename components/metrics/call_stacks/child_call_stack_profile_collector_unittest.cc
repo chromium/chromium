@@ -61,11 +61,13 @@ class ChildCallStackProfileCollectorTest : public ::testing::Test {
       const ChildCallStackProfileCollectorTest&) = delete;
 
   // Collects a profile and returns its start timestamp.
-  base::TimeTicks CollectProfile(SampledProfile::TriggerEvent trigger_event) {
+  base::TimeTicks CollectProfile(
+      SampledProfile::TriggerEvent trigger_event,
+      mojom::ProfileType profile_type = mojom::ProfileType::kCPU) {
     base::TimeTicks start_timestamp = task_environment_.NowTicks();
     SampledProfile profile;
     profile.set_trigger_event(trigger_event);
-    child_collector_.Collect(start_timestamp, std::move(profile));
+    child_collector_.Collect(start_timestamp, profile_type, std::move(profile));
     return start_timestamp;
   }
 
@@ -156,8 +158,8 @@ TEST_F(ChildCallStackProfileCollectorTest, HeapProfiles) {
   EXPECT_EQ(0u, profiles().size());
 
   // Add a profile before providing the interface.
-  base::TimeTicks start_timestamp =
-      CollectProfile(SampledProfile::PERIODIC_HEAP_COLLECTION);
+  base::TimeTicks start_timestamp = CollectProfile(
+      SampledProfile::PERIODIC_HEAP_COLLECTION, mojom::ProfileType::kHeap);
   ASSERT_EQ(1u, profiles().size());
   ExpectProfile(profiles()[0], start_timestamp, mojom::ProfileType::kHeap);
 
