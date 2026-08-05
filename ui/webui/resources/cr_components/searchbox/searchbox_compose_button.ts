@@ -11,8 +11,17 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './searchbox_compose_button.css.js';
 import {getHtml} from './searchbox_compose_button.html.js';
 
+export interface ComposeClickEventDetail {
+  button: number;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  shiftKey: boolean;
+  viaKeyboard?: boolean;
+}
+
 export interface SearchboxComposeButtonElement {
   $: {
+    composeButton: HTMLElement,
     glowAnimationWrapper: HTMLElement,
   };
 }
@@ -173,6 +182,7 @@ export class SearchboxComposeButtonElement extends
       ctrlKey: e.ctrlKey,
       metaKey: e.metaKey,
       shiftKey: e.shiftKey,
+      viaKeyboard: e.detail === 0,
     });
   }
 

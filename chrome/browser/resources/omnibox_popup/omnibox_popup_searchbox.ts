@@ -7,6 +7,7 @@ import '//resources/cr_components/searchbox/searchbox_input.js';
 import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import type {ComposeClickEventDetail, SearchboxComposeButtonElement} from '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import type {SearchboxInputElement} from '//resources/cr_components/searchbox/searchbox_input.js';
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
@@ -55,6 +56,7 @@ export interface AimButtonConfig {
 
 export interface OmniboxPopupSearchboxElement {
   $: {
+    composeButton: SearchboxComposeButtonElement,
     input: SearchboxInputElement,
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
@@ -732,10 +734,9 @@ export class OmniboxPopupSearchboxElement extends
     this.dispatchEvent(new Event('open-lens-search'));
   }
 
-  protected onComposeClick_() {
-    // TODO(b/504670284): Open AIM popup on-click via Mojo IPC.
+  protected onComposeClick_(e: CustomEvent<ComposeClickEventDetail>) {
     this.dropdownIsVisible = false;
-    this.dispatchEvent(new Event('open-composebox'));
+    this.popupPageHandler_.openAimPopup(e.detail?.viaKeyboard || false);
   }
 
   protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {

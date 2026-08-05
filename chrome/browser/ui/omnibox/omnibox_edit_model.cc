@@ -892,6 +892,12 @@ void OmniboxEditModel::OpenLensSearch() {
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
+                                     bool via_keyboard) {
+  OpenSelection(selection, base::TimeTicks(),
+                WindowOpenDisposition::CURRENT_TAB, via_keyboard);
+}
+
+void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      base::TimeTicks timestamp,
                                      WindowOpenDisposition disposition,
                                      bool via_keyboard) {

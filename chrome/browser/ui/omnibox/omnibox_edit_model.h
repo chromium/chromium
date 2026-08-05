@@ -296,6 +296,7 @@ class OmniboxEditModel {
       base::TimeTicks timestamp = base::TimeTicks(),
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
       bool via_keyboard = false);
+  void OpenSelection(OmniboxPopupSelection selection, bool via_keyboard);
 
   // A simplified version of `OpenSelection()` that opens the model's current
   // selection.
