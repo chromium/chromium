@@ -69,8 +69,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceApple
   bool Init(VideoCaptureApi capture_api_type);
 
   // VideoCaptureDeviceAVFoundationFrameReceiver:
-  void ReceiveFrame(const uint8_t* video_frame,
-                    int video_frame_length,
+  void ReceiveFrame(base::span<const uint8_t> sample,
                     const VideoCaptureFormat& frame_format,
                     const gfx::ColorSpace color_space,
                     int aspect_numerator,

@@ -219,8 +219,7 @@ bool VideoCaptureDeviceApple::Init(VideoCaptureApi capture_api_type) {
 }
 
 void VideoCaptureDeviceApple::ReceiveFrame(
-    const uint8_t* video_frame,
-    int video_frame_length,
+    base::span<const uint8_t> sample,
     const VideoCaptureFormat& frame_format,
     const gfx::ColorSpace color_space,
     int aspect_numerator,
@@ -237,9 +236,8 @@ void VideoCaptureDeviceApple::ReceiveFrame(
   }
 
   client_->OnIncomingCapturedData(
-      video_frame, video_frame_length, frame_format, color_space,
-      rotation /* clockwise_rotation */, false /* flip_y */,
-      base::TimeTicks::Now(), timestamp, capture_begin_time,
+      sample, frame_format, color_space, rotation /* clockwise_rotation */,
+      false /* flip_y */, base::TimeTicks::Now(), timestamp, capture_begin_time,
       GetVideoFrameMetadata());
 }
 

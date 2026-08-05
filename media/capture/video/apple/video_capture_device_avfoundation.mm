@@ -812,24 +812,21 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     capture_begin_time:(std::optional<base::TimeTicks>)capture_begin_time {
   VLOG(3) << __func__;
   // Trust |_frameReceiver| to do decompression.
-  char* baseAddress = nullptr;
-  size_t frameSize = 0;
   _lock.AssertAcquired();
   DCHECK(_frameReceiver);
-  const bool sample_buffer_addressable = media::ExtractBaseAddressAndLength(
-      &baseAddress, &frameSize, sampleBuffer);
-  DCHECK(sample_buffer_addressable);
-  if (sample_buffer_addressable) {
+  std::optional<base::span<const uint8_t>> data_span =
+      media::ExtractDataSpan(sampleBuffer);
+  DCHECK(data_span.has_value());
+  if (data_span.has_value()) {
     const bool safe_to_forward =
         captureFormat.pixel_format == media::PIXEL_FORMAT_MJPEG ||
-        media::VideoFrame::AllocationSize(
-            captureFormat.pixel_format, captureFormat.frame_size) <= frameSize;
+        media::VideoFrame::AllocationSize(captureFormat.pixel_format,
+                                          captureFormat.frame_size) <=
+            data_span->size();
     DCHECK(safe_to_forward);
     if (safe_to_forward) {
-      _frameReceiver->ReceiveFrame(
-          reinterpret_cast<const uint8_t*>(baseAddress), frameSize,
-          captureFormat, colorSpace, 0, 0, timestamp, capture_begin_time,
-          _rotation);
+      _frameReceiver->ReceiveFrame(*data_span, captureFormat, colorSpace, 0, 0,
+                                   timestamp, capture_begin_time, _rotation);
     }
   }
 }
@@ -941,10 +938,17 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   _lock.AssertAcquired();
   DCHECK(_frameReceiver);
-  _frameReceiver->ReceiveFrame(packedBufferCopy.empty()
-                                   ? pixelBufferAddresses[0]
-                                   : packedBufferCopy.data(),
-                               frameSize, captureFormat, colorSpace, 0, 0,
+  // If the pixel buffer was not tightly packed, packedBufferCopy holds the
+  // repacked frame. Otherwise, pixelBufferAddresses[0] points to the contiguous
+  // CVPixelBuffer of frameSize bytes.
+  // SAFETY: CVPixelBufferGetDataSize guarantees that the CVPixelBuffer is
+  // contiguous in memory starting from plane 0 address
+  // (pixelBufferAddresses[0]) for frameSize bytes.
+  base::span<const uint8_t> frame_span =
+      packedBufferCopy.empty()
+          ? UNSAFE_BUFFERS(base::span(pixelBufferAddresses[0], frameSize))
+          : base::span(packedBufferCopy);
+  _frameReceiver->ReceiveFrame(frame_span, captureFormat, colorSpace, 0, 0,
                                timestamp, capture_begin_time, _rotation);
   CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
   return YES;

@@ -17,8 +17,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
 
   // Called to deliver captured video frames.  It's safe to call this method
   // from any thread, including those controlled by AVFoundation.
-  virtual void ReceiveFrame(const uint8_t* video_frame,
-                            int video_frame_length,
+  virtual void ReceiveFrame(base::span<const uint8_t> sample,
                             const VideoCaptureFormat& frame_format,
                             const gfx::ColorSpace color_space,
                             int aspect_numerator,

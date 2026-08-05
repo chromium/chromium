@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "media/capture/capture_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -23,12 +24,10 @@ namespace media {
 
 std::string CAPTURE_EXPORT MacFourCCToString(OSType fourcc);
 
-// Extracts |base_address| and |length| out of a SampleBuffer. Returns true on
-// success and false if we failed to retrieve the information due to OS call
-// error return, or unexpected output parameters.
-[[nodiscard]] bool ExtractBaseAddressAndLength(char** base_address,
-                                               size_t* length,
-                                               CMSampleBufferRef sample_buffer);
+// Extracts base address and length out of a SampleBuffer as a span. Returns
+// std::nullopt on OS call failure or if the buffer is not contiguous.
+[[nodiscard]] std::optional<base::span<const uint8_t>> ExtractDataSpan(
+    CMSampleBufferRef sample_buffer);
 
 gfx::Size CAPTURE_EXPORT GetPixelBufferSize(CVPixelBufferRef pixel_buffer);
 gfx::Size CAPTURE_EXPORT GetSampleBufferSize(CMSampleBufferRef sample_buffer);

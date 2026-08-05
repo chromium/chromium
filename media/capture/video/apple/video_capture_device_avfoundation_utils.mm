@@ -9,6 +9,7 @@
 #endif
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace media {
 
@@ -19,20 +20,26 @@ std::string MacFourCCToString(OSType fourcc) {
   return arr;
 }
 
-bool ExtractBaseAddressAndLength(char** base_address,
-                                 size_t* length,
-                                 CMSampleBufferRef sample_buffer) {
+std::optional<base::span<const uint8_t>> ExtractDataSpan(
+    CMSampleBufferRef sample_buffer) {
   CMBlockBufferRef block_buffer = CMSampleBufferGetDataBuffer(sample_buffer);
-  DCHECK(block_buffer);
+  if (!block_buffer) {
+    return std::nullopt;
+  }
 
-  size_t length_at_offset;
+  char* base_address = nullptr;
+  size_t length = 0;
+  size_t length_at_offset = 0;
   const OSStatus status = CMBlockBufferGetDataPointer(
-      block_buffer, 0, &length_at_offset, length, base_address);
-  DCHECK_EQ(noErr, status);
-  // Expect the (M)JPEG data to be available as a contiguous reference, i.e.
-  // not covered by multiple memory blocks.
-  DCHECK_EQ(length_at_offset, *length);
-  return status == noErr && length_at_offset == *length;
+      block_buffer, 0, &length_at_offset, &length, &base_address);
+  if (status != noErr || length_at_offset != length || !base_address) {
+    return std::nullopt;
+  }
+  // SAFETY: CMBlockBufferGetDataPointer guarantees that base_address points to
+  // a contiguous memory buffer of length bytes when status is noErr and
+  // length_at_offset == length.
+  return UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const uint8_t*>(base_address), length));
 }
 
 gfx::Size GetPixelBufferSize(CVPixelBufferRef pixel_buffer) {
