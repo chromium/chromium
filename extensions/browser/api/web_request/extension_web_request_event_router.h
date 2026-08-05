@@ -15,17 +15,23 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/child_process_id.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request/web_request_filter.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
@@ -54,8 +60,11 @@ namespace extensions {
 class WebRequestRulesRegistry;
 class WebRequestEventDetails;
 struct WebRequestInfo;
+struct WorkerId;
 
-class WebRequestEventRouter : public KeyedService {
+class WebRequestEventRouter : public KeyedService,
+                              public ProcessManagerObserver,
+                              public content::RenderProcessHostObserver {
  public:
   struct BlockedRequest;
 
@@ -790,8 +799,8 @@ class WebRequestEventRouter : public KeyedService {
   // without applying response deltas. Bound as an event's
   // `cannot_dispatch_callback` to unblock requests when a target is unreachable
   // at dispatch time (e.g., worker start failure).
-  void OnTargetCannotDispatch(content::BrowserContext* browser_context,
-                              const std::string& event_name,
+  // `ResolvePendingTargetsForTeardown()` also calls this on target teardown.
+  void OnTargetCannotDispatch(const std::string& event_name,
                               uint64_t request_id,
                               const DispatchTargetKey& dispatch_key);
 
@@ -811,6 +820,31 @@ class WebRequestEventRouter : public KeyedService {
                            const std::string& event_name,
                            EventResponse& response,
                            int extra_info_spec);
+
+  // ProcessManagerObserver:
+  void OnStoppedTrackingServiceWorkerInstance(
+      content::BrowserContext& browser_context,
+      const WorkerId& worker_id) override;
+  void OnProcessManagerShutdown(ProcessManager* manager) override;
+
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+
+  // Starts to observe the ProcessManager of `browser_context`.
+  void ObserveProcessManager(content::BrowserContext* browser_context);
+
+  // Starts to observe `host`, so the router resolves the host's pending
+  // targets when the process goes away.
+  void ObserveRenderProcessHost(content::RenderProcessHost* host);
+
+  // Resolves (without responses) every pending target whose key satisfies
+  // `matches`, across the blocked requests of every BrowserContext that
+  // shares this router.
+  void ResolvePendingTargetsForTeardown(
+      base::FunctionRef<bool(const DispatchTargetKey&)> matches);
 
   // Returns a list of event listeners that care about the given event, based
   // on their filter parameters. `extra_info_spec` will contain the combined
@@ -975,6 +1009,16 @@ class WebRequestEventRouter : public KeyedService {
   BlockedRequestMap blocked_requests_;
 
   const raw_ptr<content::BrowserContext> browser_context_;
+
+  // Observes the ProcessManagers of the contexts that recorded pending
+  // targets, for worker-stop signals.
+  base::ScopedMultiSourceObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observations_{this};
+
+  // Observes every render process that hosts a concrete pending target.
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      render_process_host_observations_{this};
 
   base::WeakPtrFactory<WebRequestEventRouter> weak_ptr_factory_{this};
 };

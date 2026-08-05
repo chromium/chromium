@@ -1784,6 +1784,7 @@ void EventRouter::OnExtensionUnloaded(content::BrowserContext* browser_context,
 }
 
 void EventRouter::OnStoppedTrackingServiceWorkerInstance(
+    content::BrowserContext& browser_context,
     const WorkerId& worker_id) {
   // Remove any active listeners since they are no longer guaranteed to be ready
   // to receive events.

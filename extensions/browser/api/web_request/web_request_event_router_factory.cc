@@ -12,6 +12,7 @@
 #include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -41,6 +42,7 @@ WebRequestEventRouterFactory::WebRequestEventRouterFactory()
   DependsOn(EventRouterFactory::GetInstance());
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(PermissionHelper::GetFactoryInstance());
+  DependsOn(ProcessManagerFactory::GetInstance());
   DependsOn(ProcessMapFactory::GetInstance());
   DependsOn(ExtensionNavigationRegistry::GetFactoryInstance());
 }

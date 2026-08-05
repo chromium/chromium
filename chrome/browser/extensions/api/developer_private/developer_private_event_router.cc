@@ -209,6 +209,7 @@ void DeveloperPrivateEventRouter::OnStartedTrackingServiceWorkerInstance(
 }
 
 void DeveloperPrivateEventRouter::OnStoppedTrackingServiceWorkerInstance(
+    content::BrowserContext& browser_context,
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
                             worker_id.extension_id);

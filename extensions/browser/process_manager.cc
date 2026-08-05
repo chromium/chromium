@@ -1084,7 +1084,8 @@ void ProcessManager::StopTrackingServiceWorkerRunningInstance(
   all_running_extension_workers_.Remove(worker_id);
   worker_context_ids_.erase(worker_id);
   for (auto& observer : observer_list_)
-    observer.OnStoppedTrackingServiceWorkerInstance(worker_id);
+    observer.OnStoppedTrackingServiceWorkerInstance(*browser_context(),
+                                                    worker_id);
 }
 
 // TODO(crbug.com/40936639): Deduplicate this method with it's other overload

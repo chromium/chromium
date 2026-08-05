@@ -19,6 +19,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -186,6 +187,12 @@ const char* GetRequestStageAsString(WebRequestEventRouter::EventTypes type) {
       return keys::kOnCompleted;
   }
   NOTREACHED();
+}
+
+// Returns the webRequest event name for `type`.
+std::string GetEventNameForBlockedRequestStage(
+    WebRequestEventRouter::EventTypes type) {
+  return base::StrCat({kWebRequestEventPrefix, GetRequestStageAsString(type)});
 }
 
 void LogRequestAction(RequestAction action) {
@@ -1829,6 +1836,21 @@ int WebRequestEventRouter::DispatchEventToTargets(
           GetOrAddBlockedRequest(browser_context, request->id);
       blocked_request.pending_targets[key] |= union_spec_blocking;
       ++num_blocking_targets;
+      // Observe the target's teardown sources, so the router can resolve the
+      // target if its context goes away.
+      ObserveProcessManager(group_browser_context);
+      if (!key.IsLazy()) {
+        content::RenderProcessHost* target_process =
+            is_web_view_target
+                ? web_view_render_process
+                : content::RenderProcessHost::FromID(key.render_process_id);
+        if (target_process) {
+          // TODO(andreaorru): Can target_process be null? There shouldn't be
+          // any registered non-lazy listeners for dead processes in
+          // EventRouter. Verify and CHECK.
+          ObserveRenderProcessHost(target_process);
+        }
+      }
     }
 
     if (is_web_view_target) {
@@ -1856,8 +1878,8 @@ int WebRequestEventRouter::DispatchEventToTargets(
         // that the request does not block indefinitely.
         event->cannot_dispatch_callback = base::BindRepeating(
             &WebRequestEventRouter::OnTargetCannotDispatch,
-            weak_ptr_factory_.GetWeakPtr(), group_browser_context, event_name,
-            request->id, /*dispatch_key=*/key);
+            weak_ptr_factory_.GetWeakPtr(), event_name, request->id,
+            /*dispatch_key=*/key);
       }
       EventRouter::Get(group_browser_context)
           ->DispatchEventToExtension(key.extension_id, std::move(event));
@@ -2075,17 +2097,10 @@ WebRequestEventRouter::FindTargetForResponse(
 }
 
 void WebRequestEventRouter::OnTargetCannotDispatch(
-    content::BrowserContext* browser_context,
     const std::string& event_name,
     uint64_t request_id,
     const DispatchTargetKey& dispatch_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Because this callback can run from a posted task, `browser_context` may
-  // have been destroyed. Verify its liveness by identity before dereferencing.
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
-    return;
-  }
 
   BlockedRequest* blocked_request =
       GetBlockedRequestForEvent(request_id, event_name);
@@ -2139,6 +2154,100 @@ void WebRequestEventRouter::AppendResponseDelta(
       SummarizeResponseDelta(event_name, delta));
 
   blocked_request.response_deltas.push_back(std::move(delta));
+}
+
+void WebRequestEventRouter::OnStoppedTrackingServiceWorkerInstance(
+    content::BrowserContext& browser_context,
+    const WorkerId& worker_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BrowserContextID worker_context_id =
+      GetBrowserContextID(&browser_context);
+  ResolvePendingTargetsForTeardown([&](const DispatchTargetKey& key) {
+    // Concrete key.
+    if (key.render_process_id == worker_id.render_process_id &&
+        key.worker_thread_id == worker_id.thread_id &&
+        key.service_worker_version_id == worker_id.version_id) {
+      return true;
+    }
+    // Lazy key.
+    return key.IsLazy() && key.extension_id == worker_id.extension_id &&
+           key.web_view_instance_id == 0 &&
+           key.listener_context_id == worker_context_id;
+  });
+}
+
+void WebRequestEventRouter::OnProcessManagerShutdown(ProcessManager* manager) {
+  process_manager_observations_.RemoveObservation(manager);
+}
+
+void WebRequestEventRouter::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const content::ChildProcessId process_id = host->GetID();
+  ResolvePendingTargetsForTeardown([&](const DispatchTargetKey& key) {
+    return key.render_process_id == process_id;
+  });
+}
+
+void WebRequestEventRouter::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const content::ChildProcessId process_id = host->GetID();
+  ResolvePendingTargetsForTeardown([&](const DispatchTargetKey& key) {
+    return key.render_process_id == process_id;
+  });
+  render_process_host_observations_.RemoveObservation(host);
+}
+
+void WebRequestEventRouter::ObserveProcessManager(
+    content::BrowserContext* browser_context) {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kWebRequestPerContextEventDispatch));
+  ProcessManager* process_manager = ProcessManager::Get(browser_context);
+  if (process_manager &&
+      !process_manager_observations_.IsObservingSource(process_manager)) {
+    process_manager_observations_.AddObservation(process_manager);
+  }
+}
+
+void WebRequestEventRouter::ObserveRenderProcessHost(
+    content::RenderProcessHost* host) {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kWebRequestPerContextEventDispatch));
+  if (!render_process_host_observations_.IsObservingSource(host)) {
+    render_process_host_observations_.AddObservation(host);
+  }
+}
+
+void WebRequestEventRouter::ResolvePendingTargetsForTeardown(
+    base::FunctionRef<bool(const DispatchTargetKey&)> matches) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kWebRequestPerContextEventDispatch));
+  // Collect the matches first: resolution mutates `pending_targets` and
+  // `blocked_requests_`. Scan every entry: a target and the request that it
+  // blocks can belong to different contexts (spanning-mode incognito).
+  struct DeadTarget {
+    uint64_t request_id;
+    DispatchTargetKey key;
+    std::string event_name;
+  };
+  std::vector<DeadTarget> dead_targets;
+  for (auto& [request_id, blocked_request] : blocked_requests_) {
+    for (const auto& [key, blocking_union_spec] :
+         blocked_request.pending_targets) {
+      if (matches(key)) {
+        dead_targets.push_back(
+            {request_id, key,
+             GetEventNameForBlockedRequestStage(blocked_request.event)});
+      }
+    }
+  }
+
+  for (const DeadTarget& target : dead_targets) {
+    OnTargetCannotDispatch(target.event_name, target.request_id, target.key);
+  }
 }
 
 bool WebRequestEventRouter::AddEventListener(
@@ -2547,6 +2656,17 @@ void WebRequestEventRouter::RemoveWebViewEventListeners(
       iter = listeners.erase(iter);
     }
   }
+
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kWebRequestPerContextEventDispatch)) {
+    return;
+  }
+
+  // The <webview> goes away; nothing else can resolve its pending targets.
+  ResolvePendingTargetsForTeardown([&](const DispatchTargetKey& key) {
+    return key.render_process_id == render_process_id &&
+           key.web_view_instance_id == web_view_instance_id;
+  });
 }
 
 // static

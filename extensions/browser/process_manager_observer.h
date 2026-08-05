@@ -9,6 +9,7 @@
 #include "extensions/common/extension_id.h"
 
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
 }
 
@@ -48,7 +49,10 @@ class ProcessManagerObserver : public base::CheckedObserver {
       const WorkerId& worker_id) {}
 
   // Called when a service worker is no longer part of an extension process.
+  // `browser_context` is the context of the ProcessManager that tracked the
+  // worker.
   virtual void OnStoppedTrackingServiceWorkerInstance(
+      content::BrowserContext& browser_context,
       const WorkerId& worker_id) {}
 
   // Called when the observed ProcessManager is shutting down.

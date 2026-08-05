@@ -164,6 +164,7 @@ class UnregisterWorkerObserver : public ProcessManagerObserver {
 
   // ProcessManagerObserver:
   void OnStoppedTrackingServiceWorkerInstance(
+      content::BrowserContext& browser_context,
       const WorkerId& worker_id) override;
 
   // Waits for ProcessManager::UnregisterServiceWorker for `extension_id_`.

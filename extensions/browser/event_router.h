@@ -529,6 +529,7 @@ class EventRouter : public KeyedService,
 
   // ProcessManagerObserver:
   void OnStoppedTrackingServiceWorkerInstance(
+      content::BrowserContext& browser_context,
       const WorkerId& worker_id) override;
 
   // Adds/removes lazy listeners for trusted browser-internal callers that do

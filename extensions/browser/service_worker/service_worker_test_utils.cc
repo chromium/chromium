@@ -264,6 +264,7 @@ UnregisterWorkerObserver::UnregisterWorkerObserver(
 UnregisterWorkerObserver::~UnregisterWorkerObserver() = default;
 
 void UnregisterWorkerObserver::OnStoppedTrackingServiceWorkerInstance(
+    content::BrowserContext& browser_context,
     const WorkerId& worker_id) {
   run_loop_.QuitWhenIdle();
 }
