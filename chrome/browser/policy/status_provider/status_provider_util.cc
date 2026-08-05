@@ -71,13 +71,11 @@ void SetProfileId(base::DictValue* dict, Profile* profile) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-std::optional<bool> GetOffHoursStatus() {
+void GetOffHoursStatus(base::DictValue* dict) {
   policy::off_hours::DeviceOffHoursController* off_hours_controller =
       ash::DeviceSettingsService::Get()->device_off_hours_controller();
   if (off_hours_controller) {
-    return off_hours_controller->is_off_hours_mode();
-  } else {
-    return std::nullopt;
+    dict->Set("isOffHoursActive", off_hours_controller->is_off_hours_mode());
   }
 }
 
