@@ -21,22 +21,19 @@ export function getHtml(this: FeatureShowcaseGeminiStepElement) {
     <p>$i18nRaw{geminiDisclosure3}</p>
   </div>
   <if expr="is_win">
-    <cr-button slot="button" id="confirm-button"
-        class="tonal-button"
+    <cr-button slot="button" id="confirm-button" class="action-button"
         @click="${this.onConfirmClick_}"
         ?disabled="${this.buttonsDisabled}">
       $i18n{geminiYesImIn}
     </cr-button>
   </if>
     <cr-button slot="button" id="skip-button"
-        class="tonal-button"
         @click="${this.onSkipClick_}"
         ?disabled="${this.buttonsDisabled}">
       $i18n{geminiNotNow}
     </cr-button>
   <if expr="not is_win">
-    <cr-button slot="button" id="confirm-button"
-        class="tonal-button"
+    <cr-button slot="button" id="confirm-button" class="action-button"
         @click="${this.onConfirmClick_}"
         ?disabled="${this.buttonsDisabled}">
       $i18n{geminiYesImIn}
