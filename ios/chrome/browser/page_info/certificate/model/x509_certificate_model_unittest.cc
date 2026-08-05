@@ -447,6 +447,18 @@ TEST_F(X509CertificateModelTest, GlobalsignComCert) {
   ASSERT_EQ(1u, crl_dps.size());
   EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI, crl_dps[0].type);
   EXPECT_EQ("http://crl.globalsign.net/SHA256ExtendVal1.crl", crl_dps[0].value);
+
+  // A single policy with one CPS pointer qualifier.
+  EXPECT_FALSE(model.IsCertificatePoliciesCritical());
+  auto policies = model.GetCertificatePolicies();
+  EXPECT_FALSE(policies.has_error);
+  ASSERT_EQ(1u, policies.policies.size());
+  EXPECT_EQ("1.3.6.1.4.1.4146.1.1", policies.policies[0].policy_oid);
+  ASSERT_EQ(1u, policies.policies[0].qualifiers.size());
+  EXPECT_EQ(X509CertificateModel::PolicyQualifier::Type::kCpsUri,
+            policies.policies[0].qualifiers[0].type);
+  EXPECT_EQ("http://www.globalsign.net/repository/",
+            policies.policies[0].qualifiers[0].cps_uri);
 }
 
 TEST_F(X509CertificateModelTest, DiginotarCert) {
@@ -489,6 +501,30 @@ TEST_F(X509CertificateModelTest, DiginotarCert) {
   EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI,
             aia[0].location.type);
   EXPECT_EQ("http://validation.diginotar.nl", aia[0].location.value);
+
+  EXPECT_FALSE(model.IsCertificatePoliciesCritical());
+  auto policies = model.GetCertificatePolicies();
+  EXPECT_FALSE(policies.has_error);
+  ASSERT_EQ(1u, policies.policies.size());
+  EXPECT_EQ("2.16.528.1.1001.1.1.1.1.5.2.6.4", policies.policies[0].policy_oid);
+  ASSERT_EQ(2u, policies.policies[0].qualifiers.size());
+
+  using PolicyQualifier = X509CertificateModel::PolicyQualifier;
+  EXPECT_EQ(PolicyQualifier::Type::kCpsUri,
+            policies.policies[0].qualifiers[0].type);
+  EXPECT_EQ("http://www.diginotar.nl/cps",
+            policies.policies[0].qualifiers[0].cps_uri);
+
+  EXPECT_EQ(PolicyQualifier::Type::kUserNotice,
+            policies.policies[0].qualifiers[1].type);
+  ASSERT_TRUE(policies.policies[0].qualifiers[1].user_notice.has_value());
+  const auto& notice = *policies.policies[0].qualifiers[1].user_notice;
+  EXPECT_TRUE(notice.organization.empty());
+  EXPECT_TRUE(notice.notice_numbers.empty());
+  EXPECT_EQ(
+      "Conditions, as mentioned on our website (www.diginotar.nl), are "
+      "applicable to all our products and services.",
+      notice.explicit_text);
 }
 
 TEST_F(X509CertificateModelTest, DiginotarCyberCa) {
@@ -663,6 +699,120 @@ TEST_F(X509CertificateModelTest, IssuerAltNameTest) {
                                   "http://test.example/"));
   EXPECT_TRUE(
       ContainsGeneralName(names, GeneralName::Type::kIPAddress, "127.0.0.2"));
+}
+
+TEST_F(X509CertificateModelTest, CertificatePoliciesSanityTest) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "policies_sanity_check.pem");
+  ASSERT_TRUE(cert);
+  X509CertificateModel model(cert.get());
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_FALSE(model.IsCertificatePoliciesCritical());
+
+  using PolicyQualifier = X509CertificateModel::PolicyQualifier;
+  auto result = model.GetCertificatePolicies();
+  // Fully valid extension: no error
+  EXPECT_FALSE(result.has_error);
+  EXPECT_FALSE(result.raw_der.empty());
+  const auto& policies = result.policies;
+  ASSERT_EQ(2u, policies.size());
+
+  // First policy: bare OID with no qualifiers.
+  EXPECT_EQ("1.2.3.4.5", policies[0].policy_oid);
+  EXPECT_TRUE(policies[0].qualifiers.empty());
+
+  // Second policy: one CPS pointer followed by three UserNotice variants.
+  EXPECT_EQ("1.3.5.8.12", policies[1].policy_oid);
+  ASSERT_EQ(4u, policies[1].qualifiers.size());
+
+  // Qualifier 0: CPS URI.
+  EXPECT_EQ(PolicyQualifier::Type::kCpsUri, policies[1].qualifiers[0].type);
+  EXPECT_EQ("http://cps.example.com/foo", policies[1].qualifiers[0].cps_uri);
+
+  // Qualifier 1: UserNotice with organization, notice numbers, and text.
+  EXPECT_EQ(PolicyQualifier::Type::kUserNotice, policies[1].qualifiers[1].type);
+  ASSERT_TRUE(policies[1].qualifiers[1].user_notice.has_value());
+  const auto& notice1 = *policies[1].qualifiers[1].user_notice;
+  EXPECT_EQ("Organization Name", notice1.organization);
+  EXPECT_THAT(notice1.notice_numbers, testing::ElementsAre("1", "2", "3", "4"));
+  EXPECT_EQ("Explicit Text Here", notice1.explicit_text);
+
+  // Qualifier 2: UserNotice with only explicitText.
+  EXPECT_EQ(PolicyQualifier::Type::kUserNotice, policies[1].qualifiers[2].type);
+  ASSERT_TRUE(policies[1].qualifiers[2].user_notice.has_value());
+  const auto& notice2 = *policies[1].qualifiers[2].user_notice;
+  EXPECT_TRUE(notice2.organization.empty());
+  EXPECT_TRUE(notice2.notice_numbers.empty());
+  EXPECT_EQ("Explicit Text Two", notice2.explicit_text);
+
+  // Qualifier 3: UserNotice with organization and a single notice number, but
+  // no explicitText.
+  EXPECT_EQ(PolicyQualifier::Type::kUserNotice, policies[1].qualifiers[3].type);
+  ASSERT_TRUE(policies[1].qualifiers[3].user_notice.has_value());
+  const auto& notice3 = *policies[1].qualifiers[3].user_notice;
+  EXPECT_EQ("Organization Name Two", notice3.organization);
+  EXPECT_THAT(notice3.notice_numbers, testing::ElementsAre("42"));
+  EXPECT_TRUE(notice3.explicit_text.empty());
+}
+
+// A UserNotice explicitText that is not valid UTF-8 makes the qualifier fail to
+// decode. Decoding stops: the failing policy is retained (its UserNotice
+// qualifier kept with no decoded notice), has_error is set, and raw_der holds a
+// hex dump of the whole extension.
+TEST_F(X509CertificateModelTest, CertificatePoliciesInvalidUtf8UserNotice) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // \xa1 is a UTF-8 continuation byte with no leading byte, which is invalid.
+  //
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     OBJECT_IDENTIFIER { 1.2.3 }
+  //     SEQUENCE {
+  //       SEQUENCE {
+  //         OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.2.2 }  # unotice
+  //         SEQUENCE {
+  //           UTF8String { "Explicit \xa1 Text" }    # explicitText
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  const uint8_t kPolicies[] = {
+      0x30, 0x27, 0x30, 0x25, 0x06, 0x02, 0x2a, 0x03, 0x30, 0x1f, 0x30,
+      0x1d, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05, 0x07, 0x02, 0x02,
+      0x30, 0x11, 0x0c, 0x0f, 0x45, 0x78, 0x70, 0x6c, 0x69, 0x63, 0x69,
+      0x74, 0x20, 0xa1, 0x20, 0x54, 0x65, 0x78, 0x74};
+  builder->SetExtension(bssl::der::Input(bssl::kCertificatePoliciesOid),
+                        std::string(base::as_string_view(kPolicies)),
+                        /*critical=*/false);
+
+  X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
+  ASSERT_TRUE(model.is_valid());
+
+  using PolicyQualifier = X509CertificateModel::PolicyQualifier;
+  auto result = model.GetCertificatePolicies();
+
+  // The UserNotice failed to decode, so has_error is set.
+  EXPECT_TRUE(result.has_error);
+
+  // The failing policy is retained, with its UserNotice qualifier kept but not
+  // decoded.
+  ASSERT_EQ(1u, result.policies.size());
+  EXPECT_EQ("1.2.3", result.policies[0].policy_oid);
+  ASSERT_EQ(1u, result.policies[0].qualifiers.size());
+  EXPECT_EQ(PolicyQualifier::Type::kUserNotice,
+            result.policies[0].qualifiers[0].type);
+  EXPECT_FALSE(result.policies[0].qualifiers[0].user_notice.has_value());
+
+  // The failure surfaces the whole extension as a hex dump in `raw_der`.
+  EXPECT_EQ(
+      "30 27 30 25 06 02 2A 03 30 1F 30 1D 06 08 2B 06 01 05 05 07 02 02 30 "
+      "11 0C 0F 45 78 70 6C 69 63 69 74 20 A1 20 54 65 78 74",
+      result.raw_der);
 }
 
 }  // namespace x509_certificate_model

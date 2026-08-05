@@ -204,6 +204,64 @@ class X509CertificateModel : public X509CertificateModelBase {
   // (URI, DNS, ...). The relativeName, reasons, and cRLIssuer fields are not
   // parsed. Empty if the extension is absent or cannot be parsed.
   std::vector<GeneralName> GetCRLDistributionPointsFullNames() const;
+
+  // A decoded RFC 5280 UserNotice policy qualifier. Each field is optional in
+  // the DER encoding.
+  struct UserNotice {
+    // noticeRef.organization, or empty if there is no noticeRef.
+    std::string organization;
+    // noticeRef.noticeNumbers as decimal strings, or empty if there is no
+    // noticeRef.
+    std::vector<std::string> notice_numbers;
+    // explicitText, or empty if absent.
+    std::string explicit_text;
+  };
+
+  struct PolicyQualifier {
+    enum class Type {
+      kCpsUri,      // id-qt-cps: `cps_uri` holds the CPS pointer URI.
+      kUserNotice,  // id-qt-unotice: `user_notice` holds the decoded notice.
+      kUnknown,     // Other qualifier OID: `raw_value` holds a hex dump.
+    };
+    Type type;
+    // Set when `type` is `kCpsUri`, empty if this is the qualifier that failed
+    // to decode.
+    std::string cps_uri;
+    // Set when `type` is `kUserNotice`, nullopt if this is the qualifier that
+    // failed to decode.
+    std::optional<UserNotice> user_notice;
+    // Set when `type` is `kUnknown`: hex dump of this qualifier's bytes.
+    std::string raw_value;
+  };
+
+  struct CertificatePolicy {
+    // The policyIdentifier.
+    std::string policy_oid;
+    // The policyQualifiers in DER order, ending at the failing one (if any).
+    std::vector<PolicyQualifier> qualifiers;
+  };
+
+  struct CertificatePoliciesResult {
+    // Decoded policies in DER order. On a per-qualifier failure, includes
+    // policies up to and including the failing one. On an extension-level parse
+    // failure, this is empty. Policies after a failure are omitted.
+    std::vector<CertificatePolicy> policies;
+    // True if decoding failed.
+    bool has_error = false;
+    // Hex dump of the extension's value. Populated whenever the extension is
+    // present; empty when it is absent.
+    std::string raw_der;
+  };
+
+  // Returns true if the CertificatePolicies extension is present and marked
+  // critical.
+  bool IsCertificatePoliciesCritical() const;
+
+  // Decodes the CertificatePolicies extension. Decoding stops at the first
+  // known qualifier (CPS or UserNotice) that fails to decode. See
+  // `CertificatePoliciesResult` for how the result reflects success, failure,
+  // and an absent extension.
+  CertificatePoliciesResult GetCertificatePolicies() const;
 };
 
 }  // namespace x509_certificate_model

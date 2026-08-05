@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/certificate_model/x509_certificate_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -24,11 +25,13 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/certificate_policies.h"
 #include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "third_party/boringssl/src/pki/general_names.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
+#include "third_party/boringssl/src/pki/parse_values.h"
 #include "third_party/boringssl/src/pki/parser.h"
 #include "third_party/boringssl/src/pki/signature_algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -315,6 +318,121 @@ std::vector<X509CertificateModel::GeneralName> ProcessGeneralNamesTlv(
   }
   return ToGeneralNameList(*general_names);
 }
+
+std::optional<X509CertificateModel::UserNotice> ProcessUserNotice(
+    bssl::der::Input qualifier) {
+  // RFC 5280 section 4.2.1.4:
+  //
+  //    UserNotice ::= SEQUENCE {
+  //         noticeRef        NoticeReference OPTIONAL,
+  //         explicitText     DisplayText OPTIONAL }
+  //
+  //    NoticeReference ::= SEQUENCE {
+  //         organization     DisplayText,
+  //         noticeNumbers    SEQUENCE OF INTEGER }
+  //
+  //    DisplayText ::= CHOICE {
+  //         ia5String        IA5String      (SIZE (1..200)),
+  //         visibleString    VisibleString  (SIZE (1..200)),
+  //         bmpString        BMPString      (SIZE (1..200)),
+  //         utf8String       UTF8String     (SIZE (1..200)) }
+  bssl::der::Parser outer_parser(qualifier);
+  bssl::der::Parser parser;
+  if (!outer_parser.ReadSequence(&parser) || outer_parser.HasMore()) {
+    return std::nullopt;
+  }
+
+  std::optional<bssl::der::Input> notice_ref_value;
+  if (!parser.ReadOptionalTag(CBS_ASN1_SEQUENCE, &notice_ref_value)) {
+    return std::nullopt;
+  }
+
+  X509CertificateModel::UserNotice notice;
+  if (notice_ref_value) {
+    bssl::der::Parser notice_ref_parser(*notice_ref_value);
+    CBS_ASN1_TAG organization_tag;
+    bssl::der::Input organization_value;
+    if (!notice_ref_parser.ReadTagAndValue(&organization_tag,
+                                           &organization_value)) {
+      return std::nullopt;
+    }
+    std::optional<std::string> organization =
+        ProcessUserNoticeDisplayText(organization_tag, organization_value);
+    if (!organization) {
+      return std::nullopt;
+    }
+    notice.organization = *std::move(organization);
+
+    bssl::der::Parser notice_numbers_parser;
+    if (!notice_ref_parser.ReadSequence(&notice_numbers_parser)) {
+      return std::nullopt;
+    }
+    while (notice_numbers_parser.HasMore()) {
+      bssl::der::Input notice_number;
+      if (!notice_numbers_parser.ReadTag(CBS_ASN1_INTEGER, &notice_number)) {
+        return std::nullopt;
+      }
+      uint64_t number;
+      if (bssl::der::ParseUint64(notice_number, &number)) {
+        notice.notice_numbers.push_back(base::NumberToString(number));
+      } else {
+        // The integer does not fit in a uint64, so surface it as hex.
+        notice.notice_numbers.push_back(ProcessRawBytes(notice_number));
+      }
+    }
+  }
+
+  if (parser.HasMore()) {
+    CBS_ASN1_TAG explicit_text_tag;
+    bssl::der::Input explicit_text_value;
+    if (!parser.ReadTagAndValue(&explicit_text_tag, &explicit_text_value)) {
+      return std::nullopt;
+    }
+    std::optional<std::string> explicit_text =
+        ProcessUserNoticeDisplayText(explicit_text_tag, explicit_text_value);
+    if (!explicit_text) {
+      return std::nullopt;
+    }
+    notice.explicit_text = *std::move(explicit_text);
+  }
+
+  if (parser.HasMore()) {
+    return std::nullopt;
+  }
+  return notice;
+}
+
+// Returns false when a known qualifier fails to decode. In that case, its type
+// is preserved in `qualifier`, but its decoded content is left empty.
+bool ProcessPolicyQualifier(const bssl::PolicyQualifierInfo& qualifier_info,
+                            X509CertificateModel::PolicyQualifier* qualifier) {
+  if (qualifier_info.qualifier_oid == bssl::der::Input(bssl::kCpsPointerId)) {
+    qualifier->type = X509CertificateModel::PolicyQualifier::Type::kCpsUri;
+    std::optional<std::string> cps_uri =
+        ProcessIA5String(qualifier_info.qualifier);
+    if (!cps_uri) {
+      return false;
+    }
+    qualifier->cps_uri = *std::move(cps_uri);
+    return true;
+  }
+
+  if (qualifier_info.qualifier_oid == bssl::der::Input(bssl::kUserNoticeId)) {
+    qualifier->type = X509CertificateModel::PolicyQualifier::Type::kUserNotice;
+    std::optional<X509CertificateModel::UserNotice> user_notice =
+        ProcessUserNotice(qualifier_info.qualifier);
+    if (!user_notice) {
+      return false;
+    }
+    qualifier->user_notice = *std::move(user_notice);
+    return true;
+  }
+
+  qualifier->type = X509CertificateModel::PolicyQualifier::Type::kUnknown;
+  qualifier->raw_value = ProcessRawBytes(qualifier_info.qualifier);
+  return true;
+}
+
 }  // namespace
 
 // X509CertificateModel implementation
@@ -717,6 +835,52 @@ X509CertificateModel::GetCRLDistributionPointsFullNames() const {
       auto names = ToGeneralNameList(*dp.distribution_point_fullname);
       result.insert(result.end(), std::make_move_iterator(names.begin()),
                     std::make_move_iterator(names.end()));
+    }
+  }
+  return result;
+}
+
+bool X509CertificateModel::IsCertificatePoliciesCritical() const {
+  CHECK(is_valid());
+  return IsExtensionCritical(extensions_,
+                             bssl::der::Input(bssl::kCertificatePoliciesOid));
+}
+
+X509CertificateModel::CertificatePoliciesResult
+X509CertificateModel::GetCertificatePolicies() const {
+  CHECK(is_valid());
+  CertificatePoliciesResult result;
+  const bssl::ParsedExtension* extension = FindExtension(
+      extensions_, bssl::der::Input(bssl::kCertificatePoliciesOid));
+  if (!extension) {
+    return result;
+  }
+  result.raw_der = ProcessRawBytes(extension->value);
+  std::vector<bssl::PolicyInformation> policies;
+  bssl::CertErrors unused_errors;
+  if (!bssl::ParseCertificatePoliciesExtension(extension->value, &policies,
+                                               &unused_errors)) {
+    result.has_error = true;
+    return result;
+  }
+  for (const bssl::PolicyInformation& policy_info : policies) {
+    CertificatePolicy policy;
+    policy.policy_oid = GetOidTextOrOid(policy_info.policy_oid);
+    // Keep a known qualifier that fails to decode, then stop decoding.
+    for (const bssl::PolicyQualifierInfo& qualifier_info :
+         policy_info.policy_qualifiers) {
+      PolicyQualifier qualifier;
+      const bool qualifier_decoded =
+          ProcessPolicyQualifier(qualifier_info, &qualifier);
+      policy.qualifiers.push_back(std::move(qualifier));
+      if (!qualifier_decoded) {
+        result.has_error = true;
+        break;
+      }
+    }
+    result.policies.push_back(std::move(policy));
+    if (result.has_error) {
+      break;
     }
   }
   return result;
