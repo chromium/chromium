@@ -847,8 +847,11 @@ class AutofillClient {
   // Notifies the user that operation to fetch data failed.
   virtual void ShowAutofillAiFetchEntityFailureNotification();
 
-  // Notifies the user that an AtMemory operation to fetch PII data failed.
-  virtual void ShowAtMemoryFetchFailureNotification();
+  // Notifies the user that an AtMemory operation to fetch PII data failed. If
+  // `message_override` is provided, it is displayed instead of the generic
+  // error message.
+  virtual void ShowAtMemoryFetchFailureNotification(
+      std::optional<std::u16string> message_override);
 
   // Notifies the user that prefetching Autofill AI entities failed.
   virtual void ShowAutofillAiPreFetchFailureNotification();

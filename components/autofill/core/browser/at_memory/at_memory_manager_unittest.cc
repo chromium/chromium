@@ -102,7 +102,10 @@ class MockAutofillClient : public TestAutofillClient {
               ShowAutofillAiFetchEntityFailureNotification,
               (),
               (override));
-  MOCK_METHOD(void, ShowAtMemoryFetchFailureNotification, (), (override));
+  MOCK_METHOD(void,
+              ShowAtMemoryFetchFailureNotification,
+              (std::optional<std::u16string>),
+              (override));
   MOCK_METHOD(void,
               HideSuggestions,
               (SuggestionHidingReason, std::optional<FillingProduct>),
@@ -1038,7 +1041,8 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
       .WillOnce(RunOnceCallback<5>(base::unexpected(
           AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed)));
 
-  EXPECT_CALL(autofill_client(), ShowAtMemoryFetchFailureNotification());
+  EXPECT_CALL(autofill_client(),
+              ShowAtMemoryFetchFailureNotification(Eq(std::nullopt)));
   EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
@@ -1051,6 +1055,47 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.FetchPersonalContextPiiData.FailureReason",
       AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed, 1);
+}
+
+// Tests that when fetching the unmasked Personal Context value fails due to
+// reauth in progress, the manager triggers the fetch error notification with
+// a specific error message override.
+TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_ReauthInProgress) {
+  base::HistogramTester histogram_tester;
+  auto [form_id, field_id] = SeeFormAndShowPopup();
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
+                             u"1234");
+    entry.identifier = "personal-context-guid";
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+
+  EXPECT_CALL(
+      mock_query_service(),
+      AuthenticateAndFetchPiiEntity(
+          Ref(autofill_client()),
+          GetAuthenticationMessage(
+              autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
+          std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
+      .WillOnce(RunOnceCallback<5>(
+          base::unexpected(AtMemoryQueryService::SpiiRetrievalFailureReason::
+                               kReauthInProgress)));
+
+  EXPECT_CALL(
+      autofill_client(),
+      ShowAtMemoryFetchFailureNotification(
+          std::make_optional(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_AT_MEMORY_REAUTH_IN_PROGRESS_ERROR_NOTIFICATION))));
+  EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
 }
 
 // Tests that when fetching the unmasked entity instance fails, the manager

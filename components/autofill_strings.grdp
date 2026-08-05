@@ -835,6 +835,9 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_FETCH_ERROR_NOTIFICATION" desc="A toast message appearing at the top of the screen when fetching AtMemory information fails." translateable="false">
     Something went wrong. Try again
   </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_REAUTH_IN_PROGRESS_ERROR_NOTIFICATION" desc="A toast message appearing at the top of the screen when fetching AtMemory information fails due to reauth already in progress." translateable="false">
+    Another verification is in progress. Try again later.
+  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE" desc="Title of the AtMemory search trigger affordance." translateable="false">
     Try searching in Chrome Memory
   </message>

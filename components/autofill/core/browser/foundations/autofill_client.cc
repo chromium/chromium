@@ -400,7 +400,8 @@ void AutofillClient::ShowAutofillAiFetchEntityFailureNotification() {
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::ShowAtMemoryFetchFailureNotification() {
+void AutofillClient::ShowAtMemoryFetchFailureNotification(
+    std::optional<std::u16string> message_override) {
   NOTIMPLEMENTED();
 }
 
