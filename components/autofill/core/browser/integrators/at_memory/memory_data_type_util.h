@@ -15,6 +15,8 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 
 namespace personal_context::proto {
 class AtMemoryQueryResponse;
@@ -81,6 +83,12 @@ std::vector<MemorySearchResult> ExtractRemoteResults(
     const personal_context::proto::AtMemoryQueryResponse& response,
     std::string_view app_locale);
 
+// Extracts the unmasked PII value from `entity` based on the requested
+// `data_type`.
+std::optional<std::u16string> GetUnmaskedPiiFromEntity(
+    const personal_context::proto::Entity& entity,
+    MemoryDataType data_type);
+
 // The following functions are exposed in the header for testing purposes only:
 
 // Converts a `proto::MemoryDataType` to a local `MemoryDataType`. Returns
@@ -114,6 +122,19 @@ std::u16string FormatMemoryDataTypeLabelValue(
 
 // Returns the primary attribute type for a given entity type.
 AttributeType GetPrimaryAttributeType(EntityType entity_type);
+
+// Returns true if `data_type` represents a dynamic transaction type (e.g.
+// Shipment or Order).
+bool IsDynamicTransactionType(MemoryDataType data_type);
+
+// Returns a suggestion for managing the given `type`. Returns std::nullopt
+// if the type does not support management.
+std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type);
+
+// Returns the icon for a suggestion of the given `type`. `is_autofill_only`
+// should be true if the data source is only Autofill (no AI).
+Suggestion::Icon GetSuggestionIcon(MemoryDataType type, bool is_autofill_only);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_UTIL_H_

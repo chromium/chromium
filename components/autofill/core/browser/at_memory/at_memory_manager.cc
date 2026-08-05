@@ -75,53 +75,6 @@ Suggestion CreateFetchingSuggestion() {
   return suggestion;
 }
 
-std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
-  auto create_suggestion = [](SuggestionType suggestion_type, int string_id) {
-    Suggestion suggestion(l10n_util::GetStringUTF16(string_id),
-                          suggestion_type);
-    suggestion.icon = Suggestion::Icon::kSettings;
-    suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-    return suggestion;
-  };
-
-  switch (GetMemoryDataTypeCategory(type)) {
-    case MemoryDataTypeCategory::kContactInfo:
-      return create_suggestion(SuggestionType::kManageAddress,
-                               IDS_AUTOFILL_AT_MEMORY_MANAGE_CONTACT_INFO);
-
-    case MemoryDataTypeCategory::kCreditCard:
-      return create_suggestion(SuggestionType::kManageCreditCard,
-                               IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
-
-    case MemoryDataTypeCategory::kIban:
-      return create_suggestion(SuggestionType::kManageIban,
-                               IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
-
-    case MemoryDataTypeCategory::kPassport:
-    case MemoryDataTypeCategory::kDriversLicense:
-    case MemoryDataTypeCategory::kNationalIdCard:
-      return create_suggestion(
-          SuggestionType::kManageAutofillAiIdentityDocs,
-          IDS_AUTOFILL_AI_MANAGE_IDENTITY_DOCS_SUGGESTION_MAIN_TEXT);
-
-    case MemoryDataTypeCategory::kVehicle:
-    case MemoryDataTypeCategory::kFlightReservation:
-    case MemoryDataTypeCategory::kKnownTravelerNumber:
-    case MemoryDataTypeCategory::kRedressNumber:
-      return create_suggestion(
-          SuggestionType::kManageAutofillAiTravel,
-          IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT);
-
-    case MemoryDataTypeCategory::kOrder:
-    case MemoryDataTypeCategory::kShipment:
-      return create_suggestion(
-          SuggestionType::kManageAutofillAiShopping,
-          IDS_AUTOFILL_AI_MANAGE_SHOPPING_SUGGESTION_MAIN_TEXT);
-    case MemoryDataTypeCategory::kUnknown:
-      return std::nullopt;
-  }
-}
-
 // Returns the primary type name label for `entry`. For AutofillAi
 // entities and attributes, this resolves to the Entity name.
 std::u16string GetSuggestionLabelTypeName(const MemorySearchResult& entry) {
@@ -168,48 +121,6 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataTypeCategory::kUnknown:
       return std::monostate();
   }
-}
-
-Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
-  const bool is_autofill_only =
-      search_result.sources.size() == 1 &&
-      search_result.sources.front().type == MemoryEntrySourceType::kAutofill;
-  switch (GetMemoryDataTypeCategory(search_result.type)) {
-    case MemoryDataTypeCategory::kContactInfo:
-      return is_autofill_only ? Suggestion::Icon::kLocation
-                              : Suggestion::Icon::kLocationSpark;
-    case MemoryDataTypeCategory::kCreditCard:
-    case MemoryDataTypeCategory::kIban:
-      return is_autofill_only ? Suggestion::Icon::kCardGenericVector
-                              : Suggestion::Icon::kCardGenericSpark;
-    case MemoryDataTypeCategory::kVehicle:
-      return is_autofill_only ? Suggestion::Icon::kVehicle
-                              : Suggestion::Icon::kVehicleSpark;
-    case MemoryDataTypeCategory::kPassport:
-      return is_autofill_only ? Suggestion::Icon::kPassport
-                              : Suggestion::Icon::kPassportSpark;
-    case MemoryDataTypeCategory::kDriversLicense:
-    case MemoryDataTypeCategory::kNationalIdCard:
-      return is_autofill_only ? Suggestion::Icon::kIdCard
-                              : Suggestion::Icon::kIdCardSpark;
-    case MemoryDataTypeCategory::kFlightReservation:
-      return is_autofill_only ? Suggestion::Icon::kFlight
-                              : Suggestion::Icon::kFlightSpark;
-    case MemoryDataTypeCategory::kKnownTravelerNumber:
-    case MemoryDataTypeCategory::kRedressNumber:
-      return is_autofill_only ? Suggestion::Icon::kIdCard2
-                              : Suggestion::Icon::kIdCard2Spark;
-    case MemoryDataTypeCategory::kOrder:
-      return is_autofill_only ? Suggestion::Icon::kOrder
-                              : Suggestion::Icon::kOrderSpark;
-    case MemoryDataTypeCategory::kShipment:
-      return is_autofill_only ? Suggestion::Icon::kShipment
-                              : Suggestion::Icon::kShipmentSpark;
-    case MemoryDataTypeCategory::kUnknown:
-      return is_autofill_only ? Suggestion::Icon::kNoIcon
-                              : Suggestion::Icon::kTextSpark;
-  }
-  NOTREACHED();
 }
 
 // Returns true if `entry` is sourced from Autofill.
@@ -309,7 +220,10 @@ Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
   Suggestion suggestion(
       MaybeObfuscateValue(entry.value, entry.type, is_personal_context_sourced),
       SuggestionType::kAtMemorySearchResult);
-  suggestion.icon = GetIcon(entry);
+  suggestion.icon = GetSuggestionIcon(
+      entry.type,
+      /*is_autofill_only=*/entry.sources.size() == 1 &&
+          entry.sources.front().type == MemoryEntrySourceType::kAutofill);
 
   // Label row: [type_name, metadata[0].value, ...]
   std::vector<Suggestion::Text> label_row;
