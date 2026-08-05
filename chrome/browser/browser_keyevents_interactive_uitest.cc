@@ -736,7 +736,8 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
 }
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, EditorKeyBindings) {
+// TODO(crbug.com/542810322): This test is flaky.
+IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, DISABLED_EditorKeyBindings) {
   static const KeyEventTestData kTestCtrlA = {
     ui::VKEY_A, true, false, false, false,
     false, false, false, false, 4,
