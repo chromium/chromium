@@ -17,7 +17,9 @@
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "base/types/expected_macros.h"
+#include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/remove_obsolete_bundle_versions_cache_command.h"
@@ -31,10 +33,13 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/isolated_web_app_external_install_options.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
+#include "net/base/url_util.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -43,6 +48,14 @@ namespace {
 using SessionType = IwaCacheClient::SessionType;
 
 bool HasManagedGuestSessionInPolicy() {
+  // If CrosSettings does not have the device local accounts pref initialized yet
+  // (e.g. during early startup or before policy is loaded), assume a Managed Guest
+  // Session policy exists to avoid prematurely deleting cached bundles.
+  const base::ListValue* list = nullptr;
+  if (!ash::CrosSettings::Get()->GetList(ash::kAccountsPrefDeviceLocalAccounts,
+                                         &list)) {
+    return true;
+  }
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(ash::CrosSettings::Get());
   auto managed_gest_session = std::find_if(
@@ -50,6 +63,7 @@ bool HasManagedGuestSessionInPolicy() {
       [](auto& account) {
         return account.type == policy::DeviceLocalAccountType::kPublicSession;
       });
+
   return managed_gest_session != device_local_accounts.end();
 }
 
@@ -81,7 +95,43 @@ void AddResultToLog(const std::string& key,
   operations_results.Append(base::DictValue().Set(key, std::move(value)));
 }
 
+using KioskIwaInfo = IwaBundleCacheManager::KioskIwaInfo;
+
+base::DictValue KioskIwaInfoToDict(const KioskIwaInfo& info) {
+  return base::DictValue()
+      .Set("update_manifest_url", info.update_manifest_url)
+      .Set("pinned_version", info.pinned_version)
+      .Set("allow_downgrades", info.allow_downgrades)
+      .Set("update_channel", info.update_channel);
+}
+
+std::optional<KioskIwaInfo> DictToKioskIwaInfo(const base::DictValue& dict) {
+  const std::string* update_manifest_url =
+      dict.FindString("update_manifest_url");
+  const std::string* pinned_version = dict.FindString("pinned_version");
+  std::optional<bool> allow_downgrades = dict.FindBool("allow_downgrades");
+  const std::string* update_channel = dict.FindString("update_channel");
+
+  if (!update_manifest_url || !pinned_version || !allow_downgrades ||
+      !update_channel) {
+    return std::nullopt;
+  }
+
+  return KioskIwaInfo{
+      .update_manifest_url = *update_manifest_url,
+      .pinned_version = *pinned_version,
+      .allow_downgrades = *allow_downgrades,
+      .update_channel = *update_channel,
+  };
+}
+
 }  // namespace
+
+// static
+void IwaBundleCacheManager::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kKioskIwaCachePolicyState);
+}
 
 IwaBundleCacheManager::IwaBundleCacheManager(Profile& profile)
     : profile_(profile) {}
@@ -92,21 +142,20 @@ void IwaBundleCacheManager::Start() {
   CHECK(provider_);
 
   if (IsIwaBundleCacheFeatureEnabled()) {
+    LoadKioskIwaPolicyInfoFromPrefs();
+
     // Remove MGS and Kiosk app cache directories when they are not in the
     // device local account policy anymore or when policy changed. This should
     // be done during any session.
-    MaybeRemoveManagedGuestSessionCache();
-    EvictUnnecessaryIwasFromKioskCache();
-
-    if (ash::CrosSettings::IsInitialized()) {
-      cros_settings_subscription_ =
-          ash::CrosSettings::Get()->AddSettingsObserver(
-              ash::kAccountsPrefDeviceLocalAccounts,
-              base::BindRepeating(
-                  &IwaBundleCacheManager::EvictUnnecessaryIwasFromKioskCache,
-                  weak_ptr_factory_.GetWeakPtr()));
+    if (GetKioskIwaPolicyInfo().empty() &&
+        GetPolicyInstalledIwasForManagedGuestSession(*profile_).empty()) {
+      MaybeRemoveManagedGuestSessionCache();
+      EvictUnnecessaryIwasFromKioskCache();
+      RegisterSettingsObserver();
     } else {
-      CHECK_IS_TEST();
+      IwaRuntimeDataProvider::GetInstance().OnBestEffortRuntimeDataReady().Post(
+          FROM_HERE, base::BindOnce(&IwaBundleCacheManager::OnRuntimeDataReady,
+                                    weak_ptr_factory_.GetWeakPtr()));
     }
   }
 
@@ -117,6 +166,15 @@ void IwaBundleCacheManager::Start() {
 
   install_manager_observation_.Observe(&provider_->install_manager());
   CleanupManagedGuestSessionOrphanedIwas();
+}
+
+void IwaBundleCacheManager::OnRuntimeDataReady() {
+  RegisterSettingsObserver();
+
+  // Remove MGS and Kiosk app cache directories when they are not in the
+  // device local account policy anymore or when policy changed.
+  MaybeRemoveManagedGuestSessionCache();
+  EvictUnnecessaryIwasFromKioskCache();
 }
 
 void IwaBundleCacheManager::SetProvider(base::PassKey<WebAppProvider>,
@@ -154,6 +212,26 @@ base::Value IwaBundleCacheManager::GetDebugValue() const {
           .Set(kOperationsResults, base::Value(operations_results_.Clone())));
 }
 
+void IwaBundleCacheManager::RegisterSettingsObserver() {
+  if (cros_settings_subscription_) {
+    return;
+  }
+  if (ash::CrosSettings::IsInitialized()) {
+    cros_settings_subscription_ = ash::CrosSettings::Get()->AddSettingsObserver(
+        ash::kAccountsPrefDeviceLocalAccounts,
+        base::BindRepeating(
+            &IwaBundleCacheManager::OnDeviceLocalAccountsChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    CHECK_IS_TEST();
+  }
+}
+
+void IwaBundleCacheManager::OnDeviceLocalAccountsChanged() {
+  MaybeRemoveManagedGuestSessionCache();
+  EvictUnnecessaryIwasFromKioskCache();
+}
+
 void IwaBundleCacheManager::MaybeRemoveManagedGuestSessionCache() {
   if (HasManagedGuestSessionInPolicy()) {
     // Managed Guest Session is still in the policy, do not clean it's cache.
@@ -176,6 +254,19 @@ void IwaBundleCacheManager::EvictUnnecessaryIwasFromKioskCache() {
   base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo> new_kiosk_iwas =
       GetKioskIwaPolicyInfo();
 
+  // Only filter allowlisted IWAs if there are Kiosk IWAs in policy and runtime
+  // data is ready, to avoid triggering an on-demand update check on startup when
+  // policy is empty.
+  if (!new_kiosk_iwas.empty() &&
+      IwaRuntimeDataProvider::GetInstance()
+          .OnBestEffortRuntimeDataReady()
+          .is_signaled()) {
+    base::EraseIf(new_kiosk_iwas, [](const auto& item) {
+      return !IwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
+          item.first.id());
+    });
+  }
+
   if (kiosk_iwas_.has_value() && *kiosk_iwas_ == new_kiosk_iwas) {
     return;
   }
@@ -190,19 +281,22 @@ void IwaBundleCacheManager::EvictUnnecessaryIwasFromKioskCache() {
     }
   }
 
-  kiosk_iwas_ = std::move(new_kiosk_iwas);
-
   provider_->scheduler().CleanupIsolatedWebAppBundleCache(
       FilterAllowlistedIwas(std::move(iwas_to_keep)), SessionType::kKiosk,
       base::BindOnce(
           &IwaBundleCacheManager::OnEvictUnnecessaryIwasFromKioskCache,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), new_kiosk_iwas));
 }
 
 void IwaBundleCacheManager::OnEvictUnnecessaryIwasFromKioskCache(
+    base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo> new_kiosk_iwas,
     CleanupBundleCacheResult result) {
   AddResultToLog(kEvictUnnecessaryIwasFromKioskCache, result,
                  operations_results_);
+  if (result) {
+    SaveKioskIwaPolicyInfoToPrefs(new_kiosk_iwas);
+    kiosk_iwas_ = std::move(new_kiosk_iwas);
+  }
 }
 
 void IwaBundleCacheManager::CleanupManagedGuestSessionOrphanedIwas() {
@@ -276,6 +370,44 @@ IwaBundleCacheManager::GetKioskIwaPolicyInfo() {
     };
   }
   return infos;
+}
+
+void IwaBundleCacheManager::LoadKioskIwaPolicyInfoFromPrefs() {
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  if (!local_state ||
+      !local_state->HasPrefPath(prefs::kKioskIwaCachePolicyState)) {
+    return;
+  }
+
+  base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo> infos;
+  const base::DictValue& dict =
+      local_state->GetDict(prefs::kKioskIwaCachePolicyState);
+  for (auto [id_str, info_val] : dict) {
+    auto bundle_id = web_package::SignedWebBundleId::Create(id_str);
+    if (!bundle_id.has_value() || !info_val.is_dict()) {
+      continue;
+    }
+    if (auto info = DictToKioskIwaInfo(info_val.GetDict())) {
+      infos[*bundle_id] = std::move(*info);
+    }
+  }
+  kiosk_iwas_ = std::move(infos);
+}
+
+void IwaBundleCacheManager::SaveKioskIwaPolicyInfoToPrefs(
+    const base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo>& infos) {
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  if (!local_state) {
+    return;
+  }
+
+  base::DictValue dict;
+  for (const auto& [id, info] : infos) {
+    dict.Set(id.id(), KioskIwaInfoToDict(info));
+  }
+  local_state->SetDict(prefs::kKioskIwaCachePolicyState, std::move(dict));
 }
 
 }  // namespace web_app

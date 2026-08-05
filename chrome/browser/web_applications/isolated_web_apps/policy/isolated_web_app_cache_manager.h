@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 
+class PrefRegistrySimple;
 class Profile;
 
 namespace web_app {
@@ -52,9 +53,10 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
   base::Value GetDebugValue() const;
 
- private:
   // Stores policy metadata for Kiosk IWAs. If any of these values change for a
   // bundle ID on policy refresh, the associated bundle is evicted from the
   // cache.
@@ -67,8 +69,14 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
     bool operator==(const KioskIwaInfo& other) const = default;
   };
 
+ private:
   static base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo>
   GetKioskIwaPolicyInfo();
+
+  void LoadKioskIwaPolicyInfoFromPrefs();
+  void SaveKioskIwaPolicyInfoToPrefs(
+      const base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo>&
+          infos);
 
   // If Managed Guest Session is not in configured on the device anymore, remove
   // all IWA bundle cache for it.
@@ -78,7 +86,14 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
   // Cleans IWA bundle cache for Kiosk IWAs which are no longer in the policy
   // list or whose policy configuration / pinned version changed.
   void EvictUnnecessaryIwasFromKioskCache();
-  void OnEvictUnnecessaryIwasFromKioskCache(CleanupBundleCacheResult result);
+  void OnEvictUnnecessaryIwasFromKioskCache(
+      base::flat_map<web_package::SignedWebBundleId, KioskIwaInfo>
+          new_kiosk_iwas,
+      CleanupBundleCacheResult result);
+
+  void RegisterSettingsObserver();
+  void OnDeviceLocalAccountsChanged();
+  void OnRuntimeDataReady();
 
   // Cleans IWA bundle cache for the IWAs which are not in the policy list for
   // current Managed Guest Session. Does nothing when called outside of the
@@ -112,6 +127,7 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
       kiosk_iwas_;
 
   base::CallbackListSubscription cros_settings_subscription_;
+  base::CallbackListSubscription runtime_data_subscription_;
 
   base::WeakPtrFactory<IwaBundleCacheManager> weak_ptr_factory_{this};
 };

@@ -20,12 +20,15 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/test_support/fake_iwa_runtime_data_provider.h"
@@ -138,7 +141,68 @@ class IwaBundleCacheManagerTest : public WebAppTest {
   base::AutoReset<IwaRuntimeDataProvider*> runtime_data_provider_reset_;
 };
 
-TEST_F(IwaBundleCacheManagerTest, AppRemovalFromPolicyClearsCache) {
+TEST_F(IwaBundleCacheManagerTest, PolicyChangeClearsCache) {
+  CreateKioskCacheDir(kWebBundleId1);
+  SetKioskAccounts(
+      scoped_testing_cros_settings_,
+      {CreateIwaKioskAccount(kWebBundleId1, /*pinned_version=*/"1.0.0")});
+
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(IsBundleCachedInKioskDir(kWebBundleId1));
+
+  SetKioskAccounts(
+      scoped_testing_cros_settings_,
+      {CreateIwaKioskAccount(kWebBundleId1, /*pinned_version=*/"2.0.0")});
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_FALSE(IsBundleCachedInKioskDir(kWebBundleId1));
+}
+
+TEST_F(IwaBundleCacheManagerTest, PolicyUpdateManifestUrlChangeClearsCache) {
+  CreateKioskCacheDir(kWebBundleId1);
+  SetKioskAccounts(
+      scoped_testing_cros_settings_,
+      {CreateIwaKioskAccount(kWebBundleId1, /*pinned_version=*/"1.0.0",
+                             /*allow_downgrades=*/false,
+                             /*account_id=*/"account_id",
+                             /*update_manifest_url=*/
+                             "https://example.com/update_v1.json")});
+
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(IsBundleCachedInKioskDir(kWebBundleId1));
+
+  SetKioskAccounts(
+      scoped_testing_cros_settings_,
+      {CreateIwaKioskAccount(kWebBundleId1, /*pinned_version=*/"1.0.0",
+                             /*allow_downgrades=*/false,
+                             /*account_id=*/"account_id",
+                             /*update_manifest_url=*/
+                             "https://example.com/update_v2.json")});
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_FALSE(IsBundleCachedInKioskDir(kWebBundleId1));
+}
+
+TEST_F(IwaBundleCacheManagerTest, PolicyAllowDowngradesChangeClearsCache) {
+  CreateKioskCacheDir(kWebBundleId1);
+  SetKioskAccounts(
+      scoped_testing_cros_settings_,
+      {CreateIwaKioskAccount(kWebBundleId1, /*pinned_version=*/"1.0.0",
+                             /*allow_downgrades=*/false)});
+
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(IsBundleCachedInKioskDir(kWebBundleId1));
+
+  SetKioskAccounts(
+      scoped_testing_cros_settings_,
+      {CreateIwaKioskAccount(kWebBundleId1, /*pinned_version=*/"1.0.0",
+                             /*allow_downgrades=*/true)});
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_FALSE(IsBundleCachedInKioskDir(kWebBundleId1));
+}
+
+TEST_F(IwaBundleCacheManagerTest, MultipleAppsPolicyChange) {
   CreateKioskCacheDir(kWebBundleId1);
   CreateKioskCacheDir(kWebBundleId2);
   SetKioskAccounts(
@@ -157,12 +221,51 @@ TEST_F(IwaBundleCacheManagerTest, AppRemovalFromPolicyClearsCache) {
 
   SetKioskAccounts(
       scoped_testing_cros_settings_,
-      {CreateIwaKioskAccount(kWebBundleId2, /*pinned_version=*/"1.0.0",
+      {CreateIwaKioskAccount(kWebBundleId1, /*pinned_version=*/"2.0.0",
+                             /*allow_downgrades=*/false,
+                             /*account_id=*/"account_id_1"),
+       CreateIwaKioskAccount(kWebBundleId2, /*pinned_version=*/"1.0.0",
                              /*allow_downgrades=*/false,
                              /*account_id=*/"account_id_2")});
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_FALSE(IsBundleCachedInKioskDir(kWebBundleId1));
   EXPECT_TRUE(IsBundleCachedInKioskDir(kWebBundleId2));
+}
+
+TEST_F(IwaBundleCacheManagerTest, StartupClearsCacheIfLocalStatePolicyDiffers) {
+  CreateKioskCacheDir(kWebBundleId1);
+
+  // Populate local_state with an old policy state (pinned_version = "1.0.0").
+  base::DictValue old_info;
+  old_info.Set("update_manifest_url", "https://example.com/update.json");
+  old_info.Set("pinned_version", "1.0.0");
+  old_info.Set("allow_downgrades", false);
+  old_info.Set("update_channel", "");
+
+  base::DictValue local_state_dict;
+  local_state_dict.Set(kWebBundleId1.id(), std::move(old_info));
+  g_browser_process->local_state()->SetDict(prefs::kKioskIwaCachePolicyState,
+                                            std::move(local_state_dict));
+
+  // Configure CrosSettings policy with a new pinned_version = "2.0.0".
+  SetKioskAccounts(
+      scoped_testing_cros_settings_,
+      {CreateIwaKioskAccount(kWebBundleId1, /*pinned_version=*/"2.0.0")});
+
+  // Start the manager. It loads old policy from local_state, compares with
+  // CrosSettings, detects the difference, and clears the cache.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_FALSE(IsBundleCachedInKioskDir(kWebBundleId1));
+
+  // Verify local_state was updated to the new policy state.
+  const base::DictValue& updated_dict =
+      g_browser_process->local_state()->GetDict(
+          prefs::kKioskIwaCachePolicyState);
+  const base::DictValue* app_dict = updated_dict.FindDict(kWebBundleId1.id());
+  ASSERT_TRUE(app_dict);
+  EXPECT_EQ(*app_dict->FindString("pinned_version"), "2.0.0");
 }
 
 }  // namespace web_app

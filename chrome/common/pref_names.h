@@ -2075,6 +2075,11 @@ inline constexpr char kIsolatedWebAppInstallForceList[] =
 inline constexpr char kIsolatedWebAppUserInstallationEnabled[] =
     "profile.isolated_web_app.install.user_install_enabled";
 
+// Dictionary pref storing policy metadata for Kiosk Isolated Web Apps (IWAs) in
+// bundle cache.
+inline constexpr char kKioskIwaCachePolicyState[] =
+    "kiosk.isolated_web_app_cache_policy_state";
+
 // An integer pref that remembers how many force install initializations are
 // pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
 // initializations are pending, the initialization is delayed for

@@ -25,7 +25,8 @@ class BundledIsolatedWebApp;
 // This mixin starts a server that hosts update manifests and bundles.
 class IsolatedWebAppTestUpdateServer {
  public:
-  IsolatedWebAppTestUpdateServer();
+  explicit IsolatedWebAppTestUpdateServer(
+      bool reuse_port_across_restarts = false);
   ~IsolatedWebAppTestUpdateServer();
 
   IsolatedWebAppTestUpdateServer(const IsolatedWebAppTestUpdateServer&) =

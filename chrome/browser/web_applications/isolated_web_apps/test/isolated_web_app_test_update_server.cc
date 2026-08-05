@@ -6,12 +6,17 @@
 
 #include <variant>
 
+#include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -26,12 +31,79 @@ std::unique_ptr<net::test_server::HttpResponse> HttpNotFound() {
   return response;
 }
 
+std::string GetBaseTestName() {
+  const auto* test_info =
+      ::testing::UnitTest::GetInstance()->current_test_info();
+  if (!test_info) {
+    return "";
+  }
+  std::string_view name = test_info->name();
+  while (name.starts_with("PRE_")) {
+    name.remove_prefix(4);
+  }
+  size_t slash_pos = name.find('/');
+  if (slash_pos != std::string_view::npos) {
+    name = name.substr(0, slash_pos);
+  }
+  return std::string(name);
+}
+
+// Returns the file path used to persist the test update server's HTTP port across
+// test restarts (e.g., across PRE_ steps in multi-stage browser tests).
+base::FilePath GetPortFilePath() {
+  base::FilePath user_data_dir =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          switches::kUserDataDir);
+  if (user_data_dir.empty()) {
+    return base::FilePath();
+  }
+  std::string test_name = GetBaseTestName();
+  std::string filename =
+      test_name.empty() ? "iwa_test_update_server_port.txt"
+                        : "iwa_test_update_server_port_" + test_name + ".txt";
+  return user_data_dir.AppendASCII(filename);
+}
+
+// Reads the saved port from `port_file` if it exists and contains a valid port number,
+// otherwise returns 0 (allowing EmbeddedTestServer to pick an available port).
+int ReadSavedPort(const base::FilePath& port_file) {
+  if (port_file.empty()) {
+    return 0;
+  }
+  std::string port_str;
+  int port = 0;
+  if (base::ReadFileToString(port_file, &port_str) &&
+      base::StringToInt(base::TrimWhitespaceASCII(port_str, base::TRIM_ALL),
+                        &port) &&
+      port > 0) {
+    return port;
+  }
+  return 0;
+}
+
 }  // namespace
 
-IsolatedWebAppTestUpdateServer::IsolatedWebAppTestUpdateServer() {
+IsolatedWebAppTestUpdateServer::IsolatedWebAppTestUpdateServer(
+    bool reuse_port_across_restarts) {
   iwa_server_.RegisterRequestHandler(base::BindRepeating(
       &IsolatedWebAppTestUpdateServer::HandleRequest, base::Unretained(this)));
-  EXPECT_TRUE(iwa_server_.Start());
+
+  base::FilePath port_file =
+      reuse_port_across_restarts ? GetPortFilePath() : base::FilePath();
+  int port_to_use = ReadSavedPort(port_file);
+
+  // Try starting the server on the saved port first. If binding fails or no port
+  // was saved, fall back to binding an ephemeral port (0).
+  bool started = iwa_server_.Start(port_to_use);
+  if (!started && port_to_use != 0) {
+    started = iwa_server_.Start(0);
+  }
+  EXPECT_TRUE(started);
+
+  if (reuse_port_across_restarts && !port_file.empty()) {
+    base::WriteFile(port_file, base::NumberToString(iwa_server_.port()));
+  }
+
   storage_.SetBaseUrl(iwa_server_.base_url());
 }
 
