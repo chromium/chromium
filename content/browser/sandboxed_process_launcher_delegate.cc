@@ -108,6 +108,10 @@ SandboxedProcessLauncherDelegate::GetProcessRequirement() {
   return std::nullopt;
 }
 
+bool SandboxedProcessLauncherDelegate::NeedsProcessIsolatedDarwinUserDirs() {
+  return false;
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace content

@@ -26,6 +26,14 @@
 (define darwin-user-cache-dir "DARWIN_USER_CACHE_DIR")
 (define darwin-user-dir "DARWIN_USER_DIR")
 (define darwin-user-temp-dir "DARWIN_USER_TEMP_DIR")
+(define sandbox-child-user-dir "SANDBOX_CHILD_USER_DIR")
+(define sandbox-child-user-cache-dir "SANDBOX_CHILD_USER_CACHE_DIR")
+(define sandbox-child-user-temp-dir "SANDBOX_CHILD_USER_TEMP_DIR")
+
+(define selected-user-cache-dir
+  (if (param-defined? sandbox-child-user-cache-dir)
+      (param sandbox-child-user-cache-dir)
+      (param darwin-user-cache-dir)))
 
 ; Whether to allow processes to post and look up distributed notifications.
 ; See https://crbug.com/513454805.
@@ -76,7 +84,7 @@
 ; See https://crbug.com/1159113
 (define (maybe-disable-metal-shader-cache)
   (if (param-true? disable-metal-shader-cache)
-    (let ((metal-cache-dir (subpath (string-append (param darwin-user-cache-dir)
+    (let ((metal-cache-dir (subpath (string-append selected-user-cache-dir
                                                    "/com.apple.metal"))))
       (deny file-read* metal-cache-dir)
       (deny file-write* metal-cache-dir)
@@ -96,8 +104,8 @@
   (begin
     (if (param helper-bundle-id)
       (let ((helper-bundle-cache-dir
-            (string-append (param darwin-user-cache-dir)
-                            "/" (param helper-bundle-id))))
+            (string-append
+              selected-user-cache-dir "/" (param helper-bundle-id))))
         (allow file-issue-extension
           (require-all
             (extension-class "com.apple.app-sandbox.read-write")

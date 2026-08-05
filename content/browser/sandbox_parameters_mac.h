@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SANDBOX_PARAMETERS_MAC_H_
 #define CONTENT_BROWSER_SANDBOX_PARAMETERS_MAC_H_
 
+#include "base/environment.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -26,6 +27,7 @@ namespace content {
 CONTENT_EXPORT bool SetupSandboxParameters(
     sandbox::mojom::Sandbox sandbox_type,
     const base::CommandLine& command_line,
+    const base::EnvironmentMap& env,
     sandbox::SandboxSerializer* serializer);
 
 // Expands the SandboxType::kNetwork policy to allow reading files from

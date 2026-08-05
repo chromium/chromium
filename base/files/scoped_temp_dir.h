@@ -47,6 +47,13 @@ class BASE_EXPORT ScopedTempDir {
       const FilePath& path,
       FilePath::StringViewType prefix = GetDefaultTempDirPrefix());
 
+#if BUILDFLAG(IS_MAC)
+  // Creates a directory exclusively at |path| and takes ownership of it (fails
+  // if the directory already exists or if any parent directory does not exist).
+  // Don't call multiple times unless Take() has been called first.
+  [[nodiscard]] bool CreateDirectoryExclusive(const FilePath& path);
+#endif
+
   // Takes ownership of directory at |path|, creating it if necessary.
   // Don't call multiple times unless Take() has been called first.
   [[nodiscard]] bool Set(const FilePath& path);

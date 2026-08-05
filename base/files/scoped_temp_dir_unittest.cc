@@ -163,6 +163,36 @@ TEST(ScopedTempDir, Move) {
   EXPECT_FALSE(DirectoryExists(dir_path));
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST(ScopedTempDir, CreateDirectoryExclusive) {
+  FilePath test_path;
+  CreateNewTempDirectory(FILE_PATH_LITERAL("scoped_temp_dir"), &test_path);
+
+  // Against an existing dir, CreateDirectoryExclusive should fail.
+  EXPECT_TRUE(DirectoryExists(test_path));
+  {
+    ScopedTempDir dir;
+    EXPECT_FALSE(dir.CreateDirectoryExclusive(test_path));
+    EXPECT_FALSE(dir.IsValid());
+  }
+  // The directory should NOT be deleted, because CreateDirectoryExclusive
+  // failed and did not take ownership.
+  EXPECT_TRUE(DirectoryExists(test_path));
+
+  // If the directory does not exist, CreateDirectoryExclusive should succeed
+  // and create it.
+  EXPECT_TRUE(DeleteFile(test_path));
+  EXPECT_FALSE(DirectoryExists(test_path));
+  {
+    ScopedTempDir dir;
+    EXPECT_TRUE(dir.CreateDirectoryExclusive(test_path));
+    EXPECT_TRUE(dir.IsValid());
+  }
+  // Now it should be deleted because it went out of scope.
+  EXPECT_FALSE(DirectoryExists(test_path));
+}
+#endif
+
 #if BUILDFLAG(IS_WIN)
 TEST(ScopedTempDir, LockedTempDir) {
   ScopedTempDir dir;

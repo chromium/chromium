@@ -68,6 +68,19 @@ bool ScopedTempDir::CreateUniqueTempDirUnderPath(
   return true;
 }
 
+#if BUILDFLAG(IS_MAC)
+bool ScopedTempDir::CreateDirectoryExclusive(const FilePath& path) {
+  CHECK(path_.empty());
+
+  if (base::File::Mkdir(path, S_IRWXU) != File::FILE_OK) {
+    return false;
+  }
+
+  path_ = path;
+  return true;
+}
+#endif
+
 bool ScopedTempDir::Set(const FilePath& path) {
   if (!path_.empty()) {
     return false;

@@ -117,15 +117,43 @@
   (subpath "/System/Library/Video/Plug-Ins")
 )
 
+; CoreML and Metal rely on access to various darwin user dirs. If we have
+; created a process-isolated subdirectory for any of those dirs, allow full
+; read/write access to the subdirectory and disallow all access to parent and
+; sibling directories (https://crbug.com/528379972).
+(define (allow-only-sandbox-child-dir child-dir-path parent-dir-path)
+  (begin
+    (deny file-read* file-write*
+      (subpath parent-dir-path))
+    (allow file-read* file-write*
+      (subpath child-dir-path))))
+
 ; crbug.com/980134
 ; Restrict file-write to data/create/unlink only — the GPU process does not need
 ; file-write-xattr or file-write-mode.
 ; TODO(crbug.com/491422244): Remove file-write-owner needed by WebNN.
-(allow file-read* file-write-data file-write-create file-write-owner file-write-unlink
-  (subpath (param darwin-user-cache-dir))
-  (subpath (param darwin-user-dir))
-  (subpath (param darwin-user-temp-dir))
-)
+(define (allow-default-darwin-dir parent-dir-path)
+  (allow file-read*
+    file-write-data
+    file-write-create
+    file-write-owner
+    file-write-unlink
+    (subpath parent-dir-path)))
+
+(if (param-defined? sandbox-child-user-dir)
+  (allow-only-sandbox-child-dir (param sandbox-child-user-dir)
+    (param darwin-user-dir))
+  (allow-default-darwin-dir (param darwin-user-dir)))
+
+(if (param-defined? sandbox-child-user-cache-dir)
+  (allow-only-sandbox-child-dir (param sandbox-child-user-cache-dir)
+    (param darwin-user-cache-dir))
+  (allow-default-darwin-dir (param darwin-user-cache-dir)))
+
+(if (param-defined? sandbox-child-user-temp-dir)
+  (allow-only-sandbox-child-dir (param sandbox-child-user-temp-dir)
+    (param darwin-user-temp-dir))
+  (allow-default-darwin-dir (param darwin-user-temp-dir)))
 
 ; Metal issues a sandbox extension to permit MTLCompilerService to read source
 ; files from disk. It's much broader than we'd like (see
