@@ -75,6 +75,9 @@ class ActorUiStateManagerInterface {
   virtual std::optional<actor::ActorTask::State> GetActorTaskState(
       TaskId id) = 0;
 
+  virtual std::optional<actor::ActorTask::InterruptReason>
+  GetActorTaskInterruptReason(TaskId id) = 0;
+
   // Gets the duration of a given task.
   virtual ActorTask::TaskDuration GetDuration(TaskId task_id) = 0;
 

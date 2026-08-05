@@ -471,6 +471,12 @@ std::optional<actor::ActorTask::State> ActorUiStateManager::GetActorTaskState(
   return std::nullopt;
 }
 
+std::optional<actor::ActorTask::InterruptReason>
+ActorUiStateManager::GetActorTaskInterruptReason(TaskId id) {
+  ActorTask* task = actor_service_->GetTask(id);
+  return task ? task->GetInterruptReason() : std::nullopt;
+}
+
 size_t ActorUiStateManager::GetInactiveTaskCount() {
   return stopped_task_info_.size();
 }

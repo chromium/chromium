@@ -42,6 +42,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
       TaskId id) override;
   std::optional<actor::ActorTask::State> GetActorTaskState(TaskId id) override;
+  std::optional<actor::ActorTask::InterruptReason> GetActorTaskInterruptReason(
+      TaskId id) override;
   ActorTask::TaskDuration GetDuration(TaskId task_id) override;
   glic::mojom::FeatureMode GetFeatureMode(TaskId task_id) override;
   size_t GetInactiveTaskCount() override;

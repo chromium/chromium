@@ -61,6 +61,10 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               GetFeatureMode,
               (TaskId task_id),
               (override));
+  MOCK_METHOD(std::optional<actor::ActorTask::InterruptReason>,
+              GetActorTaskInterruptReason,
+              (TaskId id),
+              (override));
   MOCK_METHOD(size_t, GetInactiveTaskCount, (), (override));
 };
 

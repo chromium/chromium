@@ -27,6 +27,8 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
+using InterruptReason = actor::ActorTask::InterruptReason;
+
 namespace {
 const int kBubbleRowIconSize = 16;
 const int kRedirectIconSize = 20;
@@ -75,12 +77,30 @@ ui::ColorId GetRowColor(actor::ActorTask::State state,
   return ui::kColorMenuIcon;
 }
 
+bool ShouldShowConsentOverride(
+    actor::ActorTask::State state,
+    bool has_tab,
+    std::optional<InterruptReason> interrupt_reason) {
+  if (!has_tab && !(state == actor::ActorTask::State::kActing ||
+                    state == actor::ActorTask::State::kReflecting)) {
+    return false;
+  }
+  return glic::GlicActorTaskIconManager::RequiresAttention(state) &&
+         interrupt_reason ==
+             InterruptReason::kWaitingForExperimentalTriggeringConsent;
+}
+
 // Returns the appropriate localized subtitle string based on task state.
 // If the task was completed and the tab is closed, returns "Tab closed".
 std::u16string GetRowSubtitle(actor::ActorTask::State state,
                               bool has_tab,
                               bool requires_processing,
-                              glic::mojom::FeatureMode feature_mode) {
+                              glic::mojom::FeatureMode feature_mode,
+                              std::optional<InterruptReason> interrupt_reason) {
+  if (ShouldShowConsentOverride(state, has_tab, interrupt_reason)) {
+    return l10n_util::GetStringUTF16(
+        IDS_GLIC_TASK_WAITING_FOR_CONSENT_SUBTITLE);
+  }
   // If the task does not have a tab, show the "Tab closed" subtitle *unless*
   // the task is active (kActing or kReflecting). Active tasks may start with no
   // associated tab yet, so we avoid displaying "Tab closed" on them.
@@ -119,7 +139,8 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
     std::u16string title_text,
     bool requires_processing,
     bool has_tab,
-    glic::mojom::FeatureMode feature_mode)
+    glic::mojom::FeatureMode feature_mode,
+    std::optional<InterruptReason> interrupt_reason)
     : has_tab_(has_tab), requires_processing_(requires_processing) {
   SetCallback(std::move(on_row_clicked));
   SetNotifyEnterExitOnChild(true);
@@ -164,6 +185,10 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
       gfx::Insets::TLBR(kLabelsContainerTopMargin, horizontal_spacing, 0,
                         horizontal_spacing));
 
+  if (ShouldShowConsentOverride(state, has_tab, interrupt_reason)) {
+    title_text =
+        l10n_util::GetStringUTF16(IDS_GLIC_TASK_WAITING_FOR_CONSENT_TITLE);
+  }
   title_ = labels_container->AddChildView(
       std::make_unique<views::Label>(title_text));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -171,7 +196,8 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
   title_->SetSubpixelRenderingEnabled(false);
 
   subtitle_ = labels_container->AddChildView(std::make_unique<views::Label>(
-      GetRowSubtitle(state, has_tab, requires_processing, feature_mode)));
+      GetRowSubtitle(state, has_tab, requires_processing, feature_mode,
+                     interrupt_reason)));
   subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
   subtitle_->SetEnabledColor(GetRowColor(state, has_tab, requires_processing));

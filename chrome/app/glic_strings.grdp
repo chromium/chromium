@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Glic specific strings (included from generated_resources.grd). -->
 <grit-part>
+  <message name="IDS_GLIC_TASK_WAITING_FOR_CONSENT_TITLE" desc="Title of task in task list bubble showing that the task is waiting for user consent.">
+    Review Important Information
+  </message>
+  <message name="IDS_GLIC_TASK_WAITING_FOR_CONSENT_SUBTITLE" desc="Subtitle of task in task list bubble showing that the task is waiting for user consent.">
+    Working on your task
+  </message>
   <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini">
     You're sharing this tab with Gemini
   </message>
