@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_
 #define CHROME_BROWSER_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_
 
+#include <optional>
+
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +27,7 @@ void GetUserAffiliationStatus(base::DictValue* dict, Profile* profile);
 void SetProfileId(base::DictValue* dict, Profile* profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
-void GetOffHoursStatus(base::DictValue* dict);
+std::optional<bool> GetOffHoursStatus();
 
 // Adds a new entry to |dict| with the enterprise domain manager of the user
 // associated with |profile|. This method shouldn't be called for device scope
