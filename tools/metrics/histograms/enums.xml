@@ -13564,6 +13564,8 @@ from previous Chrome versions.
       label="CustomizeChromeWallpaperSearchInspirationCard:disabled"/>
   <int value="-311262273" label="BrowsingHistoryActorIntegrationM1:enabled"/>
   <int value="-311148335" label="v8-pac-mojo-out-of-process"/>
+  <int value="-311119715"
+      label="AutofillEnableAutofillSettingsEnterprisePolicy:disabled"/>
   <int value="-310908854" label="new-wallpaper-picker"/>
   <int value="-310615515" label="EnableSuggestedFiles:disabled"/>
   <int value="-309744108"
@@ -16198,6 +16200,8 @@ from previous Chrome versions.
   <int value="521992655" label="LauncherPlayStoreSearch:disabled"/>
   <int value="522013077" label="LinkCapturingAutoDisplayIntentPicker:disabled"/>
   <int value="522179748" label="DataControlsSearchWith:disabled"/>
+  <int value="523491968"
+      label="AutofillEnableAutofillSettingsEnterprisePolicy:enabled"/>
   <int value="524557829" label="OmniboxSteadyStateTextColor:enabled"/>
   <int value="525286392" label="PageInfoAboutThisSiteNonMsbb:disabled"/>
   <int value="525789079" label="ContextualTasksSearchQuery:disabled"/>
