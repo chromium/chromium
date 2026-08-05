@@ -5303,24 +5303,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.RepeatUsage" enum="BooleanIsRepeat"
-    expires_after="2026-01-18">
+    expires_after="2027-03-31">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Recorded each time the Global Media Controls dialog is opened. True if this
     was repeat usage of the dialog (e.g. if it's not the first time the dialog
-    has been opened this session).
+    has been opened this session). Note: This histogram was expired from
+    2026-01-18 to 2026-08-04; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.UserActionFocus"
-    enum="BooleanFocused" expires_after="2026-01-18">
+    enum="BooleanFocused" expires_after="2027-03-31">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The focused state of the WebContents associated with the MediaSession that
     the user is interacting with via the Global Media Controls. Recorded when
     the user presses an action on the Global Media Controls dialog (e.g. play).
+    Note: This histogram was expired from 2026-01-18 to 2026-08-04; data may be
+    missing.
   </summary>
 </histogram>
 
