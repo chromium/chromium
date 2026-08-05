@@ -1114,22 +1114,7 @@ std::unique_ptr<ColorProfile> ColorProfile::Create(
   return std::make_unique<ColorProfile>(std::move(skia_profile));
 }
 
-ColorProfileTransform::ColorProfileTransform(
-    const skcms_ICCProfile* src_profile,
-    const skcms_ICCProfile* dst_profile) {
-  DCHECK(src_profile);
-  DCHECK(dst_profile);
-  src_profile_ = src_profile;
-  dst_profile_ = *dst_profile;
-}
 
-const skcms_ICCProfile* ColorProfileTransform::SrcProfile() const {
-  return src_profile_;
-}
-
-const skcms_ICCProfile* ColorProfileTransform::DstProfile() const {
-  return &dst_profile_;
-}
 
 void ImageDecoder::SetEmbeddedColorProfile(
     std::unique_ptr<ColorProfile> profile) {
@@ -1137,7 +1122,7 @@ void ImageDecoder::SetEmbeddedColorProfile(
 
   embedded_color_profile_ = std::move(profile);
   sk_image_color_space_ = nullptr;
-  embedded_to_sk_image_transform_.reset();
+  needs_decode_time_color_transform_ = false;
 
   if (color_behavior_ == ColorBehavior::kTag) {
     // Set `sk_image_color_space_` to the best SkColorSpace approximation
@@ -1155,7 +1140,7 @@ void ImageDecoder::SetEmbeddedColorProfile(
             icc_profile->CICP.video_full_range_flag,
             /*prefer_srgb_trfn=*/true);
         // A CICP profile's SkColorSpace is considered an exact representation
-        // of `profile`, so don't create `embedded_to_sk_image_transform_`.
+        // of `profile`, so decode-time transform is not needed.
         if (sk_image_color_space_) {
           return;
         }
@@ -1166,8 +1151,7 @@ void ImageDecoder::SetEmbeddedColorProfile(
       sk_image_color_space_ = SkColorSpace::Make(*icc_profile);
 
       // If the embedded color space isn't supported by Skia, we will transform
-      // to a supported color space using `embedded_to_sk_image_transform_` at
-      // decode time.
+      // to a supported color space at decode time.
       if (!sk_image_color_space_ && icc_profile->has_toXYZD50) {
         // Preserve the gamut, but convert to a standard transfer function.
         skcms_ICCProfile with_srgb = *icc_profile;
@@ -1181,7 +1165,7 @@ void ImageDecoder::SetEmbeddedColorProfile(
       }
     } else {
       // If there is no `embedded_color_profile_`, then assume that the content
-      // was sRGB (and `embedded_to_sk_image_transform_` is not needed).
+      // was sRGB (and decode-time transform is not needed).
       sk_image_color_space_ = SkColorSpace::MakeSRGB();
       return;
     }
@@ -1190,13 +1174,13 @@ void ImageDecoder::SetEmbeddedColorProfile(
     sk_image_color_space_ = SkColorSpace::MakeSRGB();
 
     // If there is no `embedded_color_profile_`, then assume the content was
-    // sRGB  (and, as above, `embedded_to_sk_image_transform_` is not needed).
+    // sRGB  (and, as above, decode-time transform is not needed).
     if (!embedded_color_profile_) {
       return;
     }
   }
 
-  // If we arrive here then we may need to create a transform from
+  // If we arrive here then we may need a decode-time transform from
   // `embedded_color_profile_` to `sk_image_color_space_`.
   DCHECK(embedded_color_profile_);
   DCHECK(sk_image_color_space_);
@@ -1208,21 +1192,22 @@ void ImageDecoder::SetEmbeddedColorProfile(
     return;
   }
 
-  embedded_to_sk_image_transform_ =
-      std::make_unique<ColorProfileTransform>(src_profile, &dst_profile);
+  needs_decode_time_color_transform_ = true;
 }
-
-ColorProfileTransform::~ColorProfileTransform() = default;
 
 void ImageDecoder::DoDecodeTimeColorTransformIfNeeded(
     ImageFrame& buffer,
     const SkIRect& rect,
     std::optional<SkColorType> override_src_color_type,
     std::optional<SkAlphaType> override_src_alpha_type) {
-  if (!NeedsDecodeTimeColorTransform()) {
+  if (!needs_decode_time_color_transform_) {
     return;
   }
-  const ColorProfileTransform* transform = ColorTransform();
+  DCHECK(embedded_color_profile_);
+  DCHECK(sk_image_color_space_);
+  const skcms_ICCProfile* src_profile = embedded_color_profile_->GetProfile();
+  skcms_ICCProfile dst_profile;
+  sk_image_color_space_->toProfile(&dst_profile);
 
   const skcms_AlphaFormat dst_alpha_format =
       (buffer.HasAlpha() && buffer.PremultiplyAlpha())
@@ -1239,9 +1224,8 @@ void ImageDecoder::DoDecodeTimeColorTransformIfNeeded(
     for (int y = rect.top(); y < rect.bottom(); ++y) {
       ImageFrame::PixelDataF16* const row = buffer.GetAddrF16(rect.left(), y);
       const bool success = skcms_Transform(
-          row, color_format, src_alpha_format, transform->SrcProfile(), row,
-          color_format, dst_alpha_format, transform->DstProfile(),
-          rect.width());
+          row, color_format, src_alpha_format, src_profile, row, color_format,
+          dst_alpha_format, &dst_profile, rect.width());
       DCHECK(success);
     }
   } else {
@@ -1254,9 +1238,8 @@ void ImageDecoder::DoDecodeTimeColorTransformIfNeeded(
     for (int y = rect.top(); y < rect.bottom(); ++y) {
       ImageFrame::PixelData* const row = buffer.GetAddr(rect.left(), y);
       const bool success = skcms_Transform(
-          row, src_pixel_format, src_alpha_format, transform->SrcProfile(), row,
-          dst_pixel_format, dst_alpha_format, transform->DstProfile(),
-          rect.width());
+          row, src_pixel_format, src_alpha_format, src_profile, row,
+          dst_pixel_format, dst_alpha_format, &dst_profile, rect.width());
       DCHECK(success);
     }
   }

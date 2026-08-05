@@ -130,24 +130,6 @@ class PLATFORM_EXPORT ColorProfile final {
   std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile_;
 };
 
-class PLATFORM_EXPORT ColorProfileTransform final {
-  USING_FAST_MALLOC(ColorProfileTransform);
-
- public:
-  ColorProfileTransform(const skcms_ICCProfile* src_profile,
-                        const skcms_ICCProfile* dst_profile);
-  ColorProfileTransform(const ColorProfileTransform&) = delete;
-  ColorProfileTransform& operator=(const ColorProfileTransform&) = delete;
-  ~ColorProfileTransform();
-
-  const skcms_ICCProfile* SrcProfile() const;
-  const skcms_ICCProfile* DstProfile() const;
-
- private:
-  raw_ptr<const skcms_ICCProfile> src_profile_;
-  skcms_ICCProfile dst_profile_;
-};
-
 // ImageDecoder is a base for all format-specific decoders
 // (e.g. JPEGImageDecoder). This base manages the ImageFrame cache.
 //
@@ -415,14 +397,8 @@ class PLATFORM_EXPORT ImageDecoder {
   const gfx::HDRMetadata& GetHDRMetadata() const { return hdr_metadata_; }
 
   void SetEmbeddedColorProfile(std::unique_ptr<ColorProfile> profile);
-
-  // Transformation from embedded color space to target color space.
-  ColorProfileTransform* ColorTransform() const {
-    return embedded_to_sk_image_transform_.get();
-  }
-
   bool NeedsDecodeTimeColorTransform() const {
-    return embedded_to_sk_image_transform_ != nullptr;
+    return needs_decode_time_color_transform_;
   }
 
   // Performs color transformation on the specified rect of buffer if needed.
@@ -657,10 +633,9 @@ class PLATFORM_EXPORT ImageDecoder {
   // this is sRGB.
   sk_sp<SkColorSpace> sk_image_color_space_;
 
-  // Transforms `embedded_color_profile_` to `sk_image_color_space_`. This
-  // is needed if `sk_image_color_space_` is not an exact representation of
-  // `embedded_color_profile_`.
-  std::unique_ptr<ColorProfileTransform> embedded_to_sk_image_transform_;
+  // Set if decode-time color space conversion from `embedded_color_profile_`
+  // to `sk_image_color_space_` is needed.
+  bool needs_decode_time_color_transform_ = false;
 };
 
 // static

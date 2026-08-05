@@ -1693,18 +1693,19 @@ TEST(PNGTests, cicp) {
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
   ASSERT_TRUE(data);
 
-  auto decoder = CreatePNGDecoder();
+  auto decoder = CreatePNGDecoder(ImageDecoder::kAlphaNotPremultiplied,
+                                  ColorBehavior::kTag);
   decoder->SetData(data.get(), true);
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
   ASSERT_FALSE(decoder->Failed());
   ASSERT_TRUE(decoder->HasEmbeddedColorProfile());
-  ColorProfileTransform* transform = decoder->ColorTransform();
-  ASSERT_TRUE(transform);  // Guaranteed by `HasEmbeddedColorProfile`.
-  const skcms_ICCProfile* png_profile = transform->SrcProfile();
-  ASSERT_TRUE(png_profile);
-  EXPECT_TRUE(skcms_TransferFunction_isPQ(&png_profile->trc[0].parametric) ||
-              skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
+  sk_sp<SkColorSpace> color_space = decoder->ColorSpaceForSkImages();
+  ASSERT_TRUE(color_space);
+  skcms_TransferFunction tf;
+  color_space->transferFn(&tf);
+  EXPECT_TRUE(skcms_TransferFunction_isPQ(&tf) ||
+              skcms_TransferFunction_isPQish(&tf));
 }
 
 TEST(PNGTests, IgnoringColorProfile) {

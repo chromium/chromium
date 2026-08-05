@@ -388,15 +388,12 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
       DCHECK_NE(color_type, kUnknown_SkColorType);
 
       sk_sp<SkColorSpace> color_space;
-      if (const ColorProfileTransform* transform = ColorTransform()) {
-        const skcms_ICCProfile* dst_profile = transform->DstProfile();
-        DCHECK(dst_profile);  // Always non-null ptr to `dst_profile_` field.
-        color_space = SkColorSpace::Make(*dst_profile);
+      if (NeedsDecodeTimeColorTransform()) {
+        color_space = ColorSpaceForSkImages();
       } else {
         // Explicitly ask for no color transformation.  This avoids transforming
         // into sRGB if/when `SkEncodedInfo::makeImageInfo` has set
         // `codec_->getInfo().colorSpace()` to sRGB as a fallback.
-        color_space = nullptr;
       }
 
       SkImageInfo image_info = codec_->getInfo()
