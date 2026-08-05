@@ -85,7 +85,7 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
     void ClickOnDigit(int number) const;
 
    private:
-    const raw_ptr<LoginPinView, DanglingUntriaged> view_;
+    const raw_ptr<LoginPinView> view_;
   };
 
   using OnPinKey = base::RepeatingCallback<void(int value)>;
