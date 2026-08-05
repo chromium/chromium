@@ -479,13 +479,13 @@ bool IsReadAnythingDocsLoadMoreButtonEnabled() {
       ::features::kReadAnythingDocsLoadMoreButton);
 }
 
-BASE_FEATURE(kReadAnythingWithReadability, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReadAnythingWithReadability, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingWithReadabilityEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);
 }
 
 BASE_FEATURE(kReadAnythingReadabilitySelectText,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingReadabilitySelectTextEnabled() {
   return base::FeatureList::IsEnabled(
              ::features::kReadAnythingReadabilitySelectText) &&
