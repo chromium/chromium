@@ -2858,6 +2858,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Win x64 Builder",
+            "no_symbols",
             "separate_renderer",
         ],
     ),
@@ -2889,6 +2890,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Linux Builder",
+            "no_symbols",
             "separate_renderer",
         ],
     ),
@@ -2917,6 +2919,7 @@ fyi_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Mac Builder",
+            "no_symbols",
             "separate_renderer",
         ],
     ),
