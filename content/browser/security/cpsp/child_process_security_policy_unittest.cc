@@ -2015,9 +2015,12 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
               testing::UnorderedElementsAre(etld1, qux.origin()));
 
   // Verify it behaves as a conventional origin: a subdomain resolves to the
-  // eTLD+1 site URL.
+  // eTLD+1 site URL (or its own origin if OriginKeyedProcessesByDefault is
+  // enabled).
   EXPECT_EQ(
-      GURL("https://qux.com"),
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(&context)
+          ? GURL("https://sub.qux.com")
+          : GURL("https://qux.com"),
       SiteInfo::CreateForTesting(isolation_context, GURL("https://sub.qux.com"))
           .site_url());
 
@@ -2040,9 +2043,11 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
               testing::UnorderedElementsAre(etld2, qux.origin()));
 
   // The outer wildcard is removed, so sub.foo.com resolves to the eTLD+1 site
-  // URL again.
+  // URL again (or its own origin if OriginKeyedProcessesByDefault is enabled).
   EXPECT_EQ(
-      GURL("https://foo.com"),
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(&context)
+          ? GURL("https://sub.foo.com")
+          : GURL("https://foo.com"),
       SiteInfo::CreateForTesting(isolation_context, GURL("https://sub.foo.com"))
           .site_url());
   // But the inner wildcard is still present, so its subdomain resolves to its
