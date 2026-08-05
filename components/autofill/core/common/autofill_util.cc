@@ -137,6 +137,7 @@ bool IsFillable(FocusedFieldType focused_field_type) {
     case FocusedFieldType::kFillableUsernameField:
     case FocusedFieldType::kFillablePasswordField:
     case FocusedFieldType::kFillableWebauthnTaggedField:
+    case FocusedFieldType::kContenteditableField:
       return true;
     case FocusedFieldType::kUnfillableElement:
     case FocusedFieldType::kUnknown:

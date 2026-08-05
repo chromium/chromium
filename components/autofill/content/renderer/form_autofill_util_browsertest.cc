@@ -2411,10 +2411,40 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableFailures) {
          <textarea id=ce4 contenteditable><div contenteditable></textarea>
          </body>)");
   WebDocument doc = GetDocument();
-  ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce1")));
-  ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce2")));
-  ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce3")));
-  ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce4")));
+  EXPECT_FALSE(FindFormForContentEditable(doc.GetElementById("ce1")));
+  EXPECT_FALSE(FindFormForContentEditable(doc.GetElementById("ce2")));
+  EXPECT_FALSE(FindFormForContentEditable(doc.GetElementById("ce3")));
+  EXPECT_FALSE(FindFormForContentEditable(doc.GetElementById("ce4")));
+}
+
+// Tests that GetFieldRendererId() returns valid and unique `FieldRendererId`s
+// for contenteditable elements based on their DOM node ID, and that the
+// returned ID matches the `FormFieldData` renderer ID extracted by
+// FindFormForContentEditable().
+TEST_F(FormAutofillUtilsTest, GetFieldRendererId_ContentEditable) {
+  LoadHTML(
+      R"(<body>
+         <div id=editable1 contenteditable>First</div>
+         <p id=editable2 contenteditable>Second</p>
+         </body>)");
+  WebElement ce1 = GetDocument().GetElementById("editable1");
+  WebElement ce2 = GetDocument().GetElementById("editable2");
+  ASSERT_TRUE(ce1);
+  ASSERT_TRUE(ce2);
+
+  FieldRendererId id1 = GetFieldRendererId(ce1);
+  FieldRendererId id2 = GetFieldRendererId(ce2);
+
+  EXPECT_FALSE(id1.is_null());
+  EXPECT_FALSE(id2.is_null());
+  EXPECT_NE(id1, id2);
+  EXPECT_EQ(id1, FieldRendererId(ce1.GetDomNodeId()));
+  EXPECT_EQ(id2, FieldRendererId(ce2.GetDomNodeId()));
+
+  EXPECT_THAT(FindFormForContentEditable(ce1),
+              Optional(Property(
+                  &FormData::fields,
+                  ElementsAre(Property(&FormFieldData::renderer_id, id1)))));
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {

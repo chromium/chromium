@@ -184,6 +184,7 @@ enum FocusedFieldType {
   kFillableWebauthnTaggedField,
   kFillableUsernameField,
   kFillablePasswordField,
+  kContenteditableField,
 };
 
 // Describes how a form button is implemented in HTML source. Should be

@@ -333,6 +333,12 @@ bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
     case FocusedFieldType::kUnfillableElement:
     case FocusedFieldType::kUnknown:
       return available_sources_.contains(FillingSource::AUTOFILL);
+
+    // AtMemory suggestion is supported for contenteditable fields.
+    case FocusedFieldType::kContenteditableField:
+      // TODO(crbug.com/370301890): Return and handle a new, dedicated
+      // `FillingSource`.
+      return available_sources_.contains(FillingSource::AUTOFILL);
   }
 }
 
@@ -353,6 +359,8 @@ void ManualFillingControllerImpl::UpdateVisibility() {
       }
     }
 
+    // TODO(crbug.com/370301890): Account for kContenteditableField and AtMemory
+    // `FillingSource` when determining suppression on LFF.
     view_->Show(
         ManualFillingViewInterface::WaitForKeyboard(
             last_focused_field_type_ != FocusedFieldType::kUnfillableElement &&

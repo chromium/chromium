@@ -172,6 +172,7 @@ ShouldShowAction ShouldShowCredManReentryAction(
     case FocusedFieldType::kFillableNonSearchField:
     case FocusedFieldType::kFillableSearchField:
     case FocusedFieldType::kFillableTextArea:
+    case FocusedFieldType::kContenteditableField:
     case FocusedFieldType::kUnfillableElement:
     case FocusedFieldType::kUnknown:
       return ShouldShowAction(false);

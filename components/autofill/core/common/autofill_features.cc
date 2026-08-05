@@ -503,6 +503,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether contenteditable fields on Android are supported for
+// AtMemory.
+BASE_FEATURE(kAutofillAtMemorySupportContenteditableOnAndroid,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, AtMemory can be triggered with a keyboard shortcut like
 // Ctrl+Space.
 BASE_FEATURE(kAutofillAtMemoryTriggerShortcut,
