@@ -1155,6 +1155,30 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                         "%2efileprovider/cache/file"})),
       HandleType::kFile));
 
+  // Authority exactly matching package name (no dot) should fail.
+  EXPECT_TRUE(IsOpenAbort(
+      base::FilePath(
+          base::StrCat({"content://", base::android::apk_info::package_name(),
+                        "/cache/dir"})),
+      HandleType::kDirectory));
+  EXPECT_TRUE(IsOpenAbort(
+      base::FilePath(
+          base::StrCat({"content://", base::android::apk_info::package_name(),
+                        "/cache/file"})),
+      HandleType::kFile));
+
+  // Userinfo bypass should also fail.
+  EXPECT_TRUE(IsOpenAbort(
+      base::FilePath(base::StrCat({"content://user@",
+                                   base::android::apk_info::package_name(),
+                                   ".fileprovider/cache/dir"})),
+      HandleType::kDirectory));
+  EXPECT_TRUE(IsOpenAbort(
+      base::FilePath(base::StrCat({"content://user@",
+                                   base::android::apk_info::package_name(),
+                                   "/cache/file"})),
+      HandleType::kFile));
+
   EXPECT_TRUE(IsOpenAllowed(base::FilePath("content://authority/dir"),
                             HandleType::kDirectory));
   EXPECT_TRUE(IsOpenAllowed(base::FilePath("content://authority/file"),

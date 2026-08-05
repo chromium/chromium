@@ -23,8 +23,11 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -101,6 +104,25 @@ public class WebAppLaunchHandlerTest {
         when(mWebContentsMock.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.INITIAL_URL);
         when(mTabProviderMock.getInitialTabCreationMode()).thenReturn(TabCreationMode.DEFAULT);
         when(mTabProviderMock.getSpeculatedUrl()).thenReturn(null);
+
+        // Mock PackageManager to resolve our test providers
+        Context context = ContextUtils.getApplicationContext();
+        PackageManager pm = context.getPackageManager();
+        String packageName = context.getPackageName();
+
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = packageName;
+
+        ProviderInfo fileProvider = new ProviderInfo();
+        fileProvider.packageName = packageName;
+        fileProvider.authority = packageName + ".FileProvider";
+
+        ProviderInfo exactProvider = new ProviderInfo();
+        exactProvider.packageName = packageName;
+        exactProvider.authority = packageName;
+
+        packageInfo.providers = new ProviderInfo[] {fileProvider, exactProvider};
+        shadowOf(pm).installPackage(packageInfo);
     }
 
     @Test
@@ -392,6 +414,34 @@ public class WebAppLaunchHandlerTest {
         Uri privateUri = Uri.parse("content://" + packageName + ".FileProvider/foo");
         mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI), privateUri));
         mExpectedFileList = new String[0]; // Expect empty because one is Chrome private
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_chromePrivateDataBypass() {
+        String packageName = ContextUtils.getApplicationContext().getPackageName();
+        // Bypass using exactly package name as authority (no trailing dot in prefix check)
+        Uri bypassUri1 = Uri.parse("content://" + packageName + "/foo");
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI), bypassUri1));
+        mExpectedFileList = new String[0]; // Expect empty because one is Chrome private (bypassed)
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_chromePrivateDataBypassUserInfo() {
+        String packageName = ContextUtils.getApplicationContext().getPackageName();
+        // Bypass using userinfo
+        Uri bypassUri1 = Uri.parse("content://user@" + packageName + ".FileProvider/foo");
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI), bypassUri1));
+        mExpectedFileList = new String[0]; // Expect empty because one is Chrome private (bypassed)
         doTestHandleIntent(
                 LaunchHandlerClientMode.AUTO,
                 INITIAL_URL,
