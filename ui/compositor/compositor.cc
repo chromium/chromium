@@ -765,9 +765,10 @@ void Compositor::IssueExternalBeginFrame(
     const viz::BeginFrameArgs& args,
     base::OnceCallback<void(const viz::BeginFrameAck&)> callback) {
   if (!external_begin_frame_controller_) {
-    // IssueExternalBeginFrame() shouldn't be called again before the previous
-    // begin frame is acknowledged.
-    DCHECK(!pending_begin_frame_args_);
+    // When wait_for_all_frame_sinks() is false, IssueExternalBeginFrame()
+    // shouldn't be called again before the previous begin frame is
+    // acknowledged.
+    DCHECK(!pending_begin_frame_args_ || !wait_for_all_frame_sinks());
     pending_begin_frame_args_.emplace(args, std::move(callback));
     return;
   }
