@@ -43,7 +43,9 @@ class DataControlsReportingTest : public testing::Test {
     EXPECT_TRUE(profile_manager_->SetUp());
     managed_profile_ = profile_manager_->CreateTestingProfile("managed");
     unmanaged_profile_ = profile_manager_->CreateTestingProfile("unmanaged");
-    guest_profile_ = profile_manager_->CreateGuestProfile();
+    guest_profile_ =
+        profile_manager_->CreateGuestProfile()->GetPrimaryOTRProfile(
+            /*create_if_needed=*/true);
 
     helper_ = std::make_unique<
         enterprise_connectors::test::EventReportValidatorHelper>(
@@ -160,7 +162,7 @@ class DataControlsReportingTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> managed_profile_ = nullptr;
   raw_ptr<TestingProfile> unmanaged_profile_ = nullptr;
-  raw_ptr<TestingProfile> guest_profile_ = nullptr;
+  raw_ptr<Profile> guest_profile_ = nullptr;
   std::unique_ptr<content::WebContents> managed_contents_;
   std::unique_ptr<content::WebContents> unmanaged_contents_;
   std::unique_ptr<content::WebContents> incognito_managed_contents_;

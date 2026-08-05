@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog_factory.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/enterprise/common/files_scan_data.h"
@@ -32,6 +33,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -889,6 +891,44 @@ void PasteFromGeminiIfAllowedByContentAnalysis(
 }
 
 }  // namespace
+
+BasicPasteSource::BasicPasteSource() = default;
+BasicPasteSource::BasicPasteSource(const BasicPasteSource&) = default;
+BasicPasteSource& BasicPasteSource::operator=(const BasicPasteSource&) =
+    default;
+BasicPasteSource::BasicPasteSource(BasicPasteSource&&) = default;
+BasicPasteSource& BasicPasteSource::operator=(BasicPasteSource&&) = default;
+BasicPasteSource::~BasicPasteSource() = default;
+
+FullPasteSource::FullPasteSource() = default;
+FullPasteSource::FullPasteSource(const FullPasteSource&) = default;
+FullPasteSource& FullPasteSource::operator=(const FullPasteSource&) = default;
+FullPasteSource::FullPasteSource(FullPasteSource&&) = default;
+FullPasteSource& FullPasteSource::operator=(FullPasteSource&&) = default;
+FullPasteSource::~FullPasteSource() = default;
+
+BasicPasteSource CacheBasicPasteSource(
+    const content::ClipboardEndpoint& source) {
+  BasicPasteSource cached;
+  cached.data_transfer_endpoint = source.data_transfer_endpoint();
+  if (source.browser_context()) {
+    cached.browser_context = source.browser_context()->GetWeakPtr();
+  }
+  cached.gemini_in_chrome =
+      source.web_contents() && (glic::IsGlicGuest(source.web_contents()) ||
+                                glic::IsGlicWebUI(source.web_contents()));
+  return cached;
+}
+
+FullPasteSource CacheFullPasteSource(const content::ClipboardEndpoint& source) {
+  FullPasteSource cached;
+  static_cast<BasicPasteSource&>(cached) = CacheBasicPasteSource(source);
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  cached.active_user =
+      enterprise_connectors::ContentAreaUserProvider::GetUser(source);
+#endif
+  return cached;
+}
 
 void PasteIfAllowedByPolicy(
     const content::ClipboardEndpoint& source,

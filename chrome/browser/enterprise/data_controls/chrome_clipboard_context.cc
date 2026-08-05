@@ -23,6 +23,15 @@ GURL GetURL(const content::ClipboardEndpoint& endpoint) {
   return *endpoint.data_transfer_endpoint()->GetURL();
 }
 
+GURL GetURL(const enterprise_data_protection::BasicPasteSource& source) {
+  if (!source.data_transfer_endpoint ||
+      !source.data_transfer_endpoint->IsUrlType() ||
+      !source.data_transfer_endpoint->GetURL()) {
+    return GURL();
+  }
+  return *source.data_transfer_endpoint->GetURL();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 bool PolicyAppliedAtUserScope(content::BrowserContext* browser_context,
                               const char* scope_pref) {
@@ -41,15 +50,23 @@ ChromeClipboardContext::ChromeClipboardContext(
     content::ClipboardEndpoint source,
     content::ClipboardEndpoint destination,
     ui::ClipboardMetadata metadata)
-    : source_(std::move(source)),
+    : source_(enterprise_data_protection::CacheFullPasteSource(source)),
       destination_(std::move(destination)),
       metadata_(std::move(metadata)) {}
 
 ChromeClipboardContext::ChromeClipboardContext(
     content::ClipboardEndpoint source,
     ui::ClipboardMetadata metadata)
-    : source_(std::move(source)),
+    : source_(enterprise_data_protection::CacheFullPasteSource(source)),
       destination_(std::nullopt),
+      metadata_(std::move(metadata)) {}
+
+ChromeClipboardContext::ChromeClipboardContext(
+    enterprise_data_protection::FullPasteSource source,
+    content::ClipboardEndpoint destination,
+    ui::ClipboardMetadata metadata)
+    : source_(std::move(source)),
+      destination_(std::move(destination)),
       metadata_(std::move(metadata)) {}
 
 ChromeClipboardContext::~ChromeClipboardContext() = default;
@@ -92,26 +109,37 @@ ChromeClipboardContext::GetClipboardSource(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
     const char* scope_pref) {
+  return GetClipboardSource(
+      enterprise_data_protection::CacheFullPasteSource(source), destination,
+      scope_pref);
+}
+
+// static
+enterprise_connectors::ContentMetaData::CopiedTextSource
+ChromeClipboardContext::GetClipboardSource(
+    const enterprise_data_protection::FullPasteSource& source,
+    const content::ClipboardEndpoint& destination,
+    const char* scope_pref) {
   CHECK(destination.browser_context());
 
   using SourceType = enterprise_connectors::ContentMetaData::CopiedTextSource;
 
   SourceType copied_text_source;
-  if (!source.browser_context()) {
+  if (!source.browser_context) {
     // This off the record check will also include guest profile sources, but
     // since there is no way to disambiguate them with a null BrowserContext
     // INCOGNITO is selected instead of CLIPBOARD to not share the source URL in
     // such cases.
-    if (source.data_transfer_endpoint() &&
-        source.data_transfer_endpoint()->off_the_record()) {
+    if (source.data_transfer_endpoint &&
+        source.data_transfer_endpoint->off_the_record()) {
       copied_text_source.set_context(SourceType::INCOGNITO);
     } else {
       copied_text_source.set_context(SourceType::CLIPBOARD);
     }
-  } else if (Profile::FromBrowserContext(source.browser_context())
+  } else if (Profile::FromBrowserContext(source.browser_context.get())
                  ->IsIncognitoProfile()) {
     copied_text_source.set_context(SourceType::INCOGNITO);
-  } else if (source.browser_context() == destination.browser_context()) {
+  } else if (source.browser_context.get() == destination.browser_context()) {
     copied_text_source.set_context(SourceType::SAME_PROFILE);
   } else {
     copied_text_source.set_context(SourceType::OTHER_PROFILE);
@@ -146,11 +174,11 @@ ChromeClipboardContext::GetClipboardSource(
 #endif  // BUILDFLAG(IS_CHROMEOS)
       [[fallthrough]];
     case SourceType::SAME_PROFILE:
-      if (source.data_transfer_endpoint() &&
-          source.data_transfer_endpoint()->IsUrlType() &&
-          source.data_transfer_endpoint()->GetURL()) {
+      if (source.data_transfer_endpoint &&
+          source.data_transfer_endpoint->IsUrlType() &&
+          source.data_transfer_endpoint->GetURL()) {
         copied_text_source.set_url(
-            source.data_transfer_endpoint()->GetURL()->spec());
+            source.data_transfer_endpoint->GetURL()->spec());
       }
       break;
   }
@@ -163,12 +191,13 @@ GURL ChromeClipboardContext::source_url() const {
 }
 
 GURL ChromeClipboardContext::destination_url() const {
-  return GetURL(destination_);
+  return destination_ ? GetURL(*destination_) : GURL();
 }
 
 enterprise_connectors::ContentMetaData::CopiedTextSource
 ChromeClipboardContext::data_controls_copied_text_source() const {
-  return GetClipboardSource(source_, destination_, kDataControlsRulesScopePref);
+  return GetClipboardSource(source_, *destination_,
+                            kDataControlsRulesScopePref);
 }
 
 ui::ClipboardFormatType ChromeClipboardContext::format_type() const {
@@ -180,23 +209,20 @@ std::optional<size_t> ChromeClipboardContext::size() const {
 }
 
 std::string ChromeClipboardContext::source_active_user() const {
-  auto* profile = Profile::FromBrowserContext(source_.browser_context());
-  if (!profile) {
-    return "";
-  }
-
-  return enterprise_connectors::ContentAreaUserProvider::GetUser(
-      profile, source_.web_contents(), source_url());
+  return source_.active_user;
 }
 
 std::string ChromeClipboardContext::destination_active_user() const {
-  auto* profile = Profile::FromBrowserContext(destination_.browser_context());
+  if (!destination_) {
+    return "";
+  }
+  auto* profile = Profile::FromBrowserContext(destination_->browser_context());
   if (!profile) {
     return "";
   }
 
   return enterprise_connectors::ContentAreaUserProvider::GetUser(
-      profile, destination_.web_contents(), destination_url());
+      profile, destination_->web_contents(), destination_url());
 }
 
 }  // namespace data_controls

@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -99,6 +100,25 @@ class DataControlsRulesServiceTest : public testing::Test {
           return static_cast<content::BrowserContext*>(other_profile());
         }),
         *other_profile_web_contents()->GetPrimaryMainFrame());
+  }
+
+  enterprise_data_protection::BasicPasteSource cached_google_url_source() {
+    return enterprise_data_protection::CacheBasicPasteSource(
+        google_url_endpoint());
+  }
+
+  enterprise_data_protection::BasicPasteSource cached_empty_source() const {
+    return enterprise_data_protection::CacheBasicPasteSource(empty_endpoint());
+  }
+
+  enterprise_data_protection::BasicPasteSource cached_incognito_source() {
+    return enterprise_data_protection::CacheBasicPasteSource(
+        incognito_endpoint());
+  }
+
+  enterprise_data_protection::BasicPasteSource cached_other_profile_source() {
+    return enterprise_data_protection::CacheBasicPasteSource(
+        other_profile_endpoint());
   }
 
   void ExpectBlockVerdict(Verdict verdict) const {
@@ -207,6 +227,32 @@ TEST_F(DataControlsRulesServiceTest, NoRuleSet) {
   EXPECT_FALSE(ChromeRulesServiceFactory::GetInstance()
                    ->GetForBrowserContext(profile())
                    ->BlockScreenshots(google_url()));
+}
+
+TEST_F(DataControlsRulesServiceTest, CachedPasteSource) {
+  SetDataControls(profile()->GetPrefs(), {R"({
+                    "name": "block",
+                    "rule_id": "1234",
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
+                         ->GetForBrowserContext(profile())
+                         ->GetPasteVerdict(
+                             /*source=*/cached_google_url_source(),
+                             /*destination=*/empty_endpoint(),
+                             /*metadata=*/{}));
+  ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
+                      ->GetForBrowserContext(profile())
+                      ->GetPasteVerdict(
+                          /*source=*/cached_empty_source(),
+                          /*destination=*/empty_endpoint(),
+                          /*metadata=*/{}));
 }
 
 TEST_F(DataControlsRulesServiceTest, SourceURL) {

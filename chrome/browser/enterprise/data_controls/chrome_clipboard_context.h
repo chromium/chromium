@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CHROME_CLIPBOARD_CONTEXT_H_
 #define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CHROME_CLIPBOARD_CONTEXT_H_
 
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "components/enterprise/data_controls/core/browser/clipboard_context.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
@@ -20,6 +21,9 @@ class ChromeClipboardContext : public ClipboardContext {
                          ui::ClipboardMetadata metadata);
   ChromeClipboardContext(content::ClipboardEndpoint source,
                          ui::ClipboardMetadata metadata);
+  ChromeClipboardContext(enterprise_data_protection::FullPasteSource source,
+                         content::ClipboardEndpoint destination,
+                         ui::ClipboardMetadata metadata);
   ~ChromeClipboardContext();
 
   // Converts `source` into a `CopiedTextSource`. `CopiedTextSource::context` is
@@ -30,6 +34,10 @@ class ChromeClipboardContext : public ClipboardContext {
   // reports and scans.
   static enterprise_connectors::ContentMetaData::CopiedTextSource
   GetClipboardSource(const content::ClipboardEndpoint& source,
+                     const content::ClipboardEndpoint& destination,
+                     const char* scope_pref);
+  static enterprise_connectors::ContentMetaData::CopiedTextSource
+  GetClipboardSource(const enterprise_data_protection::FullPasteSource& source,
                      const content::ClipboardEndpoint& destination,
                      const char* scope_pref);
 
@@ -50,8 +58,8 @@ class ChromeClipboardContext : public ClipboardContext {
   std::string destination_active_user() const override;
 
  private:
-  content::ClipboardEndpoint source_;
-  content::ClipboardEndpoint destination_;
+  enterprise_data_protection::FullPasteSource source_;
+  std::optional<content::ClipboardEndpoint> destination_;
   ui::ClipboardMetadata metadata_;
 };
 
