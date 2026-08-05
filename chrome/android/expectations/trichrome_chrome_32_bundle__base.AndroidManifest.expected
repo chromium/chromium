@@ -123,12 +123,6 @@
     <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable" android:value="true"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="10"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
-    <provider  # DIFF-ANCHOR: a3fe279b
-        android:name="com.google.mlkit.common.internal.MlKitInitProvider"
-        android:authorities="$PACKAGE.mlkitinitprovider"
-        android:exported="false"
-        android:initOrder="99">
-    </provider>  # DIFF-ANCHOR: a3fe279b
     <provider  # DIFF-ANCHOR: 3b9c6c31
         android:name="org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider"
         android:authorities="$PACKAGE.AutofillThirdPartyModeContentProvider"
