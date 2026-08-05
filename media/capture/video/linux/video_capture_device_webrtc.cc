@@ -149,9 +149,12 @@ int32_t VideoCaptureDeviceWebRtc::OnRawFrame(
 
   // Neither PipeWire nor WebRTC currently implement colorspaces, so the actual
   // colorspace is the default colorspace of the used camera but unknown here.
+  // SAFETY: `video_frame` points to a raw buffer of `video_frame_length` bytes
+  // provided by the WebRTC video capture module.
+  auto frame_span = UNSAFE_BUFFERS(base::span(video_frame, video_frame_length));
   client_->OnIncomingCapturedData(
-      video_frame, video_frame_length, format, gfx::ColorSpace(),
-      rotation_degree, false /* flip_y */, base::TimeTicks::Now(),
+      frame_span, format, gfx::ColorSpace(), rotation_degree,
+      false /* flip_y */, base::TimeTicks::Now(),
       base::Milliseconds(capture_time_ms) - *base_time_,
       /*capture_begin_timestamp=*/std::nullopt,
       /*metadata=*/std::nullopt);

@@ -183,6 +183,10 @@ class V4L2CaptureDelegate::BufferTracker
 
   const uint8_t* start() const { return start_; }
   size_t payload_size() const { return payload_size_; }
+  base::span<const uint8_t> as_span() const {
+    // SAFETY: start_ points to mapped memory of payload_size_ bytes.
+    return UNSAFE_BUFFERS(base::span(start_, payload_size_));
+  }
   void set_payload_size(size_t payload_size) {
     DCHECK_LE(payload_size, length_);
     payload_size_ = payload_size;
@@ -1153,16 +1157,17 @@ void V4L2CaptureDelegate::DoCapture() {
 #if BUILDFLAG(IS_LINUX)
       if (use_gpu_buffer_) {
         v4l2_gpu_helper_->OnIncomingCapturedData(
-            client_.get(), buffer_tracker->start(),
-            buffer_tracker->payload_size(), capture_format_, gfx::ColorSpace(),
-            rotation_, now, timestamp);
+            client_.get(), buffer_tracker->as_span(), capture_format_,
+            gfx::ColorSpace(), rotation_, now, timestamp);
       } else
-#endif  //  BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
+      {
         client_->OnIncomingCapturedData(
-            buffer_tracker->start(), buffer_tracker->payload_size(),
-            capture_format_, gfx::ColorSpace(), rotation_, false /* flip_y */,
-            now, timestamp, /*capture_begin_timestamp=*/std::nullopt,
+            buffer_tracker->as_span(), capture_format_, gfx::ColorSpace(),
+            rotation_, false /* flip_y */, now, timestamp,
+            /*capture_begin_timestamp=*/std::nullopt,
             /*metadata=*/std::nullopt);
+      }
     }
 
     while (!take_photo_callbacks_.empty()) {
