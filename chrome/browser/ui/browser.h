@@ -320,6 +320,12 @@ class Browser : public TabStripModelObserver,
 
   // Accessors ////////////////////////////////////////////////////////////////
 
+  // In production code, each instance of Browser will always instantiate an
+  // instance of BrowserView in the constructor. Some tests instantiate a
+  // Browser without a BrowserView: this is an anti-pattern and should be
+  // avoided.
+  BrowserView& GetBrowserView();
+
   base::WeakPtr<Browser> AsWeakPtr();
   base::WeakPtr<const Browser> AsWeakPtr() const;
 
