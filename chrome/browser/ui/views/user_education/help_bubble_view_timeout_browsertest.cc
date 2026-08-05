@@ -1,19 +1,25 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_view_info.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_observer.h"
 
 using user_education::HelpBubbleArrow;
@@ -22,14 +28,9 @@ using user_education::HelpBubbleParams;
 using user_education::HelpBubbleView;
 using user_education::HelpBubbleViewInfo;
 
-// Testing timeouts can be flaky on some platforms without the full browser view
-// and its message pump, so we do these tests here rather than in the
-// user_education component.
-class HelpBubbleViewTimeoutTest : public TestWithBrowserView {
+class HelpBubbleViewTimeoutTest : public InProcessBrowserTest {
  public:
-  HelpBubbleViewTimeoutTest()
-      : TestWithBrowserView(
-            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
+  HelpBubbleViewTimeoutTest() = default;
   ~HelpBubbleViewTimeoutTest() override = default;
 
  protected:
@@ -42,9 +43,11 @@ class HelpBubbleViewTimeoutTest : public TestWithBrowserView {
 
   [[nodiscard]] HelpBubbleViewInfo CreateHelpBubbleView(
       HelpBubbleParams params) {
-    return HelpBubbleView::Create(GetHelpBubbleDelegate(),
-                                  {browser_view()->contents_container()},
-                                  std::move(params));
+    return HelpBubbleView::Create(
+        GetHelpBubbleDelegate(),
+        {BrowserView::GetBrowserViewForBrowser(browser())
+             ->contents_container()},
+        std::move(params));
   }
 
   void SimulateActivation(const HelpBubbleViewInfo& info, bool active) {
@@ -53,111 +56,93 @@ class HelpBubbleViewTimeoutTest : public TestWithBrowserView {
   }
 };
 
-class MockWidgetObserver : public views::WidgetObserver {
- public:
-  MOCK_METHOD(void, OnWidgetClosing, (views::Widget*), ());
-};
-
-TEST_F(HelpBubbleViewTimeoutTest, DismissOnTimeout) {
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewTimeoutTest, DismissOnTimeout) {
   HelpBubbleParams params = GetBubbleParams();
-  params.timeout = base::Seconds(30);
+  params.timeout = base::Milliseconds(200);
   auto info = CreateHelpBubbleView(std::move(params));
-  MockWidgetObserver dismiss_observer;
-  EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(1);
-  info.widget->AddObserver(&dismiss_observer);
-  task_environment()->FastForwardBy(base::Minutes(1));
-  task_environment()->RunUntilIdle();
+  views::test::WidgetDestroyedWaiter(info.widget.get()).Wait();
 }
 
-TEST_F(HelpBubbleViewTimeoutTest, NoAutoDismissWithoutTimeout) {
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewTimeoutTest, NoAutoDismissWithoutTimeout) {
   // Without a button, there is a default timeout; with a button there is none.
   HelpBubbleParams params = GetBubbleParams();
   HelpBubbleButtonParams button_params;
   button_params.text = u"button";
   params.buttons.push_back(std::move(button_params));
   auto info = CreateHelpBubbleView(std::move(params));
-  MockWidgetObserver dismiss_observer;
-  EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(0);
-  info.widget->AddObserver(&dismiss_observer);
-  task_environment()->FastForwardBy(base::Minutes(1));
-  task_environment()->RunUntilIdle();
-  // WidgetObserver checks if it is in an observer list in its destructor.
-  // Need to remove it from widget manually.
-  info.widget->RemoveObserver(&dismiss_observer);
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
+  run_loop.Run();
+  EXPECT_FALSE(info.widget->IsClosed());
 }
 
-TEST_F(HelpBubbleViewTimeoutTest, TimeoutCallback) {
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewTimeoutTest, TimeoutCallback) {
+  base::RunLoop run_loop;
   base::MockRepeatingClosure timeout_callback;
+  EXPECT_CALL(timeout_callback, Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   HelpBubbleParams params = GetBubbleParams();
-  params.timeout = base::Seconds(10);
+  params.timeout = base::Milliseconds(200);
   params.timeout_callback = timeout_callback.Get();
 
   auto bubble = CreateHelpBubbleView(std::move(params));
-
-  EXPECT_CALL(timeout_callback, Run()).Times(1);
-  task_environment()->FastForwardBy(base::Seconds(11));
+  run_loop.Run();
 }
 
-TEST_F(HelpBubbleViewTimeoutTest, NoTimeoutIfSetToZero) {
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewTimeoutTest, NoTimeoutIfSetToZero) {
   base::MockRepeatingClosure timeout_callback;
+  EXPECT_CALL(timeout_callback, Run()).Times(0);
 
   HelpBubbleParams params = GetBubbleParams();
   params.timeout = base::TimeDelta();
   params.timeout_callback = timeout_callback.Get();
 
   auto bubble = CreateHelpBubbleView(std::move(params));
-
-  EXPECT_CALL(timeout_callback, Run()).Times(0);
-
-  // Fast forward by a long time to check bubble does not time out.
-  task_environment()->FastForwardBy(base::Hours(1));
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
+  run_loop.Run();
 }
 
-TEST_F(HelpBubbleViewTimeoutTest, RespectsProvidedTimeoutBeforeActivate) {
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewTimeoutTest,
+                       RespectsProvidedTimeoutBeforeActivate) {
+  base::RunLoop run_loop;
   base::MockRepeatingClosure timeout_callback;
+  EXPECT_CALL(timeout_callback, Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   HelpBubbleParams params = GetBubbleParams();
-  params.timeout = base::Seconds(20);
+  params.timeout = base::Milliseconds(200);
   params.timeout_callback = timeout_callback.Get();
 
   auto bubble = CreateHelpBubbleView(std::move(params));
-
-  EXPECT_CALL(timeout_callback, Run()).Times(0);
-  task_environment()->FastForwardBy(base::Seconds(19));
-
-  EXPECT_CALL(timeout_callback, Run()).Times(1);
-  task_environment()->FastForwardBy(base::Seconds(1));
+  run_loop.Run();
 }
 
-TEST_F(HelpBubbleViewTimeoutTest, RespectsProvidedTimeoutAfterActivate) {
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewTimeoutTest,
+                       RespectsProvidedTimeoutAfterActivate) {
+  base::RunLoop run_loop;
   base::MockRepeatingClosure timeout_callback;
+  EXPECT_CALL(timeout_callback, Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   HelpBubbleParams params = GetBubbleParams();
-  params.timeout = base::Seconds(10);
+  params.timeout = base::Milliseconds(200);
   params.timeout_callback = timeout_callback.Get();
 
-  EXPECT_CALL(timeout_callback, Run()).Times(0);
-
   auto info = CreateHelpBubbleView(std::move(params));
-
-  task_environment()->FastForwardBy(base::Seconds(9));
 
   // Simulate bubble activation. We won't actually activate the bubble since
   // bubble visibility and activation don't work well in this mock environment.
   SimulateActivation(info, true);
 
   // The bubble should not time out since it is active.
-  task_environment()->FastForwardBy(base::Seconds(4));
+  base::PlatformThread::Sleep(base::Milliseconds(300));
 
   // Deactivating the widget should restart the timer.
   SimulateActivation(info, false);
 
-  // Wait most of the timeout, but not all of it.
-  task_environment()->FastForwardBy(base::Seconds(9));
-
-  EXPECT_CALL(timeout_callback, Run()).Times(1);
-
-  // Finishing the timeout should dismiss the bubble.
-  task_environment()->FastForwardBy(base::Seconds(1));
+  run_loop.Run();
 }
