@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/actor/actor_critical_action_logger.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
@@ -55,6 +56,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -724,8 +726,18 @@ void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
                                           download::DownloadItem* item) {
   if (content::WebContents* web_contents =
           content::DownloadItemUtils::GetWebContents(item)) {
-    if (GetActingActorTaskForWebContents(web_contents)) {
+    if (const ActorTask* task =
+            GetActingActorTaskForWebContents(web_contents)) {
       RecordDirectDownloadTriggered(true);
+      ukm::SourceId navigation_id = ukm::kInvalidSourceId;
+      if (web_contents->GetPrimaryMainFrame()) {
+        navigation_id =
+            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+      }
+      ActorCriticalActionLogger::LogAgentSelfReportedAction(
+          profile_, task->source_info().id.value_or(""),
+          critical_actions::ActionType::kDownload, item->GetURL(),
+          navigation_id, task->id());
     }
   }
 }

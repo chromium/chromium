@@ -50,6 +50,8 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
   std::string_view Name() const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
+  const std::vector<FormFillingRequest>& requests() const { return requests_; }
+
   const std::vector<FormFillingRequest>& GetRequestsForTesting() const {
     return requests_;
   }

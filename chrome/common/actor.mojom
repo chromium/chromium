@@ -242,6 +242,12 @@ enum PageContentExtractionPolicy {
 };
 // LINT.ThenChange(//chrome/browser/actor/tab_observation_strategy.h:PageContentExtractionPolicy)
 
+// Represents the type of login attempted by an AttemptLoginTool.
+enum AttemptLoginStatus {
+  kPasswordManager = 0,
+  kFederated = 1,
+};
+
 struct ActionResult {
   // A code with the outcome of the tool invocation.
   ActionResultCode code;
@@ -267,4 +273,5 @@ struct ActionResult {
 
   ScreenshotPolicy screenshot_policy = kRequested;
   PageContentExtractionPolicy page_content_policy = kRequested;
+  AttemptLoginStatus? attempt_login_status;
 };

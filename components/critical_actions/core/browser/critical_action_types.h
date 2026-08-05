@@ -23,6 +23,10 @@ enum class ActionType {
   kDownload = 2,
   kSettingChange = 3,
   kCredentialAccess = 4,
+  kGooglePasswordManager = 5,
+  kFederatedLogin = 6,
+  kCredentialsOtp = 7,
+  kMaxValue = kCredentialsOtp,
 };
 
 // Source features that generate critical actions.
@@ -30,7 +34,8 @@ enum class ActionType {
 enum class ActionSource {
   kUnknown = 0,
   kPasswordManager = 1,
-  kMaxValue = kPasswordManager,
+  kActor = 2,
+  kMaxValue = kActor,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/histograms.xml:ActionSource)
 

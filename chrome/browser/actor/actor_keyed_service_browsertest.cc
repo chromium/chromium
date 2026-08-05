@@ -414,7 +414,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       /*script_tool_response=*/nullptr,
       /*execution_end_time=*/base::TimeTicks::Now(),
       mojom::ScreenshotPolicy::kRequested,
-      mojom::PageContentExtractionPolicy::kRequested);
+      mojom::PageContentExtractionPolicy::kRequested,
+      /*attempt_login_status=*/std::nullopt);
   action_results.emplace_back(base::TimeTicks::Now(), base::TimeTicks::Now(),
                               std::move(fail_result));
 

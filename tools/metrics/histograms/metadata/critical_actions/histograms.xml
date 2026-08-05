@@ -35,6 +35,7 @@ chromium-metrics-reviews@google.com.
     is dropped prior to persistence.
   </summary>
   <token key="ActionSource">
+    <variant name="Actor" summary="Actor agent events"/>
     <variant name="PasswordManager" summary="password manager fill events"/>
   </token>
 </histogram>

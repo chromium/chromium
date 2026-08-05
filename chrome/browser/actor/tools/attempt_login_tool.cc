@@ -23,6 +23,7 @@
 #include "chrome/browser/password_manager/actor_login/chrome_actor_login_delegate_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-shared.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/actor_features.h"
@@ -508,8 +509,10 @@ void AttemptLoginTool::OnAttemptLogin(
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
         tab_handle_, *sign_in_with_google_button_, mojom::ClickType::kLeft,
         mojom::ClickCount::kSingle, requires_opening_web_contents_));
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeOkResult(/*requires_page_stabilization=*/false));
+    mojom::ActionResultPtr result =
+        MakeOkResult(/*requires_page_stabilization=*/false);
+    result->attempt_login_status = mojom::AttemptLoginStatus::kFederated;
+    PostResponseTask(std::move(invoke_callback_), std::move(result));
     return;
   }
 
@@ -522,15 +525,25 @@ void AttemptLoginTool::OnAttemptLogin(
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
         tab_handle_, *password_button_, mojom::ClickType::kLeft,
         mojom::ClickCount::kSingle, requires_opening_web_contents_));
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeOkResult(/*requires_page_stabilization=*/false));
+    mojom::ActionResultPtr result =
+        MakeOkResult(/*requires_page_stabilization=*/false);
+    result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;
+    PostResponseTask(std::move(invoke_callback_), std::move(result));
     return;
   }
 
   mojom::ActionResultCode code =
       actor_login::LoginResultToActorResult(login_status.value());
-  PostResponseTask(std::move(invoke_callback_),
-                   IsOk(code) ? MakeOkResult() : MakeResult(code));
+  mojom::ActionResultPtr result =
+      IsOk(code) ? MakeOkResult() : MakeResult(code);
+  if (IsOk(code)) {
+    result->attempt_login_status =
+        login_status.value() ==
+                actor_login::LoginStatusResult::kSuccessFederated
+            ? mojom::AttemptLoginStatus::kFederated
+            : mojom::AttemptLoginStatus::kPasswordManager;
+  }
+  PostResponseTask(std::move(invoke_callback_), std::move(result));
 }
 
 void AttemptLoginTool::OnWillDetach(tabs::TabInterface* tab,

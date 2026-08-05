@@ -34,6 +34,7 @@
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/action_tracker_for_metrics.h"
+#include "chrome/browser/actor/actor_critical_action_logger.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
@@ -1410,6 +1411,16 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
+  // Cache the navigation ID before invoking the tool to ensure we log the
+  // critical action under the correct pre-navigation page context.
+  pre_invoke_navigation_id_ = ukm::kInvalidSourceId;
+  const ToolRequest& current_action = GetInProgressAction();
+  tabs::TabInterface* tab = current_action.GetTabForValidation().Get();
+  if (tab && tab->GetContents() && tab->GetContents()->GetPrimaryMainFrame()) {
+    pre_invoke_navigation_id_ =
+        tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  }
+
   SetState(State::kToolInvoke);
   tool_controller_->Invoke(base::BindOnce(&ExecutionEngine::FinishedToolInvoke,
                                           GetActionSequenceWeakPtr()));
@@ -1448,6 +1459,13 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
     CompleteActions(std::move(result), InProgressActionIndex());
     return;
   }
+
+  const ToolRequest& current_action = GetInProgressAction();
+
+  ActorCriticalActionLogger::MaybeLogAction(*task_, &GetProfile(),
+                                            current_action, *result,
+                                            pre_invoke_navigation_id_);
+  pre_invoke_navigation_id_ = ukm::kInvalidSourceId;
 
   // TODO(bokan): If tool completion is deferred due to interruption (e.g.
   // waiting on a user to confirm an action) the recorded tool metrics will look

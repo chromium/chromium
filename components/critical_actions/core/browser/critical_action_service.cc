@@ -26,6 +26,8 @@ std::string_view ActionSourceToString(ActionSource source) {
   switch (source) {
     case ActionSource::kPasswordManager:
       return "PasswordManager";
+    case ActionSource::kActor:
+      return "Actor";
     case ActionSource::kUnknown:
       return "Unknown";
   }

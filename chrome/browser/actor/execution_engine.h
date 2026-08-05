@@ -473,6 +473,9 @@ class ExecutionEngine : public ToolDelegate,
   size_t next_action_index_ = 0;
   base::TimeTicks action_start_time_;
 
+  // The UKM Source ID of the page before the tool was invoked.
+  ukm::SourceId pre_invoke_navigation_id_ = ukm::kInvalidSourceId;
+
   // If set, the currently executing tool should be considered failed once it
   // completes.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason_;

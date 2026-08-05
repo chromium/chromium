@@ -53,7 +53,8 @@ mojom::ActionResultPtr MakeOkResultWithMessage(bool requires_page_stabilization,
       /*script_tool_response=*/nullptr,
       /*execution_end_time=*/base::TimeTicks::Now(),
       mojom::ScreenshotPolicy::kRequested,
-      mojom::PageContentExtractionPolicy::kRequested);
+      mojom::PageContentExtractionPolicy::kRequested,
+      /*attempt_login_status=*/std::nullopt);
 }
 
 mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
@@ -66,7 +67,8 @@ mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
       /*script_tool_response=*/nullptr,
       /*execution_end_time=*/base::TimeTicks::Now(),
       mojom::ScreenshotPolicy::kRequested,
-      mojom::PageContentExtractionPolicy::kRequested);
+      mojom::PageContentExtractionPolicy::kRequested,
+      /*attempt_login_status=*/std::nullopt);
 }
 
 std::vector<ActionResultWithLatencyInfo> MakeResultVector(
