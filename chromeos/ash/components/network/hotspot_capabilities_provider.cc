@@ -277,8 +277,15 @@ void HotspotCapabilitiesProvider::OnCheckReadinessSuccess(
   NET_LOG(EVENT) << "Check tethering readiness result: " << result;
   CheckTetheringReadinessResult readiness_result =
       ShillResultToReadinessResult(result);
+
   if (result == shill::kTetheringReadinessReady) {
-    SetHotspotAllowStatus(HotspotAllowStatus::kAllowed);
+    // Verify enterprise policy before setting status to kAllowed.
+    // Ensure hardware readiness does not overwrite a blocked policy state.
+    if (!policy_allow_hotspot_) {
+      SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedByPolicy);
+    } else {
+      SetHotspotAllowStatus(HotspotAllowStatus::kAllowed);
+    }
   } else if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
     SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoMobileData);
   } else {

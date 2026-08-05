@@ -55,6 +55,16 @@ void HotspotController::Init(
 }
 
 void HotspotController::EnableHotspot(HotspotControlCallback callback) {
+  // Enforce enterprise policy check before processing the request
+  if (!allow_hotspot_) {
+    NET_LOG(ERROR)
+        << "Failed to enable hotspot: disallowed by enterprise policy";
+    HotspotMetricsHelper::RecordSetTetheringEnabledResult(
+        /*enabled=*/true, HotspotControlResult::kNotAllowed);
+    std::move(callback).Run(HotspotControlResult::kNotAllowed);
+    return;
+  }
+
   if (current_disable_request_) {
     NET_LOG(ERROR) << "Failed to enable hotspot as an existing disable "
                       "request is in progress";
@@ -62,13 +72,16 @@ void HotspotController::EnableHotspot(HotspotControlCallback callback) {
         /*enabled=*/true, HotspotControlResult::kInvalid);
     return;
   }
+
   if (!current_enable_request_) {
     current_enable_request_ = std::make_unique<HotspotControlRequest>(
         /*enabled=*/true, /*disable_reason=*/std::nullopt, std::move(callback));
+
     if (hotspot_state_handler_->GetHotspotState() == HotspotState::kEnabled) {
       CompleteEnableRequest(HotspotControlResult::kAlreadyFulfilled);
       return;
     }
+
     current_enable_request_->enable_latency_timer = base::ElapsedTimer();
     hotspot_capabilities_provider_->CheckTetheringReadiness(
         base::BindOnce(&HotspotController::OnCheckTetheringReadiness,

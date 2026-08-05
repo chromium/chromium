@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -436,6 +437,19 @@ TEST_F(HotspotControllerTest, SetPolicyAllowHotspot) {
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kAllowed,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
+}
+
+TEST_F(HotspotControllerTest, EnableHotspotBlockedByPolicy) {
+  SetPolicyAllowHotspot(false);
+
+  // Attempt to enable the hotspot
+  base::test::TestFuture<hotspot_config::mojom::HotspotControlResult>
+      enable_future;
+  hotspot_controller_->EnableHotspot(enable_future.GetCallback());
+
+  // The controller must explicitly block the request and return kNotAllowed
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNotAllowed,
+            enable_future.Get());
 }
 
 TEST_F(HotspotControllerTest, RestoreWiFiStatus) {
