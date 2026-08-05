@@ -46,6 +46,8 @@ class GlicSidePanelCoordinatorAndroid
   int GetPreferredWidth() override;
   bool IsGlicSidePanelActive() override;
   void SuppressBottomSheetForTesting(bool suppress);
+  std::optional<ShowOptions::InitialState>
+  GetInitialStateOverrideForTesting() const;
 
   // context_sharing::TabBottomSheetBridge::Observer:
   void OnClosed() override;
