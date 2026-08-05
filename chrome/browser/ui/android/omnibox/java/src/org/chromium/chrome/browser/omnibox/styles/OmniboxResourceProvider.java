@@ -381,13 +381,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getTabletToolbarTextBoxStandbyBackgroundColor(mContext, getBrandedColorScheme());
     }
 
-    /**
-     * Get dropdown side spacing.
-     *
-     * @see #getDropdownSideSpacing(Context, ...)
-     */
+    /** Gets the margin, in pixels, on either side of an omnibox suggestion list. */
     public @Px int getDropdownSideSpacing() {
-        return getDropdownSideSpacing(mContext);
+        return getSideSpacing() + mCache.getDimen(R.dimen.omnibox_suggestion_dropdown_side_spacing);
     }
 
     /** Returns the top padding for the Omnibox suggestions dropdown list. */
@@ -400,13 +396,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return mCache.getDimen(R.dimen.omnibox_suggestion_list_padding_bottom);
     }
 
-    /**
-     * Get side spacing.
-     *
-     * @see #getSideSpacing(Context, ...)
-     */
+    /** Gets the margin, in pixels, on either side of an omnibox suggestion. */
     public @Px int getSideSpacing() {
-        return getSideSpacing(mContext);
+        return mCache.getDimen(R.dimen.omnibox_suggestion_side_spacing_smallest);
     }
 
     /**
@@ -1148,26 +1140,11 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return themeRes.resourceId;
     }
 
-    /** Gets the margin, in pixels, on either side of an omnibox suggestion list. */
-    public static @Px int getDropdownSideSpacing(Context context) {
-        context = maybeReplaceContextForSmallTabletWindow(context);
-        return getSideSpacing(context)
-                + context.getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_dropdown_side_spacing);
-    }
-
     /** Returns the top padding for the Omnibox suggestions dropdown list. */
     public static @Px int getDropdownTopPadding(Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
-    }
-
-    /** Gets the margin, in pixels, on either side of an omnibox suggestion. */
-    public static @Px int getSideSpacing(Context context) {
-        context = maybeReplaceContextForSmallTabletWindow(context);
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing_smallest);
     }
 
     /** Get the top padding for the MV carousel. */

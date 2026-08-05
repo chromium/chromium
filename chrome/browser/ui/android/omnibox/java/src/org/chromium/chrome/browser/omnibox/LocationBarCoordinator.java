@@ -357,6 +357,7 @@ public class LocationBarCoordinator
         View alignmentView = mLocationBarLayout.getAlignmentView();
         mOmniboxDropdownEmbedderImpl =
                 new OmniboxSuggestionsDropdownEmbedderImpl(
+                        mResourceProvider,
                         mWindowAndroid,
                         autocompleteAnchorView,
                         alignmentView,

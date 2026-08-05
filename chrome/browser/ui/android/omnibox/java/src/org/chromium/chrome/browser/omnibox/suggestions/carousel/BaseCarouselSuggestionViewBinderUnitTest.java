@@ -171,9 +171,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         verify(view).setOutlineProvider(notNull());
         verify(view).setClipToOutline(true);
         verify(view).setLayoutParams(layoutParams);
-        assertEquals(
-                OmniboxResourceProvider.getSideSpacing(mContext), layoutParams.getMarginStart());
-        assertEquals(OmniboxResourceProvider.getSideSpacing(mContext), layoutParams.getMarginEnd());
+        assertEquals(mResourceProvider.getSideSpacing(), layoutParams.getMarginStart());
+        assertEquals(mResourceProvider.getSideSpacing(), layoutParams.getMarginEnd());
     }
 
     @Test
@@ -200,9 +199,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         verify(view).setOutlineProvider(notNull());
         verify(view).setClipToOutline(true);
         verify(view).setLayoutParams(layoutParams);
-        assertEquals(
-                OmniboxResourceProvider.getSideSpacing(mContext), layoutParams.getMarginStart());
-        assertEquals(OmniboxResourceProvider.getSideSpacing(mContext), layoutParams.getMarginEnd());
+        assertEquals(mResourceProvider.getSideSpacing(), layoutParams.getMarginStart());
+        assertEquals(mResourceProvider.getSideSpacing(), layoutParams.getMarginEnd());
     }
 
     @Test

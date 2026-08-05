@@ -50,6 +50,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                 ComponentCallbacks {
     private final SettableNonNullObservableSupplier<OmniboxAlignment> mOmniboxAlignmentSupplier =
             ObservableSuppliers.createNonNull(OmniboxAlignment.UNSPECIFIED);
+    private final OmniboxResourceProvider mResourceProvider;
     private final WindowAndroid mWindowAndroid;
     private final View mAnchorView;
     private final View mAlignmentView;
@@ -76,6 +77,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private final Supplier<@FuseboxLayoutMode Integer> mFuseboxLayoutModeSupplier;
 
     /**
+     * @param resourceProvider Resource cache for fast resource lookup.
      * @param windowAndroid Window object in which the dropdown will be displayed.
      * @param anchorView View to which the dropdown should be "anchored" i.e. vertically positioned
      *     next to and matching the width of. This must be a descendant of the top-level content
@@ -104,6 +106,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      * @param topInsetProvider Provider for edge-to-edge top inset changes.
      */
     OmniboxSuggestionsDropdownEmbedderImpl(
+            OmniboxResourceProvider resourceProvider,
             WindowAndroid windowAndroid,
             View anchorView,
             View alignmentView,
@@ -117,6 +120,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             Supplier<@FuseboxState Integer> fuseboxStateSupplier,
             Supplier<@FuseboxLayoutMode Integer> fuseboxLayoutModeSupplier,
             TopInsetProvider topInsetProvider) {
+        mResourceProvider = resourceProvider;
         mWindowAndroid = windowAndroid;
         mAnchorView = anchorView;
         mAlignmentView = alignmentView;
@@ -314,7 +318,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                                     .getDimensionPixelSize(
                                             R.dimen.omnibox_suggestion_list_toolbar_overlap);
                 }
-                sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
+                sideSpacing = mResourceProvider.getDropdownSideSpacing();
             } else {
                 // Case 4: Fusebox on tablet. The width of the dropdown should match the alignment
                 // view's width exactly (0 side spacing), and its top should be exactly below the
