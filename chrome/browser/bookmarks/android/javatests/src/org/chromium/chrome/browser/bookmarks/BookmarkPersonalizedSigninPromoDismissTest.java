@@ -52,11 +52,13 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests different scenarios when the bookmark personalized signin promo is not shown. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.DESKTOP)
 public class BookmarkPersonalizedSigninPromoDismissTest {
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
 
