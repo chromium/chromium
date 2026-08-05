@@ -96,9 +96,6 @@ enum class UserSelectableType;
 // `url` that triggered the web sign-in/consistency dialog.
 + (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url;
 
-// Presents the signed-in accounts view controller if it needs to be presented.
-+ (void)presentSignInAccountsViewControllerIfNecessary;
-
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
 
 // Returns if the data type is enabled for the sync service.

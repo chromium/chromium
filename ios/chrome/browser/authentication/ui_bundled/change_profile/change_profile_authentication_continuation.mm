@@ -7,7 +7,6 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "google_apis/gaia/gaia_id.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

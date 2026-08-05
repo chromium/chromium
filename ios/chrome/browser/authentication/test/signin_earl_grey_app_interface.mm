@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_cell.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -204,10 +203,6 @@
       SceneCommands);
   [sceneHandler showWebSigninPromoFromViewController:baseViewController
                                                  URL:gURL];
-}
-
-+ (void)presentSignInAccountsViewControllerIfNecessary {
-  chrome_test_util::PresentSignInAccountsViewControllerIfNecessary();
 }
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {

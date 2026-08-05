@@ -62,6 +62,7 @@ source_set("scene_state_header_for_otr_profile_deletion") {
 source_set("scene_testing") {
   sources = [ "scene_controller_testing.h" ]
   frameworks = [ "UIKit.framework" ]
+  deps = [ ":scene_state_header" ]
 }
 
 source_set("task_updater_scene_agent") {
@@ -92,6 +93,7 @@ source_set("scene") {
 
   deps = [
     ":scene_state_header_for_otr_profile_deletion",
+    ":scene_testing",
     ":tab_activity_utils",
     ":task_updater_scene_agent",
     "//base",
