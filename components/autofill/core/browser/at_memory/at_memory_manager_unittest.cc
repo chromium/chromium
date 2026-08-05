@@ -369,7 +369,7 @@ Matcher<Suggestion> EqualsSuggestionWithManageEnhancedAutofillFooter(
           ElementsAre(Suggestion::Text(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)))),
       Field(&Suggestion::acceptability,
-            Suggestion::Acceptability::kSelectableButUnacceptable));
+            Suggestion::Acceptability::kUnselectableAndUnacceptable));
 
   if constexpr (sizeof...(matchers) == 0) {
     return EqualsAtMemorySuggestion(

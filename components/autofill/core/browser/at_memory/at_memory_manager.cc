@@ -479,7 +479,7 @@ Suggestion AtMemoryManager::CreateSourceAttributionSuggestion() {
   source_info.minor_texts.emplace_back(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE));
   source_info.acceptability =
-      Suggestion::Acceptability::kSelectableButUnacceptable;
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
   source_info.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return source_info;
 }

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -305,12 +306,13 @@ TEST_F(PopupRowFactoryUtilsTest, AtMemorySuggestionIgnoresFilterMatchBolding) {
 // Tests that kAtMemorySourceAttribution uses Body 4 text style and
 // onSurfaceSubtle text color.
 TEST_F(PopupRowFactoryUtilsTest, AtMemorySourceAttributionStyle) {
-  Suggestion suggestion(SuggestionType::kAtMemorySourceAttribution);
-  suggestion.minor_texts.emplace_back(u"Suggested by Gemini");
+  Suggestion suggestion = AtMemoryManager::CreateSourceAttributionSuggestion();
   ShowSuggestion(suggestion);
 
+  std::u16string expected_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE);
   views::Label* label =
-      FindLabelWithText(&row_view().GetContentView(), u"Suggested by Gemini");
+      FindLabelWithText(&row_view().GetContentView(), expected_text);
   ASSERT_THAT(label, NotNull());
   EXPECT_EQ(label->GetTextStyle(), views::style::STYLE_BODY_4);
   EXPECT_EQ(label->GetEnabledColor(), row_view().GetColorProvider()->GetColor(

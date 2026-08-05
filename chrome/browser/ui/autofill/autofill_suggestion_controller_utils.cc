@@ -157,7 +157,14 @@ bool IsStandaloneSuggestionType(SuggestionType type) {
 }
 
 bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion) {
-  return !suggestion.IsSelectable();
+  if (suggestion.IsSelectable()) {
+    return false;
+  }
+
+  // Unselectable suggestions use deactivated (greyed out) styling by default,
+  // except for suggestion types like source attribution, which are
+  // informational.
+  return suggestion.type != SuggestionType::kAtMemorySourceAttribution;
 }
 
 content::RenderFrameHost* GetRenderFrameHost_DoNotUse(
