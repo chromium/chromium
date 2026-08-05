@@ -2014,6 +2014,11 @@ inline constexpr char kWalletServiceUseSandboxName[] =
 inline constexpr char kWalletServiceUseSandboxDescription[] =
     "Uses the sandbox service for Google Payments API calls.";
 
+inline constexpr char kWebFrameTreeName[] = "WebFrame Tree Structure";
+inline constexpr char kWebFrameTreeDescription[] =
+    "Enables building a tree structure of WebFrames using isolated world "
+    "messaging.";
+
 inline constexpr char kWelcomeBackName[] = "Enable Welcome Back screen";
 inline constexpr char kWelcomeBackDescription[] =
     "When enabled, returning users will see the Welcome Back screen.";

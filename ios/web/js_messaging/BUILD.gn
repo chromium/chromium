@@ -9,6 +9,7 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("js_messaging") {
   deps = [
     ":frame_listeners_js",
+    ":frame_tree_js",
     ":java_script_content_world_header",
     ":java_script_content_world_util",
     ":java_script_feature_manager_header",
@@ -41,6 +42,8 @@ source_set("js_messaging") {
     "web_frames_manager_java_script_feature.h",
     "web_frames_manager_java_script_feature.mm",
     "web_frames_manager_observer_bridge.mm",
+    "web_frames_tree_java_script_feature.h",
+    "web_frames_tree_java_script_feature.mm",
     "web_view_web_state_map.h",
     "web_view_web_state_map.mm",
   ]
@@ -186,6 +189,17 @@ optimize_ts("frame_listeners_js") {
   ]
 }
 
+optimize_ts("frame_tree_js") {
+  visibility = [ ":js_messaging" ]
+
+  sources = [ "resources/frame_tree.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
 source_set("unittests") {
   testonly = true
   deps = [
@@ -199,6 +213,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//components/autofill/ios/form_util:fill_util_test_js",
     "//components/test/ios",
+    "//ios/web/common:features",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
@@ -229,6 +244,7 @@ source_set("unittests") {
     "web_frames_manager_impl_unittest.mm",
     "web_frames_manager_java_script_feature_unittest.mm",
     "web_frames_manager_observer_bridge_unittest.mm",
+    "web_frames_tree_java_script_feature_unittest.mm",
     "web_view_js_utils_unittest.mm",
     "web_view_web_state_map_unittest.mm",
   ]

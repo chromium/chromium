@@ -24,6 +24,7 @@
 #import "ios/web/js_features/window_error/error_event_listener_java_script_feature.h"
 #import "ios/web/js_features/window_error/script_error_message_handler_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
+#import "ios/web/js_messaging/web_frames_tree_java_script_feature.h"
 #import "ios/web/navigation/navigation_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
@@ -101,6 +102,10 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       WebUIMessagingJavaScriptFeature::GetInstance(),
       AnnotationsJavaScriptFeature::GetInstance(),
       ClipboardJavaScriptFeature::GetInstance()};
+
+  if (base::FeatureList::IsEnabled(web::features::kWebFrameTree)) {
+    features.push_back(WebFramesTreeJavaScriptFeature::GetInstance());
+  }
 
   auto frames_manager_features = WebFramesManagerJavaScriptFeature::
       AllContentWorldFeaturesFromBrowserState(browser_state);

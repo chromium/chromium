@@ -10265,6 +10265,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "web-frame-tree",
+    "owners": [ "olivierrobin@chromium.org", "michaeldo@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "web-hid-in-web-view",
     "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
     "expiry_milestone": 180

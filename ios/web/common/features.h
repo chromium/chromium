@@ -148,6 +148,9 @@ BASE_DECLARE_FEATURE(kCertVerificationWorkaroundKillSwitch);
 // object into a web::ScriptMessage object.
 BASE_DECLARE_FEATURE(kIOSScriptMessageConversionDurationLogging);
 
+// Feature flag to enable the isolated world parent-child frame tree handshake.
+BASE_DECLARE_FEATURE(kWebFrameTree);
+
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
