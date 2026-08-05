@@ -132,7 +132,9 @@ void ExternalBeginFrameSourceMojo::DispatchFrameCallback(
   // If there are pending copy output requests that have not been fulfilled,
   // cancel them, as they won't be served till the next frame. This prevents
   // the client for waiting for them indefinitely.
-  frame_sink_manager_->DiscardPendingCopyOfOutputRequests(this);
+  if (wait_for_all_frame_sinks_) {
+    frame_sink_manager_->DiscardPendingCopyOfOutputRequests(this);
+  }
   // Prevent missing begin frames from being sent to sinks that came late,
   // as this may result in two overlapping frames being sent, which is not
   // supported with full pipeline mode.
