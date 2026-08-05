@@ -17,17 +17,20 @@ source_set("on_device_category_classifier") {
   ]
   deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/optimization_guide/core:features",
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/intelligence/actor/tools/model:page_stability",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/passage_embeddings",
   ]

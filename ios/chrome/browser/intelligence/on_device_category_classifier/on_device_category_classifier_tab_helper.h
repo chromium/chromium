@@ -13,6 +13,10 @@
 #import "ios/web/public/web_state_user_data.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace actor {
+class PageStabilityMonitor;
+}  // namespace actor
+
 @class PageContextWrapper;
 
 // Tab helper that orchestrates on-device category classification.
@@ -31,6 +35,8 @@ class OnDeviceCategoryClassifierTabHelper
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+  // Invoked when the tab is hidden (e.g. user switched tabs). Used to cancel
+  // any pending classifications.
   void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
@@ -42,6 +48,9 @@ class OnDeviceCategoryClassifierTabHelper
 
   // Starts page context extraction for the current web state.
   void StartExtraction();
+
+  // Extracts page context after page stability is reached.
+  void ExtractPageContext();
 
   // Invoked when PageContext extraction completes asynchronously.
   void OnPageContextResponse(PageContextWrapperCallbackResponse response);
@@ -59,6 +68,7 @@ class OnDeviceCategoryClassifierTabHelper
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   PageContextWrapper* page_context_wrapper_ = nil;
+  std::unique_ptr<actor::PageStabilityMonitor> page_stability_monitor_;
 
   base::WeakPtrFactory<OnDeviceCategoryClassifierTabHelper> weak_ptr_factory_{
       this};

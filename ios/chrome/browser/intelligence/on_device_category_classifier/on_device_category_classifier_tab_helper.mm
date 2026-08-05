@@ -9,10 +9,13 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/page_content_annotations/core/simple_page_content_verbalization.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 
@@ -47,6 +50,7 @@ void OnDeviceCategoryClassifierTabHelper::DidFinishNavigation(
   } else {
     weak_ptr_factory_.InvalidateWeakPtrs();
     page_context_wrapper_ = nil;
+    page_stability_monitor_.reset();
   }
 }
 
@@ -75,6 +79,7 @@ void OnDeviceCategoryClassifierTabHelper::WebStateDestroyed(
 void OnDeviceCategoryClassifierTabHelper::StartExtraction() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   page_context_wrapper_ = nil;
+  page_stability_monitor_.reset();
 
   if (web_state_->GetBrowserState()->IsOffTheRecord()) {
     return;
@@ -85,6 +90,24 @@ void OnDeviceCategoryClassifierTabHelper::StartExtraction() {
     return;
   }
 
+  web::WebFramesManager* frames_manager =
+      web_state_->GetPageWorldWebFramesManager();
+  web::WebFrame* main_frame =
+      frames_manager ? frames_manager->GetMainWebFrame() : nullptr;
+
+  if (!main_frame) {
+    return;
+  }
+
+  page_stability_monitor_ =
+      std::make_unique<actor::PageStabilityMonitor>(main_frame->AsWeakPtr());
+  page_stability_monitor_->NotifyWhenStable(
+      /*observation_delay=*/base::TimeDelta(),
+      base::BindOnce(&OnDeviceCategoryClassifierTabHelper::ExtractPageContext,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnDeviceCategoryClassifierTabHelper::ExtractPageContext() {
   base::OnceCallback<void(PageContextWrapperCallbackResponse)> callback =
       base::BindOnce(
           &OnDeviceCategoryClassifierTabHelper::OnPageContextResponse,

@@ -10,6 +10,7 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/web/public",
+  "+ios/chrome/browser/intelligence/actor/tools/model",
   "+services/metrics/public/cpp/ukm_source_id.h",
   "+services/passage_embeddings/passage_embedder.h",
   "+services/passage_embeddings/public/mojom",
