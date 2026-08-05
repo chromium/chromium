@@ -36,18 +36,17 @@ class ChannelIndicatorQuickSettingsViewPixelTest
     set_shell_delegate(std::move(delegate));
     AshTestBase::SetUp();
 
-    system_tray_client_ = GetSystemTrayClient();
-    system_tray_client_->set_user_feedback_enabled(true);
+    GetSystemTrayClient()->set_user_feedback_enabled(true);
 
     // Place the view in a large views::Widget so the buttons are clickable.
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
-      // Implicitly instantiate the view by creating the quick settings header.
-      model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
-      controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
-      auto header = std::make_unique<QuickSettingsHeader>(controller_.get());
-      header_ = header.get();
-      widget_->SetContentsView(std::move(header));
+    // Implicitly instantiate the view by creating the quick settings header.
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
+    controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
+    auto header = std::make_unique<QuickSettingsHeader>(controller_.get());
+    header_ = header.get();
+    widget_->SetContentsView(std::move(header));
   }
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -58,6 +57,7 @@ class ChannelIndicatorQuickSettingsViewPixelTest
   }
 
   void TearDown() override {
+    header_ = nullptr;
     controller_.reset();
     model_.reset();
     widget_.reset();
@@ -70,12 +70,10 @@ class ChannelIndicatorQuickSettingsViewPixelTest
   }
 
  private:
-  raw_ptr<TestSystemTrayClient, DanglingUntriaged> system_tray_client_ =
-      nullptr;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<QuickSettingsHeader, DanglingUntriaged> header_ = nullptr;
+  raw_ptr<QuickSettingsHeader> header_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(
