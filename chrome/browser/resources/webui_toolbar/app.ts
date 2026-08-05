@@ -516,6 +516,8 @@ export class ToolbarAppElement extends AppElementBase {
 
     const sessionId = ++this.initializeSessionId_;
 
+    this.setAttribute('role', 'toolbar');
+
     this.addEventListener('dragover', this.dragOverListener_);
     this.addEventListener('drop', this.dropListener_);
     this.addEventListener('keydown', this.keyDownListener_);
