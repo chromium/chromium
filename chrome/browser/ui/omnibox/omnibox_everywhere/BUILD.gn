@@ -13,36 +13,24 @@ source_set("prefs") {
   deps = [ "//components/prefs" ]
 }
 
-# Omnibox Everywhere public interface headers.
+# Omnibox Everywhere global features on desktop.
 source_set("omnibox_everywhere") {
+  sources = [
+    "omnibox_everywhere_controller.cc",
+    "omnibox_everywhere_ui_manager.cc",
+    "omnibox_everywhere_ui_manager.h",
+    "omnibox_everywhere_widget_delegate.cc",
+    "omnibox_everywhere_widget_delegate.h",
+  ]
   public = [
     "omnibox_everywhere_controller.h",
     "omnibox_everywhere_ui_manager.h",
   ]
-  if (is_mac) {
-    public += [ "omnibox_everywhere_mac_utils.h" ]
-  }
-  public_deps = [
-    ":prefs",
-    "//base",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/webui/top_chrome",
-    "//components/prefs",
-    "//ui/base/accelerators/global_accelerator_listener",
-    "//ui/gfx",
-    "//ui/views",
+  friend = [
+    ":interactive_ui_tests",
+    ":unit_tests",
   ]
-}
-
-# Omnibox Everywhere desktop implementation.
-source_set("impl") {
-  sources = [
-    "omnibox_everywhere_controller.cc",
-    "omnibox_everywhere_ui_manager.cc",
-    "omnibox_everywhere_widget_delegate.cc",
-    "omnibox_everywhere_widget_delegate.h",
-  ]
-  public_deps = [ ":omnibox_everywhere" ]
+  public_deps = [ "//base" ]
   deps = [
     ":prefs",
     "//chrome/browser:file_select_helper",
@@ -73,6 +61,7 @@ source_set("impl") {
       "omnibox_everywhere_mac_utils.h",
       "omnibox_everywhere_mac_utils.mm",
     ]
+    public += [ "omnibox_everywhere_mac_utils.h" ]
     deps += [ "//components/remote_cocoa/app_shim" ]
   }
 }
@@ -88,7 +77,6 @@ source_set("unit_tests") {
     sources += [ "omnibox_everywhere_event_handler_aura_unittest.cc" ]
   }
   deps = [
-    ":impl",
     ":omnibox_everywhere",
     ":prefs",
     "//base",
@@ -110,7 +98,6 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [ "omnibox_everywhere_interactive_uitest.cc" ]
   deps = [
-    ":impl",
     ":omnibox_everywhere",
     "//base",
     "//base/test:test_support",
