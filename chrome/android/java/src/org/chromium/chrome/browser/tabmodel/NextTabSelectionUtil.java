@@ -98,7 +98,11 @@ public class NextTabSelectionUtil {
         if (closingTabs.size() == 1
                 && NextTabPolicy.HIERARCHICAL == model.getNextTabPolicySupplier().get()) {
             Tab parentTab =
-                    findTabInAllTabModels(model, modelDelegate, closingTabs.get(0).getParentId());
+                    findTabInAllTabModels(
+                            model,
+                            modelDelegate,
+                            closingTabs.get(0).getParentId(),
+                            model.getCount() <= 1);
             if (parentTab != null
                     && validNextTab(parentTab, closingTabs)
                     && !isTabGroupCollapsed(model, parentTab)) {
@@ -217,13 +221,19 @@ public class NextTabSelectionUtil {
     }
 
     private static @Nullable Tab findTabInAllTabModels(
-            TabModel model, @Nullable TabModelDelegate modelDelegate, int tabId) {
+            TabModel model,
+            @Nullable TabModelDelegate modelDelegate,
+            int tabId,
+            boolean includeOtherModels) {
         if (tabId == Tab.INVALID_TAB_ID) return null;
         if (modelDelegate != null) {
             boolean isIncognito = model.isIncognitoBranded();
             Tab tab = modelDelegate.getModel(isIncognito).getTabById(tabId);
             if (tab != null) return tab;
-            return modelDelegate.getModel(!isIncognito).getTabById(tabId);
+            if (includeOtherModels) {
+                return modelDelegate.getModel(!isIncognito).getTabById(tabId);
+            }
+            return null;
         }
         return model.getTabById(tabId);
     }

@@ -352,6 +352,28 @@ public class NextTabSelectionUtilUnitTest {
     }
 
     @Test
+    public void testGetNextTabIfClosed_CrossModelParentTab_IgnoredWhenOtherTabsExist() {
+        when(mOtherTabModel.isActiveModel()).thenReturn(true);
+        when(mOtherTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mTabModelDelegate.getCurrentModel()).thenReturn(mOtherTabModel);
+
+        Tab parentTab = createTab(mProfile, 0, Tab.INVALID_TAB_ID);
+        when(parentTab.isIncognito()).thenReturn(false);
+        when(mTabModel.getTabById(parentTab.getId())).thenReturn(parentTab);
+
+        Tab childTab = createTab(mOtherProfile, 0, parentTab.getId());
+        when(childTab.isIncognito()).thenReturn(true);
+        Tab siblingTab = createTab(mOtherProfile, 0, Tab.INVALID_TAB_ID);
+        when(siblingTab.isIncognito()).thenReturn(true);
+        setUpTabsInTabModel(mOtherTabModel, List.of(childTab, siblingTab));
+
+        setCurrentTab(childTab);
+        assertEquals(
+                siblingTab,
+                getNextTabIfClosed(mOtherTabModel, List.of(childTab), false, TabCloseType.SINGLE));
+    }
+
+    @Test
     public void testFindNearbyNotClosingTab_PrioritizesExpandedTabs() {
         Token groupId = new Token(1, 2);
 
