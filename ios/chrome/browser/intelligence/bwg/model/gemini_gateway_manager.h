@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 class Browser;
-class GeminiViewStateChangeHandlerTarget;
 @class GeminiActuationHandler;
 @class GeminiCameraHandler;
 @class GeminiConsentProviderHandler;
@@ -17,8 +16,8 @@ class GeminiViewStateChangeHandlerTarget;
 @class GeminiSessionHandler;
 @class GeminiSuggestionHandler;
 @class GeminiTabPickerHandler;
-@class GeminiViewStateChangeHandler;
 @protocol BWGGatewayProtocol;
+@protocol GeminiViewStateDelegate;
 
 // Manager class for creating, initializing, and holding ownership of Gemini
 // gateway objects and their handlers.
@@ -40,12 +39,11 @@ class GeminiViewStateChangeHandlerTarget;
     GeminiConsentProviderHandler* consentProviderHandler;
 @property(nonatomic, readonly) GeminiSuggestionHandler* suggestionHandler;
 @property(nonatomic, readonly) GeminiActuationHandler* actuationHandler;
-@property(nonatomic, readonly) GeminiViewStateChangeHandler* viewStateHandler;
 
 // Initializes the manager and sets up gateway and handlers for the given
-// browser and target.
+// browser and view state delegate.
 - (instancetype)initWithBrowser:(Browser*)browser
-                         target:(GeminiViewStateChangeHandlerTarget*)target
+              viewStateDelegate:(id<GeminiViewStateDelegate>)viewStateDelegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

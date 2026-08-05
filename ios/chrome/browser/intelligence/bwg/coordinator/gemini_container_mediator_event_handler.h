@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_CHANGE_HANDLER_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_CHANGE_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_CONTAINER_MEDIATOR_EVENT_HANDLER_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_CONTAINER_MEDIATOR_EVENT_HANDLER_H_
 
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
-// Target interface to handle changes in the Gemini view state.
-class GeminiViewStateChangeHandlerTarget {
+// Interface for handling events forwarded by GeminiContainerMediator.
+// NOTE: This interface is only to be used by GeminiBrowserAgent until the end
+// of the migration and will be removed afterwards.
+class GeminiContainerMediatorEventHandler {
  public:
-  virtual ~GeminiViewStateChangeHandlerTarget() = default;
+  virtual ~GeminiContainerMediatorEventHandler() = default;
 
   // Called when the Gemini view state changes.
   virtual void OnViewStateChanged(
@@ -46,18 +47,4 @@ class GeminiViewStateChangeHandlerTarget {
   virtual void OnGeminiUIDidAppear() = 0;
 };
 
-// Handler for the Gemini view state changes.
-@interface GeminiViewStateChangeHandler : NSObject <GeminiViewStateDelegate>
-
-// Initializes the handler with the given target.
-- (instancetype)initWithTarget:(GeminiViewStateChangeHandlerTarget*)target
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-// Call this before destroying the target to prevent dangling pointer access.
-- (void)disconnect;
-
-@end
-
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_CHANGE_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_CONTAINER_MEDIATOR_EVENT_HANDLER_H_

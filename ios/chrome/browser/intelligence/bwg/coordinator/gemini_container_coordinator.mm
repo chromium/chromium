@@ -50,7 +50,7 @@
   // can be added to the init params.
   _mediator = [[GeminiContainerMediator alloc]
       initWithBrowser:self.browser
-               target:GeminiBrowserAgent::FromBrowser(self.browser)];
+         eventHandler:GeminiBrowserAgent::FromBrowser(self.browser)];
 
   [self setSessionCommandHandlers];
 

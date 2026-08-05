@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -34,19 +34,21 @@
 @implementation GeminiGatewayManager
 
 - (instancetype)initWithBrowser:(Browser*)browser
-                         target:(GeminiViewStateChangeHandlerTarget*)target {
+              viewStateDelegate:(id<GeminiViewStateDelegate>)viewStateDelegate {
   self = [super init];
   if (self) {
     _gateway = ios::provider::CreateGeminiGateway();
     if (_gateway && browser) {
-      [self setUpHandlersWithBrowser:browser target:target];
+      [self setUpHandlersWithBrowser:browser
+                   viewStateDelegate:viewStateDelegate];
     }
   }
   return self;
 }
 
 - (void)setUpHandlersWithBrowser:(Browser*)browser
-                          target:(GeminiViewStateChangeHandlerTarget*)target {
+               viewStateDelegate:
+                   (id<GeminiViewStateDelegate>)viewStateDelegate {
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   WebStateList* webStateList = browser->GetWebStateList();
   ProfileIOS* profile = browser->GetProfile();
@@ -64,11 +66,9 @@
                                profile)
                prefService:profile->GetPrefs()];
 
-  if (target) {
-    _viewStateHandler =
-        [[GeminiViewStateChangeHandler alloc] initWithTarget:target];
-    _sessionHandler.geminiViewStateDelegate = _viewStateHandler;
-    _linkOpeningHandler.geminiViewStateDelegate = _viewStateHandler;
+  if (viewStateDelegate) {
+    _sessionHandler.geminiViewStateDelegate = viewStateDelegate;
+    _linkOpeningHandler.geminiViewStateDelegate = viewStateDelegate;
   }
 
   _gateway.sessionHandler = _sessionHandler;
@@ -113,8 +113,6 @@
 - (void)disconnect {
   [_linkOpeningHandler disconnect];
   _linkOpeningHandler = nil;
-  [_viewStateHandler disconnect];
-  _viewStateHandler = nil;
   [_consentProviderHandler disconnect];
   _consentProviderHandler = nil;
   _sessionHandler = nil;

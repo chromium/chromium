@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
@@ -73,7 +73,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                            public BrowserObserver,
                            public signin::IdentityManager::Observer,
                            public TabGridStateObserver,
-                           public GeminiViewStateChangeHandlerTarget {
+                           public GeminiContainerMediatorEventHandler {
  public:
   // Observer interface for GeminiBrowserAgent.
   class Observer : public base::CheckedObserver {
@@ -161,6 +161,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // floaty to be shown.
   void ShowFloatyIfInvoked(bool animated, gemini::FloatyUpdateSource source);
 
+  // Temporarily route SDK events from GeminiContainerMediator to
+  // GeminiBrowserAgent to handle work that is necessary for the overlay UI but
+  // not for the embedded UI. TODO(crbug.com/535579970): Remove this once
+  // migration is complete.
+
+  // GeminiContainerMediatorEventHandler:
   void OnViewStateChanged(ios::provider::GeminiViewState view_state) override;
   void OnProcessingStatusChanged(
       ios::provider::GeminiClientMode processing_status,

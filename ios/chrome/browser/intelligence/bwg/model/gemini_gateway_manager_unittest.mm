@@ -63,7 +63,8 @@ class GeminiGatewayManagerTest : public PlatformTest {
 // manager.
 TEST_F(GeminiGatewayManagerTest, TestHandlersInitialization) {
   GeminiGatewayManager* manager =
-      [[GeminiGatewayManager alloc] initWithBrowser:browser_.get() target:nil];
+      [[GeminiGatewayManager alloc] initWithBrowser:browser_.get()
+                                  viewStateDelegate:nil];
   EXPECT_NE(nil, manager.gateway);
   EXPECT_NE(nil, manager.linkOpeningHandler);
   EXPECT_NE(nil, manager.pageStateChangeHandler);

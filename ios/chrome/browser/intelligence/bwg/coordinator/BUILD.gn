@@ -6,6 +6,7 @@ source_set("container_mediator") {
   sources = [
     "gemini_container_mediator.h",
     "gemini_container_mediator.mm",
+    "gemini_container_mediator_event_handler.h",
   ]
   public_deps = [
     "//ios/chrome/browser/intelligence/bwg/model",

@@ -7,13 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
+
 namespace gemini {
 enum class EntryPoint;
 }  // namespace gemini
 
 class Browser;
+class GeminiContainerMediatorEventHandler;
 class WebStateList;
-class GeminiViewStateChangeHandlerTarget;
 @class GeminiConfiguration;
 @class GeminiGatewayManager;
 @class GeminiPageContext;
@@ -21,7 +23,10 @@ class GeminiViewStateChangeHandlerTarget;
 @protocol BWGGatewayProtocol;
 
 // Mediator for the Gemini container.
-@interface GeminiContainerMediator : NSObject
+@interface GeminiContainerMediator : NSObject <GeminiViewStateDelegate>
+
+// Delegate for handling events from the mediator.
+@property(nonatomic, assign) GeminiContainerMediatorEventHandler* eventHandler;
 
 // The gateway for bridging internal protocols.
 @property(nonatomic, readonly) id<BWGGatewayProtocol> gateway;
@@ -32,7 +37,8 @@ class GeminiViewStateChangeHandlerTarget;
 // TODO(crbug.com/537719170): Mediator should be the target directly.
 // Initializes the mediator with the given dependencies.
 - (instancetype)initWithBrowser:(Browser*)browser
-                         target:(GeminiViewStateChangeHandlerTarget*)target
+                   eventHandler:
+                       (GeminiContainerMediatorEventHandler*)eventHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

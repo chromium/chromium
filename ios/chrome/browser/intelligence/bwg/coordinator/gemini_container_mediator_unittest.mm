@@ -6,10 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -33,6 +36,50 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
+
+namespace {
+
+// A test spy for tracking delegate callbacks from GeminiContainerMediator.
+class FakeGeminiContainerMediatorEventHandler
+    : public GeminiContainerMediatorEventHandler {
+ public:
+  void OnViewStateChanged(ios::provider::GeminiViewState view_state) override {
+    last_view_state_changed_ = view_state;
+  }
+  void OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode processing_status,
+      ios::provider::GeminiDormantReason dormant_reason) override {
+    last_processing_status_changed_ = processing_status;
+    last_dormant_reason_changed_ = dormant_reason;
+  }
+  void SetLastShownViewState(
+      ios::provider::GeminiViewState view_state) override {
+    last_shown_view_state_ = view_state;
+  }
+  void CollapseFloatyIfInvoked() override { collapse_floaty_called_ = true; }
+  void OnLiveButtonTapped() override { live_button_tapped_called_ = true; }
+  void OnGeminiLiveUserDidBargeIn() override { barge_in_called_ = true; }
+  void OnGeminiLiveUserDidPressStopButton() override {
+    stop_button_pressed_called_ = true;
+  }
+  void OnModeChanged(ios::provider::GeminiViewMode mode) override {
+    last_mode_changed_ = mode;
+  }
+  void OnGeminiUIDidAppear() override { ui_did_appear_called_ = true; }
+
+  std::optional<ios::provider::GeminiViewState> last_view_state_changed_;
+  std::optional<ios::provider::GeminiClientMode>
+      last_processing_status_changed_;
+  std::optional<ios::provider::GeminiDormantReason>
+      last_dormant_reason_changed_;
+  std::optional<ios::provider::GeminiViewState> last_shown_view_state_;
+  bool collapse_floaty_called_ = false;
+  bool live_button_tapped_called_ = false;
+  bool barge_in_called_ = false;
+  bool stop_button_pressed_called_ = false;
+  std::optional<ios::provider::GeminiViewMode> last_mode_changed_;
+  bool ui_did_appear_called_ = false;
+};
 
 class GeminiContainerMediatorTest : public PlatformTest {
  protected:
@@ -60,7 +107,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
         initWithEntryPoint:gemini::EntryPoint::Promo];
 
     mediator_ = [[GeminiContainerMediator alloc] initWithBrowser:browser_.get()
-                                                          target:nullptr];
+                                                    eventHandler:&delegate_];
   }
 
   static std::unique_ptr<KeyedService> CreateMockTracker(ProfileIOS* context) {
@@ -86,6 +133,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   GeminiStartupState* startup_state_;
+  FakeGeminiContainerMediatorEventHandler delegate_;
   GeminiContainerMediator* mediator_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
@@ -223,3 +271,130 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_TRUE([mediator_
       shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::Promo]);
 }
+
+// Tests that the mediator correctly notifies the delegate when the view state
+// switches to expanded.
+TEST_F(GeminiContainerMediatorTest, TestDidSwitchToViewStateExpanded) {
+  [mediator_ didSwitchToViewState:ios::provider::GeminiViewState::kExpanded];
+  EXPECT_THAT(delegate_.last_view_state_changed_,
+              testing::Optional(ios::provider::GeminiViewState::kExpanded));
+  EXPECT_THAT(delegate_.last_shown_view_state_,
+              testing::Optional(ios::provider::GeminiViewState::kExpanded));
+}
+
+// Tests that the mediator correctly updates the last shown view state when
+// switching to collapsed.
+TEST_F(GeminiContainerMediatorTest, TestDidSwitchToViewStateCollapsed) {
+  [mediator_ didSwitchToViewState:ios::provider::GeminiViewState::kCollapsed];
+  EXPECT_THAT(delegate_.last_view_state_changed_,
+              testing::Optional(ios::provider::GeminiViewState::kCollapsed));
+  EXPECT_THAT(delegate_.last_shown_view_state_,
+              testing::Optional(ios::provider::GeminiViewState::kCollapsed));
+}
+
+// Tests that the mediator correctly notifies the delegate when processing
+// status changes.
+TEST_F(GeminiContainerMediatorTest, TestDidUpdateProcessingStatus) {
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kListening
+                      sessionID:@"session_id"
+                 conversationID:@"conversation_id"];
+  EXPECT_THAT(delegate_.last_processing_status_changed_,
+              testing::Optional(ios::provider::GeminiClientMode::kListening));
+  EXPECT_THAT(delegate_.last_dormant_reason_changed_,
+              testing::Optional(ios::provider::GeminiDormantReason::kUnknown));
+}
+
+// Tests that the mediator correctly notifies the delegate when processing
+// status changes with a dormant reason.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidUpdateProcessingStatusWithDormantReason) {
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                  dormantReason:ios::provider::GeminiDormantReason::kUserStop
+                      sessionID:@"session_id"
+                 conversationID:@"conversation_id"];
+  EXPECT_THAT(delegate_.last_processing_status_changed_,
+              testing::Optional(ios::provider::GeminiClientMode::kDormant));
+  EXPECT_THAT(delegate_.last_dormant_reason_changed_,
+              testing::Optional(ios::provider::GeminiDormantReason::kUserStop));
+}
+
+// Tests that the mediator requests collapsing the floaty when requested to
+// switch to collapsed state.
+TEST_F(GeminiContainerMediatorTest, TestSwitchToViewStateCollapsed) {
+  [mediator_ switchToViewState:ios::provider::GeminiViewState::kCollapsed];
+  EXPECT_TRUE(delegate_.collapse_floaty_called_);
+}
+
+// Tests that the mediator does not request collapsing the floaty when requested
+// to switch to expanded state.
+TEST_F(GeminiContainerMediatorTest, TestSwitchToViewStateExpanded) {
+  [mediator_ switchToViewState:ios::provider::GeminiViewState::kExpanded];
+  EXPECT_FALSE(delegate_.collapse_floaty_called_);
+}
+
+// Tests that the mediator handles a null delegate gracefully without crashing.
+TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
+  GeminiContainerMediator* null_delegate_mediator =
+      [[GeminiContainerMediator alloc] initWithBrowser:browser_.get()
+                                          eventHandler:nullptr];
+
+  // Verify that calling delegate methods does not crash when delegate is null.
+  [null_delegate_mediator
+      didSwitchToViewState:ios::provider::GeminiViewState::kExpanded];
+  [null_delegate_mediator
+      switchToViewState:ios::provider::GeminiViewState::kCollapsed];
+
+  SUCCEED();
+}
+
+// Tests that the mediator stops forwarding events after disconnect.
+TEST_F(GeminiContainerMediatorTest, TestDisconnectDelegate) {
+  [mediator_ disconnect];
+
+  [mediator_ didSwitchToViewState:ios::provider::GeminiViewState::kExpanded];
+  EXPECT_FALSE(delegate_.last_view_state_changed_.has_value());
+  EXPECT_FALSE(delegate_.last_shown_view_state_.has_value());
+
+  [mediator_ switchToViewState:ios::provider::GeminiViewState::kCollapsed];
+  EXPECT_FALSE(delegate_.collapse_floaty_called_);
+
+  [mediator_ geminiLiveUserDidBargeIn];
+  EXPECT_FALSE(delegate_.barge_in_called_);
+}
+
+// Tests that the mediator correctly notifies the delegate when the user barges
+// in.
+TEST_F(GeminiContainerMediatorTest, TestGeminiLiveUserDidBargeIn) {
+  [mediator_ geminiLiveUserDidBargeIn];
+  EXPECT_TRUE(delegate_.barge_in_called_);
+}
+
+// Tests that the mediator correctly forwards live button taps.
+TEST_F(GeminiContainerMediatorTest, TestLiveButtonTapped) {
+  [mediator_ geminiLiveUserDidTapLiveButton];
+  EXPECT_TRUE(delegate_.live_button_tapped_called_);
+}
+
+// Tests that the mediator correctly forwards geminiUIDidAppear calls.
+TEST_F(GeminiContainerMediatorTest, TestGeminiUIDidAppear) {
+  [mediator_ geminiUIDidAppear];
+  EXPECT_TRUE(delegate_.ui_did_appear_called_);
+}
+
+// Tests that the mediator correctly forwards didSwitchToMode calls.
+TEST_F(GeminiContainerMediatorTest, TestDidSwitchToMode) {
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+  EXPECT_THAT(delegate_.last_mode_changed_,
+              testing::Optional(ios::provider::GeminiViewMode::kLive));
+}
+
+// Tests that the mediator correctly forwards geminiLiveUserDidPressStopButton
+// calls.
+TEST_F(GeminiContainerMediatorTest, TestGeminiLiveUserDidPressStopButton) {
+  [mediator_ geminiLiveUserDidPressStopButton];
+  EXPECT_TRUE(delegate_.stop_button_pressed_called_);
+}
+
+}  // namespace

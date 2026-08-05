@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
@@ -47,15 +48,17 @@
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
-                         target:(GeminiViewStateChangeHandlerTarget*)target {
+                   eventHandler:
+                       (GeminiContainerMediatorEventHandler*)eventHandler {
   self = [super init];
   if (self) {
+    _eventHandler = eventHandler;
     if (browser) {
       _webStateList = browser->GetWebStateList();
       _profile = browser->GetProfile();
     }
     _gatewayManager = [[GeminiGatewayManager alloc] initWithBrowser:browser
-                                                             target:target];
+                                                  viewStateDelegate:self];
     if (self.gateway && browser) {
       [self configureGemini];
     }
@@ -170,10 +173,77 @@
 - (void)disconnect {
   [self onFloatyDismiss];
 
+  _eventHandler = nullptr;
   _webStateList = nullptr;
   _profile = nullptr;
   [_gatewayManager disconnect];
   _gatewayManager = nil;
+}
+
+#pragma mark - GeminiViewStateDelegate
+
+- (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState {
+  if (_eventHandler) {
+    _eventHandler->OnViewStateChanged(viewState);
+    _eventHandler->SetLastShownViewState(viewState);
+  }
+}
+
+- (void)switchToViewState:(ios::provider::GeminiViewState)viewState {
+  if (_eventHandler &&
+      viewState == ios::provider::GeminiViewState::kCollapsed) {
+    _eventHandler->CollapseFloatyIfInvoked();
+  }
+}
+
+- (void)didUpdateProcessingStatus:
+            (ios::provider::GeminiClientMode)processingStatus
+                        sessionID:(NSString*)sessionID
+                   conversationID:(NSString*)conversationID {
+  if (_eventHandler) {
+    _eventHandler->OnProcessingStatusChanged(
+        processingStatus, ios::provider::GeminiDormantReason::kUnknown);
+  }
+}
+
+- (void)
+    didUpdateProcessingStatus:(ios::provider::GeminiClientMode)processingStatus
+                dormantReason:(ios::provider::GeminiDormantReason)dormantReason
+                    sessionID:(NSString*)sessionID
+               conversationID:(NSString*)conversationID {
+  if (_eventHandler) {
+    _eventHandler->OnProcessingStatusChanged(processingStatus, dormantReason);
+  }
+}
+
+- (void)geminiLiveUserDidTapLiveButton {
+  if (_eventHandler) {
+    _eventHandler->OnLiveButtonTapped();
+  }
+}
+
+- (void)geminiLiveUserDidPressStopButton {
+  if (_eventHandler) {
+    _eventHandler->OnGeminiLiveUserDidPressStopButton();
+  }
+}
+
+- (void)geminiLiveUserDidBargeIn {
+  if (_eventHandler) {
+    _eventHandler->OnGeminiLiveUserDidBargeIn();
+  }
+}
+
+- (void)didSwitchToMode:(ios::provider::GeminiViewMode)mode {
+  if (_eventHandler) {
+    _eventHandler->OnModeChanged(mode);
+  }
+}
+
+- (void)geminiUIDidAppear {
+  if (_eventHandler) {
+    _eventHandler->OnGeminiUIDidAppear();
+  }
 }
 
 #pragma mark - Private
