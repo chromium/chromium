@@ -10501,12 +10501,12 @@
   {
     "name": "your-saved-info-settings-page-android",
     "owners": ["josefraska@google.com", "chrome-autofill-team@google.com"],
-    "expiry_milestone": 152
+    "expiry_milestone": 155
   },
   {
     "name": "your-saved-info-settings-page-ios",
     "owners": ["jsobiech@google.com", "chrome-autofill-team@google.com"],
-    "expiry_milestone": 152
+    "expiry_milestone": 155
   },
   {
     "name": "zero-copy-video-capture",
