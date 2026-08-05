@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1184166532603925201">Când ești în modul incognito, Chrome împiedică site-urile să folosească cookie-uri terță parte</translation>
-<translation id="1559726735555610004">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Unele site-uri îți pot folosi activitatea pentru a-ți personaliza experiența, nu doar pentru anunțuri. În plus, ele pot combina aceste date cu alte informații pe care le dețin deja despre tine. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. Află mai multe despre modul în care Google îți protejează datele, în <ph name="BEGIN_LINK" />Politica de confidențialitate<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">În modul incognito, site-urile nu pot folosi cookie-uri terță parte. Dacă un site care se bazează pe aceste cookie-uri nu funcționează, poți <ph name="BEGIN_LINK" />încerca să-i acorzi acces temporar la cookie-urile terță parte<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Setările Chrome actuale au fost actualizate pentru a permite site-urilor să acceseze cookie-uri terță parte. Poți modifica oricând această setare.</translation>
 <translation id="2004697686368036666">Este posibil ca funcțiile de pe anumite site-uri să nu ruleze</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Site-urile care se bazează pe cookie-uri terță parte ar trebui să funcționeze conform așteptărilor</translation>
 <translation id="3624583033347146597">Alege preferințele privind cookie-urile terță parte</translation>
 <translation id="3918378745482005425">Este posibil ca unele funcții să nu ruleze. Site-urile asociate pot folosi în continuare cookie-uri terță parte.</translation>
-<translation id="4009365983562022788">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Unele site-uri îți pot folosi activitatea pentru a-ți personaliza experiența, nu doar pentru anunțuri. În plus, ele pot combina aceste date cu alte informații pe care le dețin deja despre tine. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. Află mai multe din <ph name="BEGIN_LINK1" />Politica de confidențialitate<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Permis</translation>
 <translation id="4412992751769744546">Permite cookie-urile terță parte</translation>
 <translation id="4711259472133554310">Poți crea excepții în Setări pentru a permite întotdeauna anumitor site-uri să folosească cookie-uri terță parte</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google 搜尋 AI 模式和連結的應用程式</translation>
 <translation id="1085677983426914530">無法開啟「<ph name="FILENAME" />」</translation>
 <translation id="1086486568852410168">使用「Google 智能鏡頭」搜尋</translation>
+<translation id="1095093219235104018">使用 Gemini 尋找並填入內容</translation>
 <translation id="1096992026380844478">系統會根據上次的備份還原同步處理設定。<ph name="BEGIN_LINK" />查看你可同步處理的內容<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{已略過 1 次手動搜尋}other{已略過 # 次手動搜尋}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{已即時驗證 1 個密碼}other{已即時驗證 # 個密碼}}</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">使用 Face ID 解鎖</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">關閉 AI 模式</translation>
 <translation id="1554477036522844996">開啟新視窗</translation>
 <translation id="1558391695376153246">關閉無痕式分頁</translation>
-<translation id="1559263013367304065">使用「Google 智能鏡頭」以來</translation>
 <translation id="1560153516220021659">收埋咗次要工具列按鈕</translation>
 <translation id="1562601408588733317">管理 Gemini 尋找和填入資料的方式</translation>
 <translation id="1565371473877914088">新無痕式分頁</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">已新增並固定網站</translation>
 <translation id="1911619930368729126">上載至「Google 雲端硬碟」</translation>
 <translation id="1925706052394657380">在 iOS 中開啟「預設應用程式」設定<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
+<translation id="1938871630297275912">{count,plural, =1{已收到連結}other{已收到 {count} 個連結}}</translation>
 <translation id="1941314575388338491">輕按兩下即可複製。</translation>
 <translation id="1943478190258551035">「選單」→「設定」</translation>
 <translation id="1952728750904661634">登入受管理的帳戶</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2271452184061378400">分頁群組會儲存在這裡</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
+<translation id="2274179746480077483">自動填入來自 Gmail 和「相片」等應用程式的資料。由「個人化智能」提供技術。</translation>
 <translation id="2287614783861766820">{count,plural, =1{此地址將會從此裝置上刪除。}other{這些地址將會從此裝置上刪除。}}</translation>
 <translation id="2295236662082735391">長按網頁上的圖片，即可使用 Gemini 編輯</translation>
 <translation id="2296360194694387941">「使用 Chrome 版 Gemini」已完成！</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">無痕搜尋</translation>
 <translation id="6234310016144827337">請檢查你的連線，然後再試一次</translation>
 <translation id="6236952928980352967">取消忽略警告</translation>
+<translation id="623755660902014047">閱讀模式</translation>
 <translation id="6240553182907836376">更新身分證</translation>
 <translation id="6240601837375010619">儲存護照</translation>
 <translation id="6241132809279377987">Google 應用程式幫你解鎖更多 iPhone 功能</translation>
@@ -2108,6 +2110,7 @@
 <translation id="7972837668077967426">畫布</translation>
 <translation id="7975036700432177008">試用</translation>
 <translation id="797588153137233716">選單 → 記錄 → 刪除瀏覽資料</translation>
+<translation id="7977029776654598145">使用後</translation>
 <translation id="7977451675950311423">如果你使用在資料外洩中被盜用的密碼，系統便會向你發出警告。</translation>
 <translation id="797824194429476746">系統不會在此裝置上關閉這些分頁，但會永久刪除此群組。</translation>
 <translation id="7982789257301363584">網絡</translation>
@@ -2519,6 +2522,7 @@
 <translation id="954667170699278022">閱讀清單</translation>
 <translation id="956066588046842680">機構政策不允許匯入此資料。</translation>
 <translation id="956218893102219091">使用精確位置 (而非根據 IP 位址估計的位置) 可讓 Gemini 提供最準確的結果。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">顯示連結</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="963102227019621224">網絡和應用程式活動記錄</translation>
 <translation id="965259330007686240">使用 Gemini 製作圖片</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">A Google Kereső AI-módja és az összekapcsolt alkalmazások</translation>
 <translation id="1085677983426914530">A(z) <ph name="FILENAME" /> megnyitása nem sikerült</translation>
 <translation id="1086486568852410168">Keresés a Google Lens segítségével</translation>
+<translation id="1095093219235104018">Keresés és kitöltés a Geminivel</translation>
 <translation id="1096992026380844478">A legutóbbi biztonsági mentés alapján a rendszer visszaállítja a szinkronizálási beállításokat. <ph name="BEGIN_LINK" />Tekintse át, hogy mit szinkronizálhat<ph name="END_LINK" />.</translation>
-<translation id="1097049112094133492">{count,plural, =1{1 manuális keresés kihagyva}other{# manuális keresés kihagyva}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 jelszó azonnal ellenőrizve}other{# jelszó azonnal ellenőrizve}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> - mindig legyen lefordítva</translation>
 <translation id="1110772719190051587">Feloldás Face ID-vel</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI-mód kikapcsolása</translation>
 <translation id="1554477036522844996">Új ablak</translation>
 <translation id="1558391695376153246">Inkognitó lapok bezárása</translation>
-<translation id="1559263013367304065">a Google Lens használatának kezdete óta</translation>
 <translation id="1560153516220021659">Összecsukott másodlagos eszköztár gombja</translation>
 <translation id="1562601408588733317">Az információk Gemini általi megkeresésének és kitöltésének kezelése</translation>
 <translation id="1565371473877914088">Új inkognitó lap</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Webhely hozzáadva és kitűzve</translation>
 <translation id="1911619930368729126">Feltöltés Google Drive-ba</translation>
 <translation id="1925706052394657380">Nyissa meg az <ph name="BEGIN_BOLD" />Alapértelmezett alkalmazások<ph name="END_BOLD" /> beállításait iOS-eszközén.</translation>
+<translation id="1938871630297275912">{count,plural, =1{Link érkezett}other{{count} link érkezett}}</translation>
 <translation id="1941314575388338491">A másoláshoz koppintson duplán.</translation>
 <translation id="1943478190258551035">Menü → Beállítások</translation>
 <translation id="1952728750904661634">Bejelentkezés felügyelt fiókkal</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Pontosítás</translation>
 <translation id="2271452184061378400">Ide menti a rendszer a lapcsoportokat</translation>
 <translation id="2273327106802955778">Továbbiak menü</translation>
+<translation id="2274179746480077483">Információk automatikus kitöltése olyan alkalmazásokból, mint a Gmail és a Fotók. A Személyre szabott intelligencia erejével.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ez a cím törlődni fog erről az eszközről.}other{Ezek a címek törlődni fognak az eszközről.}}</translation>
 <translation id="2295236662082735391">Nyomja meg hosszan az interneten található képeket a Geminivel való szerkesztéshez</translation>
 <translation id="2296360194694387941">A Gemini a Chrome-ban szolgáltatással kapcsolatos feladat befejeződött.</translation>
@@ -1576,6 +1577,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6232329973559504466">Keresés inkognitó módban</translation>
 <translation id="6234310016144827337">Ellenőrizze a kapcsolatot, majd próbálkozzon újra.</translation>
 <translation id="6236952928980352967">Figyelmeztetés visszaállítása</translation>
+<translation id="623755660902014047">Olvasási mód</translation>
 <translation id="6240553182907836376">Személyazonosító okmány frissítése</translation>
 <translation id="6240601837375010619">Útlevél mentése</translation>
 <translation id="6241132809279377987">Még több funkcióhoz férhet hozzá iPhone-ján a Google-alkalmazásokkal</translation>
@@ -2110,6 +2112,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Kipróbálás</translation>
 <translation id="797588153137233716">Menü → Előzmények → Böngészési adatok törlése</translation>
+<translation id="7977029776654598145">Használatkor</translation>
 <translation id="7977451675950311423">Figyelmezteti Önt, ha adatvédelmi incidensben érintett jelszót használ.</translation>
 <translation id="797824194429476746">A lapok nyitva maradnak ezen az eszközön, de a csoport véglegesen törlődni fog.</translation>
 <translation id="7982789257301363584">Hálózat</translation>
@@ -2521,6 +2524,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="954667170699278022">Olvasólista</translation>
 <translation id="956066588046842680">A szervezete házirendje nem engedélyezi az adatok importálását.</translation>
 <translation id="956218893102219091">A pontos hely használatával a legpontosabb Gemini-találatokat kaphatja, az IP-címe alapján becsült hely helyett. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="960590623979248167">Linkek megjelenítése</translation>
 <translation id="961856697154696964">Böngészési adatok törlése</translation>
 <translation id="963102227019621224">Internetes és alkalmazástevékenységek</translation>
 <translation id="965259330007686240">Kép létrehozása a Geminivel</translation>

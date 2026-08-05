@@ -3446,22 +3446,6 @@ Si tienes que usar la política para inhabilitar la eliminación de window.name 
 <translation id="3181114468897395940">Los ajustes de Re Pág y Av Pág usan la combinación de teclas que incluye la tecla modificadora Alt</translation>
 <translation id="3182503302060513467">La página Nueva pestaña mostrará el anuncio del espacio intermedio en caso de estar disponible</translation>
 <translation id="3184161739683646075">Controla el modo DNS-over-HTTPS</translation>
-<translation id="3184247679989063353">Lista de patrones de URL. Las solicitudes de red iniciadas desde sitios web servidos por orígenes coincidentes no están sujetas a comprobaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-En el caso de los orígenes no incluidos en los patrones aquí indicados, se aplicará la configuración personal del usuario.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
-
-Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Varias políticas indican orígenes que afectan a las solicitudes al dispositivo local y a endpoints de la red local. Si un origen coincide con más de una de las siguientes políticas, estas tendrán prioridad en el siguiente orden:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="3184638144755436350">Chrome bloqueará el acceso a protocolos externos dentro de iframes
       en entornos aislados. Consulta https://chromestatus.com/features/5680742077038592.
 
@@ -4620,6 +4604,11 @@ En las plataformas de escritorio, también se puede inhabilitar la descarga del 
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo.</translation>
 <translation id="3973371701361892765">No ocultar automáticamente los archivos</translation>
+<translation id="3974715256242096353">Si se asigna el valor "false" a esta política, la página Nueva pestaña no permitirá a los usuarios personalizar la imagen de fondo. Aunque se cambie el valor a "true" posteriormente, las imágenes de fondo personalizadas se eliminarán de forma permanente.
+
+Si se asigna el valor "true" a esta política o no se define, los usuarios podrán personalizar la imagen de fondo en la página Nueva pestaña.
+
+Nota: En Android, se deberá reiniciar el navegador para que se aplique la política.</translation>
 <translation id="3977304360459208438">Utilizar el valor predeterminado para los paquetes de cifrado 3DES en TLS</translation>
 <translation id="3977906634350977040">Si se habilita esta política, el host de acceso remoto podrá usar autenticaciones con PIN y con emparejamiento al aceptar conexiones de cliente.
 
@@ -5222,20 +5211,6 @@ Si se habilita esta política, se habilitará la sintaxis obsoleta anterior.
 Si se inhabilita esta política, se inhabilitará la sintaxis obsoleta anterior.
 
 Si no se define esta política, se inhabilitará la sintaxis obsoleta anterior.</translation>
-<translation id="4400152722459197056">Lista de patrones de URL. Las solicitudes de red iniciadas desde sitios web servidos por orígenes coincidentes a endpoints de la red local no están sujetas a comprobaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-En el caso de los orígenes no incluidos en los patrones aquí indicados, se aplicará la configuración personal del usuario.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
-
-Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Varias políticas indican orígenes que afectan a las solicitudes a endpoints de la red local. Si un origen coincide con más de una de las siguientes políticas, estas tendrán prioridad en el siguiente orden:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">WebSQL en contextos no seguros se eliminará a partir de la versión M110. Esta política vuelve a habilitar la API.
           Si se le asigna el valor true a esta política, WebSQL en contextos no seguros estará disponible.
           Si se le asigna el valor false a esta política o no se establece, WebSQL en contextos no seguros seguirá disponible hasta la versión M109 y, a partir de la M110, dejará de admitirse.
@@ -7767,23 +7742,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Esta política está obsoleta. Usa <ph name="PRINTERS_BULK_BLOCKLIST" /> en su lugar.</translation>
 <translation id="591088232153082363">Carga de batería inteligente basada en el patrón de uso de batería.</translation>
-<translation id="5913506885872855604">Esto se puede usar para tratar determinados intervalos de direcciones internas como públicos y, por lo tanto, no estarán sujetos a comprobaciones de <ph name="LOCAL_NETWORK_ACCES" />. Sin embargo, también se puede usar para tratar determinados intervalos de direcciones públicos que se podrían utilizar internamente como locales para que estén protegidos por las comprobaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Las anulaciones de espacio de direcciones IP tienen dos formatos:
-
-[cidr]=[público|local|bucle invertido]
-
-[cidr] es un intervalo de direcciones IP en notación CIDR (consulta la sección 3.1 de https://tools.ietf.org/html/rfc4632 para IPv4 y la sección 2.3 de https://tools.ietf.org/html/rfc4291 para IPv6). Las direcciones IPv6 deben especificarse en formato seguro para URLs (entre corchetes). Las anulaciones de CIDR se aplican a todos los puertos.
-
-o
-
-[dirección IP]:[puerto]=[público|local|bucle invertido]
-
-Para obtener más información sobre <ph name="LOCAL_NETWORK_ACCESS" />, consulta https://wicg.github.io/local-network-access/ y https://developer.chrome.com/blog/local-network-access.
-
-Esta política no admite la actualización dinámica.
-
-Las anulaciones del interruptor de la línea de comandos --ip-address-space-overrides tienen prioridad sobre las anulaciones definidas por esta política.</translation>
 <translation id="5915023683182228340">Si se habilita la política o no se establece, se permitirá que se use el protocolo QUIC en <ph name="PRODUCT_NAME" />.
 
       Si se inhabilita la política, no se permitirá el uso del protocolo QUIC.</translation>
@@ -9940,6 +9898,20 @@ Nota: Si vas a usar esta política para resolver la zona horaria automáticament
       Si se le asigna el valor "Falso", los usuarios, las aplicaciones y las extensiones no podrán acceder al modo de pantalla completa.</translation>
 <translation id="7180529638251181928">No forzar el modo Restringido en <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="718126088895133062">Esta política especifica el ID de usuario de licencias de <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
+<translation id="7182622189057326705">Esta política está obsoleta y no tiene efecto porque la función de portapapeles compartido se ha retirado de Chrome.
+
+Descripción original:
+Habilita la función de portapapeles compartido, que permite a los usuarios enviar texto entre versiones de Chrome para ordenador y dispositivos Android cuando la sincronización está habilitada y el usuario ha iniciado sesión.
+
+          Si se asigna el valor "True" a esta política, se habilita la capacidad de enviar texto entre dispositivos para los usuarios de Chrome.
+
+          Si se le asigna el valor "False", se inhabilita la capacidad de enviar texto entre dispositivos para los usuarios de Chrome.
+
+          Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
+
+          Si no se le asigna ningún valor, la función de portapapeles compartido se habilita de forma predeterminada.
+
+          Los administradores se encargan de establecer políticas para todas las plataformas que consideren relevantes. Se recomienda definir un valor para esta política en todas las plataformas.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Utilizar un servicio web de Google para ayudar a corregir errores ortográficos</translation>
 <translation id="7187248416163189586">Inhabilitar los informes sobre la retroiluminación del dispositivo</translation>
@@ -10528,20 +10500,6 @@ Esta política está limitada a 1000 entradas.</translation>
           Si se le asigna el valor false a esta política o no se establece, los usuarios no dispondrán de la función para enviar PINs automáticamente en la pantalla de bloqueo y de inicio de sesión.
 
           Si se establece esta política, los usuarios no podrán habilitar la función.</translation>
-<translation id="7609566862616914296">Lista de patrones de URL. Las solicitudes de red iniciadas desde sitios web servidos por orígenes coincidentes a endpoints de la red local no pueden enviar solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-En el caso de los orígenes no incluidos en los patrones aquí indicados, se aplicará la configuración personal del usuario.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
-
-Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Varias políticas indican orígenes que afectan a las solicitudes a endpoints de la red local. Si un origen coincide con más de una de las siguientes políticas, estas tendrán prioridad en el siguiente orden:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">Configurar la lista de dominios en los que se inhabilitará <ph name="PASSWORD_MANAGER_NAME" /> (guardar y rellenar)</translation>
 <translation id="7612059745454194563">No permitir que se muestre la promoción de la extensión del proveedor de credenciales</translation>
 <translation id="7612157962821894603">Opciones que se deben aplicar al iniciar <ph name="PRODUCT_NAME" /> en todo el sistema</translation>
@@ -11577,22 +11535,6 @@ En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva cuando
 
 Para obtener más información sobre las tecnologías antiguas, consulta la página https://chromestatus.com/features.</translation>
 <translation id="8273183018575414926">Aplicaciones web progresivas</translation>
-<translation id="8274053052968966211">Lista de patrones de URL. Las solicitudes de red iniciadas desde sitios web servidos por orígenes coincidentes no pueden enviar solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-En el caso de los orígenes no incluidos en los patrones aquí indicados, se aplicará la configuración personal del usuario.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
-
-Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Varias políticas indican orígenes que afectan a las solicitudes al dispositivo local y a endpoints de la red local. Si un origen coincide con más de una de las siguientes políticas, estas tendrán prioridad en el siguiente orden:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8274603902181597201">Borrar los eCryptfs del directorio principal del usuario y empezar con un nuevo directorio principal cifrado con ext4.</translation>
 <translation id="8274926413890711289">Habilitar los controles de informes granulares</translation>
 <translation id="8275103737670730746">Permitir llamar a las APIs de selección de archivos o directorios sin un gesto previo del usuario</translation>

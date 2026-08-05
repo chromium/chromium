@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Dopušteno • Približno</translation>
 <translation id="1323433172918577554">Više</translation>
 <translation id="1333965224356556482">Ne dopuštaj web-lokacijama prikazivanje vaše lokacije</translation>
-<translation id="1343356790768851700">Ova web-lokacija određuje što vam se sviđa, a zatim predlaže oglase na drugim web-lokacijama</translation>
 <translation id="1369915414381695676">Dodana je web-lokacija <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Dopustite web-lokaciji da sprema podatke na vaš uređaj</translation>
 <translation id="1383876407941801731">Traži</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5335288049665977812">Web-lokacije mogu pokretati JavaScript (preporučeno)</translation>
 <translation id="534295439873310000">NFC uređaji</translation>
-<translation id="5344522958567249764">Upravljanje značajkama za zaštitu privatnosti u online oglašavanju</translation>
 <translation id="5373874281522292782">Vaše su grupe kartica spremljene</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ još 1)}one{(+ još #)}few{(+ još #)}other{(+ još #)}}</translation>
 <translation id="5403592356182871684">Nazivi</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Dodaj iznimku za web-lokaciju</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome će sutra ponovno blokirati kolačiće}one{Kolačići će se ponovo blokirati za # dan}few{Kolačići će se ponovo blokirati za # dana}other{Kolačići će se ponovo blokirati za # dana}}</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
-<translation id="6205314730813004066">Zaštita privatnosti u online oglašavanju</translation>
 <translation id="6207207788774442484">Izbriši podatke i poništi dopuštenja</translation>
 <translation id="6211409961905616543">Web-lokacije mogu upotrebljavati senzore kretanja i svjetlosne senzore</translation>
 <translation id="6218508144653756827">Ljubičastocrvena tema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Provjerite svoje zaporke da biste poboljšali sigurnost i zaštitili svoje podatke</translation>
 <translation id="6992289844737586249">Web-lokacije moraju tražiti dopuštenje za upotrebu mikrofona (preporučeno)</translation>
 <translation id="7000754031042624318">Isključeno u postavkama Androida</translation>
-<translation id="702275896380648118">Ova web-lokacija određuje što vam se sviđa, a zatim predlaže oglase na drugim web-lokacijama. Ova web-lokacija također prima podatke o temama vaših oglasa iz Chromea kako bi vam prikazivala relevantnije oglase.</translation>
 <translation id="7036823721811529709">Slušajte u pozadini</translation>
 <translation id="7044081119134178347">Kamera je dopuštena ovaj put</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
@@ -729,7 +725,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:</translation>
 <translation id="8514955299594277296">Web-lokacijama nije dopušteno spremati podatke na vaš uređaj (ne preporučuje se)</translation>
 <translation id="851751545965956758">Blokiraj povezivanje web-lokacija s uređajima</translation>
 <translation id="8525306231823319788">Cijeli zaslon</translation>
-<translation id="8541410041357371550">Ova web-lokacija prima podatke o temama vaših oglasa kako bi vam prikazivala relevantnije oglase.</translation>
 <translation id="854876774113449365">Web-lokacije koje posjećujete mogu ugraditi sadržaj s drugih web-lokacija, primjerice slike, oglase i tekst. Te druge web-lokacije mogu tražiti dopuštenje za upotrebu podataka koje su spremile o vama tijekom pregledavanja web-lokacije. <ph name="BEGIN_LINK" />Saznajte više o ugrađenom sadržaju<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Kako prikazivati zahtjeve</translation>
 <translation id="8558480467877843976">Sad možete koristiti Chrome svaki put kad pregledavate ili dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>

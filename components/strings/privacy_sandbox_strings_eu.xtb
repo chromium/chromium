@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1184166532603925201">Hirugarrenen cookieak erabiltzea eragozten die Chrome-k webguneei ezkutuko moduan</translation>
-<translation id="1559726735555610004">Datuak webguneetan zure jarraipena egiteko erabiliko ez dituztela publikoki adierazteko eskatzen die Google-k enpresei. Litekeena da webgune batzuek zure jarduerak erabiltzea zerbitzuen erabilera pertsonalizatzeko, iragarkiak pertsonalizatzeaz gain. Horrez gain, baliteke zuri buruz dauzkaten beste datu batzuekin konbinatzea jarduerok. Datuak nola erabiltzen dituzten jakinarazteko erantzukizuna dute enpresek. Lortu Google-k zure datuak babesteko duen moduari buruzko informazio gehiago gure <ph name="BEGIN_LINK" />Pribatutasun-gidalerroetan<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Webguneek ezin dute erabili hirugarrenen cookierik ezkutuko moduan. Cookie mota horiek erabiltzen dituen webguneren batek funtzionatzen ez badu, <ph name="BEGIN_LINK" />hari hirugarrenen cookieak aldi baterako erabiltzeko baimena emateko aukera duzu<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Chrome-ren oraingo ezarpenak eguneratu egin dira webguneei hirugarrenen cookieak erabiltzeko baimena emateko. Nahi duzunean alda dezakezu ezarpena.</translation>
 <translation id="2004697686368036666">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Hirugarrenen cookieak erabiltzen dituzten webguneek espero bezala funtzionatu beharko lukete</translation>
 <translation id="3624583033347146597">Aukeratu hirugarrenen cookieen hobespenak</translation>
 <translation id="3918378745482005425">Baliteke eginbide batzuek ez funtzionatzea. Erlazionatutako webguneek hirugarrenen cookieak erabili ahal izango dituzte.</translation>
-<translation id="4009365983562022788">Datuak webguneetan zure jarraipena egiteko erabiliko ez dituztela publikoki adierazteko eskatzen die Google-k enpresei. Litekeena da webgune batzuek zure jarduerak erabiltzea zerbitzuen erabilera pertsonalizatzeko, iragarkiak pertsonalizatzeaz gain. Horrez gain, baliteke zuri buruz dauzkaten beste datu batzuekin konbinatzea jarduerok. Datuak nola erabiltzen dituzten jakinarazteko erantzukizuna dute enpresek. Lortu informazio gehiago gure <ph name="BEGIN_LINK1" />Pribatutasun-gidalerroetan<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Onartuta</translation>
 <translation id="4412992751769744546">Onartu hirugarrenen cookieak</translation>
 <translation id="4711259472133554310">Salbuespenak sor ditzakezu Ezarpenak atalean webgune jakin batzuei hirugarrenen cookieak beti erabiltzeko baimena emateko</translation>

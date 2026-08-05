@@ -104,6 +104,7 @@
 <translation id="1165174597379888365">Halaman dikunjungi</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs (Anda akan tetap login ke Akun Google Anda)}other{Dari # situs (Anda akan tetap login ke Akun Google Anda)}}</translation>
 <translation id="1167877250265821930">Gagal mendownload <ph name="LANGUAGE" /></translation>
+<translation id="1171306609584863516">Diverifikasi oleh <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">Anda ingin mengizinkan <ph name="EMBEDDED_URL" /> menggunakan cookie dan data situs di <ph name="TOP_LEVEL_URL" />?
 
@@ -225,7 +226,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1337692097987160377">Bagikan tab ini</translation>
 <translation id="1339601241726513588">Domain pendaftaran:</translation>
 <translation id="1340482604681802745">Alamat pengambilan</translation>
-<translation id="1343356790768851700">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain</translation>
 <translation id="1343830902827845050">Login ke Chrome</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1348779747280417563">Konfirmasi nama</translation>
@@ -1305,6 +1305,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3019738915977809060">Simpan boarding pass ke Wallet</translation>
 <translation id="3022959067768579802">Lanjutkan menulis</translation>
 <translation id="3024663005179499861">Jenis kebijakan salah</translation>
+<translation id="3027857899292697441">Chrome telah mendeteksi detail yang umum di situs yang terkait dengan phishing, malware, atau scam. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Gambar SVG</translation>
 <translation id="3030331669969285614">Tanda ini mencegah atau mengembalikan perubahan yang dapat menyebabkan gangguan dan hanya akan tersedia untuk waktu terbatas.</translation>
 <translation id="3033200136993730761">Alamat rumah dapat membantu Anda menyelesaikan banyak hal di berbagai layanan Google, seperti hasil Penelusuran yang lebih relevan dan rute di Google Maps. Anda dapat mengedit atau menghapus alamat di <ph name="BEGIN_LINK" />Akun Google Anda <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -2041,6 +2042,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4153446078232988116"><ph name="SITE" /> tidak mendukung koneksi aman dengan HTTPS</translation>
 <translation id="4153858337812834972">Tab terbaru</translation>
 <translation id="4154277373259957087">Chrome kini akan memverifikasi diri Anda sebelum mengisi metode pembayaran. Anda dapat memperbaruinya kapan saja di <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="4157273919218514718">Didukung oleh Kecerdasan Personal dengan Gemini. <ph name="BEGIN_LINK" />Kelola setelan<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4165422751765527461">Membuka artikel Pusat Bantuan di tab baru</translation>
 <translation id="4165986682804962316">Setelan situs</translation>
@@ -2788,7 +2790,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5340250774223869109">Aplikasi diblokir</translation>
 <translation id="5342693890921195472">menit lalu</translation>
 <translation id="534295439873310000">Perangkat NFC</translation>
-<translation id="5344522958567249764">Kelola privasi iklan</translation>
 <translation id="5344579389779391559">Halaman ini mungkin mencoba menagih Anda</translation>
 <translation id="5345249337934847112">Kertas (Berlapis Bahan Berat)</translation>
 <translation id="5346059693449184483">Apa yang sedang Anda pikirkan?</translation>
@@ -3218,7 +3219,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5989320800837274978">Baik proxy server tetap ataupun URL skrip .pac tidak ditentukan.</translation>
 <translation id="5989917734461988169">Anda dapat menggunakan alamat tersimpan di seluruh produk Google. Tindakan ini tidak akan mengubah alamat rumah Anda yang ada. Alamat akan disimpan di Akun Google Anda, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Lipatan format engineering Z</translation>
-<translation id="5992805036496113940">Lihat info yang digunakan untuk menampilkan iklan kepada Anda</translation>
 <translation id="5995727681868049093">Kelola info, privasi, dan keamanan di Akun Google Anda</translation>
 <translation id="5996255674476750320">Pameran Kendaraan</translation>
 <translation id="5997247540087773573">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Untuk mengamankan akun Anda, Pengelola Sandi Google merekomendasikan untuk mengubah sandi tersebut sekarang dan memeriksa sandi tersimpan Anda.</translation>
@@ -3367,7 +3367,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Tab Full Cut</translation>
 <translation id="6203231073485539293">Periksa koneksi internet Anda</translation>
-<translation id="6205314730813004066">Privasi iklan</translation>
 <translation id="6212314149070368045">AS Fanfold</translation>
 <translation id="6213685130162740188">Known Traveler Number</translation>
 <translation id="6215936431492593050">Logam (Satin)</translation>
@@ -3898,7 +3897,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="701757816833614688">Pendidikan Seni &amp; Desain Visual</translation>
 <translation id="7020464868401003526">URL pintasan melebihi panjang maksimum yang diizinkan, yaitu <ph name="MAX_LENGTH" /> karakter.</translation>
 <translation id="7020581144940000377">Gunakan perkiraan lokasi</translation>
-<translation id="702275896380648118">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain. Situs ini juga mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>
 <translation id="7023162328967545559">Peringatan admin</translation>
 <translation id="7023765275461720661">Tautkan akun dan bayar dengan <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">mengubah setelan pengisian metode pembayaran</translation>
@@ -4070,6 +4068,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7310392214323165548">Perangkat akan segera dimulai ulang</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>
 <translation id="7313107491291103073">Organisasi Anda telah menandai situs ini karena mungkin melanggar kebijakan.</translation>
+<translation id="7315372670898739748">Penautan gagal, coba lagi nanti</translation>
 <translation id="7316521168101843192">Menyimpan file ke Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bantuan Koneksi</translation>
@@ -4263,6 +4262,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7575800019233204241">"Koneksi tidak bersifat pribadi" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" atau "SSL certificate error"</translation>
 <translation id="7575887283389198269">Ponsel</translation>
 <translation id="7579113844074980463">Tablet <ph name="MANUFACTURER" /></translation>
+<translation id="7579227976546039122">build developer</translation>
 <translation id="7579442726219254162">Variabel tidak dikenal "<ph name="VARIABLE" />" di konfigurasi terkelola "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Perpindahan image Y sisi 2</translation>
 <translation id="7582602800368606489">Buat acara baru di Google Kalender dengan cepat</translation>
@@ -4512,6 +4512,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7956713633345437162">Bookmark seluler</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
 <translation id="7962467575542381659">Perangkat platform</translation>
+<translation id="796439090588610411">Chrome akan berhenti mengonfirmasi email ini secara otomatis di situs yang didukung.</translation>
 <translation id="7966803981046576691">Jenis akun tugas</translation>
 <translation id="7967477318370169806">Reksa Dana</translation>
 <translation id="7967636097426665267">Peralatan Komunikasi</translation>
@@ -4819,6 +4820,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
 <translation id="8449036207308062757">Kelola penyimpanan</translation>
 <translation id="8449155699563577224">17 x 24 inci (43 x 60 cm)</translation>
+<translation id="8449513475775663994">Hapus email terverifikasi?</translation>
 <translation id="8449836157089738489">Buka semua di grup tab baru</translation>
 <translation id="8451518040456311377">Simpan dan isi dokumen identitas</translation>
 <translation id="84561192812921051">Administrator dapat melakukan perubahan pada profil dan browser Anda dari jarak jauh, menganalisis informasi tentang browser melalui pelaporan, dan melakukan tugas lain yang diperlukan. Aktivitas di perangkat ini juga dapat dikelola di luar Chrome.  <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -4869,7 +4871,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8538228968820006247">Grup tab Anda penuh, anggota baru tidak dapat bergabung dengan link</translation>
 <translation id="8539500321752640291">Berikan 2 izin?</translation>
 <translation id="8541158209346794904">Perangkat Bluetooth</translation>
-<translation id="8541410041357371550">Situs ini mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan</translation>
 <translation id="8541579497401304453">Terhubung dengan bisnis melalui panggilan telepon.</translation>
 <translation id="8542014550340843547">Tiga jepretan di bawah</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5033,6 +5034,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="881559332211266856">Perbarui redress number</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengupdate Chrome dari setelan Chrome</translation>
+<translation id="8816960833040967795">Berhati-hatilah saat berada di situs ini</translation>
 <translation id="8819155700324279105">Berikan lapisan perlindungan tambahan terhadap ancaman online</translation>
 <translation id="8819855907485254989">Simpan tiket transportasi ke Wallet</translation>
 <translation id="8820817407110198400">Bookmark</translation>
@@ -5343,6 +5345,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="987264212798334818">Umum</translation>
 <translation id="988159990683914416">Buatan Pengembang</translation>
 <translation id="989988560359834682">Edit Alamat</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
 <translation id="991936891556421157">Alas Kaki</translation>
 <translation id="992110854164447044">Kartu virtual menyembunyikan kartu Anda yang sebenarnya untuk membantu melindungi Anda dari kemungkinan penipuan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

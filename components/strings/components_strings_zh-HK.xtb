@@ -104,6 +104,7 @@
 <translation id="1165174597379888365">瀏覽網頁</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{無}=1{來自 1 個網站 (Google 帳戶會保持登入狀態)}other{來自 # 個網站 (Google 帳戶會保持登入狀態)}}</translation>
 <translation id="1167877250265821930">無法下載<ph name="LANGUAGE" /></translation>
+<translation id="1171306609584863516">經 <ph name="IDP_ORIGIN" /> 驗證</translation>
 <translation id="1174644974616730562">Chinese #1 信封</translation>
 <translation id="1174723505405632867">您要允許 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和網站資料嗎？
 
@@ -225,7 +226,6 @@
 <translation id="1337692097987160377">共用此分頁</translation>
 <translation id="1339601241726513588">註冊網域：</translation>
 <translation id="1340482604681802745">取貨地址</translation>
-<translation id="1343356790768851700">此網站會判斷您喜歡的內容，以便向其他網站建議廣告</translation>
 <translation id="1343830902827845050">登入 Chrome</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1348779747280417563">確認名稱</translation>
@@ -1304,6 +1304,7 @@
 <translation id="3019738915977809060">將登機證儲存至「錢包」</translation>
 <translation id="3022959067768579802">繼續撰寫</translation>
 <translation id="3024663005179499861">政策類型有誤</translation>
+<translation id="3027857899292697441">Chrome 偵測到此網站有仿冒詐騙、惡意軟件或欺詐網站常見的特徵。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG 圖片</translation>
 <translation id="3030331669969285614">這些標記用來防止或還原破壞性變更，且只能在限定期間內使用。</translation>
 <translation id="3033200136993730761">設定住宅地址可讓你透過不同 Google 服務處理大小事務，例如取得更切合需求的搜尋結果和「Google 地圖」路線指示。你可前往 <ph name="BEGIN_LINK" />Google 帳戶 (<ph name="ACCOUNT" />) <ph name="END_LINK" />編輯或刪除地址。</translation>
@@ -2788,7 +2789,6 @@
 <translation id="5340250774223869109">已封鎖應用程式</translation>
 <translation id="5342693890921195472">分鐘前</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
-<translation id="5344522958567249764">管理廣告私隱權</translation>
 <translation id="5344579389779391559">此網頁可能會向您收取費用</translation>
 <translation id="5345249337934847112">紙 (重磅塗層紙)</translation>
 <translation id="5346059693449184483">你在想什麼？</translation>
@@ -3218,7 +3218,6 @@
 <translation id="5989320800837274978">沒有指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
 <translation id="5989917734461988169">你可在不同的 Google 產品中使用已儲存的地址。這不會改變現有住宅地址。地址會儲存在 Google 帳戶 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="5992691462791905444">大小風琴摺</translation>
-<translation id="5992805036496113940">查看系統用於放送廣告的資料</translation>
 <translation id="5995727681868049093">在 Google 帳戶管理您的資料、私隱權和安全設定</translation>
 <translation id="5996255674476750320">車展</translation>
 <translation id="5997247540087773573">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，「Google 密碼管理工具」建議您立即變更密碼，並檢查已儲存的密碼。</translation>
@@ -3367,7 +3366,6 @@
 <translation id="6197648101609735209">89 x 89 毫米</translation>
 <translation id="6198480336395236519">全頁隔頁紙</translation>
 <translation id="6203231073485539293">檢查互聯網連線</translation>
-<translation id="6205314730813004066">廣告私隱權</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
 <translation id="6213685130162740188">已知旅客號碼</translation>
 <translation id="6215936431492593050">金屬 (光滑)</translation>
@@ -3898,7 +3896,6 @@
 <translation id="701757816833614688">視覺藝術和設計教育</translation>
 <translation id="7020464868401003526">捷徑網址長度超出 <ph name="MAX_LENGTH" /> 個字元的上限。</translation>
 <translation id="7020581144940000377">使用概略位置</translation>
-<translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>
 <translation id="7023162328967545559">管理員警告</translation>
 <translation id="7023765275461720661">要連結帳戶並透過 <ph name="BNPL_ISSUER_NAME" /> 付款嗎？</translation>
 <translation id="7030164307377592766">修改填入付款方法的設定</translation>
@@ -4516,6 +4513,7 @@
 <translation id="7956713633345437162">流動版書籤</translation>
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7962467575542381659">平台機器</translation>
+<translation id="796439090588610411">Chrome 將停止在支援的網站上自動確認此電郵地址。</translation>
 <translation id="7966803981046576691">工作帳戶類型</translation>
 <translation id="7967477318370169806">互惠基金</translation>
 <translation id="7967636097426665267">通訊設備</translation>
@@ -4825,6 +4823,7 @@
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8449036207308062757">管理儲存空間</translation>
 <translation id="8449155699563577224">17 x 24 吋</translation>
+<translation id="8449513475775663994">要移除已驗證的電郵地址嗎？</translation>
 <translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
 <translation id="8451518040456311377">儲存並填入身分證明文件</translation>
 <translation id="84561192812921051">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -4875,7 +4874,6 @@
 <translation id="8538228968820006247">分頁群組已滿，新成員無法透過連結加入</translation>
 <translation id="8539500321752640291">要允許 2 項權限嗎？</translation>
 <translation id="8541158209346794904">藍牙裝置</translation>
-<translation id="8541410041357371550">此網站會從 Chrome 中取得您的廣告主題，向您顯示更相關的廣告</translation>
 <translation id="8541579497401304453">撥打電話聯絡商家。</translation>
 <translation id="8542014550340843547">三釘 (底部)</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5039,6 +5037,7 @@
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="881559332211266856">更新身分識別碼</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以透過 Chrome 設定更新 Chrome</translation>
+<translation id="8816960833040967795">請留意此網站</translation>
 <translation id="8819155700324279105">為對抗網上威脅增添多一重安全保障</translation>
 <translation id="8819855907485254989">將交通票卡儲存至「錢包」</translation>
 <translation id="8820817407110198400">書籤</translation>

@@ -1561,6 +1561,7 @@
 <translation id="2198625180564913276">ກຳລັງເພີ່ມໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="2198712775285959645">ແກ້ໄຂ</translation>
 <translation id="2199298570273670671">ຜິດພາດ</translation>
+<translation id="220006241671843310">ເລືອກວ່າຈະໃຫ້ Chrome ໃຊ້ໂມເດວ AI ທີ່ເຮັດວຽກໂດຍກົງຢູ່ອຸປະກອນຂອງທ່ານຫຼືບໍ່</translation>
 <translation id="2200094388063410062">ອີເມວ</translation>
 <translation id="2200781749203116929">ບັນທຶກລະບົບ ChromeOS</translation>
 <translation id="2202391868799679245">ເປີດໃຊ້ຄີລັດ</translation>
@@ -2276,6 +2277,7 @@
 <translation id="2739240477418971307">ປ່ຽນການຕັ້ງຄ່າຄວາມສາມາດເຂົ້າຫາຂອງທ່ານ</translation>
 <translation id="2739331588276254426">ເຊື່ອມຕໍ່ອິນເຕີເນັດຜ່ານທາງ <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">ເກັບກຸ່ມນີ້ໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ລຶບອອກຫາກທ່ານບໍ່ຕ້ອງການອີກຕໍ່ໄປ.</translation>
+<translation id="2739917034504760471">ເບິ່ງຄຳນິຍາມ ຫຼື ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຫົວຂໍ້</translation>
 <translation id="274029851662193272">ຫຼຸດລົງ</translation>
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2740876196999178364">ກະແຈຜ່ານເຫຼົ່ານີ້ຖືກບັນທຶກໄວ້ຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ. ພວກມັນບໍ່ໄດ້ຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -3249,6 +3251,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ສາມາດເບິ່ງໄຟລ໌ຕໍ່ໄປນີ້</translation>
 <translation id="3484595034894304035">ປັບແຕ່ງຮູບພື້ນຫຼັງ, ພາບພັກໜ້າຈໍ, ຮູບແບບສີສັນມືດ ແລະ ອື່ນໆໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="3484869148456018791">ເອົາໃບ​ຢັ້ງ​ຢືນ​ໃຫມ່</translation>
+<translation id="3486380520195228369">ເຊື່ອງໄວ້ຈົນກວ່າໜ້າເວັບຈະໂຫຼດຂໍ້ມູນຄືນໃໝ່</translation>
 <translation id="3487007233252413104">ຟັງຄ໌ຊັນບໍ່ເປີດເຜີຍຊື່</translation>
 <translation id="3487649228420469005">ສະແກນແລ້ວໆ</translation>
 <translation id="3488199663160411179">ຊື່</translation>
@@ -3286,7 +3289,6 @@
 <translation id="3512465804715993309">ການໄຮໄລ້ທີ່ປັບໄດ້</translation>
 <translation id="3513019849832307207">ເຂົ້າຮ່ວມ ແລະ ເປີດ</translation>
 <translation id="3513563267917474897">ແຖບເລື່ອນໂທນສີຈາກ <ph name="MIN_VALUE" /> ຫາ <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">ປັກໝຸດສ່ວນຂະຫຍາຍໃໝ່</translation>
 <translation id="3514647716686280777">ທ່ານຈະໄດ້ຮັບການປົກປ້ອງຄວາມປອດໄພມາດຕະຖານ. ເພື່ອຮັບການປົກປ້ອງເພີ່ມເຕີມຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ, ໃຫ້ເປີດ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນໃນການຕັ້ງຄ່າ Chrome.</translation>
 <translation id="3514681096978190000">ໄຟລ໌ທີ່ເກັບໄວ້ໃນແຟ້ມນີ້ມີໄຟລ໌ອື່ນໆທີ່ອາດເຊື່ອງເມົາແວໄວ້</translation>
 <translation id="3515983984924808886">ສຳຜັດກະແຈຄວາມປອດໄພຂອງທ່ານອີກຄັ້ງເພື່ອຢືນຢັນການຣີເຊັດ. ລະບົບຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນກະແຈຄວາມປອດໄພ, ຮວມທັງ PIN ຂອງມັນ.</translation>
@@ -3370,6 +3372,7 @@
 <translation id="3577036603268648505">ທ່ອງໂລກອອນລາຍຢ່າງປອດໄພຍິ່ງຂຶ້ນ</translation>
 <translation id="3577473026931028326">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="3577487026101678864">ເປີດຊິ້ງຂໍ້ມູນໄຟລ໌ແລ້ວ</translation>
+<translation id="3578230582111850125">ເລືອກຂໍ້ຄວາມເພື່ອຖາມ Gemini</translation>
 <translation id="3581605050355435601">ຕັ້ງຄ່າທີ່ຢູ່ IP ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3581861561942370740">ຊອກຫາປະຫວັດການດາວໂຫຼດ</translation>
 <translation id="3582057310199111521">ປ້ອນໃສ່ເວັບໄຊຫຼອກລວງ ແລະ ພົບເຫັນໃນການລະເມີດຂໍ້ມູນ</translation>
@@ -6524,7 +6527,6 @@
 <translation id="6011193465932186973">ລາຍນີ້ວມື</translation>
 <translation id="6011308810877101166">ປັບປຸງການແນະນຳການຊອກຫາ</translation>
 <translation id="6011908034087870826">ກຳລັງສົ່ງລິ້ງໄປໃຫ້ <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">ຮັບຄຳບັນຍາຍສຳລັບສຽງ ແລະ ວິດີໂອຂອງທ່ານ</translation>
 <translation id="6014293228235665243">ຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="6015776718598175635">ດາວ</translation>
 <translation id="6015796118275082299">ປີ</translation>
@@ -7347,6 +7349,7 @@
 <translation id="6660301751798595791">ການເລືອກສຽງເວົ້າ</translation>
 <translation id="6660819301598582123">ໝາຈອກສີນໍ້າຕານທີ່ວ່ອງໄວໂດດຂ້າມໝາຂີ້ຄ້ານ.</translation>
 <translation id="666099631117081440">ເຊີບເວີການພິມ</translation>
+<translation id="6662339038589469159">ເລືອກຂໍ້ຄວາມເພື່ອຖາມ Gemini</translation>
 <translation id="6662394424395160792">ໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊຈາກອຸປະກອນໃດກໍຕາມຂອງທ່ານໄດ້ໄວຂຶ້ນ</translation>
 <translation id="6662931079349804328">ປ່ຽນນະໂຍບາຍອົງກອນແລ້ວ. ລຶບປຸ່ມການທົດລອງອອກຈາກແຖບເຄື່ອງມືແລ້ວ.</translation>
 <translation id="6664774537677393800">ມີບາງຢ່າງຜິດພາດໃນເວລາເປີດໂປຣໄຟລ໌ຂອງທ່ານ. ກະລຸນາອອກຈາກລະບົບ ແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່.</translation>
@@ -8011,6 +8014,7 @@
 <translation id="7174199383876220879">ໃໝ່! ຄວບຄຸມເພງ, ວິດີໂອຂອງທ່ານ ແລະ ອື່ນໆອີກ.</translation>
 <translation id="7175037578838465313">ກຳນົດຄ່າ <ph name="NAME" /></translation>
 <translation id="7175353351958621980">ໂຫຼດ​ຈາກ​:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{ກົດ <ph name="SHORTCUT_TEXT" /> ອີກຄັ້ງເພື່ອປິດແຖບທີ່ປັກໝຸດແລ້ວ}other{ກົດ <ph name="SHORTCUT_TEXT" /> ອີກຄັ້ງເພື່ອປິດແຖບທີ່ປັກໝຸດແລ້ວ}}</translation>
 <translation id="7177659256878428843">ປ່ຽນແປງກຸ່ມແຖບເປັນໂຟນເດີບຸກມາກ</translation>
 <translation id="7180569503618416775">Wallet ສາມາດສະເໜີໃຫ້ບັນທຶກຂໍ້ມູນຈາກໜ້າເວັບທີ່ທ່ານກຳລັງເບິ່ງຢູ່ໄດ້ ເຊັ່ນ: ປີ້ທີ່ທ່ານຊື້</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
@@ -9742,6 +9746,7 @@
 <translation id="850399339579925930">ວັດຈະນານຸກົມ</translation>
 <translation id="850561044295157831">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດຊ່ວຍຂ້ອຍຂຽນ</translation>
 <translation id="8505669004895429027">ປະຢັດໜ່ວຍຄວາມຈຳໄດ້ໜ້ອຍ</translation>
+<translation id="850632091665381275">ການເປັນສະມາຊິກ Google</translation>
 <translation id="8507052544157927817">ຮູບແບບຂີດກ້ອງ</translation>
 <translation id="8507227974644337342">ຄວາມລະອຽດໜ້າຈໍ</translation>
 <translation id="8507443886219296894">ເຊື່ອງສຳລັບເວັບໄຊນີ້</translation>

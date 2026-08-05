@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">允許 • 概略位置</translation>
 <translation id="1323433172918577554">顯示完整清單</translation>
 <translation id="1333965224356556482">禁止網站查看你的位置資訊</translation>
-<translation id="1343356790768851700">這個網站會判斷你喜歡的內容，據此向其他網站建議廣告</translation>
 <translation id="1369915414381695676">已新增 <ph name="SITE_NAME" /> 網站</translation>
 <translation id="1371239764779356792">允許特定網站將資料儲存到裝置</translation>
 <translation id="1383876407941801731">搜尋</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
-<translation id="5344522958567249764">管理廣告隱私權設定</translation>
 <translation id="5373874281522292782">系統會儲存你的分頁群組</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">新增例外網站</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome 將於明天再次封鎖 Cookie}other{# 天後將再次封鎖 Cookie}}</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
-<translation id="6205314730813004066">廣告隱私權設定</translation>
 <translation id="6207207788774442484">刪除資料並重設權限</translation>
 <translation id="6211409961905616543">網站可以使用動作和光源感應器</translation>
 <translation id="6218508144653756827">紫紅色主題</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">檢查密碼，強化安全防護並提升資料安全</translation>
 <translation id="6992289844737586249">允許網站使用你的麥克風前，必須先詢問你 (建議)</translation>
 <translation id="7000754031042624318">已在 Android 設定中關閉</translation>
-<translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
 <translation id="7036823721811529709">音樂可在背景播放</translation>
 <translation id="7044081119134178347">這次允許使用相機</translation>
 <translation id="7053983685419859001">封鎖</translation>
@@ -729,7 +725,6 @@
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
 <translation id="851751545965956758">禁止網站連線至裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
-<translation id="8541410041357371550">這個網站會從 Chrome 中取得你的廣告主題，為你顯示更貼近需求的廣告</translation>
 <translation id="854876774113449365">你造訪的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。這些嵌入的網站可要求你授予權限，在你瀏覽網站時使用與你相關的既有資訊。<ph name="BEGIN_LINK" />進一步瞭解嵌入的內容<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">如何顯示要求</translation>
 <translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>

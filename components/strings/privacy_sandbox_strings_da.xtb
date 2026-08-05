@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1184166532603925201">Når du er i inkognitotilstand, blokerer Chrome websites, så de ikke kan bruge tredjepartscookies</translation>
-<translation id="1559726735555610004">Google kræver, at virksomheder offentligt erklærer, at de ikke vil bruge disse data til at spore dig på tværs af websites. Nogle websites bruger muligvis din aktivitet til at foretage personlig tilpasning af din brugeroplevelse i forbindelse med andet end annoncer. De kan også kombinere din aktivitet med andre oplysninger, som de allerede har om dig. Virksomheder er ansvarlige for at oplyse dig om, hvordan de bruger dine data. Få flere oplysninger om, hvordan Google beskytter dine data, i vores <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Når du er i inkognitotilstand, kan websites ikke bruge tredjepartscookies. Hvis et website, der er afhængigt af disse cookies, ikke fungerer, kan du <ph name="BEGIN_LINK" />prøve at give det pågældende website midlertidig adgang til tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Dine nuværende Chrome-indstillinger er blevet opdateret, så websites kan tilgå tredjepartscookies. Du kan til enhver tid ændre denne indstilling.</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites fungerer muligvis ikke</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Websites, der er afhængige af tredjepartscookies, fungerer som forventet</translation>
 <translation id="3624583033347146597">Vælg dine præferencer for tredjepartscookies</translation>
 <translation id="3918378745482005425">Nogle funktioner fungerer muligvis ikke. Relaterede websites kan stadig bruge tredjepartscookies.</translation>
-<translation id="4009365983562022788">Google kræver, at virksomheder offentligt erklærer, at de ikke vil bruge disse data til at spore dig på tværs af websites. Nogle websites bruger muligvis din aktivitet til at foretage personlig tilpasning af din brugeroplevelse i forbindelse med andet end annoncer. De kan også kombinere din aktivitet med andre oplysninger, som de allerede har om dig. Virksomheder er ansvarlige for at oplyse dig om, hvordan de bruger dine data. Få flere oplysninger i vores <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Tilladt</translation>
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
 <translation id="4711259472133554310">Du kan oprette undtagelser under Indstillinger for altid at tillade, at specifikke websites bruger tredjepartscookies</translation>

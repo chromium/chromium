@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">허용됨 • 대략적인 위치</translation>
 <translation id="1323433172918577554">더보기</translation>
 <translation id="1333965224356556482">사이트에서 내 위치를 확인하도록 허용하지 않음</translation>
-<translation id="1343356790768851700">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다.</translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> 사이트 추가됨</translation>
 <translation id="1371239764779356792">사이트에서 기기에 데이터를 저장하도록 허용</translation>
 <translation id="1383876407941801731">검색</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5335288049665977812">사이트에서 자바스크립트를 실행하도록 허용(권장)</translation>
 <translation id="534295439873310000">NFC 기기</translation>
-<translation id="5344522958567249764">광고 개인 정보 보호 관리</translation>
 <translation id="5373874281522292782">탭 그룹이 저장되었습니다</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
 <translation id="5403592356182871684">이름</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">사이트 예외 추가</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{내일 Chrome에서 다시 쿠키를 차단합니다}other{#일 후 쿠키가 다시 차단됩니다}}</translation>
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
-<translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6207207788774442484">데이터 삭제 및 권한 재설정</translation>
 <translation id="6211409961905616543">사이트에서 움직임 감지 센서 및 조도 센서를 사용할 수 있음</translation>
 <translation id="6218508144653756827">푸시아 테마</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">비밀번호를 확인하여 보안을 강화하고 데이터를 더 안전하게 보호하세요.</translation>
 <translation id="6992289844737586249">사이트에서 마이크를 사용하기 전에 확인(권장)</translation>
 <translation id="7000754031042624318">Android 설정에서 사용 중지됨</translation>
-<translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
 <translation id="7036823721811529709">백그라운드로 듣기</translation>
 <translation id="7044081119134178347">현재 카메라 허용됨</translation>
 <translation id="7053983685419859001">차단</translation>
@@ -729,7 +725,6 @@
 <translation id="8514955299594277296">사이트에서 기기에 데이터를 저장하도록 허용하지 않음(권장하지 않음)</translation>
 <translation id="851751545965956758">사이트에서 기기에 연결하지 못하도록 차단</translation>
 <translation id="8525306231823319788">전체화면</translation>
-<translation id="8541410041357371550">이 사이트는 Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
 <translation id="854876774113449365">내가 방문한 사이트에서는 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 이러한 다른 사이트에서는 사이트를 탐색할 때 나에 관해 저장된 정보를 사용할 권한을 요청할 수 있습니다. <ph name="BEGIN_LINK" />삽입된 콘텐츠에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">요청 표시 방법</translation>
 <translation id="8558480467877843976">이제 언제든지 메시지, 문서, 기타 앱에서 탐색하거나 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>

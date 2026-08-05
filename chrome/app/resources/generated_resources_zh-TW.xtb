@@ -1552,6 +1552,7 @@
 <translation id="2198625180564913276">正在新增設定檔。請稍候片刻。</translation>
 <translation id="2198712775285959645">編輯</translation>
 <translation id="2199298570273670671">錯誤</translation>
+<translation id="220006241671843310">選擇是否讓 Chrome 使用直接在裝置上執行的 AI 模型</translation>
 <translation id="2200094388063410062">電子郵件</translation>
 <translation id="2200781749203116929">ChromeOS 系統記錄</translation>
 <translation id="2202391868799679245">開啟鍵盤快速鍵</translation>
@@ -2264,6 +2265,7 @@
 <translation id="2739240477418971307">變更你的無障礙設定</translation>
 <translation id="2739331588276254426">已透過「<ph name="HOST_DEVICE_NAME" />」連上網際網路</translation>
 <translation id="2739887572830526131">如果保留，之後可以新增分頁；如果不會再使用，可以刪除群組。</translation>
+<translation id="2739917034504760471">取得定義或進一步瞭解主題</translation>
 <translation id="274029851662193272">內凹</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2740876196999178364">這些密碼金鑰只會儲存在這部裝置上，不會儲存到你的 Google 帳戶。</translation>
@@ -3234,6 +3236,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可以檢視下列檔案</translation>
 <translation id="3484595034894304035">自訂桌布、螢幕保護程式、深色主題等項目</translation>
 <translation id="3484869148456018791">取得新憑證</translation>
+<translation id="3486380520195228369">在頁面重新整理前會保持隱藏</translation>
 <translation id="3487007233252413104">匿名函式</translation>
 <translation id="3487649228420469005">掃描完成</translation>
 <translation id="3488199663160411179">名稱</translation>
@@ -3271,7 +3274,6 @@
 <translation id="3512465804715993309">自動調整標示</translation>
 <translation id="3513019849832307207">加入並開啟</translation>
 <translation id="3513563267917474897">色調滑桿，最小值為 <ph name="MIN_VALUE" />，最大值為 <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">釘選新的擴充功能</translation>
 <translation id="3514647716686280777">你即將使用標準安全防護機制。如要進一步防範不安全的網站、下載內容和擴充功能，請在 Chrome 設定中啟用「安全瀏覽強化防護功能」。</translation>
 <translation id="3514681096978190000">這個封存檔案包含可能隱藏惡意軟體的其他檔案</translation>
 <translation id="3515983984924808886">請再次輕觸安全金鑰以確認重設。這個安全金鑰上儲存的所有資訊 (包括 PIN 碼) 都將遭到刪除。</translation>
@@ -3355,6 +3357,7 @@
 <translation id="3577036603268648505">更加安全的網路環境</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577487026101678864">開啟檔案同步處理功能</translation>
+<translation id="3578230582111850125">選取要問 Gemini 的文字</translation>
 <translation id="3581605050355435601">自動設定 IP 位址</translation>
 <translation id="3581861561942370740">搜尋下載記錄</translation>
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
@@ -6501,7 +6504,6 @@
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6011908034087870826">正在將連結傳送至「<ph name="DEVICE_NAME" />」</translation>
-<translation id="6013027779243312217">取得音訊和視訊的字幕</translation>
 <translation id="6014293228235665243">未讀取</translation>
 <translation id="6015776718598175635">星星</translation>
 <translation id="6015796118275082299">年</translation>
@@ -7324,6 +7326,7 @@
 <translation id="6660301751798595791">語音選擇</translation>
 <translation id="6660819301598582123">敏捷的棕色狐狸跳過一條懶狗。</translation>
 <translation id="666099631117081440">印表機伺服器</translation>
+<translation id="6662339038589469159">選取要問 Gemini 的文字</translation>
 <translation id="6662394424395160792">在任何裝置上，都能使用 Google 密碼管理工具快速登入網站</translation>
 <translation id="6662931079349804328">企業政策已變更，[實驗性功能] 按鈕已從工具列移除。</translation>
 <translation id="6664774537677393800">開啟你的設定檔時發生錯誤。請先登出，然後再次登入。</translation>
@@ -7989,6 +7992,7 @@
 <translation id="7174199383876220879">新功能！控管你的音樂、影片等媒體內容</translation>
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7175353351958621980">載入來源：</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{再次按下 <ph name="SHORTCUT_TEXT" /> 即可關閉固定分頁}other{再次按下 <ph name="SHORTCUT_TEXT" /> 即可關閉固定分頁}}</translation>
 <translation id="7177659256878428843">將分頁群組轉換為書籤資料夾</translation>
 <translation id="7180569503618416775">錢包可儲存瀏覽網頁的資訊，例如購買的票券</translation>
 <translation id="7180611975245234373">重新整理</translation>
@@ -9720,6 +9724,7 @@
 <translation id="850399339579925930">字典</translation>
 <translation id="850561044295157831">進一步瞭解「幫我寫」功能</translation>
 <translation id="8505669004895429027">節省量：小</translation>
+<translation id="850632091665381275">Google 會員方案</translation>
 <translation id="8507052544157927817">底線樣式</translation>
 <translation id="8507227974644337342">螢幕解析度</translation>
 <translation id="8507443886219296894">在此網站隱藏</translation>

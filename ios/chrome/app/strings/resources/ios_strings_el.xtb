@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Λειτουργία AI της Αναζήτησης Google και συνδεδεμένες εφαρμογές</translation>
 <translation id="1085677983426914530">Δεν ήταν δυνατό το άνοιγμα του αρχείου <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Αναζήτηση με Google Lens</translation>
+<translation id="1095093219235104018">Εύρεση και συμπλήρωση με το Gemini</translation>
 <translation id="1096992026380844478">Θα γίνει επαναφορά των ρυθμίσεων συγχρονισμού με βάση την τελευταία δημιουργία αντιγράφων ασφαλείας. <ph name="BEGIN_LINK" />Δείτε τι μπορείτε να συγχρονίσετε<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{Παραβλέφθηκε 1 μη αυτόματη αναζήτηση}other{Παραβλέφθηκαν # μη αυτόματες αναζητήσεις}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{Επαληθεύτηκε άμεσα 1 κωδικός πρόσβασης}other{Επαληθεύτηκαν άμεσα # κωδικοί πρόσβασης}}</translation>
 <translation id="1103523840287552314">Να μεταφράζονται πάντα τα <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Ξεκλείδωμα με Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Απενεργοποίηση της Λειτουργίας AI</translation>
 <translation id="1554477036522844996">Νέο παράθυρο</translation>
 <translation id="1558391695376153246">Κλείσιμο ανών. περιήγησης</translation>
-<translation id="1559263013367304065">από τότε που χρησιμοποιείτε το Google Lens</translation>
 <translation id="1560153516220021659">Συμπτυγμένο κουμπί δευτερεύουσας γραμμής εργαλείων</translation>
 <translation id="1562601408588733317">Διαχείριση εύρεσης και συμπλήρωσης πληροφοριών με το Gemini</translation>
 <translation id="1565371473877914088">Νέα καρτέλα ανώνυμης περιήγησης</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Ο ιστότοπος προστέθηκε και καρφιτσώθηκε</translation>
 <translation id="1911619930368729126">Μεταφόρ.στο Google Drive</translation>
 <translation id="1925706052394657380">Ανοίξτε τις ρυθμίσεις για <ph name="BEGIN_BOLD" />Προεπιλεγμένες εφαρμογές<ph name="END_BOLD" /> στο iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Λήφθηκε σύνδεσμος}other{Λήφθηκαν {count} σύνδεσμοι}}</translation>
 <translation id="1941314575388338491">Πατήστε δύο φορές για αντιγραφή.</translation>
 <translation id="1943478190258551035">Μενού → Ρυθμίσεις</translation>
 <translation id="1952728750904661634">Σύνδεση με διαχειριζόμενο λογαριασμό</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Περιορισμός</translation>
 <translation id="2271452184061378400">Οι ομάδες καρτελών αποθηκεύονται εδώ</translation>
 <translation id="2273327106802955778">Μενού "Περισσότερα"</translation>
+<translation id="2274179746480077483">Αυτόματη συμπλήρωση πληροφοριών από εφαρμογές, όπως είναι το Gmail και οι Φωτογραφίες. Με την υποστήριξη της Προσωπικής νοημοσύνης.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Η συγκεκριμένη διεύθυνση θα διαγραφεί από αυτήν τη συσκευή.}other{Οι συγκεκριμένες διευθύνσεις θα διαγραφούν από αυτήν τη συσκευή.}}</translation>
 <translation id="2295236662082735391">Πατήστε παρατεταμένα μια εικόνα στον ιστό για επεξεργασία με το Gemini</translation>
 <translation id="2296360194694387941">Η χρήση του Gemini στο Chrome ολοκληρώθηκε!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">Ανώνυμη αναζήτηση</translation>
 <translation id="6234310016144827337">Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά</translation>
 <translation id="6236952928980352967">Επαναφορά προειδοποίησης</translation>
+<translation id="623755660902014047">Λειτουργία ανάγνωσης</translation>
 <translation id="6240553182907836376">Ενημέρωση πληροφοριών ταυτότητας</translation>
 <translation id="6240601837375010619">Αποθήκευση πληροφοριών διαβατηρίου</translation>
 <translation id="6241132809279377987">Ξεκλειδώστε περισσότερες λειτουργίες για iPhone με τις εφαρμογές Google</translation>
@@ -2111,6 +2113,7 @@
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Δοκιμή</translation>
 <translation id="797588153137233716">Μενού → Ιστορικό → Διαγραφή δεδομένων περιήγησης</translation>
+<translation id="7977029776654598145">Όταν χρησιμοποιείται</translation>
 <translation id="7977451675950311423">Σας προειδοποιεί εάν χρησιμοποιήσετε έναν κωδικό πρόσβασης που έχει παραβιαστεί μέσω παραβίασης δεδομένων.</translation>
 <translation id="797824194429476746">Οι καρτέλες θα παραμείνουν ανοιχτές σε αυτή τη συσκευή, αλλά η ομάδα θα διαγραφεί οριστικά.</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>
@@ -2522,6 +2525,7 @@
 <translation id="954667170699278022">Λίστα ανάγνωσης</translation>
 <translation id="956066588046842680">Η εισαγωγή αυτών των δεδομένων δεν επιτρέπεται από την πολιτική του οργανισμού σας.</translation>
 <translation id="956218893102219091">Χρησιμοποιήστε την ακριβή τοποθεσία σας για τα πιο ακριβή αποτελέσματα του Gemini, αντί για μια εκτιμώμενη τοποθεσία με βάση τη διεύθυνση IP σας. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Προβολή υπερσυνδέσμων</translation>
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="963102227019621224">Δραστηριότητα ιστού και εφαρμογών</translation>
 <translation id="965259330007686240">Δημιουργία εικόνας με το Gemini</translation>

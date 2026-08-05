@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search AI મોડ અને કનેક્ટ થયેલી ઍપ</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ખોલી શકાઈ નથી</translation>
 <translation id="1086486568852410168">Google Lens વડે શોધો</translation>
+<translation id="1095093219235104018">Gemini વડે શોધો અને ભરો</translation>
 <translation id="1096992026380844478">તમારા છેલ્લા બૅકઅપના આધારે તમારા સિંક સંબંધિત સેટિંગ રિસ્ટોર કરવામાં આવશે. <ph name="BEGIN_LINK" />તમે શું સિંક કરી શકો, તે જાણો<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 મેન્યુઅલ શોધ છોડી દીધી}one{# મેન્યુઅલ શોધ છોડી દીધી}other{# મેન્યુઅલ શોધ છોડી દીધી}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 પાસવર્ડની ઝટપટ ચકાસણી થઈ}one{# પાસવર્ડની ઝટપટ ચકાસણી થઈ}other{# પાસવર્ડની ઝટપટ ચકાસણી થઈ}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />નો હંમેશાં અનુવાદ કરો</translation>
 <translation id="1110772719190051587">ચહેરાના ID વડે અનલૉક કરો</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI મોડ બંધ કરો</translation>
 <translation id="1554477036522844996">નવી વિંડો</translation>
 <translation id="1558391695376153246">છૂપી ટૅબ બંધ કરો</translation>
-<translation id="1559263013367304065">Google Lensનો ઉપયોગ કરવાનું શરૂ કર્યું ત્યારથી</translation>
 <translation id="1560153516220021659">સેકન્ડરી ટૂલબાર બટનને નાનું કર્યું</translation>
 <translation id="1562601408588733317">Gemini વડે માહિતી શોધવા અને ભરવાનું મેનેજ કરો</translation>
 <translation id="1565371473877914088">નવું છૂપું ટૅબ</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">સાઇટ ઉમેરી અને પિન કરી</translation>
 <translation id="1911619930368729126">Google ડ્રાઇવ પર અપલોડ કરો</translation>
 <translation id="1925706052394657380">iOSમાં <ph name="BEGIN_BOLD" />ડિફૉલ્ટ ઍપ<ph name="END_BOLD" />ના સેટિંગ ખોલો</translation>
+<translation id="1938871630297275912">{count,plural, =1{લિંક પ્રાપ્ત થઈ}one{{count} લિંક પ્રાપ્ત થઈ}other{{count} લિંક પ્રાપ્ત થઈ}}</translation>
 <translation id="1941314575388338491">કૉપિ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1943478190258551035">મેનૂ → સેટિંગ</translation>
 <translation id="1952728750904661634">મેનેજ એકાઉન્ટ સાથે સાઇન ઇન કરો</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">સુધારો</translation>
 <translation id="2271452184061378400">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે</translation>
 <translation id="2273327106802955778">વધુ મેનૂ</translation>
+<translation id="2274179746480077483">Gmail અને Photos જેવી ઍપમાંથી માહિતી ઑટોમૅટિક રીતે ભરો. પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત.</translation>
 <translation id="2287614783861766820">{count,plural, =1{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}one{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}other{આ ડિવાઇસમાંથી આ સરનામા ડિલીટ કરવામાં આવશે.}}</translation>
 <translation id="2295236662082735391">Gemini વડે ફેરફાર કરવા માટે વેબ પર છબીને થોડીવાર દબાવી રાખો</translation>
 <translation id="2296360194694387941">Gemini in Chromeના ઉપયોગનું સેટઅપ પૂર્ણ થયું!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">છૂપી શોધ</translation>
 <translation id="6234310016144827337">તમારું કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="6236952928980352967">ચેતવણી રિસ્ટોર કરો</translation>
+<translation id="623755660902014047">વાંચન મોડ</translation>
 <translation id="6240553182907836376">ઓળખ કાર્ડ અપડેટ કરો</translation>
 <translation id="6240601837375010619">પાસપોર્ટની માહિતી સાચવો</translation>
 <translation id="6241132809279377987">Google ઍપ વડે તમારા iPhone માટે વધુ સુવિધાઓ અનલૉક કરો</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">કૅન્વાસ</translation>
 <translation id="7975036700432177008">પ્રયાસ કરો</translation>
 <translation id="797588153137233716">મેનૂ → ઇતિહાસ → બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
+<translation id="7977029776654598145">ઉપયોગ કરવામાં આવે ત્યારે</translation>
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
 <translation id="797824194429476746">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ ગ્રૂપ કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">વાંચન સૂચિ</translation>
 <translation id="956066588046842680">તમારી સંસ્થાની પૉલિસી અનુસાર આ ડેટાની આયાત કરવાની મંજૂરી નથી.</translation>
 <translation id="956218893102219091">તમારા IP ઍડ્રેસના આધારે અંદાજિત લોકેશનને બદલે, Geminiના સૌથી સચોટ પરિણામો માટે તમારા સચોટ લોકેશનનો ઉપયોગ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">હાયપરલિંક બતાવો</translation>
 <translation id="961856697154696964">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="963102227019621224">વેબ અને ઍપ ઍક્ટિવિટી</translation>
 <translation id="965259330007686240">Gemini વડે કોઈ છબી બનાવો</translation>

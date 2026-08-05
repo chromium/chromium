@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search AI ಮೋಡ್ ಮತ್ತು ಕನೆಕ್ಟ್ ಮಾಡಲಾದ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1086486568852410168">Google Lens ಬಳಸಿಕೊಂಡು ಹುಡುಕಿ</translation>
+<translation id="1095093219235104018">Gemini ಮೂಲಕ ಹುಡುಕಿ ಮತ್ತು ಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="1096992026380844478">ನಿಮ್ಮ ಕೊನೆಯ ಬ್ಯಾಕಪ್‌ ಆಧರಿಸಿ ನಿಮ್ಮ ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK" />ನೀವು ಏನನ್ನು ಸಿಂಕ್‌ ಮಾಡಬಹುದು ಎಂಬುದನ್ನು ನೋಡಿ<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 ಹಸ್ತಚಾಲಿತ ಹುಡುಕಾಟವನ್ನು ಸ್ಕಿಪ್ ಮಾಡಲಾಗಿದೆ}one{# ಹಸ್ತಚಾಲಿತ ಹುಡುಕಾಟಗಳನ್ನು ಸ್ಕಿಪ್ ಮಾಡಲಾಗಿದೆ}other{# ಹಸ್ತಚಾಲಿತ ಹುಡುಕಾಟಗಳನ್ನು ಸ್ಕಿಪ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತಕ್ಷಣವೇ ದೃಢೀಕರಿಸಲಾಗಿದೆ}one{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತಕ್ಷಣವೇ ದೃಢೀಕರಿಸಲಾಗಿದೆ}other{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತಕ್ಷಣವೇ ದೃಢೀಕರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1103523840287552314">ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">ಫೇಸ್‌ ID ಬಳಸಿ ಅನ್‌ಲಾಕ್‌ ಮಾಡಿ</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI ಮೋಡ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1554477036522844996">ಹೊಸ ವಿಂಡೋ</translation>
 <translation id="1558391695376153246">ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
-<translation id="1559263013367304065">Google Lens ಬಳಸಲು ಪ್ರಾರಂಭಿಸಿದಾಗಿನಿಂದ</translation>
 <translation id="1560153516220021659">ಕುಗ್ಗಿಸಲಾದ ಸೆಕೆಂಡರಿ ಟೂಲ್‌ಬಾರ್ ಬಟನ್</translation>
 <translation id="1562601408588733317">Gemini ಮೂಲಕ ಮಾಹಿತಿಯನ್ನು ಹುಡುಕುವ ಮತ್ತು ಫಿಲ್ ಮಾಡುವ ಪ್ರಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1565371473877914088">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">ಸೈಟ್ ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ ಮತ್ತು ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1911619930368729126">Google ಡ್ರೈವ್‌ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="1925706052394657380">iOS ನಲ್ಲಿ <ph name="BEGIN_BOLD" />ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳ<ph name="END_BOLD" /> ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="1938871630297275912">{count,plural, =1{ಲಿಂಕ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ}one{{count} ಲಿಂಕ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ}other{{count} ಲಿಂಕ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1941314575388338491">ನಕಲಿಸಲು ಡಬಲ್‌ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="1943478190258551035">ಮೆನು → ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1952728750904661634">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">ಪರಿಷ್ಕರಿಸು</translation>
 <translation id="2271452184061378400">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಇಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2273327106802955778">ಹೆಚ್ಚಿನ ಮೆನು</translation>
+<translation id="2274179746480077483">Gmail ಮತ್ತು Photos ನಂತಹ ಆ್ಯಪ್‌ಗಳಿಂದ ಮಾಹಿತಿಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ. ಪರ್ಸನಲ್ ಇಂಟೆಲಿಜೆನ್ಸ್‌ನಿಂದ ಚಾಲಿತವಾಗಿದೆ.</translation>
 <translation id="2287614783861766820">{count,plural, =1{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}one{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}other{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}}</translation>
 <translation id="2295236662082735391">Gemini ಮೂಲಕ ಎಡಿಟ್ ಮಾಡಲು ವೆಬ್‌ನಲ್ಲಿ ಚಿತ್ರವನ್ನು ಲಾಂಗ್ ಪ್ರೆಸ್ ಮಾಡಿ</translation>
 <translation id="2296360194694387941">Chrome ನಲ್ಲಿ Gemini ಬಳಕೆ ಪೂರ್ಣಗೊಂಡಿದೆ!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">ಅಜ್ಞಾತ ಹುಡುಕಾಟ</translation>
 <translation id="6234310016144827337">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6236952928980352967">ಎಚ್ಚರಿಕೆಯನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
+<translation id="623755660902014047">ಓದುವ ಮೋಡ್</translation>
 <translation id="6240553182907836376">ಗುರುತಿನ ಕಾರ್ಡ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="6240601837375010619">ಪಾಸ್‌ಪೋರ್ಟ್ ಅನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="6241132809279377987">Google ಆ್ಯಪ್‌ಗಳೊಂದಿಗೆ ನಿಮ್ಮ iPhone ಗಾಗಿ ಹೆಚ್ಚಿನ ಫೀಚರ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">ಕ್ಯಾನ್ವಸ್</translation>
 <translation id="7975036700432177008">ಪ್ರಯತ್ನಿಸು</translation>
 <translation id="797588153137233716">ಮೆನು → ಇತಿಹಾಸ → ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
+<translation id="7977029776654598145">ಬಳಸಿದಾಗ</translation>
 <translation id="7977451675950311423">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಬಳಸಿದರೆ ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
 <translation id="797824194429476746">ಈ ಸಾಧನದಲ್ಲಿ ಟ್ಯಾಬ್‌ಗಳು ತೆರೆದಿರುತ್ತವೆ, ಆದರೆ ಗುಂಪನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7982789257301363584">ನೆಟ್‌ವರ್ಕ್</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="956066588046842680">ಈ ಡೇಟಾವನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಯು ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="956218893102219091">ಅತ್ಯಂತ ನಿಖರವಾದ Gemini ಫಲಿತಾಂಶಗಳಿಗಾಗಿ ನಿಮ್ಮ IP ವಿಳಾಸವನ್ನು ಆಧರಿಸಿದ ಅಂದಾಜು ಮಾಡಿದ ಸ್ಥಳದ ಬದಲಾಗಿ ನಿಮ್ಮ ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ಬಳಸಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">ಹೈಪರ್‌ಲಿಂಕ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="961856697154696964">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="963102227019621224">ವೆಬ್‌ ಮತ್ತು ಆ್ಯಪ್‌ ಚಟುವಟಿಕೆ</translation>
 <translation id="965259330007686240">Gemini ಮೂಲಕ ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>

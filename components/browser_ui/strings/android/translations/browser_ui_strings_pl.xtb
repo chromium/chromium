@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Dozwolona • Przybliżona</translation>
 <translation id="1323433172918577554">Pokaż więcej</translation>
 <translation id="1333965224356556482">Nie zezwalaj witrynom na wyświetlanie lokalizacji</translation>
-<translation id="1343356790768851700">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom</translation>
 <translation id="1369915414381695676">Strona <ph name="SITE_NAME" /> została dodana</translation>
 <translation id="1371239764779356792">Zezwól witrynie na zapisywanie danych na Twoim urządzeniu</translation>
 <translation id="1383876407941801731">Szukaj</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5335288049665977812">Zezwalaj na wykonywanie kodu JavaScript w witrynach (zalecane)</translation>
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
-<translation id="5344522958567249764">Zarządzaj prywatnością w reklamach</translation>
 <translation id="5373874281522292782">Twoje grupy kart zostały zapisane</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i jeszcze 1)}few{(i jeszcze #)}many{(i jeszcze #)}other{(i jeszcze #)}}</translation>
 <translation id="5403592356182871684">Nazwy</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Dodaj witrynę do wyjątków</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome ponownie zablokuje pliki cookie jutro}few{Do ponownego zablokowania plików cookie pozostały # dni}many{Do ponownego zablokowania plików cookie pozostało # dni}other{Do ponownego zablokowania plików cookie pozostało # dnia}}</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
-<translation id="6205314730813004066">Prywatność w reklamach</translation>
 <translation id="6207207788774442484">Usuwanie danych i resetowanie uprawnień</translation>
 <translation id="6211409961905616543">Strony mogą używać czujników ruchu i światła</translation>
 <translation id="6218508144653756827">Motyw fuksjowy</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Zwiększ bezpieczeństwo i ochronę danych przez sprawdzanie haseł</translation>
 <translation id="6992289844737586249">Pytaj, zanim zezwolisz stronom na korzystanie z mikrofonu (zalecane)</translation>
 <translation id="7000754031042624318">Wyłączone w ustawieniach Androida</translation>
-<translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="7036823721811529709">Słuchaj w tle</translation>
 <translation id="7044081119134178347">Przyznano jednorazowy dostęp do aparatu</translation>
 <translation id="7053983685419859001">Blokuj</translation>
@@ -729,7 +725,6 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="8514955299594277296">Nie zezwalaj witrynom na zapisywanie danych na urządzeniu (niezalecane)</translation>
 <translation id="851751545965956758">Nie zezwalaj stronom na łączenie się z urządzeniami</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
-<translation id="8541410041357371550">Witryna wykorzystuje gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="854876774113449365">Witryny, które odwiedzasz, mogą zawierać umieszczone treści z innych witryn, np. obrazy, reklamy i tekst. Te inne witryny mogą prosić o zgodę na korzystanie z informacji o Tobie zapisanych przez nie podczas przeglądania tych witryn. <ph name="BEGIN_LINK" />Więcej informacji o ustawieniu „Umieszczona treść”<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Jak wyświetlać żądania</translation>
 <translation id="8558480467877843976">Teraz możesz używać Chrome za każdym razem, gdy przeglądasz lub klikasz linki w wiadomościach, dokumentach i innych aplikacjach.</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Modi ya AI katika huduma ya Tafuta na Google na programu zilizounganishwa</translation>
 <translation id="1085677983426914530">Imeshindwa kufungua <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Tafuta ukitumia Lenzi ya Google</translation>
+<translation id="1095093219235104018">Tafuta na ujaze ukitumia Gemini</translation>
 <translation id="1096992026380844478">Mipangilio yako ya usawazishaji itarejeshwa kulingana na nakala uliyohifadhi mara ya mwisho. <ph name="BEGIN_LINK" />Angalia maudhui unayoweza kusawazisha<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{Umeruka utafutaji 1 uliofanya mwenyewe}other{Umeruka utafutaji # uliofanya mwenyewe}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{Nenosiri 1 limethibitishwa papo hapo}other{Manenosiri # yamethibitishwa papo hapo}}</translation>
 <translation id="1103523840287552314">Tafsiri <ph name="LANGUAGE" /> kila wakati</translation>
 <translation id="1110772719190051587">Fungua ukitumia Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Zima Modi ya AI</translation>
 <translation id="1554477036522844996">Dirisha Jipya</translation>
 <translation id="1558391695376153246">Funga vichupo fiche</translation>
-<translation id="1559263013367304065">kwa kuwa unatumia Lenzi ya Google</translation>
 <translation id="1560153516220021659">Kitufe cha upau wa ziada wa vidhibiti uliokunjwa</translation>
 <translation id="1562601408588733317">Dhibiti utafutaji na ujazaji wa maelezo ukitumia Gemini</translation>
 <translation id="1565371473877914088">Kichupo Fiche Kipya</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Tovuti imewekwa na kubandikwa</translation>
 <translation id="1911619930368729126">Pakia kwenye Hifadhi ya Google</translation>
 <translation id="1925706052394657380">Fungua mipangilio ya <ph name="BEGIN_BOLD" />Programu Chaguomsingi<ph name="END_BOLD" /> katika iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Umepokea kiungo}other{Umepokea viungo {count}}}</translation>
 <translation id="1941314575388338491">Gusa mara mbili ili unakili.</translation>
 <translation id="1943478190258551035">Menyu → Mipangilio</translation>
 <translation id="1952728750904661634">Ingia ukitumia akaunti inayodhibitiwa</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Chuja</translation>
 <translation id="2271452184061378400">Vikundi vya vichupo vyako huhifadhiwa hapa</translation>
 <translation id="2273327106802955778">Menyu zaidi</translation>
+<translation id="2274179746480077483">Jaza kiotomatiki maelezo kutoka kwenye programu kama vile Gmail na Picha. Inaendeshwa na kipengele cha Umaizi wa Binafsi.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Anwani hii itafutwa kwenye kifaa hiki.}other{Anwani hizi zitafutwa kwenye kifaa hiki.}}</translation>
 <translation id="2295236662082735391">Bonyeza kwa muda mrefu picha kwenye wavuti ili uihariri ukitumia Gemini</translation>
 <translation id="2296360194694387941">Umekamilisha hatua ya Tumia Gemini kwenye Chrome!</translation>
@@ -1576,6 +1577,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6232329973559504466">Utafutaji fiche</translation>
 <translation id="6234310016144827337">Angalia muunganisho wako kisha ujaribu tena</translation>
 <translation id="6236952928980352967">Rejesha Onyo</translation>
+<translation id="623755660902014047">Hali ya kusoma</translation>
 <translation id="6240553182907836376">Sasisha maelezo ya kitambulisho</translation>
 <translation id="6240601837375010619">Hifadhi maelezo ya pasipoti</translation>
 <translation id="6241132809279377987">Pata vipengele zaidi katika iPhone ukitumia programu za Google</translation>
@@ -2110,6 +2112,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="7972837668077967426">Turubai</translation>
 <translation id="7975036700432177008">Jaribu</translation>
 <translation id="797588153137233716">Menyu → Historia → Futa data ya kuvinjari</translation>
+<translation id="7977029776654598145">Kinapotumika</translation>
 <translation id="7977451675950311423">Hukutahadharisha iwapo unatumia nenosiri ambalo limeathiriwa na ufichuzi haramu wa data.</translation>
 <translation id="797824194429476746">Vichupo hivi havitafungwa kwenye kifaa hiki lakini kikundi kitafutwa kabisa.</translation>
 <translation id="7982789257301363584">Mtandao</translation>
@@ -2521,6 +2524,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="954667170699278022">Orodha ya Kusoma</translation>
 <translation id="956066588046842680">Sera ya shirika lako hairuhusu kupakia data hii.</translation>
 <translation id="956218893102219091">Tumia eneo lako mahususi ili upate matokeo sahihi zaidi ya Gemini, badala ya mahali palipokadiriwa kulingana na anwani yako ya IP. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Onyesha viungo</translation>
 <translation id="961856697154696964">Futa data ya kuvinjari</translation>
 <translation id="963102227019621224">Historia ya Shughuli kwenye Wavuti na Programu</translation>
 <translation id="965259330007686240">Buni picha ukitumia Gemini</translation>

@@ -104,6 +104,7 @@
 <translation id="1165174597379888365">访问网页</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{无}=1{来自 1 个网站（您的 Google 账号仍会保持登录状态）}other{来自 # 个网站（您的 Google 账号仍会保持登录状态）}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" />下载失败</translation>
+<translation id="1171306609584863516">经 <ph name="IDP_ORIGIN" /> 验证</translation>
 <translation id="1174644974616730562">中式 #1 信封</translation>
 <translation id="1174723505405632867">您想允许 <ph name="EMBEDDED_URL" /> 在 <ph name="TOP_LEVEL_URL" /> 上使用 Cookie 和网站数据吗？
 
@@ -225,7 +226,6 @@
 <translation id="1337692097987160377">共享此标签页</translation>
 <translation id="1339601241726513588">注册域：</translation>
 <translation id="1340482604681802745">取货地址</translation>
-<translation id="1343356790768851700">该网站会先判断您的喜好，然后向其他网站建议相关广告</translation>
 <translation id="1343830902827845050">登录 Chrome</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1348779747280417563">确认姓名</translation>
@@ -1304,6 +1304,7 @@
 <translation id="3019738915977809060">将登机牌保存到 Google 钱包</translation>
 <translation id="3022959067768579802">继续撰写</translation>
 <translation id="3024663005179499861">策略类型有误</translation>
+<translation id="3027857899292697441">Chrome 检测到此网站具有钓鱼式攻击网站、恶意软件网站或欺诈网站的常见特征。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG 图片</translation>
 <translation id="3030331669969285614">这些标记可以防止或还原破坏性更改，并且只能在有限的时间内使用。</translation>
 <translation id="3033200136993730761">保留住址可方便您畅享各项 Google 服务，例如在 Google 地图中获得更精确的搜索结果和路线。您可在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
@@ -2037,6 +2038,7 @@
 <translation id="4153446078232988116"><ph name="SITE" /> 不支持 HTTPS 安全连接</translation>
 <translation id="4153858337812834972">最近打开的标签页</translation>
 <translation id="4154277373259957087">现在，Chrome 会在填充付款方式之前验证是您本人在操作。您可以随时在“<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />”中更新这项设定。</translation>
+<translation id="4157273919218514718">由 Gemini 中的个性化智能服务提供支持。<ph name="BEGIN_LINK" />管理设置<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">在新标签页中打开帮助中心文章</translation>
 <translation id="4165986682804962316">网站设置</translation>
@@ -2784,7 +2786,6 @@
 <translation id="5340250774223869109">此应用已被禁用</translation>
 <translation id="5342693890921195472">分钟前</translation>
 <translation id="534295439873310000">NFC 设备</translation>
-<translation id="5344522958567249764">管理广告隐私设置</translation>
 <translation id="5344579389779391559">此页面可能会向您收取费用</translation>
 <translation id="5345249337934847112">纸（重磅涂布纸）</translation>
 <translation id="5346059693449184483">想聊点什么？</translation>
@@ -3214,7 +3215,6 @@
 <translation id="5989320800837274978">固定代理服务器和 .pac 脚本网址均未指定。</translation>
 <translation id="5989917734461988169">您可在各种 Google 产品中使用已保存的地址。这不会更改现有住址。以上信息将保存到您的 Google 账号 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="5992691462791905444">工程 Z 型折</translation>
-<translation id="5992805036496113940">查看向您展示广告时使用的信息</translation>
 <translation id="5995727681868049093">在您的 Google 账号中管理自己的信息、隐私和安全</translation>
 <translation id="5996255674476750320">车展</translation>
 <translation id="5997247540087773573">您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，Google 密码管理工具建议您立即更改此密码并检查您已保存的所有密码。</translation>
@@ -3362,7 +3362,6 @@
 <translation id="6197648101609735209">89 x 89 毫米</translation>
 <translation id="6198480336395236519">全剪切标签</translation>
 <translation id="6203231073485539293">请检查您的互联网连接是否正常</translation>
-<translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6212314149070368045">美国 Fanfold</translation>
 <translation id="6213685130162740188">已知旅客编号</translation>
 <translation id="6215936431492593050">金属（磨光）</translation>
@@ -3893,7 +3892,6 @@
 <translation id="701757816833614688">视觉艺术与设计教育</translation>
 <translation id="7020464868401003526">快捷方式的网址超出了允许的长度上限（<ph name="MAX_LENGTH" /> 个字符）。</translation>
 <translation id="7020581144940000377">使用大致位置</translation>
-<translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7023162328967545559">管理员警告</translation>
 <translation id="7023765275461720661">要关联账号并使用<ph name="BNPL_ISSUER_NAME" />付款吗？</translation>
 <translation id="7030164307377592766">修改用于填充付款方式的设置</translation>
@@ -4067,6 +4065,7 @@
 <translation id="7310392214323165548">设备很快就会重启</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7313107491291103073">您的组织已标记此网站，因为它可能违反了政策。</translation>
+<translation id="7315372670898739748">关联失败，请稍后再试</translation>
 <translation id="7316521168101843192">正在将文件保存到 Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">与连接相关的帮助</translation>
@@ -4260,6 +4259,7 @@
 <translation id="7575800019233204241">“您的连接不是私密连接”、“&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;”、“&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;”、“&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;”或“SSL 证书错误”</translation>
 <translation id="7575887283389198269">手机</translation>
 <translation id="7579113844074980463"><ph name="MANUFACTURER" />平板电脑</translation>
+<translation id="7579227976546039122">开发者版本</translation>
 <translation id="7579442726219254162">“<ph name="APPLICATION_ID" />”的受管配置中包含未知变量“<ph name="VARIABLE" />”。</translation>
 <translation id="7581199239021537589">侧边 2，图片沿 Y 轴位移</translation>
 <translation id="7582602800368606489">在 Google 日历中快速创建新活动</translation>
@@ -4509,6 +4509,7 @@
 <translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7962467575542381659">平台设备</translation>
+<translation id="796439090588610411">Chrome 将停止在支持的网站上自动确认此邮箱。</translation>
 <translation id="7966803981046576691">工作账号类型</translation>
 <translation id="7967477318370169806">共同基金</translation>
 <translation id="7967636097426665267">通信设备</translation>
@@ -4818,6 +4819,7 @@
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8449036207308062757">管理存储空间</translation>
 <translation id="8449155699563577224">17 x 24 英寸</translation>
+<translation id="8449513475775663994">要移除已验证的邮箱吗？</translation>
 <translation id="8449836157089738489">在新标签页分组中打开全部网址</translation>
 <translation id="8451518040456311377">保存并自动填充身份证件</translation>
 <translation id="84561192812921051">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -4868,7 +4870,6 @@
 <translation id="8538228968820006247">标签页分组已满，新成员无法通过链接加入</translation>
 <translation id="8539500321752640291">授予 2 项权限？</translation>
 <translation id="8541158209346794904">蓝牙设备</translation>
-<translation id="8541410041357371550">该网站会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告</translation>
 <translation id="8541579497401304453">拨打电话联系商家。</translation>
 <translation id="8542014550340843547">三钉（底部）</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5033,6 +5034,7 @@
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="881559332211266856">更新身份纠正识别号</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
+<translation id="8816960833040967795">请谨慎访问此网站</translation>
 <translation id="8819155700324279105">多一层保障，抵御网络威胁</translation>
 <translation id="8819855907485254989">将交通票券保存到钱包</translation>
 <translation id="8820817407110198400">书签</translation>
@@ -5342,6 +5344,7 @@
 <translation id="987264212798334818">常规</translation>
 <translation id="988159990683914416">开发者内部版本</translation>
 <translation id="989988560359834682">修改地址</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" />（<ph name="DISAMBIGUATION_LABEL" />）</translation>
 <translation id="991936891556421157">鞋类</translation>
 <translation id="992110854164447044">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

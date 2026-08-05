@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search AI मोड आणि कनेक्ट केलेली ॲप्स</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> उघडता आली नाही</translation>
 <translation id="1086486568852410168">Google Lens वापरून शोधा</translation>
+<translation id="1095093219235104018">Gemini वापरून शोधा आणि भरा</translation>
 <translation id="1096992026380844478">तुमच्या शेवटच्या बॅकअपच्या आधारावर तुमची सिंक सेटिंग्ज रिस्टोअर केली जातील. <ph name="BEGIN_LINK" />तुम्ही काय सिंक करू शकता हे पहा<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{१ मॅन्युअल शोध वगळला आहे}other{# मॅन्युअल शोध वगळले आहेत}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{१ पासवर्डची झटपट पडताळणी केली आहे}other{# पासवर्डच्या झटपट पडताळण्या केल्या आहेत}}</translation>
 <translation id="1103523840287552314">नेहमी भाषांतर करा <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">फेस आयडी वापरून अनलॉक करा</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI मोड बंद करा</translation>
 <translation id="1554477036522844996">नवीन विंडो</translation>
 <translation id="1558391695376153246">गुप्त टॅब बंद करा</translation>
-<translation id="1559263013367304065">Google Lens वापरल्यापासून</translation>
 <translation id="1560153516220021659">कोलॅप्स केलेले दुय्यम टूलबार बटण</translation>
 <translation id="1562601408588733317">Gemini वापरून माहिती शोधणे आणि भरणे व्यवस्थापित करा</translation>
 <translation id="1565371473877914088">नवीन गुप्त टॅब</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">साइट जोडली आणि पिन केली आहे</translation>
 <translation id="1911619930368729126">Google ड्राइव्हवर अपलोड करा</translation>
 <translation id="1925706052394657380">iOS मध्ये <ph name="BEGIN_BOLD" />डीफॉल्ट अ‍ॅप्स<ph name="END_BOLD" /> सेटिंग्ज उघडा</translation>
+<translation id="1938871630297275912">{count,plural, =1{लिंक मिळाली}other{{count} लिंक मिळाल्या}}</translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
 <translation id="1943478190258551035">मेनू → सेटिंग्ज</translation>
 <translation id="1952728750904661634">व्यवस्थापित केलेल्या खात्यासह साइन इन करा</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">सुधारित करा</translation>
 <translation id="2271452184061378400">तुमचे टॅब गट इथे सेव्ह केलेले आहेत</translation>
 <translation id="2273327106802955778">अधिक मेनू</translation>
+<translation id="2274179746480077483">Gmail आणि Photos यांसारख्या अ‍ॅप्समधील माहिती ऑटोफिल करा. पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले.</translation>
 <translation id="2287614783861766820">{count,plural, =1{हा पत्ता या डिव्हाइसवरून हटवला जाईल.}other{हे पत्ते या डिव्हाइसवरून हटवले जातील.}}</translation>
 <translation id="2295236662082735391">Gemini वापरून संपादित करण्यासाठी वेबवरील इमेज प्रेस करून ठेवा</translation>
 <translation id="2296360194694387941">Chrome मधील Gemini वापरणे पूर्ण झाले!</translation>
@@ -724,6 +725,7 @@
 <translation id="340669334496430859">शेवटचे फेरबदल केलेले</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">२५ ऑक्टोबर २०२३</translation>
+<translation id="3419787211763835342">वर्धित ऑटोफिलमध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="3426715535827854458">टूलबार लपवा हे लपवा</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3441673211568148613">तुमचे ब्राउझिंग खाजगी ठेवा</translation>
@@ -1007,6 +1009,7 @@
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4380677808580146413">निवडा</translation>
 <translation id="4389019817280890563">भाषा बदलण्यासाठी टॅप करा.</translation>
+<translation id="4390649422783033958"><ph name="USER_NAME" /> म्हणून साइन इन केले आहे. <ph name="USER_EMAIL" />, Google सदस्यत्व. खाते मेनू उघडा.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{१ दिवसानंतर}other{{COUNT} दिवसांनंतर}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{१ टॅब}other{# टॅब}}</translation>
 <translation id="4404790787924017676">तुम्ही माग ठेवत असलेल्या उत्पादनांसाठी किमतीमध्ये घट झाल्याच्या सूचना मिळवा</translation>
@@ -1364,6 +1367,7 @@
 <translation id="5559567453458728487">वेबवर आढळलेल्या मापनाच्या युनिटचे रूपांतर करा</translation>
 <translation id="5560088892362098740">एक्सपायर होण्याची तारीख</translation>
 <translation id="556042886152191864">बटण</translation>
+<translation id="5563910365456880646">पूर्ण केल्यापासून "Google Lens वापरून शोधण्यासाठी फोटो वापरा"</translation>
 <translation id="5565871407246142825">क्रेडिट कार्डे</translation>
 <translation id="5567439033041178034">अधिक जाणून घ्या</translation>
 <translation id="5578795271662203820">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
@@ -1576,6 +1580,7 @@
 <translation id="6232329973559504466">गुप्त शोध</translation>
 <translation id="6234310016144827337">तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="6236952928980352967">चेतावणी रिस्टोअर करा</translation>
+<translation id="623755660902014047">वाचन मोड</translation>
 <translation id="6240553182907836376">ओळखपत्र अपडेट करा</translation>
 <translation id="6240601837375010619">पासपोर्टसंबंधित माहिती सेव्ह करा</translation>
 <translation id="6241132809279377987">Google अ‍ॅप्स वापरून तुमच्या iPhone साठी आणखी वैशिष्ट्ये अनलॉक करा</translation>
@@ -1814,6 +1819,7 @@
 <translation id="6930162026494574854">भाषांतर करा यासंबंधित सेटिंग्ज रीसेट करा</translation>
 <translation id="6930799952781667037">ही भाषा बदलण्यासाठी टॅप करा.</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
+<translation id="6937083164784433305">{count,plural, =1{तुम्ही शोधण्यासाठी १ फोटो वापरला आहे}other{तुम्ही शोधण्यासाठी # फोटो वापरले आहेत}}</translation>
 <translation id="693761253105515415">पासकोड सेट करा</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6946722113367118030">विचार करणे</translation>
@@ -2019,6 +2025,7 @@
 <translation id="7662316065255305764">साइटची माहिती</translation>
 <translation id="7665369617277396874">खाते जोडा</translation>
 <translation id="7666861622396822790">तुम्ही हे <ph name="BEGIN_LINK" />आशय सेटिंग्ज<ph name="END_LINK" /> मध्ये व्यवस्थापित करू शकता.</translation>
+<translation id="7669448795744969014"><ph name="USER_EMAIL" /> म्हणून साइन इन केले आहे, Google सदस्यत्व. खाते मेनू उघडा.</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> वरून कॉन्फिगरेशन प्रोफाइल डाउनलोड करणे सुरू ठेवायचे आहे का?</translation>
 <translation id="7673346542062368520">तुम्ही गुप्त मोड मध्ये ब्राउझ करण्यासाठी डावीकडे स्‍वाइप करू शकता.</translation>
 <translation id="7679915578945954324">साइट अ‍ॅड्रेस कॉपी केले</translation>
@@ -2111,6 +2118,7 @@
 <translation id="7972837668077967426">कॅन्व्हास</translation>
 <translation id="7975036700432177008">वापरुन पहा</translation>
 <translation id="797588153137233716">मेनू → इतिहास → ब्राउझिंग डेटा हटवा</translation>
+<translation id="7977029776654598145">वापरले जाते तेव्हा</translation>
 <translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
 <translation id="797824194429476746">या डिव्हाइसवर टॅब उघडे राहतील, पण गट कायमचा हटवला जाईल.</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
@@ -2522,6 +2530,7 @@
 <translation id="954667170699278022">वाचन सूची</translation>
 <translation id="956066588046842680">तुमच्या संस्थेच्या धोरणानुसार हा डेटा इंपोर्ट करण्याची अनुमती नाही.</translation>
 <translation id="956218893102219091">सर्वात अचूक Gemini परिणामांसाठी तुमच्या आयपी अ‍ॅड्रेसवर आधारित अंदाजे स्थानाऐवजी, तुमचे नेमके स्थान वापरा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">हायपरलिंक दाखवा</translation>
 <translation id="961856697154696964">ब्राउझिंग डेटा हटवा</translation>
 <translation id="963102227019621224">वेब आणि ॲप ॲक्टिव्हिटी</translation>
 <translation id="965259330007686240">Gemini वापरून इमेज तयार करा</translation>

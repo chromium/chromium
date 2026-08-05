@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Toegestaan • Geschat</translation>
 <translation id="1323433172918577554">Meer bekijken</translation>
 <translation id="1333965224356556482">Niet toestaan dat sites je locatie zien</translation>
-<translation id="1343356790768851700">Deze site bepaalt wat je leuk vindt en stelt daarna advertenties voor op andere sites</translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> toegevoegd</translation>
 <translation id="1371239764779356792">Toestaan dat een site gegevens op je apparaat opslaat</translation>
 <translation id="1383876407941801731">Zoeken</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5335288049665977812">Sites toestaan JavaScript uit te voeren (aanbevolen)</translation>
 <translation id="534295439873310000">NFC-apparaten</translation>
-<translation id="5344522958567249764">Advertentieprivacy beheren</translation>
 <translation id="5373874281522292782">Je tabbladgroepen zijn opgeslagen</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(en nog 1)}other{(en nog #)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Site-uitzondering toevoegen</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome blokkeert morgen weer cookies}other{# dagen tot cookies weer worden geblokkeerd}}</translation>
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
-<translation id="6205314730813004066">Advertentieprivacy</translation>
 <translation id="6207207788774442484">Gegevens verwijderen en rechten resetten</translation>
 <translation id="6211409961905616543">Sites kunnen bewegings- en lichtsensoren gebruiken</translation>
 <translation id="6218508144653756827">Fuchsiakleurig thema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Verbeter je beveiliging en bescherm je gegevens beter door je wachtwoorden te checken</translation>
 <translation id="6992289844737586249">Eerst vragen voordat sites je microfoon mogen gebruiken (aanbevolen)</translation>
 <translation id="7000754031042624318">Uitgezet in Android-instellingen</translation>
-<translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7036823721811529709">Luisteren op de achtergrond</translation>
 <translation id="7044081119134178347">Camera deze keer toegestaan</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
@@ -729,7 +725,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="8514955299594277296">Niet toestaan dat sites gegevens opslaan op je apparaat (niet aanbevolen)</translation>
 <translation id="851751545965956758">Voorkomen dat sites verbinding maken met apparaten</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
-<translation id="8541410041357371550">Deze site krijgt je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="854876774113449365">Sites die je bezoekt, kunnen content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Deze andere sites kunnen toestemming vragen om informatie te gebruiken die ze over jou hebben opgeslagen terwijl je browst op de site. <ph name="BEGIN_LINK" />Meer informatie over ingesloten content<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Hoe verzoeken tonen</translation>
 <translation id="8558480467877843976">Je kunt Chrome nu gebruiken als je browst of op links in berichten, documenten en andere apps tikt.</translation>

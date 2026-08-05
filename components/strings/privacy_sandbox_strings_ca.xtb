@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1184166532603925201">Quan utilitzes el mode d'incògnit, Chrome impedeix que els llocs web utilitzin galetes de tercers</translation>
-<translation id="1559726735555610004">Google requereix que les empreses indiquin públicament que no utilitzaran aquestes dades per fer un seguiment del que fas als llocs web. És possible que alguns llocs web utilitzin la teva activitat per personalitzar la teva experiència més enllà dels anuncis. També és possible que la combinin amb altres dades que ja coneixen de tu. Les empreses són responsables de comunicar-te com utilitzen les teves dades. Per obtenir més informació sobre com Google protegeix les teves dades, consulta la nostra <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Quan utilitzes el mode d'incògnit, els llocs web no poden utilitzar galetes de tercers. Si un lloc web que utilitza aquestes galetes no funciona, pots <ph name="BEGIN_LINK" />provar de permetre-hi temporalment l'accés a les galetes de tercers<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">La configuració actual de Chrome s'ha actualitzat per permetre que els llocs web accedeixin a les galetes de tercers. Pots canviar aquesta opció de configuració en qualsevol moment.</translation>
 <translation id="2004697686368036666">És possible que les funcions d'alguns llocs web no funcionin</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Els llocs web que utilitzen galetes de tercers haurien de funcionar de la manera prevista</translation>
 <translation id="3624583033347146597">Tria les teves preferències de galetes de tercers</translation>
 <translation id="3918378745482005425">És possible que algunes funcions no estiguin operatives. Els llocs web relacionats podran continuar utilitzant galetes de tercers.</translation>
-<translation id="4009365983562022788">Google requereix que les empreses indiquin públicament que no utilitzaran aquestes dades per fer un seguiment del que fas als llocs web. És possible que alguns llocs web utilitzin la teva activitat per personalitzar la teva experiència més enllà dels anuncis. També és possible que la combinin amb altres dades que ja coneixen de tu. Les empreses són responsables de comunicar-te com utilitzen les teves dades. Obtén més informació a la nostra <ph name="BEGIN_LINK1" />política de privadesa<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Permeses</translation>
 <translation id="4412992751769744546">Permet les galetes de tercers</translation>
 <translation id="4711259472133554310">Pots crear excepcions a Configuració per permetre sempre que llocs web concrets utilitzin galetes de tercers</translation>

@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Leidžiama • Apytikslė</translation>
 <translation id="1323433172918577554">Rodyti daugiau</translation>
 <translation id="1333965224356556482">Neleisti svetainėms peržiūrėti vietovės informacijos</translation>
-<translation id="1343356790768851700">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines</translation>
 <translation id="1369915414381695676">Pridėta svetainė <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Leiskite svetainei išsaugoti duomenis įrenginyje</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5335288049665977812">Leisti svetainėms paleisti „JavaScript“ (rekomenduojama)</translation>
 <translation id="534295439873310000">ALR įrenginiai</translation>
-<translation id="5344522958567249764">Tvarkyti su skelbimais susijusį privatumą</translation>
 <translation id="5373874281522292782">Skirtukų grupės išsaugotos</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
 <translation id="5403592356182871684">Pavadinimai</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Pridėti svetainės išimtį</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{„Chrome“ vėl užblokuos slapukus rytoj}one{Liko # diena, kol slapukai vėl bus užblokuoti}few{Liko # dienos, kol slapukai vėl bus užblokuoti}many{Liko # dienos, kol slapukai vėl bus užblokuoti}other{Liko # dienų, kol slapukai vėl bus užblokuoti}}</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
-<translation id="6205314730813004066">Su skelbimais susijęs privatumas</translation>
 <translation id="6207207788774442484">Ištrinti duomenis ir iš naujo nustatyti leidimus</translation>
 <translation id="6211409961905616543">Svetainėse galima naudoti judesio ir šviesos jutiklius</translation>
 <translation id="6218508144653756827">Fuksijų spalvos tema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Sustiprinkite saugą ir apsaugokite duomenis patikrinę slaptažodžius</translation>
 <translation id="6992289844737586249">Pirmiausia klausti prieš leidžiant svetainėms naudoti mikrofoną (rekomenduojama)</translation>
 <translation id="7000754031042624318">Išjungta „Android“ nustatymuose</translation>
-<translation id="702275896380648118">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines. Ši svetainė taip pat gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus.</translation>
 <translation id="7036823721811529709">Klausykite fone</translation>
 <translation id="7044081119134178347">Vaizdo kamera leidžiama šį kartą</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
@@ -729,7 +725,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="8514955299594277296">Neleisti svetainėms išsaugoti duomenų įrenginyje (nerekomenduojama)</translation>
 <translation id="851751545965956758">Blokuoti svetaines, kad nebūtų galima prisijungti prie įrenginių</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
-<translation id="8541410041357371550">Ši svetainė gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
 <translation id="854876774113449365">Svetainėse, kuriose lankotės, gali būti įterpta turinio iš kitų svetainių, pvz., vaizdų, skelbimų ir teksto. Šios kitos svetainės gali prašyti leidimo naudoti savo išsaugotą informaciją apie jus, kai naršote svetainę. <ph name="BEGIN_LINK" />Sužinokite daugiau apie įterptą turinį<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Kaip rodyti užklausas</translation>
 <translation id="8558480467877843976">Dabar galite naudoti „Chrome“ bet kada naršydami ar paliesdami nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>

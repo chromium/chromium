@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1184166532603925201">Apabila anda berada dalam mod Inkognito, Chrome menyekat laman daripada menggunakan kuki pihak ketiga</translation>
-<translation id="1559726735555610004">Google menghendaki syarikat untuk menyatakan secara terbuka bahawa mereka tidak akan menggunakan data ini untuk menjejaki anda merentas laman. Sesetengah laman mungkin menggunakan aktiviti anda untuk memeribadikan pengalaman anda bukan untuk iklan sahaja. Mereka juga mungkin menggabungkan aktiviti anda dengan maklumat lain tentang anda yang telah diketahui oleh mereka. Syarikat bertanggungjawab untuk memaklumi anda tentang cara mereka menggunakan data anda. Ketahui lebih lanjut tentang cara Google melindungi data anda dalam <ph name="BEGIN_LINK" />Dasar Privasi<ph name="END_LINK" /> kami.</translation>
 <translation id="1569440020357229235">Apabila anda berada dalam mod Inkognito, laman tidak boleh menggunakan kuki pihak ketiga. Jika laman yang bergantung pada kuki ini tidak berfungsi, anda boleh <ph name="BEGIN_LINK" />cuba memberikan akses sementara kepada kuki pihak ketiga untuk laman itu<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Tetapan Chrome semasa anda telah dikemaskinikan untuk membenarkan laman web mengakses kuki pihak ketiga. Anda boleh menukar tetapan ini pada bila-bila masa.</translation>
 <translation id="2004697686368036666">Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Laman yang bergantung pada kuki pihak ketiga harus berfungsi seperti yang dijangkakan</translation>
 <translation id="3624583033347146597">Buat pilihan kuki pihak ketiga anda</translation>
 <translation id="3918378745482005425">Sesetengah ciri mungkin tidak berfungsi. Laman yang berkaitan masih boleh menggunakan kuki pihak ketiga.</translation>
-<translation id="4009365983562022788">Google menghendaki syarikat untuk menyatakan secara terbuka bahawa mereka tidak akan menggunakan data ini untuk menjejaki anda merentas laman. Sesetengah laman mungkin menggunakan aktiviti anda untuk memeribadikan pengalaman anda bukan untuk iklan sahaja. Mereka juga mungkin menggabungkan aktiviti anda dengan maklumat lain tentang anda yang telah diketahui oleh mereka. Syarikat bertanggungjawab untuk memaklumi anda tentang cara mereka menggunakan data anda. Ketahui lebih lanjut dalam <ph name="BEGIN_LINK1" />Dasar Privasi<ph name="LINK_END1" /> kami.</translation>
 <translation id="4278390842282768270">Dibenarkan</translation>
 <translation id="4412992751769744546">Benarkan kuki pihak ketiga</translation>
 <translation id="4711259472133554310">Anda boleh membuat pengecualian dalam Tetapan untuk sentiasa membenarkan laman tertentu menggunakan kuki pihak ketiga</translation>

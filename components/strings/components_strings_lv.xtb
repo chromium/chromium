@@ -104,6 +104,7 @@
 <translation id="1165174597379888365">Apmeklēta lapa</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nav}=1{No vienas vietnes (joprojām būsiet pierakstījies Google kontā)}zero{No # vietnēm (joprojām būsiet pierakstījies Google kontā)}one{No # vietnes (joprojām būsiet pierakstījies Google kontā)}other{No # vietnēm (joprojām būsiet pierakstījies Google kontā)}}</translation>
 <translation id="1167877250265821930">Neizdevās lejupielādēt šādu valodas pakotni: <ph name="LANGUAGE" /></translation>
+<translation id="1171306609584863516">Verificēja <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Ķīniešu aploksne 1</translation>
 <translation id="1174723505405632867">Vai vēlaties atļaut vietnei <ph name="EMBEDDED_URL" /> izmantot sīkfailus un vietnes datus šeit: <ph name="TOP_LEVEL_URL" />?
 
@@ -225,7 +226,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1337692097987160377">Koplietot šo cilni</translation>
 <translation id="1339601241726513588">Reģistrācijas domēns:</translation>
 <translation id="1340482604681802745">Saņemšanas adrese</translation>
-<translation id="1343356790768851700">Šī vietne nosaka jūsu intereses un pēc tam iesaka reklāmas citām vietnēm</translation>
 <translation id="1343830902827845050">Pierakstīšanās pārlūkā Chrome</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1348779747280417563">Apstipriniet vārdu</translation>
@@ -1304,6 +1304,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3019738915977809060">Iekāpšanas kartes saglabāšana lietotnē Maks</translation>
 <translation id="3022959067768579802">Turpiniet rakstīt</translation>
 <translation id="3024663005179499861">Politikas tips nav pareizs.</translation>
+<translation id="3027857899292697441">Pārlūkā Chrome tika konstatēta informācija, kas ir izplatīta vietnēs, kuras ir saistītas ar pikšķerēšanu, ļaunprātīgu programmatūru vai krāpniecību. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3027915437837548462">SVG formāta attēls</translation>
 <translation id="3030331669969285614">Šie karodziņi novērš vai atsauc traucējumus radošas izmaiņas, un tie būs pieejami tikai ierobežotu laiku.</translation>
 <translation id="3033200136993730761">Jūsu mājas adrese var palīdzēt jums paveikt vairāk dažādos Google pakalpojumos, piemēram, iegūt atbilstošākus meklēšanas rezultātus un norādes pakalpojumā Google Maps. Varat rediģēt vai dzēst adresi <ph name="BEGIN_LINK" />savā Google kontā <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -2039,6 +2040,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4153446078232988116"><ph name="SITE" /> neatbalsta drošu savienojumu, izmantojot protokolu HTTPS</translation>
 <translation id="4153858337812834972">Pēdējās izmantotās cilnes</translation>
 <translation id="4154277373259957087">Turpmāk pārlūkā Chrome pirms maksājuma veida informācijas aizpildīšanas tiks pārbaudīta jūsu identitāte. To varat jebkurā laikā atspējot sadaļā <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="4157273919218514718">Nodrošina funkcija “Personīgais intelekts” ar Gemini. <ph name="BEGIN_LINK" />Pārvaldīt iestatījumus<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">Violets</translation>
 <translation id="4165422751765527461">Atvērt palīdzības centra rakstu jaunā cilnē</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
@@ -2786,7 +2788,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5340250774223869109">Lietojumprogramma ir bloķēta</translation>
 <translation id="5342693890921195472">min iepriekš</translation>
 <translation id="534295439873310000">NFC ierīces</translation>
-<translation id="5344522958567249764">Pārvaldīt reklāmu konfidencialitāti</translation>
 <translation id="5344579389779391559">Šajā lapā var tikt mēģināts pieprasīt naudu</translation>
 <translation id="5345249337934847112">Papīrs (pārklāts, augsta gramāža)</translation>
 <translation id="5346059693449184483">Kas jums padomā?</translation>
@@ -3216,7 +3217,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5989320800837274978">Nav norādīti nedz fiksēti starpniekserveri, nedz .pac skripta URL.</translation>
 <translation id="5989917734461988169">Saglabātās adreses varat izmantot dažādos Google produktos. Tādējādi netiks mainīta jūsu esošā mājas adrese. Tā tiks saglabāta jūsu Google kontā (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Inženierijas Z-veida locījums</translation>
-<translation id="5992805036496113940">Skatīt reklāmu rādīšanai izmantoto informāciju</translation>
 <translation id="5995727681868049093">Pārvaldiet savu informāciju, konfidencialitāti un drošību savā Google kontā</translation>
 <translation id="5996255674476750320">Transportlīdzekļu izstādes</translation>
 <translation id="5997247540087773573">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Google paroļu pārvaldnieks iesaka nekavējoties to nomainīt un pēc tam pārbaudīt saglabātās paroles.</translation>
@@ -3365,7 +3365,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Pilna garuma izciļņi</translation>
 <translation id="6203231073485539293">Interneta savienojuma pārbaude</translation>
-<translation id="6205314730813004066">Reklāmu konfidencialitāte</translation>
 <translation id="6212314149070368045">Fanfold (ASV)</translation>
 <translation id="6213685130162740188">Zināmie ceļotāju numuri</translation>
 <translation id="6215936431492593050">Metāls (satinēts)</translation>
@@ -3896,7 +3895,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="701757816833614688">Vizuālās mākslas un dizaina izglītība</translation>
 <translation id="7020464868401003526">Saīsnes vietrādis URL pārsniedz maksimālo atļauto garumu (<ph name="MAX_LENGTH" /> rakstzīmes).</translation>
 <translation id="7020581144940000377">Izmantot aptuvenu atrašanās vietu</translation>
-<translation id="702275896380648118">Šī vietne nosaka jūsu intereses un pēc tam iesaka reklāmas citām vietnēm. Turklāt šī vietne iegūst informāciju par jūsu reklāmu tēmām no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="7023162328967545559">Administratora brīdinājums</translation>
 <translation id="7023765275461720661">Vai saistīt kontu un maksāt, izmantojot <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">mainīt maksājumu veidu aizpildes iestatījumus</translation>
@@ -4070,6 +4068,7 @@ Papildu informācija:
 <translation id="7310392214323165548">Ierīce ļoti drīz tiks restartēta</translation>
 <translation id="7311244614769792472">Netika atrasts neviens rezultāts</translation>
 <translation id="7313107491291103073">Jūsu organizācija ir atzīmējusi šo vietni kā nepiemērotu, jo ar to, iespējams, tiek pārkāpta politika.</translation>
+<translation id="7315372670898739748">Neizdevās saistīt. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7316521168101843192">Notiek faila saglabāšana pakalpojumā Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Savienojuma palīdzība</translation>
@@ -4263,6 +4262,7 @@ Papildu informācija:
 <translation id="7575800019233204241">“Savienojums nav privāts”, “&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;”, “&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;”, “&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” vai “SSL sertifikāta kļūda”</translation>
 <translation id="7575887283389198269">Mobilie tālruņi</translation>
 <translation id="7579113844074980463"><ph name="MANUFACTURER" /> planšetdators</translation>
+<translation id="7579227976546039122">izstrādātāja būvējums</translation>
 <translation id="7579442726219254162">Nezināms mainīgais “<ph name="VARIABLE" />” lietojumprogrammas “<ph name="APPLICATION_ID" />” pārvaldītajā konfigurācijā.</translation>
 <translation id="7581199239021537589">2. puses attēla nobīde uz Y ass</translation>
 <translation id="7582602800368606489">Ātri izveidot jaunu pasākumu Google kalendārā</translation>
@@ -4512,6 +4512,7 @@ Papildu informācija:
 <translation id="7956713633345437162">Mobilās grāmatzīmes</translation>
 <translation id="7961015016161918242">Nekad</translation>
 <translation id="7962467575542381659">Platformas ierīce</translation>
+<translation id="796439090588610411">Pārlūkā Chrome tiks pārtraukta šīs e-pasta adreses automātiska apstiprināšana atbalstītajās vietnēs.</translation>
 <translation id="7966803981046576691">Darba konta veids</translation>
 <translation id="7967477318370169806">Kopieguldījumu fondi</translation>
 <translation id="7967636097426665267">Komunikāciju aprīkojums</translation>
@@ -4821,6 +4822,7 @@ Papildu informācija:
 <translation id="8446884382197647889">Uzziniet vairāk</translation>
 <translation id="8449036207308062757">Pārvaldīt krātuvi</translation>
 <translation id="8449155699563577224">17 x 24 collas</translation>
+<translation id="8449513475775663994">Vai noņemt verificēto e-pasta adresi?</translation>
 <translation id="8449836157089738489">Atvērt visu jaunā ciļņu grupā</translation>
 <translation id="8451518040456311377">Saglabāt un aizpildīt identifikācijas dokumentu informāciju</translation>
 <translation id="84561192812921051">Administrators var attālināti veikt izmaiņas jūsu profilā un pārlūkā, analizēt informāciju par pārlūku, izmantojot pārskatus, kā arī veikt citus nepieciešamos uzdevumus. Darbības šajā ierīcē var pārvaldīt arī ārpus pārlūka Chrome.  <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
@@ -4871,7 +4873,6 @@ Papildu informācija:
 <translation id="8538228968820006247">Jūsu ciļņu grupa ir pilna, un jauni dalībnieki nevar pievienoties, izmantojot saiti.</translation>
 <translation id="8539500321752640291">Vai piešķirt 2 atļaujas?</translation>
 <translation id="8541158209346794904">Bluetooth ierīce</translation>
-<translation id="8541410041357371550">Šī vietne iegūst informāciju par jūsu reklāmu tēmām no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas</translation>
 <translation id="8541579497401304453">Sazināties ar uzņēmumu, sākot tālruņa zvanu.</translation>
 <translation id="8542014550340843547">Trīskāršs skavojums apakšdaļā</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5036,6 +5037,7 @@ Papildu informācija:
 <translation id="8814707942599948500">Aploksne C8</translation>
 <translation id="881559332211266856">Kompensācijas numura atjaunināšana</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome iestatījumos atjauninātu pārlūkprogrammu Chrome, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>
+<translation id="8816960833040967795">Piesardzīgi izmantojiet šo vietni</translation>
 <translation id="8819155700324279105">Pievienojiet papildu aizsardzības līmeni pret draudiem tiešsaistē</translation>
 <translation id="8819855907485254989">Transporta biļetes saglabāšana lietotnē Maks</translation>
 <translation id="8820817407110198400">Grāmatzīmes</translation>
@@ -5345,6 +5347,7 @@ Papildu informācija:
 <translation id="987264212798334818">Vispārīgi</translation>
 <translation id="988159990683914416">Attīstītāja konstrukcija</translation>
 <translation id="989988560359834682">Rediģēt adresi</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
 <translation id="991936891556421157">Apavi</translation>
 <translation id="992110854164447044">Virtuāla karte paslēpj jūsu faktisko karti, lai efektīvāk aizsargātu jūs pret iespējamu krāpšanu. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

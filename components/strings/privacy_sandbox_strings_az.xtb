@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1184166532603925201">Anonim rejimdə olduğunuz zaman Chrome saytların üçüncü tərəf kukilərindən istifadəsini bloklayır</translation>
-<translation id="1559726735555610004">Google şirkətlərdən sizi saytlarda izləmək üçün bu datadan istifadə etməyəcəklərini açıq şəkildə bildirmələrini tələb edir. Bəzi saytlar fərdi təcrübəni təkcə reklamlarla məhdudlaşdırmamaq üçün fəaliyyətinizdən istifadə edə bilər. Həmçinin bunu haqqınızda bildikləri digər məlumatlarla birləşdirə bilərlər. Şirkətlər datanızdan necə istifadə etdiklərini sizə bildirməlidir. <ph name="BEGIN_LINK" />Məxfilik Siyasətimizdə<ph name="END_LINK" /> Google-un datanızı necə qoruduğu haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="1569440020357229235">Anonim rejimdə olduğunuz zaman saytlar üçüncü tərəf kukilərindən istifadə edə bilməz. Bu kukilərə əsaslanan sayt işləmirsə, <ph name="BEGIN_LINK" />həmin sayta üçüncü tərəf kukilərinə müvəqqəti olaraq giriş imkanı verə bilərsiniz.<ph name="END_LINK" /></translation>
 <translation id="19426210786412737">Veb-saytların üçüncü tərəf kukilərinə daxil ola bilməsi üçün cari Chrome ayarlarınız güncəlləndi. Bu ayarı istənilən vaxt dəyişə bilərsiniz.</translation>
 <translation id="2004697686368036666">Bəzi saytlardakı funksiyalar işləməyə bilər</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Üçüncü tərəf kukilərinə əsaslanan saytlar gözlənildiyi kimi işləməlidir</translation>
 <translation id="3624583033347146597">Üçüncü tərəf kuki tərcihlərinizi seçin</translation>
 <translation id="3918378745482005425">Bəzi funksiyalar işləməyə bilər. Əlaqədar saytlar hələ də üçüncü tərəf kukilərindən istifadə edə bilər.</translation>
-<translation id="4009365983562022788">Google şirkətlərdən sizi saytlarda izləmək üçün bu datadan istifadə etməyəcəklərini açıq şəkildə bildirmələrini tələb edir. Bəzi saytlar fərdi təcrübəni təkcə reklamlarla məhdudlaşdırmamaq üçün fəaliyyətinizdən istifadə edə bilər. Həmçinin bunu haqqınızda bildikləri digər məlumatlarla birləşdirə bilərlər. Şirkətlər datanızdan necə istifadə etdiklərini sizə bildirməlidir. <ph name="BEGIN_LINK1" />Məxfilik Siyasətimizdə<ph name="LINK_END1" /> ətraflı məlumat əldə edin.</translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
 <translation id="4412992751769744546">Üçüncü tərəf kukilərinə icazə verin</translation>
 <translation id="4711259472133554310">Xüsusi saytlara üçüncü tərəf kukilərindən həmişə istifadə etmək imkanı vermək üçün Ayarlarda istisnalar yarada bilərsiniz</translation>

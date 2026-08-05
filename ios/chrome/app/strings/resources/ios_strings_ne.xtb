@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search को AI मोड र कनेक्ट गरिएका एपहरू</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> खोल्न सकिएन</translation>
 <translation id="1086486568852410168">Google लेन्समार्फत खोज्नुहोस्</translation>
+<translation id="1095093219235104018">Gemini प्रयोग गरी खोज्नुहोस् र भर्नुहोस्</translation>
 <translation id="1096992026380844478">तपाईंको पछिल्लो ब्याकअपका आधारमा तपाईंले तय गर्नुभएका सिंकसम्बन्धी सेटिङ रिस्टोर गरिने छ। <ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ हेर्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{एउटा म्यानुअल सर्च स्किप गरियो}other{# वटा म्यानुअल सर्च स्किप गरिएका छन्}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{एउटा पासवर्ड तुरुन्तै पुष्टि गरियो}other{# वटा पासवर्ड तत्कालै पुष्टि गरिएका छन्}}</translation>
 <translation id="1103523840287552314">सँधै अनुवाद गर्नुहोस् <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">फेस आइडी प्रयोग गरी अनलक गर्नुहोस्</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI मोड अफ गर्नुहोस्</translation>
 <translation id="1554477036522844996">नयाँ विन्डो</translation>
 <translation id="1558391695376153246">इन्कोग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
-<translation id="1559263013367304065">Google लेन्स प्रयोग गर्न थालेयता</translation>
 <translation id="1560153516220021659">सहायक टुलबार बटन कोल्याप्स गरिएको छ</translation>
 <translation id="1562601408588733317">Gemini प्रयोग गरी जानकारी भेट्टाउने र भर्ने सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1565371473877914088">नयाँ इन्कोग्निटो ट्याब</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">साइट हालिएको छ र पिन गरिएको छ</translation>
 <translation id="1911619930368729126">Google ड्राइभमा अपलोड गर्नुहोस्</translation>
 <translation id="1925706052394657380">iOS मा <ph name="BEGIN_BOLD" />डिफल्ट एप<ph name="END_BOLD" />सम्बन्धी सेटिङ खोल्नुहोस्</translation>
+<translation id="1938871630297275912">{count,plural, =1{लिंक प्राप्त भएको छ}other{{count} वटा लिंक प्राप्त भएका छन्}}</translation>
 <translation id="1941314575388338491">प्रतिलिपि बनाउन डबल ट्याप गर्नुहोस्।</translation>
 <translation id="1943478190258551035">मेनु → सेटिङ</translation>
 <translation id="1952728750904661634">व्यवस्थापन गरिएको खातामार्फत साइन इन</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">परिशुद्ध</translation>
 <translation id="2271452184061378400">तपाईंका ट्याब समूहहरू यहाँ सेभ गरिएका छन्</translation>
 <translation id="2273327106802955778">थप मेनु</translation>
+<translation id="2274179746480077483">Gmail र Photos जस्ता एपहरूबाट जानकारी स्वतः भर्नुहोस्। पर्सनल इन्टेलिजेन्स प्रयोग गरी उपलब्ध गराइएको।</translation>
 <translation id="2287614783861766820">{count,plural, =1{यो डिभाइसबाट यो ठेगाना मेटाइने छ।}other{यो डिभाइसबाट यी ठेगानाहरू मेटाइने छन्।}}</translation>
 <translation id="2295236662082735391">Gemini प्रयोग गरी फोटो सम्पादन गर्न वेबमा भएको फोटो केही बेरसम्म थिच्नुहोस्</translation>
 <translation id="2296360194694387941">तपाईंले Chrome मा उपलब्ध Gemini प्रयोग गर्ने तरिका सिक्नुभएको छ!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">इन्कोग्निटो खोज</translation>
 <translation id="6234310016144827337">इन्टरनेट कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6236952928980352967">चेतावनी पुनः देखाउनुहोस्</translation>
+<translation id="623755660902014047">रिडिङ मोड</translation>
 <translation id="6240553182907836376">परिचयपत्र अपडेट गर्नुहोस्</translation>
 <translation id="6240601837375010619">राहदानीसम्बन्धी जानकारी सेभ गर्नुहोस्</translation>
 <translation id="6241132809279377987">Google एपहरू प्रयोग गरी आफ्नो iPhone मा थप सुविधाहरू अनलक गर्नुहोस्</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">क्यान्भास</translation>
 <translation id="7975036700432177008">प्रयास गर्नुहोस्</translation>
 <translation id="797588153137233716">मेनु → हिस्ट्री → ब्राउजिङ डेटा मेटाउनुहोस्</translation>
+<translation id="7977029776654598145">यो सुविधा प्रयोग गर्दा</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="797824194429476746">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर यो समूह भने सदाका लागि मेटाइने छ।</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">रिडिङ लिस्ट</translation>
 <translation id="956066588046842680">यो डेटा तपाईंको सङ्गठनले तोकेको नीतिअनुसार इम्पोर्ट गर्न पाइँदैन।</translation>
 <translation id="956218893102219091">Gemini ले उपलब्ध गराउने सबैभन्दा सटीक परिणामहरू प्राप्त गर्न आफ्नो IP एड्रेसमा आधारित अनुमानित लोकेसन प्रयोग गर्नुको साटो आफ्नो सटीक लोकेसन प्रयोग गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">हाइपरलिंकहरू देखाउनुहोस्</translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="963102227019621224">वेब तथा एपसम्बन्धी गतिविधि</translation>
 <translation id="965259330007686240">Gemini प्रयोग गरी फोटो बनाउनुहोस्</translation>

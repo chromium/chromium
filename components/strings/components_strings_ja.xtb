@@ -104,6 +104,7 @@
 <translation id="1165174597379888365">ページがアクセスされた</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{なし}=1{1 件のサイトから（Google アカウントへのログイン状態は維持されます）}other{# 件のサイトから（Google アカウントへのログイン状態は維持されます）}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" />をダウンロードできませんでした</translation>
+<translation id="1171306609584863516"><ph name="IDP_ORIGIN" /> で確認済み</translation>
 <translation id="1174644974616730562">中国 #1 封筒</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> が <ph name="TOP_LEVEL_URL" /> で Cookie とサイトデータを使用することを許可しますか？
 
@@ -225,7 +226,6 @@
 <translation id="1337692097987160377">このタブを共有</translation>
 <translation id="1339601241726513588">登録ドメイン:</translation>
 <translation id="1340482604681802745">受け取り場所の住所</translation>
-<translation id="1343356790768851700">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します</translation>
 <translation id="1343830902827845050">Chrome にログイン</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1348779747280417563">名前を確認</translation>
@@ -1304,6 +1304,7 @@
 <translation id="3019738915977809060">搭乗券をウォレットに保存</translation>
 <translation id="3022959067768579802">入力を続行</translation>
 <translation id="3024663005179499861">ポリシー タイプが間違っています</translation>
+<translation id="3027857899292697441">フィッシング、マルウェア、詐欺に関連するサイトによく見られる特徴が検出されました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG 画像</translation>
 <translation id="3030331669969285614">以下は破壊的変更を防止したり元に戻したりするフラグです。期間限定でご利用いただけます。</translation>
 <translation id="3033200136993730761">自宅の住所は、関連性の高い検索結果や Google マップのルートの表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="ACCOUNT" />）<ph name="END_LINK" />で編集、削除できます。</translation>
@@ -2041,6 +2042,7 @@
 <translation id="4153446078232988116"><ph name="SITE" /> は HTTPS による安全な接続をサポートしていません</translation>
 <translation id="4153858337812834972">最近使ったタブ</translation>
 <translation id="4154277373259957087">Chrome では、お支払い方法を入力する前に本人確認が行われるようになります。この機能は、<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />でいつでも変更できます。</translation>
+<translation id="4157273919218514718">Gemini のパーソナル インテリジェンスを使用します。<ph name="BEGIN_LINK" />設定を管理する<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">パープル</translation>
 <translation id="4165422751765527461">新しいタブでヘルプセンター記事を開きます</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
@@ -2788,7 +2790,6 @@
 <translation id="5340250774223869109">アプリケーションがブロックされました</translation>
 <translation id="5342693890921195472">分前</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
-<translation id="5344522958567249764">広告プライバシーを管理</translation>
 <translation id="5344579389779391559">このページでは課金される恐れがあります</translation>
 <translation id="5345249337934847112">紙（厚手コート）</translation>
 <translation id="5346059693449184483">何かお手伝いできることはありますか？</translation>
@@ -3218,7 +3219,6 @@
 <translation id="5989320800837274978">固定プロキシ サーバーと .pac スクリプト URL のどちらも指定されていません。</translation>
 <translation id="5989917734461988169">保存した住所は Google サービス全体で使用できます。既存の自宅の住所は変更されません。この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されます。</translation>
 <translation id="5992691462791905444">工学 Z 折り</translation>
-<translation id="5992805036496113940">広告の表示に使用される情報を表示します</translation>
 <translation id="5995727681868049093">Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
 <translation id="5996255674476750320">モーターショー、オートショー</translation>
 <translation id="5997247540087773573">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために今すぐパスワードを変更して、保存したパスワードを確認することをおすすめします。</translation>
@@ -3367,7 +3367,6 @@
 <translation id="6197648101609735209">89x89 mm</translation>
 <translation id="6198480336395236519">フルカットタブ</translation>
 <translation id="6203231073485539293">インターネット接続を確認してください</translation>
-<translation id="6205314730813004066">広告プライバシー</translation>
 <translation id="6212314149070368045">米国ファンフォールド</translation>
 <translation id="6213685130162740188">Known Traveler 番号</translation>
 <translation id="6215936431492593050">金属（サテン）</translation>
@@ -3898,7 +3897,6 @@
 <translation id="701757816833614688">ビジュアル アート、デザイン教育</translation>
 <translation id="7020464868401003526">ショートカットの URL が指定可能な最大文字数（<ph name="MAX_LENGTH" /> 文字）を超えています。</translation>
 <translation id="7020581144940000377">おおよその位置情報を使用</translation>
-<translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="7023162328967545559">管理者の警告</translation>
 <translation id="7023765275461720661">アカウントをリンクして <ph name="BNPL_ISSUER_NAME" /> で支払いますか？</translation>
 <translation id="7030164307377592766">お支払い方法の入力の設定を変更します</translation>
@@ -4266,6 +4264,7 @@
 <translation id="7575800019233204241">「この接続ではプライバシーが保護されません」、「&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;」、「SSL 証明書エラー」</translation>
 <translation id="7575887283389198269">携帯電話</translation>
 <translation id="7579113844074980463"><ph name="MANUFACTURER" /> タブレット</translation>
+<translation id="7579227976546039122">デベロッパー ビルド</translation>
 <translation id="7579442726219254162">「<ph name="APPLICATION_ID" />」の管理対象の設定に不明な変数「<ph name="VARIABLE" />」があります。</translation>
 <translation id="7581199239021537589">2 面の画像の Y 軸移動</translation>
 <translation id="7582602800368606489">Google カレンダーで新しいイベントをすばやく作成します</translation>
@@ -4515,6 +4514,7 @@
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7962467575542381659">プラットフォーム マシン</translation>
+<translation id="796439090588610411">サポートされているサイトで、Chrome によるこのメールアドレスの自動確認を停止します。</translation>
 <translation id="7966803981046576691">ジョブ管理タイプ</translation>
 <translation id="7967477318370169806">投資信託</translation>
 <translation id="7967636097426665267">通信機器</translation>
@@ -4824,6 +4824,7 @@
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8449036207308062757">ストレージを管理</translation>
 <translation id="8449155699563577224">17x24 インチ</translation>
+<translation id="8449513475775663994">確認済みのメールアドレスを削除しますか？</translation>
 <translation id="8449836157089738489">すべてを新しいタブグループで開く</translation>
 <translation id="8451518040456311377">身分証明書を保存して自動入力する</translation>
 <translation id="84561192812921051">管理者は、ユーザーのプロフィールやブラウザをリモートで変更したり、レポートを通じてブラウザに関する情報を分析したり、その他の必要なタスクを行ったりすることができます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -4874,7 +4875,6 @@
 <translation id="8538228968820006247">タブグループのユーザーが上限に達したため、新しいユーザーはリンクを使用して参加できません</translation>
 <translation id="8539500321752640291">2 つのアイテムの使用を許可しますか？</translation>
 <translation id="8541158209346794904">Bluetooth デバイス</translation>
-<translation id="8541410041357371550">このサイトでは、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します</translation>
 <translation id="8541579497401304453">ビジネスに電話で問い合わせます。</translation>
 <translation id="8542014550340843547">3 か所のステープル（下）</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5039,6 +5039,7 @@
 <translation id="8814707942599948500">C8 封筒</translation>
 <translation id="881559332211266856">Redress 番号を更新</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
+<translation id="8816960833040967795">このサイトにはご注意ください</translation>
 <translation id="8819155700324279105">オンラインの脅威からの保護を強化します。</translation>
 <translation id="8819855907485254989">交通機関のチケットをウォレットに保存</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
@@ -5348,6 +5349,7 @@
 <translation id="987264212798334818">全般</translation>
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">住所の編集</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" />（<ph name="DISAMBIGUATION_LABEL" />）</translation>
 <translation id="991936891556421157">フットウェア</translation>
 <translation id="992110854164447044">仮想カードを使用すると、実際のカードを非表示にして、不正行為から保護できます。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

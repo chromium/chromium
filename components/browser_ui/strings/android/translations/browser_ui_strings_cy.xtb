@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Caniateir • Lleoliad bras</translation>
 <translation id="1323433172918577554">Dangos Rhagor</translation>
 <translation id="1333965224356556482">Peidio â chaniatáu i wefannau weld eich lleoliad</translation>
-<translation id="1343356790768851700">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yna'n cynnig hysbysebion i wefannau eraill</translation>
 <translation id="1369915414381695676">Mae'r wefan <ph name="SITE_NAME" /> wedi'i hychwanegu</translation>
 <translation id="1371239764779356792">Caniatáu gwefan i gadw data ar eich dyfais</translation>
 <translation id="1383876407941801731">Chwilio</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5335288049665977812">Caniatáu i wefannau redeg JavaScript (argymhellir)</translation>
 <translation id="534295439873310000">Dyfeisiau NFC</translation>
-<translation id="5344522958567249764">Rheoli preifatrwydd hysbyseb</translation>
 <translation id="5373874281522292782">Mae eich grwpiau tab wedi'u cadw</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 arall)}zero{(+ # arall)}two{(+ # arall)}few{(+ # arall)}many{(+ # arall)}other{(+ # arall)}}</translation>
 <translation id="5403592356182871684">Enwau</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Ychwanegu eithriad gwefan</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Bydd Chrome yn rhwystro cwcis eto yfory}zero{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}two{# ddiwrnod nes bydd cwcis yn cael eu rhwystro eto}few{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}many{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}other{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}}</translation>
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
-<translation id="6205314730813004066">Preifatrwydd hysbyseb</translation>
 <translation id="6207207788774442484">Dileu data ac ailosod caniatadau</translation>
 <translation id="6211409961905616543">Gall gwefannau ddefnyddio synwyryddion symudiad a golau</translation>
 <translation id="6218508144653756827">Thema ffiwsia</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Cryfhewch eich diogelwch a chadwch eich data'n fwy diogel trwy wirio'ch cyfrineiriau</translation>
 <translation id="6992289844737586249">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch meicroffon (argymhellir)</translation>
 <translation id="7000754031042624318">Wedi'i ddiffodd yn Gosodiadau Android</translation>
-<translation id="702275896380648118">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yn cynnig hysbysebion i wefannau eraill. Mae'r wefan hon hefyd yn cael eich pynciau hysbysebion o Chrome i ddangos hysbysebion mwy perthnasol i chi.</translation>
 <translation id="7036823721811529709">Gwrando yn y cefndir</translation>
 <translation id="7044081119134178347">Caniateir y camera y tro hwn</translation>
 <translation id="7053983685419859001">Rhwystro</translation>
@@ -729,7 +725,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="8514955299594277296">Peidio â chaniatáu i wefannau gadw data ar eich dyfais (nid argymhellir)</translation>
 <translation id="851751545965956758">Rhwystro gwefannau rhag cysylltu â dyfeisiau</translation>
 <translation id="8525306231823319788">Sgrîn lawn</translation>
-<translation id="8541410041357371550">Mae'r wefan hon yn cael eich pynciau hysbysebion gan Chrome er mwyn dangos hysbysebion mwy perthnasol i chi</translation>
 <translation id="854876774113449365">Gall gwefannau rydych yn ymweld â nhw fewnblannu cynnwys o wefannau eraill, er enghraifft lluniau, hysbysebion a thestun. Gall y gwefannau eraill hyn ofyn am ganiatâd i ddefnyddio gwybodaeth y maent wedi'i chadw amdanoch wrth i chi bori'r wefan. <ph name="BEGIN_LINK" />Dysgu rhagor am gynnwys sydd wedi'i fewnblannu<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Sut i ddangos ceisiadau</translation>
 <translation id="8558480467877843976">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn pori neu'n tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>

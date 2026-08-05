@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1184166532603925201">Kur je në modalitetin "I fshehtë", Chrome bllokon përdorimin e kukive të palëve të treta nga sajtet</translation>
-<translation id="1559726735555610004">Google kërkon që kompanitë të deklarojnë në mënyrë publike që nuk do t'i përdorin këto të dhëna për të të monitoruar nëpër sajte. Disa sajte mund të përdorin aktivitetin tënd për të personalizuar përvojën tënde për më shumë se vetëm reklama. Ato mund t'i kombinojnë edhe me informacione të tjera që ato i dinë tashmë në lidhje me ty. Kompanitë janë përgjegjëse për të të informuar se si i përdorin të dhënat e tua. Mëso më shumë se si i mbron Google të dhënat e tua në <ph name="BEGIN_LINK" />Politikën tonë të privatësisë<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Kur je në modalitetin "I fshehtë", sajtet nuk mund të përdorin kukit e palëve të treta. Nëse një sajt që mbështetet në këto kuki nuk funksionon, mund <ph name="BEGIN_LINK" />të provosh t'i japësh atij sajti qasje të përkohshme te kukit e palëve të treta<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Cilësimet e tua aktuale të Chrome janë përditësuar për të lejuar uebsajtet të kenë qasje te kukit e palëve të treta. Mund ta ndryshosh këtë cilësim në çdo kohë.</translation>
 <translation id="2004697686368036666">Veçoritë në disa sajte mund të mos funksionojnë</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Sajtet që mbështeten në kukit e palëve të treta do të funksionojnë siç pritet</translation>
 <translation id="3624583033347146597">Zgjidh preferencat e tua për kukit e palëve të treta</translation>
 <translation id="3918378745482005425">Disa veçori mund të mos funksionojnë. Sajtet e lidhura mund të përdorin përsëri kukit e palëve të treta.</translation>
-<translation id="4009365983562022788">Google kërkon që kompanitë të deklarojnë në mënyrë publike që nuk do t'i përdorin këto të dhëna për të të monitoruar nëpër sajte. Disa sajte mund të përdorin aktivitetin tënd për të personalizuar përvojën tënde për më shumë se vetëm reklama. Ato mund t'i kombinojnë edhe me informacione të tjera që ato i dinë tashmë në lidhje me ty. Kompanitë janë përgjegjëse për të të informuar se si i përdorin të dhënat e tua. Mëso më shumë në <ph name="BEGIN_LINK1" />Politikën tonë të privatësisë<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Lejuar</translation>
 <translation id="4412992751769744546">Lejo kukit e palëve të treta</translation>
 <translation id="4711259472133554310">Mund të krijosh përjashtime te "Cilësimet" për të lejuar gjithmonë sajte specifike që të përdorin kukit e palëve të treta</translation>

@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Tilladt • Omtrentlig</translation>
 <translation id="1323433172918577554">Se flere</translation>
 <translation id="1333965224356556482">Tillad ikke, at websites ser din lokation</translation>
-<translation id="1343356790768851700">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites</translation>
 <translation id="1369915414381695676">Websitet <ph name="SITE_NAME" /> blev tilføjet</translation>
 <translation id="1371239764779356792">Tillad, at et website gemmer data på din enhed</translation>
 <translation id="1383876407941801731">Søg</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5335288049665977812">Tillad, at websites kører JavaScript (anbefales)</translation>
 <translation id="534295439873310000">NFC-enheder</translation>
-<translation id="5344522958567249764">Administrer privatliv vedrørende annoncering</translation>
 <translation id="5373874281522292782">Dine fanegrupper gemmes</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
 <translation id="5403592356182871684">Navne</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Tilføj en undtagelse for et website</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{I morgen blokerer Chrome cookies igen}one{Cookies blokeres igen om # dag}other{Cookies blokeres igen om # dage}}</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
-<translation id="6205314730813004066">Privatliv vedrørende annoncering</translation>
 <translation id="6207207788774442484">Slet data, og nulstil tilladelser</translation>
 <translation id="6211409961905616543">Websites kan bruge bevægelses- og lyssensorer</translation>
 <translation id="6218508144653756827">Pink tema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Gør din sikkerhed stærkere, og beskyt dine data bedre ved at tjekke dine adgangskoder</translation>
 <translation id="6992289844737586249">Spørg, før websites bruger din mikrofon (anbefales)</translation>
 <translation id="7000754031042624318">Deaktiveret i indstillingerne for Android</translation>
-<translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
 <translation id="7036823721811529709">Hør musik i baggrunden</translation>
 <translation id="7044081119134178347">Der er givet adgang til kameraet denne gang</translation>
 <translation id="7053983685419859001">Bloker</translation>
@@ -729,7 +725,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
-<translation id="8541410041357371550">Dette website henter dine annonceemner fra Chrome for at vise dig mere relevante annoncer</translation>
 <translation id="854876774113449365">De websites, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Disse andre websites kan anmode om tilladelse til at bruge de oplysninger, de har gemt om dig, når du besøger websitet. <ph name="BEGIN_LINK" />Få flere oplysninger om indlejret indhold<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Visning af anmodninger</translation>
 <translation id="8558480467877843976">Du kan nu bruge Chrome, hver gang du browser eller trykker på links i meddelelser, dokumenter og andre apps.</translation>

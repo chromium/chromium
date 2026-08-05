@@ -1562,6 +1562,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2198625180564913276">Adding profile. This may take a few minutes.</translation>
 <translation id="2198712775285959645">Edit</translation>
 <translation id="2199298570273670671">Error</translation>
+<translation id="220006241671843310">Choose whether Chrome uses AI models that run directly on your device</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">ChromeOS System Logs</translation>
 <translation id="2202391868799679245">Turn on keyboard shortcut</translation>
@@ -2277,6 +2278,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2739240477418971307">Change your accessibility settings</translation>
 <translation id="2739331588276254426">Connected to internet through <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">Keep this group to add tabs later or delete it if you no longer need it.</translation>
+<translation id="2739917034504760471">Get a definition or learn more about a topic</translation>
 <translation id="274029851662193272">Depressed</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">These passkeys are only saved on this device. They aren't saved to your Google Account.</translation>
@@ -3250,6 +3252,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3482719661246593752"><ph name="ORIGIN" /> can view the following files</translation>
 <translation id="3484595034894304035">Personalise wallpaper, screen saver, Dark theme and more</translation>
 <translation id="3484869148456018791">Get new certificate</translation>
+<translation id="3486380520195228369">Hidden until the page refreshes</translation>
 <translation id="3487007233252413104">anonymous function</translation>
 <translation id="3487649228420469005">Scan is done</translation>
 <translation id="3488199663160411179">name</translation>
@@ -3287,7 +3290,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3512465804715993309">Adaptive highlighting</translation>
 <translation id="3513019849832307207">Join and open</translation>
 <translation id="3513563267917474897">Hue slider from <ph name="MIN_VALUE" /> to <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Pin new extensions</translation>
 <translation id="3514647716686280777">You're getting standard security protection. To get more protection against dangerous websites, downloads and extensions, turn on Enhanced Safe Browsing in Chrome settings.</translation>
 <translation id="3514681096978190000">This archive file includes other files that may hide malware</translation>
 <translation id="3515983984924808886">Touch your security key again to confirm reset. All information stored on the security key, including its PIN, will be deleted.</translation>
@@ -3371,6 +3373,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3577036603268648505">Be safer online</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3577487026101678864">File sync on</translation>
+<translation id="3578230582111850125">select text to ask Gemini</translation>
 <translation id="3581605050355435601">Auto configure IP address</translation>
 <translation id="3581861561942370740">Search download history</translation>
 <translation id="3582057310199111521">Entered on deceptive site and found in data breach</translation>
@@ -6526,7 +6529,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6011193465932186973">Fingerprint</translation>
 <translation id="6011308810877101166">Improve search suggestions</translation>
 <translation id="6011908034087870826">Sending link to <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">Get captions for your audio and video</translation>
 <translation id="6014293228235665243">Unread</translation>
 <translation id="6015776718598175635">Stars</translation>
 <translation id="6015796118275082299">Year</translation>
@@ -7349,6 +7351,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6660301751798595791">Voice selection</translation>
 <translation id="6660819301598582123">The quick brown fox jumped over the lazy dog.</translation>
 <translation id="666099631117081440">Print servers</translation>
+<translation id="6662339038589469159">Select text to ask Gemini</translation>
 <translation id="6662394424395160792">Use Google Password Manager to sign in faster to sites from any of your devices</translation>
 <translation id="6662931079349804328">Enterprise policy changed. Experiments button removed from toolbar.</translation>
 <translation id="6664774537677393800">Something went wrong when opening your profile. Please sign out then sign in again.</translation>
@@ -8014,6 +8017,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7174199383876220879">New! Control your music, videos and more.</translation>
 <translation id="7175037578838465313">Configure <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Loaded from:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{Press <ph name="SHORTCUT_TEXT" /> again to close the pinned tab}other{Press <ph name="SHORTCUT_TEXT" /> again to close the pinned tabs}}</translation>
 <translation id="7177659256878428843">Convert tab group into bookmark folder</translation>
 <translation id="7180569503618416775">Wallet can offer to save info from pages that you're viewing, like tickets that you purchase</translation>
 <translation id="7180611975245234373">Refresh</translation>
@@ -9746,6 +9750,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="850399339579925930">Dictionaries</translation>
 <translation id="850561044295157831">Learn more about Help me write</translation>
 <translation id="8505669004895429027">Small savings</translation>
+<translation id="850632091665381275">Google membership</translation>
 <translation id="8507052544157927817">Underline style</translation>
 <translation id="8507227974644337342">Screen resolution</translation>
 <translation id="8507443886219296894">Hide for this site</translation>

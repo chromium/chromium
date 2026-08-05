@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Permitida • Aproximada</translation>
 <translation id="1323433172918577554">Mostrar máis</translation>
 <translation id="1333965224356556482">Non permitir que os sitios vexan a túa localización</translation>
-<translation id="1343356790768851700">Este sitio determina o que che gusta e logo suxírelles anuncios a outros sitios</translation>
 <translation id="1369915414381695676">Engadiuse o sitio <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Permite que un sitio garde datos no teu dispositivo</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5335288049665977812">Permite que os sitios executen JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos con NFC</translation>
-<translation id="5344522958567249764">Xestionar privacidade nos anuncios</translation>
 <translation id="5373874281522292782">Os teus grupos de pestanas están gardados</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Engadir excepción do sitio</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome volverá bloquear as cookies mañá}other{Faltan # días para que se volvan bloquear as cookies}}</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
-<translation id="6205314730813004066">Privacidade nos anuncios</translation>
 <translation id="6207207788774442484">Eliminar datos e restablecer permisos</translation>
 <translation id="6211409961905616543">Os sitios poden usar sensores de movemento e de luz</translation>
 <translation id="6218508144653756827">Tema fucsia</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Comproba os teus contrasinais para reforzar a seguranza e protexer mellor os teus datos</translation>
 <translation id="6992289844737586249">Pregunta antes de permitir que os sitios utilicen o teu micrófono (recomendado)</translation>
 <translation id="7000754031042624318">Desactivouse na configuración de Android</translation>
-<translation id="702275896380648118">Este sitio determina o que che gusta e logo suxírelles anuncios a outros sitios. Este sitio tamén obtén os teus temas de anuncios de Chrome para mostrarche anuncios máis relevantes.</translation>
 <translation id="7036823721811529709">Escoitar en segundo plano</translation>
 <translation id="7044081119134178347">Permítese o uso da cámara esta vez</translation>
 <translation id="7053983685419859001">Bloquear</translation>
@@ -729,7 +725,6 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="8514955299594277296">Non permitir que os sitios garden datos no teu dispositivo (non recomendado)</translation>
 <translation id="851751545965956758">Non permitir que os sitios se conecten aos dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
-<translation id="8541410041357371550">Este sitio obtén os teus temas de anuncios de Chrome para mostrarche anuncios máis relevantes</translation>
 <translation id="854876774113449365">Os sitios que visites poderán inserir contido doutros sitios (por exemplo, imaxes, anuncios ou texto). Estes poderán pedir permiso para usar a información que garden sobre ti mentres navegas. <ph name="BEGIN_LINK" />Máis información acerca do contido inserido<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Como mostrar solicitudes</translation>
 <translation id="8558480467877843976">Agora podes usar Chrome sempre que explores contido ou toques ligazóns en mensaxes, documentos e outras aplicacións.</translation>

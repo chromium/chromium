@@ -29,6 +29,7 @@
 <translation id="1041998700806130099">Mesej helaian tugas</translation>
 <translation id="1044897699341250361">Maksudnya</translation>
 <translation id="1046350918013988591">Kupon &amp; Tawaran Diskaun</translation>
+<translation id="1049837829250301306">Kandungan tidak dapat ditampal disebabkan oleh dasar organisasi anda</translation>
 <translation id="1050038467049342496">Tutup apl lain</translation>
 <translation id="1055184225775184556">&amp;Buat Asal Tambahkan</translation>
 <translation id="1056898198331236512">Amaran</translation>
@@ -104,6 +105,7 @@
 <translation id="1165174597379888365">Halaman dilawati</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Tiada}=1{Daripada 1 laman (anda akan kekal dilog masuk ke Google Account anda)}other{Daripada # laman (anda akan kekal dilog masuk ke Google Account anda)}}</translation>
 <translation id="1167877250265821930">Gagal memuat turun <ph name="LANGUAGE" /></translation>
+<translation id="1171306609584863516">Disahkan oleh <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Sampul Cina #1</translation>
 <translation id="1174723505405632867">Adakah anda mahu membenarkan <ph name="EMBEDDED_URL" /> menggunakan kuki dan data tapak pada <ph name="TOP_LEVEL_URL" />?
 
@@ -225,7 +227,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1337692097987160377">Kongsi tab ini</translation>
 <translation id="1339601241726513588">Domain pendaftaran:</translation>
 <translation id="1340482604681802745">Alamat pengambilan</translation>
-<translation id="1343356790768851700">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain</translation>
 <translation id="1343830902827845050">Log masuk ke Chrome</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1348779747280417563">Sahkan nama</translation>
@@ -656,6 +657,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2027707238798802149">Kad tidak tersedia</translation>
 <translation id="2029735183873159415">Keturunan &amp; Salasilah</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Menyemak proksi dan tembok api<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Tetingkap Chrome ini dijalankan dengan bendera baris perintah yang ditetapkan secara manual. Harap maklum bahawa bendera baris perintah boleh berubah pada bila-bila masa dan tidak disokong.</translation>
 <translation id="2033900728810589426">Pintasan tidak boleh sama dengan kata kunci penyedia carian lalai yang ditakrifkan oleh <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Simpan juga</translation>
 <translation id="2036514476578229158">Anda meminta untuk melawat laman ini. Ibu bapa anda boleh membalas dalam Family Link.</translation>
@@ -1304,6 +1306,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3019738915977809060">Simpan pas masuk pada Wallet</translation>
 <translation id="3022959067768579802">Teruskan menulis</translation>
 <translation id="3024663005179499861">Jenis dasar salah</translation>
+<translation id="3027857899292697441">Chrome telah mengesan butiran yang biasa pada laman yang dikaitkan dengan pancingan data, perisian hasad atau komplot. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imej SVG</translation>
 <translation id="3030331669969285614">Bendera ini menghalang atau membalikkan perubahan memutus dan hanya tersedia untuk masa terhad.</translation>
 <translation id="3033200136993730761">Alamat rumah anda boleh membantu anda menyelesaikan tugasan merentas perkhidmatan Google, seperti hasil carian Search yang lebih berkaitan dan arah dalam Google Maps. Anda boleh mengedit atau memadamkan alamat anda <ph name="BEGIN_LINK" />dalam Google Account <ph name="ACCOUNT" /><ph name="END_LINK" /> anda.</translation>
@@ -2307,6 +2310,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4569155249847375786">Disahkan</translation>
 <translation id="4570008401337135432">Penjajaran teks</translation>
 <translation id="457875822857220463">Penghantaran</translation>
+<translation id="4579084373690089522">Berdasarkan dasar organisasi anda, kandungan ini mungkin mengandungi maklumat sensitif</translation>
 <translation id="4579699065574932398">Perbankan</translation>
 <translation id="4582595824823167856">Dapatkan mesej teks</translation>
 <translation id="4584094413232466841">Alih keluar maklumat ini daripada autolengkap Chrome?</translation>
@@ -2471,6 +2475,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4832388034239846146">Untuk berkongsi kumpulan tab, kemas kinikan Chrome</translation>
 <translation id="483241715238664915">Hidupkan amaran</translation>
 <translation id="4832961164064927107">BBQ &amp; Gril</translation>
+<translation id="4833567658337394628">Penampalan tidak disyorkan</translation>
 <translation id="4840250757394056958">Lihat sejarah Chrome anda</translation>
 <translation id="4842365697443353018">Kosongkan borang untuk menggunakan pilihan bayar kemudian</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -2790,7 +2795,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5340250774223869109">Aplikasi disekat</translation>
 <translation id="5342693890921195472">minit yang lalu</translation>
 <translation id="534295439873310000">Peranti NFC</translation>
-<translation id="5344522958567249764">Urus privasi iklan</translation>
 <translation id="5344579389779391559">Halaman ini mungkin cuba mengenakan bayaran kepada anda</translation>
 <translation id="5345249337934847112">Kertas (Disalut Tebal)</translation>
 <translation id="5346059693449184483">Apakah yang anda fikirkan?</translation>
@@ -3220,7 +3224,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5989320800837274978">Pelayan proksi tetap begitu juga URL skrip .pac, kedua-duanya tidak ditetapkan.</translation>
 <translation id="5989917734461988169">Anda boleh menggunakan alamat yang disimpan merentas produk Google. Tindakan ini tidak akan mengubah alamat rumah sedia ada anda. Alamat ini akan disimpan dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Lipatan Z kejuruteraan</translation>
-<translation id="5992805036496113940">Lihat maklumat yang digunakan untuk memaparkan iklan kepada anda</translation>
 <translation id="5995727681868049093">Urus maklumat, privasi dan keselamatan anda dalam Google Account anda</translation>
 <translation id="5996255674476750320">Pertunjukan Kenderaan</translation>
 <translation id="5997247540087773573">Kata laluan yang baru anda gunakan ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Google Password Manager mengesyorkan agar anda menukar kata laluan sekarang, kemudian menyemak kata laluan anda yang disimpan.</translation>
@@ -3369,7 +3372,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Tab Potongan Penuh</translation>
 <translation id="6203231073485539293">Semak sambungan Internet anda</translation>
-<translation id="6205314730813004066">Privasi iklan</translation>
 <translation id="6212314149070368045">Fanfold AS</translation>
 <translation id="6213685130162740188">Nombor Pengembara Yang Diketahui</translation>
 <translation id="6215936431492593050">Logam (Satin)</translation>
@@ -3900,7 +3902,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="701757816833614688">Pendidikan Seni Visual &amp; Reka Bentuk</translation>
 <translation id="7020464868401003526">URL pintasan melebihi panjang maksimum <ph name="MAX_LENGTH" /> aksara yang dibenarkan.</translation>
 <translation id="7020581144940000377">Gunakan lokasi anggaran</translation>
-<translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="7023162328967545559">Amaran pentadbir</translation>
 <translation id="7023765275461720661">Pautkan akaun dan bayar dengan <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">mengubah suai tetapan untuk pengisian kaedah pembayaran</translation>
@@ -4518,6 +4519,7 @@ Butiran tambahan:
 <translation id="7956713633345437162">Penanda halaman mudah alih</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
 <translation id="7962467575542381659">Mesin platform</translation>
+<translation id="796439090588610411">Chrome akan menghentikan pengesahan e-mel ini secara automatik pada laman yang disokong.</translation>
 <translation id="7966803981046576691">Jenis akaun kerja</translation>
 <translation id="7967477318370169806">Dana Bersama</translation>
 <translation id="7967636097426665267">Peralatan Komunikasi</translation>
@@ -4827,6 +4829,7 @@ Butiran tambahan:
 <translation id="8446884382197647889">Ketahui Lebih Lanjut</translation>
 <translation id="8449036207308062757">Urus storan</translation>
 <translation id="8449155699563577224">17 x 24 in</translation>
+<translation id="8449513475775663994">Alih keluar e-mel yang disahkan?</translation>
 <translation id="8449836157089738489">Buka semua dalam kumpulan tab baharu</translation>
 <translation id="8451518040456311377">Simpan dan isi dokumen identiti</translation>
 <translation id="84561192812921051">Pentadbir anda boleh membuat perubahan pada profil dan penyemak imbas anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.  <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -4877,7 +4880,6 @@ Butiran tambahan:
 <translation id="8538228968820006247">Kumpulan tab anda penuh, ahli baharu tidak dapat menyertai kumpulan tab dengan pautan</translation>
 <translation id="8539500321752640291">Berikan 2 kebenaran?</translation>
 <translation id="8541158209346794904">Peranti Bluetooth</translation>
-<translation id="8541410041357371550">Laman ini mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda</translation>
 <translation id="8541579497401304453">Berhubung dengan perniagaan dengan memulakan panggilan telefon.</translation>
 <translation id="8542014550340843547">Tiga kokot bawah</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5042,6 +5044,7 @@ Butiran tambahan:
 <translation id="8814707942599948500">Sampul C8</translation>
 <translation id="881559332211266856">Kemas kinikan nombor tebus rugi</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengemas kini Chrome daripada tetapan Chrome anda</translation>
+<translation id="8816960833040967795">Berhati-hati pada laman ini</translation>
 <translation id="8819155700324279105">Tambahkan lapisan perlindungan tambahan terhadap ancaman dalam talian</translation>
 <translation id="8819855907485254989">Simpan tiket pengangkutan pada Wallet</translation>
 <translation id="8820817407110198400">Penanda buku</translation>

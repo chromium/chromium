@@ -1562,6 +1562,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2198625180564913276">Pridedamas profilis. Tai gali užtrukti kelias minutes.</translation>
 <translation id="2198712775285959645">Redaguoti</translation>
 <translation id="2199298570273670671">Klaida</translation>
+<translation id="220006241671843310">Pasirinkite, ar „Chrome“ naudoja DI modelius, kurie veikia tiesiogiai jūsų įrenginyje</translation>
 <translation id="2200094388063410062">El. paštas</translation>
 <translation id="2200781749203116929">„ChromeOS“ sistemos žurnalai</translation>
 <translation id="2202391868799679245">Įjungti spartųjį klavišą</translation>
@@ -1760,6 +1761,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353168619378866466">Atidaryti grupę</translation>
 <translation id="2353297238722298836">Fotoaparatas ir mikrofonas leidžiami</translation>
+<translation id="2353682139907904963">Prisegti naujus plėtinius prie įrankių juostos</translation>
 <translation id="2353910600995338714">Sėkmingai eksportuota</translation>
 <translation id="2355477091455974894">Energijos taupymo priemonės parinktys</translation>
 <translation id="2355604387869345912">Įjungti momentinio įrenginio kaip modemo naudojimą</translation>
@@ -3289,7 +3291,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3512465804715993309">Prisitaikantis paryškinimas</translation>
 <translation id="3513019849832307207">Prisijungti ir atidaryti</translation>
 <translation id="3513563267917474897">Atspalvio šliaužiklis nuo <ph name="MIN_VALUE" /> iki <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Prisegti naujus plėtinius</translation>
 <translation id="3514647716686280777">Naudojate įprastos apsaugos funkciją. Kad užtikrintumėte geresnę apsaugą nuo pavojingų svetainių, atsisiuntimų ir plėtinių, „Chrome“ nustatymuose įjunkite „Sustiprinto saugaus naršymo“ funkciją.</translation>
 <translation id="3514681096978190000">Šiame archyvo faile yra kitų failų, kurie gali slėpti kenkėjiškas programas</translation>
 <translation id="3515983984924808886">Palieskite saugos raktą dar kartą patvirtindami nustatymą iš naujo. Visa saugos rakte saugoma informacija, įskaitant jo PIN kodą, bus ištrinta.</translation>
@@ -3309,6 +3310,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3525606571546393707">Pabandykite atidaryti failą iš kito aplanko arba pasirinkite „Atidaryti pagrindinėje redagavimo priemonėje“, jei norite naudoti ribotas peržiūros ir redagavimo parinktis.</translation>
 <translation id="3526034519184079374">Nepavyko nuskaityti arba pakeisti svetainės duomenų</translation>
 <translation id="3527085408025491307">Aplankas</translation>
+<translation id="3527473647192919613">Naujas izoliuotas langas</translation>
 <translation id="3528498924003805721">Tiksliniai spartieji klavišai</translation>
 <translation id="3529851166527095708">&amp;Adresai ir kt.</translation>
 <translation id="3530919970074558307">Panaikinti grupės paryškinimą</translation>
@@ -5845,6 +5847,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5463348003600590648">Išjungti pasiūlymus</translation>
 <translation id="5463625433003343978">Ieškoma įrenginių...</translation>
 <translation id="5463856536939868464">Meniu su paslėptomis žymėmis</translation>
+<translation id="5465214111614807935">Naujas &amp;izoliuotas langas</translation>
 <translation id="5466374726908360271">Įk&amp;klijuoti ir ieškoti „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="5466721587278161554">Skirtukų grupės išsaugomos žymių juostoje bei programų meniu ir atnaujinamos visuose įrenginiuose, kuriuose esate prisijungę, jei sinchronizavimas įjungtas</translation>
 <translation id="5467207440419968613">Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6530,7 +6533,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6011193465932186973">Piršto antspaudas</translation>
 <translation id="6011308810877101166">Paieškos pasiūlymų tobulinimas</translation>
 <translation id="6011908034087870826">Nuoroda siunčiama į įrenginį „<ph name="DEVICE_NAME" />“</translation>
-<translation id="6013027779243312217">Gaukite garso ir vaizdo įrašų subtitrus</translation>
 <translation id="6014293228235665243">Neskaityta</translation>
 <translation id="6015776718598175635">Žvaigždės</translation>
 <translation id="6015796118275082299">Metai</translation>
@@ -6745,6 +6747,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6185151644843671709">Prieigos raktas išsaugotas ir PIN kodas sukurtas</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{Vienas slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}one{{PASSWORD_COUNT} slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}few{{PASSWORD_COUNT} slaptažodžiai ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}many{{PASSWORD_COUNT} slaptažodžio ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}other{{PASSWORD_COUNT} slaptažodžių ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}}</translation>
 <translation id="6186177419203903310">Bus įjungti visų naujų USB išorinių įrenginių visoje sistemoje pranešimai. Ar tikrai norite tęsti?</translation>
+<translation id="6188822118034543225">Naudodami padalyto rodinio meniu perjunkite į horizontalų arba vertikalų išdėstymą.</translation>
 <translation id="6190953336330058278">„Phone Hub“ programos</translation>
 <translation id="6192333916571137726">Atsisiųsti failą</translation>
 <translation id="6192413564913825901">Perkelti į visas žymes</translation>
@@ -6987,6 +6990,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6379228010899751161">Patvirtinkite savo tapatybę, kad užtikrintumėte, jog visada galėtumėte naudoti slaptažodžius paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Ne, toliau dirbti šiame profilyje</translation>
 <translation id="6380618366311601172">„Gemini“ negalės atlikti užduočių, kurioms reikia prisijungti prie <ph name="DOMAIN" />.</translation>
+<translation id="6383321659284013430">Naujas &amp;izoliuotas langas</translation>
 <translation id="6383382161803538830">Skaitymo režimas nepasiekiamas šiame puslapyje</translation>
 <translation id="638418309848716977">Palaikomos nuorodos</translation>
 <translation id="6384275966486438344">Pakeiskite paieškos nustatymus į: <ph name="SEARCH_HOST" /></translation>
@@ -7451,6 +7455,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6729280095610283088">Šiaurės pašvaistės šviesos virš miško.</translation>
 <translation id="6729493062119577923">Bendrinamos skirtukų grupės veikla</translation>
 <translation id="6730744976532805323">Bendrinamas dabartinis skirtukas su „Gemini“, net kai perjungiate skirtukus</translation>
+<translation id="6731848763586448407">Išbandykite vertikalų padalytą rodinį</translation>
 <translation id="6734178081670810314">„<ph name="EXTENSION_OR_APP_NAME" />“ (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adresas</translation>
 <translation id="6737663862851963468">„Kerberos“ bilieto pašalinimas</translation>

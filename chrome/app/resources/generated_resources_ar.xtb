@@ -1177,6 +1177,7 @@
 <translation id="1901213235765457754">يُرجى طلب تحديث هذا التطبيق من المشرف</translation>
 <translation id="1901303067676059328">تح&amp;ديد الكلّ</translation>
 <translation id="1901760057081700494">‏تم ضبط المنطقة الزمنية حاليًا على ‎<ph name="TIME_ZONE_ENTRY" />. ولتعديلها تلقائيًا، يجب <ph name="BEGIN_LINK" />تفعيل إذن الوصول إلى الموقع الجغرافي للنظام<ph name="END_LINK" />.</translation>
+<translation id="1903124137025773109">‏يمكن أن يساعدك عنوان منزلك في إنجاز المهام في جميع خدمات Google، مثل الحصول على نتائج بحث واتجاهات في "خرائط Google" أكثر صلة باهتماماتك. ويمكنك تعديل عنوانك أو حذفه في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />: <ph name="USERNAME" />.</translation>
 <translation id="1904580727789512086">‏عند زيارة عنوان URL، سيتم حفظه في حسابك على Google.</translation>
 <translation id="190530012637606145">يتم تحذيرك من جميع الاتصالات غير الآمنة، بما في ذلك الشبكات الداخلية الخاصة</translation>
 <translation id="1906181697255754968">تطلب المواقع الإلكترونية عادةً الوصول إلى الملفات والمجلدات على جهازك لتتيح ميزات مثل حفظ عملك تلقائيًا.</translation>
@@ -1555,6 +1556,7 @@
 <translation id="2198625180564913276">جارٍ إضافة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="2198712775285959645">تعديل</translation>
 <translation id="2199298570273670671">خطأ</translation>
+<translation id="220006241671843310">‏يمكنك اختيار ما إذا كان Chrome سيستخدم نماذج الذكاء الاصطناعي التي تعمل مباشرةً على جهازك</translation>
 <translation id="2200094388063410062">البريد الإلكتروني</translation>
 <translation id="2200781749203116929">‏سجلات نظام ChromeOS</translation>
 <translation id="2202391868799679245">تفعيل اختصارات لوحة المفاتيح</translation>
@@ -1635,6 +1637,7 @@
 <translation id="225716114209817872">الحد الأقصى</translation>
 <translation id="2259337945538989999">‏للحصول على علامات التبويب من أجهزتك الأخرى، يُرجى إثبات هويتك. يمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="22614517036276112">لا يستوفي هذا المستند أو جهازك متطلبات بعض سياسات الأمان لدى مؤسستك. يُرجى التواصل مع المشرف لمعرفة ما يجب تعديله.</translation>
+<translation id="2261825061465157168">‏يمكن أن يساعدك عنوان عملك في إنجاز المهام في جميع خدمات Google، مثل الحصول على نتائج بحث واتجاهات في "خرائط Google" أكثر صلة باهتماماتك. ويمكنك تعديل عنوانك أو حذفه في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />: <ph name="USERNAME" />.</translation>
 <translation id="2262477216570151239">تأخير قبل التكرار</translation>
 <translation id="2263371730707937087">معدّل إعادة تحميل الشاشة</translation>
 <translation id="2263679799334060788">‏تساعدنا ملاحظاتك في تحسين Google Cast ونقدّر لك ذلك. للحصول على مساعدة بشأن تحديد مشاكل الإرسال وحلّها، يُرجى الرجوع إلى <ph name="BEGIN_LINK" />مركز المساعدة<ph name="END_LINK" />.</translation>
@@ -2702,6 +2705,7 @@
 <translation id="3048917188684939573">سجلات الجهاز والإرسال</translation>
 <translation id="3049356453907822148">إضافة مهارة جديدة</translation>
 <translation id="3051250416341590778">حجم شاشة العرض</translation>
+<translation id="3051676221004664500">&amp;ترجمة "<ph name="SELECTION" />"</translation>
 <translation id="3053273573829329829">تفعيل رقم التعريف الشخصي للمستخدم</translation>
 <translation id="3053274730492362225">عدم تشغيل الوميض</translation>
 <translation id="3057938290530993634">يُرجى النقر مع الاستمرار لتثبيت المواقع الإلكترونية الأكثر زيارة لتسهيل الوصول إليها في المرة القادمة</translation>
@@ -3279,7 +3283,6 @@
 <translation id="3512465804715993309">تمييز النص بشكل تكيّفي</translation>
 <translation id="3513019849832307207">الانضمام والفتح</translation>
 <translation id="3513563267917474897">شريط تمرير تدرُّج الألوان من <ph name="MIN_VALUE" /> إلى <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">تثبيت الإضافات الجديدة</translation>
 <translation id="3514647716686280777">‏ستتوفّر لك الحماية الأمنية العادية. لتعزيز حمايتك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة، يُرجى تفعيل ميزة "الحماية المُحسّنة للتصفّح الآمن" في إعدادات Chrome.</translation>
 <translation id="3514681096978190000">يتضمّن ملف الأرشيف هذا ملفات أخرى قد تخفي برامج ضارة.</translation>
 <translation id="3515983984924808886">يُرجى لمس مفتاح الأمان مرة أخرى لتأكيد إعادة الضبط. سيتم حذف جميع المعلومات المحفوظة في مفتاح الأمان، بما في ذلك رقم التعريف الشخصي الخاص به.</translation>
@@ -5145,6 +5148,7 @@
 <translation id="4913573660390710463">يمكنك الوصول إلى حزمة تطبيقات ويب ذات إمكانات محسَّنة. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">يتعذّر العثور على بيانات التطبيق</translation>
 <translation id="4915961947098019832">المواقع الإلكترونية التي يُسمح لها بعرض الصور</translation>
+<translation id="4916140032692201190">&amp;ترجمة النص المُحدَّد</translation>
 <translation id="491779113051926205">‏عدّادات زيارات نظام ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> يريد الاتصال مع الإضافة "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">قبول</translation>
@@ -6517,7 +6521,6 @@
 <translation id="6011193465932186973">بصمة الإصبع</translation>
 <translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
 <translation id="6011908034087870826">جارٍ إرسال الرابط إلى <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">الحصول على مقاطع شرح لملفات الصوت والفيديو</translation>
 <translation id="6014293228235665243">غير مقروءة</translation>
 <translation id="6015776718598175635">نجوم</translation>
 <translation id="6015796118275082299">سنة الصنع</translation>
@@ -9719,6 +9722,7 @@
 <translation id="8477241577829954800">تم استبدالها</translation>
 <translation id="8477384620836102176">&amp;عام</translation>
 <translation id="8477446666255316832">تسجيل الدخول بشكل أسرع في المرة القادمة</translation>
+<translation id="8477548388161793571">&amp;ترجمة النص المُحدَّد</translation>
 <translation id="8478346767369317046">عمل</translation>
 <translation id="8479176401914456949">رمز غير صحيح. يُرجى إعادة المحاولة.</translation>
 <translation id="8480869669560681089">جهاز غير معروف من <ph name="VENDOR_NAME" /></translation>

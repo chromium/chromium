@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">已允许 • 大致位置</translation>
 <translation id="1323433172918577554">展开</translation>
 <translation id="1333965224356556482">不允许网站查看您的位置信息</translation>
-<translation id="1343356790768851700">该网站会先判断您的喜好，然后向其他网站建议相关广告</translation>
 <translation id="1369915414381695676">网站 <ph name="SITE_NAME" /> 已添加</translation>
 <translation id="1371239764779356792">允许某个网站将数据保存在您的设备上</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5335288049665977812">允许网站运行 JavaScript（推荐）</translation>
 <translation id="534295439873310000">NFC 设备</translation>
-<translation id="5344522958567249764">管理广告隐私设置</translation>
 <translation id="5373874281522292782">标签页分组已保存</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（以及另外 1 个）}other{（以及另外 # 个）}}</translation>
 <translation id="5403592356182871684">名称</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">添加例外网站</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome 将于明天再次屏蔽 Cookie}other{Chrome 将于 # 天后再次屏蔽 Cookie}}</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
-<translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6207207788774442484">删除数据并重置权限</translation>
 <translation id="6211409961905616543">网站可以使用移动传感器和光传感器</translation>
 <translation id="6218508144653756827">紫红色主题</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">检查密码，加强安全防护，让数据更安全</translation>
 <translation id="6992289844737586249">在允许网站使用您的麦克风前先询问（推荐）</translation>
 <translation id="7000754031042624318">已在 Android 设置中关闭</translation>
-<translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7036823721811529709">后台播放</translation>
 <translation id="7044081119134178347">这次可以使用摄像头</translation>
 <translation id="7053983685419859001">屏蔽</translation>
@@ -729,7 +725,6 @@
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>
-<translation id="8541410041357371550">该网站会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告</translation>
 <translation id="854876774113449365">您访问的网站可能会嵌入来自其他网站的内容，例如图片、广告和文字。这些其他网站可能会向您请求权限，以便在您浏览相关网站时使用之前保存的与您相关的信息。<ph name="BEGIN_LINK" />详细了解嵌入式内容<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">如何显示请求</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>

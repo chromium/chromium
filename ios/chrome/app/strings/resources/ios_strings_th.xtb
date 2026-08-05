@@ -33,8 +33,8 @@
 <translation id="108485301461714610">โหมด AI ของ Google Search และแอปที่เชื่อมต่อ</translation>
 <translation id="1085677983426914530">เปิด <ph name="FILENAME" /> ไม่ได้</translation>
 <translation id="1086486568852410168">ค้นหาด้วย Google Lens</translation>
+<translation id="1095093219235104018">ค้นหาและเติมข้อมูลด้วย Gemini</translation>
 <translation id="1096992026380844478">ระบบจะกู้คืนการตั้งค่าการซิงค์ตามการสำรองข้อมูลครั้งล่าสุด <ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{ข้ามการค้นหาด้วยตนเองแล้ว 1 รายการ}other{ข้ามการค้นหาด้วยตนเองแล้ว # รายการ}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{ยืนยันรหัสผ่านทันทีแล้ว 1 รายการ}other{ยืนยันรหัสผ่านทันทีแล้ว # รายการ}}</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="1110772719190051587">ปลดล็อกด้วย Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">ปิดโหมด AI</translation>
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
 <translation id="1558391695376153246">ปิดแท็บที่ไม่ระบุตัวตน</translation>
-<translation id="1559263013367304065">ตั้งแต่ใช้ Google Lens</translation>
 <translation id="1560153516220021659">ปุ่มแถบเครื่องมือรองที่ยุบอยู่</translation>
 <translation id="1562601408588733317">จัดการการค้นหาและเติมข้อมูลด้วย Gemini</translation>
 <translation id="1565371473877914088">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">เพิ่มและปักหมุดเว็บไซต์แล้ว</translation>
 <translation id="1911619930368729126">อัปโหลดไปยัง Google ไดรฟ์</translation>
 <translation id="1925706052394657380">เปิดการตั้งค่า<ph name="BEGIN_BOLD" />แอปเริ่มต้น<ph name="END_BOLD" />ใน iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{ได้รับลิงก์แล้ว}other{ได้รับลิงก์ {count} รายการแล้ว}}</translation>
 <translation id="1941314575388338491">แตะสองครั้งเพื่อคัดลอก</translation>
 <translation id="1943478190258551035">เมนู → การตั้งค่า</translation>
 <translation id="1952728750904661634">ลงชื่อเข้าใช้ด้วยบัญชีที่มีการจัดการ</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">ปรับแต่ง</translation>
 <translation id="2271452184061378400">กลุ่มแท็บจะบันทึกไว้ที่นี่</translation>
 <translation id="2273327106802955778">เมนูเพิ่มเติม</translation>
+<translation id="2274179746480077483">ป้อนข้อมูลอัตโนมัติจากแอปต่างๆ เช่น Gmail และ Photos ขับเคลื่อนโดย Personal Intelligence</translation>
 <translation id="2287614783861766820">{count,plural, =1{ระบบจะลบที่อยู่นี้ออกจากอุปกรณ์เครื่องนี้}other{ระบบจะลบที่อยู่เหล่านี้ออกจากอุปกรณ์เครื่องนี้}}</translation>
 <translation id="2295236662082735391">กดรูปภาพบนเว็บค้างไว้เพื่อแก้ไขด้วย Gemini</translation>
 <translation id="2296360194694387941">ใช้ Gemini ใน Chrome เสร็จสมบูรณ์</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">ค้นหาในโหมดไม่ระบุตัวตน</translation>
 <translation id="6234310016144827337">ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</translation>
 <translation id="6236952928980352967">กู้คืนคำเตือน</translation>
+<translation id="623755660902014047">โหมดการอ่าน</translation>
 <translation id="6240553182907836376">อัปเดตบัตรประจำตัว</translation>
 <translation id="6240601837375010619">บันทึกหนังสือเดินทาง</translation>
 <translation id="6241132809279377987">ปลดล็อกฟีเจอร์เพิ่มเติมสำหรับ iPhone ด้วยแอป Google</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">ลอง</translation>
 <translation id="797588153137233716">เมนู → ประวัติการเข้าชม → ลบข้อมูลการท่องเว็บ</translation>
+<translation id="7977029776654598145">เมื่อใช้</translation>
 <translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
 <translation id="797824194429476746">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">เรื่องรออ่าน</translation>
 <translation id="956066588046842680">นโยบายขององค์กรไม่อนุญาตให้นำเข้าข้อมูลนี้</translation>
 <translation id="956218893102219091">ใช้ตำแหน่งที่แน่นอนเพื่อให้ Gemini แสดงผลลัพธ์ที่แม่นยำที่สุด แทนที่จะใช้ตำแหน่งโดยประมาณตามที่อยู่ IP ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">แสดงไฮเปอร์ลิงก์</translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="963102227019621224">กิจกรรมบนเว็บและแอป</translation>
 <translation id="965259330007686240">สร้างรูปภาพด้วย Gemini</translation>

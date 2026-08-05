@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1184166532603925201">Inkognitó módban a Chrome megakadályozza a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak.</translation>
-<translation id="1559726735555610004">A Google arra kötelezi a cégeket, hogy nyilvánosan nyilatkozzanak arról: nem használják fel ezeket az adatokat az Ön webhelyek közötti nyomon követésére. Előfordulhat, hogy egyes webhelyek a tevékenységeit nem csak a hirdetések személyre szabásához használják fel. Az Önről már ismert egyéb információkkal is összekapcsolhatják őket. A cégek kötelesek tájékoztatni Önt arról, hogy miként használják fel az adatait. Az <ph name="BEGIN_LINK" />adatvédelmi irányelveinkben<ph name="END_LINK" /> talál további információkat arról, hogy a Google miként gondoskodik az Ön adatainak védelméről.</translation>
 <translation id="1569440020357229235">Inkognitó módban a webhelyek nem használhatnak harmadik féltől származó cookie-kat. Ha nem működik egy olyan webhely, amely ezekre a cookie-kra támaszkodik, <ph name="BEGIN_LINK" />megpróbálhat ideiglenes hozzáférést adni a webhelynek a harmadik féltől származó cookie-khoz<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">A Chrome jelenlegi beállításai frissültek, hogy a webhelyek hozzáférhessenek a harmadik felektől származó cookie-khoz. Ezt a beállítást bármikor módosíthatja.</translation>
 <translation id="2004697686368036666">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">A harmadik féltől származó cookie-kra támaszkodó webhelyek a várt módon fognak működni.</translation>
 <translation id="3624583033347146597">Harmadik féltől származó cookie-k beállításainak megadása</translation>
 <translation id="3918378745482005425">Lehetséges, hogy néhány funkció nem működik. A kapcsolódó webhelyek továbbra is használhatnak harmadik féltől származó cookie-kat.</translation>
-<translation id="4009365983562022788">A Google arra kötelezi a cégeket, hogy nyilvánosan nyilatkozzanak arról: nem használják fel ezeket az adatokat az Ön webhelyek közötti nyomon követésére. Előfordulhat, hogy egyes webhelyek a tevékenységeit nem csak a hirdetések személyre szabásához használják fel. Az Önről már ismert egyéb információkkal is összekapcsolhatják őket. A cégek kötelesek tájékoztatni Önt arról, hogy miként használják fel az adatait. További információt az <ph name="BEGIN_LINK1" />adatvédelmi irányelveinkben<ph name="LINK_END1" /> talál.</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
 <translation id="4412992751769744546">Harmadik féltől származó cookie-k engedélyezése</translation>
 <translation id="4711259472133554310">A Beállításokban létrehozhat kivételeket, ha mindig engedélyezni szeretné bizonyos webhelyek számára a harmadik féltől származó cookie-k használatát.</translation>

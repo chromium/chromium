@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1184166532603925201">V režime inkognito blokuje Chrome webom možnosť používať súbory cookie tretích strán</translation>
-<translation id="1559726735555610004">Google vyžaduje, aby firmy verejne vyhlásili, že vás pomocou týchto údajov nebudú sledovať na weboch. Niektoré weby môžu využívať vašu aktivitu nielen na účely zobrazovania prispôsobených reklám. Môžu ich kombinovať aj s ďalšími informáciami, ktoré o vás už majú. Firmy sú povinné informovať vás o tom, ako používajú vaše údaje. Viac o tom, ako Google chráni vaše údaje, sa dozviete v našich <ph name="BEGIN_LINK" />pravidlách ochrany súkromia<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Keď máte aktivovaný režim inkognito, weby nemôžu používať súbory cookie tretích strán. Ak web, ktorý využíva tieto súbory cookie, nefunguje, môžete <ph name="BEGIN_LINK" />mu skúsiť udeliť dočasný prístup k súborom cookie tretích strán<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Vaše aktuálne nastavenia Chromu boli aktualizované tak, aby webom umožňovali prístup k súborom cookie tretích strán. Toto nastavenie môžete kedykoľvek zmeniť</translation>
 <translation id="2004697686368036666">Funkcie na niektorých weboch nemusia fungovať</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Weby, ktoré využívajú súbory cookie tretích strán, by mali fungovať podľa očakávaní</translation>
 <translation id="3624583033347146597">Vyberte predvoľby súborov cookie tretích strán</translation>
 <translation id="3918378745482005425">Niektoré funkcie nemusia fungovať. Súvisiace weby môžu naďalej používať súbory cookie tretích strán.</translation>
-<translation id="4009365983562022788">Google vyžaduje, aby firmy verejne vyhlásili, že vás pomocou týchto údajov nebudú sledovať na weboch. Niektoré weby môžu využívať vašu aktivitu nielen na účely zobrazovania prispôsobených reklám. Môžu ich kombinovať aj s ďalšími informáciami, ktoré o vás už majú. Firmy sú povinné informovať vás o tom, ako používajú vaše údaje. Viac sa dozviete v našich <ph name="BEGIN_LINK1" />pravidlách ochrany súkromia<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Povolené</translation>
 <translation id="4412992751769744546">Povoliť súbory cookie tretích strán</translation>
 <translation id="4711259472133554310">V Nastaveniach môžete vytvoriť výnimky a povoliť konkrétnym webom používať súbory cookie tretích strán vždy</translation>

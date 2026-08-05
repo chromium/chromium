@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1184166532603925201">Kui olete inkognito režiimis, blokeerib Chrome saitidel kolmanda osapoole küpsisefailide kasutamise</translation>
-<translation id="1559726735555610004">Google nõuab, et ettevõtted teataksid avalikult, et ei kasuta neid andmeid teie saitidevaheliseks jälgimiseks. Mõned saidid võivad kasutada teie tegevust peale reklaamide ka muu kasutuskogemuse isikupärastamiseks. Ühtlasi võivad nad seda kombineerida muu teabega, mis neil teie kohta on. Ettevõtted on kohustatud teid teavitama sellest, kuidas nad teie andmeid kasutavad. Lisateave selle kohta, kuidas Google teie andmeid kaitseb, on leitav meie <ph name="BEGIN_LINK" />privaatsuseeskirjadest<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Kui olete inkognito režiimis, ei saa saidid kolmanda osapoole küpsisefaile kasutada. Kui nendele küpsisefailidele tuginev sait ei tööta, võite <ph name="BEGIN_LINK" />proovida anda sellele saidile ajutise juurdepääsu kolmanda osapoole küpsisefailidele<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Teie praeguseid Chrome'i seadeid on värskendatud, et lubada veebisaitidel juurdepääs kolmandate osapoolte küpsisefailidele. Seda seadet saab igal ajal muuta.</translation>
 <translation id="2004697686368036666">Funktsioonid ei pruugi mõnel saidil toimida</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Kolmanda osapoole küpsisefailidele tuginevad saidid peaksid töötama ootuspäraselt</translation>
 <translation id="3624583033347146597">Valige oma kolmanda osapoole küpsisefailide eelistused</translation>
 <translation id="3918378745482005425">Mõned funktsioonid ei pruugi töötada. Seotud saidid saavad siiski kolmanda osapoole küpsisefaile kasutada.</translation>
-<translation id="4009365983562022788">Google nõuab, et ettevõtted teataksid avalikult, et ei kasuta neid andmeid teie saitidevaheliseks jälgimiseks. Mõned saidid võivad kasutada teie tegevust peale reklaamide ka muu kasutuskogemuse isikupärastamiseks. Ühtlasi võivad nad seda kombineerida muu teabega, mis neil teie kohta on. Ettevõtted on kohustatud teid teavitama sellest, kuidas nad teie andmeid kasutavad. Lisateavet leiate meie <ph name="BEGIN_LINK1" />privaatsuseeskirjadest<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Lubatud</translation>
 <translation id="4412992751769744546">Luba kolmanda osapoole küpsisefailid</translation>
 <translation id="4711259472133554310">Saate seadetes luua erandeid, et lubada teatud saitidel alati kolmanda osapoole küpsisefaile kasutada</translation>

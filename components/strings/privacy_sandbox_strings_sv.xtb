@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1184166532603925201">När du surfar i inkognitoläge blockerar Chrome webbplatser från att använda tredjepartscookies</translation>
-<translation id="1559726735555610004">Google kräver att företag offentligt anger att de inte använder denna data för att spåra dig på olika webbplatser. Vissa webbplatser kan använda din aktivitet för att anpassa din upplevelse för mer än bara annonser. De kan även kombinera den med annan information som de redan känner till om dig. Det är företagens ansvar att informera dig om hur de använder din data. Läs mer om hur Google skyddar din data i vår <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">När du surfar i inkognitoläge kan webbplatser inte använda tredjepartscookies. Om en webbplats som förlitar sig på dessa cookies inte fungerar kan du <ph name="BEGIN_LINK" />försöka ge webbplatsen tillfällig åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Dina nuvarande Chrome-inställningar har uppdaterats så att webbplatser får åtkomst till tredjepartscookies. Du kan ändra den här inställningen när som helst.</translation>
 <translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Webbplatser som använder tredjepartscookies bör fungera som förväntat</translation>
 <translation id="3624583033347146597">Välj inställningar för tredjepartscookies</translation>
 <translation id="3918378745482005425">En del funktioner fungerar eventuellt inte. Relaterade webbplatser kan fortfarande använda tredjepartscookies.</translation>
-<translation id="4009365983562022788">Google kräver att företag offentligt anger att de inte använder denna data för att spåra dig på olika webbplatser. Vissa webbplatser kan använda din aktivitet för att anpassa din upplevelse för mer än bara annonser. De kan även kombinera den med annan information som de redan känner till om dig. Det är företagens ansvar att informera dig om hur de använder din data. Läs mer i vår <ph name="BEGIN_LINK1" />integritetspolicy<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Tillåts</translation>
 <translation id="4412992751769744546">Tillåt tredjepartscookies</translation>
 <translation id="4711259472133554310">Du kan skapa undantag i inställningarna för att alltid tillåta att specifika webbplatser använder tredjepartscookies</translation>

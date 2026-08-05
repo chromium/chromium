@@ -29,6 +29,7 @@
 <translation id="1041998700806130099">Mensagem da folha da tarefa</translation>
 <translation id="1044897699341250361">O que significa isto</translation>
 <translation id="1046350918013988591">Cupões e ofertas de desconto</translation>
+<translation id="1049837829250301306">Não foi possível colar o conteúdo devido às políticas da sua organização</translation>
 <translation id="1050038467049342496">Fechar outras aplicações</translation>
 <translation id="1055184225775184556">&amp;Anular adição</translation>
 <translation id="1056898198331236512">Aviso</translation>
@@ -104,6 +105,7 @@
 <translation id="1165174597379888365">A página é visitada</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nenhum}=1{De 1 site (mantém a sessão iniciada na sua Conta Google)}other{De # sites (mantém a sessão iniciada na sua Conta Google)}}</translation>
 <translation id="1167877250265821930">Falha ao transferir <ph name="LANGUAGE" /></translation>
+<translation id="1171306609584863516">Validado por <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Envelope Chinese n.º 1</translation>
 <translation id="1174723505405632867">Permitir que <ph name="EMBEDDED_URL" /> utilize cookies e dados de sites em <ph name="TOP_LEVEL_URL" />?
 
@@ -225,7 +227,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1337692097987160377">Partilhar este separador</translation>
 <translation id="1339601241726513588">Domínio de inscrição:</translation>
 <translation id="1340482604681802745">Endereço de recolha</translation>
-<translation id="1343356790768851700">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites</translation>
 <translation id="1343830902827845050">Inicie sessão no Chrome</translation>
 <translation id="1346748346194534595">Direita</translation>
 <translation id="1348779747280417563">Confirmar nome</translation>
@@ -1304,6 +1305,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3019738915977809060">Guarde o cartão de embarque na Carteira</translation>
 <translation id="3022959067768579802">Continue a escrever</translation>
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
+<translation id="3027857899292697441">O Chrome detetou detalhes que são comuns em sites associados a phishing, software malicioso ou fraudes. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imagem SVG</translation>
 <translation id="3030331669969285614">Estas sinalizações evitam ou revertem uma alteração interruptiva e estão disponíveis apenas por tempo limitado.</translation>
 <translation id="3033200136993730761">A sua morada de casa pode ajudar a realizar tarefas nos serviços Google, como resultados da pesquisa mais relevantes e direções no Google Maps. Pode editar ou eliminar a sua morada na <ph name="BEGIN_LINK" />Conta Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -2306,6 +2308,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4569155249847375786">Confirmado</translation>
 <translation id="4570008401337135432">Alinhamento de texto</translation>
 <translation id="457875822857220463">Entrega</translation>
+<translation id="4579084373690089522">Com base nas políticas da sua organização, este conteúdo pode conter informações confidenciais</translation>
 <translation id="4579699065574932398">Serviços bancários</translation>
 <translation id="4582595824823167856">Receber uma mensagem de texto</translation>
 <translation id="4584094413232466841">Remover estas informações do preenchimento automático do Chrome?</translation>
@@ -2470,6 +2473,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4832388034239846146">Para partilhar grupos de separadores, atualize o Chrome</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4832961164064927107">Churrascos e grelhados</translation>
+<translation id="4833567658337394628">Não é recomendado colar</translation>
 <translation id="4840250757394056958">Ver o Histórico do Chrome</translation>
 <translation id="4842365697443353018">Limpe o formulário para usar a opção Pagar depois</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -2789,7 +2793,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5340250774223869109">A app está bloqueada</translation>
 <translation id="5342693890921195472">Há min</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5344522958567249764">Gerir privacidade dos anúncios</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar-lhe dinheiro</translation>
 <translation id="5345249337934847112">Papel (couché pesado)</translation>
 <translation id="5346059693449184483">Em que está a pensar?</translation>
@@ -3219,7 +3222,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5989320800837274978">Não foram especificados servidores proxy fixos nem um URL de script .pac.</translation>
 <translation id="5989917734461988169">Pode usar moradas guardadas em produtos Google. Isto não altera a sua morada de casa existente. Esta morada vai ser guardada na sua Conta Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Dobra em Z vertical com margem superior</translation>
-<translation id="5992805036496113940">Veja as informações usadas para lhe mostrar anúncios</translation>
 <translation id="5995727681868049093">Faça a gestão das suas informações, privacidade e segurança na Conta Google</translation>
 <translation id="5996255674476750320">Exposições de veículos</translation>
 <translation id="5997247540087773573">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe da Google recomenda que a altere agora e verifique as suas palavras-passe guardadas.</translation>
@@ -3368,7 +3370,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Separadores completos</translation>
 <translation id="6203231073485539293">Rever a ligação à Internet</translation>
-<translation id="6205314730813004066">Privacidade dos anúncios</translation>
 <translation id="6212314149070368045">Fanfold dos EUA</translation>
 <translation id="6213685130162740188">Números de viajante conhecido</translation>
 <translation id="6215936431492593050">Metal (acetinado)</translation>
@@ -3899,7 +3900,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="701757816833614688">Educação em artes visuais e design</translation>
 <translation id="7020464868401003526">O URL do atalho excede o comprimento máximo permitido de <ph name="MAX_LENGTH" /> carateres.</translation>
 <translation id="7020581144940000377">Usar localização aproximada</translation>
-<translation id="702275896380648118">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>
 <translation id="7023162328967545559">Aviso para administradores</translation>
 <translation id="7023765275461720661">Associar a conta e fazer pagamentos com a <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">modificar as definições de preenchimento dos métodos de pagamento</translation>
@@ -4516,6 +4516,7 @@ Detalhes adicionais:
 <translation id="7956713633345437162">Marcadores telemóvel</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7962467575542381659">Computador da plataforma</translation>
+<translation id="796439090588610411">O Chrome vai deixar de confirmar automaticamente este email em sites compatíveis.</translation>
 <translation id="7966803981046576691">Tipo de conta da tarefa</translation>
 <translation id="7967477318370169806">Fundos de investimento mútuo</translation>
 <translation id="7967636097426665267">Equipamento de comunicações</translation>
@@ -4825,6 +4826,7 @@ Detalhes adicionais:
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8449036207308062757">Gerir armazenamento</translation>
 <translation id="8449155699563577224">17 x 24 pol.</translation>
+<translation id="8449513475775663994">Remover o email validado?</translation>
 <translation id="8449836157089738489">Abrir tudo num novo grupo de separadores</translation>
 <translation id="8451518040456311377">Guardar e preencher documentos de identificação</translation>
 <translation id="84561192812921051">O administrador pode fazer alterações ao perfil e navegador remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias. A atividade neste dispositivo também pode ser gerida fora do Chrome.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -4875,7 +4877,6 @@ Detalhes adicionais:
 <translation id="8538228968820006247">O seu grupo de separadores está cheio e os novos membros não podem aderir através do link</translation>
 <translation id="8539500321752640291">Permitir 2 autorizações?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
-<translation id="8541410041357371550">Este site obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes</translation>
 <translation id="8541579497401304453">Inicie uma chamada telefónica para contactar uma empresa.</translation>
 <translation id="8542014550340843547">Agrafo triplo na parte inferior</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5040,6 +5041,7 @@ Detalhes adicionais:
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="881559332211266856">Atualize o número de correção</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para atualizar o Chrome nas Definições do Chrome.</translation>
+<translation id="8816960833040967795">Tenha cuidado neste site</translation>
 <translation id="8819155700324279105">Adicione uma camada extra de proteção contra ameaças online</translation>
 <translation id="8819855907485254989">Guarde o bilhete de transportes na Carteira</translation>
 <translation id="8820817407110198400">Marcadores</translation>

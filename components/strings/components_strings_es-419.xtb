@@ -104,6 +104,7 @@
 <translation id="1165174597379888365">Se visitó una página</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ninguno}=1{De 1 sitio (no saldrás de tu Cuenta de Google)}other{De # sitio (no saldrás de tu Cuenta de Google)}}</translation>
 <translation id="1167877250265821930">No se pudo descargar <ph name="LANGUAGE" /></translation>
+<translation id="1171306609584863516">Verificado por <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Sobre chino n.º 1</translation>
 <translation id="1174723505405632867">¿Deseas permitir que <ph name="EMBEDDED_URL" /> use cookies y datos de sitios en <ph name="TOP_LEVEL_URL" />?
 
@@ -225,7 +226,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1337692097987160377">Compartir esta pestaña</translation>
 <translation id="1339601241726513588">Inscripción de dominio:</translation>
 <translation id="1340482604681802745">Dirección de retiro</translation>
-<translation id="1343356790768851700">Este sitio determina lo que te gusta y, luego, sugiere anuncios a otros sitios</translation>
 <translation id="1343830902827845050">Accede a Chrome</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1348779747280417563">Confirmar el nombre</translation>
@@ -1304,6 +1304,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3019738915977809060">Guarda la tarjeta de embarque en la Billetera</translation>
 <translation id="3022959067768579802">Sigue escribiendo</translation>
 <translation id="3024663005179499861">Tipo de política incorrecto</translation>
+<translation id="3027857899292697441">Chrome detectó detalles que son comunes en sitios asociados con phishing, malware o estafas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imagen SVG</translation>
 <translation id="3030331669969285614">Estas funciones experimentales evitan o revierten un cambio rotundo y solo estarán disponibles por un tiempo limitado.</translation>
 <translation id="3033200136993730761">Tu dirección de casa puede ayudarte a realizar tareas en los servicios de Google, como obtener resultados de la Búsqueda más relevantes y direcciones en Google Maps. Puedes editar o borrar tu dirección <ph name="BEGIN_LINK" />en tu Cuenta de Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -2042,6 +2043,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4153446078232988116"><ph name="SITE" /> no admite una conexión segura con HTTPS</translation>
 <translation id="4153858337812834972">Pestañas más recientes</translation>
 <translation id="4154277373259957087">Chrome ahora verificará tu identidad antes de completar las formas de pago. Puedes actualizar esta información en cualquier momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="4157273919218514718">Con la tecnología de Inteligencia personalizada con Gemini. <ph name="BEGIN_LINK" />Administrar la configuración<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4165422751765527461">Abrir un artículo del Centro de ayuda en una pestaña nueva</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
@@ -2789,7 +2791,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5340250774223869109">Se bloqueó la app</translation>
 <translation id="5342693890921195472">min atrás</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5344522958567249764">Administrar la privacidad en los anuncios</translation>
 <translation id="5344579389779391559">Es posible que esta página intente cobrarte dinero</translation>
 <translation id="5345249337934847112">Papel (recubierto de alto gramaje)</translation>
 <translation id="5346059693449184483">¿En qué estás pensando?</translation>
@@ -3219,7 +3220,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5989320800837274978">No se especifican servidores proxy fijos ni URL de secuencias de comandos .pac.</translation>
 <translation id="5989917734461988169">Puedes usar las direcciones guardadas en todos los productos de Google. Esto no cambiará tu dirección particular existente. Se guardará en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Plegado en Z para ingeniería</translation>
-<translation id="5992805036496113940">Ver la información que se usa para mostrarte anuncios</translation>
 <translation id="5995727681868049093">Administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="5996255674476750320">Exhibiciones de vehículos</translation>
 <translation id="5997247540087773573">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de proteger tus cuentas, el Administrador de contraseñas de Google te recomienda cambiarla ahora y revisar las contraseñas guardadas.</translation>
@@ -3368,7 +3368,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6198480336395236519">Tiras de corte completo</translation>
 <translation id="6203231073485539293">Comprueba tu conexión a Internet.</translation>
-<translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6212314149070368045">Continuo estadounidense</translation>
 <translation id="6213685130162740188">Números de viajero conocido</translation>
 <translation id="6215936431492593050">Metal (satinado)</translation>
@@ -3899,7 +3898,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="701757816833614688">Educación de artes visuales y diseño</translation>
 <translation id="7020464868401003526">La URL del acceso directo supera la longitud máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="7020581144940000377">Usar ubicación aproximada</translation>
-<translation id="702275896380648118">Este sitio determina lo que te gusta y, luego, sugiere anuncios a otros sitios. Este sitio también obtiene tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="7023162328967545559">Advertencia del administrador</translation>
 <translation id="7023765275461720661">¿Quieres vincular la cuenta y pagar con <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">modificar los parámetros de configuración para completar formas de pago</translation>
@@ -4073,6 +4071,7 @@ Detalles adicionales:
 <translation id="7310392214323165548">El dispositivo se reiniciará en breve</translation>
 <translation id="7311244614769792472">No se encontraron resultados</translation>
 <translation id="7313107491291103073">Tu organización marcó este sitio porque podría incumplir una política.</translation>
+<translation id="7315372670898739748">No se pudo realizar la vinculación. Vuelve a intentarlo más tarde.</translation>
 <translation id="7316521168101843192">Guardando el archivo en Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ayuda con la conexión</translation>
@@ -4266,6 +4265,7 @@ Detalles adicionales:
 <translation id="7575800019233204241">"La conexión no es privada" o "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" o "Error de certificado SSL"</translation>
 <translation id="7575887283389198269">Teléfonos celulares</translation>
 <translation id="7579113844074980463">Tablet <ph name="MANUFACTURER" /></translation>
+<translation id="7579227976546039122">compilación del desarrollador</translation>
 <translation id="7579442726219254162">La configuración administrada de "<ph name="APPLICATION_ID" />" contiene la variable desconocida "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">Cambio en el eje Y del lado 2 de la imagen</translation>
 <translation id="7582602800368606489">Crea un evento nuevo en el Calendario de Google rápidamente</translation>
@@ -4515,6 +4515,7 @@ Detalles adicionales:
 <translation id="7956713633345437162">Favoritos del dispositivo</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7962467575542381659">Máquina de la plataforma</translation>
+<translation id="796439090588610411">Chrome dejará de confirmar automáticamente este correo electrónico en los sitios compatibles.</translation>
 <translation id="7966803981046576691">Tipo de cuenta para el trabajo</translation>
 <translation id="7967477318370169806">Fondos mutuos</translation>
 <translation id="7967636097426665267">Equipos de comunicación</translation>
@@ -4824,6 +4825,7 @@ Detalles adicionales:
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8449036207308062757">Administrar almacenamiento</translation>
 <translation id="8449155699563577224">43.2 × 61 cm (17 × 24 in)</translation>
+<translation id="8449513475775663994">¿Quieres quitar el correo electrónico verificado?</translation>
 <translation id="8449836157089738489">Abrir todo en un grupo nuevo de pestañas</translation>
 <translation id="8451518040456311377">Guardar y completar documentos de identidad</translation>
 <translation id="84561192812921051">El administrador puede realizar cambios en tu perfil y navegador de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias. Es posible que la actividad en este dispositivo también se administre fuera de Chrome.  <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -4874,7 +4876,6 @@ Detalles adicionales:
 <translation id="8538228968820006247">Tu grupo de pestañas está completo; los miembros nuevos no pueden unirse con el vínculo</translation>
 <translation id="8539500321752640291">¿Quieres habilitar 2 permisos?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
-<translation id="8541410041357371550">Este sitio obtiene de Chrome tus temas de anuncios para mostrarte anuncios más relevantes</translation>
 <translation id="8541579497401304453">Iniciar una llamada telefónica para conectarte con una empresa</translation>
 <translation id="8542014550340843547">Grapas triples en la parte inferior</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5039,6 +5040,7 @@ Detalles adicionales:
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="881559332211266856">Actualizar el número de rectificación</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para actualizar Chrome desde la configuración del navegador</translation>
+<translation id="8816960833040967795">Ten cuidado en este sitio</translation>
 <translation id="8819155700324279105">Agrega una capa adicional de protección contra las amenazas en línea</translation>
 <translation id="8819855907485254989">Guarda el boleto de transporte público en la Billetera</translation>
 <translation id="8820817407110198400">Favoritos</translation>
@@ -5349,6 +5351,7 @@ Detalles adicionales:
 <translation id="987264212798334818">General</translation>
 <translation id="988159990683914416">Build para desarrolladores</translation>
 <translation id="989988560359834682">Modificar dirección</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
 <translation id="991936891556421157">Calzado</translation>
 <translation id="992110854164447044">La tarjeta virtual oculta tu tarjeta real para protegerte contra posibles fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

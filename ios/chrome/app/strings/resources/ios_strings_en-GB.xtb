@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search AI Mode and connected apps</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> couldn't be opened</translation>
 <translation id="1086486568852410168">Search with Google Lens</translation>
+<translation id="1095093219235104018">Find and fill with Gemini</translation>
 <translation id="1096992026380844478">Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 manual search skipped}other{# manual searches skipped}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 password instantly verified}other{# passwords instantly verified}}</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Unlock with Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Turn off AI Mode</translation>
 <translation id="1554477036522844996">New window</translation>
 <translation id="1558391695376153246">Close Incognito tabs</translation>
-<translation id="1559263013367304065">since using Google Lens</translation>
 <translation id="1560153516220021659">Collapsed secondary toolbar button</translation>
 <translation id="1562601408588733317">Manage finding and filling info with Gemini</translation>
 <translation id="1565371473877914088">New Incognito tab</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Site added and pinned</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1925706052394657380">Open <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> settings in iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Link received}other{{count} links received}}</translation>
 <translation id="1941314575388338491">Double tap to copy.</translation>
 <translation id="1943478190258551035">Menu → Settings</translation>
 <translation id="1952728750904661634">Sign in with managed account</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2271452184061378400">Your tab groups are saved here</translation>
 <translation id="2273327106802955778">More menu</translation>
+<translation id="2274179746480077483">Autofill info from apps such as Gmail and Photos. Powered by Personal Intelligence.</translation>
 <translation id="2287614783861766820">{count,plural, =1{This address will be deleted from this device.}other{These addresses will be deleted from this device.}}</translation>
 <translation id="2295236662082735391">Long-press an image on the web to edit with Gemini</translation>
 <translation id="2296360194694387941">Use Gemini in Chrome completed!</translation>
@@ -1576,6 +1577,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6232329973559504466">Incognito search</translation>
 <translation id="6234310016144827337">Check your connection and try again</translation>
 <translation id="6236952928980352967">Restore warning</translation>
+<translation id="623755660902014047">Reading mode</translation>
 <translation id="6240553182907836376">Update identity card</translation>
 <translation id="6240601837375010619">Save passport</translation>
 <translation id="6241132809279377987">Unlock more features for your iPhone with Google apps</translation>
@@ -2110,6 +2112,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Try</translation>
 <translation id="797588153137233716">Menu → History → Delete browsing data</translation>
+<translation id="7977029776654598145">When used</translation>
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
 <translation id="797824194429476746">The tabs will remain open on this device but the group will be permanently deleted.</translation>
 <translation id="7982789257301363584">Network</translation>
@@ -2521,6 +2524,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="954667170699278022">Reading list</translation>
 <translation id="956066588046842680">Importing this data is not allowed by your organisation's policy.</translation>
 <translation id="956218893102219091">Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Show hyperlinks</translation>
 <translation id="961856697154696964">Delete browsing data</translation>
 <translation id="963102227019621224">Web &amp; App Activity</translation>
 <translation id="965259330007686240">Create an image with Gemini</translation>

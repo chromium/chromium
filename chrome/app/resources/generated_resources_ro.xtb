@@ -1552,6 +1552,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2198625180564913276">Se adaugă profilul. Poate dura câteva minute.</translation>
 <translation id="2198712775285959645">Editează</translation>
 <translation id="2199298570273670671">Eroare</translation>
+<translation id="220006241671843310">Alege dacă dorești ca browserul Chrome să folosească modele AI care rulează direct pe dispozitivul tău</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">Jurnale de sistem ChromeOS</translation>
 <translation id="2202391868799679245">Activează comanda rapidă de la tastatură</translation>
@@ -2264,6 +2265,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2739240477418971307">Modifică setările de accesibilitate</translation>
 <translation id="2739331588276254426">Conectat la internet prin <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">Păstrează acest grup pentru a adăuga file mai târziu sau șterge-l dacă nu mai ai nevoie de el.</translation>
+<translation id="2739917034504760471">Obține o definiție sau află mai multe despre un subiect</translation>
 <translation id="274029851662193272">Adâncită</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Cheile de acces sunt salvate numai pe acest dispozitiv. Ele nu se salvează în Contul Google.</translation>
@@ -3236,6 +3238,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> poate să vadă următoarele fișiere</translation>
 <translation id="3484595034894304035">Personalizează imaginea de fundal, screensaverul, tema întunecată și multe altele</translation>
 <translation id="3484869148456018791">Obțineți un certificat nou</translation>
+<translation id="3486380520195228369">Ascuns până la actualizarea paginii</translation>
 <translation id="3487007233252413104">funcție anonimă</translation>
 <translation id="3487649228420469005">Scanarea s-a finalizat</translation>
 <translation id="3488199663160411179">nume</translation>
@@ -3273,7 +3276,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3512465804715993309">Evidențiere adaptivă</translation>
 <translation id="3513019849832307207">Alătură-te și deschide</translation>
 <translation id="3513563267917474897">Glisor de nuanță de la <ph name="MIN_VALUE" /> la <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Fixează extensii noi</translation>
 <translation id="3514647716686280777">Beneficiezi de protecție de securitate standard. Pentru a beneficia de mai multă protecție împotriva site-urilor, descărcărilor și extensiilor periculoase, activează Navigarea sigură îmbunătățită în setările Chrome.</translation>
 <translation id="3514681096978190000">Acest fișier arhivă include alte fișiere care pot ascunde programe malware</translation>
 <translation id="3515983984924808886">Atinge cheia de securitate din nou pentru a confirma resetarea. Toate informațiile stocate pe cheia de securitate, inclusiv codul său PIN, vor fi șterse.</translation>
@@ -3357,6 +3359,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3577036603268648505">Fii în siguranță online</translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="3577487026101678864">Sincronizarea fișierelor este activată</translation>
+<translation id="3578230582111850125">selectează text pentru a întreba Gemini</translation>
 <translation id="3581605050355435601">Configurează automat adresa IP</translation>
 <translation id="3581861561942370740">Caută în istoricul descărcărilor</translation>
 <translation id="3582057310199111521">A fost introdusă pe un site înșelător și folosită pentru încălcarea securității datelor</translation>
@@ -6510,7 +6513,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6011193465932186973">Amprentă</translation>
 <translation id="6011308810877101166">Îmbunătățește sugestiile de căutare</translation>
 <translation id="6011908034087870826">Se trimite linkul la <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">Afișează subtitrări pentru conținutul audio și video</translation>
 <translation id="6014293228235665243">Necitite</translation>
 <translation id="6015776718598175635">Stele</translation>
 <translation id="6015796118275082299">An</translation>
@@ -7335,6 +7337,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6660301751798595791">Selectarea vocii</translation>
 <translation id="6660819301598582123">Vând muzică de jazz și haine de bun-gust în New-York și Quebec la preț fix.</translation>
 <translation id="666099631117081440">Servere de imprimare</translation>
+<translation id="6662339038589469159">Selectează text pentru a întreba Gemini</translation>
 <translation id="6662394424395160792">Folosește Managerul de parole Google pentru a te conecta mai rapid la site-uri de pe oricare dintre dispozitive</translation>
 <translation id="6662931079349804328">Politica de companie a fost modificată. Butonul Experimente a fost eliminat din bara de instrumente.</translation>
 <translation id="6664774537677393800">A apărut o eroare la deschiderea profilului. Deconectează-te și conectează-te din nou.</translation>
@@ -8000,6 +8003,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7174199383876220879">Nou! Gestionează muzica, videoclipurile și altele.</translation>
 <translation id="7175037578838465313">Configurează <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Încărcată de la:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{Apasă din nou pe <ph name="SHORTCUT_TEXT" /> pentru a închide fila fixată}few{Apasă din nou pe <ph name="SHORTCUT_TEXT" /> pentru a închide filele fixate}other{Apasă din nou pe <ph name="SHORTCUT_TEXT" /> pentru a închide filele fixate}}</translation>
 <translation id="7177659256878428843">Convertește grupul de file în dosar de marcaje</translation>
 <translation id="7180569503618416775">Portofelul poate oferi opțiunea de a salva informații din paginile pe care le vezi, cum ar fi biletele pe care le cumperi.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
@@ -9732,6 +9736,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="850399339579925930">Dicționare</translation>
 <translation id="850561044295157831">Află mai multe despre funcția Ajută-mă să scriu</translation>
 <translation id="8505669004895429027">Economii mici de memorie</translation>
+<translation id="850632091665381275">Abonament Google</translation>
 <translation id="8507052544157927817">Stil de subliniere</translation>
 <translation id="8507227974644337342">Rezoluția ecranului</translation>
 <translation id="8507443886219296894">Ascunde pentru acest site</translation>

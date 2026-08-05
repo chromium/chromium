@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1184166532603925201">Quando você está no modo de navegação anônima, o Chrome impede que os sites usem cookies de terceiros</translation>
-<translation id="1559726735555610004">O Google exige que as empresas declarem publicamente que não vão usar esses dados para rastrear você em outros sites. Alguns sites podem usar sua atividade para personalizar sua experiência de outras formas, além de exibir anúncios. Eles também podem combinar esses dados a outras informações que já sabem sobre você. As empresas são responsáveis por informar como usam seus dados. Confira nossa <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> para saber como o Google protege seus dados.</translation>
 <translation id="1569440020357229235">Quando você está no modo de navegação anônima, os sites não podem usar cookies de terceiros. Se um site que depende deles não estiver funcionando, <ph name="BEGIN_LINK" />tente dar a ele acesso temporário a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">As configurações atuais do Chrome foram atualizadas para permitir que os sites acessem cookies de terceiros. Você pode mudar essa opção a qualquer momento.</translation>
 <translation id="2004697686368036666">É possível que os recursos de alguns sites não funcionem</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Os sites que dependem de cookies de terceiros vão funcionar conforme o esperado</translation>
 <translation id="3624583033347146597">Escolha suas preferências de cookies de terceiros</translation>
 <translation id="3918378745482005425">É possível que alguns recursos não funcionem. Os sites relacionados ainda podem usar cookies de terceiros.</translation>
-<translation id="4009365983562022788">O Google exige que as empresas declarem publicamente que não vão usar esses dados para rastrear você em outros sites. Alguns sites podem usar sua atividade para personalizar sua experiência de outras formas, além de exibir anúncios. Eles também podem combinar esses dados a outras informações que já sabem sobre você. As empresas são responsáveis por informar como usam seus dados. Saiba mais na nossa <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Permitidos</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4711259472133554310">Você pode criar exceções nas Configurações para sempre permitir que sites específicos usem cookies de terceiros</translation>

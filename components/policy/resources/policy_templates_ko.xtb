@@ -3476,22 +3476,6 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 변형은 크로스 사이트 
 <translation id="3181114468897395940">PageUp/PageDown 설정은 Alt 수정자가 포함된 단축키를 사용합니다.</translation>
 <translation id="3182503302060513467">가운데 슬롯을 사용할 수 있으면 새 탭 페이지에 알림을 표시함</translation>
 <translation id="3184161739683646075">DNS-over-HTTPS 모드 제어</translation>
-<translation id="3184247679989063353">URL 패턴 목록입니다. 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 확인 대상이 아닙니다.
-
-여기 명시된 패턴에 해당하지 않는 출처에는 사용자의 개인 설정이 적용됩니다.
-
-유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
-
-로컬 기기 및 로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="3184638144755436350">Chrome이 샌드박스 처리된 iframe 내부에서 외부 프로토콜로의 이동을
       차단합니다. https://chromestatus.com/features/5680742077038592 페이지를 참고하세요.
 
@@ -4664,6 +4648,11 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 
       정책을 사용 중지하거나 설정하지 않으면 기기에서 <ph name="PLUGIN_VM_NAME" />이 사용 설정되지 않습니다.</translation>
 <translation id="3973371701361892765">앱 표시줄을 자동으로 숨기지 않음</translation>
+<translation id="3974715256242096353">정책이 false로 설정되어 있으면 사용자가 새 탭 페이지의 배경을 맞춤설정할 수 없습니다. 나중에 정책이 true로 설정되더라도 기존의 모든 맞춤 배경이 완전히 삭제됩니다.
+
+정책이 true로 설정되거나 설정되지 않으면 사용자가 새 탭 페이지의 배경을 맞춤설정할 수 있습니다.
+
+참고: Android에서는 재시작 후에만 정책이 브라우저에 적용됩니다.</translation>
 <translation id="3977304360459208438">TLS에서 3DES 암호화 스위트의 기본 설정 사용</translation>
 <translation id="3977906634350977040">정책을 사용 설정하면 클라이언트 연결을 수락할 때 원격 액세스 호스트에서 PIN 및 페어링 인증을 사용할 수 있습니다.
 
@@ -5275,20 +5264,6 @@ Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 정책을 사용 중지하면 지원 중단된 이전 문법이 사용 중지됩니다.
 
 정책을 설정하지 않으면 지원 중단된 이전 문법이 사용 중지됩니다.</translation>
-<translation id="4400152722459197056">URL 패턴 목록입니다. 로컬 네트워크 엔드포인트와 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 확인 대상이 아닙니다.
-
-여기 명시된 패턴에 해당하지 않는 출처에는 사용자의 개인 설정이 적용됩니다.
-
-유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
-
-로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">비보안 컨텍스트의 WebSQL이 M110부터 삭제됩니다. 이 정책은 해당 API를 다시 사용 설정합니다.
           정책을 True로 설정하면 비보안 컨텍스트에서 WebSQL을 사용할 수 있습니다.
           정책을 False로 설정하거나 설정하지 않으면 비보안 컨텍스트의 WebSQL은 M109까지 사용 가능하며 M110부터 사용할 수 없게 됩니다.
@@ -7853,23 +7828,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 
       이 정책은 지원 중단되었으므로 <ph name="PRINTERS_BULK_BLOCKLIST" /> 정책을 대신 사용하세요.</translation>
 <translation id="591088232153082363">배터리 사용량 패턴에 맞춰 배터리를 충전합니다.</translation>
-<translation id="5913506885872855604">이 정책은 <ph name="LOCAL_NETWORK_ACCES" /> 검사를 받지 않도록 특정 내부 주소 범위를 '공개'로 처리하는 데 사용할 수 있습니다. 반대로, 내부적으로 사용될 수 있는 특정 공개 주소 범위를 '로컬'로 처리하여 <ph name="LOCAL_NETWORK_ACCESS" /> 검사로 보호하는 데 사용할 수 있습니다.
-
-IP 주소 공간 재정의에는 두 가지 형식이 있습니다.
-
-[cidr]=[public|local|loopback]
-
-여기서 [cidr]은 CIDR 표기법의 IP 주소 범위입니다(IPv4의 경우 https://tools.ietf.org/html/rfc4632의 3.1 섹션, IPv6의 경우 https://tools.ietf.org/html/rfc4291의 2.3 섹션 참고). IPv6 주소는 URL 안전(괄호로 묶인) 형식으로 지정되어야 합니다. CIDR 재정의는 모든 포트에 적용됩니다.
-
-또는
-
-[IP 주소]:[포트]=[public|local|loopback]
-
-<ph name="LOCAL_NETWORK_ACCESS" />에 관한 자세한 내용은 https://wicg.github.io/local-network-access/ 및 https://developer.chrome.com/blog/local-network-access를 참고하세요.
-
-이 정책은 동적 새로고침을 지원하지 않습니다.
-
-명령줄 스위치(--ip-address-space-overrides)의 재정의가 이 정책에서 설정한 재정의보다 우선 적용됩니다.</translation>
 <translation id="5915023683182228340">정책을 사용 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />의 QUIC 프로토콜을 사용할 수 있습니다.
 
       사용 중지하면 QUIC 프로토콜을 사용할 수 없습니다.</translation>
@@ -10044,6 +10002,20 @@ EphemeralNetworkPolicies 기능이 기본적으로 사용 설정되면 이 정�
       정책을 False로 설정하면 앱 및 확장 프로그램에서 또는 사용자가 전체 화면 모드를 시작할 수 없습니다.</translation>
 <translation id="7180529638251181928"><ph name="YOUTUBE_PRODUCT_NAME" />의 제한 모드 강제 안함</translation>
 <translation id="718126088895133062">이 정책은 이 기기의 <ph name="PLUGIN_VM_NAME" /> 라이선스 사용자 ID를 지정합니다.</translation>
+<translation id="7182622189057326705">공유 클립보드 기능이 Chrome에서 삭제되었으므로 이 정책은 지원 중단되었으며 아무런 영향을 미치지 않습니다.
+
+원래 설명:
+동기화가 사용 설정되고 사용자가 로그인되어 있으면 사용자가 Chrome 데스크톱과 Android 기기 간에 텍스트를 전송할 수 있도록 허용하는 공유 클립보드 기능을 사용 설정합니다.
+
+          이 정책이 True로 설정되면 Chrome 사용자의 기기 간 텍스트 전송 기능이 사용됩니다.
+
+          이 정책이 False로 설정되면 Chrome 사용자의 기기 간 텍스트 전송 기능이 사용되지 않습니다.
+
+          이 정책을 설정하면 사용자가 변경하거나 재정의할 수 없습니다.
+
+          이 정책이 설정되지 않으면 공유 클립보드 기능이 기본값으로 사용 설정됩니다.
+
+          관리하는 모든 플랫폼에서 정책을 설정하는 일은 관리자의 재량입니다. 이 정책은 모든 플랫폼에서 하나의 값으로 설정하는 것이 좋습니다.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">맞춤법 오류를 해결하는 데 도움이 되는 Google 웹 서비스 사용</translation>
 <translation id="7187248416163189586">기기 백라이트 정보 보고 사용 중지</translation>
@@ -10655,20 +10627,6 @@ URL 패턴이 검사 중인 페이지의 모든 프레임 URL과 일치합니다
           정책을 False로 설정하거나 설정하지 않으면 사용자의 잠금 및 로그인 화면에 PIN 자동 제출 기능이 표시되지 않습니다.
 
           정책을 설정하면 사용자가 이 기능을 사용 설정할 수 없습니다.</translation>
-<translation id="7609566862616914296">URL 패턴 목록입니다. 로컬 네트워크 엔드포인트와 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 요청을 발행할 수 없습니다.
-
-여기 명시된 패턴에 해당하지 않는 출처에는 사용자의 개인 설정이 적용됩니다.
-
-유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
-
-로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401"><ph name="PASSWORD_MANAGER_NAME" />(저장 및 입력)을 사용 중지할 도메인 목록을 구성합니다.</translation>
 <translation id="7612059745454194563">Credential Provider Extension Promo를 표시하도록 허용 안함</translation>
 <translation id="7612157962821894603"><ph name="PRODUCT_NAME" /> 시작 시 시스템 전체 플래그 적용</translation>
@@ -11711,22 +11669,6 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 
 기존 기술에 관한 자세한 정보는 https://chromestatus.com/features에서 확인할 수 있습니다.</translation>
 <translation id="8273183018575414926">프로그레시브 웹 앱</translation>
-<translation id="8274053052968966211">URL 패턴 목록입니다. 일치하는 출처에 의해 게재된 웹사이트에서 시작한 네트워크 요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 요청을 발행할 수 없습니다.
-
-여기 명시된 패턴에 해당하지 않는 출처에는 사용자의 개인 설정이 적용됩니다.
-
-유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
-
-로컬 기기 및 로컬 네트워크 엔드포인트에 대한 요청에 영향을 미치는 출처를 나열하는 정책이 여러 개 있습니다. 출처가 다음 정책 중 둘 이상과 일치하는 경우 정책은 다음 순서로 우선 적용됩니다.
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8274603902181597201">사용자의 ecryptfs 홈 디렉터리를 삭제하고 ext4로 암호화된 새 홈 디렉터리로 시작합니다.</translation>
 <translation id="8274926413890711289">상세 보고 제어 사용</translation>
 <translation id="8275103737670730746">이전 사용자 동작 없이 파일 또는 디렉터리 선택 도구 API를 호출할 수 있도록 허용</translation>

@@ -104,6 +104,7 @@
 <translation id="1165174597379888365">Pagina is bezocht</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Geen}=1{Van 1 site (je blijft ingelogd op je Google-account)}other{Van # sites (je blijft ingelogd op je Google-account)}}</translation>
 <translation id="1167877250265821930">Kan <ph name="LANGUAGE" /> niet downloaden</translation>
+<translation id="1171306609584863516">Geverifieerd door <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Envelop Chinees #1</translation>
 <translation id="1174723505405632867">Wil je toestaan dat <ph name="EMBEDDED_URL" /> cookies en sitegegevens gebruikt op <ph name="TOP_LEVEL_URL" />?
 
@@ -225,7 +226,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1337692097987160377">Dit tabblad delen</translation>
 <translation id="1339601241726513588">Inschrijvingsdomein:</translation>
 <translation id="1340482604681802745">Ophaaladres</translation>
-<translation id="1343356790768851700">Deze site bepaalt wat je leuk vindt en stelt daarna advertenties voor op andere sites</translation>
 <translation id="1343830902827845050">Inloggen bij Chrome</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1348779747280417563">Naam bevestigen</translation>
@@ -1304,6 +1304,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3019738915977809060">Boardingpass opslaan in Wallet</translation>
 <translation id="3022959067768579802">Doorgaan met schrijven</translation>
 <translation id="3024663005179499861">Onjuist beleidstype</translation>
+<translation id="3027857899292697441">Chrome heeft informatie gevonden die vaak voorkomt op sites die zijn gekoppeld aan phishing, malware of scams. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">SVG-afbeelding</translation>
 <translation id="3030331669969285614">Deze flags voorkomen een schadelijke wijziging of maken deze ongedaan en zijn maar beperkte tijd beschikbaar.</translation>
 <translation id="3033200136993730761">Met je woonadres kun je meer gedaan krijgen in Google-services, zoals relevantere zoekresultaten en routes in Google Maps. Je kunt je adres bewerken of verwijderen <ph name="BEGIN_LINK" />in je Google-account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -2783,7 +2784,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5340250774223869109">App is geblokkeerd</translation>
 <translation id="5342693890921195472">min geleden</translation>
 <translation id="534295439873310000">NFC-apparaten</translation>
-<translation id="5344522958567249764">Advertentieprivacy beheren</translation>
 <translation id="5344579389779391559">Deze pagina brengt je mogelijk kosten in rekening</translation>
 <translation id="5345249337934847112">Papier (zwaargewicht gecoat)</translation>
 <translation id="5346059693449184483">Waar denk je aan?</translation>
@@ -3213,7 +3213,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5989320800837274978">Er worden geen vaste proxyservers en geen pac-script-URL gespecificeerd.</translation>
 <translation id="5989917734461988169">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit heeft geen invloed op je bestaande woonadres. Het wordt opgeslagen in je Google-account, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Zizagvouw 2-slag oneven center</translation>
-<translation id="5992805036496113940">Informatie bekijken die wordt gebruikt om advertenties aan je te laten zien</translation>
 <translation id="5995727681868049093">Je gegevens, privacy en beveiliging beheren in je Google-account</translation>
 <translation id="5996255674476750320">Autobeurzen</translation>
 <translation id="5997247540087773573">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen en je opgeslagen wachtwoorden te checken om je account te beveiligen.</translation>
@@ -3361,7 +3360,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Volledig gesneden tabbladen</translation>
 <translation id="6203231073485539293">Controleer je internetverbinding</translation>
-<translation id="6205314730813004066">Advertentieprivacy</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
 <translation id="6213685130162740188">Known Traveler Numbers</translation>
 <translation id="6215936431492593050">Metaal (satijn)</translation>
@@ -3892,7 +3890,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="701757816833614688">Design- en beeldende-kunstonderwijs</translation>
 <translation id="7020464868401003526">De URL van de snelkoppeling is langer dan de maximaal toegestane lengte van <ph name="MAX_LENGTH" /> tekens.</translation>
 <translation id="7020581144940000377">Geschatte locatie gebruiken</translation>
-<translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7023162328967545559">Beheerderswaarschuwing</translation>
 <translation id="7023765275461720661">Account koppelen en betalen met <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">instellingen voor het invullen van betaalmethoden aanpassen</translation>
@@ -4510,6 +4507,7 @@ Aanvullende informatie:
 <translation id="7956713633345437162">Mobiele bookmarks</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7962467575542381659">Platformapparaat</translation>
+<translation id="796439090588610411">Chrome bevestigt dit e-mailadres niet meer automatisch op ondersteunde sites.</translation>
 <translation id="7966803981046576691">Type taakaccount</translation>
 <translation id="7967477318370169806">Beleggingsfondsen</translation>
 <translation id="7967636097426665267">Communicatieapparatuur</translation>
@@ -4819,6 +4817,7 @@ Aanvullende informatie:
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8449036207308062757">Opslag beheren</translation>
 <translation id="8449155699563577224">17 x 24 inch</translation>
+<translation id="8449513475775663994">Geverifieerd e-mailadres verwijderen?</translation>
 <translation id="8449836157089738489">Alles openen in nieuwe tabbladgroep</translation>
 <translation id="8451518040456311377">Identiteitsdocumenten opslaan en invullen</translation>
 <translation id="84561192812921051">Je beheerder kan op afstand wijzigingen aanbrengen in je profiel en browser, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren. Activiteit op dit apparaat kan ook buiten Chrome worden beheerd.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -4869,7 +4868,6 @@ Aanvullende informatie:
 <translation id="8538228968820006247">Je tabbladgroep is vol, nieuwe leden kunnen niet deelnemen via de link</translation>
 <translation id="8539500321752640291">2 rechten toestaan?</translation>
 <translation id="8541158209346794904">Bluetooth-apparaat</translation>
-<translation id="8541410041357371550">Deze site krijgt je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="8541579497401304453">Neem contact op met een bedrijf door een telefoongesprek te starten.</translation>
 <translation id="8542014550340843547">Drie nietjes onder</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5033,6 +5031,7 @@ Aanvullende informatie:
 <translation id="8814707942599948500">Envelop C8</translation>
 <translation id="881559332211266856">Redress number updaten</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om Chrome te updaten via je Chrome-instellingen</translation>
+<translation id="8816960833040967795">Wees voorzichtig op deze site</translation>
 <translation id="8819155700324279105">Voeg een extra beveiligingslaag toe tegen online dreigingen</translation>
 <translation id="8819855907485254989">Vervoerbewijs opslaan in Wallet</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

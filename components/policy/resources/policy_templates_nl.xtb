@@ -3440,22 +3440,6 @@ Als je het beleid moet gebruiken om het wissen van window.name uit te zetten bij
 <translation id="3181114468897395940">De instellingen voor PageUp/PageDown gebruiken de sneltoets met de functietoets Alt</translation>
 <translation id="3182503302060513467">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte als die beschikbaar is</translation>
 <translation id="3184161739683646075">Hiermee wordt de modus voor DNS-over-HTTPS bepaald</translation>
-<translation id="3184247679989063353">Lijst met URL-patronen. Netwerkverzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden niet onderworpen aan <ph name="LOCAL_NETWORK_ACCESS" />-checks.
-
-Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-
-Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken aan lokale apparaten en lokale netwerkeindpunten. Als een oorsprong overeenkomt met meer dan één van de volgende beleidsregels, hebben de beleidsregels voorrang in deze volgorde:
-
-- LocalNetworkBlockedForUrls
-- LocalNetworkAllowedForUrls
-- LoopbackNetworkAccessBlockedForUrls
-- LoopbackNetworkAccessAllowedForUrls
-- LocalNetworkAccessBlockedForUrls
-- LocalNetworkAccessAllowedForUrls</translation>
 <translation id="3184638144755436350">Chrome blokkeert navigatie naar externe protocollen in iframes in sandboxes. Zie https://chromestatus.com/features/5680742077038592.
 
       Als dit is ingesteld op True, kan Chrome die navigatie blokkeren.
@@ -4604,6 +4588,11 @@ Op desktopplatforms kan het downloaden van modellen ook worden uitgezet door <ph
 
       Als je het beleid niet toepast of niet instelt, is <ph name="PLUGIN_VM_NAME" /> niet aangezet voor het apparaat.</translation>
 <translation id="3973371701361892765">Archief nooit automatisch verbergen</translation>
+<translation id="3974715256242096353">Als het beleid is ingesteld op Onwaar, kunnen gebruikers de achtergrond van de pagina Nieuw tabblad niet aanpassen. Eventuele bestaande aangepaste achtergronden worden definitief verwijderd, zelfs als het beleid later weer wordt ingesteld op Waar.
+
+Als het beleid wordt ingesteld op Waar of niet wordt ingesteld, kunnen gebruikers de achtergrond van de pagina Nieuw tabblad aanpassen.
+
+Opmerking: Voor Android wordt het beleid pas toegepast op de browser nadat deze opnieuw is opgestart.</translation>
 <translation id="3977304360459208438">Gebruik de standaardinstellingen voor 3DES cipher suites in TLS</translation>
 <translation id="3977906634350977040">Als je het beleid toepast, kan de host voor externe toegang pincode- en koppelingsverificaties gebruiken bij de acceptatie van clientverbindingen.
 
@@ -5202,20 +5191,6 @@ Als je dit beleid toepast, wordt de oude beëindigde syntaxis aangezet.
 Als je dit beleid niet toepast, wordt de oude beëindigde syntaxis uitgezet.
 
 Als je dit beleid niet instelt, wordt de oude beëindigde syntaxis uitgezet.</translation>
-<translation id="4400152722459197056">Lijst met URL-patronen. Netwerkverzoeken die worden gestart vanaf websites die via overeenkomende oorsprongen worden geleverd aan lokale netwerkeindpunten, worden niet onderworpen aan <ph name="LOCAL_NETWORK_ACCESS" />-checks.
-
-Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-
-Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken aan lokale netwerkeindpunten. Als een oorsprong overeenkomt met meer dan één van de volgende beleidsregels, hebben de beleidsregels voorrang in deze volgorde:
-
-- LocalNetworkBlockedForUrls
-- LocalNetworkAllowedForUrls
-- LocalNetworkAccessBlockedForUrls
-- LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">WebSQL in niet-beveiligde contexten wordt verwijderd vanaf M110. Dit beleid zet de API opnieuw aan.
           Als je dit beleid instelt op True, is WebSQL in niet-beveiligde contexten beschikbaar.
           Als je dit beleid instelt op False of niet instelt, blijft WebSQL in niet-beveiligde contexten beschikbaar tot M109 en is dit niet meer beschikbaar vanaf M110.
@@ -7696,23 +7671,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Aangepast batterijgebruik op basis van het gebruikspatroon van de batterij.</translation>
-<translation id="5913506885872855604">Dit kan worden gebruikt om bepaalde interne adresbereiken te behandelen als 'openbaar', wat inhoudt dat ze niet onder <ph name="LOCAL_NETWORK_ACCES" />-controles vallen. Omgekeerd kan dit worden gebruikt om bepaalde openbare adresbereiken die intern kunnen worden gebruikt, te behandelen als 'lokaal' zodat ze worden beschermd door <ph name="LOCAL_NETWORK_ACCESS" />-controles.
-
-Er zijn 2 vormen van overschrijvingen van IP-adresruimtes:
-
-[cidr]=[public|local|loopback]
-
-waarbij [cidr] een IP-adresbereik is in CIDR-notatie (zie paragraaf 3.1 van https://tools.ietf.org/html/rfc4632 voor IPv4 en paragraaf 2.3 van https://tools.ietf.org/html/rfc4291 voor IPv6). IPv6-adressen moeten worden ingevoerd in een voor URL's geschikte indeling (met haakjes). CIDR-overschrijvingen zijn van toepassing op alle poorten.
-
-of
-
-[ip-address]:[port]=[public|local|loopback]
-
-Ga voor meer informatie over <ph name="LOCAL_NETWORK_ACCESS" /> naar https://wicg.github.io/local-network-access/ en https://developer.chrome.com/blog/local-network-access.
-
-Dit beleid ondersteunt geen dynamische vernieuwing.
-
-Overschrijvingen via de opdrachtregelschakelaar --ip-address-space-overrides hebben voorrang op overschrijvingen die zijn ingesteld via dit beleid.</translation>
 <translation id="5915023683182228340">Als je het beleid toepast of niet instelt, mag het QUIC-protocol worden gebruikt in <ph name="PRODUCT_NAME" />.
 
       Als je het beleid niet toepast, mag het QUIC-protocol niet worden gebruikt.</translation>
@@ -10446,20 +10404,6 @@ Dit beleid is beperkt tot 1000 items.</translation>
           Als je het beleid instelt op False of niet instelt, wordt de functie voor automatisch versturen van pincodes niet toegepast op het vergrendelscherm en het inlogscherm van gebruikers.
 
           Als dit beleid is ingesteld, kunnen gebruikers de functie niet aanzetten.</translation>
-<translation id="7609566862616914296">Lijst met URL-patronen. Voor netwerkverzoeken die worden gestart vanaf websites die via overeenkomende oorsprongen worden geleverd aan lokale netwerkeindpunten, wordt voorkomen dat ze <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken indienen.
-
-Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-
-Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken aan lokale netwerkeindpunten. Als een oorsprong overeenkomt met meer dan één van de volgende beleidsregels, hebben de beleidsregels voorrang in deze volgorde:
-
-- LocalNetworkBlockedForUrls
-- LocalNetworkAllowedForUrls
-- LocalNetworkAccessBlockedForUrls
-- LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">De lijst met domeinen instellen waarvoor <ph name="PASSWORD_MANAGER_NAME" /> (Opslaan en Invullen) wordt uitgezet</translation>
 <translation id="7612059745454194563">Niet toestaan dat de promotie voor de extensie voor inloggegevensproviders wordt getoond</translation>
 <translation id="7612157962821894603">Markeringen voor het hele systeem die worden toegepast bij het starten van <ph name="PRODUCT_NAME" /></translation>
@@ -11489,22 +11433,6 @@ Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine i
 
 Meer informatie over verouderde technologieën vind je op https://chromestatus.com/features.</translation>
 <translation id="8273183018575414926">Progressive web-apps</translation>
-<translation id="8274053052968966211">Lijst met URL-patronen. Netwerkverzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden geblokkeerd voor het indienen van <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
-
-Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-
-Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken aan lokale apparaten en lokale netwerkeindpunten. Als een oorsprong overeenkomt met meer dan één van de volgende beleidsregels, hebben de beleidsregels voorrang in deze volgorde:
-
-- LocalNetworkBlockedForUrls
-- LocalNetworkAllowedForUrls
-- LoopbackNetworkAccessBlockedForUrls
-- LoopbackNetworkAccessAllowedForUrls
-- LocalNetworkAccessBlockedForUrls
-- LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8274603902181597201">De eCryptfs-hoofdmap van de gebruiker wissen en beginnen met een nieuwe hoofdmap die is versleuteld met ext4</translation>
 <translation id="8274926413890711289">Opties voor gedetailleerde rapportage aanzetten</translation>
 <translation id="8275103737670730746">Toestaan dat API's voor bestands- of directorykiezers worden aangeroepen zonder eerder gebruikersgebaar</translation>

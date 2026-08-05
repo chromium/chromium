@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Pinapayagan • Tinatantya</translation>
 <translation id="1323433172918577554">Magpakita Nang Higit Pa</translation>
 <translation id="1333965224356556482">Huwag payagan ang mga site na makita ang iyong lokasyon</translation>
-<translation id="1343356790768851700">Tinutukoy ng site na ito ang mga bagay na gusto mo at pagkatapos ay nagmumungkahi ito ng mga ad sa iba pang site</translation>
 <translation id="1369915414381695676">Nadagdag na ang site ng <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Payagan ang site na mag-save ang data sa iyong device</translation>
 <translation id="1383876407941801731">Hanapin</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5335288049665977812">Payagan ang mga site na magpatakbo ng JavaScript (inirerekomenda)</translation>
 <translation id="534295439873310000">Mga NFC device</translation>
-<translation id="5344522958567249764">Pamahalaan ang privacy sa mga ad</translation>
 <translation id="5373874281522292782">Naka-save ang mga grupo ng tab mo</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 pa)}one{(+ # pa)}other{(+ # pa)}}</translation>
 <translation id="5403592356182871684">Mga Pangalan</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Magdagdag ng pagbubukod ng site</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Magba-block ulit ang Chrome ng cookies bukas}one{# araw bago mag-block ulit ng cookies}other{# na araw bago mag-block ulit ng cookies}}</translation>
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
-<translation id="6205314730813004066">Privacy sa mga ad</translation>
 <translation id="6207207788774442484">I-delete ang data at i-reset ang mga pahintulot</translation>
 <translation id="6211409961905616543">Puwedeng gumamit ang mga site ng mga sensor ng paggalaw at liwanag</translation>
 <translation id="6218508144653756827">Fuchsia na tema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Paigtingin ang iyong seguridad at panatilihing mas ligtas ang data mo sa pamamagitan ng pagsusuri sa iyong mga password</translation>
 <translation id="6992289844737586249">Magtanong muna bago payagan ang mga site na gamitin ang iyong mikropono (inirerekomenda)</translation>
 <translation id="7000754031042624318">Naka-off sa mga setting ng Android</translation>
-<translation id="702275896380648118">Tinutukoy ng site na ito ang mga bagay na gusto mo at pagkatapos ay nagmumungkahi ito ng mga ad sa iba pang site. Kinukuha rin ng site na ito ang mga paksa ng ad mo mula sa Chrome para magpakita sa iyo ng higit pang kaugnay na ad.</translation>
 <translation id="7036823721811529709">Makinig sa background</translation>
 <translation id="7044081119134178347">Pinapayagan ang camera sa ngayon</translation>
 <translation id="7053983685419859001">I-block</translation>
@@ -729,7 +725,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:</transla
 <translation id="8514955299594277296">Huwag payagan ang mga site na mag-save ng data sa iyong device (hindi inirerekomenda)</translation>
 <translation id="851751545965956758">I-block ang mga site sa pagkonekta sa mga device</translation>
 <translation id="8525306231823319788">Buong screen</translation>
-<translation id="8541410041357371550">Kinukuha ng site na ito ang iyong mga paksa ng ad mula sa Chrome para magpakita pa sa iyo ng mga may kaugnayang ad</translation>
 <translation id="854876774113449365">Puwedeng mag-embed ng content mula sa iba pang site ang mga site na binibisita mo, halimbawa, mga larawan, ad, at text. Puwedeng humingi ng pahintulot ang iba pang site na ito para gumamit ng impormasyong na-save ng mga ito tungkol sa iyo habang bina-browse mo ang site. <ph name="BEGIN_LINK" />Matuto pa tungkol sa naka-embed na content<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Paano ipapakita ang mga request</translation>
 <translation id="8558480467877843976">Magagamit mo na ngayon ang Chrome sa tuwing magbo-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>

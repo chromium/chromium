@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Povolená • Približná</translation>
 <translation id="1323433172918577554">Zobraziť viac</translation>
 <translation id="1333965224356556482">Nepovoliť webom zobrazovať polohu</translation>
-<translation id="1343356790768851700">Tento web určuje, čo sa vám páči, a potom navrhuje reklamy iným webom</translation>
 <translation id="1369915414381695676">Boli pridané stránky <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Povolenie ukladania údajov webom vo vašom zariadení</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5335288049665977812">Povoliť webom spúšťať JavaScript (odporúča sa)</translation>
 <translation id="534295439873310000">Zariadenia NFC</translation>
-<translation id="5344522958567249764">Spravovať ochranu súkromia pri reklamách</translation>
 <translation id="5373874281522292782">Vaše skupiny kariet sú uložené</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ďalšie)}few{(+ # ďalšie)}many{(+ # more)}other{(+ # ďalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Pridať výnimku pre web</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome bude zajtra súbory cookie znova blokovať}few{Do opätovného blokovania súborov cookie zostávajú # dni}many{Do opätovného blokovania súborov cookie zostáva # dňa}other{Do opätovného blokovania súborov cookie zostáva # dní}}</translation>
 <translation id="6196640612572343990">Blokovať súbory cookie tretích strán</translation>
-<translation id="6205314730813004066">Ochrana súkromia pri reklamách</translation>
 <translation id="6207207788774442484">Odstrániť údaje a resetovať povolenia</translation>
 <translation id="6211409961905616543">Weby môžu senzory pohybu a svetla používať</translation>
 <translation id="6218508144653756827">Červenofialový motív</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Skontrolujte si heslá, posilnite tak svoje zabezpečenie a uchovávajte svoje údaje v bezpečí</translation>
 <translation id="6992289844737586249">Pýtať sa, či chcete povoliť webu používať mikrofón (odporúčané)</translation>
 <translation id="7000754031042624318">Vypnuté v nastaveniach Androidu</translation>
-<translation id="702275896380648118">Tento web určuje, čo sa vám páči, a potom navrhuje reklamy iným webom. Dostáva aj témy reklám od Chromu, aby vám zobrazoval relevantnejšie reklamy.</translation>
 <translation id="7036823721811529709">Počúvanie hudby na pozadí</translation>
 <translation id="7044081119134178347">Kamera je momentálne povolená</translation>
 <translation id="7053983685419859001">Blokovať</translation>
@@ -729,7 +725,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="8514955299594277296">Nepovoliť webom ukladať dáta v zariadení (neodporúča sa)</translation>
 <translation id="851751545965956758">Brániť webom pripájať sa k zariadeniam</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
-<translation id="8541410041357371550">Tento web dostáva aj témy reklám od Chromu, aby vám zobrazoval relevantnejšie reklamy</translation>
 <translation id="854876774113449365">Na weboch, ktoré navštívite, môže byť vložený obsah z iných webov, napríklad obrázky, reklamy a text. Tieto iné weby môžu žiadať o povolenia používať informácie, ktoré o vás uložili, keď ste ich prehliadali. <ph name="BEGIN_LINK" />Ďalšie informácie o vloženom obsahu<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Ako zobrazovať žiadosti</translation>
 <translation id="8558480467877843976">Chrome môžete teraz kedykoľvek použiť pri prehliadaní alebo klepnutí na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>

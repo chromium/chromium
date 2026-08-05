@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google സെർച്ച് AI മോഡും കണക്റ്റ് ചെയ്ത ആപ്പുകളും</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> തുറക്കാനായില്ല</translation>
 <translation id="1086486568852410168">Google Lens ഉപയോഗിച്ച് തിരയുക</translation>
+<translation id="1095093219235104018">Gemini ഉപയോഗിച്ച് കണ്ടെത്തി പൂരിപ്പിക്കുക</translation>
 <translation id="1096992026380844478">നിങ്ങളുടെ അവസാനത്തെ ബാക്കപ്പ് അനുസരിച്ച് നിങ്ങളുടെ സമന്വയ ക്രമീകരണം പുനഃസ്ഥാപിക്കും. <ph name="BEGIN_LINK" />നിങ്ങൾക്ക് എന്തൊക്കെ സമന്വയിപ്പിക്കാമെന്ന് കാണുക<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{നേരിട്ടുള്ള ഒരു തിരയൽ ഒഴിവാക്കി}other{നേരിട്ടുള്ള # തിരയലുകൾ ഒഴിവാക്കി}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{ഒരു പാസ്‌വേഡ് തൽക്ഷണം പരിശോധിച്ചുറപ്പിച്ചു}other{# പാസ്‌വേഡുകൾ തൽക്ഷണം പരിശോധിച്ചുറപ്പിച്ചു}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> എല്ലായ്പ്പോഴും വിവര്‍ത്തനം ചെയ്യുക </translation>
 <translation id="1110772719190051587">ഫേസ് ഐഡി ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI മോഡ് ഓഫാക്കുക</translation>
 <translation id="1554477036522844996">പുതിയ വിന്‍ഡോ</translation>
 <translation id="1558391695376153246">അദൃശ്യ ടാബുകൾ അടയ്‌ക്കുക</translation>
-<translation id="1559263013367304065">Google Lens ഉപയോഗിച്ചു തുടങ്ങിയത് മുതൽ</translation>
 <translation id="1560153516220021659">ചുരുക്കിയ സെക്കൻഡറി ടൂൾബാർ ബട്ടൺ</translation>
 <translation id="1562601408588733317">Gemini ഉപയോഗിച്ച്, കണ്ടെത്തലും പൂരിപ്പിക്കലും മാനേജ് ചെയ്യുക</translation>
 <translation id="1565371473877914088">പുതിയ അദൃശ്യ ടാബ്</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">സൈറ്റ് ചേർത്ത് പിൻ ചെയ്തു</translation>
 <translation id="1911619930368729126">Google ഡ്രൈവിലേക്ക് അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="1925706052394657380">iOS-ൽ <ph name="BEGIN_BOLD" />ഡിഫോൾട്ട് ആപ്പ്<ph name="END_BOLD" /> ക്രമീകരണം തുറക്കുക</translation>
+<translation id="1938871630297275912">{count,plural, =1{ലിങ്ക് ലഭിച്ചു}other{{count} ലിങ്കുകൾ ലഭിച്ചു}}</translation>
 <translation id="1941314575388338491">പകർത്താൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1943478190258551035">മെനു → ക്രമീകരണം</translation>
 <translation id="1952728750904661634">മാനേജ് ചെയ്‌ത അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">പരിഷ്‌ക്കരിക്കുക</translation>
 <translation id="2271452184061378400">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ സംരക്ഷിക്കും</translation>
 <translation id="2273327106802955778">കൂടുതൽ ഓപ്ഷൻ മെനു</translation>
+<translation id="2274179746480077483">Gmail, Photos എന്നിവ പോലുള്ള ആപ്പുകളിൽ നിന്നുള്ള വിവരങ്ങൾ സ്വയമേവ പൂരിപ്പിക്കുക. പേഴ്‌സണൽ ഇന്റലിജൻസ് നൽകുന്നത്.</translation>
 <translation id="2287614783861766820">{count,plural, =1{ഈ ഉപകരണത്തിൽ നിന്ന് ഈ വിലാസം ഇല്ലാതാക്കും.}other{ഈ ഉപകരണത്തിൽ നിന്ന് ഈ വിലാസങ്ങൾ ഇല്ലാതാക്കും.}}</translation>
 <translation id="2295236662082735391">Gemini ഉപയോഗിച്ച് എഡിറ്റ് ചെയ്യാൻ, വെബിലെ ഒരു ചിത്രം ദീർഘനേരം അമർത്തുക</translation>
 <translation id="2296360194694387941">Chrome-ലെ Gemini ഉപയോഗിക്കൽ പൂർത്തിയായി!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">അദൃശ്യ മോഡിലെ തിരയൽ</translation>
 <translation id="6234310016144827337">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="6236952928980352967">മുന്നറിയിപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
+<translation id="623755660902014047">റീഡിംഗ് മോഡ്</translation>
 <translation id="6240553182907836376">ഐഡന്റിറ്റി കാർഡ് അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="6240601837375010619">പാസ്‌പോർട്ട് സംരക്ഷിക്കുക</translation>
 <translation id="6241132809279377987">Google ആപ്പുകൾ ഉപയോഗിച്ച് നിങ്ങളുടെ iPhone-ൽ കൂടുതൽ ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യൂ</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">ക്യാൻവാസ്</translation>
 <translation id="7975036700432177008">പരീക്ഷിച്ച് നോക്കുക</translation>
 <translation id="797588153137233716">മെനു → ചരിത്രം → ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക</translation>
+<translation id="7977029776654598145">എപ്പോഴാണ് ഉപയോഗിക്കുന്നത്</translation>
 <translation id="7977451675950311423">ഡാറ്റാ ലംഘനത്തിൽ അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ് നിങ്ങൾ ഉപയോഗിക്കുകയാണെങ്കിൽ മുന്നറിയിപ്പ് നൽകുന്നു.</translation>
 <translation id="797824194429476746">ഈ ഉപകരണത്തിൽ ടാബുകൾ തുറന്നിരിക്കും, എന്നാൽ ഗ്രൂപ്പ് ശാശ്വതമായി ഇല്ലാതാക്കും.</translation>
 <translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ്</translation>
 <translation id="956066588046842680">ഈ ഡാറ്റ ഇമ്പോർട്ട് ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയം അനുവദിക്കുന്നില്ല.</translation>
 <translation id="956218893102219091">നിങ്ങളുടെ IP വിലാസം അടിസ്ഥാനമാക്കിയുള്ള ഏകദേശ ലൊക്കേഷന് പകരം, ഏറ്റവും കൃത്യമായ Gemini ഫലങ്ങൾക്കായി കൃത്യമായ ലൊക്കേഷൻ ഉപയോഗിക്കുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">ഹൈപ്പർലിങ്കുകൾ കാണിക്കുക</translation>
 <translation id="961856697154696964">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കൂ</translation>
 <translation id="963102227019621224">വെബ്, ആപ്പ് ആക്റ്റിവിറ്റി</translation>
 <translation id="965259330007686240">Gemini ഉപയോഗിച്ച് ചിത്രം സൃഷ്ടിക്കുക</translation>

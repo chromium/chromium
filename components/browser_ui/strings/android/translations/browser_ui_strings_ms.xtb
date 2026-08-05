@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Dibenarkan • Anggaran</translation>
 <translation id="1323433172918577554">Tunjukkan Lagi</translation>
 <translation id="1333965224356556482">Jangan benarkan laman melihat lokasi anda</translation>
-<translation id="1343356790768851700">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain</translation>
 <translation id="1369915414381695676">Tapak <ph name="SITE_NAME" /> telah ditambahkan</translation>
 <translation id="1371239764779356792">Benarkan laman menyimpan data pada peranti anda</translation>
 <translation id="1383876407941801731">Carian</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5335288049665977812">Benarkan tapak menjalankan JavaScript (disyorkan)</translation>
 <translation id="534295439873310000">Peranti NFC</translation>
-<translation id="5344522958567249764">Urus privasi iklan</translation>
 <translation id="5373874281522292782">Kumpulan tab anda disimpan</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lagi)}other{(+ # lagi)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Tambah pengecualian tapak</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome akan menyekat kuki lagi esok}other{# hari sehingga kuki disekat lagi}}</translation>
 <translation id="6196640612572343990">Sekat kuki pihak ketiga</translation>
-<translation id="6205314730813004066">Privasi iklan</translation>
 <translation id="6207207788774442484">Padamkan data &amp; tetapkan semula kebenaran</translation>
 <translation id="6211409961905616543">Laman boleh menggunakan penderia gerakan dan cahaya</translation>
 <translation id="6218508144653756827">Tema fuchsia</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Kukuhkan keselamatan anda dan pastikan data anda lebih selamat dengan menyemak kata laluan anda</translation>
 <translation id="6992289844737586249">Tanya dahulu sebelum membenarkan tapak menggunakan mikrofon anda (disyorkan)</translation>
 <translation id="7000754031042624318">Dimatikan dalam tetapan Android</translation>
-<translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="7036823721811529709">Dengar pada latar</translation>
 <translation id="7044081119134178347">Kamera dibenarkan pada masa ini</translation>
 <translation id="7053983685419859001">Sekat</translation>
@@ -729,7 +725,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="8514955299594277296">Jangan benarkan laman menyimpan data pada peranti anda (tidak disyorkan)</translation>
 <translation id="851751545965956758">Sekat tapak daripada menyambung ke peranti</translation>
 <translation id="8525306231823319788">Skrin penuh</translation>
-<translation id="8541410041357371550">Laman ini mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda</translation>
 <translation id="854876774113449365">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Laman lain boleh meminta kebenaran anda untuk menggunakan maklumat yang disimpan tentang anda ketika anda menyemak imbas laman tersebut. <ph name="BEGIN_LINK" />Ketahui kandungan terbenam dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Cara memaparkan permintaan</translation>
 <translation id="8558480467877843976">Kini anda boleh menggunakan Chrome pada bila-bila masa anda menyemak imbas atau mengetik pautan dalam mesej, dokumen dan apl lain.</translation>

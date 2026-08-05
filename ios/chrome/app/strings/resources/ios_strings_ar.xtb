@@ -33,8 +33,8 @@
 <translation id="108485301461714610">‏"وضع AI" في "بحث Google" والتطبيقات المرتبطة</translation>
 <translation id="1085677983426914530">تعذَّر فتح ملف <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">‏البحث باستخدام "عدسة Google"</translation>
+<translation id="1095093219235104018">‏البحث والملء باستخدام Gemini</translation>
 <translation id="1096992026380844478">ستتم استعادة إعدادات المزامنة استنادًا إلى آخر نسخة احتياطية. <ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{تم تخطّي عملية بحث يدوية واحدة}zero{تم تخطّي # عملية بحث يدوية}two{تم تخطّي عمليتَي بحث يدويتَين}few{تم تخطّي # عمليات بحث يدوية}many{تم تخطّي # عملية بحث يدوية}other{تم تخطّي # عملية بحث يدوية}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{تم التحقّق من كلمة مرور واحدة على الفور}zero{تم التحقّق من # كلمة مرور على الفور}two{تم التحقّق من كلمتَي مرور على الفور}few{تم التحقّق من # كلمات مرور على الفور}many{تم التحقّق من # كلمة مرور على الفور}other{تم التحقّق من # كلمة مرور على الفور}}</translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="1110772719190051587">فتح القفل باستخدام ميزة "التعرُّف على الوجه"</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">‏إيقاف "وضع AI"</translation>
 <translation id="1554477036522844996">نافذة جديدة</translation>
 <translation id="1558391695376153246">إغلاق علامات تبويب التصفح المتخفي</translation>
-<translation id="1559263013367304065">‏منذ استخدام "عدسة Google"</translation>
 <translation id="1560153516220021659">زر شريط الأدوات الثانوي المُصغَّر</translation>
 <translation id="1562601408588733317">‏يمكنك إدارة ملء المعلومات والعثور عليها باستخدام Gemini</translation>
 <translation id="1565371473877914088">علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">تمت إضافة الموقع الإلكتروني وتثبيته</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
 <translation id="1925706052394657380">‏يُرجى فتح إعدادات <ph name="BEGIN_BOLD" />التطبيقات التلقائية<ph name="END_BOLD" /> في نظام التشغيل iOS، ثم</translation>
+<translation id="1938871630297275912">{count,plural, =1{تم استلام رابط واحد}zero{تم استلام {count} رابط}two{تم استلام رابطَين ({count})}few{تم استلام {count} روابط}many{تم استلام {count} رابطًا}other{تم استلام {count} رابط}}</translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
 <translation id="1943478190258551035">القائمة ← الإعدادات</translation>
 <translation id="1952728750904661634">تسجيل الدخول باستخدام حساب مُدار</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">تحسين</translation>
 <translation id="2271452184061378400">يتم حفظ مجموعات علامات التبويب هنا</translation>
 <translation id="2273327106802955778">قائمة "المزيد"</translation>
+<translation id="2274179746480077483">‏يمكنك ملء المعلومات تلقائيًا من تطبيقات مثل Gmail و"صور Google". تستنِد هذه الميزة إلى "الذكاء المخصّص".</translation>
 <translation id="2287614783861766820">{count,plural, =1{سيتم حذف هذا العنوان من هذا الجهاز}zero{سيتم حذف هذه العناوين من هذا الجهاز}two{سيتم حذف هذين العنوانَين من هذا الجهاز}few{سيتم حذف هذه العناوين من هذا الجهاز}many{سيتم حذف هذه العناوين من هذا الجهاز}other{سيتم حذف هذه العناوين من هذا الجهاز}}</translation>
 <translation id="2295236662082735391">‏ما عليك سوى الضغط مع الاستمرار على صورة على الويب لتعديلها باستخدام Gemini</translation>
 <translation id="2296360194694387941">‏اكتملت مهمة استخدام "Gemini في Chrome".</translation>
@@ -524,7 +525,7 @@
 <translation id="2666092431469916601">أعلى</translation>
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
 <translation id="2671423594960767771">مشاركة المجموعة</translation>
-<translation id="2673183423393669407">الدفع على أقساط</translation>
+<translation id="2673183423393669407">التقسيط</translation>
 <translation id="2673508731173059946">الانتقال إلى الرابط المنسوخ</translation>
 <translation id="2679659833697380">يتم حفظ معلوماتك على جهازك</translation>
 <translation id="2681572445246787428">توقيع المستند</translation>
@@ -1574,6 +1575,7 @@
 <translation id="6232329973559504466">البحث في وضع التصفُّح المتخفي</translation>
 <translation id="6234310016144827337">يُرجى التحقّق من الاتصال بالإنترنت وإعادة المحاولة</translation>
 <translation id="6236952928980352967">استعادة التحذير</translation>
+<translation id="623755660902014047">وضع القراءة</translation>
 <translation id="6240553182907836376">تعديل بيانات بطاقة الهوية</translation>
 <translation id="6240601837375010619">حفظ بيانات جواز السفر</translation>
 <translation id="6241132809279377987">‏ميزات إضافية على هاتف iPhone تتيحها لك تطبيقات Google</translation>
@@ -1603,7 +1605,7 @@
 <translation id="6327249202318869726">‏تم إيقاف Gemini في حسابك. يُرجى التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="6331836477476466332">متصفّح أكثر أمانًا وفعالية</translation>
 <translation id="6337234675334993532">التشفير</translation>
-<translation id="6337711171050747395">سيتم عرض خيارات "الدفع على أقساط" عند الدفع</translation>
+<translation id="6337711171050747395">سيتم عرض خيارات التقسيط عند الدفع</translation>
 <translation id="633809752005859102">حدث خطأ ما، وسنحاول حل المشكلة.</translation>
 <translation id="6339793034470834130">‏لاستخدام "أداة فحص الويب" (Web Inspector)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPhone من القائمة "تطوير" (Develop). يمكنك تفعيل هذه القائمة من خلال القسم "إعدادات متقدّمة" (Advanced) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6340285871011301182">خيار الترجمة الجزئية غير متاح.</translation>
@@ -2108,6 +2110,7 @@
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">تجربة</translation>
 <translation id="797588153137233716">"القائمة" ← "السجلّ" ← "حذف بيانات التصفّح"</translation>
+<translation id="7977029776654598145">عند الاستخدام</translation>
 <translation id="7977451675950311423">ستتلقّى تحذيرًا إذا كنت تستخدم كلمة مرور تم اختراقها في عملية اختراق للبيانات.</translation>
 <translation id="797824194429476746">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة نهائيًا.</translation>
 <translation id="7982789257301363584">الشبكة</translation>
@@ -2520,6 +2523,7 @@
 <translation id="954667170699278022">قائمة القراءة</translation>
 <translation id="956066588046842680">لا تسمح سياسة مؤسستك باستيراد هذه البيانات.</translation>
 <translation id="956218893102219091">‏يمكنك استخدام موقعك الجغرافي الدقيق للحصول على نتائج أكثر دقة من Gemini، بدلاً من استخدام موقع جغرافي مقدَّر استنادًا إلى عنوان IP لجهازك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">عرض الروابط التشعّبية</translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>
 <translation id="963102227019621224">النشاط على الويب وفي التطبيقات</translation>
 <translation id="965259330007686240">‏يمكنك إنشاء صورة باستخدام Gemini</translation>

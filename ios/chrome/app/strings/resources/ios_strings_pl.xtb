@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Tryb AI w wyszukiwarce Google i połączone aplikacje</translation>
 <translation id="1085677983426914530">Nie udało się otworzyć pliku <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
+<translation id="1095093219235104018">Znajdź i wypełnij z Gemini</translation>
 <translation id="1096992026380844478">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. <ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{Pominięto 1 wyszukiwanie ręczne}few{Pominięto # wyszukiwania ręczne}many{Pominięto # wyszukiwań ręcznych}other{Pominięto # wyszukiwania ręcznego}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{Błyskawicznie zweryfikowano 1 hasło}few{Błyskawicznie zweryfikowano # hasła}many{Błyskawicznie zweryfikowano # haseł}other{Błyskawicznie zweryfikowano # hasła}}</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Odblokuj za pomocą Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Wyłącz Tryb AI</translation>
 <translation id="1554477036522844996">Nowe okno</translation>
 <translation id="1558391695376153246">Zamknij karty incognito</translation>
-<translation id="1559263013367304065">od kiedy używasz Obiektywu Google</translation>
 <translation id="1560153516220021659">Przycisk zwiniętego dodatkowego paska narzędzi</translation>
 <translation id="1562601408588733317">Zarządzaj znajdowaniem i wypełnianiem informacji z Gemini</translation>
 <translation id="1565371473877914088">Nowa karta incognito</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Witryna została dodana i przypięta</translation>
 <translation id="1911619930368729126">Prześlij na Dysk Google</translation>
 <translation id="1925706052394657380">Otwórz ustawienia <ph name="BEGIN_BOLD" />aplikacji domyślnych<ph name="END_BOLD" /> na iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Odebrano link}few{Odebrano {count} linki}many{Odebrano {count} linków}other{Odebrane {count} linku}}</translation>
 <translation id="1941314575388338491">Kliknij dwukrotnie, by skopiować.</translation>
 <translation id="1943478190258551035">Menu → Ustawienia</translation>
 <translation id="1952728750904661634">Zaloguj się na konto zarządzane</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Zawęź</translation>
 <translation id="2271452184061378400">Tutaj są zapisane Twoje grupy kart</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
+<translation id="2274179746480077483">Autouzupełnianie informacji z aplikacji takich jak Gmail i Zdjęcia. Funkcja oparta na spersonalizowanej inteligencji.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia.}few{Te adresy zostaną usunięte z tego urządzenia.}many{Te adresy zostaną usunięte z tego urządzenia.}other{Te adresy zostaną usunięte z tego urządzenia.}}</translation>
 <translation id="2295236662082735391">Przytrzymaj obraz na stronie, aby zacząć go edytować w Gemini</translation>
 <translation id="2296360194694387941">Korzystanie z Gemini w Chrome – ukończono.</translation>
@@ -1576,6 +1577,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6232329973559504466">Wyszukiwanie incognito</translation>
 <translation id="6234310016144827337">Sprawdź połączenie i spróbuj ponownie</translation>
 <translation id="6236952928980352967">Przywróć ostrzeżenie</translation>
+<translation id="623755660902014047">Tryb czytania</translation>
 <translation id="6240553182907836376">Zaktualizuj dowód tożsamości</translation>
 <translation id="6240601837375010619">Zapisz paszport</translation>
 <translation id="6241132809279377987">Odkryj nowe funkcje swojego iPhone’a dzięki aplikacjom Google</translation>
@@ -2110,6 +2112,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Wypróbuj</translation>
 <translation id="797588153137233716">Menu → Historia → Usuń dane przeglądania</translation>
+<translation id="7977029776654598145">Kiedy jej używasz</translation>
 <translation id="7977451675950311423">Ostrzega, jeśli użyjesz hasła, które zostało przejęte w wyniku naruszenia bezpieczeństwa danych.</translation>
 <translation id="797824194429476746">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie trwale usunięta.</translation>
 <translation id="7982789257301363584">Sieć</translation>
@@ -2521,6 +2524,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="954667170699278022">Do przeczytania</translation>
 <translation id="956066588046842680">Importowania tych danych zabrania zasada organizacji.</translation>
 <translation id="956218893102219091">Aby wyniki uzyskiwane w Gemini były jak najbardziej trafne, używaj dokładnej lokalizacji (a nie orientacyjnej, szacowanej na podstawie adresu IP). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Pokaż hiperlinki</translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>
 <translation id="963102227019621224">Aktywność w internecie i aplikacjach</translation>
 <translation id="965259330007686240">Utwórz obraz za pomocą Gemini</translation>

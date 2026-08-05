@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search KI-modus en gekoppelde apps</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> kon nie oopgemaak word nie</translation>
 <translation id="1086486568852410168">Soek met Google Lens</translation>
+<translation id="1095093219235104018">Soek en vul met Gemini</translation>
 <translation id="1096992026380844478">Jou sinkroniseringinstellings sal op grond van jou jongste rugsteun teruggestel word. <ph name="BEGIN_LINK" />Sien wat jy kan sinkroniseer<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 handmatige soektog is oorgeslaan}other{# handmatige soektogte is oorgeslaan}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 wagwoord is onmiddellik geverifieer}other{# wagwoorde is onmiddellik geverifieer}}</translation>
 <translation id="1103523840287552314">Vertaal <ph name="LANGUAGE" /> altyd</translation>
 <translation id="1110772719190051587">Ontsluit met gesig-ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Skakel KI-modus af</translation>
 <translation id="1554477036522844996">Nuwe venster</translation>
 <translation id="1558391695376153246">Maak Incognito-oortjies toe</translation>
-<translation id="1559263013367304065">sedert jy Google Lens gebruik</translation>
 <translation id="1560153516220021659">Ingevoude sekondêrenutsbalkknoppie</translation>
 <translation id="1562601408588733317">Bestuur die vind en invul van inligting met Gemini</translation>
 <translation id="1565371473877914088">Nuwe incognito-oortjie</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Werf is bygevoeg en vasgespeld</translation>
 <translation id="1911619930368729126">Laai op na Google Drive</translation>
 <translation id="1925706052394657380">Maak <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> se instellings in iOS oop</translation>
+<translation id="1938871630297275912">{count,plural, =1{Skakel ontvang}other{{count} skakels ontvang}}</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopieer.</translation>
 <translation id="1943478190258551035">Kieslys → Instellings</translation>
 <translation id="1952728750904661634">Meld met bestuurde rekening aan</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Verfyn</translation>
 <translation id="2271452184061378400">Jou oortjiegroepe word hier gestoor</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
+<translation id="2274179746480077483">Outovul inligting van apps soos Gmail en Foto’s af. Aangedryf deur Persoonlike Intelligensie.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Hierdie adres sal op hierdie toestel uitgevee word.}other{Hierdie adresse sal op hierdie toestel uitgevee word.}}</translation>
 <translation id="2295236662082735391">Langdruk ’n prent op die web om met Gemini te redigeer</translation>
 <translation id="2296360194694387941">Gebruik Gemini in Chrome is voltooi!</translation>
@@ -1576,6 +1577,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6232329973559504466">Incognito-soektog</translation>
 <translation id="6234310016144827337">Gaan jou verbinding na en probeer weer</translation>
 <translation id="6236952928980352967">Stel waarskuwing terug</translation>
+<translation id="623755660902014047">Leesmodus</translation>
 <translation id="6240553182907836376">Dateer identiteitkaart op</translation>
 <translation id="6240601837375010619">Stoor paspoort</translation>
 <translation id="6241132809279377987">Ontsluit meer kenmerke vir jou iPhone met Google-apps</translation>
@@ -2110,6 +2112,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="7972837668077967426">Skilderdoek</translation>
 <translation id="7975036700432177008">Probeer</translation>
 <translation id="797588153137233716">Kieslys → Geskiedenis → Vee blaaierdata uit</translation>
+<translation id="7977029776654598145">Wanneer gebruik</translation>
 <translation id="7977451675950311423">Waarsku jou as jy ’n wagwoord gebruik wat in ’n dataskending gekompromitteer is.</translation>
 <translation id="797824194429476746">Die oortjies sal op hierdie toestel oop bly, maar die groep sal permanent uitgevee word.</translation>
 <translation id="7982789257301363584">Netwerk</translation>
@@ -2521,6 +2524,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="954667170699278022">Leeslys</translation>
 <translation id="956066588046842680">Die invoer van hierdie data word nie deur jou organisasie se beleid toegelaat nie.</translation>
 <translation id="956218893102219091">Gebruik jou presiese ligging vir die akkuraatste Gemini-resultate, pleks van ’n geskatte ligging op grond van jou IP-adres. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Wys hiperskakels</translation>
 <translation id="961856697154696964">Vee blaaierdata uit</translation>
 <translation id="963102227019621224">Web- en Appaktiwiteit</translation>
 <translation id="965259330007686240">Skep ’n prent met Gemini</translation>

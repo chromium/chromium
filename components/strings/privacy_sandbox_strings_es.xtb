@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="1184166532603925201">Cuando estás en modo Incógnito, Chrome impide que los sitios usen cookies de terceros</translation>
-<translation id="1559726735555610004">Google exige que las empresas declaren públicamente que no usarán estos datos para hacerte un seguimiento entre sitios. Algunos sitios pueden usar tu actividad para personalizar no solo los anuncios, sino también la experiencia que ofrecen. También pueden combinarla con otra información que ya tengan sobre ti. Las empresas son responsables de informarte sobre cómo usan tus datos. Consulta más información sobre cómo Google protege tus datos en nuestra <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Cuando estás en modo Incógnito, los sitios no pueden usar cookies de terceros. Si un sitio que depende de estas cookies no funciona, puedes <ph name="BEGIN_LINK" />probar a darle acceso temporal a cookies de terceros<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Tu configuración actual de Chrome se ha actualizado para permitir que los sitios web accedan a cookies de terceros. Puedes cambiar este ajuste en cualquier momento.</translation>
 <translation id="2004697686368036666">Es posible que no puedas usar las funciones de algunos sitios</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Los sitios que dependen de cookies de terceros deberían funcionar correctamente</translation>
 <translation id="3624583033347146597">Elige tus preferencias de cookies de terceros</translation>
 <translation id="3918378745482005425">Es posible que no puedas usar algunas funciones. Los sitios relacionados podrán seguir usando cookies de terceros.</translation>
-<translation id="4009365983562022788">Google exige que las empresas declaren públicamente que no usarán estos datos para hacerte un seguimiento entre sitios. Algunos sitios pueden usar tu actividad para personalizar no solo los anuncios, sino también la experiencia que ofrecen. También pueden combinarla con otra información que ya tengan sobre ti. Las empresas son responsables de informarte sobre cómo usan tus datos. Consulta más información en nuestra <ph name="BEGIN_LINK1" />Política de Privacidad<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Permitidas</translation>
 <translation id="4412992751769744546">Permitir cookies de terceros</translation>
 <translation id="4711259472133554310">Puedes crear excepciones en Configuración para permitir siempre que sitios concretos usen cookies de terceros</translation>

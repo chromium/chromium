@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Dovoljeno • Približna</translation>
 <translation id="1323433172918577554">Pokaži več</translation>
 <translation id="1333965224356556482">Spletnim mestom ni dovoljen ogled vaše lokacije.</translation>
-<translation id="1343356790768851700">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom.</translation>
 <translation id="1369915414381695676">Spletno mesto <ph name="SITE_NAME" /> je bilo dodano</translation>
 <translation id="1371239764779356792">Omogočanje spletnemu mestu shranjevanje podatkov v napravi.</translation>
 <translation id="1383876407941801731">Išči</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5335288049665977812">Spletnim mestom dovoli izvajanje JavaScripta (priporočeno)</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
-<translation id="5344522958567249764">Upravljanje zasebnosti pri oglaševanju</translation>
 <translation id="5373874281522292782">Skupine zavihkov so shranjene</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Dodaj izjemo za spletno mesto</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome bo znova blokiral piškotke jutri}one{Še # dan in piškotki bodo znova blokirani}two{Še # dneva in piškotki bodo znova blokirani}few{Še # dni in piškotki bodo znova blokirani}other{Še # dni in piškotki bodo znova blokirani}}</translation>
 <translation id="6196640612572343990">Blokiraj piškotke tretjih oseb</translation>
-<translation id="6205314730813004066">Zasebnost pri oglaševanju</translation>
 <translation id="6207207788774442484">Izbriši podatke in ponastavi dovoljenja</translation>
 <translation id="6211409961905616543">Spletna mesta lahko uporabljajo tipala gibanja in svetlobe</translation>
 <translation id="6218508144653756827">Tema barve fuksije</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Preverite gesla, da okrepite varnost in poskrbite za večjo varnost podatkov</translation>
 <translation id="6992289844737586249">Prikaži poziv, preden se spletnim mestom dovoli uporaba mikrofona (priporočeno)</translation>
 <translation id="7000754031042624318">Izklopljeno v nastavitvah za Android</translation>
-<translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="7036823721811529709">Poslušanje v ozadju</translation>
 <translation id="7044081119134178347">Kamera je tokrat dovoljena</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
@@ -729,7 +725,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="8514955299594277296">Spletnim mestom ni dovoljeno shranjevanje podatkov v napravi (ni priporočljivo)</translation>
 <translation id="851751545965956758">Spletnim mestom prepreči povezovanje z napravami</translation>
 <translation id="8525306231823319788">Celozaslonsko</translation>
-<translation id="8541410041357371550">To spletno mesto pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="854876774113449365">Spletna mesta, ki jih obiščete, lahko vdelajo vsebino z drugih spletnih mest, na primer slike, oglase in besedilo. Ta druga spletna mesta lahko zahtevajo dovoljenje za uporabo podatkov, ki so jih shranila o vas med brskanjem po spletnem mestu. <ph name="BEGIN_LINK" />Preberite več o vdelani vsebini<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Kako prikazati zahteve</translation>
 <translation id="8558480467877843976">Zdaj lahko uporabljate Chrome, kadar koli brskate po povezavah ali se jih dotaknete v sporočilih, dokumentih in drugih aplikacijah.</translation>

@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Permisă • Aproximativă</translation>
 <translation id="1323433172918577554">Afișează mai multe</translation>
 <translation id="1333965224356556482">Nu permite site-urilor să-ți vadă locația</translation>
-<translation id="1343356790768851700">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri</translation>
 <translation id="1369915414381695676">Site-ul <ph name="SITE_NAME" /> a fost adăugat</translation>
 <translation id="1371239764779356792">Permite unui site să salveze date pe dispozitiv</translation>
 <translation id="1383876407941801731">Caută</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5335288049665977812">Permite site-urilor să ruleze JavaScript (recomandat)</translation>
 <translation id="534295439873310000">Dispozitive NFC</translation>
-<translation id="5344522958567249764">Gestionează confidențialitatea anunțurilor</translation>
 <translation id="5373874281522292782">Grupurile de file se salvează</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ încă 1)}few{(+ încă #)}other{(+ încă #)}}</translation>
 <translation id="5403592356182871684">Nume</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Adaugă o excepție privind site-urile</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome va bloca din nou cookie-urile mâine}few{# zile până când cookie-urile vor fi blocate din nou}other{# de zile până când cookie-urile vor fi blocate din nou}}</translation>
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
-<translation id="6205314730813004066">Confidențialitatea anunțurilor</translation>
 <translation id="6207207788774442484">Șterge datele și resetează permisiunile</translation>
 <translation id="6211409961905616543">Site-urile pot folosi senzorii de mișcare și de lumină</translation>
 <translation id="6218508144653756827">Temă fucsia</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Optimizează-ți securitatea și protejează-ți datele verificând parolele</translation>
 <translation id="6992289844737586249">Întreabă înainte de a permite site-urilor să folosească microfonul (recomandat)</translation>
 <translation id="7000754031042624318">Dezactivată din setările Android</translation>
-<translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
 <translation id="7036823721811529709">Ascultă în fundal</translation>
 <translation id="7044081119134178347">Camera foto este permisă de data aceasta</translation>
 <translation id="7053983685419859001">Blochează</translation>
@@ -729,7 +725,6 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="8514955299594277296">Nu permite site-urilor să salveze date pe dispozitiv (nu se recomandă)</translation>
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
-<translation id="8541410041357371550">Site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante</translation>
 <translation id="854876774113449365">Site-urile pe care le accesezi pot încorpora conținut de pe alte site-uri, de exemplu, imagini, anunțuri și text. Aceste site-uri pot solicita permisiunea de a folosi informațiile pe care le-au salvat despre tine în timp ce navighezi pe site. <ph name="BEGIN_LINK" />Află mai multe despre conținutul încorporat<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Cum să afișezi solicitări</translation>
 <translation id="8558480467877843976">Acum poți folosi Chrome oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>

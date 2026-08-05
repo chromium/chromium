@@ -33,8 +33,8 @@
 <translation id="108485301461714610">AI-modus van Google Zoeken en gekoppelde apps</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> kan niet worden geopend</translation>
 <translation id="1086486568852410168">Zoeken met Google Lens</translation>
+<translation id="1095093219235104018">Zoeken en invullen met Gemini</translation>
 <translation id="1096992026380844478">Je synchronisatie-instellingen worden hersteld op basis van je laatste back-up. <ph name="BEGIN_LINK" />Bekijken wat je kunt synchroniseren<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 handmatige zoekopdracht overgeslagen}other{# handmatige zoekopdrachten overgeslagen}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 wachtwoord direct geverifieerd}other{# wachtwoorden direct geverifieerd}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
 <translation id="1110772719190051587">Ontgrendelen met Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI-modus uitzetten</translation>
 <translation id="1554477036522844996">Nieuw venster</translation>
 <translation id="1558391695376153246">Incognitotabbladen sluiten</translation>
-<translation id="1559263013367304065">sinds je Google Lens gebruikt</translation>
 <translation id="1560153516220021659">Samengevouwen secundaire werkbalkknop</translation>
 <translation id="1562601408588733317">Beheren hoe je informatie vindt en invult met Gemini</translation>
 <translation id="1565371473877914088">Nieuw incognitotabblad</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Site toegevoegd en vastgezet</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
 <translation id="1925706052394657380">Open de instellingen voor <ph name="BEGIN_BOLD" />standaard-apps<ph name="END_BOLD" /> in iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Link ontvangen}other{{count} links ontvangen}}</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
 <translation id="1943478190258551035">Menu → Instellingen</translation>
 <translation id="1952728750904661634">Inloggen met een beheerd account</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Verfijnen</translation>
 <translation id="2271452184061378400">Je tabbladgroepen worden hier opgeslagen</translation>
 <translation id="2273327106802955778">Menu Meer</translation>
+<translation id="2274179746480077483">Vul informatie automatisch in vanuit apps zoals Gmail en Foto's. Mogelijk gemaakt door Personal Intelligence.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Dit adres wordt verwijderd van dit apparaat.}other{Deze adressen worden verwijderd van dit apparaat.}}</translation>
 <translation id="2295236662082735391">Houd je vinger lang op een afbeelding op het web om deze te bewerken met Gemini</translation>
 <translation id="2296360194694387941">Gemini in Chrome gebruiken is afgerond.</translation>
@@ -1576,6 +1577,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6232329973559504466">Incognito zoeken</translation>
 <translation id="6234310016144827337">Check de verbinding en probeer het opnieuw</translation>
 <translation id="6236952928980352967">Waarschuwing herstellen</translation>
+<translation id="623755660902014047">Leesmodus</translation>
 <translation id="6240553182907836376">Identiteitskaart updaten</translation>
 <translation id="6240601837375010619">Paspoort opslaan</translation>
 <translation id="6241132809279377987">Krijg toegang tot meer functies voor je iPhone met Google-apps</translation>
@@ -2110,6 +2112,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Proberen</translation>
 <translation id="797588153137233716">Menu → Geschiedenis → Browsegegevens verwijderen</translation>
+<translation id="7977029776654598145">Bij gebruik</translation>
 <translation id="7977451675950311423">Waarschuwt je als je een wachtwoord gebruikt dat is gevonden bij een gegevenslek.</translation>
 <translation id="797824194429476746">De tabbladen blijven geopend op dit apparaat, maar de groep wordt definitief verwijderd.</translation>
 <translation id="7982789257301363584">Netwerk</translation>
@@ -2521,6 +2524,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="954667170699278022">Leeslijst</translation>
 <translation id="956066588046842680">Het beleid van je organisatie staat niet toe dat je deze gegevens importeert.</translation>
 <translation id="956218893102219091">Gebruik je exacte locatie voor de nauwkeurigste Gemini-resultaten in plaats van een geschatte locatie op basis van je IP-adres. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Hyperlinks tonen</translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>
 <translation id="963102227019621224">Web- en app-activiteit</translation>
 <translation id="965259330007686240">Een afbeelding maken met Gemini</translation>

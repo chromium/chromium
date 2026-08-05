@@ -1551,6 +1551,7 @@
 <translation id="2198625180564913276">プロファイルを追加しています。この処理には数分かかることがあります。</translation>
 <translation id="2198712775285959645">編集</translation>
 <translation id="2199298570273670671">エラー</translation>
+<translation id="220006241671843310">デバイス上で直接稼働する AI モデルを Chrome で使用するかどうかを選択します</translation>
 <translation id="2200094388063410062">メール</translation>
 <translation id="2200781749203116929">ChromeOS のシステムログ</translation>
 <translation id="2202391868799679245">キーボード ショートカットをオンにする</translation>
@@ -3273,7 +3274,6 @@
 <translation id="3512465804715993309">アダプティブ ハイライト表示</translation>
 <translation id="3513019849832307207">参加して開く</translation>
 <translation id="3513563267917474897">色相スライダー <ph name="MIN_VALUE" />～<ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">新しい拡張機能を固定する</translation>
 <translation id="3514647716686280777">標準のセキュリティ機能で保護します。危険なウェブサイト、ダウンロード、拡張機能からの保護を強化するには、Chrome の設定でセーフ ブラウジング保護強化機能をオンにしてください。</translation>
 <translation id="3514681096978190000">このアーカイブ ファイルには、マルウェアが潜んでいる可能性がある別のファイルが含まれています</translation>
 <translation id="3515983984924808886">リセットを確定するには、セキュリティ キーをもう一度タップしてください。セキュリティ キーに保存されているすべての情報（PIN を含む）が削除されます。</translation>
@@ -6509,7 +6509,6 @@
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011308810877101166">検索候補の関連性を高める</translation>
 <translation id="6011908034087870826">リンクを <ph name="DEVICE_NAME" /> に送信しています</translation>
-<translation id="6013027779243312217">音声と動画の字幕を生成します</translation>
 <translation id="6014293228235665243">未読</translation>
 <translation id="6015776718598175635">星</translation>
 <translation id="6015796118275082299">年</translation>

@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Tillatt • Omtrentlig</translation>
 <translation id="1323433172918577554">Vis mer</translation>
 <translation id="1333965224356556482">Ikke la nettsteder se posisjonen din</translation>
-<translation id="1343356790768851700">Dette nettstedet avgjør hva du liker, og foreslår deretter annonser til andre nettsteder</translation>
 <translation id="1369915414381695676">Nettstedet <ph name="SITE_NAME" /> er lagt til</translation>
 <translation id="1371239764779356792">La et nettsted lagre data på enheten din</translation>
 <translation id="1383876407941801731">Søk</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5335288049665977812">Tillat nettsteder å kjøre JavaScript (anbefales)</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
-<translation id="5344522958567249764">Administrer annonsepersonvern</translation>
 <translation id="5373874281522292782">Fanegruppene dine er lagret</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 til)}other{(+ # til)}}</translation>
 <translation id="5403592356182871684">Navn</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Legg til et nettsted som unntak</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome begynner å blokkere informasjonskapsler igjen i morgen}other{# dager til informasjonskapsler blir blokkert igjen}}</translation>
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
-<translation id="6205314730813004066">Annonsepersonvern</translation>
 <translation id="6207207788774442484">Slett data og tilbakestill tillatelser</translation>
 <translation id="6211409961905616543">Nettsteder kan bruke bevegelses- og lyssensorer</translation>
 <translation id="6218508144653756827">Fuksia tema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Styrk sikkerheten og beskytt dataene dine ved å sjekke passordene dine</translation>
 <translation id="6992289844737586249">Spør før nettsteder får bruke mikrofonen (anbefales)</translation>
 <translation id="7000754031042624318">Slått av i Android-innstillingene</translation>
-<translation id="702275896380648118">Dette nettstedet avgjør hva du liker, og foreslår deretter annonser til andre nettsteder. Dette nettstedet henter også annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser.</translation>
 <translation id="7036823721811529709">Lytt i bakgrunnen</translation>
 <translation id="7044081119134178347">Kamera er tillatt denne gangen</translation>
 <translation id="7053983685419859001">Blokkér</translation>
@@ -729,7 +725,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="8514955299594277296">Ikke la nettsteder lagre data på enheten din (anbefales ikke)</translation>
 <translation id="851751545965956758">Blokkér at nettsteder kobler til enheter</translation>
 <translation id="8525306231823319788">Full skjerm</translation>
-<translation id="8541410041357371550">Dette nettstedet henter annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>
 <translation id="854876774113449365">Nettsteder du besøker, kan bygge inn innhold fra andre nettsteder, for eksempel bilder, annonser og tekst. Disse andre nettstedene kan be om tillatelse til å bruke informasjon de har lagret om deg, når du besøker nettstedet. <ph name="BEGIN_LINK" />Finn ut mer om innebygd innhold<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Hvordan forespørsler skal vises</translation>
 <translation id="8558480467877843976">Nå kan du bruke Chrome når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>

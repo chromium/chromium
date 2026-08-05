@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google සෙවීම් AI මාදිලිය සහ සම්බන්ධිත යෙදුම්</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> විවෘත කළ නොහැකි විය</translation>
 <translation id="1086486568852410168">Google Lens සමග සොයන්න</translation>
+<translation id="1095093219235104018">Gemini මඟින් සොයා පුරවන්න</translation>
 <translation id="1096992026380844478">ඔබේ අවසන් උපස්ථය මත පදනම්ව ඔබේ සමමුහුර්ත කිරීමේ සැකසීම් ප්‍රතිසාධනය කරනු ලැබේ. <ph name="BEGIN_LINK" />ඔබට සමමුහුර්ත කළ හැකි දේ බලන්න<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{හස්තීය සෙවීම් 1ක් මඟ හැර ඇත}one{හස්තීය සෙවීම් #ක් මඟ හැර ඇත}other{හස්තීය සෙවීම් #ක් මඟ හැර ඇත}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{මුරපද 1ක් ක්ෂණිකව සත්‍යාපනය කරන ලදි}one{මුරපද #ක් ක්ෂණිකව සත්‍යාපනය කරන ලදි}other{මුරපද #ක් ක්ෂණිකව සත්‍යාපනය කරන ලදි}}</translation>
 <translation id="1103523840287552314">සැමවිටම <ph name="LANGUAGE" /> පරිවර්තනය කරන්න</translation>
 <translation id="1110772719190051587">මුහුණු ID සමග අගුළු හරින්න</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI මාදිලිය ක්‍රියා විරහිත කරන්න</translation>
 <translation id="1554477036522844996">නව කවුළුව</translation>
 <translation id="1558391695376153246">අප්‍රකට ටැබ වසන්න</translation>
-<translation id="1559263013367304065">Google Lens භාවිත කරන බැවින්</translation>
 <translation id="1560153516220021659">හකුළන ලද ද්විතියික මෙවලම් තීරු බොත්තම</translation>
 <translation id="1562601408588733317">Gemini භාවිතයෙන් තොරතුරු සෙවීම සහ පිරවීම කළමනාකරණය කරන්න</translation>
 <translation id="1565371473877914088">නව අප්‍රසිද්ධ පටිත්ත</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">අඩවිය එක් කර අමුණා ඇත</translation>
 <translation id="1911619930368729126">Google Drive වෙත උඩුගත කරන්න</translation>
 <translation id="1925706052394657380">iOS හි <ph name="BEGIN_BOLD" />පෙරනිමි යෙදුම්<ph name="END_BOLD" /> සැකසීම් විවෘත කරන්න</translation>
+<translation id="1938871630297275912">{count,plural, =1{සබැඳිය ලැබුණි}one{සබැඳි {count}ක් ලැබුණි}other{සබැඳි {count}ක් ලැබුණි}}</translation>
 <translation id="1941314575388338491">පිටපත් කිරීමට දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="1943478190258551035">මෙනුව → සැකසීම්</translation>
 <translation id="1952728750904661634">කළමනාකරණය කරන ලද ගිණුම සමගින් පිරීම</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">පිරිපහදු කරන්න</translation>
 <translation id="2271452184061378400">ඔබේ පටිති සමූහය මෙහි සුරකිනු ලැබේ</translation>
 <translation id="2273327106802955778">තව මෙනුව</translation>
+<translation id="2274179746480077483">Gmail සහ ඡායාරූප වැනි යෙදුම්වලින් තොරතුරු ස්වයංව පුරවන්න. පුද්ගලික බුද්ධිය මගින් බලගන්වයි.</translation>
 <translation id="2287614783861766820">{count,plural, =1{මෙම ලිපිනය මෙම උපාංගයෙන් මකනු ඇත.}one{මෙම ලිපින මෙම උපාංගයෙන් මකනු ඇත.}other{මෙම ලිපින මෙම උපාංගයෙන් මකනු ඇත.}}</translation>
 <translation id="2295236662082735391">Gemini සමග සංස්කරණය කිරීමට වෙබයේ රූපයක් දිගු ඔබන්න</translation>
 <translation id="2296360194694387941">Chrome හි Gemini භාවිතය සම්පූර්ණයි!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">අප්‍රසිද්ධ සෙවීම</translation>
 <translation id="6234310016144827337">ඔබේ සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න</translation>
 <translation id="6236952928980352967">අවවාදය ප්‍රතිසාධන කරන්න</translation>
+<translation id="623755660902014047">කියවීම් ප්‍රකාරය</translation>
 <translation id="6240553182907836376">හැඳුනුම්පත යාවත්කාලීන කරන්න</translation>
 <translation id="6240601837375010619">ගමන් බලපත්‍රය සුරකින්න</translation>
 <translation id="6241132809279377987">Google යෙදුම් සමග ඔබේ iPhone සඳහා තවත් විශේෂාංග අගුළු හරින්න</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">කැන්වසය</translation>
 <translation id="7975036700432177008">උත්සාහ කරන්න</translation>
 <translation id="797588153137233716">මෙනුව → ඉතිහාසය → බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>
+<translation id="7977029776654598145">භාවිතා කරන විට</translation>
 <translation id="7977451675950311423">ඔබ දත්ත කඩකිරීමක අවදානමට ලක් වූ මුරපදයක් භාවිතා කරන්නේ නම් ඔබට අනතුරු අඟවයි.</translation>
 <translation id="797824194429476746">පටිති මෙම උපාංගය මත විවෘතව පවතින නමුත් සමූහය ස්ථිරව මකනු ලැබේ.</translation>
 <translation id="7982789257301363584">ජාලය</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">කියවීම් ලැයිස්තුව</translation>
 <translation id="956066588046842680">මෙම දත්ත ආයාත කිරීමට ඔබේ සංවිධානයේ ප්‍රතිපත්තියෙන් ඉඩ නොදෙයි.</translation>
 <translation id="956218893102219091">ඔබේ IP ලිපිනය මත පදනම් වූ ඇස්තමේන්තුගත ස්ථානයක් වෙනුවට, වඩාත් නිවැරදි Gemini ප්‍රතිඵල සඳහා ඔබේ ඉතා නිවැරදි ස්ථානය භාවිත කරන්න. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">අදිබැඳි පෙන්වන්න</translation>
 <translation id="961856697154696964">බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>
 <translation id="963102227019621224">වෙබ් සහ යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="965259330007686240">Gemini සමග රූපයක් තනන්න</translation>

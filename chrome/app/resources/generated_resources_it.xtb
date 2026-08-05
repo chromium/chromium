@@ -1551,6 +1551,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2198625180564913276">Aggiunta del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="2198712775285959645">Modifica</translation>
 <translation id="2199298570273670671">Errore</translation>
+<translation id="220006241671843310">Scegli se Chrome deve utilizzare modelli di AI che vengono eseguiti direttamente sul tuo dispositivo</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">Log di sistema ChromeOS</translation>
 <translation id="2202391868799679245">Attiva scorciatoia da tastiera</translation>
@@ -2263,6 +2264,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2739240477418971307">Modifica delle impostazioni di accesibilità</translation>
 <translation id="2739331588276254426">Connesso a internet tramite <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">Mantieni questo gruppo per aggiungere schede in un secondo momento o eliminalo se non ti serve più.</translation>
+<translation id="2739917034504760471">Ottieni una definizione o scopri di più su un argomento</translation>
 <translation id="274029851662193272">Incassato</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Queste passkey sono salvate soltanto su questo dispositivo e non nel tuo Account Google.</translation>
@@ -3236,6 +3238,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3482719661246593752"><ph name="ORIGIN" /> può visualizzare i seguenti file</translation>
 <translation id="3484595034894304035">Personalizza sfondo, salvaschermo, tema scuro e altro ancora</translation>
 <translation id="3484869148456018791">Richiedi nuovo certificato</translation>
+<translation id="3486380520195228369">Nascosto fino all'aggiornamento della pagina</translation>
 <translation id="3487007233252413104">funzione anonima</translation>
 <translation id="3487649228420469005">Analisi completata</translation>
 <translation id="3488199663160411179">nome</translation>
@@ -3273,7 +3276,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3512465804715993309">Evidenziazione adattiva</translation>
 <translation id="3513019849832307207">Entra e apri</translation>
 <translation id="3513563267917474897">Cursore di tonalità da <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Fissa nuove estensioni</translation>
 <translation id="3514647716686280777">È attiva la protezione standard. Per aumentare la protezione da estensioni, download e siti web pericolosi, attiva Navigazione sicura avanzata nelle impostazioni di Chrome.</translation>
 <translation id="3514681096978190000">Questo file di archivio include altri file che potrebbero nascondere malware</translation>
 <translation id="3515983984924808886">Tocca nuovamente il token di sicurezza per confermare la reimpostazione. Tutte le informazioni memorizzate sul token di sicurezza, nonché il suo PIN, verranno eliminate.</translation>
@@ -3357,6 +3359,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3577036603268648505">Naviga in maggior sicurezza</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3577487026101678864">Sincronizzazione dei file attiva</translation>
+<translation id="3578230582111850125">selezionare testo da chiedere a Gemini</translation>
 <translation id="3581605050355435601">Configura automaticamente indirizzo IP</translation>
 <translation id="3581861561942370740">Cerca nella cronologia dei download</translation>
 <translation id="3582057310199111521">Inserita in un sito ingannevole e rilevata in una violazione dei dati</translation>
@@ -6508,7 +6511,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6011193465932186973">Impronta digitale</translation>
 <translation id="6011308810877101166">Migliora i suggerimenti di ricerca</translation>
 <translation id="6011908034087870826">Invio del link a <ph name="DEVICE_NAME" /> in corso…</translation>
-<translation id="6013027779243312217">Aggiungi sottotitoli ai tuoi contenuti audio e video</translation>
 <translation id="6014293228235665243">Da leggere</translation>
 <translation id="6015776718598175635">Stelle</translation>
 <translation id="6015796118275082299">Anno</translation>
@@ -7331,6 +7333,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6660301751798595791">Selezione voce</translation>
 <translation id="6660819301598582123">Pranzo d'acqua fa volti sghembi.</translation>
 <translation id="666099631117081440">Server di stampa</translation>
+<translation id="6662339038589469159">Seleziona testo da chiedere a Gemini</translation>
 <translation id="6662394424395160792">Utilizza Gestore delle password di Google per accedere più velocemente ai siti da qualsiasi dispositivo</translation>
 <translation id="6662931079349804328">Policy aziendale modificata. Pulsante Esperimenti rimosso dalla barra degli strumenti.</translation>
 <translation id="6664774537677393800">Si è verificato un problema durante l'apertura del profilo. Esci e accedi di nuovo.</translation>
@@ -7996,6 +7999,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7174199383876220879">Novità! Gestisci la tua musica, i tuoi video e altro ancora.</translation>
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Caricamento da:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{Premi nuovamente <ph name="SHORTCUT_TEXT" /> per chiudere la scheda fissata}other{Premi nuovamente <ph name="SHORTCUT_TEXT" /> per chiudere le schede fissate}}</translation>
 <translation id="7177659256878428843">Converti un gruppo di schede in una cartella di preferiti</translation>
 <translation id="7180569503618416775">Wallet può proporre di salvare informazioni dalle pagine che visualizzi, come i biglietti che acquisti</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
@@ -9728,6 +9732,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="850399339579925930">Dizionari</translation>
 <translation id="850561044295157831">Scopri di più su Aiutami a scrivere</translation>
 <translation id="8505669004895429027">Piccoli risparmi</translation>
+<translation id="850632091665381275">Abbonamento Google</translation>
 <translation id="8507052544157927817">Stile sottolineatura</translation>
 <translation id="8507227974644337342">Risoluzione dello schermo</translation>
 <translation id="8507443886219296894">Nascondi per questo sito</translation>

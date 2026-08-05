@@ -1552,6 +1552,7 @@
 <translation id="2198625180564913276">پروفائل شامل کی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="2198712775285959645">ترمیم کریں</translation>
 <translation id="2199298570273670671">خرابی</translation>
+<translation id="220006241671843310">‏منتخب کریں کہ آیا Chrome ایسے AI ماڈلز کا استعمال کرتا ہے جو براہ راست آپ کے آلے پر چلتے ہیں</translation>
 <translation id="2200094388063410062">ای میل کریں</translation>
 <translation id="2200781749203116929">‏ChromeOS سسٹم لاگز</translation>
 <translation id="2202391868799679245">کی بورڈ شارٹ کٹ آن کریں</translation>
@@ -1747,6 +1748,7 @@
 <translation id="2352662711729498748">‎&lt; 1 MB</translation>
 <translation id="2353168619378866466">گروپ کھولیں</translation>
 <translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
+<translation id="2353682139907904963">نئی ایکسٹینشنز کو ٹول بار پر پن کریں</translation>
 <translation id="2353910600995338714">برآمد کا عمل مکمل ہو گیا ہے</translation>
 <translation id="2355477091455974894">انرجی سیور کے اختیارات</translation>
 <translation id="2355604387869345912">فوری ٹیدرنگ آن کریں</translation>
@@ -2264,6 +2266,7 @@
 <translation id="2739240477418971307">اپنی ایکسیسبیلٹی ترتیبات تبدیل کریں</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> کے ذریعے انٹرنیٹ سے منسلک ہے</translation>
 <translation id="2739887572830526131">اس گروپ کو بعد میں ٹیبز شامل کرنے کیلئے برقرار رکھیں یا اگر آپ کو اس کی مزید ضرورت نہیں ہے تو اسے حذف کریں۔</translation>
+<translation id="2739917034504760471">تعریف حاصل کریں یا کسی موضوع کے بارے میں مزید جانیں</translation>
 <translation id="274029851662193272">گھٹا ہوا</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2740876196999178364">‏یہ پاس کیز صرف اس آلہ پر محفوظ ہیں۔ وہ آپ کے Google اکاؤنٹ میں محفوظ نہیں ہیں۔</translation>
@@ -3235,6 +3238,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> درج ذیل فائلز کو دیکھ سکتا ہے</translation>
 <translation id="3484595034894304035">وال پیپر، اسکرین سیور، گہری تھیم، اور مزید کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="3484869148456018791">نیا سرٹیفکیٹ حاصل کریں</translation>
+<translation id="3486380520195228369">صفحہ ریفریش ہونے تک پوشیدہ ہے</translation>
 <translation id="3487007233252413104">گمنام فنکشن</translation>
 <translation id="3487649228420469005">اسکین ہو گیا</translation>
 <translation id="3488199663160411179">نام</translation>
@@ -3272,7 +3276,6 @@
 <translation id="3512465804715993309">اڈاپٹیو ہائی لائٹنگ</translation>
 <translation id="3513019849832307207">شامل ہوں اور کھولیں</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> سے <ph name="MAX_VALUE" /> تک رنگین سلائیڈر</translation>
-<translation id="3514519909735866748">نئی ایکسٹینشنز کو پن کریں</translation>
 <translation id="3514647716686280777">‏آپ کو معیاری حفاظتی تحفظ مل رہا ہے۔ خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف مزید تحفظ حاصل کرنے کے لیے، Chrome ترتیبات میں بہتر کردہ محفوظ براؤزنگ کو آن کریں۔</translation>
 <translation id="3514681096978190000">اس آرکائیو فائل میں دوسری فائلیں شامل ہیں جو میلوئیر کو چھپا سکتی ہیں</translation>
 <translation id="3515983984924808886">‏دوبارہ ترتیب دینے کی تصدیق کرنے کے لیے اپنی سیکیورٹی کلید کو دوبارہ ٹچ کریں۔ سیکیورٹی کلید کے PIN سمیت اس میں اسٹور کردہ سبھی معلومات کو حذف کر دیا جائے گا۔</translation>
@@ -3292,6 +3295,7 @@
 <translation id="3525606571546393707">کسی دیگر فولڈر سے فائل کھولنے کی کوشش کریں، یا محدود منظر اور ترمیم کے اختیارات استعمال کرنے کے لیے "بنیادی ایڈیٹر میں کھولیں" کو منتخب کریں۔</translation>
 <translation id="3526034519184079374">سائٹ کا ڈیٹا پڑھا یا تبدیل نہیں کیا جا سکتا</translation>
 <translation id="3527085408025491307">فولڈر</translation>
+<translation id="3527473647192919613">نئی الگ تھلگ ونڈو</translation>
 <translation id="3528498924003805721">اہداف کا شارٹ کٹ</translation>
 <translation id="3529851166527095708">&amp;پتے اور مزید</translation>
 <translation id="3530919970074558307">گروپ سے فوکس ہٹائیں</translation>
@@ -3356,6 +3360,7 @@
 <translation id="3577036603268648505">آن لائن محفوظ رہیں</translation>
 <translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3577487026101678864">فائل کی مطابقت پذیری آن ہے</translation>
+<translation id="3578230582111850125">‏‫Gemini سے پوچھنے کے لیے ٹیکسٹ منتخب کریں</translation>
 <translation id="3581605050355435601">‏خودکار طور پر IP پتہ کنفیگر کریں</translation>
 <translation id="3581861561942370740">ڈاؤن لوڈ کی سرگزشت میں تلاش کریں</translation>
 <translation id="3582057310199111521">فریب والی سائٹ پر درج کیا گیا اور ڈیٹا کی خلاف ورزی میں پایا گیا</translation>
@@ -5824,6 +5829,7 @@
 <translation id="5463348003600590648">تجاویز کو غیر فعال کریں</translation>
 <translation id="5463625433003343978">آلات تلاش کئے جا رہے ہیں...</translation>
 <translation id="5463856536939868464">مخفی بُک مارکس پر مشتمل مینیو</translation>
+<translation id="5465214111614807935">نئی اور الگ تھلگ ونڈو</translation>
 <translation id="5466374726908360271">پیسٹ کریں اور “<ph name="SEARCH_TERMS" />” تلاش کریں</translation>
 <translation id="5466721587278161554">آپ کے ٹیب گروپس بُک مارکس بار اور ایپ مینو میں محفوظ ہو جاتے ہیں اور سنک کی سہولت آن ہونے پر آپ کے تمام سائن ان کردہ آلات پر اپ ڈیٹ ہو جاتے ہیں</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کو مسدود کر دیا گیا</translation>
@@ -6508,7 +6514,6 @@
 <translation id="6011193465932186973">فنگر پرنٹ</translation>
 <translation id="6011308810877101166">تلاش کی تجاویز کو بہتر بنائیں</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> پر لنک بھیجا جا رہا ہے</translation>
-<translation id="6013027779243312217">اپنی آڈیو اور ویڈیو کیلئے کیپشنز حاصل کریں</translation>
 <translation id="6014293228235665243">نہ پڑھے ہوئے</translation>
 <translation id="6015776718598175635">ستارے</translation>
 <translation id="6015796118275082299">سال</translation>
@@ -6723,6 +6728,7 @@
 <translation id="6185151644843671709">‏پاسکی محفوظ ہو گئی اور PIN تخلیق کیا گیا</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{‏‫1 پاس ورڈ اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔ اس سے تمام ڈپلیکیٹس بھی صاف ہو جائیں گے۔}other{‏‫{PASSWORD_COUNT} پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔ اس سے تمام ڈپلیکیٹس بھی صاف ہو جائیں گے۔}}</translation>
 <translation id="6186177419203903310">‏یہ پورے سسٹم میں تمام نئے USB پیری فیرلز کے لیے اطلاعات کو فعال کر دے گا۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
+<translation id="6188822118034543225">سائیڈ بائی سائیڈ اور اسٹیک کردہ لے آؤٹس کے درمیان سوئچ کرنے کے لیے منقسم منظر مینیو کا استعمال کریں۔</translation>
 <translation id="6190953336330058278">فون ہب کی ایپس</translation>
 <translation id="6192333916571137726">فائل ڈاؤن لوڈ کریں</translation>
 <translation id="6192413564913825901">'سبھی بُک مارکس' میں منتقل کریں</translation>
@@ -6965,6 +6971,7 @@
 <translation id="6379228010899751161">یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں پاس ورڈز استعمال کر سکتے ہیں توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="6379827283296619736">نہیں، اس پروفائل میں کام کرنا جاری رکھیں</translation>
 <translation id="6380618366311601172">‏‫Gemini ان ٹاسکس کو مکمل نہیں کر سکے گا جن کے لیے <ph name="DOMAIN" /> پر سائن ان کرنے کی ضرورت ہے۔</translation>
+<translation id="6383321659284013430">نئی اور الگ تھلگ ونڈو</translation>
 <translation id="6383382161803538830">‏Reading mode اس صفحے پر دستیاب نہیں ہے</translation>
 <translation id="638418309848716977">تعاون یافتہ لنکس</translation>
 <translation id="6384275966486438344">اپنی تلاش کی ترتیبات کو اس سے تبدیل کریں: <ph name="SEARCH_HOST" /></translation>
@@ -7331,6 +7338,7 @@
 <translation id="6660301751798595791">صوتی انتخاب</translation>
 <translation id="6660819301598582123">تیز بھوری لومڑی نے سست کتے پر چھلانگ لگائی۔</translation>
 <translation id="666099631117081440">پرنٹ سرورز</translation>
+<translation id="6662339038589469159">‏‫Gemini سے پوچھنے کے لیے ٹیکسٹ منتخب کریں</translation>
 <translation id="6662394424395160792">‏اپنے کسی بھی آلے سے سائٹس میں تیزی سے سائن ان کرنے کے لیے Google پاس ورڈ مینیجر کا استعمال کریں</translation>
 <translation id="6662931079349804328">انٹرپرائز کی پالیسی تبدیل ہو گئی۔ تجربات بٹن کو ٹول بار سے ہٹا دیا گیا۔</translation>
 <translation id="6664774537677393800">آپ کے پروفائل کو کھولتے وقت کچھ غلط ہوگیا۔ براہ کرم سائن آؤٹ کر کے دوبارہ سائن ان کریں۔</translation>
@@ -7422,6 +7430,7 @@
 <translation id="6729280095610283088">آرورا بوریالِس کی جنگل میں چمکدار ندیاں۔</translation>
 <translation id="6729493062119577923">اشتراک کردہ ٹیب گروپ کی سرگرمی</translation>
 <translation id="6730744976532805323">‏‫آپ کے دوسرے ٹیبز پر چلے جانے کے باوجود ⁢Gemini کے ساتھ موجودہ ٹیب کا اشتراک کرتا ہے</translation>
+<translation id="6731848763586448407">اسٹیک کردہ منقسم منظر آزمائیں</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">پتہ</translation>
 <translation id="6737663862851963468">‏Kerberos ٹکٹ ہٹائیں</translation>
@@ -7995,6 +8004,7 @@
 <translation id="7174199383876220879">نیا! اپنی موسیقی، ویڈیوز اور بھی بہت کچھ کنٹرول کریں۔</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> کنفیگر کریں</translation>
 <translation id="7175353351958621980">لوڈ کردہ از:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{پن کردہ ٹیب کو بند کرنے کے لیے دوبارہ <ph name="SHORTCUT_TEXT" /> دبائیں}other{پن کردہ ٹیب کو بند کرنے کے لیے دوبارہ <ph name="SHORTCUT_TEXT" /> دبائیں}}</translation>
 <translation id="7177659256878428843">ٹیب گروپ کو بُک مارک فولڈر میں تبدیل کریں</translation>
 <translation id="7180569503618416775">والٹ آپ کے ملاحظہ کیے جانے والے صفحات سے معلومات کو محفوظ کرنے کی پیشکش کر سکتا ہے، جیسے آپ کے خریدے گئے ٹکٹس</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
@@ -9727,6 +9737,7 @@
 <translation id="850399339579925930">لغات</translation>
 <translation id="850561044295157831">'لکھنے میں میری مدد کریں' کے بارے میں مزید جانیں</translation>
 <translation id="8505669004895429027">چھوٹی بچتیں</translation>
+<translation id="850632091665381275">‏‫Google کی رکنیت</translation>
 <translation id="8507052544157927817">خط کشیدہ اسٹائل</translation>
 <translation id="8507227974644337342">اسکرین ریزولیوشن</translation>
 <translation id="8507443886219296894">اس سائٹ کے لیے چھپائیں</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">ໂໝດ AI ຂອງ Google ຊອກຫາ ແລະ ແອັບທີ່ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="1085677983426914530">ບໍ່ສາມາດເປີດ <ph name="FILENAME" /> ໄດ້</translation>
 <translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
+<translation id="1095093219235104018">ຊອກຫາ ແລະ ຕື່ມຂໍ້ມູນດ້ວຍ Gemini</translation>
 <translation id="1096992026380844478">ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າການຊິ້ງໂດຍອີງຕາມການສຳຮອງຂໍ້ມູນເທື່ອຫຼ້າສຸດຂອງທ່ານ. <ph name="BEGIN_LINK" />ເບິ່ງສິ່ງທີ່ທ່ານສາມາດຊິ້ງໄດ້<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{ຂ້າມການຊອກຫາດ້ວຍຕົວເອງ 1 ລາຍການແລ້ວ}other{ຂ້າມການຊອກຫາດ້ວຍຕົນເອງ # ລາຍການແລ້ວ}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{ຢັ້ງຢືນ 1 ລະຫັດຜ່ານທັນທີ}other{ຢັ້ງຢືນ # ລະຫັດຜ່ານທັນທີ}}</translation>
 <translation id="1103523840287552314">ແປ <ph name="LANGUAGE" /> ຢູ່ສະເໝີ</translation>
 <translation id="1110772719190051587">ປົດລັອກດ້ວຍ Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">ປິດໂໝດ AI</translation>
 <translation id="1554477036522844996">ໜ້າຈໍໃໝ່</translation>
 <translation id="1558391695376153246">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
-<translation id="1559263013367304065">ຕັ້ງແຕ່ໃຊ້ Google Lens</translation>
 <translation id="1560153516220021659">ປຸ່ມແຖບເຄື່ອງມືຮອງທີ່ຫຍໍ້ລົງ</translation>
 <translation id="1562601408588733317">ຈັດການການຊອກຫາ ແລະ ຕື່ມຂໍ້ມູນດ້ວຍ Gemini</translation>
 <translation id="1565371473877914088">ແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">ເພີ່ມ ແລະ ປັກໝຸດເວັບໄຊແລ້ວ</translation>
 <translation id="1911619930368729126">ອັບ​ໂຫຼດ​ໃສ່ Google Drive</translation>
 <translation id="1925706052394657380">ເປີດການຕັ້ງຄ່າ <ph name="BEGIN_BOLD" />ແອັບເລີ່ມຕົ້ນ<ph name="END_BOLD" /> ໃນ iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{ໄດ້ຮັບລິ້ງແລ້ວ}other{ໄດ້ຮັບລິ້ງ {count} ລາຍການແລ້ວ}}</translation>
 <translation id="1941314575388338491">ແຕະສອງຄັ້ງເພື່ອສຳເນົາ</translation>
 <translation id="1943478190258551035">ເມນູ → ການຕັ້ງຄ່າ</translation>
 <translation id="1952728750904661634">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຈັດການ</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">ກັ່ນ​ຕອງ</translation>
 <translation id="2271452184061378400">ລະບົບຈະບັນທຶກກຸ່ມແຖບຂອງທ່ານໄວ້ບ່ອນນີ້</translation>
 <translation id="2273327106802955778">ເມນູເພີ່ມເຕີມ</translation>
+<translation id="2274179746480077483">ຕື່ມຂໍ້ມູນອັດຕະໂນມັດຈາກແອັບຕ່າງໆ ເຊັ່ນ: Gmail ແລະ ຮູບພາບ. ຂັບເຄື່ອນໂດຍ Personal Intelligence.</translation>
 <translation id="2287614783861766820">{count,plural, =1{ທີ່ຢູ່ນີ້ຈະຖືກລຶບຈາກອຸປະກອນນີ້.}other{ທີ່ຢູ່ເຫຼົ່ານີ້ຈະຖືກລຶບຈາກອຸປະກອນນີ້.}}</translation>
 <translation id="2295236662082735391">ກົດຮູບຢູ່ເວັບຄ້າງໄວ້ເພື່ອແກ້ໄຂດ້ວຍ Gemini</translation>
 <translation id="2296360194694387941">ໃຊ້ Gemini ໃນ Chrome ສຳເລັດແລ້ວ!</translation>
@@ -1576,6 +1577,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6232329973559504466">ການຊອກຫາແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6234310016144827337">ກວດສອບການເຊື່ອມຕໍ່ຂອງທ່ານແລ້ວລອງໃໝ່</translation>
 <translation id="6236952928980352967">ກູ້ຄຳເຕືອນຄືນ</translation>
+<translation id="623755660902014047">ໂໝດການອ່ານ</translation>
 <translation id="6240553182907836376">ອັບເດດບັດປະຈຳຕົວ</translation>
 <translation id="6240601837375010619">ບັນທຶກໜັງສືຜ່ານແດນ</translation>
 <translation id="6241132809279377987">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມສຳລັບ iPhone ຂອງທ່ານດ້ວຍແອັບຕ່າງໆຂອງ Google</translation>
@@ -2110,6 +2112,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">ລອງ</translation>
 <translation id="797588153137233716">ເມນູ → ປະຫວັດ → ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
+<translation id="7977029776654598145">ເມື່ອໃຊ້</translation>
 <translation id="7977451675950311423">ເຕືອນທ່ານຫາກທ່ານໃຊ້ລະຫັດຜ່ານທີ່ຖືກລະເມີດໃນການລະເມີດຂໍ້ມູນ.</translation>
 <translation id="797824194429476746">ແຖບຈະຍັງເປີດຢູ່ໃນອຸປະກອນນີ້ ແຕ່ລະບົບຈະລຶບກຸ່ມອອກຢ່າງຖາວອນ.</translation>
 <translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>
@@ -2521,6 +2524,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="954667170699278022">ລາຍຊື່ການອ່ານ</translation>
 <translation id="956066588046842680">ນະໂຍບາຍຂອງອົງກອນຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ນຳເຂົ້າຂໍ້ມູນນີ້.</translation>
 <translation id="956218893102219091">ໃຊ້ສະຖານທີ່ແບບລະອຽດຂອງທ່ານເພື່ອໃຫ້ Gemini ສະແດງຜົນການຊອກຫາທີ່ຖືກຕ້ອງທີ່ສຸດ, ແທນທີ່ຈະໃຊ້ສະຖານທີ່ໂດຍປະມານຕາມທີ່ຢູ່ IP ຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">ສະແດງລິ້ງລັດ</translation>
 <translation id="961856697154696964">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="963102227019621224">ການເຄື່ອນໄຫວເວັບ ແລະ ແອັບ</translation>
 <translation id="965259330007686240">ສ້າງຮູບດ້ວຍ Gemini</translation>

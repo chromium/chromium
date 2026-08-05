@@ -1552,6 +1552,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2198625180564913276">Profiel toevoegen. Dit kan een paar minuten duren.</translation>
 <translation id="2198712775285959645">Bewerken</translation>
 <translation id="2199298570273670671">Fout</translation>
+<translation id="220006241671843310">Kies of Chrome AI-modellen gebruikt die rechtstreeks op je apparaat worden uitgevoerd</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">ChromeOS-systeemlogboeken</translation>
 <translation id="2202391868799679245">Sneltoets aanzetten</translation>
@@ -3274,7 +3275,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3512465804715993309">Aanpasbaar markeren</translation>
 <translation id="3513019849832307207">Deelnemen en openen</translation>
 <translation id="3513563267917474897">Schuifregelaar voor kleurtinten van <ph name="MIN_VALUE" /> tot <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Nieuwe extensies vastzetten</translation>
 <translation id="3514647716686280777">Je krijgt standaardbescherming. Zet de uitgebreide versie van Safe Browsing aan in de Chrome-instellingen voor meer bescherming tegen gevaarlijke websites, downloads en extensies.</translation>
 <translation id="3514681096978190000">Dit archiefbestand heeft andere bestanden die misschien malware verbergen</translation>
 <translation id="3515983984924808886">Tik opnieuw op de beveiligingssleutel om het resetten te bevestigen. Alle informatie die is opgeslagen op de beveiligingssleutel, inclusief de pincode, wordt verwijderd.</translation>
@@ -6508,7 +6508,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
 <translation id="6011308810877101166">Zoeksuggesties verbeteren</translation>
 <translation id="6011908034087870826">Er wordt een link gestuurd naar <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">Bekijk een ondertiteling voor je audio en video</translation>
 <translation id="6014293228235665243">Ongelezen</translation>
 <translation id="6015776718598175635">Sterren</translation>
 <translation id="6015796118275082299">Jaar</translation>

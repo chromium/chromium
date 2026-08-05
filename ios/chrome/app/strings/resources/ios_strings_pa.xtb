@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search AI ਮੋਡ ਅਤੇ ਕਨੈਕਟ ਕੀਤੀਆਂ ਐਪਾਂ</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="1086486568852410168">Google Lens ਨਾਲ ਖੋਜੋ</translation>
+<translation id="1095093219235104018">Gemini ਨਾਲ ਲੱਭੋ ਅਤੇ ਭਰੋ</translation>
 <translation id="1096992026380844478">ਤੁਹਾਡੀਆਂ ਸਿੰਕ ਸੈਟਿੰਗਾਂ ਨੂੰ ਤੁਹਾਡੇ ਪਿਛਲੇ ਬੈਕਅੱਪ ਦੇ ਆਧਾਰ 'ਤੇ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="BEGIN_LINK" />ਦੇਖੋ ਕਿ ਤੁਸੀਂ ਕਿਸ ਚੀਜ਼ ਦਾ ਸਿੰਕ ਕਰ ਸਕਦੇ ਹੋ<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 ਹੱਥੀਂ ਖੋਜ ਨੂੰ ਛੱਡਿਆ ਗਿਆ}one{# ਹੱਥੀਂ ਖੋਜ ਨੂੰ ਛੱਡਿਆ ਗਿਆ}other{# ਹੱਥੀਂ ਖੋਜਾਂ ਨੂੰ ਛੱਡਿਆ ਗਿਆ}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 ਪਾਸਵਰਡ ਦੀ ਤੁਰੰਤ ਪੁਸ਼ਟੀ ਕੀਤੀ ਗਈ}one{# ਪਾਸਵਰਡ ਦੀ ਤੁਰੰਤ ਪੁਸ਼ਟੀ ਕੀਤੀ ਗਈ}other{# ਪਾਸਵਰਡਾਂ ਦੀ ਤੁਰੰਤ ਪੁਸ਼ਟੀ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> ਦਾ ਹਮੇਸ਼ਾਂ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="1110772719190051587">ਚਿਹਰਾ ਆਈਡੀ ਨਾਲ ਅਣਲਾਕ ਕਰੋ</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI ਮੋਡ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1554477036522844996">ਨਵੀਂ ਵਿੰਡੋ</translation>
 <translation id="1558391695376153246">ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
-<translation id="1559263013367304065">Google Lens ਦੀ ਵਰਤੋਂ ਤੋਂ ਬਾਅਦ</translation>
 <translation id="1560153516220021659">ਸੈਕੰਡਰੀ ਟੂਲਬਾਰ ਬਟਨ ਨੂੰ ਸਮੇਟਿਆ ਗਿਆ</translation>
 <translation id="1562601408588733317">Gemini ਨਾਲ ਜਾਣਕਾਰੀ ਲੱਭਣ ਅਤੇ ਭਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1565371473877914088">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">ਸਾਈਟ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ ਅਤੇ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1911619930368729126">Google ਡ੍ਰਾਈਵ ਤੇ ਅਪਲੋਡ ਕਰੋ</translation>
 <translation id="1925706052394657380">iOS ਵਿੱਚ <ph name="BEGIN_BOLD" />ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ<ph name="END_BOLD" /> ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="1938871630297275912">{count,plural, =1{ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਇਆ}one{{count} ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਇਆ}other{{count} ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਏ}}</translation>
 <translation id="1941314575388338491">ਕਾਪੀ ਕਰਨ ਲਈ ਦੋ ਵਾਰ ਟੈਪ ਕਰੋ।</translation>
 <translation id="1943478190258551035">ਮੀਨੂ → ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1952728750904661634">ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">ਸੋਧੋ</translation>
 <translation id="2271452184061378400">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਇੱਥੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="2273327106802955778">ਹੋਰ ਮੀਨੂ</translation>
+<translation id="2274179746480077483">Gmail ਅਤੇ Photos ਵਰਗੀਆਂ ਐਪਾਂ ਤੋਂ ਜਾਣਕਾਰੀ ਨੂੰ ਆਟੋਫਿਲ ਕਰੋ। ਪਰਸਨਲ ਇੰਟੈਲੀਜੈਂਸ ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="2287614783861766820">{count,plural, =1{ਇਸ ਪਤੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।}one{ਇਸ ਪਤੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।}other{ਇਨ੍ਹਾਂ ਪਤਿਆਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।}}</translation>
 <translation id="2295236662082735391">Gemini ਨਾਲ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਵੈੱਬ 'ਤੇ ਕਿਸੇ ਚਿੱਤਰ ਨੂੰ ਦਬਾਈ ਰੱਖੋ</translation>
 <translation id="2296360194694387941">Chrome ਵਿੱਚ Gemini ਦੀ ਵਰਤੋਂ ਪੂਰੀ ਹੋਈ!</translation>
@@ -1576,6 +1577,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6232329973559504466">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="6234310016144827337">ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="6236952928980352967">ਚਿਤਾਵਨੀ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
+<translation id="623755660902014047">ਪੜ੍ਹਨ ਦਾ ਮੋਡ</translation>
 <translation id="6240553182907836376">ਪਛਾਣ ਕਾਰਡ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="6240601837375010619">ਪਾਸਪੋਰਟ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6241132809279377987">Google ਐਪਾਂ ਨਾਲ ਆਪਣੇ iPhone ਲਈ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਣਲਾਕ ਕਰੋ</translation>
@@ -2110,6 +2112,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7972837668077967426">ਕੈਨਵਸ</translation>
 <translation id="7975036700432177008">ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="797588153137233716">ਮੀਨੂ → ਇਤਿਹਾਸ → ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
+<translation id="7977029776654598145">ਜਦੋਂ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7977451675950311423">ਇਹ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ ਕਿ ਕਿਤੇ ਤੁਸੀਂ ਉਸ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਤਾਂ ਨਹੀਂ ਕੀਤੀ ਜਿਸ ਨਾਲ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਛੇੜਛਾੜ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="797824194429476746">ਟੈਬਾਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਰਹਿਣਗੀਆਂ ਪਰ ਗਰੁੱਪ ਨੂੰ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7982789257301363584">ਨੈੱਟਵਰਕ</translation>
@@ -2521,6 +2524,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="954667170699278022">ਪੜ੍ਹਨ-ਸੂਚੀ</translation>
 <translation id="956066588046842680">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਨੀਤੀ ਮੁਤਾਬਕ ਇਸ ਡਾਟੇ ਨੂੰ ਆਯਾਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ।</translation>
 <translation id="956218893102219091">ਸਭ ਤੋਂ ਸਟੀਕ Gemini ਨਤੀਜਿਆਂ ਲਈ, ਤੁਹਾਡੇ IP ਪਤੇ 'ਤੇ ਆਧਾਰਿਤ ਅੰਦਾਜ਼ਨ ਟਿਕਾਣੇ ਦੀ ਬਜਾਏ ਆਪਣਾ ਸਟੀਕ ਟਿਕਾਣਾ ਵਰਤੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">ਹਾਈਪਰਲਿੰਕ ਦਿਖਾਓ</translation>
 <translation id="961856697154696964">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="963102227019621224">ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ</translation>
 <translation id="965259330007686240">Gemini ਦੀ ਮਦਦ ਨਾਲ ਚਿੱਤਰ ਬਣਾਓ</translation>

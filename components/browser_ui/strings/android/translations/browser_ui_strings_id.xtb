@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Diizinkan • Perkiraan</translation>
 <translation id="1323433172918577554">Tampilkan Lebih Banyak</translation>
 <translation id="1333965224356556482">Jangan izinkan situs melihat lokasi Anda</translation>
-<translation id="1343356790768851700">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain</translation>
 <translation id="1369915414381695676">Situs <ph name="SITE_NAME" /> ditambahkan</translation>
 <translation id="1371239764779356792">Mengizinkan situs menyimpan data di perangkat Anda</translation>
 <translation id="1383876407941801731">Telusuri</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5335288049665977812">Izinkan situs menjalankan JavaScript (disarankan)</translation>
 <translation id="534295439873310000">Perangkat NFC</translation>
-<translation id="5344522958567249764">Kelola privasi iklan</translation>
 <translation id="5373874281522292782">Grup tab Anda disimpan</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lainnya)}other{(+ # lainnya)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Tambahkan pengecualian situs</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome akan memblokir cookie lagi besok}other{# hari sebelum cookie diblokir lagi}}</translation>
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
-<translation id="6205314730813004066">Privasi iklan</translation>
 <translation id="6207207788774442484">Hapus data &amp; reset izin</translation>
 <translation id="6211409961905616543">Situs dapat menggunakan sensor gerakan dan cahaya</translation>
 <translation id="6218508144653756827">Tema merah muda cerah</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Tingkatkan keamanan dan perkuat perlindungan data Anda dengan memeriksa sandi</translation>
 <translation id="6992289844737586249">Tanya terlebih dahulu sebelum mengizinkan situs menggunakan mikrofon Anda (disarankan)</translation>
 <translation id="7000754031042624318">Dinonaktifkan di setelan Android</translation>
-<translation id="702275896380648118">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain. Situs ini juga mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>
 <translation id="7036823721811529709">Dengarkan di latar belakang</translation>
 <translation id="7044081119134178347">Kamera diizinkan kali ini</translation>
 <translation id="7053983685419859001">Blokir</translation>
@@ -729,7 +725,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="8514955299594277296">Jangan izinkan situs menyimpan data di perangkat Anda (tidak direkomendasikan)</translation>
 <translation id="851751545965956758">Blokir situs agar tidak terhubung ke perangkat</translation>
 <translation id="8525306231823319788">Layar penuh</translation>
-<translation id="8541410041357371550">Situs ini mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan</translation>
 <translation id="854876774113449365">Situs yang Anda buka dapat menyematkan konten dari situs lain, misalnya gambar, iklan, dan teks. Situs lain tersebut dapat meminta izin untuk menggunakan informasi tentang Anda yang disimpan situs ketika Anda menjelajahi situs. <ph name="BEGIN_LINK" />Pelajari lebih lanjut konten sematan<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Cara menampilkan permintaan</translation>
 <translation id="8558480467877843976">Anda kini dapat menggunakan Chrome kapan saja dengan mengakses atau mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>

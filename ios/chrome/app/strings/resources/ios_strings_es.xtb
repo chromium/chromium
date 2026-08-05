@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Modo IA de la Búsqueda de Google y aplicaciones conectadas</translation>
 <translation id="1085677983426914530">No se ha podido abrir <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Busca con Google Lens</translation>
+<translation id="1095093219235104018">Buscar y rellenar con Gemini</translation>
 <translation id="1096992026380844478">Tus ajustes de sincronización se restaurarán en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 búsqueda manual omitida}other{# búsquedas manuales omitidas}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 contraseña verificada al instante}other{# contraseñas verificadas al instante}}</translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloquear con Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Desactivar Modo IA</translation>
 <translation id="1554477036522844996">Nueva ventana</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
-<translation id="1559263013367304065">desde que usas Google Lens</translation>
 <translation id="1560153516220021659">Botón de la barra de herramientas secundaria contraído</translation>
 <translation id="1562601408588733317">Gestiona cómo Gemini busca y rellena información</translation>
 <translation id="1565371473877914088">Nueva pestaña de Incógnito</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Sitio añadido y fijado</translation>
 <translation id="1911619930368729126">Subir a Google Drive</translation>
 <translation id="1925706052394657380">Abre los ajustes de <ph name="BEGIN_BOLD" />aplicaciones predeterminadas<ph name="END_BOLD" /> en iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Enlace recibido}other{{count} enlaces recibidos}}</translation>
 <translation id="1941314575388338491">Toca dos veces para copiar.</translation>
 <translation id="1943478190258551035">Menú → Configuración</translation>
 <translation id="1952728750904661634">Inicia sesión con una cuenta gestionada</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Pulir</translation>
 <translation id="2271452184061378400">Tus grupos de pestañas se guardan aquí</translation>
 <translation id="2273327106802955778">Menú más</translation>
+<translation id="2274179746480077483">Autocompleta información de aplicaciones como Gmail y Fotos. Con la tecnología de Inteligencia personalizada.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta dirección se eliminará de este dispositivo.}other{Estas direcciones se eliminarán de este dispositivo.}}</translation>
 <translation id="2295236662082735391">Mantén pulsada una imagen en la Web para editarla con Gemini</translation>
 <translation id="2296360194694387941">Usar Gemini en Chrome completado.</translation>
@@ -1576,6 +1577,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6232329973559504466">Búsqueda en incógnito</translation>
 <translation id="6234310016144827337">Comprueba tu conexión y vuelve a intentarlo</translation>
 <translation id="6236952928980352967">Restaurar advertencia</translation>
+<translation id="623755660902014047">Modo Lectura</translation>
 <translation id="6240553182907836376">Actualizar documento de identidad</translation>
 <translation id="6240601837375010619">Guardar pasaporte</translation>
 <translation id="6241132809279377987">Disfruta de más funciones para tu iPhone con las apps de Google</translation>
@@ -2110,6 +2112,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Probar</translation>
 <translation id="797588153137233716">Menú → Historial → Eliminar datos de navegación</translation>
+<translation id="7977029776654598145">Cuándo se usa</translation>
 <translation id="7977451675950311423">Te avisa si usas una contraseña vulnerada en una brecha de seguridad de datos.</translation>
 <translation id="797824194429476746">Las pestañas seguirán abiertas en este dispositivo, pero el grupo se eliminará de forma permanente.</translation>
 <translation id="7982789257301363584">Red</translation>
@@ -2521,6 +2524,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="954667170699278022">Lista de lectura</translation>
 <translation id="956066588046842680">La política de tu organización no permite importar estos datos.</translation>
 <translation id="956218893102219091">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Mostrar hiperenlaces</translation>
 <translation id="961856697154696964">Borrar datos navegación</translation>
 <translation id="963102227019621224">Actividad en la Web y en Apps</translation>
 <translation id="965259330007686240">Crea una imagen con Gemini</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">‏حالت هوشواره‌ای «جستجوی Google» و برنامه‌های متصل‌شده</translation>
 <translation id="1085677983426914530">‫<ph name="FILENAME" /> باز نشد</translation>
 <translation id="1086486568852410168">‏جستجو با «لنز Google»</translation>
+<translation id="1095093219235104018">‏پیدا کردن و پر کردن با Gemini</translation>
 <translation id="1096992026380844478">تنظیمات همگام‌سازی براساس آخرین نسخه پشتیبان شما بازیابی خواهد شد. <ph name="BEGIN_LINK" />دیدن مواردی که می‌توانید همگام‌سازی کنید<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{‫۱ جستجوی دستی رد شد}one{‫# جستجوهای دستی رد شد}other{‫# جستجوهای دستی رد شد}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{‫۱ گذرواژه فوراً درستی‌سنجی شد}one{‫# گذرواژه‌ها فوراً درستی‌سنجی شد}other{‫# گذرواژه‌ها فوراً درستی‌سنجی شد}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
 <translation id="1110772719190051587">باز کردن قفل با «شناسه چهره»</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">خاموش کردن «حالت هوشواره‌ای»</translation>
 <translation id="1554477036522844996">پنجره جدید</translation>
 <translation id="1558391695376153246">بستن «برگه‌های ناشناس»</translation>
-<translation id="1559263013367304065">‏از زمان استفاده از «لنز Google»</translation>
 <translation id="1560153516220021659">دکمه نوارابزار فرعی جمع‌شده</translation>
 <translation id="1562601408588733317">‏مدیریت پیدا کردن و پر کردن اطلاعات با Gemini</translation>
 <translation id="1565371473877914088">زبانه ناشناس جدید</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">سایت اضافه و سنجاق شد</translation>
 <translation id="1911619930368729126">‏بارگذاری در Google Drive</translation>
 <translation id="1925706052394657380">‏تنظیمات <ph name="BEGIN_BOLD" />Default Apps (برنامه‌های پیش‌فرض)<ph name="END_BOLD" /> را در iOS باز کنید</translation>
+<translation id="1938871630297275912">{count,plural, =1{پیوند دریافت شد}one{‫{count} پیوند دریافت شد}other{‫{count} پیوند دریافت شد}}</translation>
 <translation id="1941314575388338491">برای کپی کردن دو ضربه سریع بزنید.</translation>
 <translation id="1943478190258551035">تنظیمات ← منو</translation>
 <translation id="1952728750904661634">ورود به سیستم با حساب مدیریت‌شده</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">فیلتر</translation>
 <translation id="2271452184061378400">گروه‌های زبانه شما اینجا ذخیره می‌شود</translation>
 <translation id="2273327106802955778">منوی بیشتر</translation>
+<translation id="2274179746480077483">‏اطلاعات برنامه‌هایی مثل Gmail و Photos به‌طور خودکار تکمیل می‌شود. پشتیبانی شده توسط «هوش شخصی‌سازی‌شده»</translation>
 <translation id="2287614783861766820">{count,plural, =1{این نشانی از این دستگاه حذف خواهد شد.}one{این نشانی از این دستگاه حذف خواهد شد.}other{این نشانی‌ها از این دستگاه حذف خواهند شد.}}</translation>
 <translation id="2295236662082735391">‏برای ویرایش کردن تصویر در وب با Gemini، روی تصویر فشار طولانی دهید</translation>
 <translation id="2296360194694387941">‏استفاده از «Gemini در Chrome» تکمیل شد!</translation>
@@ -1576,6 +1577,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6232329973559504466">جستجوی ناشناس</translation>
 <translation id="6234310016144827337">اتصالتان را بررسی و دوباره امتحان کنید</translation>
 <translation id="6236952928980352967">بازیابی هشدار</translation>
+<translation id="623755660902014047">حالت خواندن</translation>
 <translation id="6240553182907836376">به‌روز کردن کارت شناسایی</translation>
 <translation id="6240601837375010619">ذخیره کردن گذرنامه</translation>
 <translation id="6241132809279377987">‏با برنامه‌های Google، به ویژگی‌های بیشتری برای iPhone دسترسی پیدا کنید</translation>
@@ -2110,6 +2112,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">امتحان کنید</translation>
 <translation id="797588153137233716">منو ← سابقه ← حذف داده‌های مرور</translation>
+<translation id="7977029776654598145">هنگام استفاده</translation>
 <translation id="7977451675950311423">اگر از گذرواژه‌ای استفاده کنید که در سرقت اطلاعات شبکه لو رفته باشد، به شما هشدار می‌دهد.</translation>
 <translation id="797824194429476746">زبانه‌ها در این دستگاه باز می‌مانند اما گروه برای همیشه حذف خواهد شد.</translation>
 <translation id="7982789257301363584">شبکه</translation>
@@ -2448,7 +2451,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9013605037177245304">روشن کردن اعلان‌ها</translation>
 <translation id="9029650858822697271">از سیستم خارج شدید</translation>
 <translation id="9032405509996909363">تأیید کردن حذف داده‌های مرور</translation>
-<translation id="9035699147763101514">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini. مدیریت انتخاب‌هایتان در تنظیمات.</translation>
+<translation id="9035699147763101514">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini. انتخاب‌هایتان را در تنظیمات مدیریت کنید.</translation>
 <translation id="9039373489628511875">پهنای باند</translation>
 <translation id="9042893549633094279">حریم خصوصی و امنیت</translation>
 <translation id="9055291197094969722">با ساختن گروه زبانه‌ها می‌توانید زبانه‌های باز را سازمان‌دهی کنید و بهره‌وری خود را حفظ کنید</translation>
@@ -2521,6 +2524,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="954667170699278022">فهرست خواندن</translation>
 <translation id="956066588046842680">خط‌مشی سازمانتان اجازه نمی‌دهد این داده‌ها را وارد کنید.</translation>
 <translation id="956218893102219091">‏برای دریافت دقیق‌ترین نتایج از Gemini، به‌جای استفاده از مکان تخمینی مبتنی بر نشانی IP، از مکان دقیق خود استفاده کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">نمایش پیوندها</translation>
 <translation id="961856697154696964">حذف کردن داده‌های مرور</translation>
 <translation id="963102227019621224">فعالیت‌ها در وب و برنامه</translation>
 <translation id="965259330007686240">‏ساختن تصویر با Gemini</translation>

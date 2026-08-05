@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Lubatud • Ligikaudne</translation>
 <translation id="1323433172918577554">Kuva rohkem</translation>
 <translation id="1333965224356556482">Ära luba saitidel minu asukohta näha</translation>
-<translation id="1343356790768851700">See sait tuvastab, mis teile meeldib, ja soovitab seejärel teistele saitidele reklaame</translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> on lisatud</translation>
 <translation id="1371239764779356792">Saidil teie seadmesse andmete salvestamise lubamine</translation>
 <translation id="1383876407941801731">Otsi</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5335288049665977812">Luba saitidel käitada JavaScripti (soovitatav)</translation>
 <translation id="534295439873310000">NFC-seadmed</translation>
-<translation id="5344522958567249764">Hallake reklaamide privaatsust</translation>
 <translation id="5373874281522292782">Teie vahelehegrupid salvestatakse</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ja veel 1)}other{(ja veel #)}}</translation>
 <translation id="5403592356182871684">Nimed</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Lisa saidi erand</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome blokeerib homme küpsisefailid uuesti}other{Küpsisefailid blokeeritakse uuesti # päeva pärast}}</translation>
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
-<translation id="6205314730813004066">Reklaamide privaatsus</translation>
 <translation id="6207207788774442484">Kustuta andmed ja õigused</translation>
 <translation id="6211409961905616543">Saidid saavad kasutada liikumis- ja valgusandureid</translation>
 <translation id="6218508144653756827">Fuksiaroosa teema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Suurendage oma turvalisust ja hoidke oma andmed turvalisemalt, kontrollides oma paroole</translation>
 <translation id="6992289844737586249">Küsi enne saitidele minu mikrofoni kasutamiseks juurdepääsu lubamist (soovitatav)</translation>
 <translation id="7000754031042624318">Androidi seadetes välja lülitatud</translation>
-<translation id="702275896380648118">See sait tuvastab asjad, mis teile meeldivad, ja soovitab seejärel teistele saitidele reklaame. Samuti hangib see sait Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame.</translation>
 <translation id="7036823721811529709">Kuulake taustal</translation>
 <translation id="7044081119134178347">Kaamera seekord lubatud</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
@@ -729,7 +725,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="8514955299594277296">Saitidel ei lubata teie seadmesse andmeid salvestada (pole soovitatav)</translation>
 <translation id="851751545965956758">Blokeeri saitidel seadmetega ühenduse loomine</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
-<translation id="8541410041357371550">See sait hangib Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame</translation>
 <translation id="854876774113449365">Teie külastatavad saidid võivad manustada sisu muudelt saitidelt (nt pilte, reklaame ja teksti). Kui sirvite neid saite, võivad need küsida luba kasutada teavet, mille need on teie kohta salvestanud. <ph name="BEGIN_LINK" />Lisateave manustatud sisu kohta<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Kuidas taotlusi kuvada?</translation>
 <translation id="8558480467877843976">Nüüd saate kasutada Chrome'i iga kord, kui sirvite või puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>

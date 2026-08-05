@@ -3356,22 +3356,6 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 變化版本會控制是否要
 <translation id="3181114468897395940">PageUp/PageDown 設定採用含有 Alt 輔助鍵的快速鍵</translation>
 <translation id="3182503302060513467">如果有中間版位公告，新分頁就會加以顯示</translation>
 <translation id="3184161739683646075">控管 DNS-over-HTTPS 的模式</translation>
-<translation id="3184247679989063353">網址模式清單。若網站來自相符來源，發出的網路要求不會經過<ph name="LOCAL_NETWORK_ACCESS" />檢查。
-
-如果來源不符合此處指定的模式，將套用使用者的個人設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至本機裝置和區域網路端點的來源。如果來源比對符合下列多項政策，系統會依序優先採用這些政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="3184638144755436350">Chrome 會封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業，詳情請參閱 https://chromestatus.com/features/5680742077038592。
 
       如果將這項政策設為 True，就代表允許 Chrome 封鎖這類瀏覽作業。
@@ -4495,6 +4479,11 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
       如果將這項政策設為停用或不設定，則裝置不會啟用 <ph name="PLUGIN_VM_NAME" />。</translation>
 <translation id="3973371701361892765">永不自動隱藏檔案櫃</translation>
+<translation id="3974715256242096353">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
+
+如果將這項政策設為 True 或不設定，使用者就能自訂新分頁的背景。
+
+注意：在 Android 上，必須重新啟動瀏覽器，系統才會套用這項政策。</translation>
 <translation id="3977304360459208438">在傳輸層安全標準 (TLS) 中使用 3DES 加密套件的預設設定</translation>
 <translation id="3977906634350977040">如果將這項政策設為啟用，遠端存取主機可在接受用戶端連線時使用 PIN 碼和配對驗證方式。
 
@@ -5085,20 +5074,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 如果停用這項政策，將會停用已淘汰的舊語法。
 
 如果不設定這項政策，將會停用已淘汰的舊語法。</translation>
-<translation id="4400152722459197056">網址模式清單。如果網站來自相符來源，向區域網路端點發出的網路要求就不會經過<ph name="LOCAL_NETWORK_ACCESS" />檢查。
-
-如果來源不符合此處指定的模式，將套用使用者的個人設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至區域網路端點的來源。如果來源比對符合下列多項政策，系統會按照下列順序優先採用政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">自 M110 起，系統將移除不安全環境中的 WebSQL。這項政策會重新啟用這個 API。
           如果將這項政策設為 True，系統將在不安全的環境中開放使用 WebSQL。如果將這項政策設為 False 或未設定，WebSQL 仍可在 M109 以前的不安全環境中使用，但自 M110 起將無法使用。
 這項政策將在 M112 中移除。</translation>
@@ -7549,23 +7524,6 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_BLOCKLIST" />。</translation>
 <translation id="591088232153082363">根據電池用量模式自動調整充電方式。</translation>
-<translation id="5913506885872855604">你可以將某些內部位址範圍視為「公開」，因此不會受到 <ph name="LOCAL_NETWORK_ACCES" /> 檢查。反之，如果某些公開位址範圍可能用於內部，你可以將其視為「本機」，讓 <ph name="LOCAL_NETWORK_ACCESS" /> 檢查保護這些位址範圍。
-
-IP 位址空間覆寫有兩種形式：
-
-[cidr]=[public|local|loopback]
-
-其中 [cidr] 是採用 CIDR 標記法的 IP 位址範圍 (如要瞭解 IPv4，請參閱 https://tools.ietf.org/html/rfc4632 的第 3.1 節；如要瞭解 IPv6，請參閱 https://tools.ietf.org/html/rfc4291 的第 2.3 節)。IPv6 位址必須採用網址安全 (加括號) 格式。CIDR 覆寫設定會套用至所有通訊埠。
-
-或
-
-[IP 位址]:[通訊埠]=[public|local|loopback]
-
-如要進一步瞭解<ph name="LOCAL_NETWORK_ACCESS" />，請參閱 https://wicg.github.io/local-network-access/ 和 https://developer.chrome.com/blog/local-network-access。
-
-這項政策不支援動態重新整理。
-
-指令列參數 --ip-address-space-overrides 的覆寫設定優先於這項政策設定的覆寫設定。</translation>
 <translation id="5915023683182228340">如果將這項政策設為啟用或不設定，系統會允許 <ph name="PRODUCT_NAME" /> 使用 QUIC 通訊協定。
 
       如果將這項政策設為停用，系統會禁止使用 QUIC 通訊協定。</translation>
@@ -9646,6 +9604,20 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       如果將這項政策設為 False，使用者、應用程式和擴充功能將無法進入全螢幕模式。</translation>
 <translation id="7180529638251181928">不強制執行 <ph name="YOUTUBE_PRODUCT_NAME" /> 嚴格篩選模式</translation>
 <translation id="718126088895133062">這項政策會為這部裝置指定 <ph name="PLUGIN_VM_NAME" /> 授權使用者 ID。</translation>
+<translation id="7182622189057326705">由於 Chrome 已移除「剪貼簿共用」功能，這項政策已淘汰且不再具有任何效力。
+
+原始說明：
+啟用「剪貼簿共用」功能，讓使用者處於登入狀態且啟用同步功能時，可以在 Chrome 桌面和 Android 裝置之間傳送文字。
+
+          如果將這項政策設為 True，系統會啟用 Chrome 使用者跨裝置傳送文字的功能。
+
+          如果將這項政策設為 False，系統會停用 Chrome 使用者跨裝置傳送文字的功能。
+
+          設定這項政策後，使用者即無法變更或覆寫設定。
+
+          如果不設定這項政策，系統在預設狀態下會啟用剪貼簿共用功能。
+
+          管理員可以自行選擇在任何平台上設定政策。建議作法是在所有平台上將這項政策設為相同的值。</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">使用 Google 網路服務來協助解決拼字錯誤</translation>
 <translation id="7187248416163189586">停用裝置背光資訊回報功能</translation>
@@ -10209,20 +10181,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
           如果將這項政策設為 False 或不設定，系統就不會在螢幕鎖定畫面和登入畫面提供 PIN 碼自動提交功能。
 
           如果設定了這項政策，使用者就無法啟用這項功能。</translation>
-<translation id="7609566862616914296">網址模式清單。如果傳送網路要求的網站來自相符來源，將無法向區域網路端點發出<ph name="LOCAL_NETWORK_ACCESS" />要求。
-
-如果來源不符合此處指定的模式，將套用使用者的個人設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至區域網路端點的來源。如果來源比對符合下列多項政策，系統會按照下列順序優先採用政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">設定要停用<ph name="PASSWORD_MANAGER_NAME" /> (儲存及填入) 的網域清單</translation>
 <translation id="7612059745454194563">不允許顯示憑證提供者擴充功能宣傳資訊</translation>
 <translation id="7612157962821894603">要在 <ph name="PRODUCT_NAME" /> 啟動時套用的全系統設定</translation>
@@ -11225,22 +11183,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 
 如要進一步瞭解舊版技術，請前往 https://chromestatus.com/features。</translation>
 <translation id="8273183018575414926">漸進式網頁應用程式</translation>
-<translation id="8274053052968966211">網址模式清單。若傳送網路要求的網站來自相符來源，將無法發出<ph name="LOCAL_NETWORK_ACCESS" />要求。
-
-如果來源不符合此處指定的模式，將套用使用者的個人設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至本機裝置和區域網路端點的來源。如果來源比對符合下列多項政策，系統會依序優先採用這些政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8274603902181597201">清除使用者的 eCryptfs 主目錄，改用全新的 Ext4 加密主目錄。</translation>
 <translation id="8274926413890711289">啟用精細回報控制項</translation>
 <translation id="8275103737670730746">允許不透過舊使用者手勢呼叫檔案或目錄選取器 API</translation>

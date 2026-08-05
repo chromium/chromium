@@ -1175,6 +1175,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1901213235765457754">Pide a tu administrador que actualice esta aplicación</translation>
 <translation id="1901303067676059328">Seleccionar &amp;todo</translation>
 <translation id="1901760057081700494">La zona horaria definida es <ph name="TIME_ZONE_ENTRY" />. Para actualizar automáticamente la zona horaria, <ph name="BEGIN_LINK" />activa el acceso a la ubicación del sistema<ph name="END_LINK" />.</translation>
+<translation id="1903124137025773109">Tu dirección de casa puede ayudarte a hacer cosas en los servicios de Google, como obtener resultados de búsqueda más pertinentes e indicaciones en Google Maps. Puedes editar o eliminar tu dirección en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="1904580727789512086">Las URLs que visitas se guardan en tu cuenta de Google</translation>
 <translation id="190530012637606145">Te avisa de todas las conexiones no seguras, incluidas las intranets privadas</translation>
 <translation id="1906181697255754968">Los sitios suelen acceder a archivos y carpetas de tu dispositivo para usarlos en funciones como la de guardar automáticamente tu trabajo.</translation>
@@ -1552,6 +1553,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2198625180564913276">Añadiendo perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="2198712775285959645">Editar</translation>
 <translation id="2199298570273670671">Error</translation>
+<translation id="220006241671843310">Elige si quieres que Chrome use modelos de IA que se ejecutan directamente en tu dispositivo</translation>
 <translation id="2200094388063410062">Correo electrónico</translation>
 <translation id="2200781749203116929">Registros del sistema de ChromeOS</translation>
 <translation id="2202391868799679245">Activar combinación de teclas</translation>
@@ -1632,6 +1634,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="225716114209817872">Máximo</translation>
 <translation id="2259337945538989999">Para ver las pestañas de tus otros dispositivos, verifica tu identidad. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="22614517036276112">Este documento o tu dispositivo no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.</translation>
+<translation id="2261825061465157168">Tu dirección del trabajo puede ayudarte a hacer cosas en los servicios de Google, como obtener resultados de búsqueda más pertinentes e indicaciones en Google Maps. Puedes editar o eliminar tu dirección en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="2262477216570151239">Tiempo para la repetición</translation>
 <translation id="2263371730707937087">Frecuencia de actualización de la pantalla</translation>
 <translation id="2263679799334060788">Tus comentarios nos ayudan a mejorar Google Cast. Gracias por enviarlos.
@@ -2265,6 +2268,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2739240477418971307">Cambiar tu configuración de accesibilidad</translation>
 <translation id="2739331588276254426">Conectado a Internet mediante <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">Conserva este grupo para añadir pestañas más tarde o elimínalo si ya no lo necesitas.</translation>
+<translation id="2739917034504760471">Obtener una definición o más información sobre un tema</translation>
 <translation id="274029851662193272">Hundida</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2740876196999178364">Estas llaves de acceso solo se guardan en este dispositivo. No se guardan en tu cuenta de Google.</translation>
@@ -2699,6 +2703,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3048917188684939573">Registros de envío y del dispositivo</translation>
 <translation id="3049356453907822148">Añadir una nueva habilidad</translation>
 <translation id="3051250416341590778">Tamaño de visualización</translation>
+<translation id="3051676221004664500">&amp;Traducir "<ph name="SELECTION" />"</translation>
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
 <translation id="3053274730492362225">Sin parpadeo</translation>
 <translation id="3057938290530993634">Mantén pulsado para fijar los sitios web que más visitas y acceder a ellos fácilmente la próxima vez</translation>
@@ -3238,6 +3243,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3482719661246593752"><ph name="ORIGIN" /> puede ver los siguientes archivos:</translation>
 <translation id="3484595034894304035">Personaliza el fondo de pantalla, el salvapantallas, el tema oscuro y más</translation>
 <translation id="3484869148456018791">Obtener nuevo certificado</translation>
+<translation id="3486380520195228369">Oculto hasta que se actualice la página</translation>
 <translation id="3487007233252413104">función anónima</translation>
 <translation id="3487649228420469005">Se ha completado el análisis</translation>
 <translation id="3488199663160411179">nombre</translation>
@@ -3275,7 +3281,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3512465804715993309">Resaltado adaptativo</translation>
 <translation id="3513019849832307207">Unirme y abrir</translation>
 <translation id="3513563267917474897">Control deslizante del tono de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Fijar nuevas extensiones</translation>
 <translation id="3514647716686280777">Estás usando la protección de seguridad estándar. Para aumentar la protección contra las descargas, las extensiones y los sitios web peligrosos, activa Navegación segura mejorada en la configuración de Chrome.</translation>
 <translation id="3514681096978190000">Este archivo incluye otros archivos que pueden ocultar malware</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se eliminará toda la información guardada en la llave de seguridad, incluido el PIN.</translation>
@@ -3359,6 +3364,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3577036603268648505">Más seguridad online</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="3577487026101678864">Sincronización de archivos activada</translation>
+<translation id="3578230582111850125">selecciona texto para preguntar a Gemini</translation>
 <translation id="3581605050355435601">Configurar automáticamente la dirección IP</translation>
 <translation id="3581861561942370740">Buscar en el historial de descargas</translation>
 <translation id="3582057310199111521">Introducida en un sitio web engañoso y encontrada en una brecha de seguridad de datos</translation>
@@ -5140,6 +5146,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4913573660390710463">Accede a aplicaciones web empaquetadas con funciones mejoradas. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">No se encuentran datos de aplicaciones</translation>
 <translation id="4915961947098019832">Puede mostrar imágenes</translation>
+<translation id="4916140032692201190">&amp;Traducir selección</translation>
 <translation id="491779113051926205">Contadores de tráfico de ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> quiere comunicarse con al extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="4918086044614829423">Aceptar</translation>
@@ -6511,7 +6518,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6011193465932186973">Huella digital</translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
 <translation id="6011908034087870826">Enviando enlace a <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">Obtén subtítulos para tu contenido de audio y vídeo</translation>
 <translation id="6014293228235665243">No leído</translation>
 <translation id="6015776718598175635">Estrellas</translation>
 <translation id="6015796118275082299">Año</translation>
@@ -7334,6 +7340,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6660301751798595791">Selección de voz</translation>
 <translation id="6660819301598582123">El viejo Señor Gómez pedía queso, kiwi y habas, pero le ha tocado un saxofón.</translation>
 <translation id="666099631117081440">Servidores de impresión</translation>
+<translation id="6662339038589469159">Selecciona texto para preguntar a Gemini</translation>
 <translation id="6662394424395160792">Usa el Gestor de contraseñas de Google para iniciar sesión más rápido en sitios desde cualquiera de tus dispositivos</translation>
 <translation id="6662931079349804328">La política de Enterprise ha cambiado. Se ha quitado el botón Experimentos de la barra de herramientas.</translation>
 <translation id="6664774537677393800">Se ha producido un error al abrir tu perfil. Cierra sesión y vuelve a iniciarla.</translation>
@@ -7999,6 +8006,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7174199383876220879">¡Nuevo! Controla tu música, tus vídeos y otras muchas cosas.</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Cargado desde:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{Vuelve a pulsar <ph name="SHORTCUT_TEXT" /> para cerrar la pestaña fija}other{Vuelve a pulsar <ph name="SHORTCUT_TEXT" /> para cerrar las pestañas fijas}}</translation>
 <translation id="7177659256878428843">Convertir grupo de pestañas en carpeta de marcadores</translation>
 <translation id="7180569503618416775">Wallet puede ofrecerte guardar información de las páginas que estás viendo, como las entradas que compras</translation>
 <translation id="7180611975245234373">Actualizar</translation>
@@ -9702,6 +9710,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8477241577829954800">Reemplazado</translation>
 <translation id="8477384620836102176">&amp;General</translation>
 <translation id="8477446666255316832">Inicia sesión más rápido la próxima vez</translation>
+<translation id="8477548388161793571">&amp;Traducir selección</translation>
 <translation id="8478346767369317046">Trabajo</translation>
 <translation id="8479176401914456949">Código no válido. Inténtalo de nuevo.</translation>
 <translation id="8480869669560681089">Dispositivo de <ph name="VENDOR_NAME" /> desconocido</translation>
@@ -9731,6 +9740,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="850399339579925930">Diccionarios</translation>
 <translation id="850561044295157831">Más información sobre Ayúdame a escribir</translation>
 <translation id="8505669004895429027">Ahorro reducido</translation>
+<translation id="850632091665381275">Suscripción de Google</translation>
 <translation id="8507052544157927817">Estilo de subrayado</translation>
 <translation id="8507227974644337342">Resolución de pantalla</translation>
 <translation id="8507443886219296894">Ocultar en este sitio</translation>

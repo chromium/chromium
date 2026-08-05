@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1184166532603925201">When you're in Incognito mode, Chrome blocks sites from using third-party cookies</translation>
-<translation id="1559726735555610004">Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalise your experience for more than just ads. They may also combine it with other information that they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK" />try giving that site temporary access to third-party cookies<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Your current Chrome settings have been updated to allow websites to access third-party cookies. You can change this setting any time.</translation>
 <translation id="2004697686368036666">Features on some sites may not work</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Sites that rely on third-party cookies should work as expected</translation>
 <translation id="3624583033347146597">Choose your third-party cookie preferences</translation>
 <translation id="3918378745482005425">Some features may not work. Related sites can still use third-party cookies.</translation>
-<translation id="4009365983562022788">Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalise your experience for more than just ads. They may also combine it with other information that they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK1" />privacy policy<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Allowed</translation>
 <translation id="4412992751769744546">Allow third-party cookies</translation>
 <translation id="4711259472133554310">You can create exceptions in Settings to always allow specific sites to use third-party cookies</translation>

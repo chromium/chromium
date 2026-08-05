@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search AI mode at mga nakakonektang app</translation>
 <translation id="1085677983426914530">Hindi mabuksan ang <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
+<translation id="1095093219235104018">Hanapin at punan gamit ang Gemini</translation>
 <translation id="1096992026380844478">Ire-restore ang iyong mga setting ng pag-sync batay sa huli mong backup. <ph name="BEGIN_LINK" />Tingnan kung ano ang puwede mong i-sync<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 manual na paghahanap ang nilaktawan}one{# manual na paghahanap ang nilaktawan}other{# na manual na paghahanap ang nilaktawan}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 password ang na-verify kaagad}one{# password ang na-verify kaagad}other{# na password ang na-verify kaagad}}</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">I-unlock gamit ang Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">I-off ang AI Mode</translation>
 <translation id="1554477036522844996">Bagong Window</translation>
 <translation id="1558391695376153246">Isara ang mga Incognito tab</translation>
-<translation id="1559263013367304065">mula nang gumamit ng Google Lens</translation>
 <translation id="1560153516220021659">Naka-collapse na pangalawang button ng toolbar</translation>
 <translation id="1562601408588733317">Pamahalaan ang paghahanap at paglalagay ng impormasyon gamit ang Gemini</translation>
 <translation id="1565371473877914088">Bagong Tab na Incognito</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Naidagdag at na-pin ang site</translation>
 <translation id="1911619930368729126">I-upload sa Google Drive</translation>
 <translation id="1925706052394657380">Buksan ang mga setting ng <ph name="BEGIN_BOLD" />Mga Default na App<ph name="END_BOLD" /> sa iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Natanggap ang link}one{{count} link ang natanggap}other{{count} na link ang natanggap}}</translation>
 <translation id="1941314575388338491">I-double tap upang kopyahin.</translation>
 <translation id="1943478190258551035">Menu → Mga Setting</translation>
 <translation id="1952728750904661634">Mag-sign in gamit ang isang pinamamahalaang account</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Pinuhin</translation>
 <translation id="2271452184061378400">Nase-save dito ang iyong mga grupo ng tab</translation>
 <translation id="2273327106802955778">Higit pang menu</translation>
+<translation id="2274179746480077483">I-autofill ang impormasyon mula sa mga app gaya ng Gmail at Photos. Pinapagana ng Personal Intelligence.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Made-delete ang address na ito sa device na ito.}one{Made-delete ang mga address na ito sa device na ito.}other{Made-delete ang mga address na ito sa device na ito.}}</translation>
 <translation id="2295236662082735391">Matagal na pindutin ang isang larawan sa web para i-edit gamit ang Gemini</translation>
 <translation id="2296360194694387941">Tapos na ang paggamit ng Gemini sa Chrome!</translation>
@@ -1576,6 +1577,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6232329973559504466">Paghahanap na Incognito</translation>
 <translation id="6234310016144827337">Tingnan ang iyong koneksyon at subukan ulit</translation>
 <translation id="6236952928980352967">I-restore ang Babala</translation>
+<translation id="623755660902014047">Reading mode</translation>
 <translation id="6240553182907836376">I-update ang identity card</translation>
 <translation id="6240601837375010619">I-save ang passport</translation>
 <translation id="6241132809279377987">Mag-unlock ng higit pang feature para sa iyong iPhone sa pamamagitan ng mga Google app</translation>
@@ -2110,6 +2112,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Subukan</translation>
 <translation id="797588153137233716">Menu → History → I-delete ang data mula sa pag-browse</translation>
+<translation id="7977029776654598145">Kapag ginamit</translation>
 <translation id="7977451675950311423">Babalaan ka kung gagamit ka ng password na nakompromiso sa isang paglabag sa data.</translation>
 <translation id="797824194429476746">Mananatiling nakabukas ang mga tab sa device na ito pero permanenteng made-delete ang grupo.</translation>
 <translation id="7982789257301363584">Network</translation>
@@ -2522,6 +2525,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="954667170699278022">Listahan ng Babasahin</translation>
 <translation id="956066588046842680">Hindi pinapayagan ng patakaran ng iyong organisasyon ang pag-import ng data na ito.</translation>
 <translation id="956218893102219091">Gamitin ang iyong eksaktong lokasyon para sa mga pinakatumpak na resulta sa Gemini, sa halip na ang tinatayang lokasyon batay sa IP address mo. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Ipakita ang mga hyperlink</translation>
 <translation id="961856697154696964">I-delete ang browsing data</translation>
 <translation id="963102227019621224">Aktibidad sa Web at App</translation>
 <translation id="965259330007686240">Gumawa ng larawan gamit ang Gemini</translation>

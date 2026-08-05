@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Kuvunyelwe • Ukulinganisela</translation>
 <translation id="1323433172918577554">Bonisa okuningi</translation>
 <translation id="1333965224356556482">Ungavumeli amasayithi abone indawo yakho</translation>
-<translation id="1343356790768851700">Le sayithi inquma izinto ozithandayo bese iphakamisa izikhangiso kwamanye amasayithi</translation>
 <translation id="1369915414381695676">Isayithi le-<ph name="SITE_NAME" /> lingeziwe</translation>
 <translation id="1371239764779356792">Vumela isayithi ukuthi lilondoloze idatha kudivayisi yakho</translation>
 <translation id="1383876407941801731">Sesha</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5335288049665977812">Vumela amasayithi ukuthi aqalise i-JavaScript (kunconyiwe)</translation>
 <translation id="534295439873310000">Amadivayisi e-NFC</translation>
-<translation id="5344522958567249764">Phatha ubumfihlo besikhangiso</translation>
 <translation id="5373874281522292782">Amaqembu wakho wamathebhu alondoloziwe</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 okuningi)}one{(+ # okuningi)}other{(+ # okuningi)}}</translation>
 <translation id="5403592356182871684">Amagama</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Engeza okuhlukile kwesayithi</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{I-Chrome izophinde ivimbele amakhukhi kusasa}one{izinsuku ezingu-# ngaphambi kokuthi amakhukhi avinjwe futhi}other{izinsuku ezingu-# ngaphambi kokuthi amakhukhi avinjwe futhi}}</translation>
 <translation id="6196640612572343990">Vimba amakhukhi enkampani yangaphandle</translation>
-<translation id="6205314730813004066">Ubumfihlo besikhangiso</translation>
 <translation id="6207207788774442484">Sula idatha futhi usethe kabusha izimvume</translation>
 <translation id="6211409961905616543">Amasayithi angasebenzisa izinzwa zokunyakaza nezokukhanya</translation>
 <translation id="6218508144653756827">Itimu yeFuchsia</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Qinisa ukuvikeleka kwakho futhi ugcine idatha yakho iphephile ngokuhlola amaphasiwedi akho</translation>
 <translation id="6992289844737586249">Buza kuqala ngaphambi kokuvumela amasayithi ukuthi asebenzise imakrofoni yakho (kunconyiwe)</translation>
 <translation id="7000754031042624318">Kuvaliwe kuzilungiselelo ze-Android</translation>
-<translation id="702275896380648118">LeLI sayithi Linquma izinto ozithandayo bese liphakamisa izikhangiso kwamanye amasayithi. Leli sayithi lithola izihloko zezikhangiso zakho ku-Chrome ukuze likubonise izikhangiso ezihambisana kakhulu.</translation>
 <translation id="7036823721811529709">Lalela ngemuva</translation>
 <translation id="7044081119134178347">Ikhamera ivunyelwe ngalesi sikhathi</translation>
 <translation id="7053983685419859001">Vimba</translation>
@@ -729,7 +725,6 @@ Ukuvikela Okuthuthukile kulawula la masethingi eChrome:</translation>
 <translation id="8514955299594277296">Ungavumeli amasayithi ukuthi alondoloze idatha kudivayisi yakho (akunconyiwe)</translation>
 <translation id="851751545965956758">Vimbela amasayithi kusukela ekuxhumekeni kumadivayisi</translation>
 <translation id="8525306231823319788">Isikrini esigcwele</translation>
-<translation id="8541410041357371550">Leli sayithi lithola izihloko zesikhangiso sakho ku-Chrome ukuze likubonise izikhangiso ezihambisana kakhulu</translation>
 <translation id="854876774113449365">Amasayithi owavakashelayo angashumeka okuqukethwe okuvela kwamanye amasayithi, ngokwesibonelo, imifanekiso, izikhangiso, nombhalo. Lawa masayithi amanye angacela imvume yokusebenzisa ulwazi alulondolozile ngawe njengoba ubhrawuza isayithi. <ph name="BEGIN_LINK" />Funda kabanzi ngokuqukethwe okushumekiwe<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Indlela yokubonisa izicelo</translation>
 <translation id="8558480467877843976">Manje usungasebenzisa i-Chrome noma kunini uma ubhrawuza noma uthepha amalinki emilayezweni, kumadokhumenti, nakwamanye ama-app.</translation>

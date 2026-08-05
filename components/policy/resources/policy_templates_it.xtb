@@ -3509,22 +3509,6 @@ fino alla versione 142 di
 <translation id="3181114468897395940">Le impostazioni di Pagina su/Pagina giù usano la scorciatoia che contiene il tasto di modifica Alt</translation>
 <translation id="3182503302060513467">Nella pagina Nuova scheda verrà mostrata la comunicazione dell'area centrale, se è disponibile</translation>
 <translation id="3184161739683646075">Controlla la modalità di DNS over HTTPS</translation>
-<translation id="3184247679989063353">Elenco di pattern URL. Le richieste inoltrate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns/.
-
-Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Esistono più policy che elencano le origini che influiscono sulle richieste al dispositivo locale e agli endpoint della rete locale. Se un'origine corrisponde a più di una delle seguenti policy, le policy hanno la precedenza nel seguente ordine:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="3184638144755436350">Chrome bloccherà le navigazioni verso protocolli esterni all'interno di iframe con sandbox. Visita la pagina https://chromestatus.com/features/5680742077038592.
 
       Quando il valore è True, Chrome può bloccare queste navigazioni.
@@ -4677,6 +4661,11 @@ Sulle piattaforme desktop, il download del modello può essere disattivato anche
 
       Se la policy viene impostata su Disattivata o se non viene configurata, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
 <translation id="3973371701361892765">Non nascondere mai automaticamente la barra delle app</translation>
+<translation id="3974715256242096353">Se la policy viene impostata su false, gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda. L'eventuale sfondo personalizzato esistente viene rimosso definitivamente anche se la policy viene impostata su true in un secondo momento.
+
+Se la policy viene impostata su true o non viene configurata, gli utenti possono personalizzare lo sfondo della pagina Nuova scheda.
+
+Nota: su Android, la policy viene applicata al browser solo dopo il riavvio.</translation>
 <translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
 <translation id="3977906634350977040">Se la policy viene attivata, l'host di accesso remoto può usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate.
 
@@ -5287,20 +5276,6 @@ Se questa policy viene attivata, verrà attivata la sintassi deprecata precedent
 Se questa policy viene disattivata, la sintassi deprecata precedente verrà disattivata.
 
 Se questa policy non viene configurata, la sintassi deprecata precedente verrà disattivata.</translation>
-<translation id="4400152722459197056">Elenco di pattern URL. Le richieste di rete inoltrate da siti web pubblicati da origini corrispondenti agli endpoint della rete locale non sono soggette ai controlli di <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns/.
-
-Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Esistono più policy che elencano le origini che influiscono sulle richieste agli endpoint della rete locale. Se un'origine corrisponde a più di una delle seguenti policy, le policy hanno la precedenza nel seguente ordine:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">WebSQL in contesti non sicuri verrà rimosso a partire dalla versione M110. Questa policy consente di riattivare l'API.
           Se questa policy viene impostata su true, WebSQL in contesti non sicuri sarà disponibile.
           Se la policy viene impostata su false o se non viene configurata, WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.
@@ -7831,23 +7806,6 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Questa policy è deprecata. Usa la policy <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Ricarica adattiva della batteria sulla base dei pattern di utilizzo batteria.</translation>
-<translation id="5913506885872855604">Questa può essere utilizzata per trattare determinati intervalli di indirizzi interni come "pubblici" e quindi non soggetti a controlli di <ph name="LOCAL_NETWORK_ACCES" />. Al contrario, può essere utilizzata per trattare determinati intervalli di indirizzi pubblici che potrebbero essere utilizzati internamente come "locali", in modo che siano protetti dai controlli di <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Gli override dello spazio di indirizzi IP hanno due forme:
-
-[cidr]=[public|local|loopback]
-
-dove [cidr] è un intervallo di indirizzi IP in notazione CIDR (vedi la sezione 3.1 di https://tools.ietf.org/html/rfc4632 per IPv4 e la sezione 2.3 di https://tools.ietf.org/html/rfc4291 per IPv6). Gli indirizzi IPv6 devono essere specificati in formato sicuro per gli URL (tra parentesi). Gli override di CIDR si applicano a tutte le porte.
-
-oppure
-
-[indirizzo-ip]:[porta]=[pubblico|locale|loopback]
-
-Per saperne di più su <ph name="LOCAL_NETWORK_ACCESS" />, visita le pagine https://wicg.github.io/local-network-access/ e https://developer.chrome.com/blog/local-network-access.
-
-Questa policy non supporta l'aggiornamento dinamico.
-
-Gli override dall'opzione della riga di comando --ip-address-space-overrides hanno la precedenza sugli override impostati da questa policy.</translation>
 <translation id="5915023683182228340">Se la policy viene impostata su Attivata o se non viene configurata, è consentito utilizzare il protocollo QUIC in <ph name="PRODUCT_NAME" />.
 
       Se viene impostata su Disattivata, non è consentito utilizzare il protocollo QUIC.</translation>
@@ -10058,6 +10016,20 @@ Nota: se utilizzi questa policy per risolvere automaticamente il fuso orario, no
       Se la policy è impostata su False, gli utenti, le app e le estensioni non possono utilizzare la modalità a schermo intero.</translation>
 <translation id="7180529638251181928">Non forzare l'applicazione della Modalità con restrizioni su <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="718126088895133062">Questa policy consente di specificare l'ID utente della licenza <ph name="PLUGIN_VM_NAME" /> di questo dispositivo.</translation>
+<translation id="7182622189057326705">Questa policy è deprecata e non ha alcun effetto, in quanto la funzionalità Appunti condivisi è stata rimossa da Chrome.
+
+Descrizione originale:
+Attiva la funzionalità Appunti condivisi che permette agli utenti di inviare messaggi tra le versioni desktop di Chrome e un dispositivo Android quando la sincronizzazione è attivata e l'utente ha fatto l'accesso.
+
+          Se questa policy è impostata su true, la funzionalità di invio messaggi, cross-device, è attivata per gli utenti Chrome.
+
+          Se questa policy è impostata su false, la funzionalità di invio messaggi, cross-device, è disattivata per gli utenti Chrome.
+
+          Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
+
+          Se questa policy non viene impostata, la funzionalità Appunti condivisi è attivata per impostazione predefinita.
+
+          Spetta agli amministratori scegliere se impostare le policy su tutte le piattaforme a cui sono interessati. Consigliamo di impostare questa policy su un valore unico per tutte le piattaforme.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Usa un servizio web di Google per correggere gli errori ortografici</translation>
 <translation id="7187248416163189586">Disattiva i report sulle informazioni relative alla retroilluminazione del dispositivo</translation>
@@ -10641,20 +10613,6 @@ Per questa policy è possibile definire al massimo 1000 voci.</translation>
           Se la policy viene impostata su False o se non viene configurata, gli utenti non avranno a disposizione la funzionalità di invio automatico del PIN nella schermata di blocco e di accesso.
 
           Se la policy viene configurata, gli utenti non avranno la possibilità di attivare la funzionalità.</translation>
-<translation id="7609566862616914296">Elenco di pattern URL. Le richieste di rete inoltrate da siti web pubblicati da origini corrispondenti agli endpoint della rete locale non possono effettuare richieste di <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns/.
-
-Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Esistono più policy che elencano le origini che influiscono sulle richieste agli endpoint della rete locale. Se un'origine corrisponde a più di una delle seguenti policy, le policy hanno la precedenza nel seguente ordine:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">Configura l'elenco di domini per i quali la funzionalità <ph name="PASSWORD_MANAGER_NAME" /> (salvataggio e compilazione) verrà disattivata</translation>
 <translation id="7612059745454194563">Non consentire la visualizzazione della promozione dell'estensione fornitore di credenziali</translation>
 <translation id="7612157962821894603">Contrassegni a livello di sistema da applicare all'avvio di <ph name="PRODUCT_NAME" /></translation>
@@ -11697,22 +11655,6 @@ Per <ph name="PRODUCT_NAME" />, questa policy viene applicata soltanto se la mac
 
 Per maggiori informazioni sulle tecnologie precedenti, visita la pagina all'indirizzo https://chromestatus.com/features.</translation>
 <translation id="8273183018575414926">App web progressive</translation>
-<translation id="8274053052968966211">Elenco di pattern URL. Le richieste di rete inoltrate da siti web pubblicati da origini corrispondenti non possono effettuare richieste di <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns/.
-
-Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Esistono più policy che elencano le origini che influiscono sulle richieste al dispositivo locale e agli endpoint della rete locale. Se un'origine corrisponde a più di una delle seguenti policy, le policy hanno la precedenza nel seguente ordine:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8274603902181597201">Cancella la home directory ecryptfs dell'utente e inizia con una nuova home directory criptata tramite ext4</translation>
 <translation id="8274926413890711289">Attiva i controlli di reporting granulare</translation>
 <translation id="8275103737670730746">Consenti di chiamare le API del selettore file o della directory senza un gesto precedente dell'utente.</translation>

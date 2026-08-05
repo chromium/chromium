@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search AI మోడ్, కనెక్టెడ్ యాప్స్</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" />‌ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="1086486568852410168">Google Lensతో సెర్చ్ చేయండి</translation>
+<translation id="1095093219235104018">Geminiతో కనుగొని, ఫిల్ చేయండి</translation>
 <translation id="1096992026380844478">మీ చివరి బ్యాకప్ ఆధారంగా మీ సింక్ సెట్టింగ్‌లు రీస్టోర్ చేయబడతాయి. <ph name="BEGIN_LINK" />మీరు వేటిని సింక్ చేయగలరో చూడండి<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 మాన్యువల్ సెర్చ్ స్కిప్ అయింది}other{# మాన్యువల్ సెర్చ్‌లు స్కిప్ అయ్యాయి}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 పాస్‌వర్డ్ ఇన్‌స్టంట్‌గా వెరిఫై అయింది}other{# పాస్‌వర్డ్‌లు ఇన్‌స్టంట్‌గా వెరిఫై అయ్యాయి}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />‌ను ఎల్లప్పుడూ అనువదించండి</translation>
 <translation id="1110772719190051587">ముఖం IDతో అన్‌లాక్ చేయండి</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI మోడ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="1554477036522844996">కొత్త విండో</translation>
 <translation id="1558391695376153246">అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
-<translation id="1559263013367304065">Google Lensను ఉపయోగించినప్పటి నుండి</translation>
 <translation id="1560153516220021659">కుదించబడిన సెకండరీ టూల్‌బార్ బటన్</translation>
 <translation id="1562601408588733317">Geminiతో సమాచారాన్ని కనుగొనడాన్ని, ఫిల్ చేయడాన్ని మేనేజ్ చేయండి</translation>
 <translation id="1565371473877914088">కొత్త అజ్ఞాత ట్యాబ్</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">సైట్ జోడించబడింది, పిన్ చేయబడింది</translation>
 <translation id="1911619930368729126">Google Driveకు అప్‌. చే.</translation>
 <translation id="1925706052394657380">iOSలో <ph name="BEGIN_BOLD" />ఆటోమేటిక్ సెట్టింగ్ యాప్స్<ph name="END_BOLD" /> సెట్టింగ్‌లను తెరవండి</translation>
+<translation id="1938871630297275912">{count,plural, =1{లింక్ అందింది}other{{count} లింక్‌లు అందాయి}}</translation>
 <translation id="1941314575388338491">కాపీ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1943478190258551035">మెనూ → సెట్టింగ్‌లు</translation>
 <translation id="1952728750904661634">నిర్వాహిత‌ ఖాతాతో సైన్ ఇన్ చేయండి</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
 <translation id="2271452184061378400">మీ ట్యాబ్ గ్రూప్‌లు ఇక్కడ సేవ్ చేయబడ్డాయి</translation>
 <translation id="2273327106802955778">మరిన్ని మెనూ</translation>
+<translation id="2274179746480077483">Gmail, Photos వంటి యాప్‌ల నుండి సమాచారాన్ని ఆటోఫిల్ చేయండి. పర్సనల్ ఇంటెలిజెన్స్ అందించినది.</translation>
 <translation id="2287614783861766820">{count,plural, =1{ఈ అడ్రస్ ఈ పరికరం నుండి తొలగించబడుతుంది.}other{ఈ అడ్రస్‌లు ఈ పరికరం నుండి తొలగించబడతాయి.}}</translation>
 <translation id="2295236662082735391">Geminiతో ఎడిట్ చేయడానికి వెబ్‌లోని ఇమేజ్‌ను ఎక్కువసేపు నొక్కి, ఉంచండి</translation>
 <translation id="2296360194694387941">Chromeలో Geminiని ఉపయోగించడం పూర్తయింది!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">అజ్ఞాత సెర్చ్</translation>
 <translation id="6234310016144827337">మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="6236952928980352967">హెచ్చరికను రీస్టోర్ చేయండి</translation>
+<translation id="623755660902014047">రీడింగ్ మోడ్</translation>
 <translation id="6240553182907836376">ఐడెంటిటీ కార్డ్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="6240601837375010619">పాస్‌పోర్ట్‌ను సేవ్ చేయండి</translation>
 <translation id="6241132809279377987">Google యాప్‌లతో మీ iPhone కోసం మరిన్ని ఫీచర్‌లను అన్‌లాక్ చేయండి</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">కాన్వాస్</translation>
 <translation id="7975036700432177008">ప్రయత్నించు</translation>
 <translation id="797588153137233716">మెనూ → హిస్టరీ → బ్రౌజింగ్ డేటాను తొలగించండి</translation>
+<translation id="7977029776654598145">దీన్ని ఉపయోగించడం ద్వారా</translation>
 <translation id="7977451675950311423">మీరు డేటా ఉల్లంఘనలో చోరీకి గురైన పాస్‌వర్డ్‌ని ఉపయోగిస్తే అది మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="797824194429476746">ఈ పరికరంలో ట్యాబ్‌లు అలాగే తెరిచి ఉంటాయి, కానీ గ్రూప్ శాశ్వతంగా తొలగించబడుతుంది.</translation>
 <translation id="7982789257301363584">నెట్‌వర్క్</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">చదవాల్సిన లిస్ట్</translation>
 <translation id="956066588046842680">మీ సంస్థ పాలసీ ప్రకారం ఈ డేటాను దిగుమతి చేసుకోవడానికి అనుమతి లేదు.</translation>
 <translation id="956218893102219091">మీ IP అడ్రస్ ఆధారంగా అందే ఎస్టిమేటెడ్ లొకేషన్‌కు బదులుగా, మీ ఖచ్చితమైన లొకేషన్‌ను ఉపయోగించి, అత్యంత ఖచ్చితమైన Gemini ఫలితాలను పొందండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">హైపర్‌లింక్‌లను చూపించండి</translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="963102227019621224">వెబ్ &amp; యాప్ యాక్టివిటీ</translation>
 <translation id="965259330007686240">Geminiతో ఇమేజ్‌ను క్రియేట్ చేయండి</translation>

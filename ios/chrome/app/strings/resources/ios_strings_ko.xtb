@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google 검색 AI 모드 및 연결된 앱</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> 파일을 열 수 없습니다</translation>
 <translation id="1086486568852410168">Google 렌즈로 검색</translation>
+<translation id="1095093219235104018">Gemini로 정보 찾기 및 자동 완성</translation>
 <translation id="1096992026380844478">마지막 백업에 따라 동기화 설정이 복원됩니다. <ph name="BEGIN_LINK" />동기화할 수 있는 항목 확인하기<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{수동 검색 1회 건너뜀}other{수동 검색 #회 건너뜀}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{비밀번호 1개가 즉시 확인됨}other{비밀번호 #개가 즉시 확인됨}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1110772719190051587">Face ID로 잠금 해제</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI 모드 사용 중지</translation>
 <translation id="1554477036522844996">새 창</translation>
 <translation id="1558391695376153246">시크릿 탭 닫기</translation>
-<translation id="1559263013367304065">Google 렌즈를 사용한 이후</translation>
 <translation id="1560153516220021659">접힌 보조 툴바 버튼</translation>
 <translation id="1562601408588733317">Gemini로 정보 찾기 및 자동 입력 관리</translation>
 <translation id="1565371473877914088">새 시크릿 탭</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">사이트가 추가되고 고정됨</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
 <translation id="1925706052394657380">iOS에서 <ph name="BEGIN_BOLD" />기본 앱<ph name="END_BOLD" /> 설정 열기</translation>
+<translation id="1938871630297275912">{count,plural, =1{링크 수신됨}other{링크 {count}개 수신됨}}</translation>
 <translation id="1941314575388338491">복사하려면 두 번 탭하세요.</translation>
 <translation id="1943478190258551035">메뉴 → 설정</translation>
 <translation id="1952728750904661634">관리 계정으로 로그인</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">다듬기</translation>
 <translation id="2271452184061378400">탭 그룹이 여기에 저장됩니다.</translation>
 <translation id="2273327106802955778">더보기 메뉴</translation>
+<translation id="2274179746480077483">Gmail 및 포토 등의 앱에서 정보를 자동 완성합니다. 개인 인텔리전스에 기반합니다.</translation>
 <translation id="2287614783861766820">{count,plural, =1{이 주소가 이 기기에서 삭제됩니다.}other{이 주소가 이 기기에서 삭제됩니다.}}</translation>
 <translation id="2295236662082735391">웹에서 이미지를 길게 눌러 Gemini로 수정하세요.</translation>
 <translation id="2296360194694387941">Chrome의 Gemini 사용이 완료되었습니다.</translation>
@@ -1576,6 +1577,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6232329973559504466">시크릿 검색</translation>
 <translation id="6234310016144827337">연결 상태를 확인한 후 다시 시도하세요.</translation>
 <translation id="6236952928980352967">경고 복원</translation>
+<translation id="623755660902014047">읽기 모드</translation>
 <translation id="6240553182907836376">신분증 업데이트</translation>
 <translation id="6240601837375010619">여권 저장</translation>
 <translation id="6241132809279377987">Google 앱으로 iPhone에서 더 많은 기능을 이용하세요.</translation>
@@ -2110,6 +2112,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7972837668077967426">캔버스</translation>
 <translation id="7975036700432177008">사용해 보기</translation>
 <translation id="797588153137233716">메뉴 → 방문 기록 → 인터넷 사용 기록 삭제</translation>
+<translation id="7977029776654598145">사용 시</translation>
 <translation id="7977451675950311423">정보 유출로 인해 유출된 비밀번호를 사용하면 경고를 보냅니다.</translation>
 <translation id="797824194429476746">이 기기에서 탭은 열린 상태로 유지되지만, 그룹은 완전히 삭제됩니다.</translation>
 <translation id="7982789257301363584">네트워크</translation>
@@ -2521,6 +2524,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="954667170699278022">읽기 목록</translation>
 <translation id="956066588046842680">조직의 정책에 따라 이 데이터를 가져올 수 없습니다.</translation>
 <translation id="956218893102219091">IP 주소를 기반으로 한 예상 위치 대신 정확한 위치를 사용하여 가장 정확한 Gemini 결과를 얻으세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">하이퍼링크 표시</translation>
 <translation id="961856697154696964">인터넷 사용 기록 삭제</translation>
 <translation id="963102227019621224">웹 및 앱 활동</translation>
 <translation id="965259330007686240">Gemini로 이미지 만들기</translation>

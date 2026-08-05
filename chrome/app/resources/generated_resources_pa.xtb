@@ -1562,6 +1562,7 @@
 <translation id="2198625180564913276">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="2198712775285959645">ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="2199298570273670671">ਗੜਬੜ</translation>
+<translation id="220006241671843310">ਚੁਣੋ ਕਿ ਕੀ Chrome, AI ਮਾਡਲਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ, ਜੋ ਸਿੱਧੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਚੱਲਦੇ ਹਨ</translation>
 <translation id="2200094388063410062">ਈਮੇਲ ਭੇਜੋ</translation>
 <translation id="2200781749203116929">ChromeOS ਦੇ ਸਿਸਟਮ ਲੌਗ</translation>
 <translation id="2202391868799679245">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
@@ -2277,6 +2278,7 @@
 <translation id="2739240477418971307">ਆਪਣੀਆਂ ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਬਦਲੋ</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> ਰਾਹੀਂ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2739887572830526131">ਬਾਅਦ ਵਿੱਚ ਟੈਬਾਂ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਇਸ ਗਰੁੱਪ ਨੂੰ ਬਣਾਈ ਰੱਖੋ ਜਾਂ ਜੇ ਤੁਹਾਨੂੰ ਇਸਦੀ ਲੋੜ ਨਹੀਂ ਹੈ, ਤਾਂ ਇਸ ਨੂੰ ਮਿਟਾਓ।</translation>
+<translation id="2739917034504760471">ਕਿਸੇ ਵਿਸ਼ੇ ਦੀ ਪਰਿਭਾਸ਼ਾ ਪ੍ਰਾਪਤ ਕਰੋ ਜਾਂ ਉਸ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="274029851662193272">ਨਿਰਾਸ਼</translation>
 <translation id="2740531572673183784">ਠੀਕ</translation>
 <translation id="2740876196999178364">ਇਨ੍ਹਾਂ ਪਾਸਕੀਆਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਉਨ੍ਹਾਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
@@ -3251,6 +3253,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ਵੱਲੋਂ ਅੱਗੇ ਦਿੱਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="3484595034894304035">ਵਾਲਪੇਪਰ, ਸਕ੍ਰੀਨ ਸੇਵਰ, ਗੂੜ੍ਹਾ ਥੀਮ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਓ</translation>
 <translation id="3484869148456018791">ਨਵਾਂ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="3486380520195228369">ਪੰਨਾ ਰਿਫ੍ਰੈਸ਼ ਹੋਣ ਤੱਕ ਲੁਕਿਆ ਹੋਇਆ ਹੈ</translation>
 <translation id="3487007233252413104">ਅਨਾਮ ਫੰਕਸ਼ਨ</translation>
 <translation id="3487649228420469005">ਸਕੈਨ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="3488199663160411179">ਨਾਮ</translation>
@@ -3288,7 +3291,6 @@
 <translation id="3512465804715993309">ਅਡੈਪਟਿਵ ਹਾਈਲਾਈਟਿੰਗ</translation>
 <translation id="3513019849832307207">ਸ਼ਾਮਲ ਹੋਵੋ ਅਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> ਤੋਂ <ph name="MAX_VALUE" /> ਤੱਕ ਦਾ ਹਿਊ ਸਲਾਈਡਰ</translation>
-<translation id="3514519909735866748">ਨਵੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="3514647716686280777">ਤੁਸੀਂ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰ ਰਹੇ ਹੋ। ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੇ ਵਿਰੁੱਧ ਹੋਰ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ 'ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3514681096978190000">ਇਹ ਪੁਰਾਲੇਖ ਫ਼ਾਈਲ ਵਿੱਚ ਹੋਰ ਫ਼ਾਈਲਾਂ ਸ਼ਾਮਲ ਹਨ ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਮਾਲਵੇਅਰ ਲੁਕਿਆ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="3515983984924808886">ਰੀਸੈੱਟ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਦੁਬਾਰਾ ਸਪਰਸ਼ ਕਰੋ। ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਦੇ ਪਿੰਨ ਸਮੇਤ ਉਸ 'ਤੇ ਸਟੋਰ ਕੀਤੀ ਸਾਰੀ ਜਾਣਕਾਰੀ ਨੂੰ ਮਿਟਾਇਆ ਜਾਵੇਗਾ।</translation>
@@ -3372,6 +3374,7 @@
 <translation id="3577036603268648505">ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਰਹੋ</translation>
 <translation id="3577473026931028326">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3577487026101678864">ਫ਼ਾਈਲ ਸਿੰਕ ਚਾਲੂ ਹੈ</translation>
+<translation id="3578230582111850125">Gemini ਤੋਂ ਪੁੱਛਣ ਲਈ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="3581605050355435601">IP ਪਤੇ ਦਾ ਸਵੈ-ਸੰਰੂਪਣ ਕਰੋ</translation>
 <translation id="3581861561942370740">ਡਾਊਨਲੋਡ ਦਾ ਇਤਿਹਾਸ ਖੋਜੋ</translation>
 <translation id="3582057310199111521">ਭਰਮਾਊ ਸਾਈਟ 'ਤੇ ਦਾਖਲ ਕੀਤਾ ਗਿਆ ਅਤੇ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਲੱਭਿਆ</translation>
@@ -6526,7 +6529,6 @@
 <translation id="6011193465932186973">ਫਿੰਗਰਪ੍ਰਿੰਟ</translation>
 <translation id="6011308810877101166">ਖੋਜ ਸੁਝਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਓ</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> 'ਤੇ ਲਿੰਕ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="6013027779243312217">ਆਪਣੇ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਲਈ ਸੁਰਖੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6014293228235665243">ਨਾ-ਪੜ੍ਹੇ</translation>
 <translation id="6015776718598175635">ਤਾਰੇ</translation>
 <translation id="6015796118275082299">ਸਾਲ</translation>
@@ -7351,6 +7353,7 @@
 <translation id="6660301751798595791">ਅਵਾਜ਼ ਦੀ ਚੋਣ</translation>
 <translation id="6660819301598582123">The quick brown fox jumped over the lazy dog.</translation>
 <translation id="666099631117081440">ਪ੍ਰਿੰਟ ਸਰਵਰ</translation>
+<translation id="6662339038589469159">Gemini ਤੋਂ ਪੁੱਛਣ ਲਈ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="6662394424395160792">ਆਪਣੇ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਤੋਂ ਸਾਈਟਾਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ Google Password Manager ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="6662931079349804328">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਨੀਤੀ ਨੂੰ ਬਦਲਿਆ ਗਿਆ ਹੈ। ਪ੍ਰਯੋਗ ਬਟਨ ਨੂੰ ਟੂਲਬਾਰ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="6664774537677393800">ਤੁਹਾਡੇ ਪ੍ਰੋਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਆਊਟ ਹੋ ਕੇ ਫਿਰ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
@@ -8015,6 +8018,7 @@
 <translation id="7174199383876220879">ਨਵਾਂ! ਆਪਣਾ ਸੰਗੀਤ, ਵੀਡੀਓ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕੰਟਰੋਲ ਕਰੋ।</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ਨੂੰ ਸੰਰੂਪਿਤ ਕਰੋ</translation>
 <translation id="7175353351958621980">ਤੋਂ ਲੋਡ ਕੀਤਾ:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{ਪਿੰਨ ਕੀਤੀ ਟੈਬ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ <ph name="SHORTCUT_TEXT" /> ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ}one{ਪਿੰਨ ਕੀਤੀ ਟੈਬ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ <ph name="SHORTCUT_TEXT" /> ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ}other{ਪਿੰਨ ਕੀਤੀਆਂ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ <ph name="SHORTCUT_TEXT" /> ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ}}</translation>
 <translation id="7177659256878428843">ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੁੱਕਮਾਰਕ ਫੋਲਡਰ ਵਿੱਚ ਬਦਲੋ</translation>
 <translation id="7180569503618416775">Wallet ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਜਾ ਰਹੇ ਪੰਨਿਆਂ ਤੋਂ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖਰੀਦੀਆਂ ਗਈਆਂ ਟਿਕਟਾਂ</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
@@ -9747,6 +9751,7 @@
 <translation id="850399339579925930">ਸ਼ਬਦਕੋਸ਼</translation>
 <translation id="850561044295157831">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ, ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8505669004895429027">ਥੋੜ੍ਹੀਆਂ ਬਚਤਾਂ</translation>
+<translation id="850632091665381275">Google ਮੈਂਬਰਸ਼ਿਪ</translation>
 <translation id="8507052544157927817">ਅੰਡਰਲਾਈਨ ਸਟਾਈਲ</translation>
 <translation id="8507227974644337342">ਸਕ੍ਰੀਨ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="8507443886219296894">ਇਸ ਸਾਈਟ ਲਈ ਲੁਕਾਓ</translation>

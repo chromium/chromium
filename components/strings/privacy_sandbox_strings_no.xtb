@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1184166532603925201">Når du er i inkognitomodus, blokkerer Chrome nettsteder fra å bruke informasjonskapsler fra tredjeparter</translation>
-<translation id="1559726735555610004">Google krever at bedrifter offentlig erklærer at de ikke bruker disse dataene for å spore deg på ulike nettsteder. Noen nettsteder kan bruke aktiviteten din for å gi opplevelsen din et personlig preg for andre ting enn bare annonser. De kan også kombinere den med annen informasjon de allerede har om deg. Bedrifter har et ansvar om å informere deg om hvordan de bruker dataene dine. Finn ut mer om hvordan Google beskytter dataene dine, i <ph name="BEGIN_LINK" />personvernreglene våre<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler fra tredjeparter. Hvis et nettsted som er avhengig av slike informasjonskapsler, ikke fungerer, kan du <ph name="BEGIN_LINK" />prøve å gi det midlertidig tilgang til informasjonskapsler fra tredjeparter<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">De aktive Chrome-innstillingene dine er oppdatert, slik at nettsteder kan bruke informasjonskapsler fra tredjeparter. Du kan endre denne innstillingen når som helst.</translation>
 <translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Nettsteder som er avhengige av informasjonskapsler fra tredjeparter, skal fungere som forventet</translation>
 <translation id="3624583033347146597">Velg preferanser for informasjonskapsler fra tredjeparter</translation>
 <translation id="3918378745482005425">Det kan hende at noen funksjoner ikke fungerer. Relaterte nettsteder kan fortsatt bruke informasjonskapsler fra tredjeparter.</translation>
-<translation id="4009365983562022788">Google krever at bedrifter offentlig erklærer at de ikke bruker disse dataene for å spore deg på ulike nettsteder. Noen nettsteder kan bruke aktiviteten din for å gi opplevelsen din et personlig preg for andre ting enn bare annonser. De kan også kombinere den med annen informasjon de allerede har om deg. Bedrifter har et ansvar om å informere deg om hvordan de bruker dataene dine. Finn ut mer i <ph name="BEGIN_LINK1" />personvernreglene<ph name="LINK_END1" /> våre</translation>
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="4412992751769744546">Tillat informasjonskapsler fra tredjeparter</translation>
 <translation id="4711259472133554310">Du kan opprette unntak i innstillingene for alltid å tillate at bestemte nettsteder bruker informasjonskapsler fra tredjeparter</translation>

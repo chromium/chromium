@@ -1559,6 +1559,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2198625180564913276">Dodavanje profila. To može potrajati nekoliko minuta.</translation>
 <translation id="2198712775285959645">Uredi</translation>
 <translation id="2199298570273670671">Greška</translation>
+<translation id="220006241671843310">Odaberite hoće li Chrome koristiti AI modele koji se pokreću direktno na vašem uređaju</translation>
 <translation id="2200094388063410062">E-pošta</translation>
 <translation id="2200781749203116929">Zapisnici sistema ChromeOS-a</translation>
 <translation id="2202391868799679245">Uključi prečicu na tastaturi</translation>
@@ -1757,6 +1758,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353168619378866466">Otvori grupu</translation>
 <translation id="2353297238722298836">Kamera i mikrofon su dozvoljeni</translation>
+<translation id="2353682139907904963">Zakači nove ekstenzije na alatnu traku</translation>
 <translation id="2353910600995338714">Izvoz je uspio</translation>
 <translation id="2355477091455974894">Opcije uštede energije</translation>
 <translation id="2355604387869345912">Uključi Trenutno dijeljenje internetske veze</translation>
@@ -2274,6 +2276,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2739240477418971307">Promijeniti postavke pristupačnosti</translation>
 <translation id="2739331588276254426">Povezano je s internetom putem uređaja <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">Zadržite ovu grupu da kasnije dodate kartice ili je izbrišite ako je više ne trebate.</translation>
+<translation id="2739917034504760471">Dobijte definiciju ili saznajte više o temi</translation>
 <translation id="274029851662193272">Utisnuto</translation>
 <translation id="2740531572673183784">Uredu</translation>
 <translation id="2740876196999178364">Ovi pristupni ključevi su sačuvani samo na ovom uređaju. Nisu sačuvani na vašem Google računu.</translation>
@@ -3247,6 +3250,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3482719661246593752">Web lokacija <ph name="ORIGIN" /> može pregledati sljedeće fajlove</translation>
 <translation id="3484595034894304035">Personalizirajte pozadinsku sliku, čuvar ekrana, tamnu temu i drugo</translation>
 <translation id="3484869148456018791">Preuzmi novu potvrdu</translation>
+<translation id="3486380520195228369">Sakriveno je dok se stranica ne osvježi</translation>
 <translation id="3487007233252413104">anonimna funkcija</translation>
 <translation id="3487649228420469005">Skeniranje je završeno</translation>
 <translation id="3488199663160411179">ime</translation>
@@ -3284,7 +3288,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3512465804715993309">Prilagodljivo isticanje</translation>
 <translation id="3513019849832307207">Pridružite se i otvorite</translation>
 <translation id="3513563267917474897">Klizač nijanse od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Zakačite nove ekstenzije</translation>
 <translation id="3514647716686280777">Dobijate standardnu sigurnosnu zaštitu. Da dobijete bolju zaštitu od opasnih web lokacija, preuzimanja i ekstenzija, uključite Poboljšano sigurno pregledanje u postavkama Chromea.</translation>
 <translation id="3514681096978190000">Ovaj arhivski fajl uključuje druge fajlove koji mogu sakrivati zlonamjerni softver</translation>
 <translation id="3515983984924808886">Dodirnite ponovo svoj sigurnosni ključ da potvrdite vraćanje na zadano. Izbrisat će se sve informacije koje su pohranjene na sigurnosnom ključu, uključujući njegov PIN.</translation>
@@ -3304,6 +3307,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3525606571546393707">Pokušajte otvoriti fajl iz drugog foldera ili odaberite "Otvori u osnovnom uređivaču" da koristite ograničene opcije prikaza i uređivanja.</translation>
 <translation id="3526034519184079374">Nije moguće čitati ili izmijeniti podatke web lokacije</translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3527473647192919613">Novi izolirani prozor</translation>
 <translation id="3528498924003805721">Ciljevi prečica</translation>
 <translation id="3529851166527095708">&amp;Adrese i drugo</translation>
 <translation id="3530919970074558307">Ukloni fokus s grupe</translation>
@@ -3368,6 +3372,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3577036603268648505">Budite sigurniji online</translation>
 <translation id="3577473026931028326">Nešto nije uredu. Pokušajte ponovo.</translation>
 <translation id="3577487026101678864">Sinhronizacija fajlova je uključena</translation>
+<translation id="3578230582111850125">Odaberite tekst da pitate Gemini</translation>
 <translation id="3581605050355435601">Automatski konfiguriraj IP adresu</translation>
 <translation id="3581861561942370740">Pretražite historiju preuzimanja</translation>
 <translation id="3582057310199111521">Uneseno na obmanjujućoj web lokaciji i pronađeno u narušavanju podataka</translation>
@@ -5839,6 +5844,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5463348003600590648">Onemogući prijedloge</translation>
 <translation id="5463625433003343978">Pronalaženje uređaja…</translation>
 <translation id="5463856536939868464">Meni koji sadrži sakrivene oznake</translation>
+<translation id="5465214111614807935">Novi &amp;izolirani prozor</translation>
 <translation id="5466374726908360271">Za&amp;lijepi i pretraži pojam “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Ako je sinhronizacija uključena, grupe kartica se pohranjuju na traci oznaka, u meniju aplikacije i ažuriraju se na svim vašim uređajima na kojima ste prijavljeni</translation>
 <translation id="5467207440419968613">Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6523,7 +6529,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6011193465932186973">Otisak prsta</translation>
 <translation id="6011308810877101166">Poboljšanje prijedloga za pretraživanje</translation>
 <translation id="6011908034087870826">Slanje linka na uređaj <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">Preuzmite titlove za audio i videozapise</translation>
 <translation id="6014293228235665243">Nepročitano</translation>
 <translation id="6015776718598175635">Zvijezde</translation>
 <translation id="6015796118275082299">Godina</translation>
@@ -6738,6 +6743,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6185151644843671709">Pristupni ključ je sačuvan, a PIN kreiran</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 lozinka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}one{{PASSWORD_COUNT} lozinka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}few{{PASSWORD_COUNT} lozinke i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}other{{PASSWORD_COUNT} lozinki i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}}</translation>
 <translation id="6186177419203903310">Ovo će omogućiti obavještenja za sve nove USB periferne uređaje u sistemu. Jeste li sigurni da želite nastaviti?</translation>
+<translation id="6188822118034543225">Koristite meni podijeljenog prikaza da se prebacujete između usporednog i grupisanog rasporeda.</translation>
 <translation id="6190953336330058278">Phone Hub aplikacije</translation>
 <translation id="6192333916571137726">Preuzimanje fajla</translation>
 <translation id="6192413564913825901">Premjesti u Sve oznake</translation>
@@ -6980,6 +6986,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6379228010899751161">Potvrdite identitet da uvijek možete koristiti lozinke na računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Ne, nastavi raditi na ovom profilu</translation>
 <translation id="6380618366311601172">Gemini neće moći izvršavati zadatke koji zahtijevaju prijavu na <ph name="DOMAIN" />.</translation>
+<translation id="6383321659284013430">Novi &amp;izolirani prozor</translation>
 <translation id="6383382161803538830">Način rada za čitanje nije dostupan na ovoj stranici</translation>
 <translation id="638418309848716977">Podržani linkovi</translation>
 <translation id="6384275966486438344">Promijenite svoje postavke pretraživanja na: <ph name="SEARCH_HOST" /></translation>
@@ -7350,6 +7357,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6660301751798595791">Odabir glasa</translation>
 <translation id="6660819301598582123">Bošnjak Fadil Hadžić žučljiv zet najgrđem piscu!</translation>
 <translation id="666099631117081440">Serveri za štampanje</translation>
+<translation id="6662339038589469159">Odaberite tekst da pitate Gemini</translation>
 <translation id="6662394424395160792">Koristite Google upravitelj lozinki da se brže prijavljujete na web lokacije s bilo kojeg uređaja</translation>
 <translation id="6662931079349804328">Pravila preduzeća su izmijenjena. Dugme Eksperimenti je uklonjeno s alatne trake.</translation>
 <translation id="6664774537677393800">Došlo je do problema prilikom otvaranja vašeg profila. Odjavite se pa se ponovo prijavite.</translation>
@@ -7441,6 +7449,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6729280095610283088">Svijetle trake polarne svjetlosti iznad šume.</translation>
 <translation id="6729493062119577923">Aktivnost dijeljene grupe kartica</translation>
 <translation id="6730744976532805323">Dijeli trenutnu karticu s Geminijem, čak i kada mijenjate kartice</translation>
+<translation id="6731848763586448407">Isprobajte grupisani podijeljeni prikaz</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Ukloni tiket za Kerberos</translation>
@@ -8015,6 +8024,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7174199383876220879">Novo! Upravljajte muzikom, videozapisima i drugim sadržajima.</translation>
 <translation id="7175037578838465313">Konfigurirajte <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Učitano iz:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{Ponovo pritisnite <ph name="SHORTCUT_TEXT" /> da zatvorite zakačenu karticu}one{Ponovo pritisnite <ph name="SHORTCUT_TEXT" /> da zatvorite zakačene kartice}few{Ponovo pritisnite <ph name="SHORTCUT_TEXT" /> da zatvorite zakačene kartice}other{Ponovo pritisnite <ph name="SHORTCUT_TEXT" /> da zatvorite zakačene kartice}}</translation>
 <translation id="7177659256878428843">Pretvorite grupu kartica u folder s oznakama</translation>
 <translation id="7180569503618416775">Novčanik može ponuditi pohranjivanje informacija sa stranica koje pregledate, kao što su karte koje kupite</translation>
 <translation id="7180611975245234373">Osvježi</translation>
@@ -9747,6 +9757,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="850399339579925930">Rječnici</translation>
 <translation id="850561044295157831">Više informacija o Pomoći u pisanju</translation>
 <translation id="8505669004895429027">Male uštede</translation>
+<translation id="850632091665381275">Google članstvo</translation>
 <translation id="8507052544157927817">Stil podvlačenja</translation>
 <translation id="8507227974644337342">Rezolucija ekrana</translation>
 <translation id="8507443886219296894">Sakrij za ovu web lokaciju</translation>

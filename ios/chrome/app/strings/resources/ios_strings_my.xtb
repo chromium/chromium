@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search AI မုဒ်နှင့် ချိတ်ဆက်အက်ပ်များ</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ကို ဖွင့်၍မရလိုက်ပါ</translation>
 <translation id="1086486568852410168">Google Lens ဖြင့် ရှာရန်</translation>
+<translation id="1095093219235104018">Gemini ဖြင့် ရှာဖွေပြီး ဖြည့်ခြင်း</translation>
 <translation id="1096992026380844478">သင်နောက်ဆုံး အရန်သိမ်းခြင်းပေါ်မူတည်၍ စင့်ခ်လုပ်ခြင်း ဆက်တင်များကို ပြန်ယူပါမည်။ <ph name="BEGIN_LINK" />စင့်ခ်လုပ်နိုင်သည်များကို ကြည့်ရန်<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{ကိုယ်တိုင်ရှာဖွေမှု ၁ ခုကို ကျော်လိုက်သည်}other{ကိုယ်တိုင်ရှာဖွေမှု # ခုကို ကျော်လိုက်သည်}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{စကားဝှက် ၁ ခုကို ချက်ချင်းအတည်ပြုလိုက်သည်}other{စကားဝှက် # ခုကို ချက်ချင်းအတည်ပြုလိုက်သည်}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />ကို အမြဲတမ်း ဘာသာပြန်ရန်</translation>
 <translation id="1110772719190051587">မျက်နှာ ID ဖြင့် ဖွင့်ပါ</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI မုဒ် ပိတ်ရန်</translation>
 <translation id="1554477036522844996">ဝင်ဒိုး အသစ်</translation>
 <translation id="1558391695376153246">ရုပ်ဖျက်တဘ်များ ပိတ်ရန်</translation>
-<translation id="1559263013367304065">Google Lens အသုံးပြုချိန်မှစ၍</translation>
 <translation id="1560153516220021659">ချုံ့ထားသော အရန်ကိရိယာဘား ခလုတ်</translation>
 <translation id="1562601408588733317">Gemini ဖြင့် အချက်အလက်ရှာဖွေခြင်းနှင့် ဖြည့်ခြင်းကို စီမံနိုင်သည်</translation>
 <translation id="1565371473877914088">ရုပ်ဖျက်တဘ်အသစ်</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">ဝဘ်ဆိုက်ကို ထည့်ပြီး ပင်ထိုးလိုက်သည်</translation>
 <translation id="1911619930368729126">Google Drive သို့အပ်လုဒ်လုပ်မည်</translation>
 <translation id="1925706052394657380">iOS ရှိ <ph name="BEGIN_BOLD" />မူရင်းအက်ပ်<ph name="END_BOLD" /> ဆက်တင်များကို ဖွင့်ပါ</translation>
+<translation id="1938871630297275912">{count,plural, =1{လင့်ခ် ရရှိထားသည်}other{လင့်ခ် {count} ခု ရရှိထားသည်}}</translation>
 <translation id="1941314575388338491">ကူးယူရန် နှစ်ချက်တို့ပါ။</translation>
 <translation id="1943478190258551035">မီနူး → ဆက်တင်များ</translation>
 <translation id="1952728750904661634">စီမံခန့်ခွဲထားသည့် အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ရောက်ပါ</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">ပြန်မွမ်းမံ</translation>
 <translation id="2271452184061378400">တဘ်အုပ်စုများကို ဤနေရာတွင် သိမ်းထားသည်</translation>
 <translation id="2273327106802955778">မီနူးကို ပိုပြပေးပါ</translation>
+<translation id="2274179746480077483">Gmail နှင့် Photos ကဲ့သို့သော အက်ပ်များမှ အချက်အလက်ကို အော်တိုဖြည့်နိုင်သည်။ ‘ပုဂ္ဂိုလ်ရေးသီးသန့် ဉာဏ်ရည်တု’ က ပံ့ပိုးထားသည်။</translation>
 <translation id="2287614783861766820">{count,plural, =1{ဤလိပ်စာကို ယခုစက်မှ ဖျက်ပါမည်။}other{ဤလိပ်စာများကို ယခုစက်မှ ဖျက်ပါမည်။}}</translation>
 <translation id="2295236662082735391">Gemini ဖြင့် တည်းဖြတ်ရန်အတွက် ဝဘ်ပေါ်ရှိ ပုံကို ကြာကြာနှိပ်ပါ</translation>
 <translation id="2296360194694387941">Chrome ရှိ Gemini ကို သုံးပြီးပါပြီ။</translation>
@@ -1575,6 +1576,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6232329973559504466">ရုပ်ဖျက်မုဒ်ဖြင့် ရှာရန်</translation>
 <translation id="6234310016144827337">အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="6236952928980352967">သတိပေးချက်များ ပြန်ယူရန်</translation>
+<translation id="623755660902014047">ဖတ်ရှုမုဒ်</translation>
 <translation id="6240553182907836376">အထောက်အထားကတ် အပ်ဒိတ်လုပ်မလား</translation>
 <translation id="6240601837375010619">နိုင်ငံကူးလက်မှတ် သိမ်းမလား</translation>
 <translation id="6241132809279377987">Google အက်ပ်များသုံး၍ သင့် iPhone အတွက် နောက်ထပ်တူးလ်များ ရယူနိုင်သည်</translation>
@@ -2109,6 +2111,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7972837668077967426">ကင်းဗတ်စ်</translation>
 <translation id="7975036700432177008">စမ်းကြည့်ရန်</translation>
 <translation id="797588153137233716">မီနူး → မှတ်တမ်း → ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ပါ</translation>
+<translation id="7977029776654598145">အသုံးပြုရမည့်အချိန်</translation>
 <translation id="7977451675950311423">ဒေတာကျိုးပေါက်မှုတွင် ပါဝင်သော စကားဝှက်ကို သင်သုံးပါက သတိပေးပါသည်။</translation>
 <translation id="797824194429476746">တဘ်များကို ဤစက်တွင် ဆက်ဖွင့်ထားမည်ဖြစ်သော်လည်း အုပ်စုကို အပြီးဖျက်ပါမည်။</translation>
 <translation id="7982789257301363584">ကွန်ရက်</translation>
@@ -2520,6 +2523,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="954667170699278022">ဖတ်ရန် စာရင်း</translation>
 <translation id="956066588046842680">ဤဒေတာထည့်သွင်းခြင်းကို သင့်အဖွဲ့အစည်း၏ မူဝါဒက ခွင့်မပြုပါ။</translation>
 <translation id="956218893102219091">တိကျမှုအရှိဆုံး Gemini ရလဒ်များအတွက် သင့် IP လိပ်စာပေါ် အခြေခံထားသည့် ခန့်မှန်းတည်နေရာအစား နေရာအတိအကျကို သုံးပါ။ <ph name="BEGIN_LINK" />ပိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">ဟိုက်ပါလင့်ခ်များ ပြပါ</translation>
 <translation id="961856697154696964">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်</translation>
 <translation id="963102227019621224">ဝဘ်နှင့်အက်ပ်လုပ်ဆောင်ချက်</translation>
 <translation id="965259330007686240">Gemini ဖြင့် ပုံပြုလုပ်နိုင်သည်</translation>

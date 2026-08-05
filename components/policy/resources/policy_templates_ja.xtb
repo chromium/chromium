@@ -3333,22 +3333,6 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName バリエーションでは、
 <translation id="3181114468897395940">PageUp / PageDown の設定で Alt 修飾キーを含むショートカットを使用する</translation>
 <translation id="3182503302060513467">中央スロットのお知らせが使用可能であれば、新しいタブページに表示する</translation>
 <translation id="3184161739683646075">DNS-over-HTTPS モードを管理する</translation>
-<translation id="3184247679989063353">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトで発行されたネットワーク リクエストに対して、<ph name="LOCAL_NETWORK_ACCESS" /> のチェックを行いません。
-
-ここで指定したパターンに含まれていないオリジンについては、ユーザーの個人設定が適用されます。
-
-有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
-
-<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
-
-ローカル デバイスとローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="3184638144755436350">Chrome はサンドボックス化された iframe 内で外部プロトコルへの移動をブロックします。https://chromestatus.com/features/5680742077038592 をご覧ください。True の場合は、該当する移動を Chrome がブロックできるようになります。False の場合は、該当する移動を Chrome がブロックするのを防ぎます。このデフォルトは True で、セキュリティ機能が有効になっています。このポリシーは、新しい制限の影響を受ける社内ウェブサイトの更新に時間がかかる場合に使用できます。このエンタープライズ ポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> バージョン 117 以降で削除される予定です。
       </translation>
 <translation id="3185009703220253572">バージョン <ph name="SINCE_VERSION" /> 以降</translation>
@@ -4500,6 +4484,11 @@ Protected Audience API のサポート終了により、このポリシーは <p
 
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="PLUGIN_VM_NAME" /> はデバイスでオンになりません。</translation>
 <translation id="3973371701361892765">シェルフを自動的に非表示にしない</translation>
+<translation id="3974715256242096353">このポリシーを false に設定した場合、ユーザーは新しいタブページの背景をカスタイマイズできなくなります。既存のカスタムの背景は削除され、後からこのポリシーを true に設定しても元に戻すことはできません。
+
+このポリシーを true に設定するか、未設定のままにした場合、ユーザーは新しいタブページの背景をカスタイマイズできます。
+
+注: Android の場合、このポリシーはブラウザを再起動した後に適用されます。</translation>
 <translation id="3977304360459208438">TLS の 3DES 暗号スイートにデフォルト設定が使用されます</translation>
 <translation id="3977906634350977040">このポリシーを有効に設定した場合、リモート アクセスホストはクライアント接続を受け入れる際に PIN 認証とペア設定認証を使用できます。
 
@@ -5088,20 +5077,6 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 このポリシーを無効にした場合、非推奨の古い構文は無効になります。
 
 このポリシーを未設定のままにした場合、非推奨の古い構文は無効になります。</translation>
-<translation id="4400152722459197056">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトで発行されたローカル ネットワーク エンドポイントへのネットワーク リクエストに対して、<ph name="LOCAL_NETWORK_ACCESS" /> のチェックを行いません。
-
-ここで指定したパターンに含まれていないオリジンについては、ユーザーの個人設定が適用されます。
-
-有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
-
-<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
-
-ローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">セキュアでないコンテキストの WebSQL は、M110 以降削除される予定です。このポリシーにより、この API は再度有効になります。
           このポリシーを true に設定すると、セキュアでないコンテキストの WebSQL が使用可能になります。
           このポリシーを false に設定するか未設定のままにすると、セキュアでないコンテキストの WebSQL は M109 まで使用可能ですが、M110 以降は使用できなくなります。
@@ -7485,23 +7460,6 @@ URL がリスト内の複数のパターンに一致する場合は、一致す�
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_BULK_BLOCKLIST" /> を使用してください。</translation>
 <translation id="591088232153082363">バッテリー使用状況のパターンに基づいてバッテリー充電を自動調整する。</translation>
-<translation id="5913506885872855604">特定の内部アドレス範囲を「公開」として扱い、<ph name="LOCAL_NETWORK_ACCES" /> のチェックが行われないようにするために使用できます。もしくは、内部で使用される可能性のある特定の公開アドレス範囲を「ローカル」として扱い、<ph name="LOCAL_NETWORK_ACCESS" /> のチェックで保護されるようにすることもできます。
-
-IP アドレス空間のオーバーライドには次の 2 つの形式があります。
-
-[cidr]=[public|local|loopback]
-
-[cidr] は CIDR 表記の IP アドレス範囲です（IPv4 の場合は https://tools.ietf.org/html/rfc4632 のセクション 3.1、IPv6 の場合は https://tools.ietf.org/html/rfc4291 のセクション 2.3 をご覧ください）。IPv6 アドレスは、URL セーフ（かっこ付き）の形式で指定する必要があります。CIDR のオーバーライドはすべてのポートに適用されます。
-
-または
-
-[ip-address]:[port]=[public|local|loopback]
-
-<ph name="LOCAL_NETWORK_ACCESS" /> について詳しくは、https://wicg.github.io/local-network-access/ および https://developer.chrome.com/blog/local-network-access をご覧ください。
-
-このポリシーでは、動的リフレッシュはサポートされません。
-
-コマンドライン スイッチ --ip-address-space-overrides によるオーバーライドは、このポリシーで設定されたオーバーライドより優先されます。</translation>
 <translation id="5915023683182228340">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> での QUIC プロトコルの使用が許可されます。
 
       このポリシーを無効に設定した場合、QUIC プロトコルの使用は許可されません。</translation>
@@ -10123,20 +10081,6 @@ URL パターンは、<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FO
           このポリシーを false に設定するか未設定のままにした場合、ユーザーはロック画面とログイン画面で PIN を自動送信できません。
 
           このポリシーを設定した場合、ユーザーはこの機能を有効にできません。</translation>
-<translation id="7609566862616914296">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトに対して、ローカル ネットワーク エンドポイントへの <ph name="LOCAL_NETWORK_ACCESS" /> のネットワーク リクエストの発行をブロックします。
-
-ここで指定したパターンに含まれていないオリジンについては、ユーザーの個人設定が適用されます。
-
-有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
-
-<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
-
-ローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401"><ph name="PASSWORD_MANAGER_NAME" />（保存と入力）を無効にするドメインのリストを設定する</translation>
 <translation id="7612059745454194563">認証情報プロバイダ拡張機能のプロモーションの表示を許可しない</translation>
 <translation id="7612157962821894603"><ph name="PRODUCT_NAME" /> 起動時にシステム全体のフラグを適用</translation>
@@ -11127,22 +11071,6 @@ false に設定した場合、管理対象のネットワークに接続され�
 
 レガシー テクノロジーについて詳しくは、https://chromestatus.com/features をご覧ください。</translation>
 <translation id="8273183018575414926">プログレッシブ ウェブアプリ</translation>
-<translation id="8274053052968966211">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトに対して、<ph name="LOCAL_NETWORK_ACCESS" /> のネットワーク リクエストの発行をブロックします。
-
-ここで指定したパターンに含まれていないオリジンについては、ユーザーの個人設定が適用されます。
-
-有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。
-
-<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
-
-ローカル デバイスとローカル ネットワーク エンドポイントへのリクエストを許可またはブロックするオリジンを指定するポリシーは複数あります。オリジンが以下の複数のポリシーと一致する場合、ポリシーは次の優先順位で適用されます。
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkAccessBlockedForUrls
-  - LoopbackNetworkAccessAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8274603902181597201">ユーザーの ecryptfs ホーム ディレクトリのデータをワイプして、ext4 で暗号化された新規のホーム ディレクトリから開始する。</translation>
 <translation id="8274926413890711289">詳細なレポート コントロールを有効にする</translation>
 <translation id="8275103737670730746">事前のユーザー操作なしでファイルまたはディレクトリ選択 API の呼び出しを許可する</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Bilaketa zerbitzuaren AA modua eta aplikazio konektatuak</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ezin izan da ireki</translation>
 <translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
+<translation id="1095093219235104018">Bilatu eta bete Gemini-rekin</translation>
 <translation id="1096992026380844478">Sinkronizazio-ezarpenak azken babeskopiaren arabera leheneratuko dira. <ph name="BEGIN_LINK" />Ikusi zer sinkroniza dezakezun<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{Eskuzko bilaketa bat saltatu da}other{# eskuzko bilaketa saltatu dira}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{Pasahitz bat berehala egiaztatu da}other{# pasahitz berehala egiaztatu dira}}</translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
 <translation id="1110772719190051587">Desblokeatu Face ID erabilita</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Desaktibatu AA modua</translation>
 <translation id="1554477036522844996">Leiho berria</translation>
 <translation id="1558391695376153246">Itxi ezkutuko moduko fitxak</translation>
-<translation id="1559263013367304065">Google Lens erabiltzen hasi zinenetik</translation>
 <translation id="1560153516220021659">Tolestutako bigarren mailako tresna-barraren botoia</translation>
 <translation id="1562601408588733317">Kudeatu Gemini-rekin informazioa bilatzeko eta betetzeko aukera</translation>
 <translation id="1565371473877914088">Ezkutuko moduko fitxa berria</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Gehitu eta ainguratu da webgunea</translation>
 <translation id="1911619930368729126">Kargatu Google Drive-ra</translation>
 <translation id="1925706052394657380">Ireki <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (aplikazio lehenetsiak) ataleko ezarpenak iOS-en.</translation>
+<translation id="1938871630297275912">{count,plural, =1{Jaso da esteka}other{{count} esteka jaso dira}}</translation>
 <translation id="1941314575388338491">Kopiatzeko, sakatu birritan.</translation>
 <translation id="1943478190258551035">Menua → Ezarpenak</translation>
 <translation id="1952728750904661634">Hasi saioa kontu kudeatuarekin</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Mugatu</translation>
 <translation id="2271452184061378400">Hemen gordetzen dira fitxa taldeak</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
+<translation id="2274179746480077483">Bete automatikoki Gmail, Argazkiak eta antzeko aplikazioetako informazioa. Adimen pertsonalizatuaren eskutik.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Helbidea gailutik ezabatuko da.}other{Helbideak gailutik ezabatuko dira.}}</translation>
 <translation id="2295236662082735391">Sakatu luze sareko irudi bat Gemini-rekin editatzeko</translation>
 <translation id="2296360194694387941">Erabili da Chrome-ko Gemini!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">Ezkutuko moduko bilaketa</translation>
 <translation id="6234310016144827337">Egiaztatu konektatuta zaudela eta saiatu berriro</translation>
 <translation id="6236952928980352967">Leheneratu abisua</translation>
+<translation id="623755660902014047">Irakurtzeko modua</translation>
 <translation id="6240553182907836376">Eguneratu nortasun-agiria</translation>
 <translation id="6240601837375010619">Gorde pasaportea</translation>
 <translation id="6241132809279377987">Desblokeatu iPhone-rako eginbide gehiago Google-ren aplikazioekin</translation>
@@ -2110,6 +2112,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Probatu</translation>
 <translation id="797588153137233716">Menua → Historia → Ezabatu arakatze-datuak</translation>
+<translation id="7977029776654598145">Erabiltzen denean</translation>
 <translation id="7977451675950311423">Datuen isilpekotasunaren urratze batean arriskuan jarri den pasahitz bat badarabilzu, horren berri emango dizu.</translation>
 <translation id="797824194429476746">Fitxak irekita mantenduko dira gailu honetan, baina taldea betiko ezabatuko da.</translation>
 <translation id="7982789257301363584">Sarea</translation>
@@ -2521,6 +2524,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="954667170699278022">Irakurketa-zerrenda</translation>
 <translation id="956066588046842680">Erakundearen gidalerroek ez dute baimenik ematen datu horiek inportatzeko.</translation>
 <translation id="956218893102219091">Gemini-k emaitzarik zehatzenak eman ditzan, erabili kokapen zehatza, IP helbidean oinarritutako kokapen estimatu baten ordez. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Erakutsi hiperestekak</translation>
 <translation id="961856697154696964">Ezabatu arakatze-datuak</translation>
 <translation id="963102227019621224">Sareko eta aplikazioetako jarduerak</translation>
 <translation id="965259330007686240">Sortu irudi bat Gemini-rekin</translation>

@@ -1551,6 +1551,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2198625180564913276">Profila gehitzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="2198712775285959645">Editatu</translation>
 <translation id="2199298570273670671">Errorea</translation>
+<translation id="220006241671843310">Aukeratu Chrome-k gailuan zuzenean exekutatzen diren AAko ereduak erabil ditzakeen ala ez.</translation>
 <translation id="2200094388063410062">Posta elektronikoa</translation>
 <translation id="2200781749203116929">ChromeOS-en sistemaren erregistroak</translation>
 <translation id="2202391868799679245">Aktibatu lasterbidea</translation>
@@ -2263,6 +2264,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2739240477418971307">Erabilerraztasun-ezarpenak aldatu.</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> gailuaren bidez zaude konektatuta Internetera</translation>
 <translation id="2739887572830526131">Mantendu talde hau geroago fitxak gehitzeko. Jada behar ez baduzu, ezaba ezazu.</translation>
+<translation id="2739917034504760471">Lortu definizio bat edo lortu gai bati buruzko informazio gehiago</translation>
 <translation id="274029851662193272">Beheratua</translation>
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2740876196999178364">Pasakode hauek gailu honetan soilik gordetzen dira. Ez daude Google-ko kontuan gordeta.</translation>
@@ -3234,6 +3236,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3482719661246593752"><ph name="ORIGIN" /> webguneak honako fitxategi hauek ikus ditzake</translation>
 <translation id="3484595034894304035">Pertsonalizatu horma-papera, pantaila-babeslea, gai iluna eta beste</translation>
 <translation id="3484869148456018791">Lortu ziurtagiri berria</translation>
+<translation id="3486380520195228369">Orria freskatu arte ezkutatuta</translation>
 <translation id="3487007233252413104">funtzio anonimoa</translation>
 <translation id="3487649228420469005">Analizatu da</translation>
 <translation id="3488199663160411179">izena</translation>
@@ -3271,7 +3274,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3512465804715993309">Nabarmentze egokitua</translation>
 <translation id="3513019849832307207">Sartu eta ireki</translation>
 <translation id="3513563267917474897">Tonalitate-graduatzailea, <ph name="MIN_VALUE" /> eta <ph name="MAX_VALUE" /> artekoa</translation>
-<translation id="3514519909735866748">Ainguratu luzapen berriak</translation>
 <translation id="3514647716686280777">Babes estandarra darabilzu. Webgune, deskarga eta luzapen arriskutsuen aurkako babesa handitzeko, aktibatu Arakatze seguru hobetua Chrome-ren ezarpenetan.</translation>
 <translation id="3514681096978190000">Artxibo-fitxategi honek beste fitxategi batzuk ditu, eta baliteke haietan malwarea egotea</translation>
 <translation id="3515983984924808886">Berrezarri nahi duzula berresteko, sakatu segurtasun-giltza. Ezabatu egingo da segurtasun-giltzan gordetako informazio guztia (PINa barne).</translation>
@@ -3355,6 +3357,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3577036603268648505">Egon seguruago sarean</translation>
 <translation id="3577473026931028326">Arazoren bat izan da. Saiatu berriro.</translation>
 <translation id="3577487026101678864">Fitxategien sinkronizazioa aktibatuta dago</translation>
+<translation id="3578230582111850125">hautatu testua Gemini-ri galdetzeko</translation>
 <translation id="3581605050355435601">Konfiguratu automatikoki IP helbidea</translation>
 <translation id="3581861561942370740">Bilatu deskargen historian</translation>
 <translation id="3582057310199111521">Webgune engainagarri batean idatzi duzu eta datuen isilpekotasunaren urratze batean aurkitu da</translation>
@@ -6505,7 +6508,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6011193465932186973">Hatz-marka</translation>
 <translation id="6011308810877101166">Hobetu bilaketa-iradokizunak</translation>
 <translation id="6011908034087870826">Esteka <ph name="DEVICE_NAME" /> gailura bidaltzen</translation>
-<translation id="6013027779243312217">Lortu audioaren eta bideoen azpitituluak</translation>
 <translation id="6014293228235665243">Irakurri gabe</translation>
 <translation id="6015776718598175635">Izarrak</translation>
 <translation id="6015796118275082299">Urtea</translation>
@@ -7328,6 +7330,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6660301751798595791">Ahotsaren hautapena</translation>
 <translation id="6660819301598582123">Vaudeville itxurako filmean yogi ñaño bat jipoitzen dute whiski truk Quebec-en.</translation>
 <translation id="666099631117081440">Inprimatze-zerbitzariak</translation>
+<translation id="6662339038589469159">Hautatu testua Gemini-ri galdetzeko</translation>
 <translation id="6662394424395160792">Erabili Google-ren Pasahitz-kudeatzailea webguneetan saioa bizkorrago hasteko zure gailuetako edozein erabilita</translation>
 <translation id="6662931079349804328">Enterprise-ren gidalerroak aldatu egin dira. Proben botoia kendu egin da tresna-barratik.</translation>
 <translation id="6664774537677393800">Arazo bat izan da profila irekitzean. Amaitu saioa eta has ezazu berriro.</translation>
@@ -7992,6 +7995,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7174199383876220879">Berria! Kontrolatu musika, bideoak eta beste.</translation>
 <translation id="7175037578838465313">Konfiguratu <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Hemendik kargatua:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{Sakatu <ph name="SHORTCUT_TEXT" /> berriro fitxa ainguratua ixteko}other{Sakatu <ph name="SHORTCUT_TEXT" /> berriro fitxa ainguratuak ixteko}}</translation>
 <translation id="7177659256878428843">Bihurtu fitxa taldea laster-marken karpeta</translation>
 <translation id="7180569503618416775">Diru-zorroa zerbitzuak ikusten ari zaren orrietako informazioa gordetzeko eskainiko dizu; adibidez, erosten dituzun sarrerak</translation>
 <translation id="7180611975245234373">Freskatu</translation>
@@ -9723,6 +9727,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="850399339579925930">Hiztegiak</translation>
 <translation id="850561044295157831">Lortu Idazteko laguntza eginbideari buruzko informazio gehiago</translation>
 <translation id="8505669004895429027">Aurrezte txikia</translation>
+<translation id="850632091665381275">Google-ko kidetza</translation>
 <translation id="8507052544157927817">Azpimarraren estiloa</translation>
 <translation id="8507227974644337342">Pantailaren bereizmena</translation>
 <translation id="8507443886219296894">Ezkutatu webgune honetan</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Режим с AI в Google Търсене и свързани приложения</translation>
 <translation id="1085677983426914530">Файлът „<ph name="FILENAME" />“ не бе отворен</translation>
 <translation id="1086486568852410168">Търсене с Google Обектив</translation>
+<translation id="1095093219235104018">Намиране и попълване с Gemini</translation>
 <translation id="1096992026380844478">Настройките ви за синхронизиране ще бъдат възстановени въз основа на най-скорошното ви резервно копие. <ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 ръчно търсене бе пропуснато}other{# ръчни търсения бяха пропуснати}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 парола бе потвърдена мигновено}other{# пароли бяха потвърдени мигновено}}</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Отключване с Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Изключване на режима с AI</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
 <translation id="1558391695376153246">Раздели „инкогнито“: Затв.</translation>
-<translation id="1559263013367304065">откакто използвате Google Обектив</translation>
 <translation id="1560153516220021659">Свит бутон във вторичната лента с инструменти</translation>
 <translation id="1562601408588733317">Управление на намирането и попълването на информация с Gemini</translation>
 <translation id="1565371473877914088">Нов раздел в режим „инкогнито“</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Сайтът е добавен и фиксиран</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1925706052394657380">Отворете настройките за <ph name="BEGIN_BOLD" />основните приложения<ph name="END_BOLD" /> в iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Получена е връзка}other{Получени са {count} връзки}}</translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1943478190258551035">„Меню → Настройки“</translation>
 <translation id="1952728750904661634">Влизане с управляван профил</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2271452184061378400">Групите ви раздели се запазват тук</translation>
 <translation id="2273327106802955778">Меню „Още“</translation>
+<translation id="2274179746480077483">Автоматично попълване на информация от различни приложения, като например Gmail и Снимки. Предоставено от Personal Intelligence.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Този адрес ще бъде изтрит от това устройство.}other{Тези адреси ще бъдат изтрити от това устройство.}}</translation>
 <translation id="2295236662082735391">Натиснете продължително изображение в мрежата, за да го редактирате с Gemini</translation>
 <translation id="2296360194694387941">Задачата за използване на Gemini в Chrome е изпълнена!</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">Търсене в режим „инкогнито“</translation>
 <translation id="6234310016144827337">Проверете връзката си и опитайте отново</translation>
 <translation id="6236952928980352967">Възстановяване на предупреждението</translation>
+<translation id="623755660902014047">Режим на четене</translation>
 <translation id="6240553182907836376">Актуализиране на документа за самоличност</translation>
 <translation id="6240601837375010619">Запазване на паспорта</translation>
 <translation id="6241132809279377987">Отключете още функции за своя iPhone с приложенията на Google</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Изпробване</translation>
 <translation id="797588153137233716">Меню → История → Изтриване на данните за сърфирането</translation>
+<translation id="7977029776654598145">Когато използвате функцията</translation>
 <translation id="7977451675950311423">Предупреждава ви, ако използвате парола, която е компрометирана при нарушение на сигурността на данните.</translation>
 <translation id="797824194429476746">Разделите ще останат отворени на това устройство, но групата ще бъде изтрита за постоянно.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">Списък за четене</translation>
 <translation id="956066588046842680">Импортирането на тези данни не е разрешено от правилата на организацията ви.</translation>
 <translation id="956218893102219091">За най-уместни резултати от Gemini използвайте точното си местоположение вместо приблизителното местоположение въз основа на IP адреса си. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Показване на хипервръзките</translation>
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>
 <translation id="963102227019621224">Активност в мрежата и приложенията</translation>
 <translation id="965259330007686240">Създаване на изображение с Gemini</translation>

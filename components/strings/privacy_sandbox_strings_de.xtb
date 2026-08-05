@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1184166532603925201">Wenn du im Inkognitomodus bist, verhindert Chrome, dass Websites Drittanbieter-Cookies verwenden</translation>
-<translation id="1559726735555610004">Google verlangt von Unternehmen, öffentlich zu erklären, dass sie diese Daten nicht verwenden, um deine Aktivitäten auf verschiedenen Websites zu verfolgen. Manche Websites verwenden deine Aktivitäten möglicherweise nicht nur, um dir personalisierte Werbung zu zeigen. Diese Informationen können auch mit anderen Daten kombiniert werden, die bereits über dich vorhanden sind. Unternehmen sind dafür verantwortlich, dich darüber zu informieren, wie sie deine Daten verwenden. Weitere Informationen dazu, wie Google zum Schutz deiner Daten beiträgt, findest du <ph name="BEGIN_LINK" />in unserer Datenschutzerklärung<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Wenn du im Inkognitomodus bist, können Websites keine Drittanbieter-Cookies verwenden. Wenn eine Website, die auf diese Cookies angewiesen ist, nicht funktioniert, <ph name="BEGIN_LINK" />kannst du auf dieser Website vorübergehend Drittanbieter-Cookies zulassen<ph name="END_LINK" />, um das Problem zu beheben.</translation>
 <translation id="19426210786412737">Deine aktuellen Chrome-Einstellungen wurden aktualisiert und Websites können jetzt auf Drittanbieter-Cookies zugreifen. Du kannst diese Einstellung jederzeit ändern.</translation>
 <translation id="2004697686368036666">Einige Websites funktionieren möglicherweise nicht richtig</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Websites, die auf Drittanbieter-Cookies angewiesen sind, sollten wie erwartet funktionieren</translation>
 <translation id="3624583033347146597">Einstellungen für Drittanbieter-Cookies festlegen</translation>
 <translation id="3918378745482005425">Einige Funktionen sind möglicherweise nicht verfügbar. Ähnliche Websites können weiterhin Drittanbieter-Cookies verwenden.</translation>
-<translation id="4009365983562022788">Google verlangt von Unternehmen, öffentlich zu erklären, dass sie diese Daten nicht verwenden, um deine Aktivitäten auf verschiedenen Websites zu verfolgen. Manche Websites verwenden deine Aktivitäten möglicherweise nicht nur, um dir personalisierte Werbung zu zeigen. Diese Informationen können auch mit anderen Daten kombiniert werden, die bereits über dich vorhanden sind. Unternehmen sind dafür verantwortlich, dich darüber zu informieren, wie sie deine Daten verwenden. <ph name="BEGIN_LINK1" />Weitere Informationen findest du in unserer Datenschutzerklärung.<ph name="LINK_END1" /></translation>
 <translation id="4278390842282768270">Zulässig</translation>
 <translation id="4412992751769744546">Drittanbieter-Cookies zulassen</translation>
 <translation id="4711259472133554310">Du kannst in den Einstellungen Ausnahmen erstellen, um bestimmten Websites das Verwenden von Drittanbieter-Cookies immer zu erlauben</translation>

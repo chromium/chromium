@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Search ЖИ режимі және байланысқан қолданбалар</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ашылмады</translation>
 <translation id="1086486568852410168">Google Lens арқылы іздеу</translation>
+<translation id="1095093219235104018">Gemini-мен табу және толтыру</translation>
 <translation id="1096992026380844478">Синхрондау параметрлері соңғы cақтық көшірме деректері негізінде қалпына келтіріледі. <ph name="BEGIN_LINK" />Нені синхрондай алатыныңызды көріңіз<ph name="END_LINK" />.</translation>
-<translation id="1097049112094133492">{count,plural, =1{1 қолмен іздеу әрекеті өткізіп жіберілді}other{# қолмен іздеу әрекеті өткізіп жіберілді}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 құпия сөз лезде расталды}other{# құпия сөз лезде расталды}}</translation>
 <translation id="1103523840287552314">Әрқашан <ph name="LANGUAGE" /> тіліне аудару</translation>
 <translation id="1110772719190051587">Face ID арқылы ашу</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI режимін өшіру</translation>
 <translation id="1554477036522844996">Жаңа терезе</translation>
 <translation id="1558391695376153246">Инкогнито қойындыларын жабу</translation>
-<translation id="1559263013367304065">Google Lens-ді пайдаланғалы бері</translation>
 <translation id="1560153516220021659">Жиылған қосымша құралдар тақтасының түймесі</translation>
 <translation id="1562601408588733317">Gemini арқылы ақпарат табу және толтыру процесін басқару</translation>
 <translation id="1565371473877914088">Жаңа инкогнито қойындысы</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Сайт қосылды және бекітілді.</translation>
 <translation id="1911619930368729126">Google Drive-қа жүктеу</translation>
 <translation id="1925706052394657380">iOS-тегі <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (Әдепкі қолданбалар) параметрлерін ашыңыз.</translation>
+<translation id="1938871630297275912">{count,plural, =1{Сілтеме алынды}other{{count} сілтеме алынды}}</translation>
 <translation id="1941314575388338491">Көшіру үшін екі рет түртіңіз.</translation>
 <translation id="1943478190258551035">Мәзір → Параметрлер</translation>
 <translation id="1952728750904661634">Басқарылатын аккаунтпен кіру</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Нақтылау</translation>
 <translation id="2271452184061378400">Қойындылар топтары осы жерде сақталады.</translation>
 <translation id="2273327106802955778">"Тағы" мәзірі</translation>
+<translation id="2274179746480077483">Gmail және Photos сияқты қолданбалардағы ақпаратты автоматты түрде толтырады. Personal Intelligence функциясымен істейді.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Бұл мекенжай осы құрылғыдан жойылады.}other{Бұл мекенжайлар осы құрылғыдан жойылады.}}</translation>
 <translation id="2295236662082735391">Gemini-мен өзгерту үшін интернеттегі суретті басып тұрыңыз.</translation>
 <translation id="2296360194694387941">Chrome-дағы Gemini-ды пайдалану тапсырмасы аяқталды!</translation>
@@ -1576,6 +1577,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6232329973559504466">Инкогнито режимінде іздеу</translation>
 <translation id="6234310016144827337">Байланысты тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="6236952928980352967">Ескертуді қалпына келтіру</translation>
+<translation id="623755660902014047">Оқу режимі</translation>
 <translation id="6240553182907836376">Жеке куәлік деректерін жаңартыңыз</translation>
 <translation id="6240601837375010619">Паспорт деректерін сақтаңыз</translation>
 <translation id="6241132809279377987">iPhone-ға арналған Google қолданбаларының көбірек функцияларының құлпын ашыңыз.</translation>
@@ -2110,6 +2112,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Қолданып көру</translation>
 <translation id="797588153137233716">Мәзір → Тарих → Браузерді пайдалану деректерін жою</translation>
+<translation id="7977029776654598145">Қай кезде қолданылады?</translation>
 <translation id="7977451675950311423">Деректер қолды болған кезде ұрланған құпия сөзді пайдалансаңыз, сізге ескертеді.</translation>
 <translation id="797824194429476746">Қойындылар осы құрылғыда ашық қалады, бірақ топ біржола жойылады.</translation>
 <translation id="7982789257301363584">Желі</translation>
@@ -2521,6 +2524,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="954667170699278022">Оқу тізімі</translation>
 <translation id="956066588046842680">Ұйымыңыздың саясаты бойынша бұл деректерді импорттауға рұқсат берілмейді.</translation>
 <translation id="956218893102219091">Ең дұрыс Gemini нәтижелерін алу үшін IP мекенжайыңызға негізделген болжалды локацияның орнына нақты локацияңызды пайдаланыңыз. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Гиперсілтемелерді көрсету</translation>
 <translation id="961856697154696964">Браузер деректерін жою</translation>
 <translation id="963102227019621224">Интернет пен қолданбаларды пайдалану тарихы</translation>
 <translation id="965259330007686240">Gemini-мен сурет жасаңыз</translation>

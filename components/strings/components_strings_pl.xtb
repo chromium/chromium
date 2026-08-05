@@ -104,6 +104,7 @@
 <translation id="1165174597379888365">Odwiedzono stronę</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Brak}=1{Z 1 witryny (nie nastąpi wylogowanie z konta Google)}few{Z # witryn (nie nastąpi wylogowanie z konta Google)}many{Z # witryn (nie nastąpi wylogowanie z konta Google)}other{Z # witryny (nie nastąpi wylogowanie z konta Google)}}</translation>
 <translation id="1167877250265821930">Nie udało się pobrać: <ph name="LANGUAGE" /></translation>
+<translation id="1171306609584863516">Zweryfikowane przez: <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Koperta chińska nr 1</translation>
 <translation id="1174723505405632867">Czy chcesz zezwolić stronie <ph name="EMBEDDED_URL" /> na używanie plików cookie i danych witryn ze strony <ph name="TOP_LEVEL_URL" />?
 
@@ -225,7 +226,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1337692097987160377">Udostępnij tę kartę</translation>
 <translation id="1339601241726513588">Domena rejestracji:</translation>
 <translation id="1340482604681802745">Adres odbioru</translation>
-<translation id="1343356790768851700">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom</translation>
 <translation id="1343830902827845050">Zaloguj się w Chrome</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1348779747280417563">Potwierdź nazwę</translation>
@@ -1304,6 +1304,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3019738915977809060">Zapisz kartę pokładową w Portfelu</translation>
 <translation id="3022959067768579802">Pisz dalej</translation>
 <translation id="3024663005179499861">Nieprawidłowy typ zasady</translation>
+<translation id="3027857899292697441">Chrome wykrył elementy, które często występują na stronach związanych z wyłudzaniem informacji, złośliwym oprogramowaniem lub oszustwami. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Obraz SVG</translation>
 <translation id="3030331669969285614">Te oznaczenia zapobiegają zmianom powodującym niezgodność lub je cofają. Będą one dostępne tylko przez ograniczony czas.</translation>
 <translation id="3033200136993730761">Dzięki adresowi domowemu możesz korzystać z usług Google w bardziej efektywny sposób, np. otrzymywać trafniejsze wyniki wyszukiwania i wskazówki dojazdu w Mapach Google. Adres możesz zmienić lub usunąć <ph name="BEGIN_LINK" />na koncie Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -2041,6 +2042,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> nie obsługuje bezpiecznego połączenia z HTTPS</translation>
 <translation id="4153858337812834972">Ostatnie karty</translation>
 <translation id="4154277373259957087">Teraz przed wypełnieniem form płatności Chrome będzie weryfikować Twoją tożsamość. Aby to zmienić, w dowolnym momencie otwórz <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="4157273919218514718">Technologia spersonalizowanej inteligencji w Gemini <ph name="BEGIN_LINK" />Zarządzaj ustawieniami<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4165422751765527461">Otwiera artykuł w Centrum pomocy w nowej karcie</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
@@ -2788,7 +2790,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5340250774223869109">Aplikacja jest zablokowana</translation>
 <translation id="5342693890921195472">min temu</translation>
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
-<translation id="5344522958567249764">Zarządzaj prywatnością w reklamach</translation>
 <translation id="5344579389779391559">Ta strona może próbować obciążyć Cię płatnością</translation>
 <translation id="5345249337934847112">Papier (powlekany ciężki)</translation>
 <translation id="5346059693449184483">O czym myślisz?</translation>
@@ -3218,7 +3219,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5989320800837274978">Nie określono ani stałych serwerów proxy, ani adresu URL skryptu PAC.</translation>
 <translation id="5989917734461988169">Zapisanych adresów możesz używać w różnych usługach Google. Nie spowoduje to zmiany obecnego adresu domowego. Adres zostanie zapisany na Twoim koncie Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Składanie typu Z</translation>
-<translation id="5992805036496113940">Zobacz informacje używane do wyświetlania Ci reklam</translation>
 <translation id="5995727681868049093">Zarządzaj swoimi danymi, prywatnością i bezpieczeństwem na koncie Google</translation>
 <translation id="5996255674476750320">Pokazy samochodowe</translation>
 <translation id="5997247540087773573">Znaleźliśmy użyte właśnie hasło wśród ujawnionych w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca natychmiastową zmianę tego hasła oraz sprawdzenie innych zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
@@ -3367,7 +3367,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Pełne wycięte zakładki</translation>
 <translation id="6203231073485539293">Sprawdź połączenie z internetem</translation>
-<translation id="6205314730813004066">Prywatność w reklamach</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
 <translation id="6213685130162740188">Numery KTN</translation>
 <translation id="6215936431492593050">Metal (satyna)</translation>
@@ -3898,7 +3897,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="701757816833614688">Edukacja w zakresie sztuk wizualnych i wzornictwa</translation>
 <translation id="7020464868401003526">Adres URL skrótu jest za długi. Maksymalna dozwolona liczba znaków: <ph name="MAX_LENGTH" />.</translation>
 <translation id="7020581144940000377">Użyj przybliżonej lokalizacji</translation>
-<translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="7023162328967545559">Ostrzeżenie administratora</translation>
 <translation id="7023765275461720661">Połączyć konto i zapłacić za pomocą <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">zmienić ustawienia wypełniania form płatności</translation>
@@ -4072,6 +4070,7 @@ Dodatkowe informacje:
 <translation id="7310392214323165548">Urządzenie wkrótce uruchomi się ponownie</translation>
 <translation id="7311244614769792472">Brak wyników</translation>
 <translation id="7313107491291103073">Twoja organizacja oznaczyła tę witrynę, ponieważ może ona naruszać zasady.</translation>
+<translation id="7315372670898739748">Nie udało się połączyć. Spróbuj ponownie później.</translation>
 <translation id="7316521168101843192">Zapisuję plik w Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoc dotycząca połączeń</translation>
@@ -4265,6 +4264,7 @@ Dodatkowe informacje:
 <translation id="7575800019233204241">„Połączenie nie jest prywatne” lub „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;” lub „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;” lub „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” lub „Błąd certyfikatu SSL”</translation>
 <translation id="7575887283389198269">Telefony komórkowe</translation>
 <translation id="7579113844074980463">Tablet <ph name="MANUFACTURER" /></translation>
+<translation id="7579227976546039122">kompilacja deweloperska</translation>
 <translation id="7579442726219254162">Nieznana zmienna „<ph name="VARIABLE" />” w zarządzanej konfiguracji „<ph name="APPLICATION_ID" />”.</translation>
 <translation id="7581199239021537589">Strona 2 – przesunięcie obrazu wzdłuż osi Y</translation>
 <translation id="7582602800368606489">Szybko utwórz nowe wydarzenie w Kalendarzu Google</translation>
@@ -4514,6 +4514,7 @@ Dodatkowe informacje:
 <translation id="7956713633345437162">Zakładki na komórce</translation>
 <translation id="7961015016161918242">Nigdy</translation>
 <translation id="7962467575542381659">Platforma – urządzenie</translation>
+<translation id="796439090588610411">Chrome przestanie automatycznie potwierdzać ten adres e-mail na obsługiwanych stronach.</translation>
 <translation id="7966803981046576691">Rodzaj konta zadania</translation>
 <translation id="7967477318370169806">Fundusze powiernicze</translation>
 <translation id="7967636097426665267">Sprzęt komunikacyjny</translation>
@@ -4823,6 +4824,7 @@ Dodatkowe informacje:
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8449036207308062757">Zarządzaj miejscem na dane</translation>
 <translation id="8449155699563577224">17 x 24 cale</translation>
+<translation id="8449513475775663994">Usunąć zweryfikowany adres e-mail?</translation>
 <translation id="8449836157089738489">Otwórz wszystko w nowej grupie kart</translation>
 <translation id="8451518040456311377">Zapisuj i uzupełniaj dokumenty tożsamości</translation>
 <translation id="84561192812921051">Administrator może zdalnie wprowadzać zmiany w Twoim profilu i przeglądarce, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania. Aktywność na tym urządzeniu może być zarządzana również poza Chrome.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -4873,7 +4875,6 @@ Dodatkowe informacje:
 <translation id="8538228968820006247">Twoja grupa kart jest pełna, więc nowi użytkownicy nie mogą dołączyć za pomocą linku</translation>
 <translation id="8539500321752640291">Przyznać 2 uprawnienia?</translation>
 <translation id="8541158209346794904">Urządzenie Bluetooth</translation>
-<translation id="8541410041357371550">Witryna wykorzystuje gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="8541579497401304453">Zadzwoń do firmy, aby nawiązać z nią kontakt.</translation>
 <translation id="8542014550340843547">Trzy zszywki na dole</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -5037,6 +5038,7 @@ Dodatkowe informacje:
 <translation id="8814707942599948500">Koperta C8</translation>
 <translation id="881559332211266856">Zaktualizuj numer Redress</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>
+<translation id="8816960833040967795">Uważaj na tej stronie</translation>
 <translation id="8819155700324279105">Wprowadź dodatkową warstwę ochrony przed zagrożeniami online</translation>
 <translation id="8819855907485254989">Zapisz bilet w Portfelu</translation>
 <translation id="8820817407110198400">Zakładki</translation>
@@ -5346,6 +5348,7 @@ Dodatkowe informacje:
 <translation id="987264212798334818">Ogólne</translation>
 <translation id="988159990683914416">Build</translation>
 <translation id="989988560359834682">Edytuj adres</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
 <translation id="991936891556421157">Obuwie</translation>
 <translation id="992110854164447044">Karta wirtualna ukrywa Twoją prawdziwą kartę, aby chronić Cię przed oszustwami. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

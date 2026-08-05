@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1184166532603925201">Chrome 在無痕模式下會禁止網站使用第三方 Cookie</translation>
-<translation id="1559726735555610004">Google 會要求這些公司公開聲明，不會跨網站使用此資料追蹤你。部分網站可能會根據你的活動，為你提供廣告以外的個人化體驗，亦可能會將活動與網站中有關你的其他資料整合在一起。公司有責任向使用者告知資料的使用方式。請查看《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》，進一步瞭解 Google 如何保護你的資料。</translation>
 <translation id="1569440020357229235">網站在無痕模式下無法使用第三方 Cookie。如果需使用這類 Cookie 的網站無法正常運作，你可以<ph name="BEGIN_LINK" />嘗試暫時允許網站存取第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="19426210786412737">已更新目前的 Chrome 設定，允許網站存取第三方 Cookie。你可隨時變更此設定。</translation>
 <translation id="2004697686368036666">部分網站的功能可能無法正常運作</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">需使用第三方 Cookie 的網站應可正常運作</translation>
 <translation id="3624583033347146597">選擇第三方 Cookie 偏好設定</translation>
 <translation id="3918378745482005425">部分功能可能無法正常運作。相關網站仍可使用第三方 Cookie。</translation>
-<translation id="4009365983562022788">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。部分應用程式可能會根據你的活動，為你提供廣告以外的個人化體驗，亦可能會將活動與應用程式中有關你的其他資料整合在一起。公司有責任向使用者告知資料的使用方式。請參閱《<ph name="BEGIN_LINK1" />私隱權政策<ph name="LINK_END1" />》瞭解詳情。</translation>
 <translation id="4278390842282768270">已允許</translation>
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4711259472133554310">你可前往「設定」建立例外情況，一律允許特定網站使用第三方 Cookie</translation>

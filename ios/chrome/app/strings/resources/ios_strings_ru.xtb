@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Режим ИИ в Google Поиске и подключенные приложения</translation>
 <translation id="1085677983426914530">Не удалось открыть файл "<ph name="FILENAME" />"</translation>
 <translation id="1086486568852410168">Поиск с Google Объективом</translation>
+<translation id="1095093219235104018">Поиск и Заполнение с Gemini</translation>
 <translation id="1096992026380844478">Ваши настройки синхронизации будут восстановлены на основе данных из последней резервной копии. Узнайте, <ph name="BEGIN_LINK" />какие данные можно синхронизировать<ph name="END_LINK" />.</translation>
-<translation id="1097049112094133492">{count,plural, =1{Поиск вручную пропущен 1 раз}one{Поиск вручную пропущен # раз}few{Поиск вручную пропущен # раза}many{Поиск вручную пропущен # раз}other{Поиск вручную пропущен # раза}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 пароль мгновенно подтвержден}one{# пароль мгновенно подтвержден}few{# пароля мгновенно подтверждено}many{# паролей мгновенно подтверждено}other{# пароля мгновенно подтверждено}}</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Разблокировка с помощью Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Отключить режим ИИ</translation>
 <translation id="1554477036522844996">Новое окно</translation>
 <translation id="1558391695376153246">Закрыть вкладки инкогнито</translation>
-<translation id="1559263013367304065">с начала использования Google Объектива</translation>
 <translation id="1560153516220021659">Кнопка свернутой дополнительной панели инструментов</translation>
 <translation id="1562601408588733317">Управляйте поиском и Заполнением с Gemini</translation>
 <translation id="1565371473877914088">Новая вкладка инкогнито</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Сайт добавлен и закреплен.</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
 <translation id="1925706052394657380">Откройте <ph name="BEGIN_BOLD" />Приложения по умолчанию<ph name="END_BOLD" /> в настройках iOS.</translation>
+<translation id="1938871630297275912">{count,plural, =1{Получена ссылка}one{Получена {count} ссылка}few{Получено {count} ссылки}many{Получено {count} ссылок}other{Получено {count} ссылки}}</translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
 <translation id="1943478190258551035">Меню → Настройки</translation>
 <translation id="1952728750904661634">Вход в управляемый аккаунт</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Уточнить</translation>
 <translation id="2271452184061378400">Здесь находятся группы вкладок</translation>
 <translation id="2273327106802955778">Меню "Ещё"</translation>
+<translation id="2274179746480077483">Автоматически вводить данные из таких приложений, как Gmail и Фото. Работает на базе персонального ИИ.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Адрес будет удален с устройства.}one{Адреса будут удалены с устройства.}few{Адреса будут удалены с устройства.}many{Адреса будут удалены с устройства.}other{Адреса будут удалены с устройства.}}</translation>
 <translation id="2295236662082735391">Чтобы отредактировать изображение из интернета с помощью Gemini, нажмите и удерживайте его.</translation>
 <translation id="2296360194694387941">Вы прочитали совет о Gemini в Chrome.</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6232329973559504466">Поиск в режиме инкогнито</translation>
 <translation id="6234310016144827337">Проверьте подключение и повторите попытку.</translation>
 <translation id="6236952928980352967">Восстановить предупреждение</translation>
+<translation id="623755660902014047">Режим чтения</translation>
 <translation id="6240553182907836376">Обновить информацию об удостоверении личности?</translation>
 <translation id="6240601837375010619">Сохранить паспортные данные?</translation>
 <translation id="6241132809279377987">Пользуйтесь приложениями Google на iPhone</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Запуск</translation>
 <translation id="797588153137233716">Меню → История → Удалить данные о работе в браузере</translation>
+<translation id="7977029776654598145">Преимущества</translation>
 <translation id="7977451675950311423">Предупреждает, если вы используете пароль, скомпрометированный в результате утечки данных.</translation>
 <translation id="797824194429476746">Вкладки на устройстве останутся открытыми, но группа будет навсегда удалена.</translation>
 <translation id="7982789257301363584">Сеть</translation>
@@ -2521,6 +2524,7 @@
 <translation id="954667170699278022">Список для чтения</translation>
 <translation id="956066588046842680">Импорт этих данных запрещен правилами вашей организации.</translation>
 <translation id="956218893102219091">Используйте точное местоположение вместо приблизительного на основе IP-адреса, чтобы получать более подходящие результаты от Gemini. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Показывать гиперссылки</translation>
 <translation id="961856697154696964">Удалить данные о работе в браузере</translation>
 <translation id="963102227019621224">История приложений и веб-поиска</translation>
 <translation id="965259330007686240">Создайте изображение с помощью Gemini</translation>

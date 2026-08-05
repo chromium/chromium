@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1184166532603925201">Pan fyddwch yn y modd Anhysbys, mae Chrome yn rhwystro gwefannau rhag defnyddio cwcis trydydd parti</translation>
-<translation id="1559726735555610004">Mae Google yn ei gwneud yn ofynnol i gwmnïau ddatgan yn gyhoeddus na fyddant yn defnyddio'r data hyn i'ch olrhain ar draws gwefannau. Mae'n bosib y bydd rhai gwefannau'n defnyddio'ch gweithgarwch i bersonoleiddio'ch profiad ar gyfer mwy na hysbysebion yn unig. Mae'n bosib y byddant hefyd yn ei gyfuno â gwybodaeth arall y maent eisoes yn gwybod amdanoch. Mae cwmnïau'n gyfrifol am roi gwybod i chi sut maent yn defnyddio'ch data. Dysgu rhagor am sut mae Google yn gwarchod eich data yn ein <ph name="BEGIN_LINK" />Polisi Preifatrwydd<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis trydydd parti. Os nad yw gwefan sy'n dibynnu ar y cwcis hyn yn gweithio, gallwch geisio <ph name="BEGIN_LINK" />rhoi mynediad dros dro at y wefan honno i gwcis trydydd parti<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Mae'ch gosodiadau Chrome presennol wedi cael eu diweddaru i ganiatáu gwefannau i gael mynediad at gwcis trydydd parti. Gallwch chi newid y gosodiad hwn unrhyw bryd.</translation>
 <translation id="2004697686368036666">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Dylai gwefannau sy'n dibynnu ar gwcis trydydd parti weithio yn ôl y disgwyl</translation>
 <translation id="3624583033347146597">Dewiswch eich dewisiadau cwcis trydydd parti</translation>
 <translation id="3918378745482005425">Mae'n bosib na fydd rhai nodweddion yn gweithio. Gall gwefannau cysylltiedig barhau i ddefnyddio cwcis trydydd parti.</translation>
-<translation id="4009365983562022788">Mae Google yn ei gwneud yn ofynnol i gwmnïau ddatgan yn gyhoeddus na fyddant yn defnyddio'r data hyn i'ch olrhain ar draws gwefannau. Mae'n bosib y bydd rhai gwefannau'n defnyddio'ch gweithgarwch i bersonoleiddio'ch profiad ar gyfer mwy na hysbysebion yn unig. Mae'n bosib y byddant hefyd yn ei gyfuno â gwybodaeth arall y maent eisoes yn gwybod amdanoch. Mae cwmnïau'n gyfrifol am roi gwybod i chi sut maent yn defnyddio'ch data. Dysgu rhagor yn ein <ph name="BEGIN_LINK1" />Polisi Preifatrwydd<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Caniateir</translation>
 <translation id="4412992751769744546">Caniatáu cwcis trydydd parti</translation>
 <translation id="4711259472133554310">Gallwch greu eithriadau yn y Gosodiadau i ganiatáu i wefannau penodol ddefnyddio cwcis trydydd parti bob amser</translation>

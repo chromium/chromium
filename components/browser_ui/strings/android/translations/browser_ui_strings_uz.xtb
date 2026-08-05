@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Ruxsat etildi • Taxminiy</translation>
 <translation id="1323433172918577554">Yana</translation>
 <translation id="1333965224356556482">Saytlarga joylashuvingiz axborotini koʻrishni taqiqlash</translation>
-<translation id="1343356790768851700">Bu sayt sizga qiziq narsalarni aniqlashi va boshqa saytlarga taklif qilishi mumkin</translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> sayti qo‘shildi</translation>
 <translation id="1371239764779356792">Sayt maʼlumotlarni qurilmangizda saqlashiga ruxsat berish</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5335288049665977812">Saytlarga JavaScript ishga tushirishiga ruxsat berish (tavsiya etiladi)</translation>
 <translation id="534295439873310000">NFC qurilmalar</translation>
-<translation id="5344522958567249764">Reklamalardagi maxfiylikni boshqarish</translation>
 <translation id="5373874281522292782">Varaq guruhi saqlandi</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(yana 1 ta)}other{(yana # ta)}}</translation>
 <translation id="5403592356182871684">Ismlar</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Istisno sayt qo‘shish</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome cookie fayllarni ertadan yana bloklaydi}other{Cookie fayllar yana bloklanishiga # kun qoldi}}</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
-<translation id="6205314730813004066">Reklamalardagi maxfiylik</translation>
 <translation id="6207207788774442484">Maʼlumotlarni oʻchirish va ruxsatlarni tiklash</translation>
 <translation id="6211409961905616543">Saytlar harakat va yorug‘lik sensorlaridan foydalanishi mumkin</translation>
 <translation id="6218508144653756827">Pushti-qizil mavzu</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Parollaringizni tekshirish orqali xavfsizlikni kuchaytiring va maʼlumotlaringizni xavfsiz saqlang</translation>
 <translation id="6992289844737586249">Mikrofondan foydalanishga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="7000754031042624318">Android sozlamalari orqali faolsizlantirilgan</translation>
-<translation id="702275896380648118">Bu sayt sizga qiziq narsalarni aniqlashi va boshqa saytlarga taklif qilishi mumkin. Bu sayt ham mos reklamalarni chiqarish uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="7036823721811529709">Fonda tinglash</translation>
 <translation id="7044081119134178347">Kameraga shu safar ruxsat berildi</translation>
 <translation id="7053983685419859001">Taqiqlash</translation>
@@ -729,7 +725,6 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="8514955299594277296">Saytlarga maʼlumotlarni qurilmangizga saqlashga ruxsat bermang (tavsiya etilmaydi)</translation>
 <translation id="851751545965956758">Saytlarga qurilmalarga ulanishni taqiqlash</translation>
 <translation id="8525306231823319788">To‘liq ekran rejimi</translation>
-<translation id="8541410041357371550">Bu sayt yanada mos reklama chiqishi uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi</translation>
 <translation id="854876774113449365">Siz kirgan saytlar boshqa saytlardagi kontentni, masalan, rasmlar, reklamalar va matnlarni joylashtirishi mumkin. Mazkur boshqa saytlar saytni kezishda saqlangan shaxsiy maʼlumotlaringizdan foydalanishga ruxsat soʻraydi <ph name="BEGIN_LINK" />Joylashtirilgan kontent haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Soʻrovlarni chiqarish tartibi</translation>
 <translation id="8558480467877843976">Siz endi Chrome brauzerini har doim internetni kezish vaqtida yoki xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1184166532603925201">W trybie incognito Chrome blokuje witrynom możliwość używania plików cookie innych firm</translation>
-<translation id="1559726735555610004">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też łączyć je z innymi informacjami, które już o Tobie posiadają. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. Więcej informacji o tym, jak Google chroni Twoje dane, znajdziesz w naszej <ph name="BEGIN_LINK" />Polityce prywatności<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">W trybie incognito witryny nie mogą używać plików cookie innych firm. Jeśli witryna, która wymaga tych plików, nie działa, możesz <ph name="BEGIN_LINK" />tymczasowo przyznać jej dostęp do plików cookie innych firm<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Ustawienia Chrome zostały zaktualizowane i zezwalają witrynom na dostęp do plików cookie innych firm. W każdej chwili możesz zmienić to ustawienie.</translation>
 <translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Witryny, które wymagają plików cookie innych firm, powinny działać poprawnie</translation>
 <translation id="3624583033347146597">Wybierz preferencje dotyczące plików cookie innych firm</translation>
 <translation id="3918378745482005425">Niektóre funkcje mogą nie działać prawidłowo. Powiązane witryny mogą nadal używać plików cookie innych firm.</translation>
-<translation id="4009365983562022788">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też łączyć je z innymi informacjami, które już o Tobie posiadają. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. Więcej informacji znajdziesz w naszej <ph name="BEGIN_LINK1" />Polityce prywatności<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Dozwolone</translation>
 <translation id="4412992751769744546">Jak zezwolić na używanie plików cookie innych firm</translation>
 <translation id="4711259472133554310">W Ustawieniach możesz utworzyć wyjątki, aby wybrane witryny zawsze mogły używać plików cookie innych firm</translation>

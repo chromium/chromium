@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Inaruhusiwa • Linalokadiriwa</translation>
 <translation id="1323433172918577554">Onyesha Zaidi</translation>
 <translation id="1333965224356556482">Usiruhusu tovuti zione mahali ulipo</translation>
-<translation id="1343356790768851700">Tovuti hii hubainisha mambo unayopendelea kisha hupendekeza matangazo kwenye tovuti zingine</translation>
 <translation id="1369915414381695676">Tovuti <ph name="SITE_NAME" /> imeongezwa</translation>
 <translation id="1371239764779356792">Ruhusu tovuti zihifadhi data kwenye kifaa chako</translation>
 <translation id="1383876407941801731">Tafuta</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5335288049665977812">Ruhusu tovuti zitumie JavaScript (inapendekezwa)</translation>
 <translation id="534295439873310000">Vifaa vya NFC</translation>
-<translation id="5344522958567249764">Dhibiti faragha ya matangazo</translation>
 <translation id="5373874281522292782">Vikundi vyako vya vichupo vimehifadhiwa</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 zaidi)}other{(+ # zaidi)}}</translation>
 <translation id="5403592356182871684">Majina</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Ongeza tovuti mpya kwenye orodha ya vighairi</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome itazuia vidakuzi tena kesho}other{Zimesalia siku # kabla vidakuzi vizuiwe tena}}</translation>
 <translation id="6196640612572343990">Zuia vidakuzi vya tovuti nyingine</translation>
-<translation id="6205314730813004066">Faragha ya matangazo</translation>
 <translation id="6207207788774442484">Futa data na uweke upya ruhusa</translation>
 <translation id="6211409961905616543">Tovuti zinaweza kutumia vitambuzi vya mwendo na mwangaza</translation>
 <translation id="6218508144653756827">Mandhari ya rangi ya fushia</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Imarisha usalama wako na ulinde data yako kwa kukagua manenosiri yako</translation>
 <translation id="6992289844737586249">Uliza kwanza kabla ya kuruhusu tovuti zitumie maikrofoni yako (inapendekezwa)</translation>
 <translation id="7000754031042624318">Imezimwa katika mipangilio ya Android</translation>
-<translation id="702275896380648118">Tovuti hii hubainisha mambo unayopendelea na kisha hupendekeza matangazo kwenye tovuti zingine. Tovuti hii pia hupata mada zako za matangazo kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="7036823721811529709">Sikiliza chini chini</translation>
 <translation id="7044081119134178347">Kamera inaruhusiwa wakati huu</translation>
 <translation id="7053983685419859001">Zuia</translation>
@@ -729,7 +725,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:</translation>
 <translation id="8514955299594277296">Usiruhusu tovuti zihifadhi data kwenye kifaa chako (haipendekezwi)</translation>
 <translation id="851751545965956758">Zuia tovuti zisiunganishe kwenye vifaa</translation>
 <translation id="8525306231823319788">Skrini nzima</translation>
-<translation id="8541410041357371550">Tovuti hii hupata mada zako za matangazo kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi</translation>
 <translation id="854876774113449365">Tovuti unazotembelea zinaweza kupachika maudhui kutoka kwenye tovuti nyingine, kwa mfano, picha, matangazo na maandishi. Tovuti hizi nyingine zinaweza kuomba ruhusa zitumie taarifa ambazo zimehifadhi kukuhusu unapovinjari tovuti. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu maudhui yaliyopachikwa<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Jinsi ya kuonyesha maombi</translation>
 <translation id="8558480467877843976">Sasa unaweza kutumia Chrome wakati wowote unapovinjari au kugusa viungo kwenye ujumbe, hati na programu nyingine.</translation>

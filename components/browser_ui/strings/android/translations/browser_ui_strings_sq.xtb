@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Lejohet • E përafërt</translation>
 <translation id="1323433172918577554">Shfaq më shumë</translation>
 <translation id="1333965224356556482">Mos lejo që sajtet të shikojnë vendndodhjen tënde</translation>
-<translation id="1343356790768851700">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera</translation>
 <translation id="1369915414381695676">Sajti <ph name="SITE_NAME" /> u shtua</translation>
 <translation id="1371239764779356792">Lejo që një sajt të ruajë të dhëna në pajisjen tënde</translation>
 <translation id="1383876407941801731">Kërko</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5335288049665977812">Lejoji sajtet të ekzekutojnë JavaScript (rekomandohet)</translation>
 <translation id="534295439873310000">Pajisjet me NFC</translation>
-<translation id="5344522958567249764">Menaxho privatësinë e reklamave</translation>
 <translation id="5373874281522292782">Grupet e tua të skedave janë ruajtur</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tjetër)}other{(+ # të tjerë)}}</translation>
 <translation id="5403592356182871684">Emrat</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Shto përjashtim për sajt</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome do t'i bllokojë kukit përsëri nesër}other{# ditë derisa kukit të bllokohen përsëri}}</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
-<translation id="6205314730813004066">Privatësia e reklamave</translation>
 <translation id="6207207788774442484">Fshi të dhënat dhe rivendos lejet</translation>
 <translation id="6211409961905616543">Sajtet mund të përdorin sensorët e lëvizjes dhe të dritës</translation>
 <translation id="6218508144653756827">Tema vjollcë e ndezur</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Forco sigurinë dhe mbaji të dhënat e tua më të sigurta duke kontrolluar fjalëkalimet e tua</translation>
 <translation id="6992289844737586249">Pyet përpara se sajtet të lejohen të përdorin mikrofonin (rekomandohet)</translation>
 <translation id="7000754031042624318">E çaktivizuar te cilësimet e Android</translation>
-<translation id="702275896380648118">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera. Ky sajt merr po ashtu temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="7036823721811529709">Dëgjo në sfond</translation>
 <translation id="7044081119134178347">Kamera lejohet këtë herë</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
@@ -729,7 +725,6 @@
 <translation id="8514955299594277296">Mos lejo që sajtet të ruajnë të dhëna në pajisjen tënde (nuk rekomandohet)</translation>
 <translation id="851751545965956758">Blloko lidhjen e sajteve me pajisjet</translation>
 <translation id="8525306231823319788">Ekrani i plotë</translation>
-<translation id="8541410041357371550">Ky sajt merr temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="854876774113449365">Sajtet që viziton mund të integrojnë përmbajtje nga sajte të tjera, p.sh. imazhe, reklama dhe tekste. Këto sajte të tjera mund të kërkojnë leje që të përdorin informacionet që kanë ruajtur në lidhje me ty kur ti shfleton në sajt. <ph name="BEGIN_LINK" />Mëso më shumë për përmbajtjet e integruara<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Si të shfaqësh kërkesat</translation>
 <translation id="8558480467877843976">Tani mund të përdorësh Chrome sa herë që shfleton ose troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>

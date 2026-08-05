@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Хайлтын ХОУ-ы горим болон холбоотой аппууд</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" />-г нээж чадсангүй</translation>
 <translation id="1086486568852410168">Google Lens-р хайх</translation>
+<translation id="1095093219235104018">Gemini-р олж, бөглөх</translation>
 <translation id="1096992026380844478">Таны синк хийх тохиргоог сүүлийн нөөцлөлтөд тань тулгуурлан сэргээнэ. <ph name="BEGIN_LINK" />Юу синк хийж болохоо хараарай<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{Гар аргаар хийсэн 1 хайлтыг алгассан}other{Гар аргаар хийсэн # хайлтыг алгассан}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 нууц үгийг шуурхай баталгаажуулсан}other{# нууц үгийг шуурхай баталгаажуулсан}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="1110772719190051587">Царайн ID-р түгжээг тайлна уу</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">ХОУ-ы горимыг унтраах</translation>
 <translation id="1554477036522844996">Шинэ цонх</translation>
 <translation id="1558391695376153246">Нууцлалтай табуудыг хаах</translation>
-<translation id="1559263013367304065">Google Lens-г ашигласнаас хойш</translation>
 <translation id="1560153516220021659">Хураасан хоёрдогч хэрэгслийн мөрийн товч</translation>
 <translation id="1562601408588733317">Gemini-р мэдээлэл олж, бөглөхийг удирдах</translation>
 <translation id="1565371473877914088">Нууцлалтай шинэ таб</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Сайтыг нэмж, бэхэлсэн</translation>
 <translation id="1911619930368729126">Google Drive руу татаж оруул</translation>
 <translation id="1925706052394657380">iOS-н тохиргооноос <ph name="BEGIN_BOLD" />Өгөгдмөл аппыг<ph name="END_BOLD" /> нээнэ үү</translation>
+<translation id="1938871630297275912">{count,plural, =1{Холбоос хүлээн авсан}other{{count} холбоос хүлээн авсан}}</translation>
 <translation id="1941314575388338491">Хуулахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1943478190258551035">Цэс → Тохиргоо</translation>
 <translation id="1952728750904661634">Удирдсан бүртгэлээр нэвтрэх</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Боловсронгуй болгох</translation>
 <translation id="2271452184061378400">Таны табын бүлгийг энд хадгалдаг</translation>
 <translation id="2273327106802955778">Дэлгэрэнгүй цэс</translation>
+<translation id="2274179746480077483">Gmail, Зураг зэрэг аппуудын мэдээллийг автоматаар бөглөөрэй. Personal Intelligence-р дэмжсэн.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Энэ хаягийг энэ төхөөрөмжөөс устгана.}other{Эдгээр хаягийг энэ төхөөрөмжөөс устгана.}}</translation>
 <translation id="2295236662082735391">Gemini-р засахын тулд веб дээрх зураг дээр удаан дарна уу</translation>
 <translation id="2296360194694387941">Chrome дахь Gemini-г ашиглаж дууслаа!</translation>
@@ -1576,6 +1577,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6232329973559504466">Нууцлалтай хайлт</translation>
 <translation id="6234310016144827337">Холболтоо шалгаад, дахин оролдоно уу</translation>
 <translation id="6236952928980352967">Сануулгыг сэргээх</translation>
+<translation id="623755660902014047">Уншлагын горим</translation>
 <translation id="6240553182907836376">Биеийн байцаалтыг шинэчлэх</translation>
 <translation id="6240601837375010619">Паспортыг хадгалах</translation>
 <translation id="6241132809279377987">Google аппаар өөрийн iPhone-д зориулж илүү олон онцлогийн түгжээг тайлаарай</translation>
@@ -2110,6 +2112,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7972837668077967426">Зотон</translation>
 <translation id="7975036700432177008">Туршиж үзэх</translation>
 <translation id="797588153137233716">Цэс → Түүх → Интернэтээр үзсэн өгөгдлийг устгах</translation>
+<translation id="7977029776654598145">Ашиглахад</translation>
 <translation id="7977451675950311423">Таныг өгөгдлийн зөрчилд алдагдсан нууц үгийг ашигласан тохиолдолд танд сануулна.</translation>
 <translation id="797824194429476746">Табууд энэ төхөөрөмж дээр нээлттэй хэвээр үлдэх хэдий ч бүлгийг бүрмөсөн устгана.</translation>
 <translation id="7982789257301363584">Сүлжээ</translation>
@@ -2521,6 +2524,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="954667170699278022">Унших жагсаалт</translation>
 <translation id="956066588046842680">Энэ өгөгдлийг импортлохыг танай байгууллагын бодлогын дагуу зөвшөөрдөггүй.</translation>
 <translation id="956218893102219091">Gemini-н хамгийн үнэн зөв үр дүнг авах бол IP хаягтаа тулгуурлан тооцоолсон байршлын оронд нарийвчилсан байршлаа ашиглана уу. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Цахим холбооснуудыг харуулах</translation>
 <translation id="961856697154696964">Интернэтээр үзсэн өгөгдлийг устгах</translation>
 <translation id="963102227019621224">Веб, аппын үйл ажиллагаа</translation>
 <translation id="965259330007686240">Gemini-р зураг үүсгэх</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">„AI-режим“ на „Пребарување на Google“ и поврзани апликации</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> не можеше да се отвори</translation>
 <translation id="1086486568852410168">Пребарај со Google Lens</translation>
+<translation id="1095093219235104018">Наоѓајте и пополнувајте со Gemini</translation>
 <translation id="1096992026380844478">Поставките за синхронизација ќе се вратат согласно со последниот бекап. <ph name="BEGIN_LINK" />Погледнете што може да синхронизирате<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{Прескокнато е 1 рачно пребарување}one{Прескокнати се # рачно пребарување}other{Прескокнати се # рачни пребарувања}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{Веднаш потврдена е 1 лозинка}one{Веднаш потврдени се # лозинка}other{Веднаш потврдени се # лозинки}}</translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Отклучете со ID на лик</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Исклучи AI Mode</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
 <translation id="1558391695376153246">Затвори картички „Инкогнито“</translation>
-<translation id="1559263013367304065">откако користите Google Lens</translation>
 <translation id="1560153516220021659">Копче за собран секундарен алатник</translation>
 <translation id="1562601408588733317">Управувајте со наоѓањето и пополнувањето податоци со Gemini</translation>
 <translation id="1565371473877914088">Нова инкогнито картичка</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Сајтот е додаден и закачен</translation>
 <translation id="1911619930368729126">Постави во Диск на Google</translation>
 <translation id="1925706052394657380">Отворете ги поставките за <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> во iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Примен е линк}one{Примени се {count} линк}other{Примени се {count} линка}}</translation>
 <translation id="1941314575388338491">Допрете двапати за да копирате.</translation>
 <translation id="1943478190258551035">Мени → Поставки</translation>
 <translation id="1952728750904661634">Најави се со управувана сметка</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Подобри</translation>
 <translation id="2271452184061378400">Вашите групи картички се зачувани овде</translation>
 <translation id="2273327106802955778">Мени за повеќе опции</translation>
+<translation id="2274179746480077483">Автоматско пополнување на податоците од апликации како Gmail и „Фотографии“. Овозможено од „Лична интелигенција“.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Адресава ќе се избрише од уредов.}one{Адресиве ќе се избришат од уредов.}other{Адресиве ќе се избришат од уредов.}}</translation>
 <translation id="2295236662082735391">Долго притиснете некоја слика на веб за да ја измените со Gemini</translation>
 <translation id="2296360194694387941">Задачата „Користење на Gemini во Chrome“ е завршена!</translation>
@@ -1576,6 +1577,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6232329973559504466">Пребарување во „Инкогнито“</translation>
 <translation id="6234310016144827337">Проверете ја врската и обидете се повторно</translation>
 <translation id="6236952928980352967">Врати предупредување</translation>
+<translation id="623755660902014047">Режим на читање</translation>
 <translation id="6240553182907836376">Ажурирајте го документот за идентификација</translation>
 <translation id="6240601837375010619">Зачувајте го пасошот</translation>
 <translation id="6241132809279377987">Отклучете повеќе функции за вашиот iPhone со апликациите на Google</translation>
@@ -2110,6 +2112,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7972837668077967426">Платно</translation>
 <translation id="7975036700432177008">Испробај</translation>
 <translation id="797588153137233716">Мени → Историја → Избришете ги податоците од прелистување</translation>
+<translation id="7977029776654598145">Кога се користи</translation>
 <translation id="7977451675950311423">Ве предупредува ако користите лозинка компромитирана во упад во податоци.</translation>
 <translation id="797824194429476746">Картичките ќе останат отворени на овој уред, но групата ќе се избрише трајно.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -2521,6 +2524,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="954667170699278022">Список за читање</translation>
 <translation id="956066588046842680">Увезувањето на податоциве не е дозволено со правилото на вашата организација.</translation>
 <translation id="956218893102219091">Користете ја вашата прецизна локација за да добивате најпрецизни резултати од Gemini, наместо приближна локација заснована на вашата IP-адреса. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Прикажи ги хиперлинковите</translation>
 <translation id="961856697154696964">Избришете го прелистувањето</translation>
 <translation id="963102227019621224">Активност на интернет и апликации</translation>
 <translation id="965259330007686240">Создајте слика со Gemini</translation>

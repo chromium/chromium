@@ -1175,6 +1175,7 @@
 <translation id="1901213235765457754">Затражите од администратора да ажурира ову апликацију</translation>
 <translation id="1901303067676059328">Изабери &amp;све</translation>
 <translation id="1901760057081700494">Временска зона је тренутно подешена на <ph name="TIME_ZONE_ENTRY" />. Да бисте аутоматски ажурирали временску зону, <ph name="BEGIN_LINK" />укључите приступ локацији система<ph name="END_LINK" />.</translation>
+<translation id="1903124137025773109">Кућна адреса може да вам помогне да обављате ствари у Google услугама, попут релевантнијих резултата Претраге и путање у Google мапама. Можете да измените или избришете адресу на <ph name="BEGIN_LINK" />Google налогу<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="1904580727789512086">URL-ови које посећујете се чувају на Google налогу</translation>
 <translation id="190530012637606145">Упозорава вас на све небезбедне везе, укључујући приватне интранете</translation>
 <translation id="1906181697255754968">Сајтови обично приступају фајловима и фолдерима на уређају да би вам биле доступне функције попут аутоматског чувања ставки на којима радите</translation>
@@ -1551,6 +1552,7 @@
 <translation id="2198625180564913276">Додаје се профил. То може да потраје неколико минута.</translation>
 <translation id="2198712775285959645">Измени</translation>
 <translation id="2199298570273670671">Грешка</translation>
+<translation id="220006241671843310">Изаберите да ли Chrome користи моделе вештачке интелигенције који се покрећу директно на уређају</translation>
 <translation id="2200094388063410062">Пошаљи имејлом</translation>
 <translation id="2200781749203116929">ChromeOS системске евиденције</translation>
 <translation id="2202391868799679245">Укључи тастерску пречицу</translation>
@@ -1631,6 +1633,7 @@
 <translation id="225716114209817872">Максимално</translation>
 <translation id="2259337945538989999">Да бисте преузели картице са других уређаја, потврдите идентитет. Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="22614517036276112">Овај документ или уређај није у складу са неким безбедносним смерницама организације. Проверите са администратором шта треба да поправите.</translation>
+<translation id="2261825061465157168">Адреса на послу може да вам помогне да обављате ствари у Google услугама, попут релевантнијих резултата Претраге и путање у Google мапама. Можете да измените или избришете адресу на <ph name="BEGIN_LINK" />Google налогу<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="2262477216570151239">Одлагање пре понављања</translation>
 <translation id="2263371730707937087">Учесталост освежавања екрана</translation>
 <translation id="2263679799334060788">Повратне информације нам помажу да побољшамо Google Cast и захвални смо вам на њима. Да бисте решили проблеме са пребацивањем, посетите <ph name="BEGIN_LINK" />центар за помоћ<ph name="END_LINK" />.</translation>
@@ -2698,6 +2701,7 @@
 <translation id="3048917188684939573">Евиденције пребацивања и уређаја</translation>
 <translation id="3049356453907822148">Додај нову вештину</translation>
 <translation id="3051250416341590778">Величина приказа</translation>
+<translation id="3051676221004664500">&amp;Преведи: <ph name="SELECTION" /></translation>
 <translation id="3053273573829329829">Омогући PIN корисника</translation>
 <translation id="3053274730492362225">Не трепћи</translation>
 <translation id="3057938290530993634">Додирните и задржите да бисте закачили најпосећеније веб-сајтове ради лакшег приступа следећи пут</translation>
@@ -3275,7 +3279,6 @@
 <translation id="3512465804715993309">Прилагодљиво истицање</translation>
 <translation id="3513019849832307207">Придружи ме и отвори</translation>
 <translation id="3513563267917474897">Клизач за нијансу боје од <ph name="MIN_VALUE" /> до <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Закачи нове додатке</translation>
 <translation id="3514647716686280777">Добијате стандардну заштиту. Да бисте добили додатну заштиту од опасних веб-сајтова, преузимања и додатака, укључите побољшано безбедно прегледање у подешавањима Chrome-а.</translation>
 <translation id="3514681096978190000">Овај фајл архиве садржи друге фајлове који могу да крију малвер</translation>
 <translation id="3515983984924808886">Додирните поново безбедносни кључ да бисте потврдили ресетовање. Све информације сачуване на безбедносном кључу, укључујући његов PIN, биће обрисане.</translation>
@@ -5143,6 +5146,7 @@
 <translation id="4913573660390710463">Приступ веб-апликацијама у пакету са побољшаним могућностима. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Не могу да пронађем податке апликације</translation>
 <translation id="4915961947098019832">Дозвољено им је да приказују слике</translation>
+<translation id="4916140032692201190">&amp;Преведи избор</translation>
 <translation id="491779113051926205">Бројачи саобраћаја за ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> жели да комуницира са додатком „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Прихвати</translation>
@@ -6514,7 +6518,6 @@
 <translation id="6011193465932186973">Дигитални отисак</translation>
 <translation id="6011308810877101166">Побољшајте предлоге за претрагу</translation>
 <translation id="6011908034087870826">Линк се шаље на <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">Преузмите титл за аудио и видео</translation>
 <translation id="6014293228235665243">Непрочитано</translation>
 <translation id="6015776718598175635">Звезде</translation>
 <translation id="6015796118275082299">Година</translation>
@@ -9711,6 +9714,7 @@
 <translation id="8477241577829954800">Замењено</translation>
 <translation id="8477384620836102176">&amp;Опште</translation>
 <translation id="8477446666255316832">Пријавите се брже следећи пут</translation>
+<translation id="8477548388161793571">&amp;Преведи избор</translation>
 <translation id="8478346767369317046">Пословни</translation>
 <translation id="8479176401914456949">Кôд је неважећи. Пробајте поново.</translation>
 <translation id="8480869669560681089">Непознат уређај произвођача <ph name="VENDOR_NAME" /></translation>

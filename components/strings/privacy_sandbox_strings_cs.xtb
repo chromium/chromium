@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1184166532603925201">V anonymním režimu Chrome webům používání souborů cookie třetích stran blokuje</translation>
-<translation id="1559726735555610004">Google vyžaduje, aby společnosti veřejně prohlásily, že vás pomocí těchto dat nebudou na webech sledovat. Některé weby mohou vaši aktivitu využívat k tomu, aby vaše prostředí přizpůsobily i jinak, nejen pro reklamy. Mohou ji také kombinovat s dalšími informacemi, které o vás už vědí. Společnosti mají odpovědnost informovat vás o tom, jak vaše data používají. Další informace o tom, jak Google chrání vaše data, najdete v našich <ph name="BEGIN_LINK" />zásadách ochrany soukromí<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">V anonymním režimu nemůžou weby používat soubory cookie třetích stran. Pokud web, který se spoléhá na tyhle soubory cookie, ​​nefunguje, můžete mu <ph name="BEGIN_LINK" />zkusit udělit dočasný přístup k souborům cookie třetích stran<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Nastavení Chromu bylo aktualizováno a povoluje teď webům přístup k souborům cookie třetích stran. Toto nastavení můžete kdykoli změnit.</translation>
 <translation id="2004697686368036666">Některé weby můžou přestat fungovat</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Weby, které potřebují soubory cookie třetích stran, by měly fungovat správně</translation>
 <translation id="3624583033347146597">Vyberte předvolby pro soubory cookie třetích stran</translation>
 <translation id="3918378745482005425">Některé věci nemusí fungovat. Související weby můžou soubory cookie třetích stran dál používat.</translation>
-<translation id="4009365983562022788">Google vyžaduje, aby společnosti veřejně prohlásily, že vás pomocí těchto dat nebudou na webech sledovat. Některé weby mohou vaši aktivitu využívat k tomu, aby vaše prostředí přizpůsobily i jinak, nejen pro reklamy. Mohou ji také kombinovat s dalšími informacemi, které o vás už vědí. Společnosti mají odpovědnost informovat vás o tom, jak vaše data používají. Další informace najdete v našich <ph name="BEGIN_LINK1" />zásadách ochrany soukromí<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Povoleno</translation>
 <translation id="4412992751769744546">Povolit soubory cookie třetích stran</translation>
 <translation id="4711259472133554310">V Nastavení můžete vytvořit výjimky, které konkrétním webům používání souborů cookie třetích stran vždycky povolí</translation>

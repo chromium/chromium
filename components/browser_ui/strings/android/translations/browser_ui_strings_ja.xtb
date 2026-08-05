@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">許可 • おおよそ</translation>
 <translation id="1323433172918577554">もっと見る</translation>
 <translation id="1333965224356556482">サイトに位置情報へのアクセスを許可しない</translation>
-<translation id="1343356790768851700">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します</translation>
 <translation id="1369915414381695676">サイト <ph name="SITE_NAME" /> を追加しました</translation>
 <translation id="1371239764779356792">サイトによるデバイスへのデータ保存を許可します</translation>
 <translation id="1383876407941801731">検索</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5335288049665977812">サイトに JavaScript の実行を許可する（推奨）</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
-<translation id="5344522958567249764">広告プライバシーを管理</translation>
 <translation id="5373874281522292782">タブグループを保存しました</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
 <translation id="5403592356182871684">名前</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">例外のサイトを追加</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{明日、Chrome で Cookie を再びブロックします}other{# 日後に、Chrome で Cookie を再びブロックします}}</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
-<translation id="6205314730813004066">広告プライバシー</translation>
 <translation id="6207207788774442484">データを削除して権限をリセット</translation>
 <translation id="6211409961905616543">サイトにモーション センサーと光センサーの使用を許可する</translation>
 <translation id="6218508144653756827">フューシャピンクのテーマ</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">パスワードを確認してセキュリティを強化し、データを安全に保護しましょう</translation>
 <translation id="6992289844737586249">サイトにマイクの使用を許可する前に確認する（推奨）</translation>
 <translation id="7000754031042624318">Android の設定で無効</translation>
-<translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="7036823721811529709">バックグラウンドで音楽を再生</translation>
 <translation id="7044081119134178347">一時的にカメラを許可しました</translation>
 <translation id="7053983685419859001">ブロック</translation>
@@ -729,7 +725,6 @@
 <translation id="8514955299594277296">サイトによるデバイスへのデータの保存を許可しない（非推奨）</translation>
 <translation id="851751545965956758">サイトからデバイスへの接続をブロックする</translation>
 <translation id="8525306231823319788">全画面表示</translation>
-<translation id="8541410041357371550">このサイトでは、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します</translation>
 <translation id="854876774113449365">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。サイトを閲覧する際、それらのサイトがあなたに関する保存済みの情報の使用許可を要求することがあります。<ph name="BEGIN_LINK" />埋め込みコンテンツの詳細<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">リクエストの表示方法</translation>
 <translation id="8558480467877843976">ブラウジングするときや、メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Издөө кызматынын ЖИ режими жана туташкан колдонмолор</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ачылган жок</translation>
 <translation id="1086486568852410168">Google Lens аркылуу издөө</translation>
+<translation id="1095093219235104018">Gemini менен маалымат таап, толтуруңуз</translation>
 <translation id="1096992026380844478">Шайкештирүү параметрлери акыркы жолу сакталган камдык көчүрмөнүн негизинде калыбына келтирилет. <ph name="BEGIN_LINK" />Эмнелерди шайкештире аларыңызды көрүңүз<ph name="END_LINK" />.</translation>
-<translation id="1097049112094133492">{count,plural, =1{1 кол менен издөө өткөрүлүп жиберилди}other{# кол менен издөө өткөрүлүп жиберилди}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 сырсөз ыкчам текшерилди}other{# сырсөз ыкчам текшерилди}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
 <translation id="1110772719190051587">Түзмөктүн кулпусун Face ID менен ачуу</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">ЖИ режимин өчүрүү</translation>
 <translation id="1554477036522844996">Жаңы Терезе</translation>
 <translation id="1558391695376153246">Жашыруун өтмөктөрдү жабуу</translation>
-<translation id="1559263013367304065">Google Lens'ти колдонуп баштагандан бери</translation>
 <translation id="1560153516220021659">Экинчи куралдар тилкесин жыйыштыруу баскычы</translation>
 <translation id="1562601408588733317">Gemini менен маалымат табуу жана толтурууну тескеңиз</translation>
 <translation id="1565371473877914088">Жаңы жашыруун өтмөк</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Сайт кошулуп, кадалды</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
 <translation id="1925706052394657380">iOS'то <ph name="BEGIN_BOLD" />Демейки колдонмолор<ph name="END_BOLD" /> параметрин ачыңыз</translation>
+<translation id="1938871630297275912">{count,plural, =1{Шилтеме алынды}other{{count} шилтеме алынды}}</translation>
 <translation id="1941314575388338491">Көчүрүү үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1943478190258551035">Меню → Тууралоо</translation>
 <translation id="1952728750904661634">Башкарылган аккаунт менен кириңиз</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Мыктылоо</translation>
 <translation id="2271452184061378400">Өтмөк топтору ушул жерде сакталат</translation>
 <translation id="2273327106802955778">"Дагы" менюсу</translation>
+<translation id="2274179746480077483">Gmail жана Фото сыяктуу колдонмолордогу маалыматты автоматтык түрдө толтуруу. Personal Intelligence негизинде иштейт.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Бул дарек ушул түзмөктөн өчүрүлөт.}other{Бул даректер ушул түзмөктөн өчүрүлөт.}}</translation>
 <translation id="2295236662082735391">Gemini менен түзөтүү үчүн Интернеттеги сүрөттү коё бербей басып туруңуз</translation>
 <translation id="2296360194694387941">Chrome'догу Gemini боюнча тапшырма аткарылды!</translation>
@@ -1576,6 +1577,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6232329973559504466">Жашыруун издөө</translation>
 <translation id="6234310016144827337">Интернетти текшерип, кайталап көрүңүз</translation>
 <translation id="6236952928980352967">Эскертүүнү калыбына келтирүү</translation>
+<translation id="623755660902014047">Окуу режими</translation>
 <translation id="6240553182907836376">Өздүгүн аныктоо картасын жаңыртыңыз</translation>
 <translation id="6240601837375010619">Паспортту сактаңыз</translation>
 <translation id="6241132809279377987">Google колдонмолору менен iPhone'дун көбүрөөк функцияларын колдонуңуз</translation>
@@ -2110,6 +2112,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Байкап көрүү</translation>
 <translation id="797588153137233716">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>
+<translation id="7977029776654598145">Колдонулганда</translation>
 <translation id="7977451675950311423">Колдонулган сызсөздү кимдир бирөө билип алган болсо, ал тууралуу эскертет.</translation>
 <translation id="797824194429476746">Өтмөктөр бул түзмөктө ачык бойдон калып, бирок топ биротоло өчүрүлөт.</translation>
 <translation id="7982789257301363584">Тармак</translation>
@@ -2521,6 +2524,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="954667170699278022">Окуу тизмеси</translation>
 <translation id="956066588046842680">Уюмуңуздун эрежелерине ылайык бул маалыматты өткөрүп алууга болбойт.</translation>
 <translation id="956218893102219091">Gemini'дан так маалыматты алуу үчүн IP дарегинин негизинде аныкталган болжолдуу жерди эмес, так даректи колдонуңуз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Гипершилтемелерди көрсөтүү</translation>
 <translation id="961856697154696964">Серептөө дайындарын өчүрүү</translation>
 <translation id="963102227019621224">Колдонмолор жана Интернеттеги аракеттер таржымалы</translation>
 <translation id="965259330007686240">Gemini менен сүрөт түзүңүз</translation>

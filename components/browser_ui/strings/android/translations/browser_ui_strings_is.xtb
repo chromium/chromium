@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Leyft • Áætluð</translation>
 <translation id="1323433172918577554">Sýna meira</translation>
 <translation id="1333965224356556482">Ekki leyfa vefsvæðum að sjá staðsetninguna þína</translation>
-<translation id="1343356790768851700">Þetta vefsvæði áætlar áhugasvið þitt og sendir svo öðrum vefsvæðum auglýsingatillögur</translation>
 <translation id="1369915414381695676">Vefsvæðinu <ph name="SITE_NAME" /> bætt við</translation>
 <translation id="1371239764779356792">Leyfa vefsvæði að vista gögn í tækinu þínu</translation>
 <translation id="1383876407941801731">Leita</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5335288049665977812">Leyfa vefsvæðum að keyra JavaScript (ráðlagt)</translation>
 <translation id="534295439873310000">NFC-tæki</translation>
-<translation id="5344522958567249764">Stjórna persónuvernd auglýsinga</translation>
 <translation id="5373874281522292782">Flipahóparnir þínir eru vistaðir</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 í viðbót)}one{(+ # í viðbót)}other{(+ # í viðbót)}}</translation>
 <translation id="5403592356182871684">Heiti</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Bæta við undantekningu</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome mun aftur loka fyrir fótspor á morgun}one{Aftur verður lokað á fótspor eftir # dag}other{Aftur verður lokað á fótspor eftir # daga}}</translation>
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
-<translation id="6205314730813004066">Persónuvernd auglýsinga</translation>
 <translation id="6207207788774442484">Eyða gögnum og endurstilla heimildir</translation>
 <translation id="6211409961905616543">Vefsvæði geta notað hreyfi- og birtuskynjara</translation>
 <translation id="6218508144653756827">Fúksíuþema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Athugaðu aðgangsorðin þín til að auka öryggi þitt og gæta að öryggi gagnanna þinna</translation>
 <translation id="6992289844737586249">Spyrja áður en vefsvæðum er veitt heimild til að nota hljóðnemann þinn (ráðlagt)</translation>
 <translation id="7000754031042624318">Slökkt í stillingum Android</translation>
-<translation id="702275896380648118">Þetta vefsvæði áætlar áhugasvið þitt og sendir svo öðrum vefsvæðum auglýsingatillögur. Þetta vefsvæði fær einnig upplýsingar um umfjöllunarefni auglýsinga frá Chrome til að birta þér viðeigandi auglýsingar.</translation>
 <translation id="7036823721811529709">Hlustaðu í bakgrunninum</translation>
 <translation id="7044081119134178347">Myndavél leyfð í þetta skipti</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
@@ -729,7 +725,6 @@
 <translation id="8514955299594277296">Ekki leyfa vefsvæðum að vista gögn í tækinu (ekki er mælt með þessu)</translation>
 <translation id="851751545965956758">Ekki leyfa vefsvæðum að tengjast tækjum</translation>
 <translation id="8525306231823319788">Allur skjárinn</translation>
-<translation id="8541410041357371550">Þetta vefsvæði fær upplýsingar um umfjöllunarefni auglýsinga frá Chrome til að birta þér viðeigandi auglýsingar</translation>
 <translation id="854876774113449365">Vefsvæði sem þú heimsækir geta fellt inn efni frá öðrum vefsvæðum, til dæmis myndir, auglýsingar og texta. Hin vefsvæðin kunna að biðja um að fá að nota upplýsingar sem þau hafa vistað um þig þegar þú vafrar um vefsvæðið. <ph name="BEGIN_LINK" />Nánar um innfellt efni<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Hvernig á að sýna beiðnir</translation>
 <translation id="8558480467877843976">Núna geturðu notað Chrome hvenær sem þú skoðar eða ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>

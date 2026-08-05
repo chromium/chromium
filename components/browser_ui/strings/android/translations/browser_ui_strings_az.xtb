@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">İcazə verilir • Təxmini</translation>
 <translation id="1323433172918577554">Digərlərinə baxın</translation>
 <translation id="1333965224356556482">Saytlara məkanınıza baxmaq icazəsi verməyin</translation>
-<translation id="1343356790768851700">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir</translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> saytı əlavə edildi</translation>
 <translation id="1371239764779356792">Sayta cihazınızda data saxlamağa icazə verin</translation>
 <translation id="1383876407941801731">Axtar</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5335288049665977812">Saytlara JavaScript işlətməyə icazə verin (tövsiyə olunur)</translation>
 <translation id="534295439873310000">NFC cihazları</translation>
-<translation id="5344522958567249764">Reklam məxfiliyini idarə edin</translation>
 <translation id="5373874281522292782">Tab qrupları yadda saxlanıldı</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+1)}other{(+ #)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Sayt istisnası əlavə edin</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome sabah kukiləri yenidən bloklayacaq}other{Kukilərin yenidən bloklanmasına # gün qalıb}}</translation>
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
-<translation id="6205314730813004066">Reklam məxfiliyi</translation>
 <translation id="6207207788774442484">Datanı silin və icazələri sıfırlayın</translation>
 <translation id="6211409961905616543">Saytlar hərəkət və işıq sensorlarından istifadə edə bilər</translation>
 <translation id="6218508144653756827">Fuşya tema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Parolları yoxlamaqla təhlükəsizliyi gücləndirin və datanı daha təhlükəsiz saxlayın</translation>
 <translation id="6992289844737586249">Saytlara mikrofonunuzu istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="7000754031042624318">Android ayarlarında söndürülüb</translation>
-<translation id="702275896380648118">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir.</translation>
 <translation id="7036823721811529709">Fonda dinləyin</translation>
 <translation id="7044081119134178347">Bu dəfə üçün kameraya icazə verilib</translation>
 <translation id="7053983685419859001">Bloklayın</translation>
@@ -729,7 +725,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="8514955299594277296">Saytlara cihazınızda məlumat saxlamağa icazə verməyin (tövsiyə edilmir)</translation>
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
-<translation id="8541410041357371550">Bu sayt həmçinin sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir</translation>
 <translation id="854876774113449365">Daxil olduğunuz saytlar digər saytlardan şəkil, reklam və mətn kimi kontent daxil edə bilər. Sayta baxdıqda digər saytlar haqqınızda yadda saxlanılan məlumatdan istifadə üçün icazə istəyə bilər. <ph name="BEGIN_LINK" />Daxil edilmiş kontent haqqında ətraflı<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Sorğuları necə göstərməli</translation>
 <translation id="8558480467877843976">İndi istənilən vaxt axtarış edərkən və ya mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>

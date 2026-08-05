@@ -1563,6 +1563,7 @@
 <translation id="2198625180564913276">프로필을 추가하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="2198712775285959645">수정</translation>
 <translation id="2199298570273670671">오류</translation>
+<translation id="220006241671843310">Chrome이 기기에서 직접 실행되는 AI 모델을 사용할지 여부를 선택합니다</translation>
 <translation id="2200094388063410062">이메일</translation>
 <translation id="2200781749203116929">ChromeOS 시스템 로그</translation>
 <translation id="2202391868799679245">키보드 단축키 사용 설정</translation>
@@ -2278,6 +2279,7 @@
 <translation id="2739240477418971307">접근성 설정 변경</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" />을 통해 인터넷에 연결됨</translation>
 <translation id="2739887572830526131">이 그룹을 유지하여 나중에 탭을 추가하거나 더 이상 필요하지 않으면 삭제하세요.</translation>
+<translation id="2739917034504760471">정의를 확인하거나 주제에 관해 자세히 알아보세요.</translation>
 <translation id="274029851662193272">음각</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2740876196999178364">이 패스키는 이 기기에만 저장됩니다. Google 계정에는 저장되지 않습니다.</translation>
@@ -3251,6 +3253,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" />에서 다음 파일을 볼 수 있습니다.</translation>
 <translation id="3484595034894304035">배경화면, 화면 보호기, 어두운 테마 등 맞춤설정</translation>
 <translation id="3484869148456018791">새로운 인증서 받기</translation>
+<translation id="3486380520195228369">페이지가 새로고침될 때까지 숨겨집니다</translation>
 <translation id="3487007233252413104">익명의 함수</translation>
 <translation id="3487649228420469005">스캔 완료</translation>
 <translation id="3488199663160411179">이름</translation>
@@ -3288,7 +3291,6 @@
 <translation id="3512465804715993309">적응형 강조 표시</translation>
 <translation id="3513019849832307207">참여하고 열기</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" />에서 <ph name="MAX_VALUE" />까지의 색조 슬라이더</translation>
-<translation id="3514519909735866748">새 확장 프로그램 고정</translation>
 <translation id="3514647716686280777">표준 보호 조치를 사용하고 있습니다. 위험한 웹사이트, 다운로드 항목, 확장 프로그램에 대응하여 보안을 강화하려면 Chrome 설정에서 향상된 세이프 브라우징을 사용 설정하세요.</translation>
 <translation id="3514681096978190000">이 보관 파일에는 멀웨어를 숨길 수 있는 기타 파일이 포함되어 있습니다.</translation>
 <translation id="3515983984924808886">보안 키를 다시 터치하여 초기화 여부를 확인하세요. PIN을 비롯하여 보안 키에 저장된 모든 정보가 삭제됩니다.</translation>
@@ -3372,6 +3374,7 @@
 <translation id="3577036603268648505">온라인에서 더 안전하게</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3577487026101678864">파일 동기화 사용</translation>
+<translation id="3578230582111850125">텍스트를 선택하여 Gemini에게 물어보기</translation>
 <translation id="3581605050355435601">IP 주소 자동 구성</translation>
 <translation id="3581861561942370740">다운로드 기록 검색</translation>
 <translation id="3582057310199111521">사기성 사이트에 입력되었으며 정보 유출이 발견됨</translation>
@@ -6525,7 +6528,6 @@
 <translation id="6011193465932186973">지문</translation>
 <translation id="6011308810877101166">추천 검색어 개선</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> 기기로 링크 전송 중</translation>
-<translation id="6013027779243312217">음성 및 영상 자막 생성하기</translation>
 <translation id="6014293228235665243">읽지 않음</translation>
 <translation id="6015776718598175635">별</translation>
 <translation id="6015796118275082299">연도</translation>
@@ -7348,6 +7350,7 @@
 <translation id="6660301751798595791">음성 선택</translation>
 <translation id="6660819301598582123">재빠른 갈색 여우가 게으른 개를 뛰어넘었습니다.</translation>
 <translation id="666099631117081440">인쇄 서버</translation>
+<translation id="6662339038589469159">텍스트를 선택하여 Gemini에게 물어보기</translation>
 <translation id="6662394424395160792">Google 비밀번호 관리자를 사용하여 모든 기기에서 사이트에 더 빠르게 로그인하세요.</translation>
 <translation id="6662931079349804328">기업 정책이 변경되었습니다. 툴바에서 실험 버튼이 삭제되었습니다.</translation>
 <translation id="6664774537677393800">프로필을 여는 동안 문제가 발생했습니다. 로그아웃했다가 다시 로그인하세요.</translation>
@@ -8013,6 +8016,7 @@
 <translation id="7174199383876220879">New! 음악, 동영상 등의 항목을 제어할 수 있습니다.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> 설정</translation>
 <translation id="7175353351958621980">로드 위치:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{탭 고정을 닫으려면 <ph name="SHORTCUT_TEXT" /> 키를 다시 누르세요}other{탭 고정을 닫으려면 <ph name="SHORTCUT_TEXT" /> 키를 다시 누르세요}}</translation>
 <translation id="7177659256878428843">탭 그룹을 북마크 폴더로 변환</translation>
 <translation id="7180569503618416775">월렛에서 보고 있는 페이지의 정보(예: 구매한 티켓)를 저장할지 묻는 메시지를 표시할 수 있습니다</translation>
 <translation id="7180611975245234373">새로고침</translation>
@@ -9744,6 +9748,7 @@
 <translation id="850399339579925930">사전</translation>
 <translation id="850561044295157831">글쓰기 도우미에 관해 자세히 알아보기</translation>
 <translation id="8505669004895429027">메모리 소폭 절약</translation>
+<translation id="850632091665381275">Google 멤버십</translation>
 <translation id="8507052544157927817">밑줄 스타일</translation>
 <translation id="8507227974644337342">화면 해상도</translation>
 <translation id="8507443886219296894">이 사이트에서 숨기기</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1184166532603925201">Chrome kemur í veg fyrir að vefsvæði geti notað fótspor þriðja aðila þegar þú ert í huliðsstillingu</translation>
-<translation id="1559726735555610004">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að sameina þau öðrum upplýsingum sem þau eru þegar með um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. Farðu yfir <ph name="BEGIN_LINK" />persónuverndarstefnuna<ph name="END_LINK" /> okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
 <translation id="1569440020357229235">Vefsvæði geta ekki notað fótspor þriðja aðila þegar þú ert í huliðsstillingu. Ef vefsvæði sem reiðir sig á þessi fótspor virkar ekki geturðu <ph name="BEGIN_LINK" />prófað að veita því tímabundinn aðgang að fótsporum þriðja aðila<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Núverandi Chrome-stillingar þínar hafa verið uppfærðar til að veita vefsvæðum aðgang að fótsporum þriðju aðila. Þú getur breytt þessari stillingu hvenær sem er.</translation>
 <translation id="2004697686368036666">Eiginleikar á sumum vefsvæðum virka hugsanlega ekki</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Vefsvæði sem reiða sig á fótspor þriðja aðila ættu að virka sem skyldi</translation>
 <translation id="3624583033347146597">Veldu stillingar fyrir fótspor þriðja aðila</translation>
 <translation id="3918378745482005425">Sumir eiginleikar virka ef til vill ekki. Tengd vefsvæði geta áfram notað fótspor þriðju aðila.</translation>
-<translation id="4009365983562022788">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að sameina þau öðrum upplýsingum sem þau eru þegar með um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. Þú getur nálgast frekari upplýsingar í <ph name="BEGIN_LINK1" />persónuverndarstefnunni<ph name="LINK_END1" /> okkar.</translation>
 <translation id="4278390842282768270">Leyft</translation>
 <translation id="4412992751769744546">Leyfa fótspor þriðja aðila</translation>
 <translation id="4711259472133554310">Þú getur tilgreint undantekningar í stillingunum til að leyfa tilteknum vefsvæðum ávallt að nota fótspor þriðja aðila</translation>

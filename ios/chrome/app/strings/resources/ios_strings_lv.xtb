@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google meklēšanas MI režīms un piesaistītās lietotnes</translation>
 <translation id="1085677983426914530">Nevarēja atvērt failu <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Meklēt, izmantojot Google Lens</translation>
+<translation id="1095093219235104018">Atrast un aizpildīt, izmantojot Gemini</translation>
 <translation id="1096992026380844478">Jūsu sinhronizācijas iestatījumi tiks atjaunoti, pamatojoties uz pēdējo dublējumu. <ph name="BEGIN_LINK" />Uzziniet, ko varat sinhronizēt.<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{Tika izlaista 1 manuāla meklēšana}zero{Tika izlaistas # manuālas meklēšanas}one{Tika izlaista # manuāla meklēšana}other{Tika izlaistas # manuālas meklēšanas}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{Tika tūlītēji verificēta 1 parole}zero{Tika tūlītēji verificētas # paroles}one{Tika tūlītēji verificēta # parole}other{Tika tūlītēji verificētas # paroles}}</translation>
 <translation id="1103523840287552314">Vienmēr tulkot <ph name="LANGUAGE" /> valodas saturu</translation>
 <translation id="1110772719190051587">Atbloķējiet ar Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Izslēgt MI režīmu</translation>
 <translation id="1554477036522844996">Jauns logs</translation>
 <translation id="1558391695376153246">Aizvērt inkognito cilnes</translation>
-<translation id="1559263013367304065">no tā brīža, kad tiek izmantots Google Lens</translation>
 <translation id="1560153516220021659">Sakļautas sekundārās rīkjoslas poga</translation>
 <translation id="1562601408588733317">Pārvaldiet informācijas atrašanu un aizpildīšanu, izmantojot Gemini</translation>
 <translation id="1565371473877914088">Jauna inkognito cilne</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Vietne ir pievienota un piesprausta.</translation>
 <translation id="1911619930368729126">Augšupielādēt Google diskā</translation>
 <translation id="1925706052394657380">Atveriet <ph name="BEGIN_BOLD" />noklusējuma lietotņu<ph name="END_BOLD" /> iestatījumus iOS ierīcē.</translation>
+<translation id="1938871630297275912">{count,plural, =1{Saite saņemta}zero{Saņemtas {count} saites}one{Saņemta {count} saite}other{Saņemtas {count} saites}}</translation>
 <translation id="1941314575388338491">Veiciet dubultskārienu, lai kopētu.</translation>
 <translation id="1943478190258551035">Izvēlne → Iestatījumi</translation>
 <translation id="1952728750904661634">Pierakstīšanās pārvaldītā kontā</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Uzlabot</translation>
 <translation id="2271452184061378400">Jūsu ciļņu grupas ir saglabātas šeit</translation>
 <translation id="2273327106802955778">Izvēlne Vairāk</translation>
+<translation id="2274179746480077483">Automātiski aizpildiet informāciju no tādām lietotnēm kā Gmail un Fotoattēli. Nodrošina funkcija “Personīgais intelekts”.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Šī adrese tiks dzēsta no šīs ierīces.}zero{Šīs adreses tiks dzēstas no šīs ierīces.}one{Šīs adreses tiks dzēstas no šīs ierīces.}other{Šīs adreses tiks dzēstas no šīs ierīces.}}</translation>
 <translation id="2295236662082735391">Nospiediet un turiet attēlu tīmeklī, lai to rediģētu, izmantojot Gemini.</translation>
 <translation id="2296360194694387941">Gemini pārlūkā Chrome izmantošana ir pabeigta.</translation>
@@ -1576,6 +1577,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6232329973559504466">Meklēt inkognito režīmā</translation>
 <translation id="6234310016144827337">Pārbaudiet savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="6236952928980352967">Atjaunot brīdinājumu</translation>
+<translation id="623755660902014047">Lasīšanas režīms</translation>
 <translation id="6240553182907836376">Identifikācijas kartes atjaunināšana</translation>
 <translation id="6240601837375010619">Pases informācijas saglabāšana</translation>
 <translation id="6241132809279377987">Iegūstiet vairāk funkciju savam iPhone tālrunim, izmantojot Google lietotnes.</translation>
@@ -2110,6 +2112,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Izmēģināt</translation>
 <translation id="797588153137233716">Izvēlne → Vēsture → Pārlūkošanas datu dzēšana</translation>
+<translation id="7977029776654598145">Kad šī funkcija tiek izmantota</translation>
 <translation id="7977451675950311423">Tiek rādīts brīdinājums, ja izmantojat paroli, kas ir uzlauzta datu aizsardzības pārkāpuma dēļ.</translation>
 <translation id="797824194429476746">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks neatgriezeniski dzēsta.</translation>
 <translation id="7982789257301363584">Tīkls</translation>
@@ -2521,6 +2524,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="954667170699278022">Lasīšanas saraksts</translation>
 <translation id="956066588046842680">Saskaņā ar jūsu organizācijas politiku šo datu importēšana nav atļauta.</translation>
 <translation id="956218893102219091">Lai iegūtu atbilstošākus Gemini rezultātus, izmantojiet precīzu atrašanās vietu, nevis aptuvenu atrašanās vietu, kas noteikta pēc jūsu IP adreses. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="960590623979248167">Rādīt hipersaites</translation>
 <translation id="961856697154696964">Dzēst pārlūkošanas datus</translation>
 <translation id="963102227019621224">Darbības tīmeklī un lietotnēs</translation>
 <translation id="965259330007686240">Izveidot attēlu, izmantojot Gemini</translation>

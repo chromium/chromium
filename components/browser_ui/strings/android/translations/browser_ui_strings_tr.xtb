@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">İzin veriliyor • Yaklaşık</translation>
 <translation id="1323433172918577554">Daha Fazla Göster</translation>
 <translation id="1333965224356556482">Sitelerin konumumu görmesine izin verme</translation>
-<translation id="1343356790768851700">Bu site, nelerden hoşlandığınızı belirleyip diğer sitelere reklam önerir</translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> sitesi eklendi</translation>
 <translation id="1371239764779356792">Bir sitenin cihazınıza veri kaydetmesine izin verin</translation>
 <translation id="1383876407941801731">Ara</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5335288049665977812">Sitelerin JavaScript çalıştırmasına izin ver (önerilir)</translation>
 <translation id="534295439873310000">NFC cihazları</translation>
-<translation id="5344522958567249764">Reklam gizliliğini yönet</translation>
 <translation id="5373874281522292782">Sekme gruplarınız kaydedilir</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tane daha)}other{(+ # tane daha)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Site istisnası ekle</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome yarın çerezleri tekrar engelleyecek}other{Çerezlerin tekrar engellenmesine # gün kaldı}}</translation>
 <translation id="6196640612572343990">Üçüncü taraf çerezlerini engelle</translation>
-<translation id="6205314730813004066">Reklam gizliliği</translation>
 <translation id="6207207788774442484">Verileri sil ve izinleri sıfırla</translation>
 <translation id="6211409961905616543">Siteler hareket ve ışık sensörlerini kullanabilir</translation>
 <translation id="6218508144653756827">Fuşya tema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Şifrelerinizi kontrol ederek güvenliğinizi artırın ve verilerinizin güvenliğini sağlayın</translation>
 <translation id="6992289844737586249">Sitelerin, mikrofonunuzu kullanmasına izin verilmeden önce size sorulsun (önerilen)</translation>
 <translation id="7000754031042624318">Android ayarlarından kapatıldı</translation>
-<translation id="702275896380648118">Bu site, nelerden hoşlandığınızı belirleyip diğer sitelere reklam önerir. Ayrıca, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı da öğrenir.</translation>
 <translation id="7036823721811529709">Arka planda dinleyin</translation>
 <translation id="7044081119134178347">Şu anda kameraya izin veriliyor</translation>
 <translation id="7053983685419859001">Engelle</translation>
@@ -729,7 +725,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="8514955299594277296">Sitelerin cihazıma veri kaydetmesine izin verme (önerilmez)</translation>
 <translation id="851751545965956758">Sitelerin cihazlara bağlanmasını engelle</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
-<translation id="8541410041357371550">Bu site, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı öğrenir</translation>
 <translation id="854876774113449365">Ziyaret ettiğiniz siteler, diğer sitelerdeki resim, reklam ve metin gibi içerikleri yerleştirebilir. Bu diğer siteler, sitede gezinirken hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir. <ph name="BEGIN_LINK" />Yerleştirilmiş içerik hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8549127125482561383">İstekler nasıl gösterilsin?</translation>
 <translation id="8558480467877843976">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>

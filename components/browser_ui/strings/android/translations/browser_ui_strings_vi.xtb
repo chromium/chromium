@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Được cho phép • Vị trí ước chừng</translation>
 <translation id="1323433172918577554">Xem thêm</translation>
 <translation id="1333965224356556482">Không cho phép các trang web xem thông tin vị trí của bạn</translation>
-<translation id="1343356790768851700">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị</translation>
 <translation id="1369915414381695676">Đã thêm trang web <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Cho phép một trang web lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5335288049665977812">Cho phép các trang web chạy JavaScript (được đề xuất)</translation>
 <translation id="534295439873310000">Thiết bị NFC</translation>
-<translation id="5344522958567249764">Quản lý quyền riêng tư trong quảng cáo</translation>
 <translation id="5373874281522292782">Các nhóm thẻ của bạn sẽ được lưu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
 <translation id="5403592356182871684">Tên</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Thêm trang web ngoại lệ</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome sẽ chặn cookie trở lại vào ngày mai}other{Cookie sẽ bị chặn trở lại sau # ngày nữa}}</translation>
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
-<translation id="6205314730813004066">Quyền riêng tư trong quảng cáo</translation>
 <translation id="6207207788774442484">Xoá dữ liệu và đặt lại quyền</translation>
 <translation id="6211409961905616543">Các trang web có thể sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="6218508144653756827">Giao diện màu hồng hoa vân anh</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Tăng cường bảo mật và bảo vệ dữ liệu an toàn hơn bằng cách kiểm tra mật khẩu</translation>
 <translation id="6992289844737586249">Hỏi trước trước khi cho phép các trang web sử dụng micrô của bạn (được đề xuất)</translation>
 <translation id="7000754031042624318">Đã tắt trong phần Cài đặt Android</translation>
-<translation id="702275896380648118">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị. Trang web này cũng thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn.</translation>
 <translation id="7036823721811529709">Nghe nhạc dưới nền</translation>
 <translation id="7044081119134178347">Đã cho phép sử dụng máy ảnh cho lần này</translation>
 <translation id="7053983685419859001">Chặn</translation>
@@ -729,7 +725,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8514955299594277296">Không cho phép các trang web lưu dữ liệu trên thiết bị của bạn (không khuyến nghị)</translation>
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
-<translation id="8541410041357371550">Trang web này thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn</translation>
 <translation id="854876774113449365">Các trang web bạn truy cập có thể nhúng nội dung từ các trang web khác, chẳng hạn như hình ảnh, quảng cáo và văn bản. Các trang web khác này có thể yêu cầu quyền sử dụng thông tin mà họ đã lưu về bạn khi bạn duyệt xem trang web. <ph name="BEGIN_LINK" />Tìm hiểu thêm về nội dung được nhúng<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Cách hiển thị yêu cầu</translation>
 <translation id="8558480467877843976">Giờ bạn có thể dùng Chrome mỗi khi duyệt web hoặc nhấn vào liên kết trong thư/tin nhắn, tài liệu, v.v.</translation>

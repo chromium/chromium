@@ -33,8 +33,8 @@
 <translation id="108485301461714610">AI-modus i Google Søk og tilknyttede apper</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åpnes</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
+<translation id="1095093219235104018">Finn og fyll ut med Gemini</translation>
 <translation id="1096992026380844478">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. <ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{1 manuelt søk er hoppet over}other{# manuelle søk er hoppet over}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 passord er bekreftet umiddelbart}other{# passord er bekreftet umiddelbart}}</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Lås opp med Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Slå av AI-modus</translation>
 <translation id="1554477036522844996">Nytt vindu</translation>
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
-<translation id="1559263013367304065">siden du begynte å bruke Google Lens</translation>
 <translation id="1560153516220021659">Sammenslått sekundær verktøylinje-knapp</translation>
 <translation id="1562601408588733317">Administrer hvordan Gemini finner og fyller ut informasjon</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Nettstedet er lagt til og festet</translation>
 <translation id="1911619930368729126">Last opp til Google Disk</translation>
 <translation id="1925706052394657380">Åpne <ph name="BEGIN_BOLD" />Standardapper<ph name="END_BOLD" />-innstillingene i iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Link mottatt}other{{count} linker mottatt}}</translation>
 <translation id="1941314575388338491">Dobbelttrykk for å kopiere.</translation>
 <translation id="1943478190258551035">Meny → Innstillinger</translation>
 <translation id="1952728750904661634">Logg på med administrert konto</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Finstem</translation>
 <translation id="2271452184061378400">Fanegruppene dine lagres her</translation>
 <translation id="2273327106802955778">Mer-menyen</translation>
+<translation id="2274179746480077483">Autofyll informasjon fra apper som Gmail og Foto. Basert på personlig tilpasset intelligens.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enheten.}other{Disse adressene slettes fra denne enheten.}}</translation>
 <translation id="2295236662082735391">Trykk lenge på et bilde på nettet for å redigere det med Gemini</translation>
 <translation id="2296360194694387941">Bruk Gemini i Chrome er fullført.</translation>
@@ -1576,6 +1577,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6232329973559504466">Inkognitosøk</translation>
 <translation id="6234310016144827337">Sjekk tilkoblingen og prøv igjen</translation>
 <translation id="6236952928980352967">Gjenopprett varsel</translation>
+<translation id="623755660902014047">Lesemodus</translation>
 <translation id="6240553182907836376">Oppdater identitetskort</translation>
 <translation id="6240601837375010619">Lagre pass</translation>
 <translation id="6241132809279377987">Få tilgang til flere funksjoner på iPhone med Google-apper</translation>
@@ -2110,6 +2112,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Prøv</translation>
 <translation id="797588153137233716">Meny → Logg → Slett nettlesingsdata</translation>
+<translation id="7977029776654598145">Når den brukes</translation>
 <translation id="7977451675950311423">Advarer deg hvis du bruker passord som er utsatt for databrudd.</translation>
 <translation id="797824194429476746">Fanene fortsetter å være åpne på denne enheten, men gruppen slettes permanent.</translation>
 <translation id="7982789257301363584">Nettverk</translation>
@@ -2521,6 +2524,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="954667170699278022">Leseliste</translation>
 <translation id="956066588046842680">Organisasjonens retningslinjer tillater ikke import av disse dataene.</translation>
 <translation id="956218893102219091">Bruk den nøyaktige posisjonen din for å få de mest nøyaktige Gemini-resultatene, i stedet for en anslått posisjon basert på IP-adressen din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Vis hyperlinker</translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>
 <translation id="963102227019621224">Nett- og appaktivitet</translation>
 <translation id="965259330007686240">Lag et bilde med Gemini</translation>

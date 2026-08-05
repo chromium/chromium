@@ -1552,6 +1552,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2198625180564913276">Ajout du profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="2198712775285959645">Modifier</translation>
 <translation id="2199298570273670671">Erreur</translation>
+<translation id="220006241671843310">Choisissez si Chrome peut utiliser des modèles d'IA qui s'exécutent directement sur votre appareil</translation>
 <translation id="2200094388063410062">Courriel</translation>
 <translation id="2200781749203116929">Journaux du système ChromeOS</translation>
 <translation id="2202391868799679245">Activer le raccourci-clavier</translation>
@@ -2265,6 +2266,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2739240477418971307">Modifier vos paramètres d'accessibilité</translation>
 <translation id="2739331588276254426">Connecté à Internet au moyen du <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">Conservez ce groupe pour y ajouter des onglets plus tard, ou supprimez-le si vous n'en avez plus besoin.</translation>
+<translation id="2739917034504760471">Obtenez une définition ou apprenez-en plus sur un sujet</translation>
 <translation id="274029851662193272">Surbaissé</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Ces clés d'accès sont enregistrées sur cet appareil uniquement. Elles ne sont pas enregistrées dans votre compte Google.</translation>
@@ -3239,6 +3241,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3482719661246593752"><ph name="ORIGIN" /> peut consulter les fichiers suivants</translation>
 <translation id="3484595034894304035">Personnalisez le fond d'écran, l'écran de veille, le thème sombre et plus</translation>
 <translation id="3484869148456018791">Obtenir un nouveau certificat</translation>
+<translation id="3486380520195228369">Masqué jusqu'à l'actualisation de la page</translation>
 <translation id="3487007233252413104">fonction anonyme</translation>
 <translation id="3487649228420469005">L'analyse est terminée</translation>
 <translation id="3488199663160411179">nom</translation>
@@ -3276,7 +3279,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3512465804715993309">Mise en évidence adaptative</translation>
 <translation id="3513019849832307207">Se joindre et ouvrir</translation>
 <translation id="3513563267917474897">Curseur de teinte de <ph name="MIN_VALUE" /> à <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">Épingler de nouvelles extensions</translation>
 <translation id="3514647716686280777">Vous bénéficiez d'une protection de sécurité standard. Pour obtenir une meilleure protection contre les sites Web, les extensions et les téléchargements dangereux, activez la navigation sécurisée améliorée dans les paramètres de Chrome.</translation>
 <translation id="3514681096978190000">Ce fichier d'archive comprend d'autres fichiers qui pourraient cacher des logiciels malveillants</translation>
 <translation id="3515983984924808886">Touchez votre clé de sécurité à nouveau pour confirmer la réinitialisation. Toutes les données stockées sur la clé de sécurité, y compris son NIP, seront supprimées.</translation>
@@ -3360,6 +3362,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3577036603268648505">Être plus en sécurité en ligne</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577487026101678864">La synchronisation des fichiers est activée</translation>
+<translation id="3578230582111850125">sélectionner du texte pour poser une question à Gemini</translation>
 <translation id="3581605050355435601">Configurer automatiquement l'adresse IP</translation>
 <translation id="3581861561942370740">Rechercher dans l'historique des téléchargements</translation>
 <translation id="3582057310199111521">Entré sur un site trompeur et trouvé dans une violation de données</translation>
@@ -6513,7 +6516,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6011908034087870826">Envoi du lien à <ph name="DEVICE_NAME" /> en cours…</translation>
-<translation id="6013027779243312217">Afficher des sous-titres pour vos contenus audio et vidéo</translation>
 <translation id="6014293228235665243">Non lu</translation>
 <translation id="6015776718598175635">Étoiles</translation>
 <translation id="6015796118275082299">Année</translation>
@@ -7338,6 +7340,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6660301751798595791">Sélection de la voix</translation>
 <translation id="6660819301598582123">Voici à quoi ressemblera votre texte.</translation>
 <translation id="666099631117081440">Serveurs d'impression</translation>
+<translation id="6662339038589469159">Sélectionner du texte pour poser une question à Gemini</translation>
 <translation id="6662394424395160792">Utilisez le gestionnaire de mots de passe Google pour vous connecter plus rapidement aux sites à partir de n'importe lequel de vos appareils</translation>
 <translation id="6662931079349804328">La politique de l'entreprise a changé. Le bouton des fonctionnalités expérimentales a été retiré de la barre d'outils.</translation>
 <translation id="6664774537677393800">Un problème est survenu lors de l'ouverture de votre profil. Veuillez vous déconnecter, puis vous reconnecter.</translation>
@@ -8002,6 +8005,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7174199383876220879">Nouveau! Commandez votre musique, vos vidéos et plus encore.</translation>
 <translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Chargé de :</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{Appuyez de nouveau sur <ph name="SHORTCUT_TEXT" /> pour fermer l'onglet épinglé}one{Appuyez de nouveau sur <ph name="SHORTCUT_TEXT" /> pour fermer l'onglet épinglé}other{Appuyez de nouveau sur <ph name="SHORTCUT_TEXT" /> pour fermer les onglets épinglés}}</translation>
 <translation id="7177659256878428843">Convertissez le groupe d'onglets en dossier de favoris</translation>
 <translation id="7180569503618416775">Portefeuille peut vous proposer d'enregistrer des informations à partir des pages que vous consultez, comme les billets que vous achetez</translation>
 <translation id="7180611975245234373">Actualiser</translation>
@@ -9734,6 +9738,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="850399339579925930">Dictionnaires</translation>
 <translation id="850561044295157831">En savoir plus sur Aide à la rédaction</translation>
 <translation id="8505669004895429027">Petites économies</translation>
+<translation id="850632091665381275">Abonnement à Google</translation>
 <translation id="8507052544157927817">Style de soulignement</translation>
 <translation id="8507227974644337342">Résolution d'écran</translation>
 <translation id="8507443886219296894">Masquer pour ce site</translation>

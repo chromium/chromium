@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1184166532603925201">Inkognito režīmā pārlūkā Chrome vietnēm ir liegts izmantot trešo pušu sīkfailus.</translation>
-<translation id="1559726735555610004">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Vietnes var arī apvienot šos datus ar citu informāciju, ko jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. Lasiet mūsu <ph name="BEGIN_LINK" />konfidencialitātes politiku<ph name="END_LINK" />, lai uzzinātu vairāk par to, kā Google aizsargā jūsu datus.</translation>
 <translation id="1569440020357229235">Inkognito režīmā vietnes nevar izmantot trešo pušu sīkfailus. Ja kāda vietne, kura paļaujas uz šiem sīkfailiem, nedarbojas, varat <ph name="BEGIN_LINK" />mēģināt piešķirt šai vietnei īslaicīgu piekļuvi trešo pušu sīkfailiem<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Jūsu pašreizējie Chrome iestatījumi ir atjaunināti, lai vietnēm būtu atļauts piekļūt trešo pušu sīkfailiem. Jebkurā laikā varat mainīt šo iestatījumu.</translation>
 <translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Vietnes, kuras paļaujas uz trešo pušu sīkfailiem, darbosies paredzētajā veidā.</translation>
 <translation id="3624583033347146597">Izvēlieties trešo pušu sīkfailu preferences</translation>
 <translation id="3918378745482005425">Dažas funkcijas var nedarboties. Saistītās vietnes joprojām var izmantot trešo pušu sīkfailus.</translation>
-<translation id="4009365983562022788">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Vietnes var arī apvienot šos datus ar citu informāciju, ko jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. Uzziniet vairāk mūsu <ph name="BEGIN_LINK1" />konfidencialitātes politikā<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Atļauti</translation>
 <translation id="4412992751769744546">Atļaut trešo pušu sīkfailus</translation>
 <translation id="4711259472133554310">Iestatījumos varat izveidot izņēmumus, lai vienmēr atļautu konkrētām vietnēm izmantot trešo pušu sīkfailus.</translation>

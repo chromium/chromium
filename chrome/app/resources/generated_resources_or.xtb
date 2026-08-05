@@ -1553,6 +1553,7 @@
 <translation id="2198625180564913276">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="2198712775285959645">ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="2199298570273670671">ତ୍ରୁଟି</translation>
+<translation id="220006241671843310">ଆପଣଙ୍କ ଡିଭାଇସରେ ସିଧାସଳଖ ଚାଲୁଥିବା AI ମଡେଲଗୁଡ଼ିକୁ Chrome ବ୍ୟବହାର କରିବ ନା ନାହିଁ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="2200094388063410062">ଇ-ମେଲ୍‌</translation>
 <translation id="2200781749203116929">ChromeOS ସିଷ୍ଟମ ଲଗଗୁଡ଼ିକ</translation>
 <translation id="2202391868799679245">କୀବୋର୍ଡ ସର୍ଟକଟ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -2266,6 +2267,7 @@
 <translation id="2739240477418971307">ଆପଣଙ୍କର ଆକ୍ସେସିବିଲିଟି ସେଟିଂସ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> ମାଧ୍ୟମରେ ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="2739887572830526131">ପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରିବା ପାଇଁ ଏହି ଗ୍ରୁପକୁ ରଖନ୍ତୁ କିମ୍ୱା ଆପଣଙ୍କୁ ଯଦି ଆଉ ଏହା ଆବଶ୍ୟକ ନାହିଁ, ତେବେ ଏହାକୁ ଡିଲିଟ କରିଦିଅନ୍ତୁ।</translation>
+<translation id="2739917034504760471">କୌଣସି ବିଷୟର ସଂଜ୍ଞା ପାଆନ୍ତୁ କିମ୍ବା ସେହି ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="274029851662193272">ଡିପ୍ରେସ୍‌ଡ</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2740876196999178364">ଏହି ପାସକୀଗୁଡ଼ିକୁ କେବଳ ଏଇ ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କ Google Accountରେ ସେଭ କରାଯାଏ ନାହିଁ।</translation>
@@ -3239,6 +3241,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ନିମ୍ନୋକ୍ତ ଫାଇଲଗୁଡ଼ିକୁ ଦେଖିପାରିବେ</translation>
 <translation id="3484595034894304035">ୱାଲପେପର, ସ୍କ୍ରିନ ସେଭର, ଡାର୍କ ଥିମ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ପର୍ସନାଲାଇଜ କରନ୍ତୁ</translation>
 <translation id="3484869148456018791">ନୂଆ ସାର୍ଟିଫିକେଟ୍ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
+<translation id="3486380520195228369">ପୃଷ୍ଠା ରିଫ୍ରେସ ନହେବା ପର୍ଯ୍ୟନ୍ତ ଲୁକ୍କାୟିତ</translation>
 <translation id="3487007233252413104">ନାମହୀନ ଫକ୍‌ସନ୍</translation>
 <translation id="3487649228420469005">ସ୍କାନ କରାଯାଇଛି</translation>
 <translation id="3488199663160411179">ନାମ</translation>
@@ -3276,7 +3279,6 @@
 <translation id="3512465804715993309">ଆଡାପ୍ଟିଭ ହାଇଲାଇଟିଂ</translation>
 <translation id="3513019849832307207">ଯୋଗ ଦେଇ ଖୋଲନ୍ତୁ</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" />ରୁ <ph name="MAX_VALUE" /> ପର୍ଯ୍ୟନ୍ତ ହ୍ୟୁ ସ୍ଲାଇଡର</translation>
-<translation id="3514519909735866748">ନୂଆ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ପିନ କରନ୍ତୁ</translation>
 <translation id="3514647716686280777">ଆପଣ ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା ପାଉଛନ୍ତି। ବିପଦଜନକ ୱେବସାଇଟ, ଡାଉନଲୋଡ ଏବଂ ଏକ୍ସଟେନ୍ସନଗୁଡ଼ିକଠାରୁ ଅଧିକ ସୁରକ୍ଷା ପାଇବା ପାଇଁ Chrome ସେଟିଂସରେ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="3514681096978190000">ଏହି ଆର୍କାଇଭ ଫାଇଲରେ ମାଲୱେର ଲୁଚାଇପାରୁଥିବା ଅନ୍ୟ ଫାଇଲଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ</translation>
 <translation id="3515983984924808886">ରିସେଟ୍ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ'କୁ ପୁଣି ସ୍ପର୍ଶ କରନ୍ତୁ। ସୁରକ୍ଷା କୀ’ର PIN ସମେତ ଏଥିରେ ଷ୍ଟୋର୍ ହୋଇଥିବା ସମସ୍ତ ସୂଚନା ଡିଲିଟ୍ ହୋଇଯିବ।</translation>
@@ -3360,6 +3362,7 @@
 <translation id="3577036603268648505">ଅନଲାଇନରେ ସୁରକ୍ଷିତ ରୁହନ୍ତୁ</translation>
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3577487026101678864">ଫାଇଲ ସିଙ୍କ ଚାଲୁ ଅଛି</translation>
+<translation id="3578230582111850125">Geminiକୁ ପଚାରିବା ପାଇଁ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3581605050355435601">IP ଠିକଣା ସ୍ୱଚାଳିତ ଭାବେ କନଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="3581861561942370740">ଡାଉନଲୋଡ ଇତିହାସ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3582057310199111521">ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଲେଖାଯାଇଛି ଏବଂ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି</translation>
@@ -6510,7 +6513,6 @@
 <translation id="6011193465932186973">ଟିପ ଚିହ୍ନ</translation>
 <translation id="6011308810877101166">ସର୍ଚ୍ଚ ପରାମର୍ଶଗୁଡ଼ିକୁ ଉନ୍ନତ କରନ୍ତୁ</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" />କୁ ଲିଙ୍କ୍ ପଠାଯାଉଛି</translation>
-<translation id="6013027779243312217">ଆପଣଙ୍କ ଅଡିଓ ଏବଂ ଭିଡିଓ ପାଇଁ କ୍ୟାପ୍ସନଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="6014293228235665243">ପଢ଼ାଯାଇନଥିବା</translation>
 <translation id="6015776718598175635">ଷ୍ଟାର</translation>
 <translation id="6015796118275082299">ବର୍ଷ</translation>
@@ -7335,6 +7337,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6660301751798595791">ଭଏସ ଚୟନ</translation>
 <translation id="6660819301598582123">The quick brown fox jumps over the lazy dog.</translation>
 <translation id="666099631117081440">ପ୍ରିଣ୍ଟ ସର୍ଭରଗୁଡ଼ିକ</translation>
+<translation id="6662339038589469159">Geminiକୁ ପଚାରିବା ପାଇଁ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6662394424395160792">ଆପଣଙ୍କର ଯେ କୌଣସି ଡିଭାଇସରୁ ସାଇଟଗୁଡ଼ିକରେ ଶୀଘ୍ର ସାଇନ ଇନ କରିବାକୁ Google Password Managerକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6662931079349804328">ଏଣ୍ଟରପ୍ରାଇଜ୍ ନୀତିକୁ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ଟୁଲବାରରୁ ପରୀକ୍ଷଣ ବଟନକୁ କାଢ଼ି ଦିଆଯାଇଛି।</translation>
 <translation id="6664774537677393800">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‌ ଖୋଲିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି। ଦୟାକରି ସାଇନ୍ ଆଉଟ୍ କରିବା ପରେ ପୁଣିଥରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
@@ -7999,6 +8002,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7174199383876220879">ନୂତନ! ଆପଣଙ୍କର ସଙ୍ଗୀତ, ଭିଡିଓଗୁଡ଼ିକ ଏବଂ ଆହୁରି ଅନେକ କିଛି ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ।</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> କନ୍‌ଫିଗର୍‌ କରନ୍ତୁ</translation>
 <translation id="7175353351958621980">ଏଠାରୁ ଲୋଡ୍ କରାଯାଇଛି:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{ପିନ ହୋଇଥିବା ଟାବକୁ ବନ୍ଦ କରିବା ପାଇଁ <ph name="SHORTCUT_TEXT" />କୁ ପୁଣି ଦବାନ୍ତୁ}other{ପିନ ହୋଇଥିବା ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରିବା ପାଇଁ <ph name="SHORTCUT_TEXT" />କୁ ପୁଣି ଦବାନ୍ତୁ}}</translation>
 <translation id="7177659256878428843">ଟାବ ଗ୍ରୁପକୁ ବୁକମାର୍କ ଫୋଲ୍ଡରରେ କନଭର୍ଟ କରନ୍ତୁ</translation>
 <translation id="7180569503618416775">ଆପଣ କ୍ରୟ କରୁଥିବା ଟିକେଟଗୁଡ଼ିକ ପରି ଆପଣ ଭ୍ୟୁ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକରୁ ସୂଚନା ସେଭ କରିବାକୁ Wallet ଅଫର କରିପାରିବ</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
@@ -9730,6 +9734,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="850399339579925930">ଶବ୍ଦକୋଷ</translation>
 <translation id="850561044295157831">ଲେଖିବାରେ ମୋତେ ସହାୟତା କରନ୍ତୁ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8505669004895429027">ଛୋଟ ସେଭିଂସ</translation>
+<translation id="850632091665381275">Google ସଦସ୍ୟତା</translation>
 <translation id="8507052544157927817">ଅଣ୍ଡରଲାଇନ ଷ୍ଟାଇଲ</translation>
 <translation id="8507227974644337342">ସ୍କ୍ରିନ୍ ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="8507443886219296894">ଏହି ସାଇଟ ପାଇଁ ଲୁଚାନ୍ତୁ</translation>

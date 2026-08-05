@@ -33,8 +33,8 @@
 <translation id="108485301461714610">‏‫Google تلاش کی AI وضع اور منسلک ایپس</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> کھولی نہیں جا سکی</translation>
 <translation id="1086486568852410168">‏Google لینز سے تلاش کریں</translation>
+<translation id="1095093219235104018">‏‫Gemini کے ساتھ تلاش کریں اور پُر کریں</translation>
 <translation id="1096992026380844478">آپ کی مطابقت پذیری کی ترتیبات آپ کے آخری بیک اپ کی بنیاد پر بحال کی جائیں گی۔ <ph name="BEGIN_LINK" />دیکھیں کہ آپ کیا مطابقت پذیر کر سکتے ہیں<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{‫1 دستی تلاش کو نظر انداز کیا گیا}other{# دستی تلاشیں نظر انداز کی گئیں}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{‫1 پاس ورڈ کی فوری طور پر تصدیق کی گئی}other{‫# پاس ورڈز کی فوری طور پر تصدیق کی گئی}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
 <translation id="1110772719190051587">‏‫Face ID کے ساتھ غیر مقفل کریں</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">‏‫AI وضع آف کریں</translation>
 <translation id="1554477036522844996">نئی ونڈو</translation>
 <translation id="1558391695376153246">پوشیدگی ٹیبز بند کریں</translation>
-<translation id="1559263013367304065">‏‫Google لینز استعمال کرنے کے بعد سے</translation>
 <translation id="1560153516220021659">ثانوی ٹول بار کا بٹن سکیڑا گیا</translation>
 <translation id="1562601408588733317">‏‫Gemini کے ساتھ معلومات تلاش کرنے اور پُر کرنے کا نظم کریں</translation>
 <translation id="1565371473877914088">نیا پوشیدگی ٹیب</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">سائٹ کو شامل اور پن کیا گیا</translation>
 <translation id="1911619930368729126">‏Google Drive میں اپ لوڈ کریں</translation>
 <translation id="1925706052394657380">‏‫iOS میں <ph name="BEGIN_BOLD" />ڈیفالٹ ایپس<ph name="END_BOLD" /> کی ترتیبات کھولیں</translation>
+<translation id="1938871630297275912">{count,plural, =1{لنک موصول ہوا}other{{count} لنکس موصول ہوئے}}</translation>
 <translation id="1941314575388338491">کاپی کرنے کیلئے دو بار تھپتھپائیں۔</translation>
 <translation id="1943478190258551035">مینیو ← ترتیبات</translation>
 <translation id="1952728750904661634">نظم کردہ اکاؤنٹ کے ساتھ سائن ان کریں</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">بہتر بنائیں</translation>
 <translation id="2271452184061378400">آپ کے ٹیب گروپس یہاں محفوظ کیے جاتے ہیں</translation>
 <translation id="2273327106802955778">مزید مینیو</translation>
+<translation id="2274179746480077483">‏‫Gmail اور تصاویر جیسی ایپس سے معلومات کو آٹو فل کریں۔ ذاتی ذہانت کے ذریعے تقویت یافتہ۔</translation>
 <translation id="2287614783861766820">{count,plural, =1{یہ پتہ اس آلے سے حذف ہو جائے گا۔}other{یہ پتے اس آلے سے حذف ہو جائیں گے۔}}</translation>
 <translation id="2295236662082735391">‏‫Gemini کے ساتھ ترمیم کرنے کے لیے ویب پر کسی تصویر کو لانگ پریس کریں</translation>
 <translation id="2296360194694387941">‏'‫Chrome میں Gemini کا استعمال' مکمل ہو گیا!</translation>
@@ -724,6 +725,7 @@
 <translation id="340669334496430859">آخری بار ترمیم کردہ</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 اکتوبر، 2023</translation>
+<translation id="3419787211763835342">بہتر کردہ آٹو فل کو بہتر بنانے میں مدد کریں</translation>
 <translation id="3426715535827854458">ٹول بار چھپائیں چھپائیں</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="3441673211568148613">اپنی براؤزنگ کو نجی رکھیں</translation>
@@ -1007,6 +1009,7 @@
 <translation id="4378154925671717803">فون</translation>
 <translation id="4380677808580146413">منتخب کریں</translation>
 <translation id="4389019817280890563">زبان تبدیل کرنے کے لیے تھپتھپائیں۔</translation>
+<translation id="4390649422783033958">‏‫<ph name="USER_NAME" /> کے بطور سائن ان کردہ۔ ‫<ph name="USER_EMAIL" />، Google ممبرشپ۔ اکاؤنٹ مینیو کھولیں۔</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{‫1 دن کے بعد}other{‫{COUNT} دن کے بعد}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
 <translation id="4404790787924017676">اپنے ٹریک کردہ پروڈکٹس کے لیے قیمت میں کمی کے الرٹس حاصل کریں</translation>
@@ -1364,6 +1367,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5559567453458728487">ویب پر تبدیلی کی پیمائش کے یونٹس ملے</translation>
 <translation id="5560088892362098740">تاریخ اختتام</translation>
 <translation id="556042886152191864">بٹن</translation>
+<translation id="5563910365456880646">‏‫"Google لینز کے ساتھ تلاش کرنے کے لیے تصویر کا استعمال کریں" کو مکمل کرنے کے بعد سے</translation>
 <translation id="5565871407246142825">کریڈٹ کارڈز</translation>
 <translation id="5567439033041178034">مزید جانیں</translation>
 <translation id="5578795271662203820">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> تلاش کریں</translation>
@@ -1576,6 +1580,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6232329973559504466">پوشیدگی تلاش</translation>
 <translation id="6234310016144827337">اپنا کنکشن چیک کر کے دوبارہ کوشش کریں</translation>
 <translation id="6236952928980352967">وارننگ بحال کریں</translation>
+<translation id="623755660902014047">Reading Mode</translation>
 <translation id="6240553182907836376">شناختی کارڈ اپ ڈیٹ کریں</translation>
 <translation id="6240601837375010619">پاسپورٹ کی معلومات محفوظ کریں</translation>
 <translation id="6241132809279377987">‏‫Google ایپس کے ساتھ اپنے iPhone کے لیے مزید خصوصیات کو غیر مقفل کریں</translation>
@@ -1813,6 +1818,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6930162026494574854">ترجمہ کی ترتیبات کو ری سیٹ کریں</translation>
 <translation id="6930799952781667037">اس زبان میں تبدیل کرنے کے لیے تھپتھپائیں۔</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />، <ph name="EMAIL" />۔ <ph name="MANAGED_STATUS" />۔</translation>
+<translation id="6937083164784433305">{count,plural, =1{آپ نے تلاش کرنے کے لیے 1 تصویر استعمال کی}other{آپ نے تلاش کرنے کے لیے # تصاویر استعمال کیں}}</translation>
 <translation id="693761253105515415">ایک پاس کوڈ سیٹ کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6946722113367118030">فکر میں ڈوبا ہوا</translation>
@@ -2018,6 +2024,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7662316065255305764">سائٹ کی معلومات</translation>
 <translation id="7665369617277396874">اکاؤنٹ شامل کریں</translation>
 <translation id="7666861622396822790">آپ <ph name="BEGIN_LINK" />مواد کی ترتیبات<ph name="END_LINK" /> میں اس کا نظم کر سکتے ہیں۔</translation>
+<translation id="7669448795744969014">‏بطور <ph name="USER_EMAIL" />، Google رکنیت سائن ان ہے۔ اکاؤنٹ مینیو کھولیں۔</translation>
 <translation id="7669493687462784703"><ph name="WEBSITE" /> سے کنفیگریشن پروفائل ڈاؤن لوڈ کرنا جاری رکھیں؟</translation>
 <translation id="7673346542062368520">آپ پوشیدگی میں براؤز کرنے کے لیے دائیں سوائپ کر سکتے ہیں۔</translation>
 <translation id="7679915578945954324">سائٹ کے پتے کاپی کیے گئے</translation>
@@ -2110,6 +2117,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">آزمائیں</translation>
 <translation id="797588153137233716">مینو ← سرگزشت ← براؤزنگ ڈیٹا حذف کریں</translation>
+<translation id="7977029776654598145">جب استعمال کیا جائے</translation>
 <translation id="7977451675950311423">اگر آپ کوئی ایسا پاس ورڈ استعمال کرتے ہیں جس سے ڈیٹا کی خلاف ورزی میں سمجھوتہ کیا گیا ہو تو آپ کو متنبہ کرتا ہے۔</translation>
 <translation id="797824194429476746">اس آلے پر ٹیبز کھلے رہیں گے، لیکن گروپ مستقل طور پر حذف ہو جائے گا۔</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
@@ -2521,6 +2529,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="954667170699278022">پڑھنے کی فہرست</translation>
 <translation id="956066588046842680">آپ کی تنظیم کی پالیسی کے مطابق، اس ڈیٹا کو درآمد کرنے کی اجازت نہیں ہے۔</translation>
 <translation id="956218893102219091">‏اپنے IP پتہ کی بنیاد پر تخمینی مقام کے بجائے، انتہائی درست Gemini نتائج کے لیے اپنے قطعی مقام کا استعمال کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">ہائپرلنکس دکھائیں</translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="963102227019621224">ویب اور ایپ سرگرمی</translation>
 <translation id="965259330007686240">‏‫Gemini کی مدد سے ایک تصویر بنائیں</translation>

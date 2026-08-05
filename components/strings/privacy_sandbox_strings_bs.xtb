@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1184166532603925201">Kada ste u anonimnom načinu rada, Chrome onemogućava web lokacijama da koriste kolačiće treće strane</translation>
-<translation id="1559726735555610004">Google zahtijeva od kompanija da javno navedu da neće koristiti ove podatke da vas prate na web lokacijama. Određene web lokacije mogu koristiti vašu aktivnost da personaliziraju vaše iskustvo i u druge svrhe osim oglašavanja. Mogu ih i kombinirati s drugim informacijama koje već znaju o vama. Kompanije su odgovorne za to da vas obavijeste o načinu na koji koriste vaše podatke. Saznajte više o tome kako Google štiti vaše podatke u našim <ph name="BEGIN_LINK" />Pravilima privatnosti<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Kada ste u anonimnom načinu rada, web lokacije ne mogu koristiti kolačiće treće strane. Ako web lokacija koja se oslanja na te kolačiće ne funkcionira, <ph name="BEGIN_LINK" />pokušajte dati toj web lokaciji privremeni pristup kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Trenutne postavke Chromea su ažurirane da se dozvoli web lokacijama da pristupaju kolačićima treće strane. Možete promijeniti ovu postavku bilo kada.</translation>
 <translation id="2004697686368036666">Funkcije na nekim web lokacijama možda neće funkcionirati</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Web lokacije koje se oslanjanje na kolačiće treće strane trebale bi funkcionirati prema očekivanju</translation>
 <translation id="3624583033347146597">Odaberite postavke za kolačiće treće strane</translation>
 <translation id="3918378745482005425">Određene funkcije možda neće funkcionirati. Povezane web lokacije i dalje mogu koristiti kolačiće treće strane.</translation>
-<translation id="4009365983562022788">Google zahtijeva od kompanija da javno navedu da neće koristiti ove podatke da vas prate na web lokacijama. Određene web lokacije mogu koristiti vašu aktivnost da personaliziraju vaše iskustvo i u druge svrhe osim oglašavanja. Mogu ih i kombinirati s drugim informacijama koje već znaju o vama. Kompanije su odgovorne za to da vas obavijeste o načinu na koji koriste vaše podatke. Saznajte više u našim <ph name="BEGIN_LINK1" />Pravilima privatnosti<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
 <translation id="4412992751769744546">Dozvoli kolačiće treće strane</translation>
 <translation id="4711259472133554310">Možete kreirati izuzetke u Postavkama da uvijek dozvolite određenim web lokacijama da koriste kolačiće treće strane</translation>

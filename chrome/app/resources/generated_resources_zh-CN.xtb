@@ -1552,6 +1552,7 @@
 <translation id="2198625180564913276">正在添加配置文件。这可能需要几分钟的时间。</translation>
 <translation id="2198712775285959645">修改</translation>
 <translation id="2199298570273670671">错误</translation>
+<translation id="220006241671843310">选择 Chrome 是否使用直接在设备上运行的 AI 模型</translation>
 <translation id="2200094388063410062">电子邮件</translation>
 <translation id="2200781749203116929">ChromeOS 系统日志</translation>
 <translation id="2202391868799679245">开启键盘快捷键</translation>
@@ -2264,6 +2265,7 @@
 <translation id="2739240477418971307">更改您的无障碍设置</translation>
 <translation id="2739331588276254426">已通过“<ph name="HOST_DEVICE_NAME" />”连接到互联网</translation>
 <translation id="2739887572830526131">您可以保留此分组，以便日后添加标签页；如果不再需要，也可以将其删除。</translation>
+<translation id="2739917034504760471">获取定义或详细了解某个主题</translation>
 <translation id="274029851662193272">凹陷</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2740876196999178364">这些通行密钥只会保存在此设备上，不会保存到您的 Google 账号中。</translation>
@@ -3235,6 +3237,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可查看以下文件</translation>
 <translation id="3484595034894304035">对壁纸、屏保、深色主题等进行个性化设置</translation>
 <translation id="3484869148456018791">获取新的证书</translation>
+<translation id="3486380520195228369">隐藏，直到页面刷新</translation>
 <translation id="3487007233252413104">匿名函数</translation>
 <translation id="3487649228420469005">扫描完毕</translation>
 <translation id="3488199663160411179">姓名</translation>
@@ -3272,7 +3275,6 @@
 <translation id="3512465804715993309">自动调节选中内容</translation>
 <translation id="3513019849832307207">加入并打开</translation>
 <translation id="3513563267917474897">色调滑块从 <ph name="MIN_VALUE" /> 移动到 <ph name="MAX_VALUE" /></translation>
-<translation id="3514519909735866748">固定新的扩展程序</translation>
 <translation id="3514647716686280777">Chrome 正在为您提供标准安全保护。为了进一步防范危险的网站、下载内容和扩展程序，请在 Chrome 设置中开启“增强型安全浏览”功能。</translation>
 <translation id="3514681096978190000">此归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
@@ -3356,6 +3358,7 @@
 <translation id="3577036603268648505">进一步保障上网安全</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577487026101678864">已开启文件同步</translation>
+<translation id="3578230582111850125">选择文字即可问问 Gemini</translation>
 <translation id="3581605050355435601">自动配置 IP 地址</translation>
 <translation id="3581861561942370740">搜索下载记录</translation>
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
@@ -6505,7 +6508,6 @@
 <translation id="6011193465932186973">指纹</translation>
 <translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6011908034087870826">正在将链接发送到“<ph name="DEVICE_NAME" />”</translation>
-<translation id="6013027779243312217">为您的音频和视频生成字幕</translation>
 <translation id="6014293228235665243">未读</translation>
 <translation id="6015776718598175635">恒星</translation>
 <translation id="6015796118275082299">年</translation>
@@ -7328,6 +7330,7 @@
 <translation id="6660301751798595791">语音选择</translation>
 <translation id="6660819301598582123">敏捷的棕色狐狸跨过懒狗。</translation>
 <translation id="666099631117081440">打印服务器</translation>
+<translation id="6662339038589469159">选择文字即可问问 Gemini</translation>
 <translation id="6662394424395160792">借助 Google 密码管理工具，在任何设备上都能更快地登录网站</translation>
 <translation id="6662931079349804328">企业政策已更改。实验按钮已从工具栏移除。</translation>
 <translation id="6664774537677393800">打开您的个人资料时出了点问题。请先退出，然后重新登录。</translation>
@@ -7993,6 +7996,7 @@
 <translation id="7174199383876220879">新功能！控制您的音乐、视频等媒体内容。</translation>
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
 <translation id="7175353351958621980">加载来源：</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{再次按 <ph name="SHORTCUT_TEXT" /> 即可关闭固定标签页}other{再次按 <ph name="SHORTCUT_TEXT" /> 即可关闭固定标签页}}</translation>
 <translation id="7177659256878428843">将标签页分组转换为书签文件夹</translation>
 <translation id="7180569503618416775">Google 钱包会询问您是否保存正在查看的网页中的信息，例如购买的票券</translation>
 <translation id="7180611975245234373">刷新</translation>
@@ -9725,6 +9729,7 @@
 <translation id="850399339579925930">字典</translation>
 <translation id="850561044295157831">详细了解“帮我写”功能</translation>
 <translation id="8505669004895429027">节省少量内存</translation>
+<translation id="850632091665381275">Google One 会员</translation>
 <translation id="8507052544157927817">下划线样式</translation>
 <translation id="8507227974644337342">屏幕分辨率</translation>
 <translation id="8507443886219296894">在此网站上隐藏</translation>

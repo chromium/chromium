@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Baimenduta • Gutxi gorabeherakoa</translation>
 <translation id="1323433172918577554">Erakutsi gehiago</translation>
 <translation id="1333965224356556482">Ez eman kokapena ikusteko baimena webguneei</translation>
-<translation id="1343356790768851700">Webguneak gustatzen zaizkizun gauzak zehazten ditu eta, gero, beste webguneei iragarkiak iradokitzen dizkie</translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> webgunea gehitu da</translation>
 <translation id="1371239764779356792">Eman zure gailuan datuak gordetzeko baimena webgune bati</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5335288049665977812">Baimendu webguneei JavaScript erabiltzea (gomendatua)</translation>
 <translation id="534295439873310000">NFC darabilten gailuak</translation>
-<translation id="5344522958567249764">Kudeatu iragarkien pribatutasuna</translation>
 <translation id="5373874281522292782">Fitxa taldeak gorde egiten dira</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(eta beste bat)}other{(eta beste #)}}</translation>
 <translation id="5403592356182871684">Izenak</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Gehitu webgune bat salbuespen gisa</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Bihar blokeatuko ditu cookieak berriro Chrome-k}other{# egun barru blokeatuko dira berriro cookieak}}</translation>
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
-<translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
 <translation id="6207207788774442484">Ezabatu datuak eta berrezarri baimenak</translation>
 <translation id="6211409961905616543">Webguneek mugimendu- eta argi-sentsoreak erabil ditzakete</translation>
 <translation id="6218508144653756827">Fuksia-koloreko gaia</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Areagotu segurtasuna eta mantendu datuak seguru pasahitzak egiaztatuta</translation>
 <translation id="6992289844737586249">Webguneei mikrofonoa erabiltzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="7000754031042624318">Desaktibatuta dago Android-en ezarpenetan</translation>
-<translation id="702275896380648118">Webguneak gustatzen zaizkizun gauzak zehazten ditu eta, gero, beste webguneei iragarkiak iradokitzen dizkie. Halaber, Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun.</translation>
 <translation id="7036823721811529709">Entzun atzeko planoan</translation>
 <translation id="7044081119134178347">Kamera erabil daiteke une honetan</translation>
 <translation id="7053983685419859001">Blokeatu</translation>
@@ -729,7 +725,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="8514955299594277296">Ez eman gailuan datuak gordetzeko baimena webguneei (ez da gomendatzen)</translation>
 <translation id="851751545965956758">Ez utzi webguneei gailuekin konektatzen</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
-<translation id="8541410041357371550">Webgunea Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun</translation>
 <translation id="854876774113449365">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Halaber, webgune horiek arakatzen dituzun bitartean zuri buruz gorde duten informazioa erabiltzeko baimena eska dezakete. <ph name="BEGIN_LINK" />Lortu eduki kapsulatuari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Eskaerak erakusteko modua</translation>
 <translation id="8558480467877843976">Orain, Chrome erabili ahalko duzu arakatzen duzunean, edo mezuetako, dokumentuetako eta aplikazioetako estekak sakatzen dituzunean.</translation>

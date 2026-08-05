@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1184166532603925201">Lorsque vous êtes en mode navigation privée, Chrome empêche les sites d'utiliser des cookies tiers</translation>
-<translation id="1559726735555610004">Google exige que les entreprises déclarent publiquement qu'elles n'utiliseront pas ces données pour vous suivre sur plusieurs sites. Certains sites peuvent utiliser votre activité pour personnaliser votre expérience au-delà des annonces. Ils peuvent aussi l'associer à d'autres informations qu'ils possèdent déjà à votre sujet. Les entreprises sont tenues de vous informer de la manière dont elles utilisent vos données. Pour savoir comment Google protège vos données, lisez nos <ph name="BEGIN_LINK" />Règles de confidentialité<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">En mode navigation privée, les sites ne peuvent pas utiliser de cookies tiers. Si un site qui dépend de ces cookies ne fonctionne pas, vous pouvez <ph name="BEGIN_LINK" />essayer de lui donner un accès temporaire aux cookies tiers<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Vos paramètres Chrome actuels ont été mis à jour pour autoriser les sites Web à accéder aux cookies tiers. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="2004697686368036666">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Les sites qui dépendent des cookies tiers devraient fonctionner comme prévu</translation>
 <translation id="3624583033347146597">Sélectionner vos préférences concernant les cookies tiers</translation>
 <translation id="3918378745482005425">Il est possible que certaines fonctionnalités ne fonctionnent pas. Les sites associés peuvent toujours utiliser des cookies tiers.</translation>
-<translation id="4009365983562022788">Google exige que les entreprises déclarent publiquement qu'elles n'utiliseront pas ces données pour vous suivre sur plusieurs sites. Certains sites peuvent utiliser votre activité pour personnaliser votre expérience au-delà des annonces. Ils peuvent aussi l'associer à d'autres informations qu'ils possèdent déjà à votre sujet. Les entreprises sont tenues de vous informer de la manière dont elles utilisent vos données. Pour en savoir plus, consultez nos <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="LINK_END1" />.</translation>
 <translation id="4278390842282768270">Autorisés</translation>
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
 <translation id="4711259472133554310">Vous pouvez créer des exceptions dans les paramètres pour toujours autoriser des sites spécifiques à utiliser des cookies tiers</translation>

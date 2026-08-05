@@ -31,7 +31,6 @@
 <translation id="1321110954513621549">Sallittu • Likimääräinen</translation>
 <translation id="1323433172918577554">Näytä lisää</translation>
 <translation id="1333965224356556482">Älä salli sivustojen nähdä sijaintiasi</translation>
-<translation id="1343356790768851700">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille</translation>
 <translation id="1369915414381695676">Sivusto <ph name="SITE_NAME" /> lisättiin.</translation>
 <translation id="1371239764779356792">Salli sivuston tallentaa dataa laitteellesi</translation>
 <translation id="1383876407941801731">Haku</translation>
@@ -429,7 +428,6 @@
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5335288049665977812">Anna kaikkien sivustojen käyttää JavaScriptiä (suositus).</translation>
 <translation id="534295439873310000">NFC-laitteet</translation>
-<translation id="5344522958567249764">Muuta mainosyksityisyysasetuksia</translation>
 <translation id="5373874281522292782">Välilehtiryhmät on tallennettu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 muu)}other{(+ # muuta)}}</translation>
 <translation id="5403592356182871684">Nimet</translation>
@@ -514,7 +512,6 @@
 <translation id="6181444274883918285">Lisää sivustopoikkeus</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome estää evästeet uudelleen huomenna}other{Chrome estää evästeet uudelleen # päivän päästä}}</translation>
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
-<translation id="6205314730813004066">Mainosyksityisyys</translation>
 <translation id="6207207788774442484">Poista data ja nollaa luvat</translation>
 <translation id="6211409961905616543">Sivustot voivat käyttää liike- ja valoantureita</translation>
 <translation id="6218508144653756827">Fuksia teema</translation>
@@ -585,7 +582,6 @@
 <translation id="6992014788289743568">Paranna suojausta ja pidä datasi turvassa tarkistamalla salasanasi</translation>
 <translation id="6992289844737586249">Pyydä lupaa, kun sivustot yrittävät käyttää mikrofonia (suositus).</translation>
 <translation id="7000754031042624318">Poistettu käytöstä Android-asetuksissa</translation>
-<translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="7036823721811529709">Kuuntele taustalla</translation>
 <translation id="7044081119134178347">Kamera sallittu tällä kertaa</translation>
 <translation id="7053983685419859001">Estä</translation>
@@ -729,7 +725,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="8514955299594277296">Älä salli sivustojen tallentaa dataa laitteellesi (ei suositella)</translation>
 <translation id="851751545965956758">Estä sivustoja yhdistämästä laitteisiin</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
-<translation id="8541410041357371550">Tämä sivusto saa mainosaiheet Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
 <translation id="854876774113449365">Avaamasi sivustot voivat upottaa muiden sivustojen sisältöä, esimerkiksi kuvia, mainoksia ja tekstiä. Nämä muut sivustot voivat pyytää lupaa käyttää sinusta tallentamiaan tietoja, kun selaat sivustoa. <ph name="BEGIN_LINK" />Lue lisää upotetusta sisällöstä<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Miten pyyntöjä näytetään</translation>
 <translation id="8558480467877843976">Voit nyt käyttää Chromea aina selatessasi ja kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>

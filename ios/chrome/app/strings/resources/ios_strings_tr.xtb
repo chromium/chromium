@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Google Arama AI Modu ve bağlı uygulamalar</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> açılamadı</translation>
 <translation id="1086486568852410168">Google Lens ile ara</translation>
+<translation id="1095093219235104018">Gemini ile Bulun ve Tamamlayın</translation>
 <translation id="1096992026380844478">Senkronizasyon ayarlarınız, son yedeğinize bağlı olarak geri yüklenecek. <ph name="BEGIN_LINK" />Neleri senkronize edebileceğinizi görün<ph name="END_LINK" />.</translation>
-<translation id="1097049112094133492">{count,plural, =1{1 manuel arama atlandı}other{# manuel arama atlandı}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{1 şifre anında doğrulandı}other{# şifre anında doğrulandı}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="1110772719190051587">Kilidi Face ID ile açın</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">AI Modu'nu kapat</translation>
 <translation id="1554477036522844996">Yeni Pencere</translation>
 <translation id="1558391695376153246">Gizli sekmeleri kapat</translation>
-<translation id="1559263013367304065">Google Lens'i kullanmaya başladığınızdan beri</translation>
 <translation id="1560153516220021659">Daraltılmış ikincil araç çubuğu düğmesi</translation>
 <translation id="1562601408588733317">Gemini ile bilgi bulma ve doldurma işlemlerini yönetin</translation>
 <translation id="1565371473877914088">Yeni Gizli Sekme</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Site eklendi ve sabitlendi</translation>
 <translation id="1911619930368729126">Google Drive'a yükle</translation>
 <translation id="1925706052394657380">iOS'te <ph name="BEGIN_BOLD" />Varsayılan Uygulamalar<ph name="END_BOLD" /> ayarlarını açın.</translation>
+<translation id="1938871630297275912">{count,plural, =1{Bağlantı alındı}other{{count} bağlantı alındı}}</translation>
 <translation id="1941314575388338491">Kopyalamak için iki kez dokunun.</translation>
 <translation id="1943478190258551035">Menü → Ayarlar</translation>
 <translation id="1952728750904661634">Yönetilen hesapla oturum açın</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Hassaslaştır</translation>
 <translation id="2271452184061378400">Sekme gruplarınız buraya kaydedilir</translation>
 <translation id="2273327106802955778">Diğer menüsü</translation>
+<translation id="2274179746480077483">Gmail ve Google Fotoğraflar gibi uygulamalardaki bilgileri otomatik doldurur. Kişisel Zeka tarafından desteklenir.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu adres bu cihazdan silinecek.}other{Bu adresler bu cihazdan silinecek.}}</translation>
 <translation id="2295236662082735391">Gemini ile düzenlemek için web'deki bir görüntüye uzun süre basın</translation>
 <translation id="2296360194694387941">Chrome'da Gemini'ı kullanma tamamlandı.</translation>
@@ -1576,6 +1577,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6232329973559504466">Gizli Arama</translation>
 <translation id="6234310016144827337">Bağlantınızı kontrol edip tekrar deneyin</translation>
 <translation id="6236952928980352967">Uyarıyı Geri Yükle</translation>
+<translation id="623755660902014047">Okuma Modu</translation>
 <translation id="6240553182907836376">Kimlik kartını güncelleyin</translation>
 <translation id="6240601837375010619">Pasaportu kaydedin</translation>
 <translation id="6241132809279377987">Google uygulamalarıyla iPhone'unuzda daha fazla özellikten yararlanın</translation>
@@ -2110,6 +2112,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Deneyin</translation>
 <translation id="797588153137233716">Menü → Geçmiş → Tarama verilerini sil</translation>
+<translation id="7977029776654598145">Kullanıldığı zaman</translation>
 <translation id="7977451675950311423">Veri ihlali nedeniyle güvenliği ihlal edilmiş bir şifre kullanırsanız sizi uyarır.</translation>
 <translation id="797824194429476746">Sekmeler bu cihazda açık kalır ancak grup kalıcı olarak silinir.</translation>
 <translation id="7982789257301363584">Ağ</translation>
@@ -2521,6 +2524,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="954667170699278022">Okuma Listesi</translation>
 <translation id="956066588046842680">Kuruluşunuzun politikası bu verilerin içe aktarılmasına izin vermiyor.</translation>
 <translation id="956218893102219091">IP adresinize göre tahmini konum yerine tam konumunuzu kullanarak en doğru Gemini sonuçlarını alın. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
+<translation id="960590623979248167">Köprüleri göster</translation>
 <translation id="961856697154696964">Tarama verilerini sil</translation>
 <translation id="963102227019621224">Web ve Uygulama etkinliği</translation>
 <translation id="965259330007686240">Gemini ile görüntü oluşturun</translation>

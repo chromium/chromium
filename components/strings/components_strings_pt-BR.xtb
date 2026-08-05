@@ -29,6 +29,7 @@
 <translation id="1041998700806130099">Mensagem de página de tarefa</translation>
 <translation id="1044897699341250361">O que isso significa</translation>
 <translation id="1046350918013988591">Cupons e ofertas de desconto</translation>
+<translation id="1049837829250301306">Não foi possível colar o conteúdo devido às políticas da sua organização</translation>
 <translation id="1050038467049342496">Fechar outros apps</translation>
 <translation id="1055184225775184556">&amp;Desfazer adicionar</translation>
 <translation id="1056898198331236512">Aviso</translation>
@@ -226,7 +227,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1337692097987160377">Compartilhar esta guia</translation>
 <translation id="1339601241726513588">Domínio de inscrição:</translation>
 <translation id="1340482604681802745">Endereço de retirada</translation>
-<translation id="1343356790768851700">Este site determina o seus interesses e sugere anúncios para outros sites</translation>
 <translation id="1343830902827845050">Faça login no Chrome</translation>
 <translation id="1346748346194534595">À direita</translation>
 <translation id="1348779747280417563">Confirmar nome</translation>
@@ -657,6 +657,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2027707238798802149">Cartão indisponível</translation>
 <translation id="2029735183873159415">Ancestralidade e genealogia</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Verificar o proxy e o firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Essa instância do Chrome está sendo executada com flags de linha de comando definidas manualmente. As flags de linha de comando podem ser alteradas a qualquer momento e não são suportadas.</translation>
 <translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do provedor de pesquisa padrão definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salvar mesmo assim</translation>
 <translation id="2036514476578229158">Você pediu para acessar este site. Os familiares responsáveis podem responder no Family Link.</translation>
@@ -2308,6 +2309,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4569155249847375786">Tudo certo</translation>
 <translation id="4570008401337135432">Alinhamento do texto</translation>
 <translation id="457875822857220463">Entrega</translation>
+<translation id="4579084373690089522">De acordo com as políticas da sua organização, este conteúdo pode conter informações sensíveis</translation>
 <translation id="4579699065574932398">Bancos</translation>
 <translation id="4582595824823167856">Receber uma mensagem de texto</translation>
 <translation id="4584094413232466841">Remover essas informações do preenchimento automático do Chrome?</translation>
@@ -2472,6 +2474,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4832388034239846146">Para compartilhar grupos de guias, atualize o Chrome</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4832961164064927107">Churrasco e grelhados</translation>
+<translation id="4833567658337394628">Não é recomendado colar</translation>
 <translation id="4840250757394056958">Ver seu histórico do Chrome</translation>
 <translation id="4842365697443353018">Limpe o formulário para usar a opção de pagar depois</translation>
 <translation id="484462545196658690">Automática</translation>
@@ -2791,7 +2794,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5340250774223869109">O aplicativo foi bloqueado</translation>
 <translation id="5342693890921195472">min atrás</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5344522958567249764">Gerenciar a privacidade de anúncios</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar pagamento em dinheiro</translation>
 <translation id="5345249337934847112">Papel (grosso e revestido)</translation>
 <translation id="5346059693449184483">No que você está pensando agora?</translation>
@@ -3221,7 +3223,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5989320800837274978">Nem os servidores proxy fixos nem o URL de script .pac foram especificados.</translation>
 <translation id="5989917734461988169">Os endereços salvos podem ser usados em vários produtos do Google. Isso não vai mudar seu endereço de casa atual. Ele será salvo na sua Conta do Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Dobra sanfona</translation>
-<translation id="5992805036496113940">Consultar informações usadas para mostrar anúncios</translation>
 <translation id="5995727681868049093">Gerenciar suas informações, sua privacidade e sua segurança na Conta do Google.</translation>
 <translation id="5996255674476750320">Exposições de automóveis</translation>
 <translation id="5997247540087773573">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você a mude e revise as senhas salvas.</translation>
@@ -3370,7 +3371,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Separadores com aba integral</translation>
 <translation id="6203231073485539293">Verifique sua conexão com a Internet</translation>
-<translation id="6205314730813004066">Privacidade de anúncios</translation>
 <translation id="6212314149070368045">Fanfold (EUA)</translation>
 <translation id="6213685130162740188">Números de viajante conhecido</translation>
 <translation id="6215936431492593050">Metal (acetinado)</translation>
@@ -3901,7 +3901,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="701757816833614688">Cursos de artes gráficas e design</translation>
 <translation id="7020464868401003526">O URL do atalho excede o tamanho máximo permitido de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="7020581144940000377">Usar local aproximado</translation>
-<translation id="702275896380648118">Este site determina seus interesses e sugere anúncios para outros sites. Ele também usa seus temas de anúncios do Chrome para mostrar anúncios mais relevantes.</translation>
 <translation id="7023162328967545559">Aviso do administrador</translation>
 <translation id="7023765275461720661">Vincular a conta e pagar com <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">modificar as configurações para preenchimento de formas de pagamento</translation>
@@ -4880,7 +4879,6 @@ Mais detalhes:
 <translation id="8538228968820006247">Seu grupo de guias está cheio, novos participantes não podem usar o link para entrar</translation>
 <translation id="8539500321752640291">Conceder duas permissões?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
-<translation id="8541410041357371550">Este site usa seus temas de anúncios do Chrome para mostrar anúncios mais relevantes</translation>
 <translation id="8541579497401304453">Conecte-se com uma empresa iniciando uma ligação.</translation>
 <translation id="8542014550340843547">Três grampos na parte inferior</translation>
 <translation id="8542617028204211143">SRA0</translation>

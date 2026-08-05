@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Režim AI ve Vyhledávání Google a připojené aplikace</translation>
 <translation id="1085677983426914530">Soubor <ph name="FILENAME" /> nelze otevřít</translation>
 <translation id="1086486568852410168">Vyhledat pomocí Google Lens</translation>
+<translation id="1095093219235104018">Vyhledávat a vyplňovat s Gemini</translation>
 <translation id="1096992026380844478">Nastavení synchronizace se obnoví podle vaší poslední zálohy. <ph name="BEGIN_LINK" />Co lze synchronizovat<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{Přeskočeno 1 ruční vyhledávání}few{Přeskočena # ruční vyhledávání}many{Přeskočeno # ručního vyhledávání}other{Přeskočeno # ručních vyhledávání}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{Okamžitě ověřeno 1 heslo}few{Okamžitě ověřena # hesla}many{Okamžitě ověřeno # hesla}other{Okamžitě ověřeno # hesel}}</translation>
 <translation id="1103523840287552314">Vždy překládat jazyk <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Odemykejte zařízení pomocí Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Vypnout AI režim</translation>
 <translation id="1554477036522844996">Nové okno</translation>
 <translation id="1558391695376153246">Zavřít anonymní karty</translation>
-<translation id="1559263013367304065">za dobu, co používáte Google Lens</translation>
 <translation id="1560153516220021659">Tlačítko sbalené sekundární lišty</translation>
 <translation id="1562601408588733317">Správa vyhledávání a vyplňování informací pomocí Gemini</translation>
 <translation id="1565371473877914088">Nová anonymní karta</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Web byl přidán a připnut</translation>
 <translation id="1911619930368729126">Nahrát na Disk Google</translation>
 <translation id="1925706052394657380">Otevřete v systému iOS nastavení <ph name="BEGIN_BOLD" />Výchozí aplikace<ph name="END_BOLD" /></translation>
+<translation id="1938871630297275912">{count,plural, =1{Byl přijat odkaz}few{Byly přijaty {count} odkazy}many{Bylo přijato {count} odkazu}other{Bylo přijato {count} odkazů}}</translation>
 <translation id="1941314575388338491">Zkopírujete dvojitým klepnutím.</translation>
 <translation id="1943478190258551035">Nabídka → Nastavení</translation>
 <translation id="1952728750904661634">Přihlášení pomocí spravovaného účtu</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Upřesnit</translation>
 <translation id="2271452184061378400">Tady jsou uloženy vaše skupiny karet</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
+<translation id="2274179746480077483">Automaticky vyplňovat informace z aplikací jako Gmail a Fotky. Využívá Osobní inteligenci.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Tato adresa bude z tohoto zařízení smazána.}few{Tyto adresy budou z tohoto zařízení smazány.}many{Tyto adresy budou z tohoto zařízení smazány.}other{Tyto adresy budou z tohoto zařízení smazány.}}</translation>
 <translation id="2295236662082735391">Dlouhým stisknutím obrázku na webu ho můžete upravit pomocí Gemini</translation>
 <translation id="2296360194694387941">Používání Gemini v Chromu – dokončeno!</translation>
@@ -1576,6 +1577,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6232329973559504466">Anonymní vyhledávání</translation>
 <translation id="6234310016144827337">Zkontrolujte připojení a zkuste to znovu</translation>
 <translation id="6236952928980352967">Obnovit upozornění</translation>
+<translation id="623755660902014047">Režim čtení</translation>
 <translation id="6240553182907836376">Aktualizace průkazu totožnosti</translation>
 <translation id="6240601837375010619">Uložení pasu</translation>
 <translation id="6241132809279377987">Využívejte na iPhonu další skvělé funkce aplikací Google</translation>
@@ -2110,6 +2112,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Vyzkoušet</translation>
 <translation id="797588153137233716">Menu → Historie → Vymazat údaje o prohlížení</translation>
+<translation id="7977029776654598145">Použití</translation>
 <translation id="7977451675950311423">Upozorní vás, pokud používáte heslo, které bylo prozrazeno při porušení zabezpečení dat.</translation>
 <translation id="797824194429476746">Karty zůstanou na tomto zařízení otevřené, ale skupina se trvale smaže.</translation>
 <translation id="7982789257301363584">Síť</translation>
@@ -2521,6 +2524,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="954667170699278022">Seznam četby</translation>
 <translation id="956066588046842680">Import těchto dat není podle zásad vaší organizace povolen.</translation>
 <translation id="956218893102219091">Namísto polohy odhadované na základě IP adresy používat přesnou polohu, aby výsledky od Gemini byly co nejpřesnější. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Zobrazit hypertextové odkazy</translation>
 <translation id="961856697154696964">Vymazat údaje o prohlížení</translation>
 <translation id="963102227019621224">Aktivita na webu a v aplikacích</translation>
 <translation id="965259330007686240">Vytvořit obrázek pomocí Gemini</translation>

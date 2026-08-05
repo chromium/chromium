@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1184166532603925201">Inkognito rejimda Chrome saytlarning tashqi cookie fayllaridan foydalanishini bloklaydi</translation>
-<translation id="1559726735555610004">Google kompaniyalardan saytlardagi harakatlaringizni kuzatish uchun bu maʼlumotlardan foydalanmaslik haqida bayonot qilishni talab qiladi. Ayrim saytlar faollik tarixingizdan reklamani moslashdan tashqari maqsadlarda foydalanishi mumkin. Ular bu axborotni siz haqingizda bilgan axborotlar bilan birlashtirishi ham mumkin. Kompaniyalar maʼlumotlaringizni qanday ishlatishi haqida sizga xabar qilish majburiyatini oladi. <ph name="BEGIN_LINK" />Maxfiylik siyosatimizda<ph name="END_LINK" /> Google maʼlumotlarni qanday himoyalashi haqida batafsil axborot mavjud.</translation>
 <translation id="1569440020357229235">Inkognito rejimida saytlar tashqi cookie fayllaridan foydalana olmaydi. Agar bunday cookie ishlatadigan sayt yaxshi ishlamasa, <ph name="BEGIN_LINK" />bu saytga tashqi cookie fayllari ishlatishga vaqtincha ruxsat bering<ph name="END_LINK" />.</translation>
 <translation id="19426210786412737">Joriy Chrome sozlamalari saytlarga tashqi cookie fayllaridan foydalanishga ruxsat beradigan tarzda yangilandi. Bu sozlamani istalgan vaqt oʻzgartirish mumkin.</translation>
 <translation id="2004697686368036666">Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin</translation>
@@ -13,7 +12,6 @@
 <translation id="3425311689852411591">Tashqi cookie fayllariga tayanadigan saytlar kutilganidek ishlashi kerak</translation>
 <translation id="3624583033347146597">Tashqi cookie sozlamalarini tanlang</translation>
 <translation id="3918378745482005425">Ayrim funksiyalar ishlamasligi mumkin. Tegishli saytlar tashqi cookie fayllaridan foydalanishda davom etishi mumkin.</translation>
-<translation id="4009365983562022788">Google kompaniyalardan saytlardagi harakatlaringizni kuzatish uchun bu maʼlumotlardan foydalanmaslik haqida bayonot qilishni talab qiladi. Ayrim saytlar faollik tarixingizdan reklamani moslashdan tashqari maqsadlarda foydalanishi mumkin. Ular bu axborotni siz haqingizda bilgan axborotlar bilan birlashtirishi ham mumkin. Kompaniyalar maʼlumotlaringizni qanday ishlatishi haqida sizga xabar qilish majburiyatini oladi. <ph name="BEGIN_LINK1" />Maxfiylik siyosati orqali batafsil<ph name="LINK_END1" /> tanishing.</translation>
 <translation id="4278390842282768270">Ruxsat berilgan</translation>
 <translation id="4412992751769744546">Tashqi cookie fayllarga ruxsat berish</translation>
 <translation id="4711259472133554310">Muayyan saytlar tashqi cookie fayllaridan doimiy foydalanishiga ruxsat berish uchun sozlamalar orqali istisno yaratish mumkin</translation>

@@ -1562,6 +1562,7 @@
 <translation id="2198625180564913276">প্ৰ’ফাইল যোগ দি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="2198712775285959645">সম্পাদনা কৰক</translation>
 <translation id="2199298570273670671">আসোঁৱাহ</translation>
+<translation id="220006241671843310">Chromeএ আপোনাৰ ডিভাইচত পোনপটীয়াকৈ চলা AI মডেলসমূহ ব্যৱহাৰ কৰেনে নকৰে সেয়া বাছনি কৰক</translation>
 <translation id="2200094388063410062">ইমেইল</translation>
 <translation id="2200781749203116929">ChromeOS ছিষ্টেম লগ</translation>
 <translation id="2202391868799679245">কীব’ৰ্ডৰ শ্বৰ্টকাট অন কৰক</translation>
@@ -2277,6 +2278,7 @@
 <translation id="2739240477418971307">আপোনাৰ সাধ্য সুবিধাৰ ছেটিং সলনি কৰক</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" />ৰ জৰিয়তে ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ আছে</translation>
 <translation id="2739887572830526131">পাছত টেবসমূহ যোগ দিবলৈ এই গোটটো ৰাখক বা যদি আপোনাক এইটো আৰু নালাগে তেন্তে এইটো মচক।</translation>
+<translation id="2739917034504760471">কোনো বিষয়বস্তুৰ সংজ্ঞা পাওক বা সেইটোৰ বিষয়ে অধিক জানক</translation>
 <translation id="274029851662193272">পোটোকা পৰা</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2740876196999178364">এই পাছকীসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা নহয়।</translation>
@@ -3250,6 +3252,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" />এ তলত দিয়া ফাইলসমূহ চাব পাৰে</translation>
 <translation id="3484595034894304035">ৱালপেপাৰ, স্ক্ৰীন ছেভাৰ, গাঢ় ৰঙৰ থীম আৰু আন বহুতো ব্যক্তিগতকৰণ কৰক</translation>
 <translation id="3484869148456018791">নতুন প্ৰমাণপত্ৰ পাওক</translation>
+<translation id="3486380520195228369">পৃষ্ঠাখন ৰিফ্ৰেশ্ব নোহোৱালৈকে লুকুৱাই ৰখা হয়</translation>
 <translation id="3487007233252413104">পৰিচয়বিহীন ফাংশ্বন</translation>
 <translation id="3487649228420469005">স্কেন কৰা হ’ল</translation>
 <translation id="3488199663160411179">নাম</translation>
@@ -3287,7 +3290,6 @@
 <translation id="3512465804715993309">অভিযোজিত হাইলাইট সৃষ্টি</translation>
 <translation id="3513019849832307207">যোগদান কৰক আৰু খোলক</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" />ৰ পৰা <ph name="MAX_VALUE" />লৈ ৰঙৰ শ্লাইডাৰ</translation>
-<translation id="3514519909735866748">নতুন এক্সটেনশ্বন পিন কৰক</translation>
 <translation id="3514647716686280777">আপুনি উন্নত সুৰক্ষা ব্যৱস্থাটোৰ দ্বাৰা সুৰক্ষা পাই আছে। বিপজ্জনক ৱেবছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা অধিক সুৰক্ষিত হৈ থাকিবলৈ Chromeৰ ছেটিঙত বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং অন কৰক।</translation>
 <translation id="3514681096978190000">এই আৰ্কাইভ কৰা ফাইলটোত অন্য ফাইল আছে, যিবোৰে মালৱেৰ লুকুৱাই ৰাখিব পাৰে</translation>
 <translation id="3515983984924808886">ৰিছেট কৰাটো নিশ্চিত কৰিবলৈ আপোনাৰ সুৰক্ষা চাবিটো পুনৰ স্পৰ্শ কৰক। সুৰক্ষা চাবিটোত ষ্ট’ৰ হৈ থকা ইয়াৰ পিনকে ধৰি সকলো তথ্য মচা হ’ব।</translation>
@@ -3371,6 +3373,7 @@
 <translation id="3577036603268648505">অনলাইনত সুৰক্ষিত হওক</translation>
 <translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3577487026101678864">ফাইলৰ ছিংক অন আছে</translation>
+<translation id="3578230582111850125">Geminiক সুধিবলৈ পাঠ বাছনি কৰক</translation>
 <translation id="3581605050355435601">আইপি ঠিকনা স্বয়ংক্ৰিয়ভাৱে কনফিগাৰ কৰক</translation>
 <translation id="3581861561942370740">ডাউনল’ডৰ ইতিহাস সন্ধান কৰক</translation>
 <translation id="3582057310199111521">প্ৰৱঞ্চনামূলক ছাইটত দিয়া হৈছিল আৰু ডেটা উলংঘনত পোৱা গৈছিল</translation>
@@ -6525,7 +6528,6 @@
 <translation id="6011193465932186973">ফিংগাৰপ্ৰিণ্ট</translation>
 <translation id="6011308810877101166">সন্ধানৰ পৰামৰ্শ উন্নত কৰক</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" />লৈ লিংক পঠিয়াই থকা হৈছে</translation>
-<translation id="6013027779243312217">আপোনাৰ অডিঅ’ আৰু ভিডিঅ’ৰ বাবে কেপশ্বন পাওক</translation>
 <translation id="6014293228235665243">নপঢ়া</translation>
 <translation id="6015776718598175635">তৰা</translation>
 <translation id="6015796118275082299">বছৰ</translation>
@@ -7350,6 +7352,7 @@
 <translation id="6660301751798595791">কণ্ঠধ্বনিৰ বাছনি</translation>
 <translation id="6660819301598582123">অসমৰ এশিঙীয়া গঁড় পৃথিৱী বিখ্যাত।</translation>
 <translation id="666099631117081440">প্ৰিণ্ট ছাৰ্ভাৰ</translation>
+<translation id="6662339038589469159">Geminiক সুধিবলৈ পাঠ বাছনি কৰক</translation>
 <translation id="6662394424395160792">আপোনাৰ যিকোনো ডিভাইচৰ পৰা ছাইটসমূহত দ্ৰুতভাৱে ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰক</translation>
 <translation id="6662931079349804328">এণ্টাৰপ্ৰাইজৰ নীতি সলনি হৈছে। পৰীক্ষা-নিৰীক্ষা কৰাৰ বুটামটো টুলবাৰৰ পৰা আঁতৰোৱা হৈছে।</translation>
 <translation id="6664774537677393800">আপোনাৰ প্ৰ’ফাইলটো খুলি থাকোঁতে কিবা ভুল হ’ল। অনুগ্ৰহ কৰি ছাইন আউট কৰি পুনৰ ছাইন ইন কৰক।</translation>
@@ -8014,6 +8017,7 @@
 <translation id="7174199383876220879">নতুন! আপোনাৰ সংগীত, ভিডিঅ’সমূহ আৰু অধিক নিয়ন্ত্ৰণ কৰক৷</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> কনফিগাৰ কৰক</translation>
 <translation id="7175353351958621980">ল'ড কৰা হৈছে:</translation>
+<translation id="7176515069119047423">{NUM_TABS,plural, =1{পিন কৰি থোৱা টেবটো বাছনি কৰিবলৈ <ph name="SHORTCUT_TEXT" />ত পুনৰ টিপক}one{পিন কৰি থোৱা টেবটো বাছনি কৰিবলৈ <ph name="SHORTCUT_TEXT" />ত পুনৰ টিপক}other{পিন কৰি থোৱা টেবটো বাছনি কৰিবলৈ <ph name="SHORTCUT_TEXT" />ত পুনৰ টিপক}}</translation>
 <translation id="7177659256878428843">টেবৰ গোটক বুকমাৰ্কৰ ফ’ল্ডাৰলৈ ৰূপান্তৰ কৰক</translation>
 <translation id="7180569503618416775">Walletএ আপুনি চাই থকা পৃষ্ঠাৰ তথ্য, যেনে- আপুনি ক্ৰয় কৰা টিকেট ছেভ কৰাৰ সুবিধা দিব পাৰে</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
@@ -9746,6 +9750,7 @@
 <translation id="850399339579925930">অভিধানসমূহ</translation>
 <translation id="850561044295157831">হেল্প মী ৰাইটৰ বিষয়ে অধিক জানক</translation>
 <translation id="8505669004895429027">কম ৰাহি</translation>
+<translation id="850632091665381275">Googleৰ মেম্বাৰশ্বিপ</translation>
 <translation id="8507052544157927817">আণ্ডাৰলাইনৰ শৈলী</translation>
 <translation id="8507227974644337342">স্ক্ৰীনৰ ৰিজ’লিউশ্বন</translation>
 <translation id="8507443886219296894">এই ছাইটটোৰ বাবে লুকুৱাওক</translation>

@@ -33,8 +33,8 @@
 <translation id="108485301461714610">មុខងារ AI របស់ម៉ាស៊ីនស្វែងរកនៅលើ Google និងកម្មវិធី​តភ្ជាប់</translation>
 <translation id="1085677983426914530">មិនអាច​បើក <ph name="FILENAME" /> បានទេ</translation>
 <translation id="1086486568852410168">ស្វែងរក​ដោយ​ប្រើ Google Lens</translation>
+<translation id="1095093219235104018">ស្វែងរក និងបំពេញដោយប្រើ Gemini</translation>
 <translation id="1096992026380844478">ការ​កំណត់​សមកាលកម្ម​របស់​អ្នក​នឹង​ត្រូវបាន​ស្ដារ ដោយ​ផ្អែកលើ​ការបម្រុងទុក​ចុងក្រោយ​របស់​អ្នក។ <ph name="BEGIN_LINK" />មើលអ្វី​ដែលអ្នកអាច​ធ្វើសមកាលកម្ម<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{បានរំលង​ការស្វែងរក​ដោយ​ផ្ទាល់ដៃ 1}other{បានរំលង​ការស្វែងរក​ដោយ​ផ្ទាល់ដៃ #}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{បាន​ផ្ទៀងផ្ទាត់​ពាក្យសម្ងាត់ 1 ភ្លាមៗ}other{បាន​ផ្ទៀងផ្ទាត់​ពាក្យសម្ងាត់ # ភ្លាមៗ}}</translation>
 <translation id="1103523840287552314">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
 <translation id="1110772719190051587">ដោះសោ​ដោយប្រើ Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">បិទ​មុខងារ AI</translation>
 <translation id="1554477036522844996">វិនដូ​ថ្មី</translation>
 <translation id="1558391695376153246">បិទ​ផ្ទាំងឯកជន</translation>
-<translation id="1559263013367304065">ចាប់តាំង​ពីពេលប្រើ Google Lens</translation>
 <translation id="1560153516220021659">ប៊ូតុង​របារឧបករណ៍​បន្ទាប់បន្សំ​ដែលបាន​បង្រួម</translation>
 <translation id="1562601408588733317">គ្រប់គ្រងការស្វែងរក និងការបំពេញព័ត៌មានដោយប្រើ Gemini</translation>
 <translation id="1565371473877914088">ផ្ទាំងឯកជនថ្មី</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">បាន​បញ្ចូល និង​បានខ្ទាស់​គេហទំព័រ</translation>
 <translation id="1911619930368729126">អាប់ឡូត Google Drive</translation>
 <translation id="1925706052394657380">បើក​ការ​កំណត់ <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> នៅក្នុង iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{បានទទួលតំណ}other{បានទទួលតំណ {count}}}</translation>
 <translation id="1941314575388338491">ប៉ះពីរដងដើម្បីចម្លង</translation>
 <translation id="1943478190258551035">ម៉ឺនុយ → ការកំណត់</translation>
 <translation id="1952728750904661634">ចូលដោយប្រើគណនីដែលបានគ្រប់គ្រង</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">សម្រាំង</translation>
 <translation id="2271452184061378400">ក្រុមផ្ទាំងរបស់អ្នកត្រូវបានរក្សាទុកនៅទីនេះ</translation>
 <translation id="2273327106802955778">ម៉ឺនុយច្រើនទៀត</translation>
+<translation id="2274179746480077483">បំពេញព័ត៌មានដោយស្វ័យប្រវត្តិពីកម្មវិធី ដូចជា Gmail និងរូបថត។ ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួន។</translation>
 <translation id="2287614783861766820">{count,plural, =1{អាសយដ្ឋាន​នេះ​នឹង​ត្រូវ​បានលុប​ពី​ឧបករណ៍​នេះ។}other{អាសយដ្ឋាន​ទាំង​នេះ​នឹង​ត្រូវ​បានលុប​ពី​ឧបករណ៍​នេះ។}}</translation>
 <translation id="2295236662082735391">ចុចលើរូបភាព​ឱ្យយូរ​នៅលើ​បណ្ដាញ ដើម្បីកែ​ដោយប្រើ Gemini</translation>
 <translation id="2296360194694387941">បានបញ្ចប់ការប្រើ Gemini ក្នុង Chrome!</translation>
@@ -724,6 +725,7 @@
 <translation id="340669334496430859">បានកែប្រែ​លើកចុងក្រោយ</translation>
 <translation id="3409785640040772790">ផែនទី</translation>
 <translation id="3416023309465857378">25 តុលា 2023</translation>
+<translation id="3419787211763835342">ជួយកែលម្អការបំពេញស្វ័យប្រវត្តិរហ័ស</translation>
 <translation id="3426715535827854458">លាក់ "លាក់​របារឧបករណ៍"</translation>
 <translation id="3435738964857648380">សុវត្ថិភាព</translation>
 <translation id="3441673211568148613">រក្សា​ការរុករក​របស់អ្នក​ជាលក្ខណៈ​ឯកជន</translation>
@@ -1007,6 +1009,7 @@
 <translation id="4378154925671717803">ទូរស័ព្ទ</translation>
 <translation id="4380677808580146413">ជ្រើសរើស</translation>
 <translation id="4389019817280890563">ចុចដើម្បី​ប្ដូរភាសា។</translation>
+<translation id="4390649422783033958">បានចូលគណនី​ជា <ph name="USER_NAME" />។ <ph name="USER_EMAIL" />, សមាជិកភាព Google។ បើកម៉ឺនុយគណនី។</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{ក្រោយពេល 1 ថ្ងៃ}other{ក្រោយពេល {COUNT} ថ្ងៃ}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ផ្ទាំង}other{# ផ្ទាំង}}</translation>
 <translation id="4404790787924017676">ទទួលបាន​ការជូនដំណឹង​អំពី​ការធ្លាក់ថ្លៃ​ផលិតផល​ដែលអ្នក​តាមដាន</translation>
@@ -1364,6 +1367,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5559567453458728487">បំប្លែងឯកតារង្វាស់​ដែលបានរកឃើញនៅលើ​បណ្ដាញ</translation>
 <translation id="5560088892362098740">កាលបរិច្ឆេទ​ផុតកំណត់</translation>
 <translation id="556042886152191864">ប៊ូតុង</translation>
+<translation id="5563910365456880646">ចាប់តាំងពីបញ្ចប់ "ប្រើរូបថតដើម្បីស្វែងរកដោយប្រើ Google Lens"</translation>
 <translation id="5565871407246142825">កាតឥណទាន</translation>
 <translation id="5567439033041178034">ស្វែងយល់បន្ថែម</translation>
 <translation id="5578795271662203820">ស្វែងរក <ph name="SEARCH_ENGINE" /> សម្រាប់រូបភាពនេះ</translation>
@@ -1576,6 +1580,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6232329973559504466">ការស្វែងរក​លក្ខណៈឯកជន</translation>
 <translation id="6234310016144827337">ពិនិត្យមើល​ការតភ្ជាប់​របស់អ្នក រួច​ព្យាយាម​ម្ដងទៀត</translation>
 <translation id="6236952928980352967">ស្ដារ​សារប្រុងប្រយ័ត្ន</translation>
+<translation id="623755660902014047">មុខងារអាន</translation>
 <translation id="6240553182907836376">ធ្វើបច្ចុប្បន្នភាព​អត្តសញ្ញាណ​ប័ណ្ណ</translation>
 <translation id="6240601837375010619">រក្សាទុក​លិខិត​ឆ្លងដែន</translation>
 <translation id="6241132809279377987">ដោះ​សោ​មុខងារ​ច្រើនទៀត​សម្រាប់ iPhone របស់អ្នក​តាមរយៈ​កម្មវិធី Google</translation>
@@ -1813,6 +1818,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6930162026494574854">កំណត់ការកំណត់ការបកប្រែឡើងវិញ</translation>
 <translation id="6930799952781667037">ចុចដើម្បីប្ដូរ​ទៅភាសានេះ។</translation>
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />។ <ph name="MANAGED_STATUS" />។</translation>
+<translation id="6937083164784433305">{count,plural, =1{អ្នកបានប្រើរូបថត 1 សន្លឹក ដើម្បីស្វែងរក}other{អ្នកបានប្រើរូបថត # សន្លឹក ដើម្បីស្វែងរក}}</translation>
 <translation id="693761253105515415">កំណត់​លេខ​កូដ​សម្ងាត់</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="6946722113367118030">កំពុងគិត</translation>
@@ -2018,6 +2024,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7662316065255305764">ព័ត៌មាន​អំពីគេហទំព័រ</translation>
 <translation id="7665369617277396874">បន្ថែមគណនី</translation>
 <translation id="7666861622396822790">អ្នកអាច​គ្រប់គ្រងលក្ខណៈនេះ​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់​ខ្លឹមសារ<ph name="END_LINK" />។</translation>
+<translation id="7669448795744969014">បានចូលគណនីជា <ph name="USER_EMAIL" />, សមាជិកភាព Google។ បើកម៉ឺនុយគណនី។</translation>
 <translation id="7669493687462784703">បន្តទាញយក​កម្រងព័ត៌មាននៃ​ការកំណត់រចនាសម្ព័ន្ធ​ពី <ph name="WEBSITE" /> ឬ?</translation>
 <translation id="7673346542062368520">អ្នកអាចអូសទៅឆ្វេងដើម្បីរុករកនៅក្នុងមុខងារឯកជន។</translation>
 <translation id="7679915578945954324">បាន​ចម្លង​អាសយដ្ឋាន​គេហទំព័រ</translation>
@@ -2110,6 +2117,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">សាកល្បង</translation>
 <translation id="797588153137233716">ម៉ឺនុយ → ប្រវត្តិ → លុបទិន្នន័យរុករក</translation>
+<translation id="7977029776654598145">នៅពេលប្រើ</translation>
 <translation id="7977451675950311423">ប្រាប់ឱ្យអ្នកប្រុងប្រយ័ត្ន ប្រសិនបើ​អ្នកប្រើ​ពាក្យសម្ងាត់​ដែល​រងការលុកលុយក្នុងការបែកធ្លាយ​ទិន្នន័យ។</translation>
 <translation id="797824194429476746">ផ្ទាំងនឹង​នៅតែ​បើកនៅលើ​ឧបករណ៍នេះ ប៉ុន្តែក្រុម​នឹងត្រូវ​បានលុប​ជាអចិន្ត្រៃយ៍។</translation>
 <translation id="7982789257301363584">បណ្តាញ</translation>
@@ -2521,6 +2529,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="954667170699278022">បញ្ជីអាន</translation>
 <translation id="956066588046842680">ការនាំចូល​ទិន្នន័យនេះ​មិនត្រូវបាន​អនុញ្ញាត​ដោយ​គោលការណ៍​របស់​ស្ថាប័នអ្នក​ទេ។</translation>
 <translation id="956218893102219091">ប្រើ​ទីតាំង​ជាក់លាក់​របស់អ្នក ដើម្បី​ទទួលបាន​លទ្ធផល​ត្រឹមត្រូវបំផុតពី Gemini ជំនួសឱ្យ​ទីតាំង​ប៉ាន់ស្មាន​ដោយផ្អែកលើ​អាសយដ្ឋាន IP របស់អ្នក។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">បង្ហាញ​តំណទំព័រ</translation>
 <translation id="961856697154696964">លុប​ទិន្នន័យរុករក</translation>
 <translation id="963102227019621224">សកម្មភាពកម្មវិធី និងគេហទំព័រ</translation>
 <translation id="965259330007686240">បង្កើត​រូបភាព​ដោយប្រើ Gemini</translation>

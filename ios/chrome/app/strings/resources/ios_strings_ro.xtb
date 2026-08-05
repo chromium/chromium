@@ -33,8 +33,8 @@
 <translation id="108485301461714610">Modul AI din Căutarea Google și aplicațiile conectate</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> nu a putut fi deschis</translation>
 <translation id="1086486568852410168">Caută cu Google Lens</translation>
+<translation id="1095093219235104018">Găsește și completează cu Gemini</translation>
 <translation id="1096992026380844478">Setările de sincronizare vor fi restabilite pe baza ultimului backup. <ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" /></translation>
-<translation id="1097049112094133492">{count,plural, =1{S-a omis o căutare manuală}few{# căutări manuale au fost omise}other{# de căutări manuale au fost omise}}</translation>
 <translation id="1097807529207545420">{count,plural, =1{O parolă confirmată instantaneu}few{# parole confirmate instantaneu}other{# de parole confirmate instantaneu}}</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Deblochează cu Face ID</translation>
@@ -184,7 +184,6 @@
 <translation id="1554043146674176775">Dezactivează Modul AI</translation>
 <translation id="1554477036522844996">Fereastră nouă</translation>
 <translation id="1558391695376153246">Închide filele incognito</translation>
-<translation id="1559263013367304065">de când folosești Google Lens</translation>
 <translation id="1560153516220021659">Butonul barei de instrumente secundare restrânse</translation>
 <translation id="1562601408588733317">Gestionează găsirea și completarea informațiilor cu Gemini</translation>
 <translation id="1565371473877914088">Filă incognito nouă</translation>
@@ -305,6 +304,7 @@
 <translation id="1909201414196501151">Site-ul a fost adăugat și fixat</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
 <translation id="1925706052394657380">Deschide setările pentru <ph name="BEGIN_BOLD" />Aplicații prestabilite<ph name="END_BOLD" /> în iOS</translation>
+<translation id="1938871630297275912">{count,plural, =1{Link primit}few{{count} linkuri primite}other{{count} de linkuri primite}}</translation>
 <translation id="1941314575388338491">Atinge de două ori pentru a copia.</translation>
 <translation id="1943478190258551035">Meniu → Setări</translation>
 <translation id="1952728750904661634">Conectează-te cu un cont gestionat</translation>
@@ -411,6 +411,7 @@
 <translation id="2268044343513325586">Rafinează</translation>
 <translation id="2271452184061378400">Grupurile de file se salvează aici</translation>
 <translation id="2273327106802955778">Meniul Mai multe</translation>
+<translation id="2274179746480077483">Completează automat informații din aplicații cum ar fi Gmail și Foto. Cu Inteligență personalizată.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adresa se va șterge de pe acest dispozitiv.}few{Adresele se vor șterge de pe dispozitiv.}other{Adresele se vor șterge de pe dispozitiv.}}</translation>
 <translation id="2295236662082735391">Apasă lung pe o imagine de pe web pentru a o edita cu Gemini</translation>
 <translation id="2296360194694387941">Ai folosit Gemini în Chrome!</translation>
@@ -1576,6 +1577,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6232329973559504466">Căutare incognito</translation>
 <translation id="6234310016144827337">Verifică-ți conexiunea și încearcă din nou</translation>
 <translation id="6236952928980352967">Restabilește avertismentul</translation>
+<translation id="623755660902014047">Modul de lectură</translation>
 <translation id="6240553182907836376">Actualizează cartea de identitate</translation>
 <translation id="6240601837375010619">Salvează pașaportul</translation>
 <translation id="6241132809279377987">Beneficiază de mai multe funcții pentru iPhone cu aplicațiile Google</translation>
@@ -2110,6 +2112,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Încercați</translation>
 <translation id="797588153137233716">Meniu → Istoric → Șterge datele de navigare</translation>
+<translation id="7977029776654598145">Când se folosește</translation>
 <translation id="7977451675950311423">Te avertizează dacă folosești o parolă care a fost compromisă printr-o încălcare a securității datelor.</translation>
 <translation id="797824194429476746">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters definitiv.</translation>
 <translation id="7982789257301363584">Rețea</translation>
@@ -2521,6 +2524,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="954667170699278022">Listă de lecturi</translation>
 <translation id="956066588046842680">Importarea acestor date nu este permisă de politica organizației.</translation>
 <translation id="956218893102219091">Folosește locația exactă pentru cele mai precise rezultate Gemini, în locul unei locații estimate pe baza adresei IP. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="960590623979248167">Afișează hyperlinkurile</translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>
 <translation id="963102227019621224">Activitatea de pe web și din aplicații</translation>
 <translation id="965259330007686240">Creează o imagine cu Gemini</translation>
