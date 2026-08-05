@@ -5,24 +5,30 @@
 #include "chrome/browser/extensions/extension_ui_util.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "extensions/browser/mime_handler/mime_handler_ui_util.h"
@@ -129,6 +135,38 @@ std::u16string GetFormattedHostForDisplay(content::WebContents& web_contents) {
   // "chrome://").
   return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
       url);
+}
+
+bool ShouldShowReviewPrompt(const Extension& extension, Profile& profile) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kCWSReviewPromptingNativeUI)) {
+    return false;
+  }
+
+  if (!profile.IsRegularProfile() ||
+      !profile.GetPrefs()->GetBoolean(
+          prefs::kExtensionReviewPromptsAllowed)) {
+    return false;
+  }
+
+  if (extension.location() != mojom::ManifestLocation::kInternal ||
+      !extension.from_webstore()) {
+    return false;
+  }
+
+  // Suppress prompts unless CWS info confirms the extension is present in CWS,
+  // live, and has no active policy violations.
+  CWSInfoService* cws_info = CWSInfoServiceFactory::GetForProfile(&profile);
+  CHECK(cws_info);
+
+  std::optional<CWSInfoService::CWSInfo> info =
+      cws_info->GetCWSInfo(extension);
+  if (!info.has_value() || !info->is_present || !info->is_live ||
+      info->violation_type != CWSInfoService::CWSViolationType::kNone) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace ui_util

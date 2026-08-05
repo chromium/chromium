@@ -2021,6 +2021,7 @@ source_set("unit_tests") {
     "extension_special_storage_policy_unittest.cc",
     "extension_tab_util_unittest.cc",
     "extension_telemetry_service_verdict_handler_unittest.cc",
+    "extension_ui_util_unittest.cc",
     "extension_url_overrides_unittest.cc",
     "extension_user_script_loader_unittest.cc",
     "extension_util_unittest.cc",

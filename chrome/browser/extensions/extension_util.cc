@@ -351,6 +351,7 @@ void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kShouldGarbageCollectStoragePartitions,
                                 false);
+  registry->RegisterBooleanPref(prefs::kExtensionReviewPromptsAllowed, true);
 }
 
 bool AreExtensionsDisabled(const base::CommandLine& command_line,

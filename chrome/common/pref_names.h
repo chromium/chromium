@@ -744,6 +744,11 @@ inline constexpr char kPinExtensionsMenuButton[] =
 // extension + named command pair.
 inline constexpr char kExtensionCommands[] = "extensions.commands";
 
+// Boolean pref indicating whether native UI extension review prompts are
+// allowed by enterprise policy.
+inline constexpr char kExtensionReviewPromptsAllowed[] =
+    "extensions.review_prompts_allowed";
+
 // Whether Chrome should use its internal PDF viewer or not.
 inline constexpr char kPluginsAlwaysOpenPdfExternally[] =
     "plugins.always_open_pdf_externally";
