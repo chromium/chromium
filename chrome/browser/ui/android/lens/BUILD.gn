@@ -16,10 +16,13 @@ source_set("lens") {
   sources = [
     "lens_overlay_controller_android.cc",
     "lens_overlay_controller_android.h",
+    "lens_overlay_untrusted_ui_android.cc",
+    "lens_overlay_untrusted_ui_android.h",
   ]
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/common",
     "//components/lens",
     "//content/public/browser",
     "//third_party/jni_zero",

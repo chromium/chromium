@@ -63,6 +63,8 @@ public class LensOverlayCoordinator implements UserData {
 
     private static final String LENS_OVERLAY_JS_BRIDGE_NAME = "lensOverlay";
 
+    private static final String LENS_OVERLAY_URL = "chrome-untrusted://lens-overlay/";
+
     /**
      * Returns whether the WebUI implementation of the Lens Overlay is enabled via feature params.
      */
@@ -73,30 +75,6 @@ public class LensOverlayCoordinator implements UserData {
                         LensSupportStatusHelper.LENS_OVERLAY_IMPL_TYPE);
         return LensSupportStatusHelper.LENS_OVERLAY_IMPL_WEBUI.equals(implType);
     }
-
-    private static final String LENS_OVERLAY_DEFAULT_HTML =
-            """
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <style>
-              html, body {
-                align-items: center;
-                display: flex;
-                font-family: sans-serif;
-                height: 100vh;
-                justify-content: center;
-                margin: 0;
-                padding: 0;
-                width: 100vw;
-              }
-            </style>
-            </head>
-            <body onclick="lensOverlay.close()" role="dialog" aria-label="Lens Overlay Placeholder">
-              <h1>Lens Overlay Placeholder: Click to dismiss.</h1>
-            </body>
-            </html>
-            """;
 
     private final Tab mTab;
     private long mNativeLensOverlayControllerAndroid;
@@ -299,12 +277,7 @@ public class LensOverlayCoordinator implements UserData {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        mOverlayWebContents
-                .getNavigationController()
-                .loadUrl(
-                        new LoadUrlParams(
-                                "data:text/html;charset=utf-8,"
-                                        + Uri.encode(LENS_OVERLAY_DEFAULT_HTML)));
+        mOverlayWebContents.getNavigationController().loadUrl(new LoadUrlParams(LENS_OVERLAY_URL));
         return true;
     }
 

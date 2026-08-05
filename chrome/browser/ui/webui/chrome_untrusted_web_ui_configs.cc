@@ -35,6 +35,10 @@
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/lens/lens_overlay_untrusted_ui_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void RegisterChromeUntrustedWebUIConfigs() {
   // Don't add calls to `AddUntrustedWebUIConfig()` for ash-specific UIs here.
   // Add them in chrome_untrusted_web_ui_configs_chromeos.cc.
@@ -42,9 +46,11 @@ void RegisterChromeUntrustedWebUIConfigs() {
   ash::RegisterAshChromeUntrustedWebUIConfigs();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(TOOLKIT_VIEWS) || BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if defined(TOOLKIT_VIEWS) || BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
+    BUILDFLAG(IS_ANDROID)
   auto& map = content::WebUIConfigMap::GetInstance();
-#endif  // defined(TOOLKIT_VIEWS) || BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#endif  // defined(TOOLKIT_VIEWS) || BUILDFLAG(ENABLE_PRINT_PREVIEW) ||
+        // BUILDFLAG(IS_ANDROID)
 
 #if defined(TOOLKIT_VIEWS)
   map.AddUntrustedWebUIConfig(
@@ -71,10 +77,13 @@ void RegisterChromeUntrustedWebUIConfigs() {
       std::make_unique<printing::PrintPreviewUIUntrustedConfig>());
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<lens::LensOverlayUntrustedUIAndroidConfig>());
+#else
   map.AddUntrustedWebUIConfig(
       std::make_unique<DrivePickerUntrustedHostUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<NtpMicrosoftAuthUntrustedUIConfig>());
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
