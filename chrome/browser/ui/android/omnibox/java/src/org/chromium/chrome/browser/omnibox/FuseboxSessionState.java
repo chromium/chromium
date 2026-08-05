@@ -282,10 +282,16 @@ public class FuseboxSessionState implements UserData {
 
     @Override
     public void destroy() {
-        if (mIsActive) {
-            deactivate();
-        }
+        // Do not `deactivate()` from here - if TabModel is destroyed before LocationBar is,
+        // deactivate() resets AutocompleteInput, triggering Autocomplete refresh, causing a crash.
+        // When destroying - there's no point in clearing up AutocompleteInput.
         tearDownSessionControllers();
+        if (mProfileSupplier != null && mPendingProfileCallback != null) {
+            mProfileSupplier.removeObserver(mPendingProfileCallback);
+            mPendingProfileCallback = null;
+        }
+        mWebContents = null;
+        mIsActive = false;
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             mAutocompleteInput.getRequestTypeSupplier().removeObserver(mOnRequestTypeChanged);
         }
