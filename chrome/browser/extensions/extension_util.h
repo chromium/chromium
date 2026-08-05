@@ -122,6 +122,18 @@ enum class DseNtpOverrideType {
 DseNtpOverrideType GetDseNtpOverrideType(const Extension& extension);
 #endif
 
+// Sources from which the CWS write review dialog can be launched.
+enum class CWSReviewSource {
+  kExtensionsMenu,
+  kExtensionsPage,
+  kContextMenu,
+};
+
+// Returns the URL to the Chrome Web Store's write review dialog for a specific
+// `extension_id` and `source`.
+GURL GetCWSWritingReviewUrl(const ExtensionId& extension_id,
+                            CWSReviewSource source);
+
 }  // namespace util
 }  // namespace extensions
 

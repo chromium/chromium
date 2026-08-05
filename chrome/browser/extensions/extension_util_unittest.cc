@@ -7,7 +7,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -31,9 +34,12 @@
 #include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -209,6 +215,41 @@ TEST_F(ExtensionUtilUnittest, FixupLongExtensionName) {
   EXPECT_EQ(fixup_extension_name, expected_fixup_extension_name);
 }
 
+TEST_F(ExtensionUtilUnittest, GetCWSWritingReviewUrl) {
+  const ExtensionId kValidId = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  const ExtensionId kInvalidId = "invalid_id_format";
+
+  for (const char* invalid_id : {kInvalidId.c_str(), "", "../../etc/passwd"}) {
+    EXPECT_DEATH_IF_SUPPORTED(
+        util::GetCWSWritingReviewUrl(invalid_id,
+                                     util::CWSReviewSource::kExtensionsMenu),
+        "");
+  }
+
+  EXPECT_EQ(
+      util::GetCWSWritingReviewUrl(
+          kValidId, util::CWSReviewSource::kExtensionsMenu)
+          .spec(),
+      base::StringPrintf("https://chromewebstore.google.com/detail/"
+                         "%s/reviews?action=write&source=extensions_menu",
+                         kValidId.c_str()));
+
+  EXPECT_EQ(
+      util::GetCWSWritingReviewUrl(
+          kValidId, util::CWSReviewSource::kExtensionsPage)
+          .spec(),
+      base::StringPrintf("https://chromewebstore.google.com/detail/"
+                         "%s/reviews?action=write&source=extensions_page",
+                         kValidId.c_str()));
+
+  EXPECT_EQ(
+      util::GetCWSWritingReviewUrl(
+          kValidId, util::CWSReviewSource::kContextMenu)
+          .spec(),
+      base::StringPrintf("https://chromewebstore.google.com/detail/"
+                         "%s/reviews?action=write&source=context_menu",
+                         kValidId.c_str()));
+}
 #if BUILDFLAG(IS_CHROMEOS)
 class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
  public:
