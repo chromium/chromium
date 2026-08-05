@@ -23,7 +23,7 @@ constexpr uint32_t kRecommendedImageHeight = 1584;
 constexpr uint32_t kMaxImageWidth = 8192;
 constexpr uint32_t kMaxImageHeight = 8192;
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_WIN)
 // Per-view max texture width limit is 16384 / 2 = 8192.
 // Raw max is 8192x8192.
 // max_scale_w = 8192 / 1440 = 5.6888...
@@ -57,9 +57,8 @@ void ValidateScale(const OpenXrViewProperties& properties, double scale) {
 
 }  // namespace
 
-// Viewport scaling isn't supported on Windows or Linux, validate default
-// behavior.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+// Viewport scaling isn't supported on windows, validate default behavior.
+#if BUILDFLAG(IS_WIN)
 
 TEST(OpenXrViewPropertiesTest, ValidateNoFramebufferScale) {
   OpenXrViewProperties properties(kDefaultXrViewProperties, /*view_count=*/2,
@@ -164,6 +163,6 @@ TEST(OpenXrViewPropertiesTest, CommandLineSwitchOverride_InvalidLarge) {
   ValidateScale(properties, kDefaultDoubleWideScaleFactor);
 }
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace device

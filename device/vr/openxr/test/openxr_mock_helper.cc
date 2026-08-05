@@ -61,16 +61,6 @@ bool InitializeOpenXrMockTrampoline() {
   if (library_path.empty()) {
     library_path = base::FilePath("libmockopenxrruntime.so");
   }
-#elif BUILDFLAG(IS_LINUX)
-  // :openxr_mock puts the trampoline next to its manifest, in the same
-  // mock_vr_clients/bin/openxr/ directory the Windows runtime uses.
-  base::FilePath exe_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &exe_dir)) {
-    LOG(ERROR) << "Failed to get DIR_EXE path for OpenXR mock trampoline";
-    return false;
-  }
-  library_path =
-      exe_dir.AppendASCII("mock_vr_clients/bin/openxr/libmockopenxrruntime.so");
 #else
   NOTREACHED() << "Unsupported platform for OpenXR mock trampoline";
 #endif

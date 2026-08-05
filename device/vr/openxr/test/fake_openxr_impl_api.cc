@@ -16,10 +16,6 @@
 #include <wrl.h>
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-#include <vector>
-#endif
-
 namespace openxr_mock {
 
 namespace {
@@ -302,23 +298,6 @@ XrResult XRAPI_PTR xrCreateSession(XrInstance instance,
             "D3D11Device is nullptr");
 
   GetTestHelper().SetD3DDevice(binding->device);
-#elif BUILDFLAG(IS_LINUX)
-  // Linux sessions are Vulkan-bound: next points to
-  // XrGraphicsBindingVulkan2KHR.
-  const XrGraphicsBindingVulkan2KHR* binding =
-      static_cast<const XrGraphicsBindingVulkan2KHR*>(create_info->next);
-  RETURN_IF(binding == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "XrGraphicsBindingVulkan2KHR is nullptr");
-  RETURN_IF(binding->type != XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR,
-            XR_ERROR_VALIDATION_FAILURE,
-            "xrCreateSession next has unexpected type for Linux");
-  RETURN_IF(binding->instance == VK_NULL_HANDLE, XR_ERROR_VALIDATION_FAILURE,
-            "XrGraphicsBindingVulkan2KHR instance is VK_NULL_HANDLE");
-  RETURN_IF(binding->physicalDevice == VK_NULL_HANDLE,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrGraphicsBindingVulkan2KHR physicalDevice is VK_NULL_HANDLE");
-  RETURN_IF(binding->device == VK_NULL_HANDLE, XR_ERROR_VALIDATION_FAILURE,
-            "XrGraphicsBindingVulkan2KHR device is VK_NULL_HANDLE");
 #elif BUILDFLAG(IS_ANDROID)
   const XrGraphicsBindingOpenGLESAndroidKHR* binding =
       static_cast<const XrGraphicsBindingOpenGLESAndroidKHR*>(
@@ -708,20 +687,13 @@ XrResult XRAPI_PTR xrEnumerateSwapchainFormats(XrSession session,
                                                int64_t* formats) {
   DVLOG(2) << __FUNCTION__;
   RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
-  // Linux advertises both RGBA and BGRA SRGB so the Vulkan binding's format
-  // selection can be tested. Windows/Android keep a single hardcoded format.
-#if BUILDFLAG(IS_LINUX)
-  constexpr uint32_t kNumFormats = 2;
-#else
-  constexpr uint32_t kNumFormats = 1;
-#endif
-  RETURN_IF(format_capacity_input != kNumFormats && format_capacity_input != 0,
+  RETURN_IF(format_capacity_input != 1 && format_capacity_input != 0,
             XR_ERROR_SIZE_INSUFFICIENT,
             "xrEnumerateSwapchainFormats does not equal length returned by "
             "previous call");
   RETURN_IF(format_count_output == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "format_count_output is nullptr");
-  *format_count_output = kNumFormats;
+  *format_count_output = 1;
   if (format_capacity_input == 0) {
     return XR_SUCCESS;
   }
@@ -737,13 +709,6 @@ XrResult XRAPI_PTR xrEnumerateSwapchainFormats(XrSession session,
 #elif BUILDFLAG(IS_ANDROID)
   // This is what is hardcoded in `OpenXrGraphicsBindingOpenGLES`.
   formats[0] = OpenXrTestHelper::kSwapchainFormat;
-#elif BUILDFLAG(IS_LINUX)
-  // SAFETY: `formats` is a caller-provided array of at least
-  // `format_capacity_input` elements, which the RETURN_IFs above confirmed
-  // is >= *format_count_output == kNumFormats.
-  auto formats_span = UNSAFE_BUFFERS(base::span(formats, size_t{kNumFormats}));
-  formats_span[0] = VK_FORMAT_R8G8B8A8_SRGB;
-  formats_span[1] = VK_FORMAT_B8G8R8A8_SRGB;
 #endif
 
   return XR_SUCCESS;
@@ -817,23 +782,6 @@ xrEnumerateSwapchainImages(XrSwapchain swapchain,
               "XrSwapchainImageOpenGLESKHR next is not nullptr");
 
     image.image = texture_ids[i];
-  }
-#elif BUILDFLAG(IS_LINUX)
-  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
-  // arrays as a pointer and a size. The sole callers are our own product/test
-  // code.
-  auto images_span = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<XrSwapchainImageVulkan2KHR*>(images),
-                 image_capacity_input));
-  for (uint32_t i = 0; i < image_capacity_input; i++) {
-    XrSwapchainImageVulkan2KHR& image = images_span[i];
-    RETURN_IF(image.type != XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR,
-              XR_ERROR_VALIDATION_FAILURE,
-              "XrSwapchainImageVulkan2KHR type invalid");
-    // SwiftShader cannot create real VkImages in the mock without a full
-    // rendering setup. Return VK_NULL_HANDLE — EnumerateSwapchainImages and
-    // CreateSharedImages handle null images gracefully.
-    image.image = VK_NULL_HANDLE;
   }
 #endif
 
@@ -1387,131 +1335,6 @@ xrWaitSwapchainImage(XrSwapchain swapchain,
   return XR_SUCCESS;
 }
 
-#if BUILDFLAG(IS_LINUX)
-// --- XR_KHR_vulkan_enable2 pass-through implementations ----------------------
-// These forward Vulkan creation calls to the real Vulkan loader so that unit
-// tests can work with actual VkInstance/VkDevice handles (via SwiftShader).
-
-XrResult XRAPI_PTR xrGetVulkanGraphicsRequirements2KHR(
-    XrInstance instance,
-    XrSystemId systemId,
-    XrGraphicsRequirementsVulkanKHR* graphicsRequirements) {
-  DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(systemId));
-  RETURN_IF(graphicsRequirements == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "graphicsRequirements is nullptr");
-  graphicsRequirements->type = XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR;
-  graphicsRequirements->next = nullptr;
-  graphicsRequirements->minApiVersionSupported = XR_MAKE_VERSION(1, 0, 0);
-  graphicsRequirements->maxApiVersionSupported = XR_MAKE_VERSION(1, 3, 0);
-  return XR_SUCCESS;
-}
-
-XrResult XRAPI_PTR
-xrCreateVulkanInstanceKHR(XrInstance instance,
-                          const XrVulkanInstanceCreateInfoKHR* createInfo,
-                          VkInstance* vulkanInstance,
-                          VkResult* vulkanResult) {
-  DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
-  RETURN_IF(createInfo == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "createInfo is nullptr");
-  RETURN_IF(vulkanInstance == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "vulkanInstance is nullptr");
-  RETURN_IF(vulkanResult == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "vulkanResult is nullptr");
-  RETURN_IF(!createInfo->pfnGetInstanceProcAddr, XR_ERROR_VALIDATION_FAILURE,
-            "pfnGetInstanceProcAddr is null");
-
-  // Stash the getter so xrGetVulkanGraphicsDevice2KHR can use it later.
-  GetTestHelper().SetVulkanGetInstanceProcAddr(
-      createInfo->pfnGetInstanceProcAddr);
-
-  auto pfn_create_instance = reinterpret_cast<PFN_vkCreateInstance>(
-      createInfo->pfnGetInstanceProcAddr(VK_NULL_HANDLE, "vkCreateInstance"));
-  if (!pfn_create_instance) {
-    *vulkanResult = VK_ERROR_INITIALIZATION_FAILED;
-    return XR_ERROR_RUNTIME_FAILURE;
-  }
-  *vulkanResult =
-      pfn_create_instance(createInfo->vulkanCreateInfo,
-                          createInfo->vulkanAllocator, vulkanInstance);
-  if (*vulkanResult == VK_SUCCESS) {
-    GetTestHelper().SetVulkanInstance(*vulkanInstance);
-  }
-  return (*vulkanResult == VK_SUCCESS) ? XR_SUCCESS : XR_ERROR_RUNTIME_FAILURE;
-}
-
-XrResult XRAPI_PTR
-xrGetVulkanGraphicsDevice2KHR(XrInstance instance,
-                              const XrVulkanGraphicsDeviceGetInfoKHR* getInfo,
-                              VkPhysicalDevice* vulkanPhysicalDevice) {
-  DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
-  RETURN_IF(getInfo == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "getInfo is nullptr");
-  RETURN_IF(vulkanPhysicalDevice == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "vulkanPhysicalDevice is nullptr");
-  PFN_vkGetInstanceProcAddr get_instance_proc_addr =
-      GetTestHelper().GetVulkanGetInstanceProcAddr();
-  RETURN_IF(!get_instance_proc_addr, XR_ERROR_RUNTIME_FAILURE,
-            "vkGetInstanceProcAddr not available — call "
-            "xrCreateVulkanInstanceKHR first");
-
-  auto pfn_enumerate =
-      reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(get_instance_proc_addr(
-          getInfo->vulkanInstance, "vkEnumeratePhysicalDevices"));
-  if (!pfn_enumerate) {
-    return XR_ERROR_RUNTIME_FAILURE;
-  }
-
-  uint32_t count = 0;
-  pfn_enumerate(getInfo->vulkanInstance, &count, nullptr);
-  if (count == 0) {
-    return XR_ERROR_RUNTIME_FAILURE;
-  }
-
-  std::vector<VkPhysicalDevice> devices(count);
-  pfn_enumerate(getInfo->vulkanInstance, &count, devices.data());
-  *vulkanPhysicalDevice = devices[0];
-  return XR_SUCCESS;
-}
-
-XrResult XRAPI_PTR
-xrCreateVulkanDeviceKHR(XrInstance instance,
-                        const XrVulkanDeviceCreateInfoKHR* createInfo,
-                        VkDevice* vulkanDevice,
-                        VkResult* vulkanResult) {
-  DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
-  RETURN_IF(createInfo == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "createInfo is nullptr");
-  RETURN_IF(vulkanDevice == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "vulkanDevice is nullptr");
-  RETURN_IF(vulkanResult == nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "vulkanResult is nullptr");
-  RETURN_IF(!createInfo->pfnGetInstanceProcAddr, XR_ERROR_VALIDATION_FAILURE,
-            "pfnGetInstanceProcAddr is null");
-
-  // vkCreateDevice must be resolved through the VkInstance stored from
-  // xrCreateVulkanInstanceKHR.
-  auto pfn_create_device =
-      reinterpret_cast<PFN_vkCreateDevice>(createInfo->pfnGetInstanceProcAddr(
-          GetTestHelper().GetVulkanInstance(), "vkCreateDevice"));
-  if (!pfn_create_device) {
-    *vulkanResult = VK_ERROR_INITIALIZATION_FAILED;
-    return XR_ERROR_RUNTIME_FAILURE;
-  }
-  *vulkanResult = pfn_create_device(createInfo->vulkanPhysicalDevice,
-                                    createInfo->vulkanCreateInfo,
-                                    createInfo->vulkanAllocator, vulkanDevice);
-  return (*vulkanResult == VK_SUCCESS) ? XR_SUCCESS : XR_ERROR_RUNTIME_FAILURE;
-}
-
-// --- end XR_KHR_vulkan_enable2 -----------------------------------------------
-#endif  // BUILDFLAG(IS_LINUX)
-
 // Getter for extension methods. Casts the correct function dynamically based on
 // the method name provided.
 // Please add new OpenXR APIs below in alphabetical order.
@@ -1539,10 +1362,6 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
   TRY_LOAD_METHOD(xrCreateReferenceSpace);
   TRY_LOAD_METHOD(xrCreateSession);
   TRY_LOAD_METHOD(xrCreateSwapchain);
-#if BUILDFLAG(IS_LINUX)
-  TRY_LOAD_METHOD(xrCreateVulkanDeviceKHR);
-  TRY_LOAD_METHOD(xrCreateVulkanInstanceKHR);
-#endif
   TRY_LOAD_METHOD(xrDestroyActionSet);
   TRY_LOAD_METHOD(xrDestroyHandTrackerEXT);
   TRY_LOAD_METHOD(xrDestroyInstance);
@@ -1571,10 +1390,6 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
   TRY_LOAD_METHOD(xrGetReferenceSpaceBoundsRect);
   TRY_LOAD_METHOD(xrGetViewConfigurationProperties);
   TRY_LOAD_METHOD(xrGetVisibilityMaskKHR);
-#if BUILDFLAG(IS_LINUX)
-  TRY_LOAD_METHOD(xrGetVulkanGraphicsDevice2KHR);
-  TRY_LOAD_METHOD(xrGetVulkanGraphicsRequirements2KHR);
-#endif
   TRY_LOAD_METHOD(xrGetSystem);
   TRY_LOAD_METHOD(xrGetSystemProperties);
   TRY_LOAD_METHOD(xrLocateHandJointsEXT);

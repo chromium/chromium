@@ -497,14 +497,14 @@ if (enable_vr) {
           "//device/vr:directx_helpers",
           "//device/vr:openxr_data",
         ]
-      }
 
-      if (enable_openxr) {
-        deps += [
-          "//device/vr:openxr_test_helper",
-          "//third_party/openxr",
-        ]
-        data_deps += [ "//device/vr:openxr_mock" ]
+        if (enable_openxr) {
+          deps += [
+            "//device/vr:openxr_test_helper",
+            "//third_party/openxr",
+          ]
+          data_deps += [ "//device/vr:openxr_mock" ]
+        }
       }
     }
   }

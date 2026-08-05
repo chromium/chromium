@@ -1,13 +1,11 @@
 include_rules = [
   "+components/ukm",
   "+components/viz/common/gpu/context_provider.h",
-  "+components/viz/common/resources/shared_image_format.h",
   "+device/base/features.h",
   "+device/gamepad/public/cpp/gamepads.h",
   "+gpu/command_buffer/client/gles2_interface.h",
   "+gpu/command_buffer/common/constants.h",
   "+gpu/command_buffer/common/sync_token.h",
-  "+gpu/ipc/common/surface_handle.h",
   "+device/vr/jni_headers",
   "+services/device/public",
   "+services/metrics/public/cpp/ukm_builders.h",

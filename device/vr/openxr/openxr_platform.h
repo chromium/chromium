@@ -21,8 +21,6 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include <EGL/egl.h>
 #include <jni.h>
-#elif BUILDFLAG(IS_LINUX)
-#include <vulkan/vulkan_core.h>
 #endif
 
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"

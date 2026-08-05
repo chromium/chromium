@@ -75,11 +75,6 @@ class OpenXrGraphicsBinding {
   // buffers/images.
   virtual bool CanUseSharedImages() const = 0;
 
-  // Returns true if this binding cannot present without GPU-shared images, so
-  // the render loop must end the session when they are unavailable instead of
-  // continuing with imageless frames. Only the Linux Vulkan binding does.
-  virtual bool RequiresSharedImages() const;
-
   // Called when a frame is going to end without any attempt at rendering, in
   // case there is any early cleanup to do that would otherwise occur during
   // `Render`.
