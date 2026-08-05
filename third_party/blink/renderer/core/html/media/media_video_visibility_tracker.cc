@@ -323,8 +323,7 @@ void RecordVideoOcclusionState(
       intersection_rect_string.Ascii().c_str(),
       video_element_rect_string.Ascii().c_str(), visibility_threshold));
 
-  video_element.RecordVideoOcclusionState(
-      occlusion_state_string.Ascii().c_str());
+  video_element.RecordVideoOcclusionState(occlusion_state_string.Ascii());
 }
 
 }  // anonymous namespace

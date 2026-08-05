@@ -46,8 +46,7 @@ void P2PAsyncAddressResolver::Start(const webrtc::SocketAddress& host_name,
   }
 
   dispatcher_->GetP2PSocketManager()->GetHostAddress(
-      String(host_name.hostname().data()), family, enable_mdns,
-      std::move(callback));
+      String(host_name.hostname()), family, enable_mdns, std::move(callback));
   dispatcher_ = nullptr;
 }
 

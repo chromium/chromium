@@ -520,7 +520,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
         }
       } else if (const std::string* str =
                      parameterized_item.item.GetIfString()) {
-        allowlist_item = str->c_str();
+        allowlist_item = String(*str);
       } else {
         logger_.Warn(UNSAFE_TODO(
             String::Format("Invalid allowlist item for feature %s. Allowlist "

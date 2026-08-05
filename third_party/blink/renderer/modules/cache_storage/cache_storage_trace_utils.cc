@@ -34,9 +34,8 @@ std::unique_ptr<TracedValue> CacheStorageTracedValue(
   auto value = std::make_unique<TracedValue>();
   if (request) {
     value->SetString("url", request->url.GetString());
-    value->SetString("method",
-                     String(MojoEnumToString(request->method).data()));
-    value->SetString("mode", String(MojoEnumToString(request->mode).data()));
+    value->SetString("method", String(MojoEnumToString(request->method)));
+    value->SetString("mode", String(MojoEnumToString(request->mode)));
   }
   return value;
 }
