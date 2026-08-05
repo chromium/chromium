@@ -9,6 +9,7 @@
 # platforms you are interested in, and to configure them as required.
 
 import os
+import subprocess
 
 
 class GnConfigsImpl:
@@ -428,9 +429,11 @@ def GnConfigs(use_remoteexec) -> GnConfigsImpl:
 
 # This function will generate out/<target> to use <args> this is the same as
 # running `gn args` yourself and manually entering <args>.
-def GenerateGnTarget(target, args):
+def GenerateGnTarget(target, args, cwd=None):
     # Configure the target.
-    ret = os.system("gn gen out/%s --args='%s'" % (target, "\n".join(args)))
-    if os.WIFEXITED(ret) and os.WEXITSTATUS(ret) == 0:
-        return True
-    return False
+    cmd = ['gn', 'gen', f'out/{target}', f'--args={" ".join(args)}']
+    try:
+        result = subprocess.run(cmd, check=True, text=True, cwd=cwd)
+        return result.returncode == 0
+    except subprocess.CalledProcessError:
+        return False
