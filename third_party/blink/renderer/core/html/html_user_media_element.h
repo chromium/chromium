@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
-
 namespace blink {
 
 class CORE_EXPORT HTMLUserMediaElement : public HTMLMediaCaptureElementBase {
@@ -17,6 +16,7 @@ class CORE_EXPORT HTMLUserMediaElement : public HTMLMediaCaptureElementBase {
   static bool isTypeSupported(const AtomicString& type);
 
   explicit HTMLUserMediaElement(Document& document);
+  void Trace(Visitor*) const override;
 
   ElementType GetElementType() const final {
     return ElementType::kHTMLUserMediaElement;

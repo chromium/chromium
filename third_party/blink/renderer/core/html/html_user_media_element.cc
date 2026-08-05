@@ -177,4 +177,8 @@ void HTMLUserMediaElement::ApplyDefaultConstraints() {
   HTMLMediaCaptureElementBase::ApplyDefaultConstraints();
 }
 
+void HTMLUserMediaElement::Trace(Visitor* visitor) const {
+  HTMLMediaCaptureElementBase::Trace(visitor);
+}
+
 }  // namespace blink

@@ -14,9 +14,9 @@ const char HTMLMediaTrackElementMediaTrack::kSupplementName[] =
 
 // static
 HTMLMediaTrackElementMediaTrack& HTMLMediaTrackElementMediaTrack::From(
-    HTMLMediaTrackElementBase& element) {
+    HTMLMediaCaptureElementBase& element) {
   HTMLMediaTrackElementMediaTrack* supplement =
-      Supplement<HTMLMediaTrackElementBase>::From<
+      Supplement<HTMLMediaCaptureElementBase>::From<
           HTMLMediaTrackElementMediaTrack>(element);
   if (!supplement) {
     supplement = MakeGarbageCollected<HTMLMediaTrackElementMediaTrack>(element);
@@ -32,12 +32,12 @@ MediaStreamTrack* HTMLMediaTrackElementMediaTrack::track(
 }
 
 HTMLMediaTrackElementMediaTrack::HTMLMediaTrackElementMediaTrack(
-    HTMLMediaTrackElementBase& element)
-    : Supplement<HTMLMediaTrackElementBase>(element) {}
+    HTMLMediaCaptureElementBase& element)
+    : Supplement<HTMLMediaCaptureElementBase>(element) {}
 
 void HTMLMediaTrackElementMediaTrack::Trace(Visitor* visitor) const {
   visitor->Trace(media_track_);
-  Supplement<HTMLMediaTrackElementBase>::Trace(visitor);
+  Supplement<HTMLMediaCaptureElementBase>::Trace(visitor);
 }
 
 }  // namespace blink

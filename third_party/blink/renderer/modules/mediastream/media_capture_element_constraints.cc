@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/mediastream/user_media_element_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_capture_element_constraints.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraint_set.h"
@@ -13,23 +13,24 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindomstringparameters_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
-#include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
+#include "third_party/blink/renderer/core/html/html_camera_element.h"
+#include "third_party/blink/renderer/core/html/html_media_track_element_base.h"
+#include "third_party/blink/renderer/core/html/html_microphone_element.h"
+#include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
-const char UserMediaElementConstraints::kSupplementName[] =
-    "UserMediaElementConstraints";
+namespace {
 
-// Keep the most basic constraints, strip out 'ideal', 'exact', 'min', 'max'
-// from all properties
+// Keep basic properties, strip out 'ideal', 'exact', 'min', 'max' ranges.
+// Guaranteed to return a non-null MediaTrackConstraints object.
 MediaTrackConstraints* SanitizeTrackConstraints(
     const MediaTrackConstraintSet* constraints) {
-  if (!constraints) {
-    return nullptr;
-  }
-
   MediaTrackConstraints* sanitized = MediaTrackConstraints::Create();
+  if (!constraints) {
+    return sanitized;
+  }
 
   // 1. Video properties
   // Longs
@@ -106,53 +107,73 @@ MediaTrackConstraints* SanitizeTrackConstraints(
   return sanitized;
 }
 
-UserMediaElementConstraints& UserMediaElementConstraints::From(
+}  // namespace
+
+const char MediaCaptureElementConstraints::kSupplementName[] =
+    "MediaCaptureElementConstraints";
+
+MediaCaptureElementConstraints& MediaCaptureElementConstraints::From(
     HTMLMediaCaptureElementBase& element) {
-  UserMediaElementConstraints* supplement = Supplement<
-      HTMLMediaCaptureElementBase>::From<UserMediaElementConstraints>(element);
+  MediaCaptureElementConstraints* supplement =
+      Supplement<HTMLMediaCaptureElementBase>::From<
+          MediaCaptureElementConstraints>(element);
   if (!supplement) {
-    supplement = MakeGarbageCollected<UserMediaElementConstraints>(element);
+    supplement = MakeGarbageCollected<MediaCaptureElementConstraints>(element);
     ProvideTo(element, supplement);
   }
   return *supplement;
 }
 
-UserMediaElementConstraints::UserMediaElementConstraints(
+MediaCaptureElementConstraints::MediaCaptureElementConstraints(
     HTMLMediaCaptureElementBase& element)
     : Supplement<HTMLMediaCaptureElementBase>(element) {}
 
-void UserMediaElementConstraints::Trace(Visitor* visitor) const {
+void MediaCaptureElementConstraints::Trace(Visitor* visitor) const {
   visitor->Trace(constraints_);
   Supplement<HTMLMediaCaptureElementBase>::Trace(visitor);
 }
 
-void UserMediaElementConstraints::setConstraints(
-    HTMLMediaCaptureElementBase& element,
+void MediaCaptureElementConstraints::setConstraints(
+    HTMLUserMediaElement& element,
     const HTMLMediaStreamConstraints* constraints) {
-  UserMediaElementConstraints& self = From(element);
-  if (self.did_set_constraints_) {
+  MediaCaptureElementConstraints& self = From(element);
+  if (self.DidSetConstraints()) {
     return;
   }
 
   HTMLMediaStreamConstraints* sanitized_constraints =
       HTMLMediaStreamConstraints::Create();
 
-  if (constraints->hasVideo()) {
-    sanitized_constraints->setVideo(
-        SanitizeTrackConstraints(constraints->video()));
-  } else {
-    sanitized_constraints->setVideo(MediaTrackConstraints::Create());
+  sanitized_constraints->setVideo(SanitizeTrackConstraints(
+      (constraints && constraints->hasVideo()) ? constraints->video()
+                                               : nullptr));
+  sanitized_constraints->setAudio(SanitizeTrackConstraints(
+      (constraints && constraints->hasAudio()) ? constraints->audio()
+                                               : nullptr));
+
+  self.SetConstraints(sanitized_constraints);
+}
+
+void MediaCaptureElementConstraints::setConstraints(
+    HTMLMediaTrackElementBase& element,
+    const MediaTrackConstraintSet* constraints) {
+  MediaCaptureElementConstraints& self = From(element);
+  if (self.DidSetConstraints()) {
+    return;
   }
 
-  if (constraints->hasAudio()) {
-    sanitized_constraints->setAudio(
-        SanitizeTrackConstraints(constraints->audio()));
-  } else {
-    sanitized_constraints->setAudio(MediaTrackConstraints::Create());
+  HTMLMediaStreamConstraints* sanitized_constraints =
+      HTMLMediaStreamConstraints::Create();
+  MediaTrackConstraints* sanitized_track =
+      SanitizeTrackConstraints(constraints);
+
+  if (element.IsHTMLCameraElement()) {
+    sanitized_constraints->setVideo(sanitized_track);
+  } else if (element.IsHTMLMicrophoneElement()) {
+    sanitized_constraints->setAudio(sanitized_track);
   }
 
   self.SetConstraints(sanitized_constraints);
-  self.did_set_constraints_ = true;
 }
 
 }  // namespace blink

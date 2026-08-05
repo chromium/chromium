@@ -7,13 +7,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class CORE_EXPORT HTMLMediaTrackElementBase
-    : public HTMLMediaCaptureElementBase,
-      public Supplementable<HTMLMediaTrackElementBase> {
+    : public HTMLMediaCaptureElementBase {
  public:
   HTMLMediaTrackElementBase(Document& document, const QualifiedName& tag_name);
   void Trace(Visitor*) const override;

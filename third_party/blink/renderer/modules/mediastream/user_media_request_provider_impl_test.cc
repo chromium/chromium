@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
-#include "third_party/blink/renderer/modules/mediastream/user_media_element_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_capture_element_constraints.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -60,7 +60,7 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestEarlyExitNoClient) {
 
   HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
   constraints->setVideo(MediaTrackConstraintSet::Create());
-  UserMediaElementConstraints::setConstraints(*element, constraints);
+  MediaCaptureElementConstraints::setConstraints(*element, constraints);
 
   provider->StartRequest(element, element->GetPermissionDescriptors());
   // Test passes if it doesn't crash.
@@ -76,7 +76,7 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestActiveStreamExists) {
 
   HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
   constraints->setVideo(MediaTrackConstraintSet::Create());
-  UserMediaElementConstraints::setConstraints(*element, constraints);
+  MediaCaptureElementConstraints::setConstraints(*element, constraints);
 
   auto* stream = MediaStream::Create(GetDocument().GetExecutionContext());
   stream->Descriptor()->SetActive(true);

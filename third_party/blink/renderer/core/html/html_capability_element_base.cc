@@ -261,6 +261,8 @@ HTMLCapabilityElementBase::HTMLCapabilityElementBase(
             document.GetExecutionContext()) ||
         RuntimeEnabledFeatures::UserMediaElementEnabled(
             document.GetExecutionContext()) ||
+        RuntimeEnabledFeatures::CameraAndMicrophoneElementsEnabled(
+            document.GetExecutionContext()) ||
         RuntimeEnabledFeatures::InstallElementEnabled(
             document.GetExecutionContext()));
   SetHasCustomStyleCallbacks();

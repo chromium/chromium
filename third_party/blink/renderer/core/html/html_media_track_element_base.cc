@@ -13,7 +13,6 @@ HTMLMediaTrackElementBase::HTMLMediaTrackElementBase(
 
 void HTMLMediaTrackElementBase::Trace(Visitor* visitor) const {
   HTMLMediaCaptureElementBase::Trace(visitor);
-  Supplementable<HTMLMediaTrackElementBase>::Trace(visitor);
 }
 
 }  // namespace blink

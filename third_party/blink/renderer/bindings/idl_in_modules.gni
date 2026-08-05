@@ -473,6 +473,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/mediastream/long_range.idl",
   "//third_party/blink/renderer/modules/mediastream/media_device_info.idl",
   "//third_party/blink/renderer/modules/mediastream/media_devices.idl",
+  "//third_party/blink/renderer/modules/mediastream/media_track_element_constraints.idl",
   "//third_party/blink/renderer/modules/mediastream/media_stream.idl",
   "//third_party/blink/renderer/modules/mediastream/media_stream_constraints.idl",
   "//third_party/blink/renderer/modules/mediastream/media_stream_event.idl",
