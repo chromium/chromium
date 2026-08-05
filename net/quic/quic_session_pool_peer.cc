@@ -117,6 +117,10 @@ bool QuicSessionPoolPeer::IsLiveSession(QuicSessionPool* pool,
   return pool->all_sessions_.contains(session);
 }
 
+size_t QuicSessionPoolPeer::GetNumLiveSessions(QuicSessionPool* pool) {
+  return pool->all_sessions_.size();
+}
+
 void QuicSessionPoolPeer::SetTaskRunner(
     QuicSessionPool* pool,
     base::SequencedTaskRunner* task_runner) {

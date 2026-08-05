@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -29,6 +30,7 @@
 #include "net/quic/quic_endpoint.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_attempt_request.h"
+#include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_session_pool_test_base.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
@@ -416,6 +418,68 @@ TEST_P(QuicSessionAttemptManagerTest, MultipleEndpointsAllSuccess) {
   EXPECT_TRUE(requester1.session());
   EXPECT_TRUE(requester2.session());
   EXPECT_EQ(requester1.session(), requester2.session());
+}
+
+TEST_P(QuicSessionAttemptManagerTest, CancelDuringHandshakeClosesSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+
+  InitializeWithDefaultProofVerifyDetails();
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester = CreateRequester();
+  EXPECT_THAT(requester.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_EQ(1u, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+
+  requester.ResetRequest();
+
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+}
+
+TEST_P(QuicSessionAttemptManagerTest,
+       CancelDuringAsyncSessionCreationClosesCreatedSession) {
+  InitializeWithDefaultProofVerifyDetails();
+
+  MockConnectCompleter connect_completer;
+  MockQuicData socket_data(version_);
+  socket_data.AddConnect(&connect_completer);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester = CreateRequester();
+  EXPECT_THAT(requester.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+
+  requester.ResetRequest();
+  connect_completer.Complete(OK);
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 0u;
+  }));
+}
+
+TEST_P(QuicSessionAttemptManagerTest, DestroyPoolDuringHandshakeClosesSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+
+  InitializeWithDefaultProofVerifyDetails();
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester = CreateRequester();
+  EXPECT_THAT(requester.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_EQ(1u, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+
+  pool_.reset();
+
+  EXPECT_THAT(requester.WaitForResult(), IsError(ERR_ABORTED));
 }
 
 TEST_P(QuicSessionAttemptManagerTest, JobCompletesWhenAllRequestsCancelled) {

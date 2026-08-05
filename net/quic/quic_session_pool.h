@@ -603,6 +603,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   void OnJobComplete(Job* job,
                      std::optional<base::TimeTicks> proxy_connect_start_time,
                      int rv);
+  // Returns whether the exact session is currently active under any key.
+  bool IsSessionActive(const QuicChromiumClientSession* session) const;
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
 

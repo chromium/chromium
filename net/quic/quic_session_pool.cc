@@ -747,12 +747,13 @@ QuicSessionPool::QuicSessionPool(
 QuicSessionPool::~QuicSessionPool() {
   UMA_HISTOGRAM_COUNTS_1000("Net.NumQuicSessionsAtShutdown",
                             all_sessions_.size());
+
+  // Destroy attempts before sessions because attempts can hold non-owning
+  // session pointers. This also ensures there is no active crypto config map.
+  session_attempt_manager_.reset();
+
   CloseAllSessions(ERR_ABORTED, quic::QUIC_CONNECTION_CANCELLED);
   all_sessions_.clear();
-
-  // Reset session attempt manager to ensure there is no active crypto config
-  // map.
-  session_attempt_manager_.reset();
 
   // Clear the active jobs, first moving out of the instance variable so that
   // calls to CancelRequest for any pending requests do not cause recursion.
@@ -1790,6 +1791,13 @@ void QuicSessionPool::OnJobComplete(
     }
     request->OnRequestComplete(rv);
   }
+}
+
+bool QuicSessionPool::IsSessionActive(
+    const QuicChromiumClientSession* session) const {
+  return std::ranges::any_of(active_sessions_, [session](const auto& entry) {
+    return entry.second.get() == session;
+  });
 }
 
 bool QuicSessionPool::HasActiveSession(

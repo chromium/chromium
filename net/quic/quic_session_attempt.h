@@ -102,6 +102,20 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
 
   int Start(CompletionOnceCallback callback);
 
+  // Cancels an in-flight attempt without invoking its completion callback.
+  // Must only be called after Start() returned ERR_IO_PENDING.
+  //
+  // While an attempt is in flight, a non-null `session_` is the candidate
+  // created for this attempt. It has not been activated or exposed to a
+  // request. DoConfirmConnection() may replace it with an existing shared
+  // session, but only immediately before completing synchronously; a completed
+  // attempt must never be cancelled.
+  //
+  // If the candidate session already exists, closes it immediately. If
+  // asynchronous session creation is still in flight, the completion path
+  // closes any session it creates instead of handing it to this attempt.
+  void Cancel();
+
   bool session_creation_finished() const { return session_creation_finished_; }
 
   const quic::ParsedQuicVersion& quic_version() const { return quic_version_; }
@@ -122,6 +136,13 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
     kCryptoConnect,
     kConfirmConnection,
   };
+
+  // Static so this callback still runs after the attempt is destroyed. It
+  // forwards the result while the attempt is alive and otherwise silently
+  // closes any session that was created.
+  static void HandleCreateSessionResult(
+      base::WeakPtr<QuicSessionAttempt> attempt,
+      base::expected<CreateSessionResult, int> result);
 
   QuicSessionPool* pool() { return delegate_->GetQuicSessionPool(); }
   const QuicSessionAliasKey& key() { return delegate_->GetKey(); }
