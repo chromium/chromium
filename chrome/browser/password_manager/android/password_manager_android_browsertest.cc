@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/device_info.h"
+#include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,12 +18,16 @@
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/realtime_reporting_test_environment.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -37,11 +42,17 @@
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class PasswordManagerAndroidBrowserTest
-    : public AndroidBrowserTest,
-      public testing::WithParamInterface<bool> {
+namespace {
+
+constexpr char kEnrollmentToken[] = "fake-enrollment-token";
+constexpr char kEnrollmentTokenPolicyName[] = "CloudManagementEnrollmentToken";
+constexpr char kClientId[] = "fake_client_id";
+
+}  // namespace
+
+class PasswordManagerAndroidBrowserTestBase : public AndroidBrowserTest {
  public:
-  PasswordManagerAndroidBrowserTest()
+  PasswordManagerAndroidBrowserTestBase()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     // Set a GMS Core version that is guaranteed to provide full UPM support.
     // This ensures that calls to the password store are derministically
@@ -53,7 +64,7 @@ class PasswordManagerAndroidBrowserTest
     // storing.
     SetUpGmsCoreFakeBackends();
   }
-  ~PasswordManagerAndroidBrowserTest() override = default;
+  ~PasswordManagerAndroidBrowserTestBase() override = default;
 
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -79,6 +90,10 @@ class PasswordManagerAndroidBrowserTest
   }
 
   const GURL& base_url() const { return https_server_.base_url(); }
+
+  GURL GetURL(const std::string& file_path) const {
+    return https_server_.GetURL(file_path);
+  }
 
   void WaitForHistogram(const std::string& histogram_name,
                         const base::HistogramTester& histogram_tester) {
@@ -124,6 +139,10 @@ class PasswordManagerAndroidBrowserTest
   autofill::test::AutofillBrowserTestEnvironment environment_;
   net::EmbeddedTestServer https_server_;
 };
+
+class PasswordManagerAndroidBrowserTest
+    : public PasswordManagerAndroidBrowserTestBase,
+      public testing::WithParamInterface<bool> {};
 
 IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
                        TriggerFormSubmission) {
@@ -264,6 +283,84 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
           GetActiveWebContents(),
           "document.getElementById('password_field').value === \"Password\"")
           .ExtractBool());
+}
+
+class PasswordManagerEnterpriseReportingAndroidBrowserTest
+    : public PasswordManagerAndroidBrowserTestBase {
+ public:
+  PasswordManagerEnterpriseReportingAndroidBrowserTest() {
+    storage_.SetEnrollmentToken(kEnrollmentToken);
+    storage_.SetClientId(kClientId);
+
+    reporting_environment_ =
+        enterprise_connectors::test::RealtimeReportingTestEnvironment::Create(
+            /*enabled_event_names=*/{"loginEvent"},
+            /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
+    CHECK(reporting_environment_);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    PasswordManagerAndroidBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(reporting_environment_->Start());
+    PasswordManagerAndroidBrowserTestBase::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PasswordManagerAndroidBrowserTestBase::SetUpCommandLine(command_line);
+    base::CommandLine reporting_command_line =
+        base::CommandLine::FromArgvWithoutProgram(
+            reporting_environment_->GetArguments());
+    command_line->AppendArguments(reporting_command_line,
+                                  /*include_program=*/false);
+    command_line->AppendSwitchASCII(
+        "policy", base::StrCat({"{\"", kEnrollmentTokenPolicyName, "\":\"",
+                                kEnrollmentToken, "\"}"}));
+  }
+
+  enterprise_connectors::test::RealtimeReportingTestServer* reporting_server() {
+    return reporting_environment_->reporting_server();
+  }
+
+ private:
+  policy::FakeBrowserDMTokenStorage storage_;
+  std::unique_ptr<enterprise_connectors::test::RealtimeReportingTestEnvironment>
+      reporting_environment_;
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerEnterpriseReportingAndroidBrowserTest,
+                       LoginEventReported) {
+  base::HistogramTester uma_recorder;
+
+  NavigateToFile("/password/simple_password.html");
+
+  PasswordsNavigationObserver observer(GetActiveWebContents());
+  observer.SetPathToWaitFor("/password/done.html");
+
+  std::string fill_and_submit =
+      "document.getElementById('username_field').value = 'user@domain.com';"
+      "document.getElementById('password_field').value = 'password';"
+      "document.getElementById('input_submit_button').click();";
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), fill_and_submit));
+  ASSERT_TRUE(observer.Wait());
+
+  WaitForHistogram("Enterprise.ReportingEventUploadSuccess", uma_recorder);
+  uma_recorder.ExpectUniqueSample(
+      "Enterprise.ReportingEventUploadSuccess",
+      enterprise_connectors::EnterpriseReportingEventType::kLoginEvent, 1);
+  uma_recorder.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
+
+  auto reports = reporting_server()->GetUploadedReports();
+  ASSERT_EQ(1u, reports.size());
+  EXPECT_EQ("Android", reports[0].device().os_platform());
+  ASSERT_EQ(1, reports[0].events_size());
+  EXPECT_EQ(reports[0].events(0).login_event().url(),
+            GetURL("/password/simple_password.html").spec());
+  EXPECT_TRUE(base::EndsWith(
+      reports[0].events(0).login_event().login_user_name(), "@domain.com"));
 }
 
 INSTANTIATE_TEST_SUITE_P(VariateFormElementPresence,

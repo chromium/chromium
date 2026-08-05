@@ -4,10 +4,6 @@
 
 import("//build/config/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
-if (is_android) {
-  import("//build/config/android/config.gni")
-  import("//build/config/android/rules.gni")
-}
 
 source_set("core") {
   configs += [ "//components/enterprise:extra_warnings" ]
@@ -365,17 +361,5 @@ if (enterprise_cloud_content_analysis || is_android) {
         "cloud_content_scanning/chunked_file_data_pipe_producer_unittest.cc",
       ]
     }
-  }
-}
-
-if (is_android) {
-  android_library("connectors_java_enums") {
-    srcjar_deps = [ ":connectors_java_enums_srcjar" ]
-
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-  }
-
-  java_cpp_enum("connectors_java_enums_srcjar") {
-    sources = [ "common.h" ]
   }
 }

@@ -1486,6 +1486,7 @@ if (is_android) {
       "//components/enterprise",
       "//components/enterprise:test_support",
       "//components/enterprise/browser/identifiers",
+      "//components/enterprise/connectors/core:test_support",
       "//components/feed:feature_list",
       "//components/feed/core/v2:feed_core_v2",
       "//components/feed/core/v2:ios_shared",
