@@ -670,6 +670,41 @@ void OnFetchPiiEntityCompleted(
 
 }  // namespace
 
+namespace internal {
+
+bool MatchesStringFilter(
+    std::u16string_view entry_string,
+    const personal_context::proto::AutofillFetchSpecification::StringFilter&
+        filter) {
+  if (filter.value().empty() &&
+      filter.mode() != personal_context::proto::AutofillFetchSpecification::
+                           StringFilter::STRING_FILTER_MODE_EXACT) {
+    return true;
+  }
+  std::u16string normalized_entry =
+      normalization::NormalizeForComparison(entry_string);
+  std::u16string normalized_filter =
+      normalization::NormalizeForComparison(base::UTF8ToUTF16(filter.value()));
+  switch (filter.mode()) {
+    case personal_context::proto::AutofillFetchSpecification::StringFilter::
+        STRING_FILTER_MODE_EXACT:
+      return normalized_entry == normalized_filter;
+    case personal_context::proto::AutofillFetchSpecification::StringFilter::
+        STRING_FILTER_MODE_FUZZY:
+      // TODO(crbug.com/542022101): The current implementation is not fuzzy
+      // mode - fuzzy mode should also handle mistyped or missed characters.
+      [[fallthrough]];
+    case personal_context::proto::AutofillFetchSpecification::StringFilter::
+        STRING_FILTER_MODE_SUBSTRING:
+    case personal_context::proto::AutofillFetchSpecification::StringFilter::
+        STRING_FILTER_MODE_UNSPECIFIED:
+    default:
+      return normalized_entry.contains(normalized_filter);
+  }
+}
+
+}  // namespace internal
+
 AtMemoryQueryService::AtMemoryQueryService(
     std::unique_ptr<AutofillDataProvider> data_provider,
     personal_context::PersonalContextService* personal_context_service,

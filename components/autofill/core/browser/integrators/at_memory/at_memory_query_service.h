@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/personal_context/proto/features/at_memory.pb.h"
 #include "url/gurl.h"
 
 namespace personal_context {
@@ -130,6 +131,18 @@ class AtMemoryQueryService : public KeyedService {
   base::WeakPtrFactory<AtMemoryQueryService> pii_unmasking_weak_ptr_factory_{
       this};
 };
+
+// TODO(crbug.com/542022101): Move all of these functions into the anonymous
+// namespace once they can be tested via `AtMemoryQueryService::Query()`.
+namespace internal {
+
+// Returns whether `entry_string` matches `filter` according to its filter mode.
+bool MatchesStringFilter(
+    std::u16string_view entry_string,
+    const personal_context::proto::AutofillFetchSpecification::StringFilter&
+        filter);
+
+}  // namespace internal
 
 }  // namespace autofill
 

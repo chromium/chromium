@@ -47,6 +47,7 @@ namespace {
 using ::base::test::ErrorIs;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
+using ::personal_context::proto::AutofillFetchSpecification;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ByMove;
@@ -58,6 +59,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 using ::testing::Values;
+using ::testing::WithParamInterface;
 
 class FakeMemoryDataProvider : public AutofillDataProvider {
  public:
@@ -1238,7 +1240,7 @@ struct QueryClassificationTestCase {
 
 class AtMemoryQueryServiceClassificationTest
     : public AtMemoryQueryServiceTest,
-      public ::testing::WithParamInterface<QueryClassificationTestCase> {};
+      public WithParamInterface<QueryClassificationTestCase> {};
 
 // Verifies that each query classification is correctly mapped to a search
 // status.
@@ -1583,7 +1585,7 @@ struct ReorderMetadataTestCase {
 
 class AtMemoryQueryServiceReorderMetadataTest
     : public AtMemoryQueryServiceTest,
-      public ::testing::WithParamInterface<ReorderMetadataTestCase> {};
+      public WithParamInterface<ReorderMetadataTestCase> {};
 
 // Tests that secondary metadata attributes in query search results are
 // reordered by uniqueness across all suggestions (more unique values of the
@@ -1719,6 +1721,71 @@ INSTANTIATE_TEST_SUITE_P(
                   u"Arrival Airport", u"SFO"},
                  {MemoryDataType::kFlightReservationDepartureAirport,
                   u"Departure Airport", u"LAX"}}}}));
+
+class MatchesStringFilterParamTest
+    : public testing::TestWithParam<
+          AutofillFetchSpecification::StringFilter::StringFilterMode> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MatchesStringFilterParamTest,
+    Values(
+        AutofillFetchSpecification::StringFilter::
+            STRING_FILTER_MODE_UNSPECIFIED,
+        AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_SUBSTRING,
+        AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_FUZZY));
+
+// Tests that empty string filters match anything in non-exact modes.
+TEST_P(MatchesStringFilterParamTest, EmptyFilter) {
+  AutofillFetchSpecification::StringFilter filter;
+  filter.set_value("");
+  filter.set_mode(GetParam());
+  EXPECT_TRUE(internal::MatchesStringFilter(u"California", filter));
+  EXPECT_TRUE(internal::MatchesStringFilter(u"", filter));
+}
+
+// Tests that non-exact string filter modes match substrings case-insensitively.
+TEST_P(MatchesStringFilterParamTest, SubstringMode) {
+  AutofillFetchSpecification::StringFilter filter;
+  filter.set_value("Cal");
+  filter.set_mode(GetParam());
+  EXPECT_TRUE(internal::MatchesStringFilter(u"California", filter));
+  EXPECT_TRUE(internal::MatchesStringFilter(u"california", filter));
+  EXPECT_TRUE(internal::MatchesStringFilter(u"Cal", filter));
+  EXPECT_TRUE(internal::MatchesStringFilter(u"Southern Cal", filter));
+  EXPECT_FALSE(internal::MatchesStringFilter(u"New York", filter));
+  EXPECT_FALSE(internal::MatchesStringFilter(u"", filter));
+}
+
+// Tests that exact string filter mode matches only full strings
+// case-insensitively.
+TEST(MatchesStringFilterTest, ExactMode) {
+  AutofillFetchSpecification::StringFilter filter;
+  filter.set_value("California");
+  filter.set_mode(
+      AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_EXACT);
+
+  EXPECT_TRUE(internal::MatchesStringFilter(u"California", filter));
+  EXPECT_TRUE(internal::MatchesStringFilter(u"california", filter));
+  EXPECT_FALSE(internal::MatchesStringFilter(u"Cal", filter));
+  EXPECT_FALSE(internal::MatchesStringFilter(u"California State", filter));
+  EXPECT_FALSE(internal::MatchesStringFilter(u"NY", filter));
+  EXPECT_FALSE(internal::MatchesStringFilter(u"", filter));
+
+  filter.set_value("");
+  EXPECT_FALSE(internal::MatchesStringFilter(u"California", filter));
+  EXPECT_TRUE(internal::MatchesStringFilter(u"", filter));
+}
+
+// Tests that string filters apply Autofill normalization when comparing
+// strings.
+TEST(MatchesStringFilterTest, NormalizedComparison) {
+  AutofillFetchSpecification::StringFilter filter;
+  filter.set_value("Timothé");
+  filter.set_mode(
+      AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_EXACT);
+  EXPECT_TRUE(internal::MatchesStringFilter(u"timothe", filter));
+}
 
 }  // namespace
 
