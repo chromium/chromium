@@ -36,7 +36,7 @@ namespace blink {
 class Node;
 class TreeScope;
 
-enum class PositionAnchorType : unsigned {
+enum class PositionAnchorType : uint8_t {
   kOffsetInAnchor,
   kBeforeAnchor,
   kAfterAnchor,

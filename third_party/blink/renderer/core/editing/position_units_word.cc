@@ -60,7 +60,7 @@ PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
     Finder(WordSide side) : side_(side) {}
 
    private:
-    Position Find(const String text, unsigned offset) final {
+    Position Find(const String text, wtf_size_t offset) final {
       DCHECK_LE(offset, text.length());
       if (!is_first_time_) {
         return FindInternal(text, offset);
@@ -78,7 +78,7 @@ PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
       return FindInternal(text, offset);
     }
 
-    static Position FindInternal(const String text, unsigned offset) {
+    static Position FindInternal(const String text, wtf_size_t offset) {
       DCHECK_LE(offset, text.length());
       TextBreakIterator* it = WordBreakIterator(text.Span16());
       const int result = it->following(offset);
@@ -110,9 +110,9 @@ PositionInFlatTree NextWordPositionInternal(
         : platform_word_behavior_(platform_word_behavior) {}
 
    private:
-    Position Find(const String text, unsigned offset) final {
+    Position Find(const String text, wtf_size_t offset) final {
       DCHECK_LE(offset, text.length());
-      if (!is_first_time_ && static_cast<unsigned>(offset) < text.length()) {
+      if (!is_first_time_ && offset < text.length()) {
         // These conditions check if we found a valid word break position after
         // another iteration of scanning contents from the position that was
         // passed to this function. Ex: |Hello |World|\n |foo |bar
@@ -151,7 +151,7 @@ PositionInFlatTree NextWordPositionInternal(
           return SkipWhitespaceIfNeeded(text, runner);
         }
         // Accumulate punctuation/surrogate pair runs.
-        if (static_cast<unsigned>(runner) < text.length() &&
+        if (static_cast<wtf_size_t>(runner) < text.length() &&
             IsWordBoundary(text[runner])) {
           if (unicode::IsAlphanumeric(text[runner - 1])) {
             return SkipWhitespaceIfNeeded(text, runner);
@@ -183,12 +183,12 @@ PositionInFlatTree NextWordPositionInternal(
         // 2. When the character preceding the break is a whitespace and
         //    the character following it is an alphanumeric or punctuations
         //    or underscore or linebreaks.
-        if (static_cast<unsigned>(runner) < text.length() &&
+        if (static_cast<wtf_size_t>(runner) < text.length() &&
             IsWordBreak(text[runner - 1])) {
           return SkipWhitespaceIfNeeded(text, runner);
         } else if (platform_word_behavior_ ==
                        PlatformWordBehavior::kWordSkipSpaces &&
-                   static_cast<unsigned>(runner) < text.length() &&
+                   static_cast<wtf_size_t>(runner) < text.length() &&
                    IsWhitespace(text[runner - 1]) &&
                    IsWordBreak(text[runner])) {
           return SkipWhitespaceIfNeeded(text, runner);
@@ -205,7 +205,7 @@ PositionInFlatTree NextWordPositionInternal(
       // On Windows next word should skip trailing whitespaces but not line
       // break
       if (platform_word_behavior_ == PlatformWordBehavior::kWordSkipSpaces) {
-        for (unsigned runner = static_cast<unsigned>(offset);
+        for (wtf_size_t runner = static_cast<wtf_size_t>(offset);
              runner < text.length(); ++runner) {
           if (!(IsWhitespace(text[runner]) ||
                 unicode::Direction(text[runner]) ==
@@ -230,10 +230,9 @@ PositionInFlatTree PreviousWordPositionInternal(
     STACK_ALLOCATED();
 
    private:
-    Position Find(const String text, unsigned offset) final {
+    Position Find(const String text, wtf_size_t offset) final {
       DCHECK_LE(offset, text.length());
-      if (!is_first_time_ && text.length() > 0 &&
-          static_cast<unsigned>(offset) <= text.length()) {
+      if (!is_first_time_ && text.length() > 0 && offset <= text.length()) {
         // These conditions check if we found a valid word break position after
         // another iteration of scanning contents from the position that was
         // passed to this function. Ex: |Hello |World|\n |foo |bar
@@ -256,7 +255,7 @@ PositionInFlatTree PreviousWordPositionInternal(
       for (int runner = it->preceding(offset); runner != kTextBreakDone;
            runner = it->preceding(runner)) {
         // Accumulate punctuation/surrogate pair runs.
-        if (static_cast<unsigned>(runner) < text.length() &&
+        if (static_cast<wtf_size_t>(runner) < text.length() &&
             IsWordBoundary(text[runner])) {
           if (unicode::IsAlphanumeric(text[runner - 1])) {
             return Position::Before(runner);
@@ -270,7 +269,7 @@ PositionInFlatTree PreviousWordPositionInternal(
         }
         // We stop searching when the character following the break is
         // alphanumeric or punctuations or underscore or linebreaks.
-        if (static_cast<unsigned>(runner) < text.length() &&
+        if (static_cast<wtf_size_t>(runner) < text.length() &&
             IsWordBreak(text[runner])) {
           return Position::Before(runner);
         }
@@ -292,7 +291,7 @@ PositionInFlatTree StartOfWordPositionInternal(
     Finder(WordSide side) : side_(side) {}
 
    private:
-    Position Find(const String text, unsigned offset) final {
+    Position Find(const String text, wtf_size_t offset) final {
       DCHECK_LE(offset, text.length());
       if (!is_first_time_) {
         return FindInternal(text, offset);
@@ -310,7 +309,7 @@ PositionInFlatTree StartOfWordPositionInternal(
       return FindInternal(text, offset);
     }
 
-    static Position FindInternal(const String text, unsigned offset) {
+    static Position FindInternal(const String text, wtf_size_t offset) {
       DCHECK_LE(offset, text.length());
       TextBreakIterator* it = WordBreakIterator(text.Span16());
       const int result = it->preceding(offset);
@@ -405,7 +404,7 @@ PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree& word_start,
   if (word_start >= word_end) {
     return PositionInFlatTree(nullptr, 0);
   }
-  unsigned middle =
+  wtf_size_t middle =
       TextIteratorAlgorithm<EditingInFlatTreeStrategy>::RangeLength(word_start,
                                                                     word_end) /
       2;
@@ -414,7 +413,7 @@ PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree& word_start,
   middle += TextOffsetMapping(*range.begin()).ComputeTextOffset(word_start);
   for (auto inline_contents : range) {
     const TextOffsetMapping mapping(inline_contents);
-    unsigned length = mapping.GetText().length();
+    wtf_size_t length = mapping.GetText().length();
     if (middle < length) {
       return mapping.GetPositionBefore(middle);
     }

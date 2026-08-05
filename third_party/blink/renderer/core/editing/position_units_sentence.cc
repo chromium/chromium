@@ -47,11 +47,11 @@ PositionInFlatTree PreviousSentencePositionInternal(
     STACK_ALLOCATED();
 
    public:
-    Position Find(const String text, unsigned passed_offset) final {
+    Position Find(const String text, wtf_size_t passed_offset) final {
       DCHECK_LE(passed_offset, text.length());
       // "move_by_sentence_boundary.html" requires to skip a space characters
       // between sentences.
-      const unsigned offset = FindLastNonSpaceCharacter(text, passed_offset);
+      const wtf_size_t offset = FindLastNonSpaceCharacter(text, passed_offset);
       TextBreakIterator* iterator = SentenceBreakIterator(text.Span16());
       const int result = iterator->preceding(offset);
       if (result == kTextBreakDone) {
@@ -61,9 +61,9 @@ PositionInFlatTree PreviousSentencePositionInternal(
     }
 
    private:
-    static unsigned FindLastNonSpaceCharacter(const String& text,
-                                              unsigned passed_offset) {
-      for (unsigned offset = passed_offset; offset; --offset) {
+    static wtf_size_t FindLastNonSpaceCharacter(const String& text,
+                                                wtf_size_t passed_offset) {
+      for (wtf_size_t offset = passed_offset; offset; --offset) {
         if (text[offset - 1] != ' ') {
           return offset;
         }
@@ -79,11 +79,11 @@ PositionInFlatTree StartOfSentenceInternal(const PositionInFlatTree& position) {
     STACK_ALLOCATED();
 
    public:
-    Position Find(const String text, unsigned passed_offset) final {
+    Position Find(const String text, wtf_size_t passed_offset) final {
       DCHECK_LE(passed_offset, text.length());
       // "move_by_sentence_boundary.html" requires to skip a space characters
       // between sentences.
-      const unsigned offset = FindNonSpaceCharacter(text, passed_offset);
+      const wtf_size_t offset = FindNonSpaceCharacter(text, passed_offset);
       TextBreakIterator* iterator = SentenceBreakIterator(text.Span16());
       const int result = iterator->preceding(offset);
       if (result == kTextBreakDone) {
@@ -97,9 +97,9 @@ PositionInFlatTree StartOfSentenceInternal(const PositionInFlatTree& position) {
     }
 
    private:
-    static unsigned FindNonSpaceCharacter(const String& text,
-                                          unsigned passed_offset) {
-      for (unsigned offset = passed_offset; offset; --offset) {
+    static wtf_size_t FindNonSpaceCharacter(const String& text,
+                                            wtf_size_t passed_offset) {
+      for (wtf_size_t offset = passed_offset; offset; --offset) {
         if (text[offset - 1] != ' ') {
           return offset;
         }
@@ -120,12 +120,12 @@ PositionInFlatTree EndOfSentenceInternal(
     explicit Finder(SentenceTrailingSpaceBehavior space_behavior)
         : space_behavior_(space_behavior) {}
 
-    Position Find(const String text, unsigned passed_offset) final {
+    Position Find(const String text, wtf_size_t passed_offset) final {
       DCHECK_LE(passed_offset, text.length());
       TextBreakIterator* iterator = SentenceBreakIterator(text.Span16());
       // "move_by_sentence_boundary.html" requires to skip a space characters
       // between sentences.
-      const unsigned offset = FindNonSpaceCharacter(text, passed_offset);
+      const wtf_size_t offset = FindNonSpaceCharacter(text, passed_offset);
       const int result = iterator->following(offset);
       if (result == kTextBreakDone) {
         if (text.length()) {
@@ -143,9 +143,10 @@ PositionInFlatTree EndOfSentenceInternal(
     }
 
    private:
-    static unsigned FindNonSpaceCharacter(const String& text,
-                                          unsigned passed_offset) {
-      for (unsigned offset = passed_offset; offset < text.length(); ++offset) {
+    static wtf_size_t FindNonSpaceCharacter(const String& text,
+                                            wtf_size_t passed_offset) {
+      for (wtf_size_t offset = passed_offset; offset < text.length();
+           ++offset) {
         if (text[offset] != ' ') {
           return offset;
         }
@@ -164,7 +165,7 @@ PositionInFlatTree NextSentencePositionInternal(
     STACK_ALLOCATED();
 
    private:
-    Position Find(const String text, unsigned offset) final {
+    Position Find(const String text, wtf_size_t offset) final {
       DCHECK_LE(offset, text.length());
       if (should_stop_finding_) {
         DCHECK_EQ(offset, 0u);
@@ -184,7 +185,7 @@ PositionInFlatTree NextSentencePositionInternal(
       return result == 0 ? Position::Before(0) : Position::After(result - 1);
     }
 
-    static bool IsImplicitEndOfSentence(const String& text, unsigned offset) {
+    static bool IsImplicitEndOfSentence(const String& text, wtf_size_t offset) {
       DCHECK_LE(offset, text.length());
       if (offset == text.length()) {
         // "extend-by-sentence-002.html" reaches here.

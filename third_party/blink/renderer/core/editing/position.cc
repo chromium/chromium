@@ -243,7 +243,7 @@ PositionTemplate<Strategy>::ParentAnchoredEquivalent() const {
   }
   if (!anchor_node_->IsCharacterDataNode() &&
       (IsAfterAnchorOrAfterChildren() ||
-       static_cast<unsigned>(offset_) == anchor_node_->CountChildren()) &&
+       offset_ == anchor_node_->CountChildren()) &&
       (EditingIgnoresContent(*anchor_node_) ||
        IsDisplayInsideTable(anchor_node_.Get())) &&
       ComputeContainerNode()) {

@@ -943,7 +943,7 @@ void FastPositionIteratorAlgorithm<Strategy>::PopOffsetStack() {
 
 template <typename Strategy>
 void FastPositionIteratorAlgorithm<Strategy>::PushThenSetOffset(
-    unsigned offset_in_container) {
+    wtf_size_t offset_in_container) {
   offset_stack_.push_back(offset_in_container_);
   offset_in_container_ = offset_in_container;
   AssertOffsetInContainerIsValid();

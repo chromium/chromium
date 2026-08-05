@@ -148,7 +148,7 @@ class FastPositionIteratorAlgorithm {
     kUserSelectContainNode,
   };
 
-  static constexpr unsigned kInvalidOffset = static_cast<unsigned>(-1);
+  static constexpr wtf_size_t kInvalidOffset = static_cast<wtf_size_t>(-1);
 
   static ContainerType ContainerToContainerType(const Node* node);
 
@@ -187,7 +187,7 @@ class FastPositionIteratorAlgorithm {
   void EnsureOffsetInContainer() const;
   void MoveOffsetInContainerBy(int delta);
   void PopOffsetStack();
-  void PushThenSetOffset(unsigned offset_in_container);
+  void PushThenSetOffset(wtf_size_t offset_in_container);
 
   // We representation a position as same as`RangeBoundaryPoint`.
   Node* container_node_ = nullptr;
@@ -195,9 +195,9 @@ class FastPositionIteratorAlgorithm {
   uint64_t dom_tree_version_ = 0;
   // Note: When `child_before_position_` is `nullptr`, `offset_is_container`
   // should be zero.
-  mutable unsigned offset_in_container_ = kInvalidOffset;
+  mutable wtf_size_t offset_in_container_ = kInvalidOffset;
 
-  Vector<unsigned> offset_stack_;
+  Vector<wtf_size_t> offset_stack_;
   ContainerType container_type_ = kNullNode;
 };
 
