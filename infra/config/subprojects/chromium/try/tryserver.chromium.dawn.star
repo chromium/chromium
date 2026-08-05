@@ -47,6 +47,19 @@ consoles.list_view(
     ],
 )
 
+def dawn_android_builder(*args, **kwargs):
+    # TODO(crbug.com/543082386): Update this to use shared code from gpu.star.
+    return dawn_linux_builder(*args, **kwargs)
+
+def dawn_linux_builder(*args, **kwargs):
+    # TODO(crbug.com/543082386): Update this to use shared code from gpu.star.
+    kwargs.setdefault("builderless", True)
+    kwargs.setdefault("free_space", None)
+    kwargs.setdefault("os", os.LINUX_DEFAULT)
+    kwargs.setdefault("pool", "luci.chromium.gpu.try")
+    kwargs.setdefault("ssd", None)
+    return try_.builder(*args, **kwargs)
+
 def dawn_mac_builder(*, name, **kwargs):
     kwargs.setdefault("cpu", None)
     return try_.builder(
@@ -76,7 +89,7 @@ def dawn_win_builderless_builder(*, name, **kwargs):
         **kwargs
     )
 
-try_.builder(
+dawn_linux_builder(
     name = "dawn-chromium-presubmit",
     branch_selector = [
         branches.selector.ANDROID_BRANCHES,
@@ -94,28 +107,18 @@ try_.builder(
         retry_without_patch = False,
     ),
     gn_args = "ci/Dawn Chromium Presubmit",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
-    ssd = None,
-    free_space = None,
     execution_timeout = 30 * time.minute,
     main_list_view = "try",
     max_concurrent_builds = 3,
 )
 
-try_.builder(
+dawn_android_builder(
     name = "dawn-android-arm-deps-rel",
     mirrors = [
         "ci/Dawn Android arm DEPS Builder",
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
     gn_args = "ci/Dawn Android arm DEPS Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
-    ssd = None,
-    free_space = None,
     cq_settings = try_.cq_settings(
         location_filters = [
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
@@ -139,7 +142,7 @@ try_.builder(
     ),
 )
 
-try_.builder(
+dawn_android_builder(
     name = "dawn-android-arm64-deps-rel",
     mirrors = [
         "ci/Dawn Android arm64 DEPS Builder",
@@ -147,11 +150,6 @@ try_.builder(
         "ci/Dawn Android arm64 DEPS Release (Pixel 10)",
     ],
     gn_args = "ci/Dawn Android arm64 DEPS Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
-    ssd = None,
-    free_space = None,
     cq_settings = try_.cq_settings(
         location_filters = [
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
@@ -175,7 +173,7 @@ try_.builder(
     ),
 )
 
-try_.builder(
+dawn_linux_builder(
     name = "dawn-linux-x64-deps-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
@@ -184,11 +182,6 @@ try_.builder(
         "ci/Dawn Linux x64 DEPS Release (NVIDIA)",
     ],
     gn_args = "ci/Dawn Linux x64 DEPS Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
-    ssd = None,
-    free_space = None,
     cq_settings = try_.cq_settings(
         location_filters = [
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
@@ -383,18 +376,13 @@ dawn_win_builderless_builder(
     ),
 )
 
-try_.builder(
+dawn_android_builder(
     name = "android-dawn-arm-rel",
     mirrors = [
         "ci/Dawn Android arm Builder",
         "ci/Dawn Android arm Release (Pixel 4)",
     ],
     gn_args = "ci/Dawn Android arm Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
-    ssd = None,
-    free_space = None,
     # Occasionally receives bursty CQ traffic from the Dawn repo, so increase
     # the expiration/pending timeout to more gracefully handle that.
     expiration_timeout = 4 * time.hour,
@@ -404,7 +392,7 @@ try_.builder(
     ),
 )
 
-try_.builder(
+dawn_android_builder(
     name = "android-dawn-arm64-rel",
     mirrors = [
         "ci/Dawn Android arm64 Builder",
@@ -412,11 +400,6 @@ try_.builder(
         "ci/Dawn Android arm64 Release (Pixel 10)",
     ],
     gn_args = "ci/Dawn Android arm64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
-    ssd = None,
-    free_space = None,
     # Occasionally receives bursty CQ traffic from the Dawn repo, so increase
     # the expiration/pending timeout to more gracefully handle that.
     expiration_timeout = 4 * time.hour,
@@ -426,7 +409,7 @@ try_.builder(
     ),
 )
 
-try_.builder(
+dawn_android_builder(
     name = "android-dawn-arm64-exp-rel",
     description_html = "Runs ToT Dawn tests on experimental Pixel 6 configs",
     mirrors = [
@@ -434,16 +417,13 @@ try_.builder(
         "ci/Dawn Android arm64 Experimental Release (Pixel 6)",
     ],
     gn_args = "ci/Dawn Android arm64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
     max_concurrent_builds = 1,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_android_builder(
     name = "android-dawn-arm64-p10-rel",
     description_html = "Runs ToT Dawn tests on Pixel 10 devices",
     mirrors = [
@@ -451,16 +431,13 @@ try_.builder(
         "ci/Dawn Android arm64 Release (Pixel 10)",
     ],
     gn_args = "ci/Dawn Android arm64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
     max_concurrent_builds = 1,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_android_builder(
     # This is not part of "android-dawn-arm64-rel" at the moment since there is
     # not sufficient S24 capacity for that.
     name = "android-dawn-arm64-s24-rel",
@@ -470,16 +447,13 @@ try_.builder(
         "ci/Dawn Android arm64 Release (Samsung S24)",
     ],
     gn_args = "ci/Dawn Android arm64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
     max_concurrent_builds = 1,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_linux_builder(
     name = "linux-dawn-intel-exp-rel",
     description_html = "Runs ToT Dawn tests on experimental Linux/Intel configs",
     mirrors = [
@@ -487,16 +461,13 @@ try_.builder(
         "ci/Dawn Linux x64 Experimental Release (Intel UHD 630)",
     ],
     gn_args = "ci/Dawn Linux x64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
     max_concurrent_builds = 1,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_linux_builder(
     name = "linux-dawn-nvidia-1660-exp-rel",
     description_html = "Runs ToT Dawn tests on experimental Linux/GTX 1660 configs",
     mirrors = [
@@ -504,16 +475,13 @@ try_.builder(
         "ci/Dawn Linux x64 Experimental Release (NVIDIA GTX 1660)",
     ],
     gn_args = "ci/Dawn Linux x64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
     max_concurrent_builds = 1,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
-try_.builder(
+dawn_linux_builder(
     name = "linux-dawn-rel",
     mirrors = [
         "ci/Dawn Linux x64 Builder",
@@ -521,11 +489,6 @@ try_.builder(
         "ci/Dawn Linux x64 Release (NVIDIA)",
     ],
     gn_args = "ci/Dawn Linux x64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
-    ssd = None,
-    free_space = None,
     # Occasionally receives bursty CQ traffic from the Dawn repo, so increase
     # the expiration/pending timeout to more gracefully handle that.
     expiration_timeout = 4 * time.hour,
@@ -576,7 +539,7 @@ try_.builder(
     ),
 )
 
-try_.builder(
+dawn_linux_builder(
     name = "dawn-try-linux-x64-intel-uhd770-rel",
     description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
     mirrors = [
@@ -584,8 +547,6 @@ try_.builder(
         "ci/Dawn Linux x64 Release (Intel UHD 770)",
     ],
     gn_args = "ci/Dawn Linux x64 Builder",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
     max_concurrent_builds = 1,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],

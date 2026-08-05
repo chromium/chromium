@@ -15,6 +15,7 @@ def _gpu_ci_linux_builder(*, name, **kwargs):
     """
     kwargs.setdefault("cores", 8)
     kwargs.setdefault("os", os.LINUX_DEFAULT)
+    kwargs.setdefault("ssd", None)
     return ci.builder(name = name, **kwargs)
 
 def _gpu_ci_mac_builder(*, name, **kwargs):
