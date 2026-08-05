@@ -6,6 +6,8 @@
 
 namespace browser_actuator {
 
+BASE_FEATURE(kBrowserActuatorChannelEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBrowserActuatorProtoStreamTransport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

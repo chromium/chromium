@@ -15,6 +15,10 @@ namespace browser_actuator {
 // kill switches and tuning knobs that are not part of the embedder
 // contract (the embedder-facing feature lives in public/features.h).
 
+// Controls whether the background transport channel is enabled. If disabled,
+// no connection will be made.
+BASE_DECLARE_FEATURE(kBrowserActuatorChannelEnabled);
+
 // The server→client push transport backed by the Rust StreamBody framing
 // parser. On by default; serves as a kill switch and as the anchor for
 // the transport tuning params below.

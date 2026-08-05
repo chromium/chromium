@@ -19,7 +19,10 @@ CallbackTransportHandler::~CallbackTransportHandler() = default;
 
 void CallbackTransportHandler::OnMessage(std::string_view payload) {
   if (on_message_cb_) {
-    std::move(on_message_cb_).Run();
+    base::OnceClosure cb = std::move(on_message_cb_);
+    // The callback may synchronously delete `this`.
+    // Do not add any code or access members below this call.
+    std::move(cb).Run();
   }
 }
 

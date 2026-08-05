@@ -12,6 +12,7 @@
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/resume_body_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
+#include "components/browser_actuator/internal/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/internal/transport_session_impl.h"
 #include "components/browser_actuator/internal/transport_session_registry_impl.h"
 
@@ -19,6 +20,7 @@ namespace browser_actuator {
 
 TransportChannelImpl::TransportChannelImpl(
     StreamClientFactory stream_client_factory) {
+  handler_registry_ = std::make_unique<TransportHandlerFactoryRegistryImpl>();
   session_registry_ = std::make_unique<TransportSessionRegistryImpl>(
       weak_ptr_factory_.GetWeakPtr());
   session_registry_->AddObserver(this);
@@ -29,14 +31,17 @@ TransportChannelImpl::TransportChannelImpl(
   // thus the delegate holding this callback — and tears it down first, so the
   // callback never runs after `this` is gone. (A WeakPtr can't be used here:
   // it may not bind to a method that returns a value.)
-  auto resume_delegate = std::make_unique<ResumeBodyConnectionDelegate>(
-      base::BindRepeating(&TransportChannelImpl::BuildWatchSessionsRequestBody,
-                          base::Unretained(this)),
-      std::make_unique<DefaultStreamConnectionDelegate>());
+  if (stream_client_factory) {
+    auto resume_delegate = std::make_unique<ResumeBodyConnectionDelegate>(
+        base::BindRepeating(
+            &TransportChannelImpl::BuildWatchSessionsRequestBody,
+            base::Unretained(this)),
+        std::make_unique<DefaultStreamConnectionDelegate>());
 
-  stream_client_ =
-      std::move(stream_client_factory).Run(std::move(resume_delegate));
-  stream_client_->AddObserver(this);
+    stream_client_ =
+        std::move(stream_client_factory).Run(std::move(resume_delegate));
+    stream_client_->AddObserver(this);
+  }
 }
 
 TransportChannelImpl::~TransportChannelImpl() {
@@ -52,8 +57,7 @@ TransportChannelImpl::~TransportChannelImpl() {
 TransportHandlerFactoryRegistry*
 TransportChannelImpl::GetHandlerFactoryRegistry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/532660606): own and return the handler factory registry.
-  return nullptr;
+  return handler_registry_.get();
 }
 
 TransportSessionRegistry* TransportChannelImpl::GetSessionRegistry() {
@@ -73,23 +77,24 @@ void TransportChannelImpl::OnSessionRegistered(TransportSession*) {
 // own resume position.
 void TransportChannelImpl::OnStreamMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ActuatorDownstreamMessage downstream;
-  if (!downstream.ParseFromString(message) || downstream.session_id().empty()) {
-    DLOG(WARNING) << "Failed to parse downstream message or missing session_id";
+  WatchSessionsResponse response;
+  if (!response.ParseFromString(message) ||
+      !response.has_actuator_downstream_message()) {
+    DLOG(WARNING) << "Failed to parse WatchSessionsResponse from stream";
+    return;
+  }
+  const ActuatorDownstreamMessage& downstream =
+      response.actuator_downstream_message();
+  if (downstream.session_id().empty()) {
+    DLOG(WARNING) << "Received ActuatorDownstreamMessage with empty session_id";
     return;
   }
 
   TransportSessionImpl* session =
       session_registry_->GetOrCreateSession(downstream.session_id());
-  if (!session) {
-    return;
+  if (session) {
+    session->ProcessDownstreamMessage(downstream);
   }
-  if (!session->RecordServerSequenceNumber(downstream.sequence_number())) {
-    return;
-  }
-
-  // TODO(crbug.com/532660606): route downstream.typed_payloads() to the
-  // handler for each payload_type.
 }
 
 void TransportChannelImpl::OnStreamConnectionStateChange(bool connected) {
@@ -146,8 +151,5 @@ std::string TransportChannelImpl::BuildWatchSessionsRequestBodyForTesting() {
   return BuildWatchSessionsRequestBody();
 }
 
-base::WeakPtr<TransportChannelImpl> TransportChannelImpl::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
 
 }  // namespace browser_actuator

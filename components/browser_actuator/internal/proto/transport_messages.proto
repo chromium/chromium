@@ -128,3 +128,8 @@ message WatchSessionsRequest {
     int64 last_seen_sequence_number = 2;
   }
 }
+// Response messages streamed by WatchSessions RPC.
+message WatchSessionsResponse {
+  // The downstream message payload sent from the server to the Chrome client.
+  ActuatorDownstreamMessage actuator_downstream_message = 1;
+}

@@ -6,23 +6,38 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/browser_actuator/internal/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browser_actuator {
 
 class BrowserActuatorServiceImplTest : public testing::Test {
  protected:
-  BrowserActuatorServiceImplTest()
-      : service_(std::make_unique<BrowserActuatorServiceImpl>()) {}
+  BrowserActuatorServiceImplTest() = default;
   ~BrowserActuatorServiceImplTest() override = default;
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<BrowserActuatorServiceImpl> service_;
 };
 
 TEST_F(BrowserActuatorServiceImplTest, IsInitialized) {
-  EXPECT_TRUE(service_->IsInitialized());
+  BrowserActuatorServiceImpl service;
+  EXPECT_TRUE(service.IsInitialized());
+}
+
+TEST_F(BrowserActuatorServiceImplTest, GetChannelReturnsValidChannel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+  BrowserActuatorServiceImpl service;
+  EXPECT_NE(service.GetChannel(), nullptr);
+}
+
+TEST_F(BrowserActuatorServiceImplTest, GetChannelReturnsNullIfChannelDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kBrowserActuatorChannelEnabled);
+  BrowserActuatorServiceImpl disabled_service;
+  EXPECT_EQ(disabled_service.GetChannel(), nullptr);
 }
 
 }  // namespace browser_actuator

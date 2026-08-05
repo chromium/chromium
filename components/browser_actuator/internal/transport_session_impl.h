@@ -22,6 +22,7 @@
 
 namespace browser_actuator {
 
+class ActuatorDownstreamMessage;
 class TransportChannel;
 class TransportHandler;
 
@@ -57,6 +58,10 @@ class TransportSessionImpl : public TransportSession {
   base::expected<void, ProcessPayloadError> ProcessPayload(
       PayloadType payload_type,
       std::string_view payload);
+
+  // Processes a downstream message from the server by checking sequence numbers
+  // and routing payloads to registered handlers.
+  void ProcessDownstreamMessage(const ActuatorDownstreamMessage& message);
 
   // Last sequence number for the session received from the server, used for
   // message ordering

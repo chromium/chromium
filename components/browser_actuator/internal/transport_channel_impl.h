@@ -20,7 +20,7 @@
 namespace browser_actuator {
 
 class StreamConnectionDelegate;
-class TransportHandlerFactoryRegistry;
+class TransportHandlerFactoryRegistryImpl;
 class TransportSessionRegistryImpl;
 
 // Concrete TransportChannel: the single physical connection shared by every
@@ -51,7 +51,8 @@ class TransportChannelImpl : public TransportChannel,
       base::OnceCallback<std::unique_ptr<MessageStreamClient>(
           std::unique_ptr<StreamConnectionDelegate> resume_delegate)>;
 
-  explicit TransportChannelImpl(StreamClientFactory stream_client_factory);
+  explicit TransportChannelImpl(
+      StreamClientFactory stream_client_factory = StreamClientFactory());
   ~TransportChannelImpl() override;
 
   TransportChannelImpl(const TransportChannelImpl&) = delete;
@@ -71,7 +72,9 @@ class TransportChannelImpl : public TransportChannel,
   // TransportSessionRegistry::Observer:
   void OnSessionRegistered(TransportSession* session) override;
 
-  base::WeakPtr<TransportChannelImpl> GetWeakPtr();
+  base::WeakPtr<TransportChannel> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // Test-only: the resume body a (re)connect would send right now.
   std::string BuildWatchSessionsRequestBodyForTesting();
@@ -84,19 +87,18 @@ class TransportChannelImpl : public TransportChannel,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Declared before `stream_client_` so the client (and the resume delegate
-  // it owns, whose body provider points back here) is destroyed first — the
-  // provider is never invoked after the registry it reads is gone.
+  // The registry holding factories that create the dynamic feature handlers.
+  std::unique_ptr<TransportHandlerFactoryRegistryImpl> handler_registry_;
+
+  // The registry to access and control the life cycles for sessions.
+  // Declared before `stream_client_` and after `handler_registry_` to
+  // coordinate the correct lifetimes and pointer management.
   std::unique_ptr<TransportSessionRegistryImpl> session_registry_;
 
-  // TODO(crbug.com/532660606): own the handler factory registry and route
-  // ActuatorDownstreamMessage.typed_payloads to handlers by payload_type.
-
-  // The downstream stream. The channel observes it; the client owns the
-  // delegate chain the channel built.
+  // The underlying network message stream client.
   std::unique_ptr<MessageStreamClient> stream_client_;
 
-  base::WeakPtrFactory<TransportChannelImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TransportChannel> weak_ptr_factory_{this};
 };
 
 }  // namespace browser_actuator

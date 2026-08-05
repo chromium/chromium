@@ -63,6 +63,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":features",
     ":internal",
     "//base",
     "//base/test:test_support",

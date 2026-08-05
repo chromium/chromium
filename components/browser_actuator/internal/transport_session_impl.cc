@@ -5,7 +5,9 @@
 #include "components/browser_actuator/internal/transport_session_impl.h"
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport_channel.h"
 #include "components/browser_actuator/public/transport_handler.h"
 #include "components/browser_actuator/public/transport_handler_factory.h"
@@ -130,6 +132,40 @@ bool TransportSessionImpl::RecordServerSequenceNumber(int64_t seq) {
     return true;
   }
   return false;
+}
+
+void TransportSessionImpl::ProcessDownstreamMessage(
+    const ActuatorDownstreamMessage& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!RecordServerSequenceNumber(message.sequence_number())) {
+    return;
+  }
+
+  base::WeakPtr<TransportSessionImpl> weak_this = GetWeakPtr();
+  for (const auto& typed_payload : message.typed_payloads()) {
+    if (!weak_this) {
+      break;
+    }
+    // Map ActuatorDownstreamPayloadType to public PayloadType
+    PayloadType public_type = PayloadType::kUnspecified;
+    switch (typed_payload.payload_type()) {
+      case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
+        public_type = PayloadType::kUnspecified;
+        break;
+      case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND:
+        public_type = PayloadType::kControl;
+        break;
+      default:
+        // Ignore unknown payload types
+        continue;
+    }
+    auto result =
+        ProcessPayload(public_type, typed_payload.proto_payload().value());
+    if (!result.has_value()) {
+      DLOG(WARNING) << "Failed to process payload "
+                    << "error: " << static_cast<int>(result.error());
+    }
+  }
 }
 
 }  // namespace browser_actuator
