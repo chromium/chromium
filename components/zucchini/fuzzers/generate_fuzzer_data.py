@@ -46,7 +46,7 @@ def gen(old_file, new_file, patch_file, output_file, is_raw, is_win):
     zucchini += '.exe'
     protoc += '.exe'
 
-  zuc_cmd = [os.path.abspath(zucchini), '-gen']
+  zuc_cmd = [os.path.abspath(zucchini), '-gen', '--v=-1']
   if is_raw:
     zuc_cmd.append('-raw')
   # Generate a new patch.
