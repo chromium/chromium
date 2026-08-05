@@ -48,7 +48,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/glic_ui.h"
-#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/guest_view/web_view/context_menu_content_type_web_view.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -8698,7 +8698,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksChannelWebViewTest, InspectElement) {
 
 // TODO(crbug.com/537849253): Simplify this test suite to GlicBrowserTest.
 class GlicChannelWebViewTest
-    : public glic::NonInteractiveGlicTest,
+    : public glic::GlicBrowserTest,
       public testing::WithParamInterface<version_info::Channel> {
  public:
   GlicChannelWebViewTest() = default;
@@ -8706,7 +8706,7 @@ class GlicChannelWebViewTest
   version_info::Channel GetChannelParam() { return GetParam(); }
 
   void TearDownOnMainThread() override {
-    glic::NonInteractiveGlicTest::TearDownOnMainThread();
+    glic::GlicBrowserTest::TearDownOnMainThread();
     ContextMenuContentTypeWebView::SetChannelForTesting(std::nullopt);
   }
 
@@ -8735,27 +8735,19 @@ IN_PROC_BROWSER_TEST_P(GlicChannelWebViewTest, InspectElement) {
   ContextMenuContentTypeWebView::SetChannelForTesting(
       GetOptionalChannelParam());
 
-  RunTestSequence(
-      // glic::NonInteractiveGlicTest::OpenGlic() handles opening the window and
-      // instrumenting the guest webview as kGlicContentsElementId.
-      OpenGlic(glic::NonInteractiveGlicTest::kHostAndContents),
-      // Verify that the "Inspect" context menu item is enabled.
-      InAnyContext(WithElement(
-          glic::kGlicContentsElementId,
-          base::BindLambdaForTesting([](ui::TrackedElement* el) {
-            content::WebContents* guest_web_contents =
-                AsInstrumentedWebContents(el)->web_contents();
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  content::RenderFrameHost* guest_main_frame =
+      instance->host().GetGuestMainFrame();
+  ASSERT_TRUE(guest_main_frame);
 
-            content::ContextMenuParams params;
-            params.page_url = guest_web_contents->GetLastCommittedURL();
-            auto menu = std::make_unique<TestRenderViewContextMenu>(
-                *guest_web_contents->GetPrimaryMainFrame(), params);
-            menu->Init();
+  content::ContextMenuParams params;
+  params.page_url = guest_main_frame->GetLastCommittedURL();
+  auto menu =
+      std::make_unique<TestRenderViewContextMenu>(*guest_main_frame, params);
+  menu->Init();
 
-            // Verify the command was present in the menu and was enabled.
-            EXPECT_TRUE(
-                menu->IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
-            EXPECT_TRUE(
-                menu->IsItemEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
-          }))));
+  // Verify the command was present in the menu and was enabled.
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  EXPECT_TRUE(menu->IsItemEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
