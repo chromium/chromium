@@ -90,3 +90,10 @@ Based on the VCS detected:
    recursively.
 4. **Final Status:** Report the uploaded CL URLs and confirm that the workspace
    is clean.
+
+## Evaluation & Testing
+
+When modifying this skill's workflow, routing, or schemas, ensure that the
+corresponding Promptfoo evaluation test suite is updated and passing:
+
+- [eval.promptfoo.yaml](../../prompts/eval/multi-agent-release-manager/eval.promptfoo.yaml)

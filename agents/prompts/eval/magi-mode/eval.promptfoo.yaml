@@ -1,0 +1,44 @@
+description: >-
+  Verify magi-mode skill triggers correctly as an orchestrator, investigates
+  and defines project specifications, and routes to appropriate multi-agent
+  sub-skills.
+owner: joedow@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - magi-mode
+
+tests:
+  - description: >-
+      Trigger: Query requesting MAGI mode orchestration for code refactoring and review
+    vars:
+      query: >-
+        Run MAGI mode on this project to refactor and review the codebase.
+    assert:
+      - type: contains
+        value: "project.magi.json"
+      - type: icontains
+        value: "ROUTING.md"
+
+  - description: "Functional: Verify environment grounding and harness detection"
+    vars:
+      query: "How does MAGI mode handle environment discovery and tool usage?"
+    assert:
+      - type: contains
+        value: "project.magi.json#environment"
+      - type: icontains
+        value: "temp_directory"
+
+  - description: "Quality: Verify workflow orchestration stage transitions"
+    vars:
+      query: "Explain the orchestration stages and paths in MAGI mode."
+    assert:
+      - type: icontains
+        value: "FAST_PATH"
+      - type: icontains
+        value: "RIGOR_PATH"

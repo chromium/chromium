@@ -114,3 +114,10 @@ ______________________________________________________________________
   jj, and build tools.
 - [Synthesis Merge](./references/synthesis_merge.md): Detailed 3-way merge
   instructions for the Synthesis subagent.
+
+## Evaluation & Testing
+
+When modifying this skill's workflow, routing, or schemas, ensure that the
+corresponding Promptfoo evaluation test suite is updated and passing:
+
+- [eval.promptfoo.yaml](../../prompts/eval/multi-agent-tdd-implementation/eval.promptfoo.yaml)

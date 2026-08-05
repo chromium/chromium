@@ -1,0 +1,50 @@
+description: >-
+  Verify multi-agent-skill-trainer skill triggers correctly for training and
+  upgrading skills, using Analyzer and Upgrader roles.
+owner: joedow@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - multi-agent-skill-trainer
+
+tests:
+  - description: >-
+      Trigger: Query requesting skill training and upgrade analysis
+    vars:
+      query: >-
+        Use the multi-agent skill trainer to analyze and upgrade a target skill.
+    assert:
+      - type: icontains
+        value: "Analyzer"
+      - type: icontains
+        value: "Upgrader"
+
+  - description: "Functional: Verify training report JSON output schema usage"
+    vars:
+      query: "Where does the Analyzer output its recommendations during skill training?"
+    assert:
+      - type: contains
+        value: "training_report.magi.json"
+
+  - description: "Quality: Verify verification gate requirements for upgraded skills"
+    vars:
+      query: "How does the skill trainer verify that an upgraded skill is valid?"
+    assert:
+      - type: icontains
+        value: "presubmit"
+      - type: icontains
+        value: "PASSED"
+
+  - description: "Functional: Verify multi-path selection and breadth research personas"
+    vars:
+      query: "How does the skill trainer choose between Basic, Deep, and Breadth training paths?"
+    assert:
+      - type: icontains
+        value: "BREADTH_PATH"
+      - type: icontains
+        value: "Architect"

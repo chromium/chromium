@@ -1,0 +1,41 @@
+description: >-
+  Verify multi-agent-release-manager skill triggers for CL preparation,
+  presubmits, formatting, and CL uploading with proper tagging.
+owner: joedow@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - multi-agent-release-manager
+
+tests:
+  - description: >-
+      Trigger: Query requesting CL preparation and release cleanup
+    vars:
+      query: >-
+        Use the multi-agent release manager skill to prepare and upload this change.
+    assert:
+      - type: contains
+        value: "TAG=agy"
+      - type: icontains
+        value: "presubmit"
+
+  - description: "Functional: Verify CL description tag requirement"
+    vars:
+      query: "What tag MUST be added to CL descriptions when using the release manager?"
+    assert:
+      - type: contains
+        value: "TAG=agy"
+
+  - description: "Quality: Verify git and jj VCS tool command adaptation"
+    vars:
+      query: "How does the release manager upload CLs in git versus jj environments?"
+    assert:
+      - type: icontains
+        value: "git cl upload"
+      - type: icontains
+        value: "jj"

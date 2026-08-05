@@ -1,0 +1,54 @@
+description: >-
+  Verify multi-agent-code-review skill triggers correctly, selects appropriate
+  scanners from ROUTING.md, and formats ReviewFeedback outputs.
+owner: joedow@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - multi-agent-code-review
+
+tests:
+  - description: >-
+      Trigger: Query requesting parallel code review using multi-agent scanners
+    vars:
+      query: >-
+        Review these code changes using the multi-agent code review skill.
+    assert:
+      - type: contains
+        value: "ROUTING.md"
+      - type: icontains
+        value: "ReviewFeedback"
+
+  - description: "Functional: Verify default scanner selection for code review"
+    vars:
+      query: "What scanners are invoked by default in multi-agent code review?"
+    assert:
+      - type: contains
+        value: "Security Scanner"
+      - type: contains
+        value: "Performance Scanner"
+      - type: contains
+        value: "Core Scanner"
+
+  - description: "Quality: Verify review feedback filename convention"
+    vars:
+      query: "How should scanners format and save their output during code review?"
+    assert:
+      - type: contains
+        value: "review_feedback_"
+      - type: icontains
+        value: "json"
+
+  - description: "Functional: Verify routing_overlay merging from project specification"
+    vars:
+      query: "How can a project override or add custom review personas to the default scanners?"
+    assert:
+      - type: icontains
+        value: "routing_overlay"
+      - type: contains
+        value: "project.magi.json"

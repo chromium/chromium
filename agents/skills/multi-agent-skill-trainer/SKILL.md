@@ -130,3 +130,10 @@ ______________________________________________________________________
      ruleset checklist exceeds 10 items. If it does, split the ruleset and
      update the target skill's `ROUTING.md`.
 3. **Complete:** Confirm that the files are saved and exit.
+
+## Evaluation & Testing
+
+When modifying this skill's workflow, routing, or schemas, ensure that the
+corresponding Promptfoo evaluation test suite is updated and passing:
+
+- [eval.promptfoo.yaml](../../prompts/eval/multi-agent-skill-trainer/eval.promptfoo.yaml)

@@ -96,3 +96,10 @@ ______________________________________________________________________
 - **Handoff:** The review skill writes its output to `review_state.magi.json`
   and exits. The parent orchestrator is responsible for reading `next_stage` and
   invoking the synthesis phase if `REJECT` was returned.
+
+## Evaluation & Testing
+
+When modifying this skill's workflow, routing, or schemas, ensure that the
+corresponding Promptfoo evaluation test suite is updated and passing:
+
+- [eval.promptfoo.yaml](../../prompts/eval/multi-agent-code-review/eval.promptfoo.yaml)

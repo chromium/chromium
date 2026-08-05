@@ -129,3 +129,10 @@ ______________________________________________________________________
   [orchestration_patterns.md](./references/orchestration_patterns.md) to
   understand how the Orchestrator adapts to centralized (Jetski) or
   decentralized (MAS CLI) environments.
+
+## Evaluation & Testing
+
+When modifying this skill's workflow, routing, or schemas, ensure that the
+corresponding Promptfoo evaluation test suite is updated and passing:
+
+- [eval.promptfoo.yaml](../../prompts/eval/magi-mode/eval.promptfoo.yaml)

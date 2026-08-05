@@ -1,0 +1,48 @@
+description: >-
+  Verify multi-agent-tdd-implementation skill triggers for TDD scaffolding,
+  parallel implementation, 3-way merge synthesis, and verification.
+owner: joedow@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - multi-agent-tdd-implementation
+
+tests:
+  - description: >-
+      Trigger: Query requesting feature implementation using TDD protocol
+    vars:
+      query: >-
+        Implement this feature using the multi-agent TDD implementation skill.
+    assert:
+      - type: contains
+        value: "tdd_state.magi.json"
+      - type: icontains
+        value: "Scaffold"
+
+  - description: "Functional: Verify TDD boundary stub failure mandate"
+    vars:
+      query: "What assertion MUST be included in stubbed tests during TDD scaffolding?"
+    assert:
+      - type: contains
+        value: 'ADD_FAILURE() << "NOT IMPLEMENTED";'
+
+  - description: "Quality: Verify 3-way surgical merge guidance reference"
+    vars:
+      query: "How does the Synthesis agent resolve conflicts between parallel implementation drafts?"
+    assert:
+      - type: icontains
+        value: "synthesis_merge"
+      - type: icontains
+        value: "3-way"
+
+  - description: "Functional: Verify ESCALATION reporting on unavoidable signature conflicts"
+    vars:
+      query: "What stage or status should the Synthesis agent report if parallel implementations require incompatible signature changes?"
+    assert:
+      - type: contains
+        value: "ESCALATION"
