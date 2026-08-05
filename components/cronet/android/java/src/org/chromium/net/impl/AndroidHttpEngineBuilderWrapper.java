@@ -36,7 +36,6 @@ import java.util.Set;
 class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     private static final String TAG = "HttpEngBuilderWrap";
 
-    private static boolean sLibraryLoaderUnsupportedLogged;
     private static boolean sNQEUnsupportedLogged;
     private boolean mHasCustomUserAgent;
 
@@ -71,13 +70,8 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     }
 
     @Override
+    @Deprecated
     public ICronetEngineBuilder setLibraryLoader(CronetEngine.Builder.LibraryLoader loader) {
-        if (!sLibraryLoaderUnsupportedLogged) {
-            Log.i(
-                    TAG,
-                    "Custom library loader is unsupported when HttpEngineNativeProvider is used.");
-            sLibraryLoaderUnsupportedLogged = true;
-        }
         return this;
     }
 

@@ -103,23 +103,19 @@ public class CronetLibraryLoader {
                 : libraryNamePrefix;
     }
 
-    // While we support Android API 23, Consumer is not available.
-    private abstract static class LibraryLoaderLambda {
-        abstract void loadLibrary(String libraryName);
-    }
-
-    private static void loadLibraryInternal(LibraryLoaderLambda loadLibraryFunction) {
+    @VisibleForTesting
+    public static void loadLibrary() {
         sLibAlreadyLoaded = true;
         if (BuildConfig.CRONET_FOR_AOSP_BUILD) {
             // For AOSP we have only one library name, and exceptions should propagate.
-            loadLibraryFunction.loadLibrary(getLibraryName(LIBRARY_NAME_HTTPENGINE));
+            System.loadLibrary(getLibraryName(LIBRARY_NAME_HTTPENGINE));
         } else {
             // For NON_AOSP, try the legacy versioned library name first, then the uniform name.
             try {
-                loadLibraryFunction.loadLibrary(getLibraryName(LIBRARY_NAME_CRONET_VERSIONED));
+                System.loadLibrary(getLibraryName(LIBRARY_NAME_CRONET_VERSIONED));
             } catch (UnsatisfiedLinkError e) {
                 // TODO(sporeba): This is a fallback supporting the new name pattern.
-                loadLibraryFunction.loadLibrary(getLibraryName(LIBRARY_NAME_CRONET));
+                System.loadLibrary(getLibraryName(LIBRARY_NAME_CRONET));
             }
         }
         if (sSwitchToTestLibrary) {
@@ -131,23 +127,11 @@ public class CronetLibraryLoader {
     }
 
     @VisibleForTesting
-    public static void loadLibrary() {
-        loadLibraryInternal(
-                new LibraryLoaderLambda() {
-                    @Override
-                    void loadLibrary(String libraryName) {
-                        System.loadLibrary(libraryName);
-                    }
-                });
-    }
-
-    @VisibleForTesting
     public static void switchToTestLibrary() {
         sSwitchToTestLibrary = true;
     }
 
-    public static boolean ensureInitialized(
-            Context applicationContext, final CronetEngineBuilderImpl builder) {
+    public static boolean ensureInitialized(Context applicationContext) {
         try (var traceEvent = ScopedSysTraceEvent.scoped("CronetLibraryLoader#ensureInitialized")) {
             synchronized (sLoadLock) {
                 if (sInitialized) return false;
@@ -181,17 +165,7 @@ public class CronetLibraryLoader {
                             ScopedSysTraceEvent.scoped(
                                     "CronetLibraryLoader#ensureInitialized loading native"
                                             + " library")) {
-                        if (builder.libraryLoader() != null) {
-                            loadLibraryInternal(
-                                    new LibraryLoaderLambda() {
-                                        @Override
-                                        void loadLibrary(String libraryName) {
-                                            builder.libraryLoader().loadLibrary(libraryName);
-                                        }
-                                    });
-                        } else {
-                            loadLibrary();
-                        }
+                        loadLibrary();
                     }
                 }
                 try (var nativeInitTraceEvent =
@@ -420,7 +394,7 @@ public class CronetLibraryLoader {
         // using ContextUtils.initApplicationContext().
         Context applicationContext = ContextUtils.getApplicationContext();
         assert applicationContext != null;
-        ensureInitialized(applicationContext, null);
+        ensureInitialized(applicationContext);
     }
 
     @CalledByNative

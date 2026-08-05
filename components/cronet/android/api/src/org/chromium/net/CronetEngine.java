@@ -108,17 +108,25 @@ public abstract class CronetEngine {
         /**
          * A class which provides a method for loading the cronet native library. Apps needing to
          * implement custom library loading logic can inherit from this class and pass an instance
-         * to
-         * {@link CronetEngine.Builder#setLibraryLoader}. For example, this might be required to
+         * to {@link CronetEngine.Builder#setLibraryLoader}. For example, this might be required to
          * work around {@code UnsatisfiedLinkError}s caused by flaky installation on certain older
          * devices.
+         *
+         * @deprecated System.loadLibrary was unreliable on minSDK <= 23, and this method was used
+         *     to provide alternative, more reliable loaders. Now that Cronet's minSDK = 24 this
+         *     method is obsolete and is a no-op.
          */
+        @Deprecated
         public abstract static class LibraryLoader {
             /**
              * Loads the native library.
              *
              * @param libName name of the library to load
+             * @deprecated System.loadLibrary was unreliable on minSDK <= 23, and this method was
+             *     used to provide alternative, more reliable loaders. Now that Cronet's minSDK = 24
+             *     this method is obsolete and is a no-op.
              */
+            @Deprecated
             public abstract void loadLibrary(String libName);
         }
 
@@ -211,9 +219,12 @@ public abstract class CronetEngine {
          *
          * @param loader {@code LibraryLoader} to be used to load the native library.
          * @return the builder to facilitate chaining.
+         * @deprecated System.loadLibrary was unreliable on minSDK <= 23, and this method was used
+         *     to provide alternative, more reliable loaders. Now that Cronet's minSDK = 24 this
+         *     method is obsolete and is a no-op.
          */
+        @Deprecated
         public Builder setLibraryLoader(LibraryLoader loader) {
-            mBuilderDelegate.setLibraryLoader(loader);
             return this;
         }
 

@@ -82,6 +82,7 @@ public abstract class ICronetEngineBuilder {
 
     public abstract ICronetEngineBuilder setExperimentalOptions(String options);
 
+    @Deprecated
     public abstract ICronetEngineBuilder setLibraryLoader(
             CronetEngine.Builder.LibraryLoader loader);
 

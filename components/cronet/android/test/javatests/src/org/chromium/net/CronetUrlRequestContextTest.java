@@ -61,7 +61,6 @@ import org.chromium.net.impl.CronetManifest;
 import org.chromium.net.impl.CronetManifestInterceptor;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.ImplVersion;
-import org.chromium.net.impl.NativeCronetEngineBuilderImpl;
 import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.NetworkExceptionImpl;
 
@@ -2265,6 +2264,7 @@ public class CronetUrlRequestContextTest {
                         getTestStorage(mTestRule.getTestFramework().getContext()));
     }
 
+    @SuppressWarnings("deprecation")
     public static class TestBadLibraryLoader extends CronetEngine.Builder.LibraryLoader {
         private boolean mWasCalled;
 
@@ -2281,20 +2281,15 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "LibraryLoader is supported only by the native implementation")
-    public void testSetLibraryLoaderIsIgnoredInNativeCronetEngineBuilderImpl() throws Exception {
-        CronetEngine.Builder builder =
-                new CronetEngine.Builder(
-                        new NativeCronetEngineBuilderImpl(
-                                mTestRule.getTestFramework().getContext()));
+    @SuppressWarnings("deprecation")
+    public void testSetLibraryLoaderIsIgnored() throws Exception {
         TestBadLibraryLoader loader = new TestBadLibraryLoader();
-        builder.setLibraryLoader(loader);
-        CronetEngine engine = builder.build();
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch((builder) -> builder.setLibraryLoader(loader));
+        CronetEngine engine = mTestRule.getTestFramework().startEngine();
         assertThat(engine).isNotNull();
         assertThat(loader.wasCalled()).isFalse();
-        engine.shutdown();
     }
 
     @Test
