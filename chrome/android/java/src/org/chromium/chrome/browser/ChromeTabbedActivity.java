@@ -217,6 +217,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSupplier;
@@ -1631,6 +1632,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     getProfileProviderSupplier().get().getOriginalProfile(),
                     getLifecycleDispatcher(),
                     this::isWarmOnResume);
+
+            if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled() && !isIncognitoWindow()) {
+                CrossDeviceThemeTracker themeTracker =
+                        CrossDeviceThemeTracker.getForProfile(
+                                getProfileProviderSupplier().get().getOriginalProfile());
+                if (themeTracker != null) {
+                    themeTracker.setActivity(this);
+                }
+            }
 
             super.finishNativeInitialization();
 

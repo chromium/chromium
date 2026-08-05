@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridgeJni;
 import org.chromium.chrome.browser.ntp_customization.theme.tip.NtpThemeTipCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.NtpThemeSyncHistoryCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -77,6 +78,7 @@ import org.chromium.ui.widget.ButtonCompat;
 public class NtpCustomizationCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NtpThemeCollectionBridge.Natives mNtpThemeCollectionBridgeJni;
+    @Mock private CrossDeviceThemeTracker.Natives mCrossDeviceThemeTrackerJni;
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpCustomizationMediator mMediator;
@@ -120,6 +122,7 @@ public class NtpCustomizationCoordinatorUnitTest {
         when(mMockFeedServiceBridgeJni.isEnabled()).thenReturn(true);
         NtpThemeCollectionBridgeJni.setInstanceForTesting(mNtpThemeCollectionBridgeJni);
         when(mNtpThemeCollectionBridgeJni.init(any(), any())).thenReturn(1L);
+        CrossDeviceThemeTracker.setInstanceForTesting(mCrossDeviceThemeTrackerJni);
 
         mNtpCustomizationCoordinator =
                 new NtpCustomizationCoordinator(

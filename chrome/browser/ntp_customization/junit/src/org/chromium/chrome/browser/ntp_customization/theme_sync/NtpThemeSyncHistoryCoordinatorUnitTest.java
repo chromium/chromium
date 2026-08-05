@@ -102,6 +102,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private NtpThemeCollectionManager mThemeCollectionManager;
     @Mock private Profile mProfile;
+    @Mock private CrossDeviceThemeTracker.Natives mCrossDeviceThemeTrackerJni;
     @Captor private ArgumentCaptor<Callback<List<BackgroundCollection>>> mCollectionsCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mImagesCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mPreviewCallbackCaptor;
@@ -116,6 +117,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        CrossDeviceThemeTracker.setInstanceForTesting(mCrossDeviceThemeTrackerJni);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),

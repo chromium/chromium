@@ -79,8 +79,18 @@ public class NtpBackgroundDataManager {
             // first one. Otherwise, adds it as the first one on the list and removed the last data
             // of the list if exceeds the maximum allowed size of history data.
             int index = currentGroup.indexOf(backgroundData);
+            NtpBackgroundDataBase dataToSave = backgroundData;
             if (index != -1) {
-                currentGroup.remove(index);
+                NtpBackgroundDataBase existingData = currentGroup.remove(index);
+                // If existing entry has enriched metadata (e.g., BackgroundImageInfo fetched
+                // later), preserve the enriched existing entry instead of overwriting with
+                // incomplete native data.
+                if (existingData instanceof NtpBackgroundDataImageBase existingImage
+                        && existingImage.getBackgroundImageInfo() != null
+                        && backgroundData instanceof NtpBackgroundDataImageBase newData
+                        && newData.getBackgroundImageInfo() == null) {
+                    dataToSave = existingData;
+                }
             } else {
                 if (currentGroup.size() >= MAXIMUM_REMOTE_HISTORY) {
                     NtpBackgroundDataBase dataToRemove = currentGroup.get(currentGroup.size() - 1);
@@ -90,7 +100,7 @@ public class NtpBackgroundDataManager {
                     }
                 }
             }
-            currentGroup.add(0, backgroundData);
+            currentGroup.add(0, dataToSave);
 
             writeToSharedPreference(currentGroup.toJsonArray(), platformType);
         } catch (JSONException e) {

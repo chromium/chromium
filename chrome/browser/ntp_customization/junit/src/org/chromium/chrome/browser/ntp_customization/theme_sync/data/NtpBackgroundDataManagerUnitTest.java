@@ -636,4 +636,74 @@ public class NtpBackgroundDataManagerUnitTest {
         // Ensure the other object in the list was not modified.
         assertEquals(differentCollection, group.get(1));
     }
+
+    @Test
+    public void testSaveRemoteSyncDataToSharedPreference_PreservesEnrichedMetadata() {
+        @PlatformType int platformType = PlatformType.DESKTOP;
+        GURL url = JUnitTestGURLs.URL_1;
+        String collectionId = "test_collection";
+        CustomBackgroundInfo customBgInfo =
+                new CustomBackgroundInfo(
+                        url,
+                        collectionId,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+
+        // 1. Initial remote data without BackgroundImageInfo (as received from native sync).
+        NtpBackgroundDataThemeCollection initialData =
+                new NtpBackgroundDataThemeCollection(
+                        platformType,
+                        customBgInfo,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+
+        mManager.saveRemoteSyncDataToSharedPreference(initialData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        NtpBackgroundDataGroup group =
+                mManager.getBackgroundDataGroupFromSharedPreference(platformType);
+        assertEquals(1, group.size());
+        assertEquals(initialData, group.get(0));
+        assertNull(((NtpBackgroundDataThemeCollection) group.get(0)).getBackgroundImageInfo());
+
+        // 2. Simulate UI reading from SharedPreferences and enriching it with BackgroundImageInfo.
+        BackgroundImageInfo enrichedInfo =
+                new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
+        NtpBackgroundDataThemeCollection enrichedData =
+                new NtpBackgroundDataThemeCollection(
+                        platformType,
+                        customBgInfo,
+                        enrichedInfo,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+        mManager.saveRemoteSyncDataToSharedPreference(enrichedData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        group = mManager.getBackgroundDataGroupFromSharedPreference(platformType);
+        assertEquals(1, group.size());
+        assertEquals(enrichedData, group.get(0));
+        assertNotNull(((NtpBackgroundDataThemeCollection) group.get(0)).getBackgroundImageInfo());
+
+        // 3. Simulate another remote sync update arriving from native with incomplete info (null
+        // BackgroundImageInfo).
+        NtpBackgroundDataThemeCollection subsequentSyncData =
+                new NtpBackgroundDataThemeCollection(
+                        platformType,
+                        customBgInfo,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+        mManager.saveRemoteSyncDataToSharedPreference(subsequentSyncData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify that the enriched BackgroundImageInfo from step 2 was preserved!
+        group = mManager.getBackgroundDataGroupFromSharedPreference(platformType);
+        assertEquals(1, group.size());
+        assertEquals(enrichedData, group.get(0));
+        assertNotNull(((NtpBackgroundDataThemeCollection) group.get(0)).getBackgroundImageInfo());
+    }
 }

@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
@@ -107,6 +108,11 @@ public class NtpThemeSyncHistoryCoordinator {
         mBottomSheetDelegate = bottomSheetDelegate;
         mProfile = profile;
         mThemeCollectionManager = themeCollectionManager;
+
+        CrossDeviceThemeTracker tracker = CrossDeviceThemeTracker.getForProfile(mProfile);
+        if (tracker != null) {
+            tracker.setActivity(ContextUtils.activityFromContext(mContext));
+        }
 
         ViewGroup historyContainerView =
                 parentView.findViewById(R.id.ntp_theme_sync_history_container);

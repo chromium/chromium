@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.JUnitTestGURLs;
@@ -55,6 +56,7 @@ public class NtpSyncedThemeManagerUnitTest {
     @Mock private Profile mProfile;
     @Mock private ImageFetcher mImageFetcher;
     @Mock private NtpSyncedThemeBridge.Natives mNatives;
+    @Mock private CrossDeviceThemeTracker.Natives mCrossDeviceThemeTrackerNatives;
     @Captor private ArgumentCaptor<NtpSyncedThemeBridge> mBridgeCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
@@ -66,6 +68,7 @@ public class NtpSyncedThemeManagerUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         NtpCustomizationUtils.setImageFetcherForTesting(mImageFetcher);
         NtpSyncedThemeBridgeJni.setInstanceForTesting(mNatives);
+        CrossDeviceThemeTracker.setInstanceForTesting(mCrossDeviceThemeTrackerNatives);
         when(mNatives.init(any(), any())).thenReturn(1L);
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
