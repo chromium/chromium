@@ -3689,6 +3689,13 @@
       status: "experimental",
     },
     {
+      // Prevents running DefaultEventHandler on disabled input elements.
+      // Enabled in M153, safe to remove in M155.
+      // https://issues.chromium.org/issues/533188858
+      name: "InputDisabledHandlerFix",
+      status: "stable",
+    },
+    {
       // Enable DataTransfer propagation to input events for insertFromPaste,
       // insertFromDrop, and insertReplacementText operations on content-editables.
       name: "InputEventDataTransferForInsertCmd",

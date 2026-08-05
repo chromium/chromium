@@ -1601,6 +1601,10 @@ void HTMLInputElement::RunActivationBehavior(
 }
 
 void HTMLInputElement::DefaultEventHandler(Event& evt) {
+  if (RuntimeEnabledFeatures::InputDisabledHandlerFixEnabled() &&
+      IsDisabledFormControl()) {
+    return;
+  }
   auto* mouse_event = DynamicTo<MouseEvent>(evt);
   if (mouse_event && evt.type() == event_type_names::kClick &&
       mouse_event->button() ==
