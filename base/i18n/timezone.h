@@ -74,10 +74,21 @@ class BASE_I18N_EXPORT TimeZone {
   // 3-digit numeric code (like "001" for World).
   std::string GetRegion() const;
 
+  // Options for GetDisplayName.
+  struct DisplayNameOptions {
+    bool is_day_light = false;
+    DisplayType style = kLong;
+  };
+
   // Returns a localized name for this time zone.
+  // Supports designated initializers for options, for example:
+  //   GetDisplayName(language_tag, {.style = TimeZone::kShort});
+  //   GetDisplayName({.is_day_light = true});
   std::u16string GetDisplayName(const LanguageTag& language_tag,
-                                DisplayType style = kLong) const;
-  std::u16string GetDisplayName(DisplayType style = kLong) const;
+                                const DisplayNameOptions& options =
+                                    CreateDefaultDisplayNameOptions()) const;
+  std::u16string GetDisplayName(const DisplayNameOptions& options =
+                                    CreateDefaultDisplayNameOptions()) const;
 
   // Returns the raw GMT offset (without DST).
   base::TimeDelta GetRawOffset() const;
@@ -93,6 +104,7 @@ class BASE_I18N_EXPORT TimeZone {
   bool UseDaylightTime() const;
 
   // Returns true if daylight saving time is in effect at the given time.
+  // `time` determines the point of time to check.
   bool InDaylightTime(base::Time time) const;
 
   // Equality operators.
@@ -102,6 +114,8 @@ class BASE_I18N_EXPORT TimeZone {
  private:
   struct Impl;
   explicit TimeZone(std::unique_ptr<Impl> impl);
+  // C++20 does not allow `options = {}` when parsing `TimeZone`.
+  static DisplayNameOptions CreateDefaultDisplayNameOptions();
 
   std::unique_ptr<Impl> impl_;
 };

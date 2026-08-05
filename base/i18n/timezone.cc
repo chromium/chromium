@@ -128,19 +128,27 @@ std::string TimeZone::GetRegion() const {
   return std::string();
 }
 
-std::u16string TimeZone::GetDisplayName(const LanguageTag& language_tag,
-                                        DisplayType style) const {
+// static
+TimeZone::DisplayNameOptions TimeZone::CreateDefaultDisplayNameOptions() {
+  return DisplayNameOptions{};
+}
+
+std::u16string TimeZone::GetDisplayName(
+    const LanguageTag& language_tag,
+    const DisplayNameOptions& options) const {
   icu::UnicodeString name;
   icu::Locale locale =
       IcuLocaleConverter::GetInstance().FromLanguageTag(language_tag);
-  impl_->icu_timezone->getDisplayName(false, ToIcuDisplayType(style), locale,
-                                      name);
+  impl_->icu_timezone->getDisplayName(
+      options.is_day_light, ToIcuDisplayType(options.style), locale, name);
   return UnicodeStringToString16(name);
 }
 
-std::u16string TimeZone::GetDisplayName(DisplayType style) const {
+std::u16string TimeZone::GetDisplayName(
+    const DisplayNameOptions& options) const {
   icu::UnicodeString name;
-  impl_->icu_timezone->getDisplayName(false, ToIcuDisplayType(style),
+  impl_->icu_timezone->getDisplayName(options.is_day_light,
+                                      ToIcuDisplayType(options.style),
                                       icu::Locale::getDefault(), name);
   return UnicodeStringToString16(name);
 }

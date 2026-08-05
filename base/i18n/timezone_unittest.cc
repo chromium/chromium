@@ -60,11 +60,35 @@ TEST(TimeZoneTest, GetDisplayName) {
 
   TimeZone tz = TimeZone::FromString("America/Los_Angeles");
   // Standard time display name.
-  EXPECT_EQ(tz.GetDisplayName(TimeZone::kLong), u"Pacific Standard Time");
-  EXPECT_EQ(tz.GetDisplayName(TimeZone::kShort), u"PST");
+  EXPECT_EQ(tz.GetDisplayName({.style = TimeZone::kLong}),
+            u"Pacific Standard Time");
+  EXPECT_EQ(tz.GetDisplayName({.style = TimeZone::kShort}), u"PST");
   constexpr auto fr = GetKnownLanguageTag("fr");
   // Locale specific.
-  EXPECT_EQ(tz.GetDisplayName(fr, TimeZone::kLong),
+  EXPECT_EQ(tz.GetDisplayName(fr, {.style = TimeZone::kLong}),
+            u"heure normale du Pacifique nord-am\u00e9ricain");
+
+  base::Time winter_time;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-01-15 12:00:00", &winter_time));
+  EXPECT_EQ(tz.GetDisplayName({.is_day_light = tz.InDaylightTime(winter_time),
+                               .style = TimeZone::kLong}),
+            u"Pacific Standard Time");
+
+  base::Time summer_time;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-07-15 12:00:00", &summer_time));
+  EXPECT_EQ(tz.GetDisplayName({.is_day_light = tz.InDaylightTime(summer_time),
+                               .style = TimeZone::kLong}),
+            u"Pacific Daylight Time");
+
+  // Single-field designated initializer checks.
+  EXPECT_EQ(tz.GetDisplayName({.is_day_light = false}),
+            u"Pacific Standard Time");
+  EXPECT_EQ(tz.GetDisplayName({.is_day_light = true}),
+            u"Pacific Daylight Time");
+
+  // Default parameters check.
+  EXPECT_EQ(tz.GetDisplayName(), u"Pacific Standard Time");
+  EXPECT_EQ(tz.GetDisplayName(fr),
             u"heure normale du Pacifique nord-am\u00e9ricain");
 }
 
