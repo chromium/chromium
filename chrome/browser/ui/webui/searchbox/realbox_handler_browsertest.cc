@@ -113,6 +113,11 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
               (override));
   MOCK_METHOD(void, OpenCurrentSelection, (WindowOpenDisposition), (override));
   MOCK_METHOD(void, SetAimButtonVisible, (bool visible), (override));
+  MOCK_METHOD(
+      void,
+      SetAimButtonConfig,
+      (const std::string&, const std::string&, const std::string&, const GURL&),
+      (override));
 
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();

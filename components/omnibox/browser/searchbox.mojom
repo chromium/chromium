@@ -568,6 +568,14 @@ interface Page {
   //  OmniboxViewViews and can be eliminated once we have full webui popup.
   SetAimButtonVisible(bool visible);
 
+  // Updates properties of the AIM button (label text, tooltip/title, a11y
+  // label, icon URL) based on the config provided by the AIM button service.
+  SetAimButtonConfig(
+      string text,
+      string tooltip,
+      string a11y_label,
+      url.mojom.Url icon_url);
+
   // Called to set searchbox input.
   SetInputText(string input);
 

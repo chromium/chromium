@@ -69,6 +69,15 @@
   padding-left: 1px;
 }
 
+.compose-icon-favicon {
+  background-color: transparent;
+  object-fit: contain;
+  height: 16px;
+  width: 16px;
+  padding-top: 0;
+  padding-left: 0;
+}
+
 .arrow-icon {
   background-color: currentColor;
   -webkit-mask-position: center;

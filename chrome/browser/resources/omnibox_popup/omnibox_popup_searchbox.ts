@@ -20,6 +20,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {browserProxyFactory, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
 import type {OmniboxInputState, PageCallbackRouter as PopupPageCallbackRouter, PageHandlerInterface as PopupPageHandlerInterface} from './omnibox_popup.mojom-webui.js';
@@ -44,6 +45,13 @@ enum DeferredFocusAction {
  */
 const canShowSecondarySideMediaQueryList =
     window.matchMedia('(min-width: 675px)');
+
+export interface AimButtonConfig {
+  text: string;
+  title: string;
+  a11yLabel: string;
+  icon: string;
+}
 
 export interface OmniboxPopupSearchboxElement {
   $: {
@@ -108,9 +116,6 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
-      aimButtonEnabled_: {
-        type: Boolean,
-      },
       searchboxDynamicColorScheme_: {
         type: Boolean,
         reflect: true,
@@ -123,6 +128,9 @@ export class OmniboxPopupSearchboxElement extends
       },
       aimButtonVisible_: {
         type: Boolean,
+      },
+      aimButtonConfig_: {
+        type: Object,
       },
       /**
        * Whether the secondary side can be shown based on the feature state and
@@ -163,14 +171,18 @@ export class OmniboxPopupSearchboxElement extends
   // TODO(b/519185419): Remove `isTouchUi_` property and from `loadTimeData` and
   // get layout constants and font sizes from a C++ layout helper instead.
   protected accessor isTouchUi_: boolean = loadTimeData.getBoolean('isTouchUi');
-  protected accessor aimButtonEnabled_: boolean =
-      loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
   protected accessor searchboxDynamicColorScheme_: boolean =
       loadTimeData.getBoolean('searchboxDynamicColorScheme');
   protected accessor searchboxDynamicAnimation_: boolean =
       loadTimeData.getBoolean('searchboxDynamicAnimation');
   protected accessor hasUserInput_: boolean = false;
   protected accessor aimButtonVisible_: boolean = false;
+  protected accessor aimButtonConfig_: AimButtonConfig = {
+    text: '',
+    title: '',
+    a11yLabel: '',
+    icon: '',
+  };
 
   private eventTracker_ = new EventTracker();
   private searchboxPageHandler_: SearchboxPageHandlerInterface;
@@ -219,6 +231,15 @@ export class OmniboxPopupSearchboxElement extends
       this.searchboxCallbackRouter_.setAimButtonVisible.addListener(
           (visible: boolean) => {
             this.aimButtonVisible_ = visible;
+          }),
+      this.searchboxCallbackRouter_.setAimButtonConfig.addListener(
+          (text: string, tooltip: string, a11yLabel: string, iconUrl: Url) => {
+            this.aimButtonConfig_ = {
+              text,
+              title: tooltip,
+              a11yLabel,
+              icon: iconUrl,
+            };
           }),
     ];
     this.popupListenerIds_ = [

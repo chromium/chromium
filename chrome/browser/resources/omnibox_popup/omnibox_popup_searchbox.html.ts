@@ -49,14 +49,16 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           </div>
         ` :
                                                                     ''}
-        ${
-      this.aimButtonEnabled_ ? html`
-          <cr-searchbox-compose-button id="composeButton" slot="compose-button"
-              ?dynamic="${this.searchboxDynamicAnimation_}"
-              ?has-user-input="${this.hasUserInput_}"
-              ?hidden="${!this.aimButtonVisible_}"
-              @compose-click="${this.onComposeClick_}">
-          </cr-searchbox-compose-button>` : ''}
+        <cr-searchbox-compose-button id="composeButton" slot="compose-button"
+            ?dynamic="${this.searchboxDynamicAnimation_}"
+            ?has-user-input="${this.hasUserInput_}"
+            ?hidden="${!this.aimButtonVisible_}"
+            label-text="${this.aimButtonConfig_.text}"
+            tooltip-title="${this.aimButtonConfig_.title}"
+            a11y-label="${this.aimButtonConfig_.a11yLabel}"
+            compose-icon="${this.aimButtonConfig_.icon}"
+            @compose-click="${this.onComposeClick_}">
+        </cr-searchbox-compose-button>
       </cr-searchbox-input>
       <div class="dropdownContainer">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
