@@ -5,4 +5,6 @@ per-file process_memory_metrics_emitter*=file://services/resource_coordinator/OW
 per-file process_memory_metrics_emitter*=file://chrome/browser/performance_manager/OWNERS
 per-file process_memory_metrics_emitter*=file://base/trace_event/OWNERS
 per-file family_link_user_metrics_provider*=file://components/supervised_user/OWNERS
+per-file metrics_provider_process_observer*=spvm@chromium.org
 per-file system_pdh_metrics_provider_win*=spvm@chromium.org
+per-file task_info_metrics_provider_mac*=spvm@chromium.org

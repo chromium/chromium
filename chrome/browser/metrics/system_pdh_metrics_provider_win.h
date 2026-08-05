@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_SYSTEM_PDH_METRICS_PROVIDER_WIN_H_
 #define CHROME_BROWSER_METRICS_SYSTEM_PDH_METRICS_PROVIDER_WIN_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -14,17 +15,15 @@
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/scoped_generic.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/scoped_pdh_query.h"
 #include "base/win/windows_types.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/metrics/metrics_provider_process_observer.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/public/common/child_process_id.h"
-#include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace features {
@@ -39,7 +38,9 @@ extern const base::FeatureParam<int> kSystemPdhMetrics_MetricsPerProcess;
 
 // Queries various PDH performance counters. Specifically, records various
 // per-process metrics such as CPU usage and IO operations.
-class SystemPdhMetricsProvider : public metrics::MetricsProvider {
+class SystemPdhMetricsProvider
+    : public metrics::MetricsProvider,
+      public metrics::MetricsProviderProcessObserver::Delegate {
  public:
   SystemPdhMetricsProvider();
 
@@ -51,6 +52,12 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
   // MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
+
+  // metrics::MetricsProviderProcessObserver::Delegate:
+  void StartListeningToProcess(content::ChildProcessId content_id,
+                               base::ProcessId pid,
+                               std::string_view process_type_suffix) override;
+  void StopListeningToProcess(content::ChildProcessId content_id) override;
 
   class PdhQueryHandler {
    public:
@@ -69,10 +76,10 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
     // UMA. Called on intervals of kSamplingPeriod.
     void Sample();
 
-    void StartListeningToProcessPdhMetrics(content::ChildProcessId content_id,
-                                           base::ProcessId pid,
-                                           std::string process_type_name);
-    void StopListeningToProcessPdhMetrics(content::ChildProcessId pid);
+    void StartListeningToProcess(content::ChildProcessId content_id,
+                                 base::ProcessId pid,
+                                 std::string_view process_type_suffix);
+    void StopListeningToProcess(content::ChildProcessId content_id);
 
    private:
     // Checks the case where a PDH function call failed and records debug
@@ -114,31 +121,36 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
                      std::wstring_view instance_name,
                      std::wstring_view process_counter_name,
                      std::string_view base_name,
-                     std::string process_type_suffix,
+                     std::string_view process_type_suffix,
                      DWORD format);
       ~ProcessCounter();
       ProcessCounter(const ProcessCounter&) = delete;
       ProcessCounter& operator=(const ProcessCounter&) = delete;
       ProcessCounter(ProcessCounter&&);
       ProcessCounter& operator=(ProcessCounter&&);
-
       void Record();
 
      private:
-      ScopedPdhCounter counter_handle_;
-
-      // Since it takes two queries to record data in the counters, record
-      // whether more than one instance of the given counters have been
-      // recorded.
-      bool first_sample_ = true;
-
-      // The first sample after the baseline (first_sample_ = false) will be
-      // recorded with a ".FirstSample" suffix.
-      bool first_emission_ = true;
-
       std::string uma_name_;
       std::string process_type_suffix_;
+      ScopedPdhCounter counter_handle_;
       DWORD format_;
+      // Tracks the metric recording lifecycle for a process counter. Because
+      // rate and delta counters require two snapshots over time to compute a
+      // value, metric emission progresses through three distinct stages.
+      enum class SamplingState : uint8_t {
+        // No baseline snapshot has been recorded yet. The next Record() call
+        // will take the initial measurement without emitting a UMA histogram.
+        kNoBaseline,
+        // An initial baseline snapshot exists, but no UMA histogram has been
+        // emitted yet. The next Record() call will emit the initial metric
+        // with a ".FirstSample" suffix attached to the histogram name.
+        kHasBaseline,
+        // Steady-state sampling is active. Subsequent Record() calls will
+        // emit standard UMA histograms without any special suffix.
+        kSteadyState,
+      };
+      SamplingState sampling_state_ = SamplingState::kNoBaseline;
     };
 
     // Initialized during metric recording, and cleared when stopped.
@@ -167,9 +179,8 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
   }
 
  private:
-  class ProcessMetricsObserver;
   base::SequenceBound<PdhQueryHandler> query_handler_;
-  std::unique_ptr<ProcessMetricsObserver> process_observer_;
+  std::unique_ptr<metrics::MetricsProviderProcessObserver> process_observer_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_SYSTEM_PDH_METRICS_PROVIDER_WIN_H_

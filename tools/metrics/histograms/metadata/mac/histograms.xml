@@ -94,6 +94,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Mac.Experimental.Process.{Counter}.{ProcessType}{StartupState}"
+    units="counter value" expires_after="2027-01-03">
+  <owner>spvm@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the {StartupState} of the {Counter} in the {ProcessType} process on
+    macOS. This is polled periodically using proc_pidinfo(..., PROC_PIDTASKINFO,
+    ...).
+
+    Recorded once every 30 seconds for the browser, GPU, and network processes,
+    and once every 30 seconds for every 1/20th renderer or utility process.
+  </summary>
+  <token key="Counter">
+    <variant name="ContextSwitchesPerSec" summary="Context Switches/sec"/>
+    <variant name="CowFaultsPerSec" summary="Copy-On-Write Page Faults/sec"/>
+    <variant name="MajorPageFaultsPerSec" summary="Major Page Faults/sec"/>
+    <variant name="PageFaultsPerSec" summary="Page Faults/sec"/>
+    <variant name="ResidentSize" summary="Resident Memory Size (MB)"/>
+    <variant name="ResidentVirtualRatio"
+        summary="Resident to Virtual Memory Ratio (%)"/>
+    <variant name="RunningThreadCount" summary="Running Thread Count"/>
+    <variant name="ThreadCount" summary="Thread Count"/>
+    <variant name="VirtualSize" summary="Virtual Memory Size (MB)"/>
+  </token>
+  <token key="ProcessType">
+    <variant name="Browser" summary="Browser"/>
+    <variant name="Extension" summary="Extension Renderer"/>
+    <variant name="Gpu" summary="GPU"/>
+    <variant name="NetworkService" summary="Network Service"/>
+    <variant name="Other" summary="Other"/>
+    <variant name="Renderer" summary="Renderer"/>
+    <variant name="Utility" summary="Non-network utility"/>
+  </token>
+  <token key="StartupState">
+    <variant name="" summary="value"/>
+    <variant name=".FirstSample" summary="first recorded value by process"/>
+  </token>
+</histogram>
+
 <histogram name="Mac.GlassFrame.MacOS26LiquidGlassPreferredLook"
     enum="MacOS26LiquidGlassPreferredLook" expires_after="2027-07-15">
   <owner>dpenning@chromium.org</owner>
