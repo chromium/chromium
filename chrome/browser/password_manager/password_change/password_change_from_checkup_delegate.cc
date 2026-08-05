@@ -120,32 +120,36 @@ std::string GetReachFormPrompt(const std::string& domain,
 #endif
 }
 
-constexpr char kDefaultPostSubmissionPrompt[] =
-    "Verify password change submission.";
-
 std::string GetPostSubmissionPrompt() {
 #if defined(IDR_APC_PROMPTS_JSON)
   std::string json_data =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_APC_PROMPTS_JSON);
 
-  if (!json_data.empty()) {
-    std::optional<base::Value> parsed_json =
-        base::JSONReader::Read(json_data, base::JSON_PARSE_RFC);
-
-    if (parsed_json.has_value() && parsed_json->is_dict()) {
-      const std::string* system_prompt =
-          parsed_json->GetDict().FindStringByDottedPath(
-              "prompts.verify_password_change_submission.system_prompt");
-
-      if (system_prompt && !system_prompt->empty()) {
-        return *system_prompt;
-      }
-    }
+  if (json_data.empty()) {
+    return std::string();
   }
-#endif
 
-  return kDefaultPostSubmissionPrompt;
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_RFC);
+
+  if (!parsed_json.has_value() || !parsed_json->is_dict()) {
+    return std::string();
+  }
+
+  const std::string* system_prompt =
+      parsed_json->GetDict().FindStringByDottedPath(
+          "prompts.verify_password_change_submission.system_prompt");
+
+  if (!system_prompt) {
+    return std::string();
+  }
+
+  return *system_prompt;
+
+#else
+  return std::string();
+#endif
 }
 
 std::u16string GeneratePassword(
@@ -261,7 +265,12 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
 
 void PasswordChangeFromCheckupDelegate::Stop(
     actor::ActorTask::StoppedReason stop_reason) {
+  glic::GlicKeyedService* glic_service = GetGlicService();
   if (actuation_web_contents_) {
+    if (glic_service) {
+      glic_service->CloseAndShutdown(
+          actuation_web_contents_->GetPrimaryMainFrame());
+    }
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(Profile::FromBrowserContext(
             actuation_web_contents_->GetBrowserContext()));
@@ -277,7 +286,7 @@ void PasswordChangeFromCheckupDelegate::Stop(
     }
   }
 
-  CloseGlicSessionAndStopDummyTask();
+  StopDummyTask();
 
   form_filler_.reset();
   form_waiter_.reset();
@@ -349,7 +358,6 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     }
     task.Stop(actor::ActorTask::StoppedReason::kShutdown);
     actor_task_state_subscription_ = {};
-    CloseGlicSessionAndStopDummyTask();
     if (state_change_callback_) {
       state_change_callback_.Run(PasswordAutomaticChangeState::kError);
     }
@@ -500,11 +508,6 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
     task.Stop(actor::ActorTask::StoppedReason::kShutdown);
     actor_task_state_subscription_ = {};
     saved_form_manager_.reset();
-    verification_timer_.Stop();
-    CloseGlicSessionAndStopDummyTask();
-    if (state_change_callback_) {
-      state_change_callback_.Run(PasswordAutomaticChangeState::kError);
-    }
     return;
   }
 
@@ -515,7 +518,12 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
       logger->LogMessage(
           Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_FINISHED);
     }
-    CloseGlicSessionAndStopDummyTask();
+    glic::GlicKeyedService* glic_service = GetGlicService();
+    if (glic_service && actuation_web_contents_) {
+      glic_service->CloseAndShutdown(
+          actuation_web_contents_->GetPrimaryMainFrame());
+    }
+    StopDummyTask();
     HandleMaybeSuccessfulPasswordChange();
   }
 }
@@ -525,7 +533,12 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTimeout() {
     logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_TIMEOUT);
   }
   actor_task_state_subscription_ = {};
-  CloseGlicSessionAndStopDummyTask();
+  glic::GlicKeyedService* glic_service = GetGlicService();
+  if (glic_service && actuation_web_contents_) {
+    glic_service->CloseAndShutdown(
+        actuation_web_contents_->GetPrimaryMainFrame());
+  }
+  StopDummyTask();
   HandleMaybeSuccessfulPasswordChange();
 }
 
@@ -606,13 +619,4 @@ void PasswordChangeFromCheckupDelegate::StopDummyTask() {
   }
 
   dummy_task_id_ = std::nullopt;
-}
-
-void PasswordChangeFromCheckupDelegate::CloseGlicSessionAndStopDummyTask() {
-  glic::GlicKeyedService* glic_service = GetGlicService();
-  if (glic_service && actuation_web_contents_) {
-    glic_service->CloseAndShutdown(
-        actuation_web_contents_->GetPrimaryMainFrame());
-  }
-  StopDummyTask();
 }

@@ -91,7 +91,6 @@ class PasswordChangeFromCheckupDelegate {
   void HandleMaybeSuccessfulPasswordChange();
   void InvokeVerificationFlow(std::string post_submission_prompt);
   void StopDummyTask();
-  void CloseGlicSessionAndStopDummyTask();
 
   base::WeakPtr<content::WebContents> originator_;
   raw_ptr<password_manager::PasswordManagerClient> client_;
