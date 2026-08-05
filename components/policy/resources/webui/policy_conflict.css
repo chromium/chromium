@@ -26,6 +26,7 @@
 :host(:not([hidden])) {
   display: block;
   border-top: 1px solid var(--cr-separator-color);
+  border-bottom: 1px solid var(--cr-separator-color);
 }
 
 .row:not([hidden]) {
