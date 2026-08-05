@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -176,8 +177,11 @@ class DownloadRequestLimiter
                            const url::Origin& request_origin);
 
     // Notifies the callbacks as to whether the download is allowed or not.
-    // Returns false if it didn't notify all callbacks.
-    bool NotifyCallbacks(bool allow);
+    // Only callbacks queued for `request_origin` are eligible to be allowed;
+    // callbacks queued for any other origin are always notified with false.
+    // Returns true if downloads were throttled and remaining callbacks were
+    // kept queued.
+    bool NotifyCallbacks(const url::Origin& request_origin, bool allow);
 
     // Set the download limiter state and notify if it has changed. Callers must
     // guarantee that |status| and |setting| correspond to each other.
@@ -208,10 +212,11 @@ class DownloadRequestLimiter
     // True if a download has been seen on the current page load.
     bool download_seen_;
 
-    // Callbacks we need to notify. This is only non-empty if we're showing a
-    // dialog.
+    // Callbacks we need to notify, paired with the origin that initiated each
+    // download. This is only non-empty if we're showing a dialog.
     // See description above CanDownload for details on lifetime of callbacks.
-    std::vector<DownloadRequestLimiter::Callback> callbacks_;
+    std::vector<std::pair<url::Origin, DownloadRequestLimiter::Callback>>
+        callbacks_;
 
     // Origins that have non-default download state.
     using DownloadStatusMap = std::map<url::Origin, DownloadStatus>;

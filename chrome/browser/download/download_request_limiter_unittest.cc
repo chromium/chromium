@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -136,6 +137,11 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
     // Ensure a download state exists.
     download_request_limiter_->GetOrCreateDownloadState(web_contents);
     SetHostContentSetting(web_contents, setting);
+  }
+
+  DownloadRequestLimiter::TabDownloadState* GetTabDownloadState(
+      WebContents* web_contents) {
+    return download_request_limiter_->GetDownloadState(web_contents);
   }
 
  protected:
@@ -1023,6 +1029,58 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiatedDownloadFromAnotherOrigin) {
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
+}
+
+// Test that accepting the multiple-download prompt only allows the queued
+// downloads that were initiated by the origin the prompt was shown for.
+TEST_F(DownloadRequestLimiterTest, AcceptOnlyAllowsPromptOriginDownloads) {
+  NavigateAndCommit(kTestURL);
+  LoadCompleted();
+
+  url::Origin main_origin = url::Origin::Create(kTestURL);
+  url::Origin other_origin = url::Origin::Create(GURL("http://foobar.com"));
+
+  // First download from the main origin is allowed and moves the tab to
+  // PROMPT_BEFORE_DOWNLOAD.
+  CanDownloadFor(kTestURL, web_contents(), main_origin);
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+
+  // A download from another origin in the same tab triggers the prompt for that
+  // origin. Leave the prompt visible so subsequent downloads queue behind it.
+  UpdateExpectations(WAIT);
+  CanDownloadFor(kTestURL, web_contents(), other_origin);
+  EXPECT_TRUE(mock_permission_prompt_factory_->RequestOriginSeen(
+      other_origin.GetURL()));
+  EXPECT_FALSE(
+      mock_permission_prompt_factory_->RequestOriginSeen(main_origin.GetURL()));
+  ExpectAndResetCounts(0, 0, 1, __LINE__);
+
+  // While the prompt is showing, queue several more downloads from the main
+  // origin. These must not be released by accepting the other origin's prompt.
+  for (int i = 0; i < 5; ++i) {
+    CanDownloadFor(kTestURL, web_contents(), main_origin);
+  }
+  ExpectAndResetCounts(0, 0, 0, __LINE__);
+
+  // Accept the prompt as the permission request would for `other_origin`.
+  DownloadRequestLimiter::TabDownloadState* state =
+      GetTabDownloadState(web_contents());
+  ASSERT_TRUE(state);
+  state->Accept(other_origin);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return state->GetDownloadStatus(other_origin) ==
+           DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS;
+  }));
+
+  // Only the download queued for `other_origin` should proceed; downloads
+  // queued for the main origin should be cancelled.
+  ExpectAndResetCounts(1, 5, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
+            state->GetDownloadStatus(other_origin));
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            state->GetDownloadStatus(main_origin));
 }
 
 // Test that user interaction on the current page won't reset download status

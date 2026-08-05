@@ -139,7 +139,7 @@ void DownloadRequestLimiter::TabDownloadState::DidStartNavigation(
   if (!shouldClearDownloadState(navigation_handle))
     return;
 
-  NotifyCallbacks(false);
+  NotifyCallbacks(origin_, false);
   host_->Remove(this, web_contents());
 }
 
@@ -173,7 +173,7 @@ void DownloadRequestLimiter::TabDownloadState::DidFinishNavigation(
     // just initially navigated to this page. See http://crbug.com/40299431.
     // However, explicitly leave the limiter in place if the navigation was
     // renderer-initiated and we are in a prompt state.
-    NotifyCallbacks(false);
+    NotifyCallbacks(origin_, false);
     host_->Remove(this, web_contents());
     return;
     // WARNING: We've been deleted.
@@ -198,7 +198,7 @@ void DownloadRequestLimiter::TabDownloadState::WebContentsDestroyed() {
   // Tab closed, no need to handle closing the dialog as it's owned by the
   // WebContents.
 
-  NotifyCallbacks(false);
+  NotifyCallbacks(origin_, false);
   host_->Remove(this, web_contents());
   // WARNING: We've been deleted.
 }
@@ -206,7 +206,7 @@ void DownloadRequestLimiter::TabDownloadState::WebContentsDestroyed() {
 void DownloadRequestLimiter::TabDownloadState::PromptUserForDownload(
     DownloadRequestLimiter::Callback callback,
     const url::Origin& request_origin) {
-  callbacks_.push_back(std::move(callback));
+  callbacks_.emplace_back(request_origin, std::move(callback));
   DCHECK(web_contents_);
   if (is_showing_prompt())
     return;
@@ -263,14 +263,14 @@ void DownloadRequestLimiter::TabDownloadState::SetContentSetting(
 void DownloadRequestLimiter::TabDownloadState::Cancel(
     const url::Origin& request_origin) {
   SetContentSetting(CONTENT_SETTING_BLOCK, request_origin);
-  bool throttled = NotifyCallbacks(false);
+  bool throttled = NotifyCallbacks(request_origin, false);
   SetDownloadStatusAndNotify(request_origin, throttled ? PROMPT_BEFORE_DOWNLOAD
                                                        : DOWNLOADS_NOT_ALLOWED);
 }
 
 void DownloadRequestLimiter::TabDownloadState::CancelOnce(
     const url::Origin& request_origin) {
-  bool throttled = NotifyCallbacks(false);
+  bool throttled = NotifyCallbacks(request_origin, false);
   SetDownloadStatusAndNotify(request_origin, throttled ? PROMPT_BEFORE_DOWNLOAD
                                                        : DOWNLOADS_NOT_ALLOWED);
 }
@@ -278,7 +278,7 @@ void DownloadRequestLimiter::TabDownloadState::CancelOnce(
 void DownloadRequestLimiter::TabDownloadState::Accept(
     const url::Origin& request_origin) {
   SetContentSetting(CONTENT_SETTING_ALLOW, request_origin);
-  bool throttled = NotifyCallbacks(true);
+  bool throttled = NotifyCallbacks(request_origin, true);
   SetDownloadStatusAndNotify(
       request_origin, throttled ? PROMPT_BEFORE_DOWNLOAD : ALLOW_ALL_DOWNLOADS);
 }
@@ -379,32 +379,50 @@ void DownloadRequestLimiter::TabDownloadState::OnContentSettingChanged(
                                  setting);
 }
 
-bool DownloadRequestLimiter::TabDownloadState::NotifyCallbacks(bool allow) {
-  std::vector<DownloadRequestLimiter::Callback> callbacks;
+bool DownloadRequestLimiter::TabDownloadState::NotifyCallbacks(
+    const url::Origin& request_origin,
+    bool allow) {
+  std::vector<DownloadRequestLimiter::Callback> requesting_origin_callbacks;
+  std::vector<DownloadRequestLimiter::Callback> other_origin_callbacks;
+  for (auto& [origin, callback] : callbacks_) {
+    if (origin == request_origin) {
+      requesting_origin_callbacks.push_back(std::move(callback));
+    } else {
+      other_origin_callbacks.push_back(std::move(callback));
+    }
+  }
+  callbacks_.clear();
+
   bool throttled = false;
 
   // Selectively send first few notifications only if number of downloads exceed
   // kMaxDownloadsAtOnce. In that case, we also retain the infobar instance and
   // don't close it. If allow is false, we send all the notifications to cancel
   // all remaining downloads and close the infobar.
-  if (!allow || (callbacks_.size() < kMaxDownloadsAtOnce)) {
+  if (!allow || (requesting_origin_callbacks.size() < kMaxDownloadsAtOnce)) {
     // Null the generated weak pointer so we don't get notified again.
     factory_.InvalidateWeakPtrs();
-    callbacks.swap(callbacks_);
   } else {
-    std::vector<DownloadRequestLimiter::Callback>::iterator start, end;
-    start = callbacks_.begin();
-    end = callbacks_.begin() + kMaxDownloadsAtOnce;
-    callbacks.assign(std::make_move_iterator(start),
-                     std::make_move_iterator(end));
-    callbacks_.erase(start, end);
+    auto start = requesting_origin_callbacks.begin() + kMaxDownloadsAtOnce;
+    auto end = requesting_origin_callbacks.end();
+    for (auto it = start; it != end; ++it) {
+      callbacks_.emplace_back(request_origin, std::move(*it));
+    }
+    requesting_origin_callbacks.erase(start, end);
     throttled = true;
   }
 
-  for (auto& callback : callbacks) {
+  for (auto& callback : requesting_origin_callbacks) {
     // When callback runs, it can cause the WebContents to be destroyed.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), allow));
+  }
+
+  // Downloads queued for other origins are not covered by the user's decision
+  // for `request_origin`, so cancel them.
+  for (auto& callback : other_origin_callbacks) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 
   return throttled;
