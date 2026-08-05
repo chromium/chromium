@@ -10,18 +10,19 @@
 #include <utility>
 #include <variant>
 
-#include "third_party/dawn/include/dawn/dawn_proc.h"
-
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
+#include "third_party/dawn/include/dawn/dawn_proc.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/task/thread_pool.h"
@@ -85,15 +86,20 @@ base::File OpenAndValidateProgramCache(const base::FilePath& path) {
 
   base::FilePath version_path =
       path.AddExtension(FILE_PATH_LITERAL(".dawn_version"));
-  std::string current_version(
+  std::string_view dawn_rev(
       reinterpret_cast<const char*>(dawnProcGetVersion()), kDawnVersionSize);
+  // TODO(crbug.com/538727789): Remove Chrome version check once ML Drift
+  // incorporates kernel revision versioning into fingerprint keys.
+  std::string current_version =
+      base::StrCat({version_info::GetVersionNumber(), "_", dawn_rev});
   std::string cached_version;
 
   bool version_match = base::ReadFileToString(version_path, &cached_version) &&
                        cached_version == current_version;
 
   if (!version_match) {
-    // Dawn version changed (or first run). Invalidate by truncating file to 0.
+    // Dawn or Chrome version changed (or first run). Invalidate by truncating
+    // file to 0.
     cache_file.SetLength(0);
     base::WriteFile(version_path, current_version);
   }

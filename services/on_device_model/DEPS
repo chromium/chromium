@@ -9,4 +9,5 @@ include_rules = [
   "+components/optimization_guide/core/optimization_guide_features.h",
   "+components/optimization_guide/core/optimization_guide_util.h",
   "+components/optimization_guide/proto",
+  "+components/version_info",
 ]

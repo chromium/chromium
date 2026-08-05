@@ -47,6 +47,9 @@ component("types") {
     "//skia:skia_core_public_headers",
     "//third_party/dawn/src/dawn:proc",
   ]
+  deps = [
+    "//components/version_info",
+  ]
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }
 

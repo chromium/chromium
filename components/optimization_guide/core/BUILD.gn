@@ -683,6 +683,7 @@ static_library("model_execution_test_support") {
       "//components/optimization_guide/public/mojom",
       "//components/prefs:test_support",
       "//components/update_client",
+      "//components/version_info",
       "//services/on_device_model/public/cpp:types",
       "//services/on_device_model/public/cpp/test_support",
       "//third_party/dawn/src/dawn:proc",

@@ -5,9 +5,9 @@
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 
 #include "base/files/file_path.h"
-#include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
@@ -17,7 +17,9 @@
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "components/version_info/version_info.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
+#include "third_party/dawn/include/dawn/dawn_proc.h"
 
 namespace optimization_guide {
 
@@ -83,8 +85,12 @@ void FakeBaseModelAsset::Write(Content&& content) {
         temp_dir_.GetPath().Append(kProgramCacheFile);
     CHECK(base::WriteFile(program_cache_path,
                           std::string(content.shader_cache_data)));
-    std::string current_version(
+    std::string_view dawn_rev(
         reinterpret_cast<const char*>(dawnProcGetVersion()), 20);
+    // TODO(crbug.com/538727789): Remove Chrome version check once ML Drift
+    // incorporates kernel revision versioning into fingerprint keys.
+    std::string current_version =
+        base::StrCat({version_info::GetVersionNumber(), "_", dawn_rev});
     CHECK(base::WriteFile(
         program_cache_path.AddExtension(FILE_PATH_LITERAL(".dawn_version")),
         current_version));
