@@ -209,9 +209,11 @@ void WebuiOmniboxHandler::OpenLensSearch() {
   edit_model()->OpenLensSearch();
 }
 
-void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
-                                        bool delay_upload,
-                                        AddTabContextCallback callback) {
+void WebuiOmniboxHandler::AddTabContext(
+    int32_t tab_id,
+    bool delay_upload,
+    searchbox::mojom::TabAttachmentSource source,
+    AddTabContextCallback callback) {
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_.get());
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
@@ -238,6 +240,7 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
   tab_attachment->tab_id = tab_id;
   tab_attachment->title = base::UTF16ToUTF8(TabUIHelper::From(tab)->GetTitle());
   tab_attachment->url = tab->GetContents()->GetLastCommittedURL();
+  tab_attachment->source = source;
   context->file_infos.push_back(
       searchbox::mojom::SearchContextAttachment::NewTabAttachment(
           std::move(tab_attachment)));

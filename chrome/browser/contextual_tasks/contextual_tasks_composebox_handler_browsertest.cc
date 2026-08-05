@@ -1571,7 +1571,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
     token_opt = result.value();
   });
 
-  handler_->AddTabContext(tab_id, /*delay_upload=*/true, callback.Get());
+  handler_->AddTabContext(tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
   std::vector<int32_t> selected_tab_ids = handler_->GetSelectedTabIds();
   EXPECT_THAT(selected_tab_ids, testing::Contains(tab_id));
   ASSERT_TRUE(token_opt.has_value());
@@ -1597,7 +1599,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
     ASSERT_TRUE(result.has_value());
     active_token_opt = result.value();
   });
-  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
   ASSERT_TRUE(active_token_opt.has_value());
   base::UnguessableToken active_token = active_token_opt.value();
   ASSERT_FALSE(active_token.is_empty());
@@ -1685,7 +1689,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
     token_opt = result.value();
   });
 
-  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
   ASSERT_TRUE(token_opt.has_value());
   base::UnguessableToken token = token_opt.value();
   ASSERT_FALSE(token.is_empty());
@@ -1737,7 +1743,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   int32_t tab_id = 15;
   base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
       callback;
-  handler_->AddTabContext(tab_id, /*delay_upload=*/true, callback.Get());
+  handler_->AddTabContext(tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
 
   std::vector<int32_t> selected_tab_ids = handler_->GetSelectedTabIds();
   EXPECT_THAT(selected_tab_ids, testing::Contains(tab_id));
@@ -1800,6 +1808,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
                           callback.Get());
   run_loop.Run();
 
@@ -2041,6 +2050,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
                           callback.Get());
   run_loop.Run();
 
@@ -2137,6 +2147,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
                           callback.Get());
   run_loop.Run();
 
@@ -2257,7 +2268,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   });
   EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_)).Times(0);
 
-  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true, callback.Get());
+  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
   run_loop.Run();
 
   ASSERT_TRUE(token_opt.has_value())
@@ -2459,6 +2472,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   });
 
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
                           normal_tab_cb.Get());
 
   run_loop_2.Run();
@@ -2472,6 +2486,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
         // not critical for the logic tested here, but we acknowledge the call.
       });
   handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
                           delayed_tab_cb.Get());
 
   ASSERT_TRUE(normal_tab_token_opt.has_value());
@@ -2606,7 +2621,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 
   ASSERT_EQ(handler_->GetNumTabsDelayed(), 0);
 
-  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true, cb_d1.Get());
+  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          cb_d1.Get());
   run_loop_d1.Run();
 
   ASSERT_TRUE(token_d1_opt.has_value());
@@ -2630,7 +2647,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
     run_loop_d2.Quit();
   });
 
-  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true, cb_d2.Get());
+  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          cb_d2.Get());
   run_loop_d2.Run();
 
   ASSERT_TRUE(token_d2_opt.has_value());
@@ -2650,7 +2669,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
     run_loop_rA.Quit();
   });
 
-  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false, cb_rA.Get());
+  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          cb_rA.Get());
   run_loop_rA.Run();
 
   ASSERT_TRUE(token_rA_opt.has_value());
@@ -2675,7 +2696,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
     run_loop_rB.Quit();
   });
 
-  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false, cb_rB.Get());
+  handler_->AddTabContext(tab_handle_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          cb_rB.Get());
   run_loop_rB.Run();
 
   ASSERT_TRUE(token_rB_opt.has_value());
@@ -3019,7 +3042,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
     token_opt = result.value();
   });
 
-  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
   ASSERT_TRUE(token_opt.has_value());
   base::UnguessableToken token = token_opt.value();
   ASSERT_FALSE(token.is_empty());
@@ -3219,6 +3244,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
         TabListInterface::From(browser())->GetActiveTab();
     int32_t active_tab_id = active_tab->GetHandle().raw_value();
     handler_->AddTabContext(active_tab_id, /*delay_upload=*/false,
+                            searchbox::mojom::TabAttachmentSource::kContextMenu,
                             base::DoNothing());
     histogram_tester.ExpectTotalCount(
         "ContextualTasks.Composebox.UserAction."

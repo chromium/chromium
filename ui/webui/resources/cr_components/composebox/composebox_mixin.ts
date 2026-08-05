@@ -20,7 +20,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, hasOnlySuggestedTabs, isContextUploadStatusTerminal, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -46,6 +46,8 @@ export enum SubmitButtonIconType {
 }
 
 const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
+
+
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -1304,13 +1306,14 @@ export const ComposeboxEmbedderMixin =
                 void): Promise<ComposeboxFile|null> {
           try {
             const token = await this.getSearchboxHandler().addTabContext(
-                tabUpload.tabId, tabUpload.delayUpload);
+                tabUpload.tabId, tabUpload.delayUpload,
+                mapOriginToMojoSource(tabUpload.origin));
             if (!token) {
               return null;
             }
             const attachment = ComposeboxFile.createFromTab(
                 token, tabUpload.tabId, tabUpload.title, tabUpload.url,
-                {supportsUnimodal: true});
+                {supportsUnimodal: true, origin: tabUpload.origin});
 
             if (onBeforeUpdateFiles) {
               onBeforeUpdateFiles(attachment);
@@ -1661,9 +1664,11 @@ export const ComposeboxEmbedderMixin =
           this.getInputElement().inputElement.focus();
         }
 
-        hasContent(): boolean {
+        hasContent(ignoreSuggestedTab: boolean = false): boolean {
+          const hasFiles = this.files.size > 0 &&
+              !(ignoreSuggestedTab && hasOnlySuggestedTabs(this.files));
           return this.inputState?.activeTool !== ToolMode.kUnspecified ||
-              this.input.trim().length > 0 || this.files.size > 0;
+              this.input.trim().length > 0 || hasFiles;
         }
 
         clearInput() {
@@ -2892,7 +2897,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   // Common helper methods
   addToPendingUploads(token: UnguessableToken): void;
   focusInput(): void;
-  hasContent(): boolean;
+  hasContent(ignoreAutoTab?: boolean): boolean;
   clearInput(): void;
   clearAllInputs(
       querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean): void;

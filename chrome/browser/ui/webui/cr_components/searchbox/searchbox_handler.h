@@ -172,6 +172,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                       AddFileContextCallback callback) override {}
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
+                     searchbox::mojom::TabAttachmentSource source,
                      AddTabContextCallback) override {}
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override {}

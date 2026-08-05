@@ -144,6 +144,7 @@ void ContextualTasksExtensionHandler::AddFileContext(
 void ContextualTasksExtensionHandler::AddTabContext(
     int32_t tab_id,
     bool delay_upload,
+    searchbox::mojom::TabAttachmentSource source,
     AddTabContextCallback callback) {}
 void ContextualTasksExtensionHandler::DeleteContext(
     const base::UnguessableToken& file_token,
