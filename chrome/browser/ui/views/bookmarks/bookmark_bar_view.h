@@ -43,8 +43,8 @@ class BookmarkBarViewTestHelper;
 class BookmarkContextMenu;
 class BookmarkMergedSurfaceService;
 struct BookmarkParentFolder;
-class Browser;
 class BrowserView;
+class BrowserWindowInterface;
 class Profile;
 
 namespace bookmarks {
@@ -91,7 +91,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   class ButtonSeparatorView;
 
   // |browser_view| can be NULL during tests.
-  BookmarkBarView(Browser* browser, BrowserView* browser_view);
+  BookmarkBarView(BrowserWindowInterface* browser, BrowserView* browser_view);
   BookmarkBarView(const BookmarkBarView&) = delete;
   BookmarkBarView& operator=(const BookmarkBarView&) = delete;
   ~BookmarkBarView() override;
@@ -101,7 +101,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   static void DisableAnimationsForTesting(bool disabled);
 
   // Returns the current browser.
-  Browser* browser() const { return browser_; }
+  BrowserWindowInterface* browser() const { return browser_; }
 
   void AddObserver(BookmarkBarViewObserver* observer);
   void RemoveObserver(BookmarkBarViewObserver* observer);
@@ -517,7 +517,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
   raw_ptr<ButtonSeparatorView> saved_tab_groups_separator_view_ = nullptr;
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<BrowserView> browser_view_;
 
   // True if the owning browser is showing an infobar.
