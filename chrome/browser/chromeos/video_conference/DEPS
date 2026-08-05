@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/media/webrtc",
   "+chrome/browser/ui/tabs/tab_activity_simulator.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
-  "+chrome/browser/ui/web_applications/app_browser_controller.h",
   "+chrome/common/webui_url_constants.h",
   "+chrome/test",
 ]
