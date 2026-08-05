@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "content/test/test_web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -134,6 +136,32 @@ class WebViewTestWebContentsDelegate : public content::WebContentsDelegate {
  private:
   bool is_fullscreened_ = false;
 };
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+class TestRenderWidgetHostViewWithAccessible
+    : public content::TestRenderWidgetHostView {
+ public:
+  TestRenderWidgetHostViewWithAccessible(
+      content::RenderWidgetHost* render_widget_host,
+      gfx::NativeViewAccessible native_view_accessible)
+      : TestRenderWidgetHostView(render_widget_host),
+        native_view_accessible_(native_view_accessible) {}
+
+  TestRenderWidgetHostViewWithAccessible(
+      const TestRenderWidgetHostViewWithAccessible&) = delete;
+  TestRenderWidgetHostViewWithAccessible& operator=(
+      const TestRenderWidgetHostViewWithAccessible&) = delete;
+
+  ~TestRenderWidgetHostViewWithAccessible() override = default;
+
+  gfx::NativeViewAccessible GetNativeViewAccessible() override {
+    return native_view_accessible_;
+  }
+
+ private:
+  gfx::NativeViewAccessible native_view_accessible_;
+};
+#endif
 
 void SimulateRendererCrash(content::WebContents* contents, WebView* view) {
   auto* tester = content::WebContentsTester::For(contents);
@@ -623,6 +651,55 @@ TEST_F(WebViewUnitTest, AccessibleProperties) {
   web_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWebView);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(WebViewUnitTest,
+       NativeViewAccessibleFallsBackWhenWebContentsAccessibleIsNull) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+  web_view()->SetWebContents(web_contents.get());
+
+  content::RenderWidgetHostView* host_view =
+      web_contents->GetRenderWidgetHostView();
+  ASSERT_NE(nullptr, host_view);
+  EXPECT_EQ(ui::AXMode(), web_contents->GetAccessibilityMode());
+  EXPECT_EQ(gfx::NativeViewAccessible(), host_view->GetNativeViewAccessible());
+
+  gfx::NativeViewAccessible view_accessible =
+      static_cast<View*>(web_view())->View::GetNativeViewAccessible();
+  ASSERT_NE(gfx::NativeViewAccessible(), view_accessible);
+  EXPECT_EQ(view_accessible,
+            static_cast<View*>(web_view())->GetNativeViewAccessible());
+  EXPECT_EQ(ui::AXMode(), web_contents->GetAccessibilityMode());
+}
+
+TEST_F(WebViewUnitTest, NativeViewAccessibleUsesWebContentsAccessible) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+  web_view()->SetWebContents(web_contents.get());
+
+  View* web_contents_accessible_view =
+      top_level_widget()->GetContentsView()->AddChildView(
+          std::make_unique<View>());
+  gfx::NativeViewAccessible web_contents_accessible =
+      web_contents_accessible_view->GetNativeViewAccessible();
+  ASSERT_NE(gfx::NativeViewAccessible(), web_contents_accessible);
+
+  auto* test_web_contents =
+      static_cast<content::TestWebContents*>(web_contents.get());
+  auto* render_widget_host =
+      test_web_contents->GetRenderViewHost()->GetWidget();
+  auto* original_host_view = render_widget_host->GetView();
+  auto host_view = std::make_unique<TestRenderWidgetHostViewWithAccessible>(
+      render_widget_host, web_contents_accessible);
+
+  ASSERT_EQ(host_view.get(), web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(web_contents_accessible,
+            static_cast<View*>(web_view())->GetNativeViewAccessible());
+
+  render_widget_host->SetView(original_host_view);
+}
+#endif
 
 TEST_F(WebViewAXTreeEnabledTest, ObservesManagerUntilEnableCompletes) {
   if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {

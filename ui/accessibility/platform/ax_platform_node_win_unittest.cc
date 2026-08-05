@@ -5437,6 +5437,35 @@ TEST_F(AXPlatformNodeWinTest, UIANavigate) {
                nullptr);
 }
 
+namespace {
+
+class InconsistentChildDelegate : public AXPlatformNodeDelegate {
+ public:
+  AXPlatformNodeId GetUniqueId() const override { return unique_id_; }
+  size_t GetChildCount() const override { return 1; }
+
+ private:
+  const AXUniqueId unique_id_{AXUniqueId::Create()};
+};
+
+}  // namespace
+
+TEST_F(AXPlatformNodeWinTest, UIANavigateWithNullChildAccessible) {
+  InconsistentChildDelegate delegate;
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(delegate);
+
+  ComPtr<IRawElementProviderFragment> provider;
+  ASSERT_HRESULT_SUCCEEDED(static_cast<AXPlatformNodeWin*>(node.get())
+                               ->QueryInterface(IID_PPV_ARGS(&provider)));
+
+  for (NavigateDirection direction :
+       {NavigateDirection_FirstChild, NavigateDirection_LastChild}) {
+    ComPtr<IRawElementProviderFragment> child_provider;
+    EXPECT_EQ(S_OK, provider->Navigate(direction, &child_provider));
+    EXPECT_EQ(nullptr, child_provider.Get());
+  }
+}
+
 TEST_F(AXPlatformNodeWinTest, IAnnotationProvider) {
   // rootWebArea
   // ++mark detailsIds=comment, footnote, definition
