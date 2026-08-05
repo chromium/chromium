@@ -9,6 +9,7 @@ include_rules = [
   "+components/policy/android/javatests",
   "+components/safe_browsing/android/java",
   "+components/variations/android/java",
+  "+components/webauthn/android/java/src/org/chromium/components/webauthn",
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",

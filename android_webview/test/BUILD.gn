@@ -276,9 +276,8 @@ copy("copy_webview_js_test_script_to_blink") {
 android_library("webview_compose_javatests") {
   testonly = true
   enable_compose = true
-  sources = [
-    "../javatests/src/org/chromium/android_webview/test/AwComposeTest.kt",
-  ]
+  sources =
+      [ "../javatests/src/org/chromium/android_webview/test/AwComposeTest.kt" ]
   deps = [
     ":base_webview_instrumentation_java",
     ":base_webview_instrumentation_test_java",
@@ -309,6 +308,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
 
   deps = [
     ":webview_compose_javatests",
+    "$google_play_services_package:google_play_services_tasks_java",
     "//android_webview:common_aidl_java",
     "//android_webview:common_origin_trials_java",
     "//android_webview:common_variations_java",
@@ -384,6 +384,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/androidx_javascriptengine:javascriptengine_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/common:common_java",
+    "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings_java",
     "//third_party/google-truth:google_truth_java",
