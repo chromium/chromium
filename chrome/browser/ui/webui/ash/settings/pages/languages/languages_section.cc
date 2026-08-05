@@ -21,6 +21,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/translate/core/common/translate_features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -100,8 +101,6 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_LABEL},
       {"offerTranslationSublabel",
        IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_SUBLABEL},
-      {"offerGoogleTranslateLabel",
-       IDS_OS_SETTINGS_LANGUAGES_OFFER_GOOGLE_TRANSLATE_LABEL},
       {"changeDeviceLanguageDialogTitle",
        IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_TITLE},
       {"selectedDeviceLanguageInstruction",
@@ -131,6 +130,11 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_CHANGE_LANGUAGE_BUTTON_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddLocalizedString(
+      "offerGoogleTranslateLabel",
+      base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)
+          ? IDS_OS_SETTINGS_LANGUAGES_OFFER_GOOGLE_TRANSLATE_LABEL_WITH_PDF
+          : IDS_OS_SETTINGS_LANGUAGES_OFFER_GOOGLE_TRANSLATE_LABEL);
 
   html_source->AddString(
       "languagesPreferenceDescription",
