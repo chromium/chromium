@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use alloc::collections::BTreeMap;
 use alloc::vec::Vec;
 use core::cmp::Ordering;
 use core::str;
 
 use crate::constants::*;
 use crate::float_conversions::*;
-use crate::values::{MapKey, Value};
+use crate::values::{MapEntry, MapKey, Value};
 
 // LINT.IfChange(Error)
 #[repr(C)]
@@ -225,7 +224,7 @@ fn to_map<'a>(
     depth: usize,
     config: &Config,
 ) -> Result<Value<'a>, Error> {
-    let mut ret: BTreeMap<MapKey, Value> = BTreeMap::new();
+    let mut ret: Vec<MapEntry> = Vec::new();
 
     for _ in 0..num_elements {
         // TODO(crbug.com/259749095): Validate key type + order (and possibly return
@@ -239,10 +238,12 @@ fn to_map<'a>(
             Err(_) => return Err(Error::IncorrectMapKeyType),
         };
 
-        if let Some((previous, _)) = ret.last_key_value() {
-            match previous.cmp(&key) {
+        if let Some(previous) = ret.last() {
+            match previous.key.cmp(&key) {
                 Ordering::Less => {}
-                Ordering::Greater if !ret.contains_key(&key) => {
+                Ordering::Greater
+                    if ret.binary_search_by_key(&&key, |entry| &entry.key).is_err() =>
+                {
                     return Err(Error::OutOfOrderKey);
                 }
                 // Covers `Ordering::Equal` and `Ordering::Greater` when the key is already
@@ -253,7 +254,7 @@ fn to_map<'a>(
             }
         }
 
-        ret.insert(key, value);
+        ret.push(MapEntry { key, value });
     }
     Ok(Value::Map(ret))
 }

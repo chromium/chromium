@@ -165,11 +165,11 @@ Value Reader::ConvertRustValueToCpp(const cbor::rust::Value& rust_val) {
     case cbor::rust::ValueKind::Tag::Map: {
       return Value(Value::MapValue(
           base::sorted_unique,
-          base::ToVector(
-              CHECK_DEREF(rust_val.map_entries()), [](const auto& entry) {
-                return std::pair(ConvertRustMapKeyToCpp(*entry.key),
-                                 ConvertRustValueToCpp(*entry.value));
-              })));
+          base::ToVector(CHECK_DEREF(rust_val.map_entries()).to_span(),
+                         [](const auto& entry) {
+                           return std::pair(ConvertRustMapKeyToCpp(entry.key),
+                                            ConvertRustValueToCpp(entry.value));
+                         })));
     }
   }
   NOTREACHED();

@@ -4,7 +4,6 @@
 
 use cbor::*;
 use rust_gtest_interop::prelude::*;
-use std::collections::BTreeMap;
 
 #[gtest(CBORWriterRustTest, TestWriteUint)]
 fn test_write_uint() {
@@ -93,17 +92,17 @@ fn test_write_array() {
 #[gtest(CBORWriterRustTest, TestWriteMap)]
 fn test_write_map() {
     let test_cases = [
-        (Value::Map(BTreeMap::new()), "a0"),
-        (Value::Map(BTreeMap::from([(MapKey::Int(1), Value::Int(1))])), "a10101"),
-        (Value::Map(BTreeMap::from([(MapKey::Int(-2), Value::Int(1))])), "a12101"),
+        (Value::Map(vec![]), "a0"),
+        (Value::Map(vec![(MapKey::Int(1), Value::Int(1)).into()]), "a10101"),
+        (Value::Map(vec![(MapKey::Int(-2), Value::Int(1)).into()]), "a12101"),
         (
-            Value::Map(BTreeMap::from([
-                (MapKey::Int(1), Value::Int(1)),
-                (MapKey::Int(2), Value::Int(2)),
-            ])),
+            Value::Map(vec![
+                (MapKey::Int(1), Value::Int(1)).into(),
+                (MapKey::Int(2), Value::Int(2)).into(),
+            ]),
             "a201010202",
         ),
-        (Value::Map(BTreeMap::from([(MapKey::Bytestring(&[0x0a]), Value::Int(1))])), "a1410a01"),
+        (Value::Map(vec![(MapKey::Bytestring(&[0x0a]), Value::Int(1)).into()]), "a1410a01"),
     ];
 
     for test in test_cases {
@@ -154,12 +153,12 @@ fn test_write_floats() {
 
 #[gtest(CBORWriterRustTest, TestWriteMapKeyCanonicalization)]
 fn test_write_map_key_canonicalization() {
-    let map = BTreeMap::from([
-        (MapKey::String("bb"), Value::Int(1)),
-        (MapKey::String("c"), Value::Int(2)), // Length 1 should precede length 2
-        (MapKey::Int(-1), Value::Int(3)),     // Major Type 1
-        (MapKey::Int(1), Value::Int(4)),      // Major Type 0
-    ]);
+    let map = vec![
+        (MapKey::Int(1), Value::Int(4)).into(),      // Major Type 0
+        (MapKey::Int(-1), Value::Int(3)).into(),     // Major Type 1
+        (MapKey::String("c"), Value::Int(2)).into(), // Length 1 should precede length 2
+        (MapKey::String("bb"), Value::Int(1)).into(),
+    ];
 
     // Expected CTAP2 Canonical Order:
     // 1. MapKey::Int(1) -> 0x01

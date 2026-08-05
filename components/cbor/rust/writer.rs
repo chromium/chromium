@@ -61,10 +61,15 @@ pub(crate) fn append_value(val: &Value, out: &mut Vec<u8>) {
             }
         }
         Value::Map(m) => {
+            debug_assert!(
+                m.is_sorted_by(|a, b| a.key < b.key),
+                "CBOR map entries must be sorted by key and unique"
+            );
             write_header(out, MAJOR_TYPE_MAP, m.len() as u64);
-            for (key, value) in m {
-                append_map_key(key, out);
-                append_value(value, out);
+
+            for entry in m {
+                append_map_key(&entry.key, out);
+                append_value(&entry.value, out);
             }
         }
         Value::Boolean(b) => write_header(

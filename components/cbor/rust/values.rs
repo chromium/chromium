@@ -7,7 +7,6 @@
 // `MapKey`), remove all manual inspection (`kind()`) and payload extraction
 // (`as_int()`, `as_string()`, `as_array()`, etc.) methods below, as well as the
 // `MapKeyKind` and `ValueKind` proxy enums.
-use alloc::collections::BTreeMap;
 use alloc::vec::Vec;
 use core::cmp::Ordering;
 
@@ -40,7 +39,7 @@ pub enum Value<'a> {
     Bytestring(&'a [u8]),
     String(&'a str),
     Array(Vec<Value<'a>>),
-    Map(BTreeMap<MapKey<'a>, Value<'a>>),
+    Map(Vec<MapEntry<'a>>),
     Boolean(bool),
     Float(f64),
     Null,
@@ -125,11 +124,9 @@ impl<'a> Value<'a> {
         }
     }
 
-    pub fn map_entries(&self) -> Option<Vec<MapEntryRef<'a, '_>>> {
+    pub fn map_entries(&self) -> Option<&[MapEntry<'a>]> {
         match self {
-            Value::Map(m) => {
-                Some(m.iter().map(|(k, v)| MapEntryRef { key: k, value: v }).collect())
-            }
+            Value::Map(m) => Some(m.as_slice()),
             _ => None,
         }
     }
@@ -147,9 +144,15 @@ impl<'a> From<MapKey<'a>> for Value<'a> {
 
 #[repr(C)]
 #[derive(Debug, PartialEq, Clone)]
-pub struct MapEntryRef<'a, 'b> {
-    pub key: &'b MapKey<'a>,
-    pub value: &'b Value<'a>,
+pub struct MapEntry<'a> {
+    pub key: MapKey<'a>,
+    pub value: Value<'a>,
+}
+
+impl<'a> From<(MapKey<'a>, Value<'a>)> for MapEntry<'a> {
+    fn from((key, value): (MapKey<'a>, Value<'a>)) -> Self {
+        Self { key, value }
+    }
 }
 
 #[repr(C)]
