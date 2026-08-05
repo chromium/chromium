@@ -46,7 +46,7 @@ import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.Arrays;
@@ -105,7 +105,7 @@ public class AccessibilitySettingsPageZoomTest {
 
         // Enable screen reader to display all settings options.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true));
+                () -> AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(true));
         when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(true);
 
         mSettingsActivityTestRule.launchPreference(
@@ -121,7 +121,7 @@ public class AccessibilitySettingsPageZoomTest {
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false));
+                () -> AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(false));
         when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(false);
     }
 

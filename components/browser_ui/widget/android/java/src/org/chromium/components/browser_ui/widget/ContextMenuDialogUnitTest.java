@@ -39,7 +39,7 @@ import org.robolectric.shadows.ShadowPhoneWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 import org.chromium.ui.widget.ChromePopupWindow;
 import org.chromium.ui.widget.UiWidgetFactory;
@@ -90,7 +90,7 @@ public class ContextMenuDialogUnitTest {
 
     @After
     public void tearDown() {
-        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(false);
         UiWidgetFactory.setInstance(null);
         mActivity.finish();
     }
@@ -191,7 +191,7 @@ public class ContextMenuDialogUnitTest {
 
     @Test
     public void testShowPopupWindow_NotFocusableInA11y() throws Exception {
-        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(true);
 
         mDialog = createContextMenuDialog(/* isPopup= */ true, /* shouldRemoveScrim= */ false);
         mDialog.show();
