@@ -6,6 +6,7 @@
 
 #include <sys/types.h>
 
+#include <algorithm>
 #include <memory>
 #include <ostream>
 #include <set>
@@ -180,7 +181,14 @@ QuicSessionPoolTestBase::QuicSessionPoolTestBase(
           &QuicSessionPoolTestBase::OnFailedOnDefaultNetwork,
           base::Unretained(this))),
       quic_params_(context_.params()) {
-  enabled_features.push_back(features::kAsyncQuicSession);
+  // A caller that lists kAsyncQuicSession itself decides its state.
+  const auto is_async_quic_session = [](const base::test::FeatureRef& ref) {
+    return &*ref == &features::kAsyncQuicSession;
+  };
+  if (!std::ranges::any_of(enabled_features, is_async_quic_session) &&
+      !std::ranges::any_of(disabled_features, is_async_quic_session)) {
+    enabled_features.push_back(features::kAsyncQuicSession);
+  }
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   FLAGS_quic_enable_http3_grease_randomness = false;
   context_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));

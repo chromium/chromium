@@ -239,6 +239,8 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   // returns the amount of time waiting job should be delayed.
   base::TimeDelta GetTimeDelayForWaitingJob() const;
 
+  base::WeakPtr<QuicSessionRequest> GetWeakPtr();
+
   // If host resolution is underway, changes the priority of the host resolver
   // request.
   void SetPriority(RequestPriority priority);
@@ -300,6 +302,8 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   CompletionOnceCallback host_resolution_callback_;
 
   CompletionOnceCallback create_session_callback_;
+
+  base::WeakPtrFactory<QuicSessionRequest> weak_factory_{this};
 };
 
 // Manages a pool of QuicChromiumClientSessions.
@@ -560,7 +564,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
  private:
   class Job;
+  class AsyncDnsJob;
   class DirectJob;
+  class EndpointConnector;
   class ProxyJob;
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
