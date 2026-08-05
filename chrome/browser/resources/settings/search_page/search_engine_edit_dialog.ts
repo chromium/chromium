@@ -41,9 +41,6 @@ export interface SettingsSearchEngineEditDialogElement {
   };
 }
 
-export type SearchEngineEditDialogElement =
-    SettingsSearchEngineEditDialogElement;
-
 const SettingsSearchEngineEditDialogElementBase =
     WebUiListenerMixinLit(CrLitElement);
 

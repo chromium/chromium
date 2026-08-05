@@ -4,9 +4,9 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {SearchEngineEditDialogElement} from './search_engine_edit_dialog.js';
+import type {SettingsSearchEngineEditDialogElement} from './search_engine_edit_dialog.js';
 
-export function getHtml(this: SearchEngineEditDialogElement) {
+export function getHtml(this: SettingsSearchEngineEditDialogElement) {
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">${this.dialogTitle_}</div>

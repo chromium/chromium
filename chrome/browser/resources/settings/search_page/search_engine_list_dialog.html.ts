@@ -4,9 +4,9 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {SearchEngineListDialogElement} from './search_engine_list_dialog.js';
+import type {SettingsSearchEngineListDialogElement} from './search_engine_list_dialog.js';
 
-export function getHtml(this: SearchEngineListDialogElement) {
+export function getHtml(this: SettingsSearchEngineListDialogElement) {
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" @cancel="${this.onDialogCancel_}" show-on-attach>
   <div slot="title">
