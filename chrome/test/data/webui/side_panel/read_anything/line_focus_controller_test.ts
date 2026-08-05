@@ -19,7 +19,8 @@ suite('LineFocusController', () => {
   let lineFocusController: LineFocusController;
   let lineFocusListener: LineFocusListener;
   let model: LineFocusModel;
-  let lineFocusMoved: boolean;
+  let lineFocusContentPositionChanged: boolean;
+  let lineFocusVisualPositionChanged: boolean;
   let defaultContainer: HTMLElement;
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
@@ -82,11 +83,15 @@ suite('LineFocusController', () => {
     SpeechController.setInstance(speechController);
     model = new LineFocusModel();
     lineFocusController = new LineFocusController(model);
-    lineFocusMoved = false;
+    lineFocusContentPositionChanged = false;
+    lineFocusVisualPositionChanged = false;
     lineFocusModesChanged = false;
     lineFocusListener = {
-      onLineFocusMove() {
-        lineFocusMoved = true;
+      onLineFocusContentPositionChange() {
+        lineFocusContentPositionChanged = true;
+      },
+      onLineFocusVisualPositionChange() {
+        lineFocusVisualPositionChanged = true;
       },
       onNeedScrollForLineFocus() {},
       onNeedScrollToTop() {},
@@ -357,17 +362,20 @@ suite('LineFocusController', () => {
         LineFocusMovement.STATIC, container, height);
     lineFocusController.onStyleChange(
         LineFocusStyle.SMALL_WINDOW, container, height);
-    lineFocusMoved = false;
+    lineFocusContentPositionChanged = false;
+    lineFocusVisualPositionChanged = false;
     const startingTop = model.getTop();
 
     lineFocusController.onKeyDown(downKey(), container, height);
-    assertFalse(lineFocusMoved);
+    assertFalse(lineFocusContentPositionChanged);
+    assertFalse(lineFocusVisualPositionChanged);
     assertEquals(startingTop, model.getTop());
 
     lineFocusController.onKeyDown(downKey(), container, height);
     lineFocusController.onKeyDown(downKey(), container, height);
     lineFocusController.onScrollEnd(height);
-    assertTrue(lineFocusMoved);
+    assertTrue(lineFocusContentPositionChanged);
+    assertFalse(lineFocusVisualPositionChanged);
     assertLT(startingTop, model.getTop());
   });
 
@@ -389,11 +397,11 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = false;
-    lineFocusMoved = false;
+    lineFocusContentPositionChanged = false;
 
     lineFocusController.onMouseMove(101);
 
-    assertFalse(lineFocusMoved);
+    assertFalse(lineFocusContentPositionChanged);
   });
 
   test('onMouseMove does nothing when speech active', () => {
@@ -407,11 +415,11 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, container, defaultHeight);
     speechController.onPlayPauseToggle(container);
-    lineFocusMoved = false;
+    lineFocusContentPositionChanged = false;
 
     lineFocusController.onMouseMove(101);
 
-    assertFalse(lineFocusMoved);
+    assertFalse(lineFocusContentPositionChanged);
   });
 
   test('onMouseMoveInToolbar does nothing if flag disabled', () => {
@@ -444,15 +452,17 @@ suite('LineFocusController', () => {
     assertEquals(startingTop, model.getTop());
   });
 
-  test('onAllMenusClose notifies listeners', () => {
+  test('onAllMenusClose notifies listeners of visual update', () => {
     lineFocusController.toggle(true, defaultContainer, defaultHeight);
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
-    lineFocusMoved = false;
+    lineFocusContentPositionChanged = false;
+    lineFocusVisualPositionChanged = false;
 
     lineFocusController.onAllMenusClose();
 
-    assertTrue(lineFocusMoved);
+    assertTrue(lineFocusVisualPositionChanged);
+    assertFalse(lineFocusContentPositionChanged);
   });
 
   test('onKeyDown arrows does nothing when speech active', () => {
@@ -467,12 +477,12 @@ suite('LineFocusController', () => {
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
     speechController.onPlayPauseToggle(container);
-    lineFocusMoved = false;
+    lineFocusContentPositionChanged = false;
 
     lineFocusController.onKeyDown(downKey(), container, defaultHeight);
     lineFocusController.onKeyDown(upKey(), container, defaultHeight);
 
-    assertFalse(lineFocusMoved);
+    assertFalse(lineFocusContentPositionChanged);
   });
 
   test('onKeyDown arrows consumes event with line focus enabled', () => {
@@ -482,14 +492,14 @@ suite('LineFocusController', () => {
         LineFocusStyle.UNDERLINE, container, defaultHeight);
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
-    lineFocusMoved = false;
+    lineFocusContentPositionChanged = false;
 
     assertTrue(
         lineFocusController.onKeyDown(downKey(), container, defaultHeight));
     assertTrue(
         lineFocusController.onKeyDown(upKey(), container, defaultHeight));
 
-    assertTrue(lineFocusMoved);
+    assertTrue(lineFocusContentPositionChanged);
   });
 
   test(
@@ -499,14 +509,14 @@ suite('LineFocusController', () => {
         lineFocusController.toggle(false, container, defaultHeight);
         lineFocusController.onMovementChange(
             LineFocusMovement.CURSOR, container, defaultHeight);
-        lineFocusMoved = false;
+        lineFocusContentPositionChanged = false;
 
         assertFalse(
             lineFocusController.onKeyDown(downKey(), container, defaultHeight));
         assertFalse(
             lineFocusController.onKeyDown(upKey(), container, defaultHeight));
 
-        assertFalse(lineFocusMoved);
+        assertFalse(lineFocusContentPositionChanged);
       });
 
   suite('toggle', () => {
