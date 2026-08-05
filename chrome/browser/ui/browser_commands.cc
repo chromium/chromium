@@ -276,17 +276,17 @@ const char kChPlatformOverrideForTabletSite[] = "Android";
 void CreateAndShowNewWindowWithContents(
     std::unique_ptr<content::WebContents> contents,
     BrowserWindowInterface* original_browser) {
-  Browser* new_browser = nullptr;
+  BrowserWindowInterface* new_browser = nullptr;
   DCHECK(original_browser->GetType() != BrowserWindowInterface::TYPE_APP_POPUP);
   if (original_browser->GetType() == BrowserWindowInterface::TYPE_APP) {
     const Browser* browser = original_browser->GetBrowserForMigrationOnly();
     const bool is_trusted_source =
         WindowFeatureController::From(original_browser)->IsTrustedSource();
-    new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+    new_browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
         BrowserInitState::From(browser)->create_params().app_name,
         is_trusted_source, gfx::Rect(), original_browser->GetProfile(), true));
   } else {
-    new_browser = Browser::Create(Browser::CreateParams(
+    new_browser = CreateBrowserWindow(BrowserWindowCreateParams(
         original_browser->GetType(), original_browser->GetProfile(), true));
   }
   // Preserve the size of the original window. The new window has already
@@ -480,9 +480,10 @@ void MoveTabsToWindowImpl(BrowserWindowInterface* source,
   target->GetWindow()->Show();
 }
 
-Browser* CreateNewBrowser(Browser* browser, bool user_gesture) {
-  auto params = Browser::CreateParams(browser->GetProfile(), user_gesture);
-  return Browser::Create(params);
+BrowserWindowInterface* CreateNewBrowser(BrowserWindowInterface* browser,
+                                         bool user_gesture) {
+  auto params = BrowserWindowCreateParams(browser->GetProfile(), user_gesture);
+  return CreateBrowserWindow(std::move(params));
 }
 
 struct MruTabResult {
@@ -620,13 +621,13 @@ tabs::TabInterface* GetTabAndRevertIfNecessaryHelper(
     case WindowOpenDisposition::NEW_WINDOW: {
       std::unique_ptr<WebContents> new_tab = current_contents->Clone();
       WebContents* raw_new_tab = new_tab.get();
-      Browser* new_browser =
-          Browser::Create(Browser::CreateParams(browser->GetProfile(), true));
-      new_browser->tab_strip_model()->AddWebContents(std::move(new_tab), -1,
-                                                     ui::PAGE_TRANSITION_LINK,
-                                                     AddTabTypes::ADD_ACTIVE);
+      BrowserWindowInterface* new_browser = CreateBrowserWindow(
+          BrowserWindowCreateParams(browser->GetProfile(), true));
+      new_browser->GetTabStripModel()->AddWebContents(std::move(new_tab), -1,
+                                                      ui::PAGE_TRANSITION_LINK,
+                                                      AddTabTypes::ADD_ACTIVE);
       new_browser->GetWindow()->Show();
-      return new_browser->tab_strip_model()->GetTabForWebContents(raw_new_tab);
+      return new_browser->GetTabStripModel()->GetTabForWebContents(raw_new_tab);
     }
     default:
       BrowserWindow::FromBrowser(browser)->GetLocationBar()->Revert();
@@ -900,12 +901,12 @@ BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
     return nullptr;
   }
 
-  Browser::CreateParams params =
-      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL, profile,
+                                   true);
   params.should_trigger_session_restore = should_trigger_session_restore;
 
   base::TimeTicks now = base::TimeTicks::Now();
-  Browser* browser = Browser::Create(params);
+  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
     manager->SetWindowCreationInfo(
         waap::NewWindowCreationSource::kBrowserInitiated, now);
@@ -913,7 +914,7 @@ BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
 
   // Startup tabs could be created during browser creation. Add an empty tab
   // only if no tabs are created.
-  if (browser->tab_strip_model()->empty()) {
+  if (browser->GetTabStripModel()->empty()) {
     AddTabAt(browser, GURL(), -1, true);
   }
 
@@ -1598,17 +1599,18 @@ bool CanMoveTabsToNewWindow(BrowserWindowInterface* browser,
 void MoveGroupToNewWindow(BrowserWindowInterface* browser,
                           tab_groups::TabGroupId group) {
   Browser* current_browser = browser->GetBrowserForMigrationOnly();
-  Browser* new_browser;
+  BrowserWindowInterface* new_browser;
   if (current_browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
       web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
     auto* app_controller = web_app::AppBrowserController::From(current_browser);
-    new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+    new_browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
         BrowserInitState::From(current_browser)->create_params().app_name,
         app_controller->IsTrustedSource(), gfx::Rect(),
         current_browser->GetProfile(), true));
-    web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
+    web_app::MaybeAddPinnedHomeTab(new_browser->GetBrowserForMigrationOnly(),
+                                   app_controller->app_id());
   } else {
-    new_browser = CreateNewBrowser(current_browser, true);
+    new_browser = CreateNewBrowser(browser, true);
   }
 
   MoveGroupToWindowImpl(browser, new_browser, group);
@@ -1621,18 +1623,19 @@ void MoveTabsToNewWindow(BrowserWindowInterface* browser,
   }
 
   Browser* current_browser = browser->GetBrowserForMigrationOnly();
-  Browser* new_browser;
+  BrowserWindowInterface* new_browser;
   base::TimeTicks now = base::TimeTicks::Now();
   if (current_browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
       web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
     auto* app_controller = web_app::AppBrowserController::From(current_browser);
-    new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+    new_browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
         BrowserInitState::From(current_browser)->create_params().app_name,
         app_controller->IsTrustedSource(), gfx::Rect(),
         current_browser->GetProfile(), true));
-    web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
+    web_app::MaybeAddPinnedHomeTab(new_browser->GetBrowserForMigrationOnly(),
+                                   app_controller->app_id());
   } else {
-    new_browser = CreateNewBrowser(current_browser, true);
+    new_browser = CreateNewBrowser(browser, true);
   }
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SetWindowCreationInfo(
@@ -2825,8 +2828,8 @@ BrowserWindowInterface* OpenInChrome(
           ->FindTabbedBrowser();
 
   if (!target_browser) {
-    target_browser = Browser::Create(
-        Browser::CreateParams(hosted_app_browser->GetProfile(), true));
+    target_browser = CreateBrowserWindow(
+        BrowserWindowCreateParams(hosted_app_browser->GetProfile(), true));
   }
 
   web_app::ReparentWebContentsIntoBrowserImpl(

@@ -64,3 +64,13 @@ IN_PROC_BROWSER_TEST_F(CreateBrowserWindowBrowserTest,
   EXPECT_EQ(BrowserWindowInterface::TYPE_APP, app_browser->GetType());
 }
 
+IN_PROC_BROWSER_TEST_F(CreateBrowserWindowBrowserTest,
+                       CreateDevToolsBrowserWindow) {
+  BrowserWindowCreateParams create_params =
+      BrowserWindowCreateParams::CreateForDevTools(browser()->GetProfile());
+
+  BrowserWindowInterface* devtools_browser =
+      CreateBrowserWindow(std::move(create_params));
+  ASSERT_TRUE(devtools_browser);
+  EXPECT_EQ(BrowserWindowInterface::TYPE_DEVTOOLS, devtools_browser->GetType());
+}

@@ -143,7 +143,8 @@ Browser* GetOrCreateBrowser(Profile* profile, bool user_gesture) {
 
   if (!browser && GetBrowserWindowCreationStatusForProfile(*profile) ==
                       Browser::CreationStatus::kOk) {
-    browser = Browser::Create(Browser::CreateParams(profile, user_gesture));
+    browser =
+        CreateBrowserWindow(BrowserWindowCreateParams(profile, user_gesture));
   }
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
@@ -228,10 +229,11 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
   return true;
 }
 
-Browser::ValueSpecified GetOriginSpecified(const NavigateParams& params) {
+BrowserWindowCreateParams::ValueSpecified GetOriginSpecified(
+    const NavigateParams& params) {
   return params.window_features.has_x && params.window_features.has_y
-             ? Browser::ValueSpecified::kSpecified
-             : Browser::ValueSpecified::kUnspecified;
+             ? BrowserWindowCreateParams::ValueSpecified::kSpecified
+             : BrowserWindowCreateParams::ValueSpecified::kUnspecified;
 }
 
 // Returns a Browser and tab index. The browser can host the navigation or
@@ -305,8 +307,9 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
             BrowserInitState::From(params.browser)->create_params().app_name;
       }
 
-      auto browser_params = Browser::CreateParams::CreateForPictureInPicture(
-          app_name, params.trusted_source, profile, params.user_gesture);
+      auto browser_params =
+          BrowserWindowCreateParams::CreateForPictureInPicture(
+              app_name, params.trusted_source, profile, params.user_gesture);
       DCHECK(params.contents_to_insert);
       auto pip_options =
           params.contents_to_insert->GetPictureInPictureOptions();
@@ -331,7 +334,7 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
                                                              display);
 
       browser_params.omit_from_session_restore = true;
-      return {Browser::Create(browser_params), -1};
+      return {CreateBrowserWindow(std::move(browser_params)), -1};
     }
     case WindowOpenDisposition::NEW_POPUP: {
       // Make a new popup window.
@@ -346,33 +349,33 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
             BrowserInitState::From(params.browser)->create_params().app_name;
       }
       if (GetBrowserWindowCreationStatusForProfile(*profile) !=
-          Browser::CreationStatus::kOk) {
+          BrowserWindowInterface::CreationStatus::kOk) {
         return {nullptr, -1};
       }
       if (app_name.empty()) {
-        Browser::CreateParams browser_params(Browser::TYPE_POPUP, profile,
-                                             params.user_gesture);
-        browser_params.trusted_source = params.trusted_source;
+        BrowserWindowCreateParams browser_params(
+            BrowserWindowInterface::TYPE_POPUP, profile, params.user_gesture);
+        browser_params.is_trusted_source = params.trusted_source;
         browser_params.initial_bounds = params.window_features.bounds;
         browser_params.initial_origin_specified = GetOriginSpecified(params);
         browser_params.can_maximize = !additional_params.tab_modal_popup;
         browser_params.can_fullscreen = !additional_params.tab_modal_popup;
-        return {Browser::Create(browser_params), -1};
+        return {CreateBrowserWindow(std::move(browser_params)), -1};
       }
-      Browser::CreateParams browser_params =
-          Browser::CreateParams::CreateForAppPopup(
+      BrowserWindowCreateParams browser_params =
+          BrowserWindowCreateParams::CreateForAppPopup(
               app_name, params.trusted_source, params.window_features.bounds,
               profile, params.user_gesture);
       browser_params.initial_origin_specified = GetOriginSpecified(params);
-      return {Browser::Create(browser_params), -1};
+      return {CreateBrowserWindow(std::move(browser_params)), -1};
     }
     case WindowOpenDisposition::NEW_WINDOW: {
       // Make a new normal browser window.
-      Browser* browser = nullptr;
+      BrowserWindowInterface* browser = nullptr;
       if (GetBrowserWindowCreationStatusForProfile(*profile) ==
-          Browser::CreationStatus::kOk) {
-        browser = Browser::Create(
-            Browser::CreateParams(profile, params.user_gesture));
+          BrowserWindowInterface::CreationStatus::kOk) {
+        browser = CreateBrowserWindow(
+            BrowserWindowCreateParams(profile, params.user_gesture));
       }
       return {browser, -1};
     }

@@ -114,6 +114,7 @@ namespace {
 void CopyDesktopParamsToBrowserParams(
     const BrowserWindowCreateParams& create_params,
     Browser::CreateParams& browser_params) {
+  browser_params.app_name = create_params.app_name;
   browser_params.omit_from_session_restore =
       create_params.omit_from_session_restore;
   browser_params.should_trigger_session_restore =
@@ -201,7 +202,9 @@ BrowserWindowInterface* CreateBrowserWindow(
   CHECK_EQ(BrowserWindowInterface::CreationStatus::kOk,
            GetBrowserWindowCreationStatusForProfile(*create_params.profile));
 
-  if (!create_params.app_name.empty()) {
+  if (!create_params.app_name.empty() &&
+      (create_params.type == BrowserWindowInterface::TYPE_APP ||
+       create_params.type == BrowserWindowInterface::TYPE_APP_POPUP)) {
     return CreateAppBrowserWindow(std::move(create_params));
   }
 

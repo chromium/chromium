@@ -334,8 +334,9 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // created in response to the user clicking on chrome. There was an
     // incomplete check on whether a user gesture created a window which looked
     // at the state of the MessageLoop.
-    Browser::CreateParams params = Browser::CreateParams(profile_, false);
-    params.creation_source = Browser::CreationSource::kStartupCreator;
+    BrowserWindowCreateParams params(profile_, false);
+    params.creation_source =
+        BrowserWindowCreateParams::CreationSource::kStartupCreator;
 #if BUILDFLAG(IS_LINUX)
     params.startup_id = startup_id;
 #endif
@@ -345,11 +346,14 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     }
 
     base::TimeTicks now = base::TimeTicks::Now();
-    browser = Browser::Create(params);
-    if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+    BrowserWindowInterface* browser_window =
+        CreateBrowserWindow(std::move(params));
+    if (auto* manager =
+            InitialWebUIWindowMetricsManager::From(browser_window)) {
       manager->SetWindowCreationInfo(
           waap::NewWindowCreationSource::kBrowserInitiated, now);
     }
+    browser = browser_window->GetBrowserForMigrationOnly();
   }
   CHECK(profile_);
 
