@@ -174,11 +174,28 @@ class ActorTask : public base::SupportsUserData {
     kTransient = 1,
   };
 
+  enum class InterruptReason {
+    kUnknownReason = 0,
+    kTaskComplete = 1,
+    kWaitingUserInput = 2,
+    kWaitingUserClarification = 3,
+    kWaitingUserConfirmation = 4,
+    kWaitingUserTakeOver = 5,
+    kWaitingIrrelevantUserInput = 6,
+    kWaitingUnsafeCounterAbuseVerdict = 7,
+    kWaitingForExperimentalTriggeringConsent = 8,
+    kMaxValue = kWaitingForExperimentalTriggeringConsent,
+  };
+
   State GetState() const;
   // TODO(bokan): This should be private (this class must be in control of its
   // state) but is used by tests. Make the tests friends (or update the tests)
   // and remove it from the public interface.
   void SetState(State new_state);
+
+  std::optional<InterruptReason> GetInterruptReason() const {
+    return interrupt_reason_;
+  }
 
   TaskDuration get_task_duration() const { return duration_; }
 
@@ -209,7 +226,9 @@ class ActorTask : public base::SupportsUserData {
   // retain_user_control is set to `true`.
   // TODO(crbug.com/484367299): Implement a proper actor task state for
   // interrupt-with-user-control.
-  void Interrupt(bool retain_user_control = false);
+  void Interrupt(
+      bool retain_user_control = false,
+      InterruptReason interrupt_reason = InterruptReason::kUnknownReason);
 
   // Uninterrupt from waiting on user input.
   void Uninterrupt(State resumed_state);
@@ -439,6 +458,8 @@ class ActorTask : public base::SupportsUserData {
 
   // Once a task is stopped what the reason was.
   std::optional<StoppedReason> stopped_reason_;
+
+  std::optional<InterruptReason> interrupt_reason_;
 
   // This is owned by actor keyed service which owns this class.
   const raw_ref<const EnterprisePolicyChecker> policy_checker_;

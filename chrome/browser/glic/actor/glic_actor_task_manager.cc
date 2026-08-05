@@ -94,6 +94,38 @@ tabs::TabInterface* GetCrashedTab(actor::ActorTask& task) {
   return nullptr;
 }
 
+actor::ActorTask::InterruptReason ConvertMojoInterruptReason(
+    std::optional<mojom::ActorTaskInterruptReason> mojo_reason) {
+  if (!mojo_reason.has_value()) {
+    return actor::ActorTask::InterruptReason::kUnknownReason;
+  }
+  switch (mojo_reason.value()) {
+    case mojom::ActorTaskInterruptReason::kUnknownReason:
+      return actor::ActorTask::InterruptReason::kUnknownReason;
+    case mojom::ActorTaskInterruptReason::kTaskComplete:
+      return actor::ActorTask::InterruptReason::kTaskComplete;
+    case mojom::ActorTaskInterruptReason::kWaitingUserInput:
+      return actor::ActorTask::InterruptReason::kWaitingUserInput;
+    case mojom::ActorTaskInterruptReason::kWaitingUserClarification:
+      return actor::ActorTask::InterruptReason::kWaitingUserClarification;
+    case mojom::ActorTaskInterruptReason::kWaitingUserConfirmation:
+      return actor::ActorTask::InterruptReason::kWaitingUserConfirmation;
+    case mojom::ActorTaskInterruptReason::kWaitingUserTakeOver:
+      return actor::ActorTask::InterruptReason::kWaitingUserTakeOver;
+    case mojom::ActorTaskInterruptReason::kWaitingIrrelevantUserInput:
+      return actor::ActorTask::InterruptReason::kWaitingIrrelevantUserInput;
+    case mojom::ActorTaskInterruptReason::kWaitingUnsafeCounterAbuseVerdict:
+      return actor::ActorTask::InterruptReason::
+          kWaitingUnsafeCounterAbuseVerdict;
+    case mojom::ActorTaskInterruptReason::
+        kWaitingForExperimentalTriggeringConsent:
+      return actor::ActorTask::InterruptReason::
+          kWaitingForExperimentalTriggeringConsent;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 GlicActorClientSessionInterface::~GlicActorClientSessionInterface() = default;
@@ -882,6 +914,7 @@ void GlicActorClientSession::InterruptActorTask(
     std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) {
   auto actor_task_id = actor::TaskId(task_id);
   instance_metrics().InterruptActorTask();
+
   actor::ActorTask* task = actor_keyed_service().GetTask(actor_task_id);
   if (!task) {
     actor_keyed_service().GetJournal().Log(GURL::EmptyGURL(), actor_task_id,
@@ -892,7 +925,10 @@ void GlicActorClientSession::InterruptActorTask(
                                                .Build());
     return;
   }
-  task->Interrupt();
+
+  actor::ActorTask::InterruptReason reason =
+      ConvertMojoInterruptReason(interrupt_reason);
+  task->Interrupt(/*retain_user_control=*/false, reason);
 }
 
 void GlicActorClientSession::UninterruptActorTask(int32_t task_id) {

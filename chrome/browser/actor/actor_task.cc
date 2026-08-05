@@ -521,12 +521,14 @@ void ActorTask::Resume() {
   SetState(State::kReflecting);
 }
 
-void ActorTask::Interrupt(bool retain_user_control) {
+void ActorTask::Interrupt(bool retain_user_control,
+                          InterruptReason interrupt_reason) {
   if (GetState() != State::kReflecting && GetState() != State::kActing) {
     return;
   }
   interrupted_task_needs_user_control_ = retain_user_control;
   execution_engine_->PauseOngoingActions();
+  interrupt_reason_ = interrupt_reason;
   SetState(State::kWaitingOnUser);
 }
 
@@ -534,6 +536,7 @@ void ActorTask::Uninterrupt(State resumed_state) {
   if (GetState() != State::kWaitingOnUser) {
     return;
   }
+  interrupt_reason_ = std::nullopt;
   interrupted_task_needs_user_control_ = false;
   SetState(resumed_state);
   execution_engine_->DidUninterruptTask();

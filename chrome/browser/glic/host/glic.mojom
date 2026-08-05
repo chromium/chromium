@@ -466,6 +466,8 @@ enum ActorTaskInterruptReason {
   kWaitingIrrelevantUserInput = 6,
   // Actor task was waiting for user to respond to unsafe counter-abuse verdict.
   [MinVersion=1] kWaitingUnsafeCounterAbuseVerdict = 7,
+  // Actor task was waiting for user to consent on experimental triggering.
+  [MinVersion=2] kWaitingForExperimentalTriggeringConsent = 8,
 };
 
 // @generate glic_api

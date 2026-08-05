@@ -100,6 +100,8 @@ export enum ActorTaskInterruptReason {
   WAITING_IRRELEVANT_USER_INPUT = 6,
   // Actor task was waiting for user to respond to unsafe counter-abuse verdict.
   WAITING_UNSAFE_COUNTER_ABUSE_VERDICT = 7,
+  // Actor task was waiting for user to consent on experimental triggering.
+  WAITING_FOR_EXPERIMENTAL_TRIGGERING_CONSENT = 8,
 }
 
 // Reason why capturing desktop screenshot failed. NOTE: This may be extended in
