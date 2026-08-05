@@ -95,6 +95,19 @@ suite('SpeechModel', () => {
     assertEquals(voice3, speechModel.getPreviewVoicePlaying());
   });
 
+  test('setActiveUtterance', () => {
+    const utterance1 = new SpeechSynthesisUtterance('hello');
+    const utterance2 = null;
+    const utterance3 = new SpeechSynthesisUtterance('world');
+
+    speechModel.setActiveUtterance(utterance1);
+    assertEquals(utterance1, speechModel.getActiveUtterance());
+    speechModel.setActiveUtterance(utterance2);
+    assertEquals(utterance2, speechModel.getActiveUtterance());
+    speechModel.setActiveUtterance(utterance3);
+    assertEquals(utterance3, speechModel.getActiveUtterance());
+  });
+
   test('setEngineState', () => {
     const state1 = SpeechEngineState.LOADING;
     const state2 = SpeechEngineState.NONE;

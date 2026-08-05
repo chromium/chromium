@@ -89,6 +89,10 @@ export class SpeechModel {
   private resumeSpeechOnVoiceMenuClose_: boolean = false;
   private speechVolume_: number = 1.0;
 
+  // The current utterance being spoken by the speech engine.
+  // This is null if speech is not active.
+  private activeUtterance_: SpeechSynthesisUtterance|null = null;
+
   setVolume(volume: number): void {
     this.speechVolume_ = volume;
   }
@@ -232,5 +236,13 @@ export class SpeechModel {
 
   incrementWordsHeard(): void {
     this.wordsHeard_++;
+  }
+
+  setActiveUtterance(utterance: SpeechSynthesisUtterance|null) {
+    this.activeUtterance_ = utterance;
+  }
+
+  getActiveUtterance() {
+    return this.activeUtterance_;
   }
 }
