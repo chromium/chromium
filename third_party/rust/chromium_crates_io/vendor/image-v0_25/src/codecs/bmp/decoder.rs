@@ -1278,8 +1278,25 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
 
     /// Read ICC profile data from the file.
     fn read_icc_profile(&mut self, icc: &ParsedIccProfile) -> ImageResult<()> {
+        let profile_end = icc
+            .profile_offset
+            .checked_add(u64::from(icc.profile_size))
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::InvalidData, "BMP ICC profile range overflow")
+            })?;
+        let stream_len = self.reader.seek(SeekFrom::End(0))?;
+        if profile_end > stream_len {
+            return Err(io::Error::new(
+                io::ErrorKind::UnexpectedEof,
+                "BMP ICC profile extends beyond file",
+            )
+            .into());
+        }
+
         self.reader.seek(SeekFrom::Start(icc.profile_offset))?;
-        let mut profile_data = vec![0u8; icc.profile_size as usize];
+        let profile_size = icc.profile_size as usize;
+        let mut profile_data = vec_try_with_capacity(profile_size)?;
+        profile_data.resize(profile_size, 0);
         self.reader.read_exact(&mut profile_data)?;
         self.icc_profile = Some(profile_data);
         Ok(())
@@ -2332,6 +2349,31 @@ mod test {
             "rgb24prof2.bmp",
             moxcms::DataColorSpace::Rgb,
             moxcms::ProfileClass::DisplayDevice,
+        );
+    }
+
+    #[test]
+    fn bmp_v5_rejects_truncated_icc_profile_before_allocation() {
+        let mut bmp = vec![0; 138];
+        bmp[0..2].copy_from_slice(b"BM");
+        bmp[2..6].copy_from_slice(&138u32.to_le_bytes());
+        bmp[10..14].copy_from_slice(&138u32.to_le_bytes());
+        bmp[14..18].copy_from_slice(&124u32.to_le_bytes());
+        bmp[18..22].copy_from_slice(&1i32.to_le_bytes());
+        bmp[22..26].copy_from_slice(&1i32.to_le_bytes());
+        bmp[26..28].copy_from_slice(&1u16.to_le_bytes());
+        bmp[28..30].copy_from_slice(&32u16.to_le_bytes());
+        bmp[70..74].copy_from_slice(&u32::from_be_bytes(*b"MBED").to_le_bytes());
+        bmp[126..130].copy_from_slice(&0x90u32.to_le_bytes());
+        bmp[130..134].copy_from_slice(&u32::MAX.to_le_bytes());
+
+        let err = match BmpDecoder::new(Cursor::new(bmp)) {
+            Ok(_) => panic!("truncated ICC profile should fail"),
+            Err(err) => err,
+        };
+
+        assert!(
+            matches!(err, ImageError::IoError(err) if err.kind() == io::ErrorKind::UnexpectedEof)
         );
     }
 

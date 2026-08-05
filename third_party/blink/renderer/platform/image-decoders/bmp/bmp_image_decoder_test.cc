@@ -4,11 +4,14 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <tuple>
 
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -42,6 +45,27 @@ std::unique_ptr<ImageDecoder> CreateBMPDecoder() {
   return CreateBmpImageDecoder(
       ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit);
+}
+
+Vector<uint8_t> MakeBmpWithTruncatedIccProfile() {
+  Vector<uint8_t> data(138);
+  auto writer = base::SpanWriter(base::span(data));
+  CHECK(writer.WriteU8LittleEndian('B'));
+  CHECK(writer.WriteU8LittleEndian('M'));
+  CHECK(writer.WriteU32LittleEndian(138));
+  CHECK(writer.Skip(4u));
+  CHECK(writer.WriteU32LittleEndian(138));
+  CHECK(writer.WriteU32LittleEndian(124));
+  CHECK(writer.WriteI32LittleEndian(1));
+  CHECK(writer.WriteI32LittleEndian(1));
+  CHECK(writer.WriteU16LittleEndian(1));
+  CHECK(writer.WriteU16LittleEndian(32));
+  CHECK(writer.Skip(40u));
+  CHECK(writer.WriteU32LittleEndian(0x4D424544));  // "MBED"
+  CHECK(writer.Skip(52u));
+  CHECK(writer.WriteU32LittleEndian(0x90));
+  CHECK(writer.WriteU32LittleEndian(UINT32_MAX));
+  return data;
 }
 
 enum class RustFeatureState { kRustEnabled, kRustDisabled };
@@ -231,6 +255,18 @@ TEST_P(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
   EXPECT_FALSE(decoder->Failed());
+}
+
+TEST(BMPRustImageDecoderTest, RejectsTruncatedIccProfileBeforeAllocation) {
+  std::unique_ptr<ImageDecoder> decoder = std::make_unique<BmpRustImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      ImageDecoder::kNoDecodedImageByteLimit);
+  Vector<uint8_t> bmp_data = MakeBmpWithTruncatedIccProfile();
+  scoped_refptr<SharedBuffer> data = SharedBuffer::Create(base::span(bmp_data));
+  decoder->SetData(data.get(), true);
+
+  EXPECT_FALSE(decoder->DecodeFrameBufferAtIndex(0));
+  EXPECT_TRUE(decoder->Failed());
 }
 
 class BMPSuiteEntry {

@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000003 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Mon, 3 Aug 2026 19:40:54 +0000
+Subject: [PATCH] bmp/decoder: Validate ICC profile range before reading
+
+A malformed BMP V5 header can advertise an embedded ICC profile whose
+configured range extends past EOF. The decoder attempted to allocate the
+configured profile size before read_exact failed, which can crash 32-bit
+renderers on web-content supplied BMPs.
+
+This mirrors upstream image-rs PR #3095:
+  https://github.com/image-rs/image/pull/3095
+---
+ .../image-v0_25/src/codecs/bmp/decoder.rs     | 44 ++++++++++++++++++-
+ 1 file changed, 43 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs b/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
+index c7b6ba3f5b810..535c2bd3b0b7b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
+@@ -1278,8 +1278,25 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
+ 
+     /// Read ICC profile data from the file.
+     fn read_icc_profile(&mut self, icc: &ParsedIccProfile) -> ImageResult<()> {
++        let profile_end = icc
++            .profile_offset
++            .checked_add(u64::from(icc.profile_size))
++            .ok_or_else(|| {
++                io::Error::new(io::ErrorKind::InvalidData, "BMP ICC profile range overflow")
++            })?;
++        let stream_len = self.reader.seek(SeekFrom::End(0))?;
++        if profile_end > stream_len {
++            return Err(io::Error::new(
++                io::ErrorKind::UnexpectedEof,
++                "BMP ICC profile extends beyond file",
++            )
++            .into());
++        }
++
+         self.reader.seek(SeekFrom::Start(icc.profile_offset))?;
+-        let mut profile_data = vec![0u8; icc.profile_size as usize];
++        let profile_size = icc.profile_size as usize;
++        let mut profile_data = vec_try_with_capacity(profile_size)?;
++        profile_data.resize(profile_size, 0);
+         self.reader.read_exact(&mut profile_data)?;
+         self.icc_profile = Some(profile_data);
+         Ok(())
+@@ -2335,6 +2352,31 @@ mod test {
+         );
+     }
+ 
++    #[test]
++    fn bmp_v5_rejects_truncated_icc_profile_before_allocation() {
++        let mut bmp = vec![0; 138];
++        bmp[0..2].copy_from_slice(b"BM");
++        bmp[2..6].copy_from_slice(&138u32.to_le_bytes());
++        bmp[10..14].copy_from_slice(&138u32.to_le_bytes());
++        bmp[14..18].copy_from_slice(&124u32.to_le_bytes());
++        bmp[18..22].copy_from_slice(&1i32.to_le_bytes());
++        bmp[22..26].copy_from_slice(&1i32.to_le_bytes());
++        bmp[26..28].copy_from_slice(&1u16.to_le_bytes());
++        bmp[28..30].copy_from_slice(&32u16.to_le_bytes());
++        bmp[70..74].copy_from_slice(&u32::from_be_bytes(*b"MBED").to_le_bytes());
++        bmp[126..130].copy_from_slice(&0x90u32.to_le_bytes());
++        bmp[130..134].copy_from_slice(&u32::MAX.to_le_bytes());
++
++        let err = match BmpDecoder::new(Cursor::new(bmp)) {
++            Ok(_) => panic!("truncated ICC profile should fail"),
++            Err(err) => err,
++        };
++
++        assert!(
++            matches!(err, ImageError::IoError(err) if err.kind() == io::ErrorKind::UnexpectedEof)
++        );
++    }
++
+     /// A reader that simulates partial data availability for testing resumable decoding.
+     /// It wraps a byte slice and limits how many bytes can be read before returning UnexpectedEof.
+     struct PartialReader {
+-- 
+2.54.0
