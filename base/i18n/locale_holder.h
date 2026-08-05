@@ -16,28 +16,27 @@
 
 namespace base::i18n {
 
-template <typename T>
-class ScopedLocaleOverride;
-
 // ThreadSafeLocaleHolder is a thread-safe container for a single LanguageTag
 // (locale). It allows any thread to safely read and write the active locale
 // concurrently under an internal lock. This class is final and non-virtual.
 class BASE_I18N_EXPORT ThreadSafeLocaleHolder final {
  public:
+  // Constructs a holder initialized with the specified `initial_locale`.
   explicit ThreadSafeLocaleHolder(LanguageTag initial_locale);
-  ~ThreadSafeLocaleHolder();
+  ~ThreadSafeLocaleHolder() = default;
 
   // Returns the current LanguageTag. Safe to call concurrently from any thread.
   LanguageTag GetLocale() const;
 
-  // Updates the current LanguageTag. Safe to call concurrently from any thread.
+  // Atomically updates the active locale to the specified `locale`. Safe to
+  // call concurrently from any thread.
   void SetLocale(const LanguageTag& locale);
 
  private:
-  template <typename T>
-  friend class ScopedLocaleOverride;
-
+  // Mutex protecting access to the underlying `locale_` member.
   mutable base::Lock lock_;
+
+  // The active locale value.
   LanguageTag locale_ GUARDED_BY(lock_);
 };
 
@@ -58,8 +57,6 @@ class BASE_I18N_EXPORT SequenceCheckedLocaleHolder final {
   void SetLocale(const LanguageTag& locale);
 
  private:
-  template <typename T>
-  friend class ScopedLocaleOverride;
   SEQUENCE_CHECKER(sequence_checker_);
   ThreadSafeLocaleHolder holder_;
 };

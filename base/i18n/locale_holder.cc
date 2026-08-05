@@ -13,8 +13,6 @@ using ::base::i18n::LanguageTag;
 ThreadSafeLocaleHolder::ThreadSafeLocaleHolder(LanguageTag initial_locale)
     : locale_(initial_locale) {}
 
-ThreadSafeLocaleHolder::~ThreadSafeLocaleHolder() = default;
-
 LanguageTag ThreadSafeLocaleHolder::GetLocale() const {
   base::AutoLock lock(lock_);
   return locale_;
@@ -22,9 +20,7 @@ LanguageTag ThreadSafeLocaleHolder::GetLocale() const {
 
 void ThreadSafeLocaleHolder::SetLocale(const LanguageTag& locale) {
   base::AutoLock lock(lock_);
-  if (locale_ != locale) {
-    locale_ = locale;
-  }
+  locale_ = locale;
 }
 
 SequenceCheckedLocaleHolder::SequenceCheckedLocaleHolder(
