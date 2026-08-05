@@ -207,6 +207,9 @@ public class ListMenuItemViewBinder {
             view.setOnKeyListener(model.get(ListMenuItemProperties.KEY_LISTENER));
         } else if (propertyKey == ListMenuItemProperties.TOUCH_LISTENER) {
             view.setOnTouchListener(model.get(ListMenuItemProperties.TOUCH_LISTENER));
+        } else if (propertyKey == ListMenuItemProperties.GENERIC_MOTION_LISTENER) {
+            view.setOnGenericMotionListener(
+                    model.get(ListMenuItemProperties.GENERIC_MOTION_LISTENER));
         } else if (propertyKey == ListMenuItemProperties.LONG_CLICK_LISTENER) {
             view.setOnLongClickListener(model.get(ListMenuItemProperties.LONG_CLICK_LISTENER));
         } else if (propertyKey == ListMenuItemProperties.ORDER) {

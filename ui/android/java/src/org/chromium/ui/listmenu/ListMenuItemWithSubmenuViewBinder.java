@@ -10,6 +10,7 @@ import static android.view.View.VISIBLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CONTENT_DESCRIPTION;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.GENERIC_MOTION_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
@@ -87,6 +88,8 @@ class ListMenuItemWithSubmenuViewBinder {
             view.setOnKeyListener(model.get(KEY_LISTENER));
         } else if (propertyKey == TOUCH_LISTENER) {
             view.setOnTouchListener(model.get(TOUCH_LISTENER));
+        } else if (propertyKey == GENERIC_MOTION_LISTENER) {
+            view.setOnGenericMotionListener(model.get(GENERIC_MOTION_LISTENER));
         } else if (propertyKey == LONG_CLICK_LISTENER) {
             view.setOnLongClickListener(model.get(LONG_CLICK_LISTENER));
         } else if (propertyKey == TEXT_APPEARANCE_ID) {

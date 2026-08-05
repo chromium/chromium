@@ -55,6 +55,7 @@ public class ListMenuItemViewBinderUnitTest {
     @Mock private ImageView mSubmenuArrow;
     @Mock private TextView mSubtitleView;
     @Mock private LayoutParams mLayoutParams;
+    @Mock private View.OnGenericMotionListener mOnGenericMotionListener;
 
     private Context mContext;
 
@@ -414,5 +415,19 @@ public class ListMenuItemViewBinderUnitTest {
         verify(mStartIcon, never()).setImageDrawable(null);
         verify(mStartIcon, never()).setVisibility(View.INVISIBLE);
         verify(mStartIcon, never()).setVisibility(View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    public void testGenericMotionListener() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(
+                                ListMenuItemProperties.GENERIC_MOTION_LISTENER,
+                                mOnGenericMotionListener)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.GENERIC_MOTION_LISTENER);
+        verify(mListItemView).setOnGenericMotionListener(mOnGenericMotionListener);
     }
 }

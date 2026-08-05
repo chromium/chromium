@@ -7,6 +7,7 @@ package org.chromium.ui.listmenu;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CONTENT_DESCRIPTION;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.GENERIC_MOTION_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
@@ -50,6 +51,7 @@ public class ListMenuSubmenuItemProperties {
         IS_TEXT_ELLIPSIZED_AT_END,
         KEY_LISTENER,
         TOUCH_LISTENER,
+        GENERIC_MOTION_LISTENER,
         LONG_CLICK_LISTENER,
         TEXT_APPEARANCE_ID,
         ICON_TINT_COLOR_STATE_LIST_ID

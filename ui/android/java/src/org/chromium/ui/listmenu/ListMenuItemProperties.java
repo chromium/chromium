@@ -98,6 +98,9 @@ public class ListMenuItemProperties {
     public static final WritableObjectPropertyKey<View.OnTouchListener> TOUCH_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<View.OnGenericMotionListener>
+            GENERIC_MOTION_LISTENER = new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<View.OnLongClickListener> LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
@@ -130,6 +133,7 @@ public class ListMenuItemProperties {
         SHOULD_TINT_END_ICON,
         KEY_LISTENER,
         TOUCH_LISTENER,
+        GENERIC_MOTION_LISTENER,
         LONG_CLICK_LISTENER,
         ORDER
     };
