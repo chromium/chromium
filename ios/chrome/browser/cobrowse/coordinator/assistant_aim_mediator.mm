@@ -84,6 +84,8 @@
   // Whether the initial context library has been processed for the current
   // thread.
   BOOL _hasProcessedInitialContextLibrary;
+  // Whether dark mode is currently active.
+  BOOL _isDarkMode;
 }
 
 @synthesize consumer = _consumer;
@@ -122,6 +124,9 @@
         _cobrowseBrowserAgent->SetCobrowseContext(_context);
       }
     }
+    _isDarkMode =
+        (UITraitCollection.currentTraitCollection.userInterfaceStyle ==
+         UIUserInterfaceStyleDark);
     _containerHandler = containerHandler;
     _contextualTasksService = contextualTasksService;
     _urlLoader = URLLoader;
@@ -296,7 +301,10 @@
       animateAssistantContainerToDetent:detent
                                duration:kSheetDetentAnimationDuration
                                   curve:UIViewAnimationCurveEaseInOut];
-  web::NavigationManager::WebLoadParams params(_context.url);
+  GURL baseContextURL = _context.url;
+  GURL urlWithTheme = net::AppendOrReplaceQueryParameter(
+      baseContextURL, "cs", _isDarkMode ? "1" : "0");
+  web::NavigationManager::WebLoadParams params(urlWithTheme);
   _webState->GetNavigationManager()->LoadURLWithParams(params);
 }
 
@@ -440,6 +448,14 @@
                                   curve:UIViewAnimationCurveEaseInOut];
 
   [_delegate assistantAIMMediatorDidFocusFromMinimized:self];
+}
+
+- (void)updateDarkModeState:(BOOL)isDarkMode {
+  if (_isDarkMode == isDarkMode) {
+    return;
+  }
+  _isDarkMode = isDarkMode;
+  [self loadAIMURL];
 }
 
 #pragma mark - CRWWebFramesManagerObserver

@@ -327,6 +327,15 @@ class AssistantAIMUIStateProvider
 
 - (void)assistantAIMViewControllerDidChangeTraits:
     (AssistantAIMViewController*)viewController {
+  // Only consider the dark mode when the tab grid is not visible, and when the
+  // app is not backgrounded to avoid unnecessary updates.
+  if (![self isTabGridVisible]) {
+    UIApplicationState currentState =
+        [[UIApplication sharedApplication] applicationState];
+    if (currentState != UIApplicationStateBackground) {
+      [_mediator updateDarkModeState:[self isDarkMode]];
+    }
+  }
   if (IsIPhoneLandscapeLayout(viewController.traitCollection)) {
     [_containerHandler
         setAssistantContainerDetents:{
@@ -353,6 +362,16 @@ class AssistantAIMUIStateProvider
                                   curve:UIViewAnimationCurveEaseInOut];
   UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+}
+
+// Returns whether dark mode is currently active.
+- (BOOL)isDarkMode {
+  // Only check whether the scene state's window is in dark mode, the
+  // `_viewController` is not reliable, when entering the tab grid its interface
+  // style will be detected as dark mode.
+  SceneState* scene_state = self.browser->GetSceneState();
+  return scene_state.window.traitCollection.userInterfaceStyle ==
+         UIUserInterfaceStyleDark;
 }
 
 - (void)dismissKeyboard {

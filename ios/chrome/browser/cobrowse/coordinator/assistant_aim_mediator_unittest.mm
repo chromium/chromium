@@ -632,9 +632,10 @@ TEST_F(AssistantAIMMediatorTest,
       static_cast<web::FakeNavigationManager*>(
           fake_web_state_->GetNavigationManager());
   ASSERT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
-  EXPECT_EQ(navigation_manager->GetLastLoadURLWithParams()->url,
-            GURL("https://www.google.com/"
-                 "search?udm=50&gsc=2&sourceid=chrome-mobile&gsas=4&csuir=1"));
+  EXPECT_EQ(
+      navigation_manager->GetLastLoadURLWithParams()->url,
+      GURL("https://www.google.com/"
+           "search?udm=50&gsc=2&sourceid=chrome-mobile&gsas=4&csuir=1&cs=0"));
 }
 
 // Tests that didTapStartNewThread loads the zero-state URL, sets a personalized
@@ -669,9 +670,10 @@ TEST_F(AssistantAIMMediatorTest,
       static_cast<web::FakeNavigationManager*>(
           fake_web_state_->GetNavigationManager());
   ASSERT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
-  EXPECT_EQ(navigation_manager->GetLastLoadURLWithParams()->url,
-            GURL("https://www.google.com/"
-                 "search?udm=50&gsc=2&sourceid=chrome-mobile&gsas=4&csuir=1"));
+  EXPECT_EQ(
+      navigation_manager->GetLastLoadURLWithParams()->url,
+      GURL("https://www.google.com/"
+           "search?udm=50&gsc=2&sourceid=chrome-mobile&gsas=4&csuir=1&cs=0"));
 }
 
 // Tests that loadedURL returns the URL of the current WebState, and returns

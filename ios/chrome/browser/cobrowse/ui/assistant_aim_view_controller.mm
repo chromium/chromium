@@ -84,10 +84,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [self setUpHeader];
   [self setUpWebStateView];
 
-  [self
-      registerForTraitChanges:
-          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
-                   withAction:@selector(traitsDidChange)];
+  [self registerForTraitChanges:@[
+    UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class,
+    UITraitUserInterfaceStyle.class
+  ]
+                     withAction:@selector(traitsDidChange)];
   [self traitsDidChange];
 }
 
