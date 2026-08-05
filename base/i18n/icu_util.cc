@@ -61,6 +61,9 @@
 
 namespace base::i18n {
 
+// Exposed to help debug https://crbug.com/40064988
+bool g_icu_initialized = false;
+
 namespace {
 
 #if DCHECK_IS_ON()
@@ -68,7 +71,6 @@ namespace {
 // function isn't harmful (ICU can handle it), being called twice probably
 // indicates a programming error.
 bool g_check_called_once = true;
-bool g_called_once = false;
 #endif  // DCHECK_IS_ON()
 
 #if (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
@@ -379,9 +381,9 @@ bool InitializeICUWithFileDescriptor(
     PlatformFile data_fd,
     const MemoryMappedFile::Region& data_region) {
 #if DCHECK_IS_ON()
-  DCHECK(!g_check_called_once || !g_called_once);
-  g_called_once = true;
+  DCHECK(!g_check_called_once || !g_icu_initialized);
 #endif
+  g_icu_initialized = true;
   if (!InitializeICUWithFileDescriptorInternal(data_fd, data_region)) {
     return false;
   }
@@ -420,9 +422,9 @@ void SetIcuTimeZoneDataDirForTesting(const char* dir) {
 
 bool InitializeICU() {
 #if DCHECK_IS_ON()
-  DCHECK(!g_check_called_once || !g_called_once);
-  g_called_once = true;
+  DCHECK(!g_check_called_once || !g_icu_initialized);
 #endif
+  g_icu_initialized = true;
 
 #if (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_STATIC)
   // The ICU data is statically linked.
