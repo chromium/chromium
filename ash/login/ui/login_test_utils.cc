@@ -5,9 +5,9 @@
 #include "ash/login/ui/login_test_utils.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "ash/login/ui/login_big_user_view.h"
-#include "base/containers/adapters.h"
 #include "base/strings/string_split.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
@@ -116,7 +116,7 @@ bool TabThroughView(ui::test::EventGenerator* event_generator,
 // Performs a DFS for the first button in the views hierarchy
 // The last child is on the top of the z layer stack
 views::View* FindTopButton(views::View* current_view) {
-  for (views::View* child : base::Reversed(current_view->children())) {
+  for (views::View* child : std::views::reverse(current_view->children())) {
     if (views::Button::AsButton(child)) {
       return child;
     }

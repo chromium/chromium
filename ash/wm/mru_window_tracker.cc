@@ -5,6 +5,7 @@
 #include "ash/wm/mru_window_tracker.h"
 
 #include <algorithm>
+#include <ranges>
 #include <vector>
 
 #include "ash/focus/ash_focus_rules.h"
@@ -19,7 +20,6 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chromeos/ui/base/app_types.h"
@@ -137,7 +137,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
   if (mru_windows) {
     // The |mru_windows| are sorted such that the most recent window comes last,
     // hence iterate in reverse order.
-    for (aura::Window* window : base::Reversed(*mru_windows)) {
+    for (aura::Window* window : std::views::reverse(*mru_windows)) {
       // Exclude windows in non-switchable containers and those which should
       // not be included.
       if (window->parent()) {
@@ -191,14 +191,14 @@ MruWindowTracker::WindowList BuildWindowListInternal(
   // TODO(afakhry): Check with UX, if kAllDesks is desired, should we put
   // the active desk's windows at the front?
 
-  for (aura::Window* root : base::Reversed(roots)) {
+  for (aura::Window* root : std::views::reverse(roots)) {
     // |wm::kSwitchableWindowContainerIds[]| contains a list of the container
     // IDs sorted such that the ID of the top-most container comes last. Hence,
     // we iterate in reverse order so the top-most windows are added first.
     const auto switachable_containers =
         GetSwitchableContainersForRoot(root, active_desk_only);
-    for (auto* container : base::Reversed(switachable_containers)) {
-      for (aura::Window* child : base::Reversed(container->children())) {
+    for (auto* container : std::views::reverse(switachable_containers)) {
+      for (aura::Window* child : std::views::reverse(container->children())) {
         // Only add windows that the predicate allows.
         if (!can_include_window_predicate(child))
           continue;

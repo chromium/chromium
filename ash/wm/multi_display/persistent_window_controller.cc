@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/wm/multi_display/persistent_window_controller.h"
-#include "base/memory/raw_ptr.h"
+
+#include <ranges>
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -12,8 +13,8 @@
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -230,7 +231,7 @@ void PersistentWindowController::
   // order (windows added first are stacked at the bottom).
   std::vector<raw_ptr<aura::Window, VectorExperimental>> mru_window_list =
       GetWindowList();
-  for (aura::Window* window : base::Reversed(mru_window_list)) {
+  for (aura::Window* window : std::views::reverse(mru_window_list)) {
     WindowState* window_state = WindowState::Get(window);
     if (!window_state->persistent_window_info_of_display_removal()) {
       continue;

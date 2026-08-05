@@ -4,9 +4,10 @@
 
 #include "ash/wm/tile_group/window_tiling_controller.h"
 
+#include <ranges>
+
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
-#include "base/containers/adapters.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -96,7 +97,7 @@ void WindowTilingController::OnTilingResizeLeft(aura::Window* window) {
   }
 
   // Resizing left decreases X, so reverse iterate through ratios.
-  for (float ratio : base::Reversed(kTilingRatios)) {
+  for (float ratio : std::views::reverse(kTilingRatios)) {
     int new_x = work_area.x() + base::ClampRound(ratio * work_area.width());
     if (window_bounds.x() == work_area.x()) {
       if (new_x < window_bounds.right()) {
@@ -167,7 +168,7 @@ void WindowTilingController::OnTilingResizeUp(aura::Window* window) {
   }
 
   // Resizing up decreases Y, so reverse iterate through ratios.
-  for (float ratio : base::Reversed(kTilingRatios)) {
+  for (float ratio : std::views::reverse(kTilingRatios)) {
     int new_y = work_area.y() + base::ClampRound(ratio * work_area.height());
     if (window_bounds.y() == work_area.y()) {
       if (new_y < window_bounds.bottom()) {

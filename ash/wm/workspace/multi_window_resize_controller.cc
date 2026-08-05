@@ -4,6 +4,8 @@
 
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 
+#include <ranges>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -15,7 +17,6 @@
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/auto_reset.h"
-#include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -512,7 +513,7 @@ aura::Window* MultiWindowResizeController::FindWindowByEdge(
     int y_in_parent) const {
   aura::Window* parent = window_to_ignore->parent();
   const aura::Window::Windows& windows = parent->children();
-  for (aura::Window* window : base::Reversed(windows)) {
+  for (aura::Window* window : std::views::reverse(windows)) {
     if (window == window_to_ignore || !window->IsVisible())
       continue;
 
@@ -546,7 +547,7 @@ aura::Window* MultiWindowResizeController::FindWindowTouching(
   int bottom = window->bounds().bottom();
   aura::Window* parent = window->parent();
   const aura::Window::Windows& windows = parent->children();
-  for (aura::Window* other : base::Reversed(windows)) {
+  for (aura::Window* other : std::views::reverse(windows)) {
     if (other == window || !other->IsVisible())
       continue;
     switch (direction) {

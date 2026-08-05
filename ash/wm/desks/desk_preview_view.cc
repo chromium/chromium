@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <ranges>
 #include <utility>
 
 #include "ash/public/cpp/window_properties.h"
@@ -27,7 +28,6 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -258,7 +258,7 @@ void MirrorLayerTree(
 
     // Step 2: Populate child layers from `source_layer` with their orders.
     size_t order = 0;
-    for (ui::Layer* it : base::Reversed(source_layer->children())) {
+    for (ui::Layer* it : std::views::reverse(source_layer->children())) {
       while (primary_key_taken.contains(order)) {
         order++;
       }

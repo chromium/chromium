@@ -5,6 +5,7 @@
 #include "ash/system/status_area_widget_delegate.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "ash/focus/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
@@ -22,7 +23,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -213,8 +213,8 @@ bool StatusAreaWidgetDelegate::CanActivate() const {
 }
 
 void StatusAreaWidgetDelegate::CalculateTargetBounds() {
-  const auto it =
-      std::ranges::find(base::Reversed(children()), true, &View::GetVisible);
+  const auto it = std::ranges::find(std::views::reverse(children()), true,
+                                    &View::GetVisible);
   const View* last_visible_child = it == children().crend() ? nullptr : *it;
 
   // Set the border for each child, with a different border for the edge child.

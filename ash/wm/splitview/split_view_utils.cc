@@ -4,6 +4,7 @@
 
 #include "ash/wm/splitview/split_view_utils.h"
 
+#include <ranges>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -37,7 +38,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
-#include "base/containers/adapters.h"
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -902,7 +902,7 @@ aura::Window::Windows GetActiveDeskAppWindowsInZOrder(aura::Window* root) {
   const auto children =
       desks_util::GetActiveDeskContainerForRoot(root)->children();
   // Iterate through the desk container's children in reversed order.
-  for (const auto& child : base::Reversed(children)) {
+  for (const auto& child : std::views::reverse(children)) {
     if (CanIncludeWindowInAppMruList(child)) {
       windows.push_back(child.get());
     }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -48,7 +49,6 @@
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -668,7 +668,7 @@ View* ShelfView::GetTooltipHandlerForPoint(const gfx::Point& point) {
   // Similar implementation as views::View, but without going into each
   // child's subviews.
   View::Views children = GetChildrenInZOrder();
-  for (views::View* child : base::Reversed(children)) {
+  for (views::View* child : std::views::reverse(children)) {
     if (!child->GetVisible())
       continue;
 
@@ -1048,7 +1048,7 @@ void ShelfView::UpdateSeparatorIndex() {
   const bool can_drag_view_across_separator =
       drag_view_ && CanDragAcrossSeparator(drag_view_);
 
-  for (size_t i : base::Reversed(visible_views_indices_)) {
+  for (size_t i : std::views::reverse(visible_views_indices_)) {
     const auto& item = model()->items()[i];
     if (IsItemPinned(item)) {
       // The dragged item is temporarily moved to the end of the shelf if it is

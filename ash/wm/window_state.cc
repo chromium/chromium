@@ -7,6 +7,7 @@
 #include <absl/cleanup/cleanup.h>
 
 #include <optional>
+#include <ranges>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -41,7 +42,6 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -1300,7 +1300,7 @@ void WindowState::RestoreHistoryStack::Clear() {
 
 void WindowState::RestoreHistoryStack::PopIncompatible(
     WindowStateType current_state_type) {
-  for (auto state_type : base::Reversed(window_states_)) {
+  for (auto state_type : std::views::reverse(window_states_)) {
     if (CanRestoreState(current_state_type, IgnoreGrouping(state_type))) {
       break;
     }

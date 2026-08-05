@@ -4,6 +4,8 @@
 
 #include "ash/wm/workspace/workspace_window_resizer.h"
 
+#include <ranges>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
@@ -24,7 +26,6 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "ash/wm/workspace_controller.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -138,7 +139,7 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   std::vector<int> WindowOrderAsIntVector(aura::Window* parent) const {
     std::vector<int> result;
     const aura::Window::Windows& windows = parent->children();
-    for (aura::Window* window : base::Reversed(windows)) {
+    for (aura::Window* window : std::views::reverse(windows)) {
       if (window == window_.get() || window == window2_.get() ||
           window == window3_.get()) {
         result.push_back(window->GetId());

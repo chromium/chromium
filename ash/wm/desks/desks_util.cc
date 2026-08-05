@@ -6,6 +6,7 @@
 
 #include <array>
 #include <optional>
+#include <ranges>
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -22,7 +23,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
@@ -263,7 +263,7 @@ std::optional<size_t> GetWindowZOrder(
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     aura::Window* window) {
   size_t position = 0;
-  for (aura::Window* w : base::Reversed(windows)) {
+  for (aura::Window* w : std::views::reverse(windows)) {
     if (IsZOrderTracked(w)) {
       if (w == window)
         return position;

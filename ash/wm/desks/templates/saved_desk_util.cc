@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/templates/saved_desk_util.h"
 
+#include <ranges>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_types.h"
@@ -16,7 +18,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/adapters.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -155,7 +156,8 @@ void UpdateTemplateActivationIndices(DeskTemplate& saved_desk) {
   // that the window with the lowest id gets the lowest activation index. NB:
   // for now, we expect admin templates to only contain a single app.
   for (auto& [app_id, launch_list] : app_id_to_launch_list) {
-    for (auto& [window_id, app_restore_data] : base::Reversed(launch_list)) {
+    for (auto& [window_id, app_restore_data] :
+         std::views::reverse(launch_list)) {
       app_restore_data->window_info.activation_index =
           g_template_next_activation_index--;
     }

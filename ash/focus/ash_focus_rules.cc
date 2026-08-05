@@ -5,6 +5,7 @@
 #include "ash/focus/ash_focus_rules.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -19,7 +20,6 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
-#include "base/containers/adapters.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -278,7 +278,7 @@ aura::Window* AshFocusRules::GetTopmostWindowToActivateForContainerIndex(
 aura::Window* AshFocusRules::GetTopmostWindowToActivateInContainer(
     aura::Window* container,
     aura::Window* ignore) const {
-  for (aura::Window* child : base::Reversed(container->children())) {
+  for (aura::Window* child : std::views::reverse(container->children())) {
     WindowState* window_state = WindowState::Get(child);
     // A floated window should not be activatable if it's hidden on an inactive
     // desk.

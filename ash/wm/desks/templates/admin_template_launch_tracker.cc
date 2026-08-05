@@ -5,6 +5,7 @@
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 
 #include <algorithm>
+#include <ranges>
 #include <vector>
 
 #include "ash/public/cpp/saved_desk_delegate.h"
@@ -15,7 +16,6 @@
 #include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/work_area_insets.h"
-#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
 #include "components/app_restore/window_properties.h"
@@ -49,7 +49,8 @@ void UpdateWindowBounds(DeskTemplate& saved_desk,
       saved_desk.mutable_desk_restore_data()->mutable_app_id_to_launch_list();
 
   for (auto& [app_id, launch_list] : app_id_to_launch_list) {
-    for (auto& [window_id, app_restore_data] : base::Reversed(launch_list)) {
+    for (auto& [window_id, app_restore_data] :
+         std::views::reverse(launch_list)) {
       CHECK(app_restore_data->window_info.current_bounds.has_value());
 
       // The bounds as found in the template are in display-local

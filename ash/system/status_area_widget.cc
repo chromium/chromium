@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 
@@ -52,7 +53,6 @@
 #include "ash/wm/window_pin_util.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
@@ -470,7 +470,7 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   TrayBackgroundView* previous_tray = nullptr;
   bool show_overflow_button = false;
   int used_width = 0;
-  for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
+  for (TrayBackgroundView* tray : std::views::reverse(tray_buttons_)) {
     // Skip non-enabled tray buttons.
     if (!tray->visible_preferred()) {
       continue;
@@ -578,7 +578,7 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
     const int available_width = GetCollapseAvailableWidth(force_collapsible);
 
     int used_width = 0;
-    for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
+    for (TrayBackgroundView* tray : std::views::reverse(tray_buttons_)) {
       // If we reach the final overflow tray button, then all the tray buttons
       // fit and there is no need for a collapse state.
       if (tray == overflow_button_tray_) {

@@ -5,6 +5,7 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 
 #include <algorithm>
+#include <ranges>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -24,7 +25,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "ui/aura/client/aura_constants.h"
@@ -303,7 +303,7 @@ void BackdropController::UpdateBackdrop() {
 
 aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
   const aura::Window::Windows windows = container_->children();
-  for (aura::Window* window : base::Reversed(windows)) {
+  for (aura::Window* window : std::views::reverse(windows)) {
     if (window == backdrop_window_)
       continue;
 

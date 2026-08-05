@@ -5,6 +5,7 @@
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 
 #include <algorithm>
+#include <ranges>
 #include <vector>
 
 #include "ash/root_window_controller.h"
@@ -24,7 +25,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -123,7 +123,7 @@ bool TopTwoVisibleWindowsBothSnapped(
   if (!top_snap_window_state->IsSnapped())
     return false;
 
-  for (aura::Window* window : base::Reversed(windows)) {
+  for (aura::Window* window : std::views::reverse(windows)) {
     // Skip the top one.
     if (window == windows.back())
       continue;

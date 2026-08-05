@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -72,7 +73,6 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -192,7 +192,7 @@ bool MinimizeAllWindows(const aura::Window::Windows& windows,
   aura::Window* container = Shell::Get()->GetPrimaryRootWindow()->GetChildById(
       kShellWindowId_HomeScreenContainer);
   aura::Window::Windows windows_to_minimize;
-  for (aura::Window* window : base::Reversed(windows)) {
+  for (aura::Window* window : std::views::reverse(windows)) {
     if (!container->Contains(window) &&
         !std::ranges::contains(windows_to_ignore, window) &&
         !WindowState::Get(window)->IsMinimized()) {

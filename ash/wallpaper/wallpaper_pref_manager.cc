@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -23,7 +24,6 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -291,7 +291,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     ScopedDictPrefUpdate daily_google_photos_ids_update(
         local_state_, prefs::kRecentDailyGooglePhotosWallpapers);
     base::ListValue id_list;
-    for (const auto& id : base::Reversed(ids)) {
+    for (const auto& id : std::views::reverse(ids)) {
       id_list.Append(base::NumberToString(id));
     }
     base::Value id_list_value(std::move(id_list));

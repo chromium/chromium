@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 
@@ -246,7 +247,6 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -2025,7 +2025,7 @@ void Shell::CloseAllAppWindows() {
     tracker.Add(window.get());
   }
   // Delete from the bottom of mru list so that it won't affect activation.
-  for (auto window : base::Reversed(list)) {
+  for (auto window : std::views::reverse(list)) {
     // Make sure that the window in the `list` is still alive.
     if (tracker.Contains(window)) {
       delete window;

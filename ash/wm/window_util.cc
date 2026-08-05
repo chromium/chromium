@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <tuple>
 
 #include "ash/constants/ash_features.h"
@@ -39,7 +40,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_constants.h"
 #include "ash/wm/wm_event.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/app_types.h"
@@ -137,7 +137,7 @@ aura::Window* FindLowestCommonParent(const aura::Window::Windows& windows) {
 // window found will be the topmost one.
 aura::Window* FindTopMostChild(aura::Window* parent,
                                const aura::Window::Windows& windows) {
-  for (aura::Window* child : base::Reversed(parent->children())) {
+  for (aura::Window* child : std::views::reverse(parent->children())) {
     for (aura::Window* window : windows) {
       if (child == window && !window->is_destroying()) {
         return window;
@@ -267,7 +267,7 @@ std::vector<aura::Window*> SortWindowsBottomToTop(
     }
 
     // Push so bottom-most is on the top of the stack.
-    for (aura::Window* child : base::Reversed(window->children())) {
+    for (aura::Window* child : std::views::reverse(window->children())) {
       stack.push(child);
     }
   }

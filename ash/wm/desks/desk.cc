@@ -7,6 +7,7 @@
 #include <absl/cleanup/cleanup.h>
 
 #include <algorithm>
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -654,7 +654,7 @@ void Desk::MoveWindowsToDesk(Desk* target_desk) {
   aura::WindowTracker windows_to_move;
   for (aura::Window* root : Shell::GetAllRootWindows()) {
     const aura::Window* container = GetDeskContainerForRoot(root);
-    for (aura::Window* window : base::Reversed(container->children())) {
+    for (aura::Window* window : std::views::reverse(container->children())) {
       windows_to_move.Add(window);
     }
   }
@@ -842,7 +842,7 @@ void Desk::BuildAllDeskStackingData() {
 
     adw_data.clear();
     size_t order = 0;
-    for (aura::Window* window : base::Reversed(desk_windows)) {
+    for (aura::Window* window : std::views::reverse(desk_windows)) {
       if (desks_util::IsZOrderTracked(window)) {
         if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
           adw_data.push_back({.window = window, .order = order});
@@ -872,7 +872,7 @@ void Desk::RestackAllDeskWindows() {
     // Find the place to insert, counting only windows that are Z-order tracked.
     auto find_window_to_stack_below = [&](size_t order) -> aura::Window* {
       size_t index = 0;
-      for (aura::Window* w : base::Reversed(container->children())) {
+      for (aura::Window* w : std::views::reverse(container->children())) {
         if (desks_util::IsZOrderTracked(w) &&
             (!desks_util::IsWindowVisibleOnAllWorkspaces(w) ||
              already_stacked.contains(w))) {

@@ -5,6 +5,7 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -29,7 +30,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/backdrop_controller.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
@@ -525,7 +525,7 @@ void WorkspaceLayoutManager::AdjustAllWindowsBoundsForWorkAreaChange(
   // Update the windows from top-most to bottom-most so when windows get bigger
   // they occlude windows below them first.
   auto ordered_windows = window_util::SortWindowsBottomToTop(windows_);
-  for (aura::Window* window : base::Reversed(ordered_windows)) {
+  for (aura::Window* window : std::views::reverse(ordered_windows)) {
     if (!window->is_destroying()) {
       WindowState::Get(window)->OnWMEvent(event);
     }

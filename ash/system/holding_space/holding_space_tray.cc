@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -36,7 +37,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -772,7 +772,7 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
   std::vector<const HoldingSpaceItem*> items_with_previews;
   std::set<base::FilePath> paths_with_previews;
   for (const auto& item :
-       base::Reversed(HoldingSpaceController::Get()->model()->items())) {
+       std::views::reverse(HoldingSpaceController::Get()->model()->items())) {
     if (!IsPreviewable(item)) {
       continue;
     }

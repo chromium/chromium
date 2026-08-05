@@ -8,8 +8,8 @@
 #include <array>
 #include <functional>
 #include <limits>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/containers/circular_deque.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -173,7 +173,7 @@ void FastInkPoints::Predict(const FastInkPoints& real_points,
   using PositionArray = std::array<gfx::PointF, 4>;
   PositionArray position;
   PositionArray::iterator it = position.begin();
-  for (const auto& point : base::Reversed(real_points.points())) {
+  for (const auto& point : std::views::reverse(real_points.points())) {
     // Stop adding positions if interval between points is too large to provide
     // an accurate history for prediction.
     if ((last_point_time - point.time) > max_point_interval)

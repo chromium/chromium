@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <utility>
 
 #include "ash/quick_insert/quick_insert_asset_fetcher.h"
 #include "ash/quick_insert/views/quick_insert_item_view.h"
 #include "ash/quick_insert/views/quick_insert_section_view.h"
-#include "base/containers/adapters.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
@@ -46,7 +46,7 @@ views::View* QuickInsertSectionListView::GetTopItem() {
 }
 
 views::View* QuickInsertSectionListView::GetBottomItem() {
-  for (views::View* section : base::Reversed(children())) {
+  for (views::View* section : std::views::reverse(children())) {
     if (views::View* bottom_item =
             views::AsViewClass<QuickInsertSectionView>(section)
                 ->GetBottomItem()) {

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/drag_drop/drag_drop_util.h"
@@ -16,7 +17,6 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/typography.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -133,8 +133,9 @@ class DragImageLayoutManager : public views::LayoutManagerBase {
     // z-index than later views, like a deck of cards with the first `child`
     // stacked on top.
     std::vector<raw_ptr<views::View, VectorExperimental>> children;
-    for (views::View* child : base::Reversed(host->children()))
+    for (views::View* child : std::views::reverse(host->children())) {
       children.push_back(child);
+    }
     return children;
   }
 

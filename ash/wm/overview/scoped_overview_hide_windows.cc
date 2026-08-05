@@ -4,8 +4,9 @@
 
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 
+#include <ranges>
+
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
@@ -64,8 +65,9 @@ void ScopedOverviewHideWindows::RemoveAllWindows() {
   windows_to_remove.reserve(window_visibility_.size());
   for (const auto& element : window_visibility_)
     windows_to_remove.push_back(element.first);
-  for (auto* window : base::Reversed(windows_to_remove))
+  for (auto* window : std::views::reverse(windows_to_remove)) {
     RemoveWindow(window, /*show_window=*/true);
+  }
 }
 
 void ScopedOverviewHideWindows::OnWindowDestroying(aura::Window* window) {

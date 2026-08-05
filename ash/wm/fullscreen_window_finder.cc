@@ -4,12 +4,13 @@
 
 #include "ash/wm/fullscreen_window_finder.h"
 
+#include <ranges>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/adapters.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/core/window_util.h"
@@ -40,7 +41,7 @@ aura::Window* GetTopMostWindowInContainer(aura::Window* container) {
   DCHECK(container);
   DCHECK(IsSwitchableContainer(container));
 
-  for (aura::Window* child : base::Reversed(container->children())) {
+  for (aura::Window* child : std::views::reverse(container->children())) {
     // `child` may be type `aura::client::WINDOW_TYPE_CONTROL` which has no
     // WindowState.
     if (WindowState::Get(child) &&
