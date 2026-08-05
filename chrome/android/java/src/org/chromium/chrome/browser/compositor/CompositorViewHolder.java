@@ -260,6 +260,10 @@ public class CompositorViewHolder extends FrameLayout
     // that outset WebContents height. Used to clamp transient oversized innerHeight values while
     // keyboard insets and Android layout are still catching up.
     private @Nullable Integer mLastStableOutsetModeWebContentsHeight;
+    // Stable WebContents height in RESIZES_CONTENT mode while the virtual keyboard is closed.
+    private @Nullable Integer mKeyboardClosedStableWebContentsHeight;
+    // Stable WebContents height in RESIZES_CONTENT mode while the virtual keyboard is open.
+    private @Nullable Integer mKeyboardOpenStableWebContentsHeight;
 
     /**
      * Tracks whether geometrychange event is fired for the active tab when the keyboard is
@@ -716,6 +720,8 @@ public class CompositorViewHolder extends FrameLayout
         mDeferredWebContentsHeightInsetUpdate = null;
         mLastViewportHeightForWebContentsSizing = null;
         mLastStableOutsetModeWebContentsHeight = null;
+        mKeyboardClosedStableWebContentsHeight = null;
+        mKeyboardOpenStableWebContentsHeight = null;
 
         mOnViewportInsetsChanged = _ -> handleWindowInsetChanged();
         mApplicationBottomInsetSupplier
@@ -726,6 +732,10 @@ public class CompositorViewHolder extends FrameLayout
     private boolean virtualKeyboardModeOutsetsWebContentsHeight() {
         return mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT
                 || mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL;
+    }
+
+    private boolean virtualKeyboardModeInsetsWebContentsHeight() {
+        return mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT;
     }
 
     private void updateDeferredWebContentsHeightInset(int newWebContentsHeightInset) {
@@ -1082,6 +1092,20 @@ public class CompositorViewHolder extends FrameLayout
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        // Clear cached RESIZES_CONTENT stable heights when the view dimensions change for reasons
+        // unrelated to the virtual keyboard (e.g., orientation changes, split-screen resizing, or
+        // desktop window resizing). During active virtual keyboard transitions, width is invariant
+        // (w == oldw) and either isKeyboardShowing() or webContentsHeightInset is non-zero.
+        if (w != oldw
+                || (!KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this)
+                        && (mApplicationBottomInsetSupplier == null
+                                || mApplicationBottomInsetSupplier.getInsets()
+                                                .webContentsHeightInset
+                                        == 0))) {
+            mKeyboardClosedStableWebContentsHeight = null;
+            mKeyboardOpenStableWebContentsHeight = null;
+        }
+
         if (mTabModelSelector == null) return;
 
         for (TabModel tabModel : mTabModelSelector.getModels()) {
@@ -1198,6 +1222,45 @@ public class CompositorViewHolder extends FrameLayout
             } else if (mLastStableOutsetModeWebContentsHeight != null) {
                 // Clamp both directions while keyboard state is in flight.
                 webContentsHeight = mLastStableOutsetModeWebContentsHeight;
+            }
+        }
+
+        if (ChromeFeatureList.sVirtualKeyboardResizesContentTransientOvershootFix.isEnabled()
+                && virtualKeyboardModeInsetsWebContentsHeight()
+                && mApplicationBottomInsetSupplier != null) {
+            boolean keyboardVisible =
+                    KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this);
+
+            if (keyboardVisible) {
+                // Clamp transient height increases caused by browser controls hiding before the
+                // WindowAndroid layout has resized the view hierarchy for the opening keyboard.
+                if (mKeyboardClosedStableWebContentsHeight != null) {
+                    webContentsHeight =
+                            Math.min(webContentsHeight, mKeyboardClosedStableWebContentsHeight);
+                }
+                // Track the open keyboard height. Using (< mKeyboardClosedStableWebContentsHeight)
+                // as an upper bound ensures that intermediate IME animation frames are accommodated
+                // while rejecting transient spikes above the closed baseline.
+                if (webContentsHeight > 0
+                        && (mKeyboardClosedStableWebContentsHeight == null
+                                || webContentsHeight < mKeyboardClosedStableWebContentsHeight)) {
+                    mKeyboardOpenStableWebContentsHeight = webContentsHeight;
+                }
+            } else {
+                // Clamp transient height decreases caused by browser controls showing before the
+                // WindowAndroid layout has restored the view hierarchy for the closing keyboard.
+                if (mKeyboardOpenStableWebContentsHeight != null) {
+                    webContentsHeight =
+                            Math.max(webContentsHeight, mKeyboardOpenStableWebContentsHeight);
+                }
+                // Track the closed page height. Using (> mKeyboardOpenStableWebContentsHeight) as a
+                // lower bound ensures the baseline is updated only after window layout restoration
+                // completes.
+                if (webContentsHeight > 0
+                        && (mKeyboardOpenStableWebContentsHeight == null
+                                || webContentsHeight > mKeyboardOpenStableWebContentsHeight)) {
+                    mKeyboardClosedStableWebContentsHeight = webContentsHeight;
+                }
             }
         }
 
@@ -2088,6 +2151,8 @@ public class CompositorViewHolder extends FrameLayout
 
         mVirtualKeyboardMode = newMode;
         mLastStableOutsetModeWebContentsHeight = null;
+        mKeyboardClosedStableWebContentsHeight = null;
+        mKeyboardOpenStableWebContentsHeight = null;
 
         if (mApplicationBottomInsetSupplier != null) {
             mApplicationBottomInsetSupplier.setVirtualKeyboardMode(mVirtualKeyboardMode);

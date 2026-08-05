@@ -797,6 +797,66 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.VIRTUAL_KEYBOARD_RESIZES_CONTENT_TRANSIENT_OVERSHOOT_FIX)
+    public void
+            testWebContentResizeTriggeredDueToKeyboardTransition_resizesContent_hasNoTransientOvershoot() {
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+        reset(mWebContents);
+
+        int fullViewportHeight = 941;
+        int fullViewportWidth = 1080;
+        int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
+
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+
+        // Establish the baseline viewport size before keyboard insets change.
+        when(mMockKeyboard.isKeyboardShowing(any())).thenReturn(false);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(0);
+        when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        reset(mWebContents);
+
+        // Keyboard show: browser controls hide (simulating transient height increase) before
+        // layout applies the reduced view height.
+        when(mMockKeyboard.isKeyboardShowing(any())).thenReturn(true);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight + 100);
+        mKeyboardInsetSupplier.set(0);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+
+        // Verify that transient height increases caused by browser controls hiding before the
+        // WindowAndroid layout completes are clamped to the stable closed WebContents height.
+        verify(mWebContents, never())
+                .setSize(fullViewportWidth, fullViewportHeight + 100 - TOOLBAR_HEIGHT);
+
+        // Once the keyboard inset arrives, it should resize to the adjusted height.
+        when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
+        mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        verify(mWebContents, atLeast(1))
+                .setSize(fullViewportWidth, adjustedHeight - TOOLBAR_HEIGHT);
+
+        // Keyboard hide: browser controls show (simulating transient height decrease) before
+        // layout applies the restored view height.
+        when(mMockKeyboard.isKeyboardShowing(any())).thenReturn(false);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(0);
+        when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight - 100);
+        mKeyboardInsetSupplier.set(0);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+
+        // Verify that transient height decreases caused by browser controls showing before the
+        // WindowAndroid layout completes are clamped to the stable open WebContents height.
+        verify(mWebContents, never())
+                .setSize(fullViewportWidth, adjustedHeight - 100 - TOOLBAR_HEIGHT);
+
+        // After layout restoration, size should restore cleanly.
+        when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        verify(mWebContents, atLeast(1))
+                .setSize(fullViewportWidth, fullViewportHeight - TOOLBAR_HEIGHT);
+    }
+
+    @Test
     public void
             testWebContentResizeTriggeredDueToKeyboardTransition_hasNoIntermediateInsetOvershoot() {
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
@@ -1649,7 +1709,7 @@ public class CompositorViewHolderUnitTest {
         mTabModelSelector.getModel(false).setIndex(1, TabSelectionType.FROM_USER);
         mCompositorViewHolder.onContentChanged();
 
-        // With our fix, the stale scroll state should be cleared immediately upon tab switch.
+        // Verify that active scroll motion state is cleared immediately upon tab switch.
         assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
 
         // Capture the observer on the new tab

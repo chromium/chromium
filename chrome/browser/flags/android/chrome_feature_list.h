@@ -325,6 +325,7 @@ BASE_DECLARE_FEATURE(kUsePLinkInHelp);
 BASE_DECLARE_FEATURE(kUseWebUiNtpAndroid);
 BASE_DECLARE_FEATURE(kUserFeedbackAllowedPolicy);
 BASE_DECLARE_FEATURE(kVerifyStartupSigninState);
+BASE_DECLARE_FEATURE(kVirtualKeyboardResizesContentTransientOvershootFix);
 BASE_DECLARE_FEATURE(kVirtualKeyboardTransientInnerHeightFix);
 BASE_DECLARE_FEATURE(kWebAppShortEdgesCutoutMode);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
