@@ -119,32 +119,39 @@ std::u16string_view TrimObfuscatingDots(std::u16string_view value) {
   return base::TrimString(value, kMidlineEllipsisDot, base::TRIM_LEADING);
 }
 
-// Returns whether two values are equivalent for deduplication, ignoring
-// case, diacritics, and obfuscation.
-bool AreValuesEquivalent(std::u16string_view a,
-                         std::u16string_view b,
-                         bool is_obfuscated) {
-  std::u16string_view clean_a = is_obfuscated ? TrimObfuscatingDots(a) : a;
-  std::u16string_view clean_b = is_obfuscated ? TrimObfuscatingDots(b) : b;
+// Returns whether two values are equivalent for deduplication, comparing typed
+// values if both are present, or comparing normalized strings otherwise.
+bool AreValuesEquivalent(
+    MemoryDataType type,
+    std::u16string_view a_value,
+    const std::optional<personal_context::proto::TypedValue>& a_typed_value,
+    std::u16string_view b_value,
+    const std::optional<personal_context::proto::TypedValue>& b_typed_value) {
+  if (a_typed_value && b_typed_value) {
+    return *a_typed_value == *b_typed_value;
+  }
+  bool is_obfuscated = IsSpiiMemoryDataType(type);
+  std::u16string_view clean_a =
+      is_obfuscated ? TrimObfuscatingDots(a_value) : a_value;
+  std::u16string_view clean_b =
+      is_obfuscated ? TrimObfuscatingDots(b_value) : b_value;
   return normalization::NormalizeForComparison(clean_a) ==
          normalization::NormalizeForComparison(clean_b);
 }
 
-// Returns a string_view to the value of the given `type` in the `result`, or
+// Returns an `EntryMetadata` for the given `type` in `result`, or
 // `std::nullopt` if it doesn't exist. This checks both the primary result type
-// and the `metadata_list`. If the attribute was the primary attribute when
-// creating the result from an entity, it might have been omitted from the
-// `metadata_list`. In that case, we can use `result.type`
-// to identify it.
-std::optional<std::u16string_view> GetValueForMemoryDataType(
+// and the `metadata_list`.
+std::optional<EntryMetadata> GetMetadataForMemoryDataType(
     const MemorySearchResult& result,
     MemoryDataType type) {
   if (result.type == type) {
-    return result.value;
+    return EntryMetadata(result.type, result.type_name, result.value,
+                         result.typed_value);
   }
   auto it = std::ranges::find(result.metadata_list, type, &EntryMetadata::type);
   if (it != result.metadata_list.end()) {
-    return it->value;
+    return *it;
   }
   return std::nullopt;
 }
@@ -174,7 +181,8 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
       (a.type_name != b.type_name || a.type_name.empty())) {
     return false;
   }
-  if (!AreValuesEquivalent(a.value, b.value, IsSpiiMemoryDataType(a.type))) {
+  if (!AreValuesEquivalent(a.type, a.value, a.typed_value, b.value,
+                           b.typed_value)) {
     return false;
   }
 
@@ -190,13 +198,14 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
          entity_type->merge_constraints()) {
       if (std::ranges::all_of(constraint, [&](AttributeType attr_type) {
             MemoryDataType mem_type = AttributeTypeToMemoryDataType(attr_type);
-            std::optional<std::u16string_view> val_a =
-                GetValueForMemoryDataType(a, mem_type);
-            std::optional<std::u16string_view> val_b =
-                GetValueForMemoryDataType(b, mem_type);
-            return val_a && val_b &&
-                   AreValuesEquivalent(*val_a, *val_b,
-                                       IsSpiiMemoryDataType(mem_type));
+            std::optional<EntryMetadata> meta_a =
+                GetMetadataForMemoryDataType(a, mem_type);
+            std::optional<EntryMetadata> meta_b =
+                GetMetadataForMemoryDataType(b, mem_type);
+            return meta_a && meta_b &&
+                   AreValuesEquivalent(mem_type, meta_a->value,
+                                       meta_a->typed_value, meta_b->value,
+                                       meta_b->typed_value);
           })) {
         return true;
       }
@@ -206,11 +215,12 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
   auto has_contradicting_metadata = [](const MemorySearchResult& result,
                                        const EntryMetadata& meta) {
     return std::ranges::any_of(
-        result.metadata_list, [&meta](const EntryMetadata& result_meta) {
+        result.metadata_list, [&](const EntryMetadata& result_meta) {
           return result_meta.type == meta.type &&
                  result_meta.type_name == meta.type_name &&
-                 !AreValuesEquivalent(result_meta.value, meta.value,
-                                      IsSpiiMemoryDataType(result_meta.type));
+                 !AreValuesEquivalent(meta.type, result_meta.value,
+                                      result_meta.typed_value, meta.value,
+                                      meta.typed_value);
         });
   };
 

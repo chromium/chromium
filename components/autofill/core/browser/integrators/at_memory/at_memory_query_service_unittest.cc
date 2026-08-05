@@ -924,6 +924,70 @@ TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_ObfuscatedValues) {
   EXPECT_EQ(result.entries.size(), 1u);
 }
 
+// Tests that results with matching metadata `TypedValue`s are deduplicated,
+// even if their string representations differ in formatting.
+TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_TypedValueMatching) {
+  personal_context::proto::TypedValue datetime1;
+  datetime1.mutable_date_time()->set_year(2024);
+  datetime1.mutable_date_time()->set_month(6);
+  datetime1.mutable_date_time()->set_day(7);
+  datetime1.mutable_date_time()->set_hours(15);
+  datetime1.mutable_date_time()->set_minutes(30);
+
+  personal_context::proto::TypedValue datetime2 = datetime1;
+
+  MemorySearchResult result1(MemoryDataType::kFlightReservationFlightNumber,
+                             u"Flight Number", u"FL123");
+  result1.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationDepartureDate, u"Departure Date",
+      u"2024-06-07 15:30", datetime1);
+
+  MemorySearchResult result2(MemoryDataType::kFlightReservationFlightNumber,
+                             u"Flight Number", u"FL123");
+  result2.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationDepartureDate, u"Departure Date",
+      u"2024-06-07 3:30 PM", datetime2);
+
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 1u);
+}
+
+// Tests that results with mismatching metadata `TypedValue`s are not
+// deduplicated.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_TypedValueMismatch_NotDeduplicated) {
+  personal_context::proto::TypedValue datetime1;
+  datetime1.mutable_date_time()->set_year(2024);
+  datetime1.mutable_date_time()->set_month(6);
+  datetime1.mutable_date_time()->set_day(7);
+  datetime1.mutable_date_time()->set_hours(15);
+  datetime1.mutable_date_time()->set_minutes(30);
+
+  personal_context::proto::TypedValue datetime2;
+  datetime2.mutable_date_time()->set_year(2024);
+  datetime2.mutable_date_time()->set_month(6);
+  datetime2.mutable_date_time()->set_day(8);
+  datetime2.mutable_date_time()->set_hours(15);
+  datetime2.mutable_date_time()->set_minutes(30);
+
+  MemorySearchResult result1(MemoryDataType::kFlightReservationFlightNumber,
+                             u"Flight Number", u"FL123");
+  result1.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationDepartureDate, u"Departure Date",
+      u"2024-06-07 15:30", datetime1);
+
+  MemorySearchResult result2(MemoryDataType::kFlightReservationFlightNumber,
+                             u"Flight Number", u"FL123");
+  result2.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationDepartureDate, u"Departure Date",
+      u"2024-06-08 3:30 PM", datetime2);
+
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 2u);
+}
+
 // Tests that Autofill AI entities are not deduplicated if their merge
 // constraints are not satisfied, even if their main values match.
 TEST_F(AtMemoryQueryServiceTest,
