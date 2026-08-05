@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
@@ -742,19 +743,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 }
 
 - (BOOL)locationBarCanSendTabToSelf {
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfExtraEntryPoints)) {
-    return NO;
-  }
-  if (!self.webState) {
-    return NO;
-  }
-  send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service =
-      SendTabToSelfSyncServiceFactory::GetForProfile(self.profile);
-  return send_tab_to_self_service &&
-         send_tab_to_self_service
-             ->GetEntryPointDisplayReason(self.webState->GetVisibleURL())
-             .has_value();
+  return send_tab_to_self::IsOmniboxEntryPointEligible(self.webState,
+                                                       self.profile);
 }
 
 - (void)locationBarSendTabToSelfTapped {

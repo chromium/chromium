@@ -14,7 +14,10 @@
 #import "components/send_tab_to_self/outgoing_tab_form_field_extractor.h"
 #import "components/send_tab_to_self/received_tab_forms_filler.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -22,6 +25,22 @@
 #import "url/origin.h"
 
 namespace send_tab_to_self {
+
+bool IsOmniboxEntryPointEligible(web::WebState* web_state,
+                                 ProfileIOS* profile) {
+  if (!base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfExtraEntryPoints)) {
+    return false;
+  }
+  if (!web_state || !profile) {
+    return false;
+  }
+  SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
+  return service &&
+         service->GetEntryPointDisplayReason(web_state->GetVisibleURL())
+             .has_value();
+}
 
 OpenNewTabCommand* CreateOpenNewTabCommand(const SendTabToSelfEntry* entry) {
   OpenNewTabCommand* command =

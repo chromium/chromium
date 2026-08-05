@@ -11,6 +11,8 @@
 
 @class OpenNewTabCommand;
 
+class ProfileIOS;
+
 namespace web {
 class WebState;
 }
@@ -18,6 +20,10 @@ class WebState;
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
+
+// Returns whether the omnibox Send Tab to Self entry point is eligible to be
+// shown for `web_state`.
+bool IsOmniboxEntryPointEligible(web::WebState* web_state, ProfileIOS* profile);
 
 // Creates an OpenNewTabCommand for the given `entry`.
 OpenNewTabCommand* CreateOpenNewTabCommand(const SendTabToSelfEntry* entry);
