@@ -196,40 +196,33 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
         mReentrantTriggering = false;
 
         Runnable r =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        assumeNonNull(mProxyView);
-                        // This is a hack to make InputMethodManager believe that the proxy view
-                        // now has a focus. As a result, InputMethodManager will think that
-                        // mProxyView is focused, and will call getHandler() of the view when
-                        // creating input connection.
+                () -> {
+                    assumeNonNull(mProxyView);
+                    // This is a hack to make InputMethodManager believe that the proxy view
+                    // now has a focus. As a result, InputMethodManager will think that
+                    // mProxyView is focused, and will call getHandler() of the view when
+                    // creating input connection.
 
-                        // Step 1: Set mProxyView as InputMethodManager#mNextServedView.
-                        // This does not affect the real window focus.
-                        mProxyView.onWindowFocusChanged(true);
+                    // Step 1: Set mProxyView as InputMethodManager#mNextServedView.
+                    // This does not affect the real window focus.
+                    mProxyView.onWindowFocusChanged(true);
 
-                        // Step 2: Have InputMethodManager focus in on mNextServedView.
-                        // As a result, IMM will call onCreateInputConnection() on mProxyView on the
-                        // same thread as mProxyView.getHandler(). It will also call subsequent
-                        // InputConnection methods on this IME thread.
-                        mInputMethodManagerWrapper.isActive(view);
+                    // Step 2: Have InputMethodManager focus in on mNextServedView.
+                    // As a result, IMM will call onCreateInputConnection() on mProxyView on the
+                    // same thread as mProxyView.getHandler(). It will also call subsequent
+                    // InputConnection methods on this IME thread.
+                    mInputMethodManagerWrapper.isActive(view);
 
-                        // Step 3: Check that the above hack worked.
-                        // Do not check until activation finishes inside InputMethodManager (on IME
-                        // thread).
-                        getHandler()
-                                .post(
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                postCheckRegisterResultOnUiThread(
-                                                        view,
-                                                        assumeNonNull(mCheckInvalidator),
-                                                        CHECK_REGISTER_RETRY);
-                                            }
-                                        });
-                    }
+                    // Step 3: Check that the above hack worked.
+                    // Do not check until activation finishes inside InputMethodManager (on IME
+                    // thread).
+                    getHandler()
+                            .post(
+                                    () ->
+                                            postCheckRegisterResultOnUiThread(
+                                                    view,
+                                                    assumeNonNull(mCheckInvalidator),
+                                                    CHECK_REGISTER_RETRY));
                 };
 
         if (mFocusState == FocusState.VIEW_FOCUSED_THEN_WINDOW_FOCUSED) {
@@ -267,13 +260,7 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
         // Now posting on UI thread to access view methods.
         final Handler viewHandler = view.getHandler();
         if (viewHandler == null) return;
-        viewHandler.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        checkRegisterResult(view, checkInvalidator, retry);
-                    }
-                });
+        viewHandler.post(() -> checkRegisterResult(view, checkInvalidator, retry));
     }
 
     private void checkRegisterResult(View view, CheckInvalidator checkInvalidator, int retry) {
