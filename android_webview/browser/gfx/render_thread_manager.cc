@@ -225,15 +225,13 @@ void RenderThreadManager::RemoveOverlaysOnRT(
     hardware_renderer_->RemoveOverlays(merge_transaction);
 }
 
-void RenderThreadManager::DestroyHardwareRendererOnRT(bool abandon_context) {
+void RenderThreadManager::DestroyHardwareRendererOnRT() {
   GpuServiceWebView::GetInstance();
 
   std::optional<ScopedAppGLStateRestore> state_restore;
-  if (!vulkan_context_provider_ && !abandon_context) {
+  if (!vulkan_context_provider_) {
     state_restore.emplace(ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT);
   }
-  if (abandon_context && hardware_renderer_)
-    hardware_renderer_->AbandonContext();
 
   hardware_renderer_.reset();
 

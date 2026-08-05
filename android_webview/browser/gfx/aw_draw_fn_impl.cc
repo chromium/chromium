@@ -264,8 +264,7 @@ void AwDrawFnImpl::OnContextDestroyed() {
   {
     RenderThreadManager::InsideHardwareReleaseReset release_reset(
         &render_thread_manager_);
-    render_thread_manager_.DestroyHardwareRendererOnRT(
-        false /* abandon_context */);
+    render_thread_manager_.DestroyHardwareRendererOnRT();
   }
 
   scoped_secondary_cb_draw_.reset();

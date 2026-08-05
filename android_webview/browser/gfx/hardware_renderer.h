@@ -86,7 +86,6 @@ class HardwareRenderer {
   void CommitFrame();
   void SetChildFrameForTesting(std::unique_ptr<ChildFrame> child_frame);
   void RemoveOverlays(OverlaysParams::MergeTransactionFn merge_transaction);
-  void AbandonContext();
 
  private:
   class OnViz;

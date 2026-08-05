@@ -826,12 +826,6 @@ void HardwareRenderer::MergeTransactionIfNeeded(
   }
 }
 
-void HardwareRenderer::AbandonContext() {
-  MarkAllowContextLoss();
-  output_surface_provider_.shared_context_state()->MarkContextLost(
-      gpu::error::ContextLostReason::kUnknown);
-}
-
 void HardwareRenderer::MarkAllowContextLoss() {
   if (on_viz_) {
     VizCompositorThreadRunnerWebView::GetInstance()->task_runner()->PostTask(
