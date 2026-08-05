@@ -377,6 +377,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   }
 
   void TearDown() override {
+    cros_network_.reset();
     GetContext()->RemovePostTargetHandler(&post_target_event_capturer_);
     CloseGameWindow();
     GameDashboardTestBase::TearDown();

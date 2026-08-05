@@ -199,6 +199,7 @@ void GameDashboardController::OnWindowBoundsChanged(
 }
 
 void GameDashboardController::OnWindowDestroying(aura::Window* window) {
+  active_recording_context_ = nullptr;
   window_observations_.RemoveObservation(window);
   game_window_contexts_.erase(window);
 }
