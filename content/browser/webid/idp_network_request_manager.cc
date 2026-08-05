@@ -25,6 +25,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_provider_info.h"
+#include "content/browser/webid/idp_accounts_parser.h"
 #include "content/browser/webid/mappers.h"
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/network_request_manager.h"
@@ -88,6 +89,7 @@ constexpr char kWellKnownPath[] = "/.well-known/web-identity";
 constexpr char kProviderUrlListKey[] = "provider_urls";
 
 // fedcm.json configuration keys.
+constexpr char kIdpBrandingKey[] = "branding";
 constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
 constexpr char kVcIssuanceEndpoint[] = "vc_issuance_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
@@ -113,10 +115,6 @@ constexpr char kPrivacyPolicyKey[] = "privacy_policy_url";
 constexpr char kTermsOfServiceKey[] = "terms_of_service_url";
 constexpr char kClientIsThirdPartyToTopFrameOriginKey[] =
     "client_is_third_party_to_top_frame_origin";
-
-// Accounts endpoint response keys.
-constexpr char kAccountsKey[] = "accounts";
-constexpr char kIdpBrandingKey[] = "branding";
 
 // Keys in 'branding' 'icons' dictionary in config for the IDP icon and client
 // metadata endpoint for the RP icon.
@@ -161,16 +159,6 @@ constexpr char kDisconnectAccountId[] = "account_id";
 // response size that is a part of this protocol.
 constexpr int maxResponseSizeInKiB = 1024;
 
-// Returns true for nullptr for easy use with Dict::FindString.
-bool IsEmptyOrWhitespace(const std::string* input) {
-  if (!input) {
-    return true;
-  }
-
-  auto utf16_string = base::UTF8ToUTF16(*input);
-  return base::TrimWhitespace(utf16_string, base::TRIM_ALL).empty();
-}
-
 GURL ExtractUrl(const base::DictValue& response, const char* key) {
   const std::string* response_url = response.FindString(key);
   if (!response_url) {
@@ -189,151 +177,6 @@ std::string ExtractString(const base::DictValue& response, const char* key) {
     return "";
   }
   return *str;
-}
-
-IdentityRequestAccountPtr ParseAccount(const base::DictValue& account) {
-  auto* id = account.FindString(kAccountIdKey);
-  auto* email = account.FindString(kAccountEmailKey);
-  auto* name = account.FindString(kAccountNameKey);
-  auto* phone = account.FindString(kAccountPhoneNumberKey);
-  auto* username = account.FindString(kAccountUsernameKey);
-  auto* given_name = account.FindString(kAccountGivenNameKey);
-  auto* picture = account.FindString(kAccountPictureKey);
-  auto* approved_clients = account.FindList(kAccountApprovedClientsKey);
-  auto* potentially_approved_site_hashes =
-      account.FindList(kPotentiallyApprovedSiteHashes);
-  std::vector<std::string> account_hints;
-  auto* hints = account.FindList(kHintsKey);
-  if (hints) {
-    for (const base::Value& entry : *hints) {
-      if (entry.is_string()) {
-        account_hints.emplace_back(entry.GetString());
-      }
-    }
-  }
-  std::vector<std::string> domain_hints;
-  auto* domain_hints_list = account.FindList(kDomainHintsKey);
-  if (domain_hints_list) {
-    for (const base::Value& entry : *domain_hints_list) {
-      if (entry.is_string()) {
-        domain_hints.emplace_back(entry.GetString());
-      }
-    }
-  }
-
-  std::vector<std::string> labels;
-  const base::ListValue* labels_list = labels_list =
-      account.FindList(kLabelHintsKey);
-  if (labels_list) {
-    for (const base::Value& entry : *labels_list) {
-      if (entry.is_string()) {
-        labels.emplace_back(entry.GetString());
-      }
-    }
-  }
-
-  if (!id) {
-    return nullptr;
-  }
-
-  std::string display_identifier;
-  std::string display_name;
-  std::string empty_string;
-
-  std::vector<std::string_view> identifiers;
-  if (!IsEmptyOrWhitespace(name)) {
-    identifiers.emplace_back(*name);
-  } else {
-    name = &empty_string;
-  }
-  if (!IsEmptyOrWhitespace(username)) {
-    identifiers.emplace_back(*username);
-  }
-  if (!IsEmptyOrWhitespace(email)) {
-    // TODO(crbug.com/40849405): validate email address.
-    identifiers.emplace_back(*email);
-  } else {
-    email = &empty_string;
-  }
-  if (!IsEmptyOrWhitespace(phone)) {
-    identifiers.emplace_back(*phone);
-  }
-  if (identifiers.empty()) {
-    return nullptr;
-  }
-  display_name = identifiers[0];
-  if (identifiers.size() > 1) {
-    display_identifier = identifiers[1];
-  }
-
-  RecordApprovedClientsExistence(approved_clients != nullptr);
-
-  std::optional<std::vector<std::string>> approved_clients_list;
-  if (approved_clients) {
-    approved_clients_list = std::vector<std::string>();
-    for (const base::Value& entry : *approved_clients) {
-      if (entry.is_string()) {
-        approved_clients_list->push_back(entry.GetString());
-      }
-    }
-    RecordApprovedClientsSize(approved_clients->size());
-  }
-
-  std::vector<std::string> potentially_approved_site_hashes_vector;
-  if (IsEmbedderInitiatedLoginEnabled() && potentially_approved_site_hashes) {
-    for (const base::Value& entry : *potentially_approved_site_hashes) {
-      if (entry.is_string()) {
-        potentially_approved_site_hashes_vector.push_back(entry.GetString());
-      }
-    }
-  }
-
-  auto parsed_account = base::MakeRefCounted<IdentityRequestAccount>(
-      *id, display_identifier, display_name, *email, *name,
-      given_name ? *given_name : "", picture ? GURL(*picture) : GURL(),
-      phone ? *phone : "", username ? *username : "",
-      std::move(potentially_approved_site_hashes_vector),
-      std::move(account_hints), std::move(domain_hints), std::move(labels),
-      /*idp_claimed_login_state=*/std::nullopt,
-      /*browser_trusted_login_state=*/LoginState::kSignUp);
-  parsed_account->approved_clients = std::move(approved_clients_list);
-  return parsed_account;
-}
-
-// Parses accounts from given Value. Returns true if parse is successful and
-// adds parsed accounts to the |account_list|.
-bool ParseAccounts(const base::ListValue& accounts,
-                   std::vector<IdentityRequestAccountPtr>& account_list,
-                   bool from_accounts_push,
-                   AccountsResponseInvalidReason& parsing_error) {
-  DCHECK(account_list.empty());
-
-  base::flat_set<std::string> account_ids;
-  for (auto& account : accounts) {
-    const base::DictValue* account_dict = account.GetIfDict();
-    if (!account_dict) {
-      parsing_error = AccountsResponseInvalidReason::kAccountIsNotDict;
-      return false;
-    }
-
-    IdentityRequestAccountPtr parsed_account = ParseAccount(*account_dict);
-    if (parsed_account) {
-      if (account_ids.count(parsed_account->id)) {
-        parsing_error = AccountsResponseInvalidReason::kAccountsShareSameId;
-        return false;
-      }
-      parsed_account->from_accounts_push = from_accounts_push;
-      account_ids.insert(parsed_account->id);
-      account_list.push_back(std::move(parsed_account));
-    } else {
-      parsing_error =
-          AccountsResponseInvalidReason::kAccountMissesRequiredField;
-      return false;
-    }
-  }
-
-  DCHECK(!account_list.empty());
-  return true;
 }
 
 std::optional<SkColor> ParseCssColor(const std::string* value) {
@@ -611,41 +454,27 @@ void OnAccountsRequestParsed(
     return;
   }
 
-  const base::ListValue* accounts = result->FindList(kAccountsKey);
+  auto parse_result = IdpAccountsParser::ParseAccounts(*result);
 
-  if (!accounts) {
-    RecordAccountsResponseInvalidReason(
-        AccountsResponseInvalidReason::kNoAccountsKey);
-    std::move(callback).Run(
-        {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-        std::move(response));
-    return;
-  }
-
-  if (accounts->empty()) {
-    RecordAccountsResponseInvalidReason(
-        AccountsResponseInvalidReason::kAccountListIsEmpty);
-    std::move(callback).Run(
-        {ParseStatus::kEmptyListError, fetch_status.response_code},
-        std::move(response));
-    return;
-  }
-
-  AccountsResponseInvalidReason parsing_error =
-      AccountsResponseInvalidReason::kResponseIsNotJsonOrDict;
-  bool accounts_valid =
-      ParseAccounts(*accounts, response.accounts,
-                    fetch_status.from_accounts_push, parsing_error);
-
-  if (!accounts_valid) {
-    CHECK_NE(parsing_error,
+  if (!parse_result.has_value()) {
+    AccountsResponseInvalidReason parse_error = parse_result.error();
+    CHECK_NE(parse_error,
              AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
-    RecordAccountsResponseInvalidReason(parsing_error);
-
-    std::move(callback).Run(
-        {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-        IdpNetworkRequestManager::AccountsResponse());
+    RecordAccountsResponseInvalidReason(parse_error);
+    ParseStatus parse_status = ParseStatus::kInvalidResponseError;
+    if (parse_error == AccountsResponseInvalidReason::kAccountListIsEmpty) {
+      parse_status = ParseStatus::kEmptyListError;
+    }
+    std::move(callback).Run({parse_status, fetch_status.response_code},
+                            IdpNetworkRequestManager::AccountsResponse());
     return;
+  }
+
+  response.accounts = std::move(*parse_result);
+  if (fetch_status.from_accounts_push) {
+    for (auto& account : response.accounts) {
+      account->from_accounts_push = true;
+    }
   }
 
   const std::string* site_salt = result->FindString(kSiteSaltKey);
@@ -1158,7 +987,8 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
     if (accounts.size() > 0) {
       OnAccountsRequestParsed(
           std::move(callback), success_status,
-          base::DictValue().Set(kAccountsKey, std::move(accounts)));
+          base::DictValue().Set(IdpAccountsParser::kAccountsKey,
+                                std::move(accounts)));
       return false;
     }
 
@@ -1167,7 +997,8 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
     if (accounts_url.is_empty()) {
       OnAccountsRequestParsed(
           std::move(callback), success_status,
-          base::DictValue().Set(kAccountsKey, base::ListValue()));
+          base::DictValue().Set(IdpAccountsParser::kAccountsKey,
+                                base::ListValue()));
       return false;
     }
   }

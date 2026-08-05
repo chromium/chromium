@@ -2948,6 +2948,7 @@ test("content_unittests") {
     "../browser/webid/federated_embedder_login_request_unittest.cc",
     "../browser/webid/identity_credential_source_impl_unittest.cc",
     "../browser/webid/identity_registry_unittest.cc",
+    "../browser/webid/idp_accounts_parser_unittest.cc",
     "../browser/webid/idp_network_request_manager_unittest.cc",
     "../browser/webid/mappers_unittest.cc",
     "../browser/webid/metrics_unittest.cc",

@@ -2292,6 +2292,8 @@ source_set("browser") {
     "webid/identity_registry.cc",
     "webid/identity_registry.h",
     "webid/identity_registry_delegate.h",
+    "webid/idp_accounts_parser.cc",
+    "webid/idp_accounts_parser.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
     "webid/idp_registration_handler.cc",
