@@ -279,9 +279,6 @@
       <message name="IDS_IOS_CREDENTIAL_EXCHANGE_EXPORTER_DISPLAY_NAME" desc="Display name of Google Password Manager used in credential export feature. [iOS only]">
         Google Password Manager
       </message>
-      <message name="IDS_IOS_PASSWORD_SAVED_INFOBAR_MESSAGE" desc="Message displayed on an infobar confirming that the password was saved to the specified account. [iOS only]">
-        To Google Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
-      </message>
       <message name="IDS_IOS_CREDENTIAL_EXCHANGE_IMPORT_DISCLAIMER" desc="The bottom text displayed on Credential Exchange import screen to declare that the data will be saved to the user's password manager. [iOS only]">
         Your data will be saved to Google Password Manager for <ph name="USER_EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>
       </message>
@@ -951,6 +948,9 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       </message>
       <message name="IDS_IOS_PASSWORD_MANAGER_SIGN_IN_ERROR_INFOBAR_SUBTITLE" desc="Infobar subtitle for fixing sign-in error before saving a password on the account.">
         Verify it's you to save this password and get Chrome data on all your devices
+      </message>
+      <message name="IDS_IOS_PASSWORD_SAVED_INFOBAR_MESSAGE" desc="Message displayed on an infobar confirming that the password was saved to the specified account. [iOS only]">
+        To Google Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION" desc="Help text explaining the benefits of having Chrome set as a credential provider for other apps. [iOS Only]">
         Sign in quickly to apps and sites by autofilling your passwords &amp; passkeys from Chrome
