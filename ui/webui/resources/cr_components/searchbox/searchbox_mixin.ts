@@ -9,7 +9,8 @@ import {isMac} from '//resources/js/platform.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, KeywordType, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SelectionLineState, SuggestInventory} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
@@ -207,9 +208,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           this.getInputElement().inputElement.value === input ?
           this.getInputElement().inputElement.selectionStart || 0 :
           input.length;
+      const keyword = this.inputKeywordModel?.type === KeywordType.kInKeyword ?
+          this.inputKeywordModel.keyword :
+          '';
       this.pageHandler().queryAutocomplete(
           this.activeQueryId, input, preventInlineAutocomplete, cursorPosition,
-          SuggestInventory.kDefault, isOnFocus);
+          SuggestInventory.kDefault, isOnFocus, keyword);
 
       this.dispatchEvent(new CustomEvent('query-autocomplete', {
         bubbles: true,

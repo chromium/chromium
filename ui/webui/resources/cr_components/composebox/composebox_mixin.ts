@@ -2031,7 +2031,7 @@ export const ComposeboxEmbedderMixin =
               this.activeQueryId, this.input,
               /*preventInlineAutocomplete=*/ false, cursorPosition,
               this.suggestInventory ?? SuggestInventory.kDefault,
-              /*isOnFocus=*/ !this.input);
+              /*isOnFocus=*/ !this.input, /*keyword=*/ '');
         }
 
         clearAutocompleteMatches() {

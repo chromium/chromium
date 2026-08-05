@@ -69,7 +69,8 @@ void ContextualTasksExtensionHandler::QueryAutocomplete(
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
     omnibox::SuggestInventory suggest_inventory,
-    bool is_on_focus) {}
+    bool is_on_focus,
+    const std::string& keyword) {}
 void ContextualTasksExtensionHandler::StopAutocomplete(bool clear_result) {}
 void ContextualTasksExtensionHandler::OpenAutocompleteMatch(
     uint8_t line,
