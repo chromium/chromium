@@ -430,6 +430,12 @@ enum class TransitionState {
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   [_animator animateFullscreenWithProgress:progress
                                 animatable:_containerViewController];
+
+  if (progress == 0) {
+    [self animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                                   duration:0
+                                      curve:UIViewAnimationCurveEaseInOut];
+  }
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
