@@ -748,6 +748,8 @@ void ServiceWorkerRouterEvaluator::Compile() {
       has_non_fetch_event_source_ |= !has_fetch_event;
     }
     compiled_rules_.emplace_back(std::move(rule));
+    UpdateMaxConditionDepthAndWidth(r.condition, max_rule_depth_,
+                                    max_rule_width_);
   }
   RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kNoError);
   is_valid_ = true;
@@ -847,21 +849,10 @@ std::string ServiceWorkerRouterEvaluator::ToString() const {
 void ServiceWorkerRouterEvaluator::RecordRouterRuleInfo() const {
   base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.RuleCount",
                                compiled_rules_.size());
-  size_t depth, width;
-  std::tie(depth, width) = GetMaxDepthAndWidth();
   base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.ConditionDepth",
-                               depth);
+                               max_rule_depth_);
   base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.OrConditionWidth",
-                               width);
-}
-
-std::tuple<size_t, size_t> ServiceWorkerRouterEvaluator::GetMaxDepthAndWidth()
-    const {
-  size_t depth = 0, width = 0;
-  for (const auto& r : rules_.rules) {
-    UpdateMaxConditionDepthAndWidth(r.condition, depth, width);
-  }
-  return {depth, width};
+                               max_rule_width_);
 }
 
 }  // namespace content
