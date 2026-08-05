@@ -25,7 +25,7 @@ if (is_android) {
 
   robolectric_binary("junit") {
     testonly = true
-    sources = [ "junit/src/org/chromium/chrome/browser/screenshot_protection/ScreenshotProtectionControllerTest.java" ]
+    sources = [ "java/src/org/chromium/chrome/browser/screenshot_protection/ScreenshotProtectionControllerTest.java" ]
     deps = [
       "//base:base_junit_test_support",
       "//base:callback_java",
@@ -38,6 +38,31 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/layouts:java",
       "//components/policy/android:policy_java",
+    ]
+  }
+
+  android_library("javatests") {
+    testonly = true
+    sources = [
+      "java/src/org/chromium/chrome/browser/screenshot_protection/ScreenshotProtectionControllerCctPTTest.java",
+      "java/src/org/chromium/chrome/browser/screenshot_protection/ScreenshotProtectionControllerPTTest.java",
+    ]
+    deps = [
+      "//base:callback_java",
+      "//base:supplier_java",
+      "//base/test:public_transit_java",
+      "//chrome/android:chrome_test_util_java",
+      "//chrome/android/javatests:common_unit_test_deps_java",
+      "//chrome/browser/android/screenshot_protection:java",
+      "//chrome/browser/enterprise/util:java",
+      "//chrome/browser/policy/android:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/ui/android/layouts:java",
+      "//chrome/browser/url_constants/android:java",
+      "//chrome/test/android:chrome_java_transit",
+      "//components/policy/android:policy_java",
+      "//net/android:net_java_test_support",
     ]
   }
 }
