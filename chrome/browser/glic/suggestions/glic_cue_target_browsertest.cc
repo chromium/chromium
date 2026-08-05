@@ -62,6 +62,14 @@ class GlicCueTargetBrowserTestAutoSubmitDisabled
   base::test::ScopedFeatureList features_;
 };
 
+IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testAllTestsAreRegistered) {
+  AssertAllTestsRegistered({
+      "GlicCueTargetBrowserTest",
+      "GlicCueTargetBrowserTestAutoSubmitEnabled",
+      "GlicCueTargetBrowserTestAutoSubmitDisabled",
+  });
+}
+
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testIsEligible) {
   GlicCueTarget target(*service(), nullptr,
                        *GetTabListInterface()->GetActiveTab());
