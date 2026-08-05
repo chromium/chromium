@@ -441,17 +441,91 @@ public class BookmarkBarContextMenuMediatorTest {
 
     @Test
     @SmallTest
-    public void testClickDelete() {
+    public void testClickOpenInNewTab() {
         BookmarkId bookmarkId =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-
         ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
 
-        click(list, R.string.bookmark_item_delete);
+        click(list, R.string.contextmenu_open_in_new_tab);
+        verify(mContextMenuDelegate).openInNewTab(eq(bookmarkId));
+        verify(mDismissRunnable).run();
+    }
 
-        verify(mContextMenuDelegate).deleteBookmark(eq(bookmarkId));
+    @Test
+    @SmallTest
+    public void testClickOpenInNewWindow() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+
+        click(list, R.string.contextmenu_open_in_new_window);
+        verify(mContextMenuDelegate).openInNewWindow(eq(bookmarkId));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickOpenInIncognitoWindow() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+
+        click(list, R.string.contextmenu_open_in_incognito_window);
+        verify(mContextMenuDelegate).openInIncognitoWindow(eq(bookmarkId));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickOpenAll() {
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
+        mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        clickPlural(list, R.plurals.contextmenu_open_all_plural, 1);
+        verify(mContextMenuDelegate).openAll(anyList());
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickOpenAllInNewWindow() {
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
+        mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        clickPlural(list, R.plurals.contextmenu_open_all_in_new_window_plural, 1);
+        verify(mContextMenuDelegate).openAllInNewWindow(anyList());
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickOpenAllInIncognitoWindow() {
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
+        mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        clickPlural(list, R.plurals.contextmenu_open_all_in_incognito_window_plural, 1);
+        verify(mContextMenuDelegate).openAllInIncognitoWindow(anyList());
         verify(mDismissRunnable).run();
     }
 
@@ -465,11 +539,95 @@ public class BookmarkBarContextMenuMediatorTest {
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
 
         ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
-        assertNotNull(list);
 
         clickPlural(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
-
         verify(mContextMenuDelegate).openAllInNewTabGroup(anyList(), eq("My Special Folder"));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickEdit() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+
+        click(list, R.string.contextmenu_edit_bookmark_ellipsis);
+        verify(mContextMenuDelegate).editBookmark(eq(bookmarkId));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickMove() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+
+        click(list, R.string.bookmark_item_move);
+        verify(mContextMenuDelegate).moveBookmark(eq(bookmarkId));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickDelete() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+
+        click(list, R.string.bookmark_item_delete);
+        verify(mContextMenuDelegate).deleteBookmark(eq(bookmarkId));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickAddPage() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        click(list, R.string.contextmenu_add_page);
+        verify(mContextMenuDelegate).addPage(eq(folderId));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickAddFolder() {
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        click(list, R.string.contextmenu_add_folder);
+        verify(mContextMenuDelegate).addFolder(eq(folderId));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testClickOpenBookmarksManager() {
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+
+        click(list, R.string.contextmenu_open_bookmarks_manager);
+        verify(mContextMenuDelegate).openBookmarksManager(eq(folderId));
+        verify(mDismissRunnable).run();
     }
 
     @Test
