@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_controller.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service_factory.h"
@@ -195,7 +195,7 @@ class BookmarkBubbleViewPromoHelper {
 
   static bool ShouldShowIOSPriceTrackingPromo(
       content::WebContents* web_contents,
-      Browser* browser) {
+      BrowserWindowInterface* browser) {
     auto* const interface =
         BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
             web_contents);
@@ -212,7 +212,7 @@ class BookmarkBubbleViewPromoHelper {
   }
 
   static base::OnceCallback<void()> CreatePriceTrackingCallback(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       Profile* profile,
       views::BubbleAnchor bubble_anchor,
       content::WebContents* web_contents,
@@ -279,7 +279,7 @@ class BookmarkBubbleViewPromoHelper {
 class BookmarkBubbleView::BookmarkBubbleDelegate
     : public ui::DialogModelDelegate {
  public:
-  BookmarkBubbleDelegate(Browser* browser, const GURL& url)
+  BookmarkBubbleDelegate(BrowserWindowInterface* browser, const GURL& url)
       : browser_(browser),
         url_(url),
         action_item_(GetBookmarkActionItem(browser)) {
@@ -400,7 +400,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   }
 
  private:
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   const GURL url_;
   base::OnceCallback<void()> close_callback_;
 
@@ -413,7 +413,7 @@ void BookmarkBubbleView::ShowBubble(
     views::BubbleAnchor bubble_anchor,
     content::WebContents* web_contents,
     page_actions::PageActionViewInterface* highlighted_button,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& url,
     bool already_bookmarked) {
   if (bookmark_bubble_) {

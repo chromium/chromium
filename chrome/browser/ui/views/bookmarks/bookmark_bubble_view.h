@@ -10,7 +10,7 @@
 #include "ui/views/bubble/bubble_anchor.h"
 
 class GURL;
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -46,7 +46,7 @@ class BookmarkBubbleView {
       views::BubbleAnchor bubble_anchor,
       content::WebContents* web_contents,
       page_actions::PageActionViewInterface* highlighted_button,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const GURL& url,
       bool already_bookmarked);
 
