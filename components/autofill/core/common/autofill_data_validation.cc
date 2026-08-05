@@ -52,10 +52,7 @@ bool IsValidFormFields(base::span<const FormFieldData> fields) {
   }
   const auto unique_global_ids =
       base::MakeFlatSet<FieldGlobalId>(fields, {}, &FormFieldData::global_id);
-  const bool all_global_ids_unique = unique_global_ids.size() == fields.size();
-  base::UmaHistogramBoolean("Autofill.FormData.Fields.DuplicateGlobalIdFound",
-                            !all_global_ids_unique);
-  return all_global_ids_unique;
+  return unique_global_ids.size() == fields.size();
 }
 
 bool IsValidFormData(const FormData& form) {

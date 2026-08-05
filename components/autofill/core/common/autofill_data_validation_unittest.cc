@@ -54,8 +54,8 @@ TEST(AutofillDataValidationTest, FormDataWithUniqueFieldGlobalIdsAreValid) {
   EXPECT_TRUE(IsValidFormData(form_data));
 }
 
-// Tests that a form without duplicates of global IDs in its fields is
-// identified as valid by `IsValidFormData`.
+// Tests that a form with duplicate global IDs in its fields is identified as
+// invalid by `IsValidFormData`.
 TEST(AutofillDataValidationTest,
      FormDataWithDuplicateFieldGlobalIdsAreInvalid) {
   test::AutofillUnitTestEnvironment env;
@@ -68,43 +68,6 @@ TEST(AutofillDataValidationTest,
   form_data.set_fields(std::move(fields));
 
   EXPECT_FALSE(IsValidFormData(form_data));
-}
-
-// Tests that metric "Autofill.FormData.Fields.DuplicateGlobalIdFound" works as
-// intended in the context of `IsValidFormData`.
-TEST(AutofillDataValidationTest, VerifyDuplicateGlobalIdUmaMetric) {
-  test::AutofillUnitTestEnvironment env;
-
-  FormData form_data = test::CreateTestSignupFormData();
-
-  {
-    base::HistogramTester histogram_tester;
-
-    // Trigger no duplicate global ID found
-    ASSERT_TRUE(IsValidFormData(form_data));
-
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples(
-            "Autofill.FormData.Fields.DuplicateGlobalIdFound"),
-        base::BucketsAre(base::Bucket{true, 0}, base::Bucket{false, 1}));
-  }
-
-  std::vector<FormFieldData> fields = form_data.ExtractFields();
-  ASSERT_FALSE(fields.empty());
-  fields.push_back(fields.front());
-  form_data.set_fields(std::move(fields));
-
-  {
-    base::HistogramTester histogram_tester;
-
-    // Trigger duplicate global ID found
-    ASSERT_FALSE(IsValidFormData(form_data));
-
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples(
-            "Autofill.FormData.Fields.DuplicateGlobalIdFound"),
-        base::BucketsAre(base::Bucket{true, 1}, base::Bucket{false, 0}));
-  }
 }
 
 }  // namespace
