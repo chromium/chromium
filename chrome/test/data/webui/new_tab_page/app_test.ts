@@ -1776,6 +1776,92 @@ suite('NewTabPageAppTest', () => {
               });
         });
       });
+
+      test('tool chip is bottom aligned with submit button', async () => {
+        await recreateApp();
+        await microtasksFinished();
+
+        const searchbox = $$(app, '#searchbox');
+        assertTrue(!!searchbox);
+
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {
+            text: 'test query',
+            files: [],
+          },
+        }));
+        await microtasksFinished();
+
+        const composebox = $$(app, '#composebox') as NtpComposeboxElement;
+        assertTrue(!!composebox);
+        composebox.inToolMode = true;
+        composebox.submitEnabled = true;
+        await microtasksFinished();
+
+        const toolChipsContainer = $$(composebox, '#toolChipsContainer');
+        assertTrue(!!toolChipsContainer, 'Tool chips container should exist');
+        const toolChip =
+            toolChipsContainer.querySelector('cr-composebox-tool-chip');
+        assertTrue(!!toolChip, 'Tool chip should exist');
+        const toolChipButton = $$(toolChip, '#toolEnabledButton');
+        assertTrue(!!toolChipButton, 'Tool chip button should exist');
+
+        const submitElement = $$(composebox, 'cr-composebox-submit');
+        assertTrue(!!submitElement, 'Submit button should be rendered');
+        const submitIcon = $$(submitElement, '#submitContainer');
+        assertTrue(!!submitIcon, 'Submit icon should exist');
+
+        assertEquals(
+            toolChipButton.getBoundingClientRect().bottom,
+            submitIcon.getBoundingClientRect().bottom,
+            'Tool chip button and submit button should be bottom aligned');
+      });
+
+      test(
+          '+ button is bottom aligned with submit button with tab context',
+          async () => {
+            await recreateApp();
+            await microtasksFinished();
+
+            const searchbox = $$(app, '#searchbox');
+            assertTrue(!!searchbox);
+
+            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+              detail: {
+                text: 'test query',
+                files: [{
+                  tabId: 1,
+                  url: 'https://example.com',
+                  title: 'Example Tab',
+                }],
+              },
+            }));
+            await microtasksFinished();
+
+            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
+            assertTrue(!!composebox);
+            composebox.smartTabSharingVisible = true;
+            composebox.smartTabSharingActive = true;
+            composebox.submitEnabled = true;
+            await microtasksFinished();
+
+            const composeboxEntrypointMenu =
+                $$(composebox, '#contextEntrypoint');
+            assertTrue(!!composeboxEntrypointMenu);
+            const composeboxEntrypointButton =
+                $$(composeboxEntrypointMenu, '#entrypointButton');
+            assertTrue(!!composeboxEntrypointButton);
+
+            const submitElement = $$(composebox, 'cr-composebox-submit');
+            assertTrue(!!submitElement, 'Submit button should be rendered');
+            const submitIcon = $$(submitElement, '#submitContainer');
+            assertTrue(!!submitIcon, 'Submit icon should exist');
+
+            assertEquals(
+                composeboxEntrypointButton.getBoundingClientRect().bottom,
+                submitIcon.getBoundingClientRect().bottom,
+                '+ button and submit button should be bottom aligned');
+          });
     });
   });
 
