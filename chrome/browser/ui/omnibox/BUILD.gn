@@ -172,6 +172,7 @@ source_set("impl") {
       "//chrome/browser/ui/search_engines",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/search_engines",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/omnibox_everywhere",

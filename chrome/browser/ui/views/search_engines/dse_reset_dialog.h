@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEARCH_ENGINES_DSE_RESET_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_SEARCH_ENGINES_DSE_RESET_DIALOG_H_
 
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+
+class Browser;
 
 namespace search_engines {
 // Shows a bubble informing the user that their

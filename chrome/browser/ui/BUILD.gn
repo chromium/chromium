@@ -1127,6 +1127,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:glass_frame_service",
       "//chrome/browser/ui/views/relaunch_notification",
       "//chrome/browser/ui/views/relaunch_notification:impl",
+      "//chrome/browser/ui/views/search_engines",
+      "//chrome/browser/ui/views/search_engines:impl",
       "//chrome/browser/ui/webui:chrome_web_contents_handler",
     ]
   }
@@ -1158,6 +1160,9 @@ static_library("ui") {
     # //chrome/browser/download:impl sources include headers from
     # //chrome/browser/ui.
     allow_circular_includes_from += [
+      # views/search_engines:impl includes headers still built as part of this
+      # target (views/frame/browser_view.h, etc.) that can't be split out yet.
+      "//chrome/browser/ui/views/search_engines:impl",
       "//chrome/browser/download:impl",
       "//chrome/browser/ui/browser_web_contents_delegate",
 
@@ -1269,7 +1274,6 @@ static_library("ui") {
     # c/b/ui/views/frame/browser_view.h
     # c/b/ui/views/omnibox/omnibox_popup_closer.h
     # c/b/ui/views/omnibox/rounded_omnibox_results_frame.h
-    # c/b/ui/views/search_engines/dse_reset_dialog.h
     "//chrome/browser/ui/omnibox:impl",
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
@@ -1586,8 +1590,6 @@ static_library("ui") {
       "unload_controller.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
-      "views/search_engines/dse_reset_dialog.cc",
-      "views/search_engines/dse_reset_dialog.h",
     ]
 
     if (enable_dice_support) {
