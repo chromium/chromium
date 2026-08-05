@@ -79,7 +79,8 @@ std::optional<std::pair<std::string, std::string>> ExtractFromTabHandle(
 
 namespace internal {
 
-private_insights::events::ContextualCueLogEvent CreateContextualCueShownEvent(
+private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
+    private_insights::events::ContextualCueLogEvent::EventType event_type,
     const std::string& cue_id,
     CueTargetType cue_type,
     const optimization_guide::proto::ContextualCue& cue,
@@ -88,7 +89,7 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueShownEvent(
     const std::vector<optimization_guide::proto::Tab>& background_tabs) {
   private_insights::events::ContextualCueLogEvent event;
   event.set_cue_id(cue_id);
-  event.set_event_type(private_insights::events::ContextualCueLogEvent::SHOWN);
+  event.set_event_type(event_type);
   event.set_event_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
 
@@ -217,8 +218,9 @@ void RecordCueShownToPrivateInsights(
     return;
   }
 
-  auto event = internal::CreateContextualCueShownEvent(
-      cue_id, cue_type, cue, active_tab, tabs_to_show, background_tabs);
+  auto event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::SHOWN, cue_id, cue_type,
+      cue, active_tab, tabs_to_show, background_tabs);
 
   private_insights_service->LogContextualCueEvent(std::move(event));
 }
@@ -226,6 +228,11 @@ void RecordCueShownToPrivateInsights(
 void RecordCueingInteractionToPrivateInsights(
     Profile* profile,
     const std::string& cue_id,
+    CueTargetType cue_type,
+    const optimization_guide::proto::ContextualCue& cue,
+    tabs::TabInterface* active_tab,
+    const std::vector<tabs::TabHandle>& tabs_to_show,
+    const std::vector<optimization_guide::proto::Tab>& background_tabs,
     ContextualCueingInteraction interaction_type,
     const std::string& cuj) {
   if (!kEnablePrivateInsightsLogging.Get()) {
@@ -237,33 +244,26 @@ void RecordCueingInteractionToPrivateInsights(
     return;
   }
 
-  private_insights::events::ContextualCueLogEvent event;
-  event.set_cue_id(cue_id);
-  event.set_event_timestamp_ms(
-      base::Time::Now().InMillisecondsSinceUnixEpoch());
-  PopulateSystemProfile(event.mutable_system_profile());
-
-  // Map interaction_type to event_type
+  private_insights::events::ContextualCueLogEvent::EventType event_type;
   switch (interaction_type) {
     case ContextualCueingInteraction::kCueClicked:
-      event.set_event_type(
-          private_insights::events::ContextualCueLogEvent::CLICKED);
+      event_type = private_insights::events::ContextualCueLogEvent::CLICKED;
       break;
     case ContextualCueingInteraction::kCueDismissed:
-      event.set_event_type(
-          private_insights::events::ContextualCueLogEvent::DISMISSED);
+      event_type = private_insights::events::ContextualCueLogEvent::DISMISSED;
       break;
     case ContextualCueingInteraction::kCueSuggestionsSettings:
-      event.set_event_type(
-          private_insights::events::ContextualCueLogEvent::CLICKED_SETTINGS);
+      event_type =
+          private_insights::events::ContextualCueLogEvent::CLICKED_SETTINGS;
       break;
     case ContextualCueingInteraction::kCueEditPrompt:
-      event.set_event_type(
-          private_insights::events::ContextualCueLogEvent::EDIT_PROMPT);
+      event_type = private_insights::events::ContextualCueLogEvent::EDIT_PROMPT;
       break;
   }
 
-  event.mutable_cue_details()->set_cuj_type(cuj);
+  auto event = internal::CreateContextualCueLogEvent(
+      event_type, cue_id, cue_type, cue, active_tab, tabs_to_show,
+      background_tabs);
 
   private_insights_service->LogContextualCueEvent(std::move(event));
 }

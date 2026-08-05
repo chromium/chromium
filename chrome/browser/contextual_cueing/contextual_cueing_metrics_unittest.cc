@@ -28,8 +28,9 @@ TEST(ContextualCueingMetricsTest, CreateEvent_EmptyCollections) {
       .WillRepeatedly(testing::Return(u"Active Title"));
 
   // When
-  auto event = internal::CreateContextualCueShownEvent(
-      "test_cue_id", CueTargetType::kGlic, {}, &active_tab,
+  auto event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
+      CueTargetType::kGlic, {}, &active_tab,
       /*tabs_to_show=*/{}, /*background_tabs=*/{});
 
   // Then
@@ -52,8 +53,9 @@ TEST(ContextualCueingMetricsTest, CreateEvent_NullTabToShow) {
   std::vector<tabs::TabHandle> tabs_to_show = {null_handle};
 
   // When
-  auto event = internal::CreateContextualCueShownEvent(
-      "test_cue_id", CueTargetType::kGlic, {}, &active_tab, tabs_to_show,
+  auto event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
+      CueTargetType::kGlic, {}, &active_tab, tabs_to_show,
       /*background_tabs=*/{});
 
   // Then
@@ -77,8 +79,9 @@ TEST(ContextualCueingMetricsTest, CreateEvent_EmptyBackgroundTab) {
   std::vector<optimization_guide::proto::Tab> background_tabs = {empty_tab};
 
   // When
-  auto event = internal::CreateContextualCueShownEvent(
-      "test_cue_id", CueTargetType::kGlic, {}, &active_tab,
+  auto event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
+      CueTargetType::kGlic, {}, &active_tab,
       /*tabs_to_show=*/{}, background_tabs);
 
   // Then
@@ -115,9 +118,9 @@ TEST(ContextualCueingMetricsTest, CreateEvent) {
   std::vector<optimization_guide::proto::Tab> background_tabs = {bg_tab};
 
   // When
-  auto event = internal::CreateContextualCueShownEvent(
-      "test_cue_id", CueTargetType::kGlic, {}, &active_tab, tabs_to_show,
-      background_tabs);
+  auto event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
+      CueTargetType::kGlic, {}, &active_tab, tabs_to_show, background_tabs);
 
   // Then
   EXPECT_EQ("test_cue_id", event.cue_id());
