@@ -49,7 +49,6 @@ class InMemoryTabGroupStore : public TabGroupStore {
                                 const std::string& excluded_group_id);
 
   base::LRUCache<std::string, TabGroupEntry> groups_;
-  int64_t next_group_id_ = 1;
 };
 
 }  // namespace context_hub

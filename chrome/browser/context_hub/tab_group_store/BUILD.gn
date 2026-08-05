@@ -5,12 +5,20 @@
 source_set("tab_group_store") {
   sources = [
     "tab_group_entry.h",
+    "tab_group_entry_conversions.cc",
+    "tab_group_entry_conversions.h",
     "tab_group_store.h",
   ]
 
   public_deps = [
     "//base",
+    "//components/saved_tab_groups/public",
     "//url",
+  ]
+
+  deps = [
+    "//components/sessions:session_id",
+    "//components/tab_groups",
   ]
 }
 
@@ -32,13 +40,18 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "in_memory_tab_group_store_unittest.cc" ]
+  sources = [
+    "in_memory_tab_group_store_unittest.cc",
+    "tab_group_entry_conversions_unittest.cc",
+  ]
 
   deps = [
     ":impl",
     ":tab_group_store",
     "//base",
     "//base/test:test_support",
+    "//components/sessions:session_id",
+    "//components/tab_groups",
     "//testing/gtest",
   ]
 }

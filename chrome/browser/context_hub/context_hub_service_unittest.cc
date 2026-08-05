@@ -330,9 +330,9 @@ TEST_F(ContextHubServiceTest, GroupTabs_WithTabs) {
   EXPECT_THAT(
       stored_groups_future.Get(),
       ElementsAre(
-          FieldsAre("group_1", "Group 1", ElementsAre(1, 2), _,
+          FieldsAre(testing::Ne(""), "Group 1", ElementsAre(1, 2), _,
                     testing::Ne(base::Time()), testing::Ne(base::Time())),
-          FieldsAre("group_2", "Group 2", ElementsAre(3, 4), _,
+          FieldsAre(testing::Ne(""), "Group 2", ElementsAre(3, 4), _,
                     testing::Ne(base::Time()), testing::Ne(base::Time()))));
 }
 

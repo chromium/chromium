@@ -20,9 +20,11 @@ struct TabData {
   GURL url;
 };
 
-// Represents stored tab group data within Context Hub.
+// Represents unconfirmed (Auto Group Suggestions from the Context Hub Auto
+// Tab Grouping feature) or confirmed (User approved suggestions or
+// native Chrome tab groups) tab group data within Context Hub.
 struct TabGroupEntry {
-  // Key identifying the tab group, formatted as "group_<int>".
+  // Key identifying the tab group, formatted as a UUID string.
   std::string id;
 
   // Descriptive label for tabs in the group.
@@ -34,7 +36,8 @@ struct TabGroupEntry {
   // Fully resolved tab objects for UI presentation.
   std::vector<TabData> tabs;
 
-  // Timestamp when a tab within this group was activated or when created/modified.
+  // Timestamp when a tab within this group was activated or when
+  // it was created/modified.
   base::Time last_accessed_timestamp;
 
   // Timestamp when the group was initially created.

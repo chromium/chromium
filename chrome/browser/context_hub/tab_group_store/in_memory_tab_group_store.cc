@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/context_hub/features.h"
 
 namespace context_hub {
@@ -47,7 +48,6 @@ void InMemoryTabGroupStore::AddAllGroups(
 
 void InMemoryTabGroupStore::DeleteAllGroups(OperationCallback callback) {
   groups_.Clear();
-  next_group_id_ = 1;
   if (callback) {
     std::move(callback).Run();
   }
@@ -58,8 +58,7 @@ void InMemoryTabGroupStore::AddOrUpdateGroup(TabGroupEntry group,
   base::ScopedClosureRunner runner(std::move(callback));
   base::Time now = base::Time::Now();
   if (group.id.empty()) {
-    group.id =
-        base::StrCat({"group_", base::NumberToString(next_group_id_++)});
+    group.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   }
   auto existing_it = groups_.Peek(group.id);
   if (group.created_timestamp.is_null()) {
