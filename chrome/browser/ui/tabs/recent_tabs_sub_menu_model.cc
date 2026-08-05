@@ -730,7 +730,7 @@ void RecentTabsSubMenuModel::BuildLocalSplitItem(
   const gfx::VectorIcon* icon = nullptr;
   if (split.visual_data.split_layout() ==
       split_tabs::SplitTabLayout::kStacked) {
-    icon = &kSplitSceneHorizontalCustomIcon;
+    icon = &kSplitScene2Icon;
   } else {
     icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
                                                : kSplitSceneOldIcon);
@@ -936,7 +936,7 @@ void RecentTabsSubMenuModel::AddSplitItemToModel(
   const gfx::VectorIcon* icon = nullptr;
   if (split.visual_data.split_layout() ==
       split_tabs::SplitTabLayout::kStacked) {
-    icon = &kSplitSceneHorizontalCustomIcon;
+    icon = &kSplitScene2Icon;
   } else {
     icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
                                                : kSplitSceneOldIcon);

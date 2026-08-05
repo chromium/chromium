@@ -63,7 +63,7 @@ ui::ImageModel SplitViewLayoutMenuModel::GetIconForCommandId(
                                                  : kSplitSceneOldIcon);
       break;
     case CommandId::kStacked:
-      icon = &kSplitSceneHorizontalCustomIcon;
+      icon = &kSplitScene2Icon;
       break;
     default:
       NOTREACHED();

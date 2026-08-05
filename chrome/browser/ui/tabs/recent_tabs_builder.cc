@@ -181,7 +181,7 @@ RecentTabItem BuildSplitItem(const sessions::tab_restore::Split& split,
   const gfx::VectorIcon* icon = nullptr;
   if (split.visual_data.split_layout() ==
       split_tabs::SplitTabLayout::kStacked) {
-    icon = &kSplitSceneHorizontalCustomIcon;
+    icon = &kSplitScene2Icon;
   } else {
     icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
                                                : kSplitSceneOldIcon);

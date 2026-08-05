@@ -243,7 +243,7 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
                                                   : kBottomPanelCloseOldIcon);
   } else if (id == CommandId::kToggleOrientation) {
     icon = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
-               ? &kSplitSceneHorizontalCustomIcon
+               ? &kSplitScene2Icon
                : &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
                                                      : kSplitSceneOldIcon);
   }

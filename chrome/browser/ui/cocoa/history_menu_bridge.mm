@@ -443,7 +443,7 @@ bool HistoryMenuBridge::AddSplitEntryToMenu(sessions::tab_restore::Split* split,
   const gfx::VectorIcon* vector_icon = nullptr;
   if (split->visual_data.split_layout() ==
       split_tabs::SplitTabLayout::kStacked) {
-    vector_icon = &kSplitSceneHorizontalCustomIcon;
+    vector_icon = &kSplitScene2Icon;
   } else {
     vector_icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
                                                       : kSplitSceneOldIcon);
