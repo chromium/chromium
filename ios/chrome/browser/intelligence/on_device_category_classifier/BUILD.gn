@@ -4,20 +4,52 @@
 
 source_set("on_device_category_classifier") {
   sources = [
+    "classification_request_tracker.h",
+    "classification_request_tracker.mm",
     "in_process_category_classification_service.h",
     "in_process_category_classification_service.mm",
+    "in_process_passage_embedder_wrapper.h",
+    "in_process_passage_embedder_wrapper.mm",
     "on_device_category_classifier_tab_helper.h",
     "on_device_category_classifier_tab_helper.mm",
+    "passage_embedder_model_loader.h",
+    "passage_embedder_model_loader.mm",
   ]
   deps = [
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/optimization_guide/core:features",
     "//components/page_content_annotations/core",
+    "//components/passage_embeddings/core",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
+    "//services/passage_embeddings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "classification_request_tracker_unittest.mm",
+    "on_device_category_classifier_tab_helper_unittest.mm",
+    "passage_embedder_model_loader_unittest.mm",
+  ]
+  deps = [
+    ":on_device_category_classifier",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/core",
+    "//components/passage_embeddings/core",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
     "//url",
   ]
 }

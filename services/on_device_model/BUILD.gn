@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//services/on_device_model/on_device_model.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
 
@@ -21,79 +23,82 @@ component("backend_interfaces") {
   defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
 }
 
-component("on_device_model_service") {
-  sources = [
-    "on_device_model_mojom_impl.cc",
-    "on_device_model_mojom_impl.h",
-    "on_device_model_service.cc",
-    "on_device_model_service.h",
-  ]
-  deps = [
-    ":backend_interfaces",
-    ":ml_internal_buildflags",
-    "//build:chromecast_buildflags",
-    "//components/optimization_guide/core:features",
-    "//services/on_device_model/fake",
-    "//services/on_device_model/ml:ml_no_internal",
-
-    # TODO(crbug.com/41492700): Remove this once possible. This is a hack due to
-    # an implicit dependency via //third_party/utf via language_detection above.
-    "//third_party/libphonenumber",
-    "//third_party/utf",
-  ]
-  if (!is_fuchsia) {
-    deps += [ "//services/on_device_model/safety:safety_model_holder" ]
-  }
-  public_deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
-    "//sandbox/policy",
-    "//services/on_device_model/public/cpp",
-    "//services/on_device_model/public/mojom",
-  ]
-
-  defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
-
-  if (dawn_use_built_dxc) {
-    defines += [ "DAWN_USE_BUILT_DXC" ]
-  }
-
-  if (enable_ml_internal) {
-    deps += [ "//services/on_device_model/ml" ]
-  }
-
-  if (is_linux || is_chromeos) {
-    deps += [ "//gpu/config" ]
-  }
-  if (is_android) {
-    deps += [ "//services/on_device_model/android" ]
-  }
-  if (!is_fuchsia && !(is_linux && enable_cast_receiver)) {
-    deps += [
-      "//third_party/dawn/include/dawn:cpp_headers",
-      "//third_party/dawn/src/dawn:proc",
-      "//third_party/dawn/src/dawn/native",
+if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
+  component("on_device_model_service") {
+    sources = [
+      "on_device_model_mojom_impl.cc",
+      "on_device_model_mojom_impl.h",
+      "on_device_model_service.cc",
+      "on_device_model_service.h",
     ]
+    deps = [
+      ":backend_interfaces",
+      ":ml_internal_buildflags",
+      "//build:chromecast_buildflags",
+      "//components/optimization_guide/core:features",
+      "//services/on_device_model/fake",
+      "//services/on_device_model/ml:ml_no_internal",
+
+      # TODO(crbug.com/41492700): Remove this once possible. This is a hack due
+      # to an implicit dependency via //third_party/utf via language_detection
+      # above.
+      "//third_party/libphonenumber",
+      "//third_party/utf",
+    ]
+    if (!is_fuchsia) {
+      deps += [ "//services/on_device_model/safety:safety_model_holder" ]
+    }
+    public_deps = [
+      "//base",
+      "//mojo/public/cpp/bindings",
+      "//sandbox/policy",
+      "//services/on_device_model/public/cpp",
+      "//services/on_device_model/public/mojom",
+    ]
+
+    defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
+
+    if (dawn_use_built_dxc) {
+      defines += [ "DAWN_USE_BUILT_DXC" ]
+    }
+
+    if (enable_ml_internal) {
+      deps += [ "//services/on_device_model/ml" ]
+    }
+
+    if (is_linux || is_chromeos) {
+      deps += [ "//gpu/config" ]
+    }
+    if (is_android) {
+      deps += [ "//services/on_device_model/android" ]
+    }
+    if (!is_fuchsia && !(is_linux && enable_cast_receiver)) {
+      deps += [
+        "//third_party/dawn/include/dawn:cpp_headers",
+        "//third_party/dawn/src/dawn:proc",
+        "//third_party/dawn/src/dawn/native",
+      ]
+    }
   }
-}
 
-source_set("tests") {
-  testonly = true
+  source_set("tests") {
+    testonly = true
 
-  sources = [ "on_device_model_service_unittest.cc" ]
-  deps = [
-    ":on_device_model_service",
-    "//base/test:test_support",
-    "//mojo/public/cpp/test_support:test_utils",
-    "//services/on_device_model/fake",
-    "//services/on_device_model/ml:ml_no_internal",
-    "//services/on_device_model/public/cpp/test_support",
-    "//services/on_device_model/public/mojom",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-  if (enable_constraints) {
-    defines = [ "ENABLE_ON_DEVICE_CONSTRAINTS" ]
+    sources = [ "on_device_model_service_unittest.cc" ]
+    deps = [
+      ":on_device_model_service",
+      "//base/test:test_support",
+      "//mojo/public/cpp/test_support:test_utils",
+      "//services/on_device_model/fake",
+      "//services/on_device_model/ml:ml_no_internal",
+      "//services/on_device_model/public/cpp/test_support",
+      "//services/on_device_model/public/mojom",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+    if (enable_constraints) {
+      defines = [ "ENABLE_ON_DEVICE_CONSTRAINTS" ]
+    }
   }
 }
 

@@ -63,6 +63,8 @@ static_library("core") {
     "page_visibility_model_handler.h",
     "page_visibility_op_resolver.cc",
     "page_visibility_op_resolver.h",
+    "simple_page_content_verbalization.cc",
+    "simple_page_content_verbalization.h",
     "web_state_wrapper.cc",
     "web_state_wrapper.h",
   ]
@@ -81,7 +83,7 @@ static_library("core") {
     "//components/google/core/common",
     "//components/omnibox/common",
     "//components/optimization_guide/core:features",
-    "//components/passage_embeddings/core:passage_embeddings_types",
+    "//components/passage_embeddings/core",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/tensorflow_models:tflite_custom_ops",
