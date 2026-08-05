@@ -237,7 +237,6 @@ class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
         /*enabled_features=*/
         {
             {autofill::features::kAutofillAiWithDataSchema, {}},
-            {autofill::features::kAutofillAiAvailableByDefault, {}},
             {autofill::features::kAutofillAiWalletFlightReservation, {}},
             {autofill::features::kAutofillAiWalletVehicleRegistration, {}},
             {autofill::features::kAutofillAiWalletPrivatePasses, {}},

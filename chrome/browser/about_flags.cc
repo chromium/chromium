@@ -12640,10 +12640,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAiAlwaysTriggerServerModel)},
 
+#if BUILDFLAG(IS_ANDROID)
     {"autofill-ai-available-by-default",
      flag_descriptions::kAutofillAiAvailableByDefaultName,
-     flag_descriptions::kAutofillAiAvailableByDefaultDescription, kOsAll,
+     flag_descriptions::kAutofillAiAvailableByDefaultDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiAvailableByDefault)},
+#endif
 
     {"autofill-ai-dedupe-entities",
      flag_descriptions::kAutofillAiDedupeEntitiesName,

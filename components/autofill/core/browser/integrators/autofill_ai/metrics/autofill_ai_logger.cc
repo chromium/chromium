@@ -241,8 +241,7 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
           combined_state.suggestions_shown, combined_state.did_fill_suggestions,
           combined_state.edited_autofilled_field, opt_in_status);
     }
-    if (opt_in_status ||
-        base::FeatureList::IsEnabled(features::kAutofillAiAvailableByDefault)) {
+    if (opt_in_status || IsAutofillAiDefaultAvailabilityEnabled()) {
       RecordKeyMetrics(funnel_states);
     }
   }

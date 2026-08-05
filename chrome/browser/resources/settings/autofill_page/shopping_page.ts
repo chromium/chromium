@@ -22,8 +22,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AiEnterpriseFeaturePrefName} from '../ai_page/constants.js';
 import type {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
-import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
-import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
@@ -56,30 +54,6 @@ export class SettingsShoppingPageElement extends
 
   static get properties() {
     return {
-      enhancedAutofillEligibleUser_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('userEligibleForAutofillAi');
-        },
-      },
-
-      enhancedAutofillOptedIn_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-         Whether the feature kAutofillAiAvailableByDefault is enabled. When
-         enabled, users do not need to opt-in to enhanced Autofill to use
-         Autofill AI.
-       */
-      autofillAiAvailableByDefault_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
-        },
-      },
-
       canEnableOrDisableAutofillAi_: {
         type: Boolean,
         value() {
@@ -95,8 +69,7 @@ export class SettingsShoppingPageElement extends
        */
       shoppingOptedIn_: {
         type: Object,
-        computed: `computeShoppingOptedIn_(enhancedAutofillEligibleUser_,
-              enhancedAutofillOptedIn_,
+        computed: `computeShoppingOptedIn_(
               prefs.autofill.autofill_ai.shopping_entities_enabled,
               prefs.autofill.profile_enabled.value,
               prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI},
@@ -134,23 +107,11 @@ export class SettingsShoppingPageElement extends
     };
   }
 
-  static get observers() {
-    return [
-      'onAutofillOptInStatusChange_(prefs.autofill.autofill_ai.opt_in_status)',
-    ];
-  }
-
-  declare private enhancedAutofillEligibleUser_: boolean;
-  declare private enhancedAutofillOptedIn_: boolean;
   declare private shoppingOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
-  declare private autofillAiAvailableByDefault_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
   declare private prefsInitialized_: boolean;
   declare private showSuggestionsFromGeminiSettings_: boolean;
-
-  private entityDataManager_: EntityDataManagerProxy =
-      EntityDataManagerProxyImpl.getInstance();
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -171,25 +132,8 @@ export class SettingsShoppingPageElement extends
     const addressAutofillOptInStatus =
         this.getPref<boolean>('autofill.profile_enabled').value;
     const ignoreAddressAutofill = this.autofillSettingsEnterprisePolicyEnabled_;
-    if (this.autofillAiAvailableByDefault_) {
       return !this.canEnableOrDisableAutofillAi_ ||
           (!ignoreAddressAutofill && !addressAutofillOptInStatus);
-    }
-
-    const optInToggleEnabled = this.enhancedAutofillEligibleUser_ &&
-        this.enhancedAutofillOptedIn_ &&
-        (ignoreAddressAutofill || addressAutofillOptInStatus);
-
-    return !optInToggleEnabled;
-  }
-
-  private onAutofillOptInStatusChange_() {
-    if (this.autofillAiAvailableByDefault_) {
-      return;
-    }
-    this.entityDataManager_.getOptInStatus().then(status => {
-      this.set('enhancedAutofillOptedIn_', status);
-    });
   }
 
   private computeShoppingOptedIn_():

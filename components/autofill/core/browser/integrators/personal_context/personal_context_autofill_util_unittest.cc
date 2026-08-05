@@ -47,15 +47,17 @@ class MockPersonalContextEligibilityService
 class PersonalContextAutofillUtilTest : public testing::Test {
  public:
   PersonalContextAutofillUtilTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kAutofillAiWithDataSchema, {}},
+        {features::kAutofillAiServerModel, {}},
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+        {features::kAutofillAiAvailableByDefault, {}},
+#endif
+        {features::kAutofillAmbientAutofill,
+         {{"ambient_autofill_eligible_tiers", "1"}}},
+    };
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {
-            {features::kAutofillAiWithDataSchema, {}},
-            {features::kAutofillAiServerModel, {}},
-            {features::kAutofillAiAvailableByDefault, {}},
-            {features::kAutofillAmbientAutofill,
-             {{"ambient_autofill_eligible_tiers", "1"}}},
-        },
+        enabled_features,
         /*disabled_features=*/{});
     client_.GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kFindAndFillWithGeminiSettings,

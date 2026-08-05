@@ -273,8 +273,10 @@ TEST_P(AutofillAiMayPerformActionTest, FeatureParamForModelCacheUseOff) {
 // enterprise policy.
 TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillAiEnterprisePolicyDisabled) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiAvailableByDefault};
+#endif
   client().GetPrefs()->SetInteger(
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
@@ -314,8 +316,10 @@ TEST_P(AutofillAiMayPerformActionTest,
 
 // Verifies that only MQLS logging and online model calls require an opt-in.
 TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiAvailableByDefault};
+#endif
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   constexpr auto kAllowedActions =
       DenseSet({AutofillAiAction::kAddLocalEntityInstanceInSettings,
@@ -629,6 +633,7 @@ TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill) {
       MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 TEST_F(AutofillAiPermissionUtilsTest, AmbientAutofillFillingRequiresOptIn) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAiAvailableByDefault);
@@ -646,6 +651,7 @@ TEST_F(AutofillAiPermissionUtilsTest, AmbientAutofillFillingRequiresOptIn) {
   EXPECT_TRUE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
 }
+#endif
 
 TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill_G1Tiers) {
   client().set_personal_context_eligibility_state(

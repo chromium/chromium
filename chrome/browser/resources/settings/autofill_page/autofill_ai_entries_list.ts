@@ -76,32 +76,7 @@ export class SettingsAutofillAiEntriesListElement extends
 
   static get properties() {
     return {
-      /**
-         If a user is not eligible for Autofill with Ai, but they have data
-         saved, the code allows them only to edit and delete their data. They
-         are not allowed to add new data, or to opt-in or opt-out of Autofill
-         with Ai using the toggle at the top of this page.
-         If a user is not eligible for Autofill with Ai and they also have no
-         data saved, then they cannot access this page at all.
-       */
-      ineligibleUser_: {
-        type: Boolean,
-        value() {
-          return !loadTimeData.getBoolean('userEligibleForAutofillAi');
-        },
-      },
 
-      /**
-         Whether the feature kAutofillAiAvailableByDefault is enabled. When
-         enabled, users do not need to opt-in to enhanced Autofill to use
-         Autofill AI.
-       */
-      autofillAiAvailableByDefault_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
-        },
-      },
 
       /**
        Controls whether the user can use Autofill AI. For example this can be
@@ -219,15 +194,14 @@ export class SettingsAutofillAiEntriesListElement extends
 
   static get observers() {
     return [
-      'updateOptInStatus_(' +
-          'prefs.autofill.autofill_ai.opt_in_status.value, ' +
+      'updateAllowNewEntitiesAddition_(' +
           'prefs.autofill.profile_enabled.value, ' +
           `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value, ` +
           'allowNewEntitiesAdditionPref.*)',
     ];
   }
 
-  declare private ineligibleUser_: boolean;
+
   declare allowedEntityTypes: Set<EntityTypeName>|null;
   declare listTitle: string;
   declare pageName: string;
@@ -242,7 +216,6 @@ export class SettingsAutofillAiEntriesListElement extends
   declare private activeEntityInstanceDeleteTitle_: string;
   declare private entityInstances_: EntityInstanceWithLabels[];
   declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
-  declare private autofillAiAvailableByDefault_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
   private activeEntityInstanceGuid_: string|null = null;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -466,7 +439,7 @@ export class SettingsAutofillAiEntriesListElement extends
     OpenWindowProxyImpl.getInstance().openUrl(e.model.item.walletEntityUrl);
   }
 
-  private async updateOptInStatus_(): Promise<void> {
+  private async updateAllowNewEntitiesAddition_(): Promise<void> {
     await CrSettingsPrefs.initialized;
     const addressPref = this.getPref<boolean>('autofill.profile_enabled');
     const autofillAiPref = this.getPref<ModelExecutionEnterprisePolicyValue>(
@@ -476,18 +449,8 @@ export class SettingsAutofillAiEntriesListElement extends
     const meetsAiPrefRequirement =
         autofillAiPref.value !== ModelExecutionEnterprisePolicyValue.DISABLE;
 
-    // If Autofill AI is available by default, it means that the pref only
-    // controls server model calls and MQLS logging. Therefore not whether the
-    // user can use Autofill AI.
-    if (this.autofillAiAvailableByDefault_) {
-      this.allowNewEntitiesAddition_ = this.isNewEntitiesAdditionAllowedByPref_ &&
-          this.canEnableOrDisableAutofillAi_ && meetsAddressPrefRequirement &&
-          meetsAiPrefRequirement;
-      return;
-    }
-    const optedIn = await this.entityDataManager_.getOptInStatus();
-    this.allowNewEntitiesAddition_ = !this.ineligibleUser_ && optedIn &&
-        this.isNewEntitiesAdditionAllowedByPref_ && meetsAddressPrefRequirement &&
+    this.allowNewEntitiesAddition_ = this.isNewEntitiesAdditionAllowedByPref_ &&
+        this.canEnableOrDisableAutofillAi_ && meetsAddressPrefRequirement &&
         meetsAiPrefRequirement;
   }
 

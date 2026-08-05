@@ -56,15 +56,12 @@ suite('CollapsibleAutofillSettingsCard', function() {
   async function createCollapsibleAutofillSettingsCard(
       eligibleUser: boolean = true,
       autofillSettingsEnterprisePolicyEnabled: boolean = false,
-      optInStatusResponse: boolean = true,
-      autofillAiAvailableByDefault: boolean =
-          false): Promise<CollapsibleCardElement> {
+      optInStatusResponse: boolean = true): Promise<CollapsibleCardElement> {
     entityDataManager.setGetOptInStatusResponse(optInStatusResponse);
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: eligibleUser,
       AutofillSettingsEnterprisePolicyEnabled:
           autofillSettingsEnterprisePolicyEnabled,
-      autofillAiAvailableByDefault: autofillAiAvailableByDefault,
     });
 
     const card: CollapsibleCardElement =
@@ -126,45 +123,8 @@ suite('CollapsibleAutofillSettingsCard', function() {
     });
   });
 
-  test('AutofillAiAvailableByDefaultFalseRendersExpectedUI', async function() {
-    const card = await createCollapsibleAutofillSettingsCard(
-        /*eligibleUser=*/ true,
-        /*autofillSettingsEnterprisePolicyEnabled=*/ false,
-        /*optInStatusResponse=*/ true,
-        /*autofillAiAvailableByDefault=*/ false);
-
-    const firstColumn = card.shadowRoot!.querySelector('.column');
-    assertTrue(!!firstColumn);
-    const bulletsInFirstColumn = firstColumn.querySelectorAll('li');
-    assertEquals(2, bulletsInFirstColumn.length);
-
-    const firstBullet = bulletsInFirstColumn.item(0);
-    assertTrue(firstBullet !== null);
-    const firstBulletIcon = firstBullet.querySelector('cr-icon');
-    assertTrue(!!firstBulletIcon);
-    assertEquals('settings20:sync-saved-locally', firstBulletIcon.icon);
-    const firstBulletText =
-        firstBullet.querySelector('.cr-secondary-text')!.textContent.trim();
-    assertEquals(
-        loadTimeData.getString('autofillAiWhenOnSavedInfo'), firstBulletText);
-
-    const secondBullet = bulletsInFirstColumn.item(1);
-    assertTrue(secondBullet !== null);
-    const secondBulletIcon = secondBullet.querySelector('cr-icon');
-    assertTrue(!!secondBulletIcon);
-    assertEquals('settings20:text-analysis', secondBulletIcon.icon);
-    const secondBulletText =
-        secondBullet.querySelector('.cr-secondary-text')!.textContent.trim();
-    assertEquals(
-        loadTimeData.getString('autofillAiWhenOnUseToFill'), secondBulletText);
-  });
-
-  test('AutofillAiAvailableByDefaultTrueRendersExpectedUI', async function() {
-    const card = await createCollapsibleAutofillSettingsCard(
-        /*eligibleUser=*/ true,
-        /*autofillSettingsEnterprisePolicyEnabled=*/ false,
-        /*optInStatusResponse=*/ true,
-        /*autofillAiAvailableByDefault=*/ true);
+  test('RendersExpectedUI', async function() {
+    const card = await createCollapsibleAutofillSettingsCard();
 
     const firstColumn = card.shadowRoot!.querySelector('.column');
     assertTrue(!!firstColumn);

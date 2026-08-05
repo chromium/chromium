@@ -47,8 +47,7 @@ suite('TravelPage', function() {
   ].forEach(({travelOptIn}) => {
     test(`Toggle should show current opt-in status`, async function() {
       loadTimeData.overrideValues({
-        userEligibleForAutofillAi: true,
-        autofillAiAvailableByDefault: false,
+        canEnableOrDisableAutofillAi: true,
       });
 
       entityDataManager.setGetOptInStatusResponse(true);
@@ -65,7 +64,7 @@ suite('TravelPage', function() {
   });
 
   test(`Toggle should switch opt-in status in prefs`, async function() {
-    loadTimeData.overrideValues({userEligibleForAutofillAi: true});
+    loadTimeData.overrideValues({canEnableOrDisableAutofillAi: true});
 
     entityDataManager.setGetOptInStatusResponse(true);
 
@@ -85,82 +84,24 @@ suite('TravelPage', function() {
         'prefs.autofill.autofill_ai.travel_entities_enabled.value'));
   });
 
-  [{enhancedAutofillOptIn: true, travelOptIn: true},
-   {enhancedAutofillOptIn: true, travelOptIn: false},
-   {enhancedAutofillOptIn: false, travelOptIn: true},
-   {enhancedAutofillOptIn: false, travelOptIn: false},
-  ].forEach(({enhancedAutofillOptIn, travelOptIn}) => {
-    test(
-        'When not elligible for enhanced autofill, toggle should' +
-            'always be disabled and off: ' +
-            `enhancedAutofillOptIn(${enhancedAutofillOptIn}) ` +
-            `travelOptIn(${travelOptIn})`,
-        async function() {
-          loadTimeData.overrideValues({userEligibleForAutofillAi: false});
-
-          entityDataManager = new TestEntityDataManagerProxy();
-          EntityDataManagerProxyImpl.setInstance(entityDataManager);
-          entityDataManager.setGetOptInStatusResponse(enhancedAutofillOptIn);
-
-          settingsPrefs.set(
-              'prefs.autofill.autofill_ai.travel_entities_enabled.value',
-              travelOptIn);
-
-          const page = await setupPage();
-
-          assertTrue(page.$.optInToggle.disabled);
-          assertFalse(page.$.optInToggle.checked);
-        });
-  });
-
   [{canEnableOrDisableAutofillAi: true},
    {canEnableOrDisableAutofillAi: false},
   ].forEach(({canEnableOrDisableAutofillAi}) => {
     test(
-        'When Autofill AI is available by default ' +
-            '(autofillAiAvailableByDefault is true) the toggle ' +
-            'availability depends on ' +
-            'canEnableOrDisableAutofillAi, not on the opt-in status: ' +
+        'Toggle availability depends on canEnableOrDisableAutofillAi: ' +
             `canEnableOrDisableAutofillAi(${canEnableOrDisableAutofillAi})`,
         async function() {
           loadTimeData.overrideValues({
-            userEligibleForAutofillAi: false,
-            autofillAiAvailableByDefault: true,
             canEnableOrDisableAutofillAi: canEnableOrDisableAutofillAi,
           });
 
           entityDataManager = new TestEntityDataManagerProxy();
           EntityDataManagerProxyImpl.setInstance(entityDataManager);
-          entityDataManager.setGetOptInStatusResponse(false);
 
           const page = await setupPage();
 
           assertEquals(
               page.$.optInToggle.disabled, !canEnableOrDisableAutofillAi);
-        });
-  });
-
-  [{travelOptIn: true},
-   {travelOptIn: false},
-  ].forEach(({travelOptIn}) => {
-    test(
-        'When opted out from travel autofill, toggle should always ' +
-            `be disabled and off, travelOptIn(${travelOptIn})`,
-        async function() {
-          loadTimeData.overrideValues({userEligibleForAutofillAi: true});
-
-          entityDataManager = new TestEntityDataManagerProxy();
-          EntityDataManagerProxyImpl.setInstance(entityDataManager);
-          entityDataManager.setGetOptInStatusResponse(false);
-
-          settingsPrefs.set(
-              'prefs.autofill.autofill_ai.travel_entities_enabled.value',
-              travelOptIn);
-
-          const page = await setupPage();
-
-          assertTrue(page.$.optInToggle.disabled);
-          assertFalse(page.$.optInToggle.checked);
         });
   });
 
@@ -191,9 +132,8 @@ suite('TravelPage', function() {
             `addressAutofillStatus(${addressAutofillStatus})`,
         async function() {
           loadTimeData.overrideValues({
-            userEligibleForAutofillAi: true,
+            canEnableOrDisableAutofillAi: true,
             AutofillSettingsEnterprisePolicyEnabled: experimentEnabled,
-            autofillAiAvailableByDefault: false,
           });
 
           entityDataManager.setGetOptInStatusResponse(true);
@@ -214,9 +154,7 @@ suite('TravelPage', function() {
           'controlled by policy',
       async function() {
         loadTimeData.overrideValues({
-          userEligibleForAutofillAi: true,
           AutofillSettingsEnterprisePolicyEnabled: false,
-          autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
         });
 
@@ -244,9 +182,7 @@ suite('TravelPage', function() {
           'controlled by extension',
       async function() {
         loadTimeData.overrideValues({
-          userEligibleForAutofillAi: true,
           AutofillSettingsEnterprisePolicyEnabled: false,
-          autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
         });
 
@@ -275,9 +211,7 @@ suite('TravelPage', function() {
           'controlled by extension and forced true',
       async function() {
         loadTimeData.overrideValues({
-          userEligibleForAutofillAi: true,
           AutofillSettingsEnterprisePolicyEnabled: false,
-          autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
         });
 
@@ -303,9 +237,7 @@ suite('TravelPage', function() {
           'controlled by policy',
       async function() {
         loadTimeData.overrideValues({
-          userEligibleForAutofillAi: true,
           AutofillSettingsEnterprisePolicyEnabled: false,
-          autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
         });
 
@@ -330,9 +262,7 @@ suite('TravelPage', function() {
           'allowed by policy',
       async function() {
         loadTimeData.overrideValues({
-          userEligibleForAutofillAi: true,
           AutofillSettingsEnterprisePolicyEnabled: false,
-          autofillAiAvailableByDefault: true,
           canEnableOrDisableAutofillAi: true,
         });
 

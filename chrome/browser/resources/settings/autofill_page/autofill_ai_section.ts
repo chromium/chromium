@@ -134,18 +134,6 @@ export class SettingsAutofillAiSectionElement extends
               'AutofillSettingsEnterprisePolicyEnabled');
         },
       },
-
-      /**
-         Whether the feature kAutofillAiAvailableByDefault is enabled. When
-         enabled, users do not need to opt-in to enhanced Autofill to use
-         Autofill AI.
-       */
-      autofillAiAvailableByDefault_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
-        },
-      },
     };
   }
 
@@ -166,7 +154,6 @@ export class SettingsAutofillAiSectionElement extends
   declare private isWalletServerStorageEnabled_: boolean;
   declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
-  declare private autofillAiAvailableByDefault_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
@@ -243,18 +230,6 @@ export class SettingsAutofillAiSectionElement extends
    */
   private showLoggingInfoBullet_(pref: number) {
     return pref !== ModelExecutionEnterprisePolicyValue.ALLOW;
-  }
-
-  private getFirstWhenOnSectionTitle_() {
-    return this.i18n(
-        this.autofillAiAvailableByDefault_ ?
-            'autofillAiWhenOnCanFillDifficultFields' :
-            'autofillAiWhenOnSavedInfo');
-  }
-
-  private getFirstWhenOnSectionIcon_() {
-    return this.autofillAiAvailableByDefault_ ? 'settings20:text-analysis' :
-                                                'settings20:sync-saved-locally';
   }
 
   // SettingsViewMixin implementation.

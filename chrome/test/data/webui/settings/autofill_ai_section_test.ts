@@ -317,10 +317,9 @@ suite('AutofillAiSectionUiTest', function() {
     CrSettingsPrefs.resetForTesting();
   });
 
-  async function createSection(autofillAiAvailableByDefault: boolean = false) {
+  async function createSection() {
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: true,
-      autofillAiAvailableByDefault: autofillAiAvailableByDefault,
       AutofillSettingsEnterprisePolicyEnabled: false,
     });
     section = document.createElement('settings-autofill-ai-section');
@@ -329,37 +328,8 @@ suite('AutofillAiSectionUiTest', function() {
     await flushTasks();
   }
 
-  test('AutofillAiAvailableByDefaultFalseRendersExpectedUI', async function() {
-    await createSection(/*autofillAiAvailableByDefault=*/ false);
-
-    const firstColumn = section.shadowRoot!.querySelector('.column');
-    assertTrue(!!firstColumn);
-    const bulletsInFirstColumn = firstColumn.querySelectorAll('li');
-    assertEquals(2, bulletsInFirstColumn.length);
-
-    const firstBullet = bulletsInFirstColumn.item(0);
-    assertTrue(firstBullet !== null);
-    const firstBulletIcon = firstBullet.querySelector('cr-icon');
-    assertTrue(!!firstBulletIcon);
-    assertEquals('settings20:sync-saved-locally', firstBulletIcon.icon);
-    const firstBulletText =
-        firstBullet.querySelector('.cr-secondary-text')!.textContent.trim();
-    assertEquals(
-        loadTimeData.getString('autofillAiWhenOnSavedInfo'), firstBulletText);
-
-    const secondBullet = bulletsInFirstColumn.item(1);
-    assertTrue(secondBullet !== null);
-    const secondBulletIcon = secondBullet.querySelector('cr-icon');
-    assertTrue(!!secondBulletIcon);
-    assertEquals('settings20:text-analysis', secondBulletIcon.icon);
-    const secondBulletText =
-        secondBullet.querySelector('.cr-secondary-text')!.textContent.trim();
-    assertEquals(
-        loadTimeData.getString('autofillAiWhenOnUseToFill'), secondBulletText);
-  });
-
-  test('AutofillAiAvailableByDefaultTrue', async function() {
-    await createSection(/*autofillAiAvailableByDefault=*/ true);
+  test('RendersExpectedUI', async function() {
+    await createSection();
 
     const firstColumn = section.shadowRoot!.querySelector('.column');
     assertTrue(!!firstColumn);

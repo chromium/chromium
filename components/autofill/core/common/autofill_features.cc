@@ -188,7 +188,9 @@ BASE_FEATURE(kAutofillAiAlwaysTriggerServerModel,
 // If enabled Autofill AI becomes available by default and the previous enable
 // toggle controls whether online model runs and MQLS logging are allowed.
 // TODO(crbug.com/440488776): Remove once clean up happens.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiAvailableByDefault);
+#endif
 
 // If enabled, AutofillAi entities will be deduped on every major milestone.
 DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiDedupeEntities);

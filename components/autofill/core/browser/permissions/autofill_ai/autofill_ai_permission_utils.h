@@ -206,6 +206,12 @@ bool IsAutofillAiEntityTypeBlockedByPolicy(const AutofillClient& client,
 [[nodiscard]] bool IsAutofillAiAllowedByEnterprisePolicy(
     const PrefService* prefs);
 
+// Returns whether Autofill AI is available by default without requiring
+// explicit opt-in. On Desktop, this returns true because the feature is fully
+// launched. On Mobile (Android/iOS), this returns whether the feature flag
+// `kAutofillAiAvailableByDefault` is enabled.
+[[nodiscard]] bool IsAutofillAiDefaultAvailabilityEnabled();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_AI_AUTOFILL_AI_PERMISSION_UTILS_H_

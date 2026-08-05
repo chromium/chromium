@@ -125,18 +125,6 @@ export class CollapsibleCardElement extends SettingsViewMixin
               'AutofillSettingsEnterprisePolicyEnabled');
         },
       },
-
-      /**
-         Whether the feature kAutofillAiAvailableByDefault is enabled. When
-         enabled, users do not need to opt-in to enhanced Autofill to use
-         Autofill AI.
-       */
-      autofillAiAvailableByDefault_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
-        },
-      },
     };
   }
 
@@ -156,7 +144,6 @@ export class CollapsibleCardElement extends SettingsViewMixin
   declare private enhancedAutofillOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
-  declare private autofillAiAvailableByDefault_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -171,18 +158,6 @@ export class CollapsibleCardElement extends SettingsViewMixin
           this.entityInstancesChangedListener_);
       this.entityInstancesChangedListener_ = null;
     }
-  }
-
-  private getFirstWhenOnSectionTitle_() {
-    return this.i18n(
-        this.autofillAiAvailableByDefault_ ?
-            'autofillAiWhenOnCanFillDifficultFields' :
-            'autofillAiWhenOnSavedInfo');
-  }
-
-  private getFirstWhenOnSectionIcon_() {
-    return this.autofillAiAvailableByDefault_ ? 'settings20:text-analysis' :
-                                                'settings20:sync-saved-locally';
   }
 
   private async onOptInToggleChange_() {

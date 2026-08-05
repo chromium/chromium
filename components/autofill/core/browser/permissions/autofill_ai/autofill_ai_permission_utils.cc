@@ -275,7 +275,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kLogToMqls:
       return !is_enabled(features::kAutofillAiUsePrivateAi);
     case AutofillAiAction::kEnableOrDisable:
-      return is_enabled(features::kAutofillAiAvailableByDefault);
+      return IsAutofillAiDefaultAvailabilityEnabled();
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kShowAmbientAutofillInSettings:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData:
@@ -352,10 +352,10 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus);
   const bool autofill_ai_available =
       GetAutofillAiOptInStatus(prefs, identity_manager) ||
-      base::FeatureList::IsEnabled(features::kAutofillAiAvailableByDefault);
+      IsAutofillAiDefaultAvailabilityEnabled();
   // Note that the policy can become disabled even after a user has opted in.
   const bool is_allowed_by_opt_in_or_default =
-      base::FeatureList::IsEnabled(features::kAutofillAiAvailableByDefault) ||
+      IsAutofillAiDefaultAvailabilityEnabled() ||
       (policy_pref_enabled && autofill_ai_available);
   switch (action) {
     case AutofillAiAction::kLogToMqls:
@@ -422,9 +422,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       return policy_pref_enabled;
     case AutofillAiAction::kWalletDataSharingPromotion:
       return !is_wallet_public_pass_storage_enabled &&
-             (policy_pref_enabled ||
-              base::FeatureList::IsEnabled(
-                  features::kAutofillAiAvailableByDefault));
+             (policy_pref_enabled || IsAutofillAiDefaultAvailabilityEnabled());
     case AutofillAiAction::kEnableOrDisable:
     case AutofillAiAction::kListEntityInstancesInSettings:
       return true;
@@ -918,6 +916,14 @@ bool IsAutofillAiEntityTypeBlockedByPolicy(const AutofillClient& client,
              optimization_guide::prefs::
                  kAutofillPredictionImprovementsEnterprisePolicyAllowed) ==
          kAutofillPredictionSettingsAllow;
+}
+
+bool IsAutofillAiDefaultAvailabilityEnabled() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(features::kAutofillAiAvailableByDefault);
+#else
+  return true;
+#endif
 }
 
 }  // namespace autofill
