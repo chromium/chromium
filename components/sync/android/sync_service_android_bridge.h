@@ -47,7 +47,6 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   // Please keep all methods below in the same order as the @NativeMethods in
   // SyncServiceImpl.java.
   void AcknowledgeBookmarksLimitExceededError(int32_t source);
-  bool IsSyncFeatureEnabled();
   bool IsSyncDisabledByEnterprisePolicy();
   bool IsEngineInitialized();
   std::vector<int32_t> GetActiveDataTypes();

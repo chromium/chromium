@@ -605,7 +605,7 @@ TEST_F(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
 
 // Tests that (a) MDM errors are cleared and (b) all browsing data is cleared
 // (not just from the signed-in period), when signing out of a managed account
-// that was migrated from ConsentLevel::kSync.
+// that was migrated from sync consent.
 TEST_F(AuthenticationServiceTest, ManagedAccountSignOut_MigratedFromSyncing) {
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];

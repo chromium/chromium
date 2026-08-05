@@ -2479,28 +2479,52 @@ _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
     'out to //components/sync/OWNERS.', )
 
 # C++ functions related to signin::ConsentLevel::kSync which are deprecated.
-_DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS: Sequence[BanRule] = (
-    BanRule(
-        'HasSyncConsent',
-        _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
-        False,
-    ),
-    BanRule(
-        'CanSyncFeatureStart',
-        _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
-        False,
-    ),
-    BanRule(
-        'IsSyncFeatureEnabled',
-        _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
-        False,
-    ),
-    BanRule(
-        'IsSyncFeatureActive',
-        _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
-        False,
-    ),
-)
+def _get_deprecated_sync_consent_cpp_functions(
+        treat_as_error: bool) -> Sequence[BanRule]:
+    return (
+        BanRule(
+            'HasSyncConsent(',
+            _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+            treat_as_error,
+        ),
+        BanRule(
+            'CanSyncFeatureStart(',
+            _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+            treat_as_error,
+        ),
+        BanRule(
+            'IsSyncFeatureEnabled(',
+            _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+            treat_as_error,
+        ),
+        BanRule(
+            'IsSyncFeatureActive(',
+            _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+            treat_as_error,
+        ),
+        BanRule(
+            'ConsentLevel::kSync',
+            _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
+            treat_as_error,
+        ),
+    )
+
+
+def _treat_deprecated_sync_consent_as_error(f, input_api):
+    # The regex is initialized once from `input_api`.
+    if not hasattr(_treat_deprecated_sync_consent_as_error,
+                   "mobile_path_regex"):
+        _treat_deprecated_sync_consent_as_error.mobile_path_regex = (
+            input_api.re.compile(r"(?<![a-zA-Z])(android|ios)(?![a-zA-Z])"))
+    # Allowlisted for now because there are browser tests shared with desktop
+    # that haven't been updated yet.
+    pending_android_file = (
+        "chrome/browser/sync/test/integration/sync_test_utils_android.cc")
+    # Error on mobile where the migration is complete, warning elsewhere.
+    return (f.UnixLocalPath() != pending_android_file and
+            _treat_deprecated_sync_consent_as_error.mobile_path_regex.search(
+                f.UnixLocalPath()))
+
 
 _BANNED_MOJOM_PATTERNS: Sequence[BanRule] = (
     BanRule(
@@ -3340,13 +3364,21 @@ def CheckNoBannedPatterns(input_api, output_api):
         file_filter=lambda f: f.LocalPath().endswith(('_egtest.mm')),
         ban_rules=_BANNED_IOS_EGTEST_FUNCTIONS)
 
+    cpp_extensions = ('.cc', '.mm', '.h')
     CheckFilesForFormat(
-        file_filter=lambda f: f.LocalPath().endswith(('.cc', '.mm', '.h')),
+        file_filter=lambda f: f.LocalPath().endswith(cpp_extensions),
         ban_rules=_BANNED_CPP_FUNCTIONS)
 
     CheckFilesForFormat(
-        file_filter=lambda f: f.LocalPath().endswith(('.cc', '.mm', '.h')),
-        ban_rules=_DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS)
+        file_filter=lambda f:
+        (f.LocalPath().endswith(cpp_extensions) and
+         _treat_deprecated_sync_consent_as_error(f, input_api)),
+        ban_rules=_get_deprecated_sync_consent_cpp_functions(True))
+    CheckFilesForFormat(
+        file_filter=lambda f:
+        (f.LocalPath().endswith(cpp_extensions) and
+         not _treat_deprecated_sync_consent_as_error(f, input_api)),
+        ban_rules=_get_deprecated_sync_consent_cpp_functions(False))
 
     CheckFilesForFormat(
         file_filter=lambda f: f.LocalPath().endswith(('.mojom')),

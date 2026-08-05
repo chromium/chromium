@@ -58,7 +58,7 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
     if (account_to_store_password.has_value()) {
       CoreAccountInfo account_info;
       account_info.email = *account_to_store_password;
-      sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
+      sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
     } else {
       sync_service_.SetSignedOut();
     }

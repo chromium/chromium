@@ -6,6 +6,10 @@
 # Pylint directives to disable warnings in cider.
 # pylint: disable=bad-indentation
 
+from __future__ import annotations
+
+import dataclasses
+import enum
 import io
 import os.path
 import subprocess
@@ -6175,44 +6179,70 @@ class CheckInlineConstexprDefinitionsInHeadersTest(unittest.TestCase):
 
 
 class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
+
+    class Result(enum.Enum):
+        OK = 1
+        WARNING = 2
+        ERROR = 3
+
+    @dataclasses.dataclass(frozen=True)
+    class TestCase:
+        path: str
+        content: str
+        expected_result: Result
+
     """Test the presubmit for deprecated ConsentLevel::kSync functions."""
 
     def testCppPath(self):
+        TestCase = self.TestCase
+        Result = self.Result
+        test_cases = (
+            TestCase('chrome/browser/android/file.cc', 'OtherFunction()',
+                     Result.OK),
+            TestCase(
+                'chrome/browser/sync/test/integration/sync_test_utils_android'
+                '.cc', 'ConsentLevel::kSync', Result.WARNING),
+            TestCase('chrome/android/file.cc', 'ConsentLevel::kSync',
+                     Result.ERROR),
+            TestCase('ios/file.mm', 'CanSyncFeatureStart()', Result.ERROR),
+            TestCase('ios/file.h', 'CanSyncFeatureStart()', Result.ERROR),
+            TestCase('components/mac/foo.mm', 'CanSyncFeatureStart()',
+                     Result.WARNING),
+            TestCase('components/foo/ios/file.cc', 'IsSyncFeatureEnabled()',
+                     Result.ERROR),
+            TestCase('components/foo/delegate_android.cc',
+                     'IsSyncFeatureActive()', Result.ERROR),
+            TestCase('components/foo/delegate_ios.cc', 'IsSyncFeatureActive()',
+                     Result.ERROR),
+            TestCase('components/foo/android_delegate.cc',
+                     'IsSyncFeatureActive()', Result.ERROR),
+            TestCase('components/foo/ios_delegate.cc', 'IsSyncFeatureActive()',
+                     Result.ERROR),
+            TestCase('chrome/browser/file.cc', 'HasSyncConsent()',
+                     Result.WARNING),
+            TestCase('bios/file.cc', 'HasSyncConsent()', Result.WARNING),
+            TestCase('components/kiosk/file.cc', 'HasSyncConsent()',
+                     Result.WARNING),
+        )
         input_api = MockInputApi()
-        input_api.files = [
-            MockFile('chrome/browser/android/file.cc', ['OtherFunction']),
-            MockFile('chrome/android/file.cc', ['HasSyncConsent']),
-            MockFile('ios/file.mm', ['CanSyncFeatureStart']),
-            MockFile('components/foo/ios/file.cc', ['IsSyncFeatureEnabled']),
-            MockFile('components/foo/delegate_android.cc',
-                     ['IsSyncFeatureActive']),
-            MockFile('components/foo/delegate_ios.cc',
-                     ['IsSyncFeatureActive']),
-            MockFile('components/foo/android_delegate.cc',
-                     ['IsSyncFeatureActive']),
-            MockFile('components/foo/ios_delegate.cc',
-                     ['IsSyncFeatureActive']),
-            MockFile('chrome/browser/file.cc', ['HasSyncConsent']),
-            MockFile('bios/file.cc', ['HasSyncConsent']),
-            MockFile('components/kiosk/file.cc', ['HasSyncConsent']),
-        ]
+        input_api.files = [MockFile(t.path, [t.content]) for t in test_cases]
 
         results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
 
-        self.assertEqual(10, len(results))
-        self.assertTrue(
-            all('chrome/browser/android/file.cc' not in r.message
-                for r in results))
-        self.assertIn('chrome/android/file.cc', results[0].message)
-        self.assertIn('ios/file.mm', results[1].message)
-        self.assertIn('components/foo/ios/file.cc', results[2].message)
-        self.assertIn('components/foo/delegate_android.cc', results[3].message)
-        self.assertIn('components/foo/delegate_ios.cc', results[4].message)
-        self.assertIn('components/foo/android_delegate.cc', results[5].message)
-        self.assertIn('components/foo/ios_delegate.cc', results[6].message)
-        self.assertIn('chrome/browser/file.cc', results[7].message)
-        self.assertIn('bios/file.cc', results[8].message)
-        self.assertIn('components/kiosk/file.cc', results[9].message)
+        i = 0
+        for t in test_cases:
+            if t.expected_result == Result.ERROR:
+                self.assertLess(i, len(results))
+                self.assertIn(t.path, results[i].message)
+                self.assertEqual('error', results[i].type)
+                i += 1
+        for t in test_cases:
+            if t.expected_result == Result.WARNING:
+                self.assertLess(i, len(results))
+                self.assertIn(t.path, results[i].message)
+                self.assertEqual('warning', results[i].type)
+                i += 1
+        self.assertEqual(i, len(results))
 
 
 class CheckAnonymousNamespaceTest(unittest.TestCase):

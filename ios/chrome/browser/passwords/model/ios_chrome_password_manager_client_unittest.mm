@@ -317,7 +317,7 @@ TEST_F(IOSChromePasswordManagerClientTest, AutomaticPasswordSaveTest) {
       SyncServiceFactory::GetForProfile(profile_.get()));
   CoreAccountInfo account_info;
   account_info.email = "user@example.com";
-  sync_service->SetSignedIn(signin::ConsentLevel::kSync, account_info);
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin, account_info);
 
   InfoBarManagerImpl::CreateForWebState(web_state());
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
@@ -348,7 +348,7 @@ TEST_F(IOSChromePasswordManagerClientTest, AutomaticPasswordSaveTest_Disabled) {
       SyncServiceFactory::GetForProfile(profile_.get()));
   CoreAccountInfo account_info;
   account_info.email = "user@example.com";
-  sync_service->SetSignedIn(signin::ConsentLevel::kSync, account_info);
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin, account_info);
 
   InfoBarManagerImpl::CreateForWebState(web_state());
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
