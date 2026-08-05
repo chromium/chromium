@@ -380,9 +380,7 @@ HEADLESS_MODE_PROTOCOL_TEST(OzoneScreenSizeOverride,
 HEADLESS_MODE_PROTOCOL_TEST(MultipleScreenDetails,
                             "shared/multiple-screen-details.js")
 
-// TODO(crbug.com/40283476): MoveWindowBetweenScreens is failing on Mac
-// TODO(crbug.com/484218769): Failing/flaky on other platforms as well
-HEADLESS_MODE_PROTOCOL_TEST(DISABLED_MoveWindowBetweenScreens,
+HEADLESS_MODE_PROTOCOL_TEST(MoveWindowBetweenScreens,
                             "shared/move-window-between-screens.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowOpenOnSecondaryScreen,

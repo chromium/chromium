@@ -22,15 +22,33 @@
 
   await session.navigate('https://example.com/index.html');
 
-  async function moveWindowAndLogScreen(new_bounds) {
-    await dp.Browser.setWindowBounds({windowId, bounds: new_bounds});
-    await dp.Page.onceFrameResized();
+  async function moveWindowAndLogScreen(new_bounds, expected_screen_label) {
+    const screenPromise = session.evaluateAsync(async (expected_label) => {
+      const sd = await getScreenDetails();
+      // Check if the window is already on the expected screen, since
+      // 'currentscreenchange' event will not fire if the screen did
+      // not change.
+      if (sd.currentScreen.label === expected_label) {
+        return sd.currentScreen.label;
+      }
+      await new Promise(resolve => {
+        const handler = () => {
+          // Ignore any intermediate screen change events until the current
+          // screen matches the expected one.
+          if (sd.currentScreen.label === expected_label) {
+            sd.removeEventListener('currentscreenchange', handler);
+            resolve();
+          }
+        };
+        sd.addEventListener('currentscreenchange', handler);
+      });
+      return sd.currentScreen.label;
+    }, expected_screen_label);
 
+    await dp.Browser.setWindowBounds({windowId, bounds: new_bounds});
+
+    const screen = await screenPromise;
     const {bounds} = (await dp.Browser.getWindowBounds({windowId})).result;
-    const screen = await session.evaluateAsync(async () => {
-      const cs = (await getScreenDetails()).currentScreen;
-      return cs.label;
-    });
 
     testRunner.log(
         `Window` +
@@ -38,10 +56,14 @@
         `, screen ${screen}`);
   }
 
-  await moveWindowAndLogScreen({left: 1, top: 1, width: 500, height: 300});
-  await moveWindowAndLogScreen({left: 801, top: 1, width: 500, height: 301});
-  await moveWindowAndLogScreen({left: 1, top: 601, width: 500, height: 302});
-  await moveWindowAndLogScreen({left: 801, top: 601, width: 500, height: 303});
+  await moveWindowAndLogScreen(
+      {left: 1, top: 1, width: 600, height: 300}, '#1');
+  await moveWindowAndLogScreen(
+      {left: 801, top: 1, width: 600, height: 300}, '#2');
+  await moveWindowAndLogScreen(
+      {left: 1, top: 601, width: 600, height: 300}, '#3');
+  await moveWindowAndLogScreen(
+      {left: 801, top: 601, width: 600, height: 300}, '#4');
 
   testRunner.completeTest();
 });
