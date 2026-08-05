@@ -263,6 +263,9 @@ int GetLiveCaptionsNumberOfLines();
 // Sets whether the suggestion chips should be shown on the floaty.
 void SetShouldShowSuggestionChips(bool should_show);
 
+// Sets whether full page context is required for submitting prompts to Gemini.
+void SetRequireFullPageContext(bool require_full_page_context);
+
 // Shows the account snackbar on the Gemini floaty.
 void ShowAccountSnackbar();
 

@@ -133,6 +133,8 @@ int GetLiveCaptionsNumberOfLines() {
 
 void SetShouldShowSuggestionChips(bool should_show) {}
 
+void SetRequireFullPageContext(bool require_full_page_context) {}
+
 void ShowAccountSnackbar() {}
 
 UIViewController* GetFloatyViewControllerWithConfiguration(
