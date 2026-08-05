@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 """Script to generate BUILD.gn files from Abseil's BUILD.bazel at roll time."""
 
-# This script is a work in progress and doesn't handle all corner cases of
-# bazel->gn translation in abseil. It can convert some simple build files,
-# support for for other build files planned to be added gradually.
-# Review result of this script as if BUILD changes were made manually!
-
 import ast
 import datetime
 import logging
@@ -39,6 +34,35 @@ _SKIP_TARGETS = {
     'Conflicts at link time with "tracing_strong_test" because also defines strong functions for AbslInternalTraceWait and alike',
     'types:any_span_test':
     'any_span_test is not ported because relies on RTTI',
+}
+
+# Targets that are public in absl in general, but are not exposed to chromium targets
+_PRIVATE_TARGETS = {
+    # Flags rely on static initializers and thus are not exposed in chromium
+    'flags:config',
+    'flags:commandlineflag',
+    'flags:flag',
+    'flags:marshalling',
+    'flags:parse',
+    'flags:reflection',
+    'flags:usage',
+    'log:flags',
+    # Targets below expose macros that conflicts with similar chromium macros,
+    # there are targets with alternative absl macro prefixed with ABSL_.
+    'log:log',
+    'log:check',
+    'log:vlog_is_on',
+    # absl::any, same as std::any doesn't work with chromium component builds.
+    'types:any',
+    # currently public, but shouldn't be, there are TODOs to make them private
+    'base:malloc_internal',
+    'cleanup:cleanup_internal',
+    'container:compressed_tuple',
+    'container:raw_hash_set',
+    'strings:internal',
+    # public in cctz, private for abseil users.
+    'time/internal/cctz:civil_time',
+    'time/internal/cctz:time_zone',
 }
 
 # Dependencies that preferably shouldn't be public in chromium, but are.
@@ -158,6 +182,8 @@ class _Converter:
 
     def __init__(self, path, old_gn_content=None):
         self.bazel_targets = []
+        self.test_targets = []
+        self.public_targets = []
         self.packages = {}
         self.year = str(datetime.datetime.now().year)
         self.path = path
@@ -392,6 +418,14 @@ class _Converter:
             out.append('}')
             out.append('')
 
+            if target_name == 'base:c_header_test':
+                pass
+            elif is_test:
+                self.test_targets.append(target_name)
+            elif not (bt.get('testonly') or target_name in _PRIVATE_TARGETS
+                      or vis):
+                self.public_targets.append(target_name)
+
         return '\n'.join(out)
 
 
@@ -412,7 +446,7 @@ def convert_one(path):
 
     if not converter.bazel_targets:
         logging.info(f'Skipping {bazel_path} (no cc_library/cc_test targets)')
-        return
+        return [], []
 
     new_gn = converter.generate()
 
@@ -424,12 +458,55 @@ def convert_one(path):
                        stderr=subprocess.DEVNULL,
                        text=True)
 
+    return converter.test_targets, converter.public_targets
+
 
 def convert_all(root_dir):
+    all_test_targets = []
+    all_public_targets = []
     for dirpath, dirnames, filenames in os.walk(os.path.join(root_dir,
                                                              'absl')):
         if 'BUILD.bazel' in filenames:
-            convert_one(dirpath)
+            t, p = convert_one(dirpath)
+            all_test_targets.extend(t)
+            all_public_targets.extend(p)
+
+    # Update root BUILD.gn
+    root_gn_path = os.path.join(root_dir, 'BUILD.gn')
+    if not os.path.exists(root_gn_path):
+        logging.error(f"Failed to find {root_gn_path}")
+        return
+
+    logging.info(f"Updating root targets in {root_gn_path}")
+    with open(root_gn_path, 'r') as f:
+        content = f.read()
+
+    # Update absl_component_deps
+    pattern_comp = re.compile(
+        r'(group\("absl_component_deps"\)\s*\{\s*public_deps\s*=\s*)\[([\s\S]*?)\]'
+    )
+    libs_lines = [
+        f'"//third_party/abseil-cpp/absl/{label}"'
+        for label in sorted(all_public_targets)
+    ]
+    new_libs_str = "[\n" + ",\n".join(libs_lines) + "\n]"
+    content = pattern_comp.sub(r'\1' + new_libs_str, content, count=1)
+
+    # Update absl_tests
+    pattern_test = re.compile(
+        r'(test\("absl_tests"\)\s*\{[\s\S]*?deps\s*=\s*)\[([\s\S]*?)\]')
+    deps_lines = [f'"absl/{label}"' for label in sorted(all_test_targets)]
+    deps_lines.append('"//third_party/googletest:gtest_main"')
+    new_deps_str = "[" + ",\n".join(deps_lines) + "]"
+    content = pattern_test.sub(r'\1' + new_deps_str, content, count=1)
+
+    with open(root_gn_path, 'w', encoding='utf-8', newline='') as f:
+        subprocess.run(['gn', 'format', '--stdin'],
+                       check=True,
+                       input=content,
+                       stdout=f,
+                       stderr=subprocess.DEVNULL,
+                       text=True)
 
 
 if __name__ == '__main__':
