@@ -8,11 +8,13 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -215,8 +217,13 @@ class FakeWindowCapturer : public ThumbnailCapturer {
     int8_t value = (it != frame_values_.end()) ? it->second : 0;
     auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
         webrtc::DesktopSize(10, 10), webrtc::FOURCC_ARGB);
-    UNSAFE_TODO(
-        memset(frame->data(), value, frame->stride() * frame->size().height()));
+    // SAFETY: The size of the frame data is frame->stride() *
+    // frame->size().height(). webrtc::DesktopFrame::data() returns a pointer to
+    // this buffer.
+    auto frame_span = UNSAFE_BUFFERS(base::span(
+        frame->data(),
+        static_cast<size_t>(frame->stride() * frame->size().height())));
+    std::ranges::fill(frame_span, value);
     consumer_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
                                std::move(frame));
   }
