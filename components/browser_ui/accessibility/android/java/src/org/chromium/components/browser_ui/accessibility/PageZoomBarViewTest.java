@@ -164,7 +164,7 @@ public class PageZoomBarViewTest {
                     }
 
                     @Override
-                    public boolean isActivityFocused() {
+                    public boolean canShowPopupWindow() {
                         return true;
                     }
                 };

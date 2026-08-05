@@ -63,7 +63,7 @@ public class PageZoomIndicatorCoordinatorUnitTest {
         when(mManager.getWebContents()).thenReturn(mWebContents);
         when(mManager.getZoomLevel()).thenReturn(0.0);
         when(mManager.getDefaultZoomLevel()).thenReturn(0.0);
-        when(mManager.isActivityFocused()).thenReturn(true);
+        when(mManager.canShowPopupWindow()).thenReturn(true);
         DeviceFormFactor.setIsTabletForTesting(true);
 
         mCoordinator = new PageZoomIndicatorCoordinator(anchorViewSupplier, mManager);
@@ -176,8 +176,8 @@ public class PageZoomIndicatorCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnZoomLevelChanged_InactiveWindow_DoesNotShowPopup() {
-        when(mManager.isActivityFocused()).thenReturn(false);
+    public void testOnZoomLevelChanged_CannotShowPopupWindow_DoesNotShowPopup() {
+        when(mManager.canShowPopupWindow()).thenReturn(false);
         assertFalse(mCoordinator.isPopupWindowShowing());
 
         mObserverCaptor.getValue().onZoomLevelChanged("example.com", 0.52);

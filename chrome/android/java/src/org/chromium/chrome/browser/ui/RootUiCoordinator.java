@@ -769,9 +769,13 @@ public class RootUiCoordinator
                             }
 
                             @Override
-                            public boolean isActivityFocused() {
+                            public boolean canShowPopupWindow() {
                                 return ApplicationStatus.getLastTrackedFocusedActivity()
-                                        == mActivity;
+                                                == mActivity
+                                        && (mAppMenuCoordinator == null
+                                                || !mAppMenuCoordinator
+                                                        .getAppMenuHandler()
+                                                        .isAppMenuShowing());
                             }
                         });
 
