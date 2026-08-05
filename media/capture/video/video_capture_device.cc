@@ -112,26 +112,6 @@ void VideoCaptureDevice::Client::OnIncomingCapturedData(
                          /*frame_feedback_id=*/0);
 }
 
-void VideoCaptureDevice::Client::OnIncomingCapturedData(
-    const uint8_t* data,
-    int length,
-    const VideoCaptureFormat& frame_format,
-    const gfx::ColorSpace& color_space,
-    int clockwise_rotation,
-    bool flip_y,
-    base::TimeTicks reference_time,
-    base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_timestamp,
-    const std::optional<VideoFrameMetadata>& metadata,
-    int frame_feedback_id) {
-  // SAFETY: Backward-compatibility overload for legacy callers providing a
-  // raw pointer and length.
-  OnIncomingCapturedData(
-      UNSAFE_BUFFERS(base::span(data, static_cast<size_t>(length))),
-      frame_format, color_space, clockwise_rotation, flip_y, reference_time,
-      timestamp, capture_begin_timestamp, metadata, frame_feedback_id);
-}
-
 void VideoCaptureDevice::Client::OnIncomingCapturedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const VideoCaptureFormat& frame_format,

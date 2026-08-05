@@ -218,19 +218,6 @@ class CAPTURE_EXPORT VideoCaptureDevice
         std::optional<base::TimeTicks> capture_begin_timestamp,
         const std::optional<VideoFrameMetadata>& metadata);
 
-    // Deprecated: use the overload taking base::span instead.
-    void OnIncomingCapturedData(
-        const uint8_t* data,
-        int length,
-        const VideoCaptureFormat& frame_format,
-        const gfx::ColorSpace& color_space,
-        int clockwise_rotation,
-        bool flip_y,
-        base::TimeTicks reference_time,
-        base::TimeDelta timestamp,
-        std::optional<base::TimeTicks> capture_begin_timestamp,
-        const std::optional<VideoFrameMetadata>& metadata,
-        int frame_feedback_id = 0);
 
     // Captured a new video frame, data for which is stored in the
     // shared image pointed to by |shared_image|.  The format of the frame is
