@@ -40,6 +40,10 @@
   width: 300px;
 }
 
+#clear-btn {
+  margin-inline-start: auto;
+}
+
 #log-list {
   background-color: var(--bg-color);
   border-radius: 4px;

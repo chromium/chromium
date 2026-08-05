@@ -88,6 +88,11 @@ export class MultistepFilterInternalsAppElement extends CrLitElement {
 
     // Combine and deduplicate based on composite key (timestamp + eventType)
     const combined = bufferedLogs.concat(this.allLogs);
+    // Sort combined logs by timestamp descending (newest first)
+    combined.sort((a, b) => {
+      const diff = b.timestamp.internalValue - a.timestamp.internalValue;
+      return diff > 0n ? 1 : (diff < 0n ? -1 : 0);
+    });
     const unique: LogEntry[] = [];
     const seen = new Set<string>();
     for (const log of combined) {
@@ -97,7 +102,7 @@ export class MultistepFilterInternalsAppElement extends CrLitElement {
         unique.push(log);
       }
     }
-    this.allLogs = unique.slice(-MAX_LOG_ENTRIES);
+    this.allLogs = unique.slice(0, MAX_LOG_ENTRIES);
 
     // Re-populate seenTimestamps_ with values left after slice to keep sync!
     this.seenTimestamps_.clear();
@@ -113,9 +118,9 @@ export class MultistepFilterInternalsAppElement extends CrLitElement {
       return;
     }
     this.seenTimestamps_.add(key);
-    const updatedLogs = [...this.allLogs, log];
+    const updatedLogs = [log, ...this.allLogs];
     if (updatedLogs.length > MAX_LOG_ENTRIES) {
-      const evicted = updatedLogs.shift()!;
+      const evicted = updatedLogs.pop()!;
       this.seenTimestamps_.delete(
           `${evicted.timestamp.internalValue}_${evicted.eventType}`);
     }
