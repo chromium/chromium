@@ -449,6 +449,7 @@ ruleWidth
 rx
 ry
 scale
+scrollAxisLock
 scrollBehavior
 scrollInitialTarget
 scrollMargin
