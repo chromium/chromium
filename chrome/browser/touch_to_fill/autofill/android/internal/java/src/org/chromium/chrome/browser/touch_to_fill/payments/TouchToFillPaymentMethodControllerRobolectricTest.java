@@ -3390,6 +3390,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(1));
         assertThat(getModelsOfType(itemList, BNPL).size(), is(0));
+
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_payment_method_bottom_sheet_content_description,
+                R.string.autofill_payment_method_bottom_sheet_half_height,
+                R.string.autofill_payment_method_bottom_sheet_full_height,
+                R.string.autofill_payment_method_bottom_sheet_closed,
+                R.id.touch_to_fill_payment_method_tabbed_home_screen);
     }
 
     @Test

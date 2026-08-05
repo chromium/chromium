@@ -582,6 +582,9 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                 R.string.autofill_payment_method_bottom_sheet_full_height);
         mModel.set(
                 SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_payment_method_bottom_sheet_closed);
+        mModel.set(
+                FOCUSED_VIEW_ID_FOR_ACCESSIBILITY,
+                R.id.touch_to_fill_payment_method_tabbed_home_screen);
         mModel.set(VISIBLE, true);
     }
 
