@@ -48,6 +48,14 @@ FocusManager::~FocusManager() {
                                  this);
 }
 
+bool FocusManager::ShouldSkipAcceleratorProcessing(
+    const ui::Accelerator& accelerator) const {
+  return focused_view_ &&
+         focused_view_->SkipDefaultKeyEventProcessing(
+             accelerator.ToKeyEvent()) &&
+         !accelerator_manager_.HasPriorityHandler(accelerator);
+}
+
 bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
   const ui::KeyboardCode key_code = event.key_code();
 
@@ -63,8 +71,7 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
   ui::Accelerator accelerator(event);
 
   // If the focused view wants to process the key event as is, let it be.
-  if (focused_view_ && focused_view_->SkipDefaultKeyEventProcessing(event) &&
-      !accelerator_manager_.HasPriorityHandler(accelerator)) {
+  if (ShouldSkipAcceleratorProcessing(accelerator)) {
     return true;
   }
 

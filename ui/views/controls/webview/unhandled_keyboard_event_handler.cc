@@ -6,7 +6,9 @@
 
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/content_accelerators/accelerator_util.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
@@ -31,9 +33,21 @@ bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
   // always generate a Char event.
   ignore_next_char_event_ = false;
 
+  auto should_skip_accelerator =
+      [focus_manager](const ui::Accelerator& accelerator) {
+        View* focused_view = focus_manager->GetFocusedView();
+        return focused_view && !IsViewClass<WebView>(focused_view) &&
+               focus_manager->ShouldSkipAcceleratorProcessing(accelerator);
+      };
+
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown) {
     ui::Accelerator accelerator =
         ui::GetAcceleratorFromNativeWebKeyboardEvent(event);
+
+    if (should_skip_accelerator(accelerator)) {
+      ignore_next_char_event_ = true;
+      return true;
+    }
 
     // This is tricky: we want to set ignore_next_char_event_ if
     // ProcessAccelerator returns true. But ProcessAccelerator might delete
@@ -53,6 +67,11 @@ bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
   if (event.GetType() == blink::WebInputEvent::Type::kKeyUp) {
     const ui::Accelerator accelerator =
         ui::GetAcceleratorFromNativeWebKeyboardEvent(event);
+
+    if (should_skip_accelerator(accelerator)) {
+      return true;
+    }
+
     if (focus_manager->ProcessAccelerator(accelerator)) {
       return true;
     }

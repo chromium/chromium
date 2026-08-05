@@ -159,6 +159,11 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // further.
   bool OnKeyEvent(const ui::KeyEvent& event);
 
+  // Returns true if the focused view wants to process the key event as is
+  // (and there is no priority handler registered for the accelerator).
+  bool ShouldSkipAcceleratorProcessing(
+      const ui::Accelerator& accelerator) const;
+
   // Returns true is the specified is part of the hierarchy of the window
   // associated with this FocusManager.
   bool ContainsView(View* view);

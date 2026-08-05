@@ -7723,6 +7723,7 @@ test("unit_tests") {
     }
 
     sources += [
+      "../../ui/views/controls/webview/unhandled_keyboard_event_handler_unittest.cc",
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",
       "../browser/ui/views/autofill/popup/lazy_loading_image_view_unittest.cc",

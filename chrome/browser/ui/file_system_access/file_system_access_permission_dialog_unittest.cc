@@ -97,3 +97,12 @@ TEST_F(FileSystemAccessPermissionDialogTest, CancelButtonInitiallyFocused) {
   EXPECT_EQ(host->GetInitiallyFocusedField(),
             host->GetId(ui::TestDialogModelHost::ButtonId::kCancel));
 }
+
+// Verifies that input protection is enabled to guard against accidental
+// or rapid-interaction keystrokes when the dialog appears.
+TEST_F(FileSystemAccessPermissionDialogTest, EnableInputProtection) {
+  TestFileSystemAccessPermissionDialog test_dialog;
+  auto host = test_dialog.CreateDialogModelHost();
+
+  EXPECT_TRUE(host->GetEnableInputProtection());
+}

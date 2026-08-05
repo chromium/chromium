@@ -422,10 +422,6 @@ void WebDialogView::SetContentsBounds(WebContents* source,
 bool WebDialogView::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  if (!event.os_event) {
-    return false;
-  }
-
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }
