@@ -123,14 +123,12 @@ void SqlSharedCache::CopyNextEntry() {
 
 void SqlSharedCache::OnEntryOpenedForSharedCache(
     SqlPersistentStore::SharedCacheEligibleEntry entry,
-    base::expected<std::optional<SqlPersistentStore::EntryInfo>,
-                   SqlPersistentStore::Error> result) {
-  if (!result.has_value() || !result.value().has_value() ||
-      !result.value()->head) {
+    SqlPersistentStore::EntryInfoOrError result) {
+  if (!result.has_value() || !result->head) {
     OnCopyEntryFailed();
     return;
   }
-  auto info = std::move(result.value().value());
+  auto info = std::move(*result);
   if (info.body_end >
       net::features::kSqlDiskCacheMaxSharedCacheCopyEntrySize.Get()) {
     OnCopyEntryFailed();

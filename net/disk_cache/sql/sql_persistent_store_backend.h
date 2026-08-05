@@ -50,8 +50,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
 
   EntryInfoOrErrorAndStoreStatus OpenOrCreateEntry(const CacheEntryKey& key,
                                                    base::TimeTicks start_time);
-  OptionalEntryInfoOrError OpenEntry(const CacheEntryKey& key,
-                                     base::TimeTicks start_time);
+  EntryInfoOrError OpenEntry(const CacheEntryKey& key,
+                             base::TimeTicks start_time);
   EntryInfoOrErrorAndStoreStatus CreateEntry(const CacheEntryKey& key,
                                              base::Time creation_time,
                                              bool run_existance_check,
@@ -258,7 +258,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   Error InitializeInternal(bool& corruption_detected);
   EntryInfoOrError OpenOrCreateEntryInternal(const CacheEntryKey& key,
                                              bool& corruption_detected);
-  OptionalEntryInfoOrError OpenEntryInternal(const CacheEntryKey& key);
+  EntryInfoOrError OpenEntryInternal(const CacheEntryKey& key);
   EntryInfoOrError CreateEntryInternal(const CacheEntryKey& key,
                                        base::Time creation_time,
                                        bool run_existance_check,

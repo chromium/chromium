@@ -335,13 +335,6 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       EntryResultCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
       SqlPersistentStore::EntryInfoOrError result);
-  // Callback for store operations that return an optional<EntryInfo>
-  // (`Open()`).
-  void OnOptionalEntryOperationFinished(
-      const CacheEntryKey& key,
-      EntryResultCallback callback,
-      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
-      SqlPersistentStore::OptionalEntryInfoOrError result);
 
   // Creates a new entry speculatively and returns it immediately. The actual
   // database insertion is performed in the background.

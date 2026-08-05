@@ -89,7 +89,7 @@ void SqlPersistentStore::BackendShard::OpenOrCreateEntry(
 
 void SqlPersistentStore::BackendShard::OpenEntry(
     const CacheEntryKey& key,
-    OptionalEntryInfoOrErrorCallback callback) {
+    EntryInfoOrErrorCallback callback) {
   backend_.AsyncCall(&SqlPersistentStore::Backend::OpenEntry)
       .WithArgs(key, base::TimeTicks::Now())
       .Then(WrapCallback(std::move(callback)));

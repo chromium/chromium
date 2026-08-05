@@ -54,8 +54,7 @@ class SqlPersistentStore::BackendShard {
   void Initialize(int64_t user_max_bytes, InitResultOrErrorCallback callback);
   void OpenOrCreateEntry(const CacheEntryKey& key,
                          EntryInfoOrErrorCallback callback);
-  void OpenEntry(const CacheEntryKey& key,
-                 OptionalEntryInfoOrErrorCallback callback);
+  void OpenEntry(const CacheEntryKey& key, EntryInfoOrErrorCallback callback);
   void CreateEntry(const CacheEntryKey& key,
                    base::Time creation_time,
                    EntryInfoOrErrorCallback callback);

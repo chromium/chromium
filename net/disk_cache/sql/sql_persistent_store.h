@@ -341,10 +341,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using Int64Callback = base::OnceCallback<void(int64_t)>;
   using EntryInfoOrError = base::expected<EntryInfo, Error>;
   using EntryInfoOrErrorCallback = base::OnceCallback<void(EntryInfoOrError)>;
-  using OptionalEntryInfoOrError =
-      base::expected<std::optional<EntryInfo>, Error>;
-  using OptionalEntryInfoOrErrorCallback =
-      base::OnceCallback<void(OptionalEntryInfoOrError)>;
   using OptionalEntryInfoWithKeyAndIterator =
       std::optional<EntryInfoWithKeyAndIterator>;
   using OptionalEntryInfoWithKeyAndIteratorCallback =
@@ -438,9 +434,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Opens an existing entry with the given `key`.
   // The `callback` is invoked with the entry's information on success. If the
-  // entry does not exist, the `callback` is invoked with `std::nullopt`.
-  void OpenEntry(const CacheEntryKey& key,
-                 OptionalEntryInfoOrErrorCallback callback);
+  // entry does not exist, the `callback` is invoked with `Error::kNotFound`.
+  void OpenEntry(const CacheEntryKey& key, EntryInfoOrErrorCallback callback);
 
   // Creates a new entry with the given `key`. `creation_time` is the time the
   // entry is created and will be used as the initial `last_used` time.

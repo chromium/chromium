@@ -622,10 +622,9 @@ void SqlBackendImpl::HandleOpenOrCreateEntryOperation(
       break;
     case OpenOrCreateEntryOperationType::kOpenEntry:
       store_->OpenEntry(
-          entry_key,
-          base::BindOnce(&SqlBackendImpl::OnOptionalEntryOperationFinished,
-                         base::Unretained(this), entry_key, std::move(callback),
-                         std::move(handle)));
+          entry_key, base::BindOnce(&SqlBackendImpl::OnEntryOperationFinished,
+                                    base::Unretained(this), entry_key,
+                                    std::move(callback), std::move(handle)));
       break;
     case OpenOrCreateEntryOperationType::kCreateEntry:
       store_->CreateEntry(
@@ -1012,18 +1011,18 @@ void SqlBackendImpl::OnBrowserIdle() {
   MaybeTriggerEviction(/*is_idle_time_eviction=*/true);
 }
 
-void SqlBackendImpl::OnOptionalEntryOperationFinished(
+void SqlBackendImpl::OnEntryOperationFinished(
     const CacheEntryKey& key,
     EntryResultCallback callback,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
-    SqlPersistentStore::OptionalEntryInfoOrError result) {
-  // If the store operation failed or the entry was not found (for OpenEntry).
-  if (!result.has_value() || !result->has_value()) {
+    SqlPersistentStore::EntryInfoOrError result) {
+  // If the store operation failed or the entry was not found.
+  if (!result.has_value()) {
     std::move(callback).Run(EntryResult::MakeError(net::ERR_FAILED));
     return;
   }
 
-  SqlPersistentStore::EntryInfo& entry_info = *(*result);
+  SqlPersistentStore::EntryInfo& entry_info = *result;
   ApplyInFlightEntryModifications(key, entry_info);
 
   // Create a new SqlEntryImpl instance.
@@ -1040,28 +1039,11 @@ void SqlBackendImpl::OnOptionalEntryOperationFinished(
   CHECK(insert_result.second);
 
   // Run the original callback with the newly created/opened entry.
-  std::move(callback).Run((*result)->opened
+  std::move(callback).Run(entry_info.opened
                               ? EntryResult::MakeOpened(new_entry.get())
                               : EntryResult::MakeCreated(new_entry.get()));
 
   MaybeTriggerEviction(/*is_idle_time_eviction=*/false);
-}
-
-void SqlBackendImpl::OnEntryOperationFinished(
-    const CacheEntryKey& key,
-    EntryResultCallback callback,
-    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
-    SqlPersistentStore::EntryInfoOrError result) {
-  // This is a helper to adapt EntryInfoOrError to
-  // OnOptionalEntryOperationFinished which expects OptionalEntryInfoOrError.
-  if (result.has_value()) {
-    OnOptionalEntryOperationFinished(key, std::move(callback),
-                                     std::move(handle), std::move(*result));
-  } else {
-    OnOptionalEntryOperationFinished(key, std::move(callback),
-                                     std::move(handle),
-                                     base::unexpected(result.error()));
-  }
 }
 
 EntryResult SqlBackendImpl::SpeculativeCreateEntry(

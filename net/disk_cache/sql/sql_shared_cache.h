@@ -154,8 +154,7 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
   void CopyNextEntry();
   void OnEntryOpenedForSharedCache(
       SqlPersistentStore::SharedCacheEligibleEntry entry,
-      base::expected<std::optional<SqlPersistentStore::EntryInfo>,
-                     SqlPersistentStore::Error> result);
+      SqlPersistentStore::EntryInfoOrError result);
   void OnEntryDataReadForInsert(
       SqlPersistentStore::SharedCacheEligibleEntry entry,
       SqlPersistentStore::ResId res_id,

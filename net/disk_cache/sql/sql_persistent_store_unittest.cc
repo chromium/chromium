@@ -243,9 +243,8 @@ class SqlPersistentStoreTestBase : public testing::Test {
   }
 
   // Synchronous wrapper for OpenEntry.
-  SqlPersistentStore::OptionalEntryInfoOrError OpenEntry(
-      const CacheEntryKey& key) {
-    base::test::TestFuture<SqlPersistentStore::OptionalEntryInfoOrError> future;
+  SqlPersistentStore::EntryInfoOrError OpenEntry(const CacheEntryKey& key) {
+    base::test::TestFuture<SqlPersistentStore::EntryInfoOrError> future;
     store_->OpenEntry(key, future.GetCallback());
     return future.Take();
   }
@@ -705,8 +704,7 @@ class SqlPersistentStoreTestBase : public testing::Test {
     for (int i = 0; i < num_entries; ++i) {
       const CacheEntryKey key("key_" + base::NumberToString(i));
       auto open_result = OpenEntry(key);
-      ASSERT_TRUE(open_result.has_value());
-      if (open_result->has_value()) {
+      if (open_result.has_value()) {
         key_out = key;
         index_out = i;
         break;
@@ -1215,12 +1213,11 @@ TEST_P(SqlPersistentStoreTest, OpenEntrySuccess) {
 
   auto open_result = OpenEntry(kKey);
   ASSERT_TRUE(open_result.has_value());
-  ASSERT_TRUE(open_result->has_value());
-  EXPECT_EQ((*open_result)->res_id, created_res_id);
-  EXPECT_TRUE((*open_result)->opened);
-  EXPECT_EQ((*open_result)->body_end, 0);
-  ASSERT_NE((*open_result)->head, nullptr);
-  EXPECT_EQ((*open_result)->head->size(), 0);
+  EXPECT_EQ(open_result->res_id, created_res_id);
+  EXPECT_TRUE(open_result->opened);
+  EXPECT_EQ(open_result->body_end, 0);
+  ASSERT_NE(open_result->head, nullptr);
+  EXPECT_EQ(open_result->head->size(), 0);
 
   // Opening an entry should not change the store's stats.
   EXPECT_EQ(GetEntryCount(), 1);
@@ -1233,8 +1230,8 @@ TEST_P(SqlPersistentStoreTest, OpenEntryNotFound) {
   const CacheEntryKey kKey("non-existent-key");
 
   auto result = OpenEntry(kKey);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_FALSE(result->has_value());
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SqlPersistentStore::Error::kNotFound);
 }
 
 TEST_P(SqlPersistentStoreTest, OpenOrCreateEntryCreatesNew) {
@@ -1294,14 +1291,13 @@ TEST_P(SqlPersistentStoreTest, DoomEntrySuccess) {
 
   // Verify the doomed entry can no longer be opened.
   auto open_doomed_result = OpenEntry(kKeyToDoom);
-  ASSERT_TRUE(open_doomed_result.has_value());
-  EXPECT_FALSE(open_doomed_result->has_value());
+  ASSERT_FALSE(open_doomed_result.has_value());
+  EXPECT_EQ(open_doomed_result.error(), SqlPersistentStore::Error::kNotFound);
 
   // Verify the other entry can still be opened.
   auto open_kept_result = OpenEntry(kKeyToKeep);
   ASSERT_TRUE(open_kept_result.has_value());
-  ASSERT_TRUE(open_kept_result->has_value());
-  EXPECT_EQ((*open_kept_result)->res_id, res_id_to_keep);
+  EXPECT_EQ(open_kept_result->res_id, res_id_to_keep);
 
   // Verify the doomed entry still exists in the table but is marked as doomed,
   // and the other entry is unaffected.
@@ -1347,13 +1343,11 @@ TEST_P(SqlPersistentStoreTest, DoomEntryFailsWrongResId) {
 
   auto open_result1 = OpenEntry(kKey1);
   ASSERT_TRUE(open_result1.has_value());
-  ASSERT_TRUE(open_result1->has_value());
-  EXPECT_EQ((*open_result1)->res_id, res_id1);
+  EXPECT_EQ(open_result1->res_id, res_id1);
 
   auto open_result2 = OpenEntry(kKey2);
   ASSERT_TRUE(open_result2.has_value());
-  ASSERT_TRUE(open_result2->has_value());
-  EXPECT_EQ((*open_result2)->res_id, res_id2);
+  EXPECT_EQ(open_result2->res_id, res_id2);
 }
 
 TEST_P(SqlPersistentStoreTest, DoomEntryWithCorruptSizeRecovers) {
@@ -1480,14 +1474,13 @@ TEST_P(SqlPersistentStoreTest, DeleteLiveEntrySuccess) {
 
   // Verify the deleted entry cannot be opened.
   auto open_deleted_result = OpenEntry(kKeyToDelete);
-  ASSERT_TRUE(open_deleted_result.has_value());
-  EXPECT_FALSE(open_deleted_result->has_value());
+  ASSERT_FALSE(open_deleted_result.has_value());
+  EXPECT_EQ(open_deleted_result.error(), SqlPersistentStore::Error::kNotFound);
 
   // Verify the other entry can still be opened.
   auto open_kept_result = OpenEntry(kKeyToKeep);
   ASSERT_TRUE(open_kept_result.has_value());
-  ASSERT_TRUE(open_kept_result->has_value());
-  EXPECT_EQ((*open_kept_result)->res_id, res_id_to_keep);
+  EXPECT_EQ(open_kept_result->res_id, res_id_to_keep);
 
   // Verify the entry is physically gone from the database.
   EXPECT_EQ(CountResourcesTable(), 1);
@@ -1542,7 +1535,6 @@ TEST_P(SqlPersistentStoreTest, DeleteLiveEntryFailsOnDoomedEntry) {
   EXPECT_EQ(GetEntryCount(), 1);
   auto open_live_result = OpenEntry(kLiveKey);
   ASSERT_TRUE(open_live_result.has_value());
-  ASSERT_TRUE(open_live_result->has_value());
 
   // Verify the doomed entry still exists in the table (as doomed), and the
   // live entry is also present.
@@ -1635,8 +1627,8 @@ TEST_P(SqlPersistentStoreTest, DeleteAllEntriesNonEmpty) {
 
   // Verify the old entries cannot be opened.
   auto open_result = OpenEntry(kKey1);
-  ASSERT_TRUE(open_result.has_value());
-  EXPECT_FALSE(open_result->has_value());
+  ASSERT_FALSE(open_result.has_value());
+  EXPECT_EQ(open_result.error(), SqlPersistentStore::Error::kNotFound);
 }
 
 TEST_P(SqlPersistentStoreTest, DeleteAllEntriesDeletesBlobs) {
@@ -1739,8 +1731,7 @@ void SqlPersistentStoreTestBase::RunCleanupDoomedEntriesTest(
   // Verify the live entry is still present.
   auto open_result1 = OpenEntry(kKeyToKeep);
   ASSERT_TRUE(open_result1.has_value());
-  ASSERT_TRUE(open_result1->has_value());
-  EXPECT_EQ(open_result1.value()->res_id, res_id_to_keep);
+  EXPECT_EQ(open_result1->res_id, res_id_to_keep);
 }
 
 TEST_P(SqlPersistentStoreTest,
@@ -2083,14 +2074,14 @@ TEST_P(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
 
   // Verify kKey1 is deleted.
   auto open_key1 = OpenEntry(kKey1);
-  ASSERT_TRUE(open_key1.has_value());
-  EXPECT_FALSE(open_key1->has_value());
+  ASSERT_FALSE(open_key1.has_value());
+  EXPECT_EQ(open_key1.error(), SqlPersistentStore::Error::kNotFound);
 
   // Verify other keys are still present.
-  EXPECT_TRUE(OpenEntry(kKey2).value().has_value());
-  EXPECT_TRUE(OpenEntry(kKey3).value().has_value());
-  EXPECT_TRUE(OpenEntry(kKey4).value().has_value());
-  EXPECT_TRUE(OpenEntry(kKey5).value().has_value());
+  EXPECT_TRUE(OpenEntry(kKey2).has_value());
+  EXPECT_TRUE(OpenEntry(kKey3).has_value());
+  EXPECT_TRUE(OpenEntry(kKey4).has_value());
+  EXPECT_TRUE(OpenEntry(kKey5).has_value());
 
   EXPECT_EQ(CountResourcesTable(), 4);
 }
@@ -2145,7 +2136,7 @@ TEST_P(SqlPersistentStoreTest, DeleteLiveEntriesBetweenNoMatchingEntries) {
 
   EXPECT_EQ(GetEntryCount(), 1);
   EXPECT_EQ(GetSizeOfAllEntries(), initial_total_size);
-  EXPECT_TRUE(OpenEntry(kKey1).value().has_value());
+  EXPECT_TRUE(OpenEntry(kKey1).has_value());
 }
 
 TEST_P(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptSize) {
@@ -2198,8 +2189,8 @@ TEST_P(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptSize) {
       kSqlBackendStaticResourceSize + kKeyToKeep.string().size();
   EXPECT_EQ(GetSizeOfAllEntries(), expected_size_after_delete);
 
-  EXPECT_FALSE(OpenEntry(kKeyToCorrupt).value().has_value());
-  EXPECT_TRUE(OpenEntry(kKeyToKeep).value().has_value());
+  EXPECT_FALSE(OpenEntry(kKeyToCorrupt).has_value());
+  EXPECT_TRUE(OpenEntry(kKeyToKeep).has_value());
 }
 
 TEST_P(SqlPersistentStoreTest, UpdateEntryLastUsedByKeySuccess) {
@@ -2212,8 +2203,8 @@ TEST_P(SqlPersistentStoreTest, UpdateEntryLastUsedByKeySuccess) {
 
   // Open to verify initial time.
   auto open_result1 = OpenEntry(kKey);
-  ASSERT_TRUE(open_result1.has_value() && open_result1->has_value());
-  EXPECT_EQ((*open_result1)->last_used, create_time);
+  ASSERT_TRUE(open_result1.has_value());
+  EXPECT_EQ(open_result1->last_used, create_time);
 
   // Advance time and update.
   task_environment_.AdvanceClock(base::Minutes(5));
@@ -2229,8 +2220,8 @@ TEST_P(SqlPersistentStoreTest, UpdateEntryLastUsedByKeySuccess) {
 
   // Open again to verify the updated time.
   auto open_result2 = OpenEntry(kKey);
-  ASSERT_TRUE(open_result2.has_value() && open_result2->has_value());
-  EXPECT_EQ((*open_result2)->last_used, kNewTime);
+  ASSERT_TRUE(open_result2.has_value());
+  EXPECT_EQ(open_result2->last_used, kNewTime);
 }
 
 TEST_P(SqlPersistentStoreTest, UpdateEntryLastUsedByKeyOnNonExistentEntry) {
@@ -2486,8 +2477,8 @@ TEST_P(SqlPersistentStoreWriteEntryTest, SuccessCreateNewDoomed) {
 
   // Verify OpenEntry fails.
   auto result = OpenEntry(kKey);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_FALSE(result->has_value());
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SqlPersistentStore::Error::kNotFound);
 }
 
 TEST_P(SqlPersistentStoreWriteEntryTest, NonExistentEntry) {
@@ -3715,8 +3706,8 @@ TEST_P(SqlPersistentStoreTest, WriteEntryDataCreatesNewDoomed) {
 
   // Verify OpenEntry fails.
   auto open_result = OpenEntry(kKey);
-  ASSERT_TRUE(open_result.has_value());
-  EXPECT_FALSE(open_result->has_value());
+  ASSERT_FALSE(open_result.has_value());
+  EXPECT_EQ(open_result.error(), SqlPersistentStore::Error::kNotFound);
 }
 
 TEST_P(SqlPersistentStoreTest, SparseRead) {
@@ -4036,11 +4027,10 @@ TEST_P(SqlPersistentStoreTest, OpenEntryCallbackNotRunOnStoreDestruction) {
   CreateAndInitStore();
 
   bool callback_run = false;
-  store_->OpenEntry(kKey,
-                    base::BindLambdaForTesting(
-                        [&](SqlPersistentStore::OptionalEntryInfoOrError) {
-                          callback_run = true;
-                        }));
+  store_->OpenEntry(kKey, base::BindLambdaForTesting(
+                              [&](SqlPersistentStore::EntryInfoOrError) {
+                                callback_run = true;
+                              }));
   store_.reset();
   FlushPendingTask();
 
@@ -4510,8 +4500,8 @@ TEST_P(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
     EXPECT_EQ(store_->GetIndexStateForHash(keys[j].hash()),
               SqlPersistentStore::IndexState::kHashNotFound);
     auto result = OpenEntry(keys[j]);
-    ASSERT_TRUE(result.has_value());
-    EXPECT_FALSE(result->has_value());
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), SqlPersistentStore::Error::kNotFound);
   }
 
   // Verify newest entries are still there.
@@ -4520,7 +4510,6 @@ TEST_P(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
               SqlPersistentStore::IndexState::kHashFound);
     auto result = OpenEntry(keys[j]);
     ASSERT_TRUE(result.has_value());
-    EXPECT_TRUE(result->has_value());
   }
 
   EXPECT_NE(store_->GetEvictionUrgency(),
@@ -4625,7 +4614,6 @@ TEST_P(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
   // Verify the excluded entry is still there.
   auto result = OpenEntry(keys[0]);
   ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(result->has_value());
 
   // Verify some other old entries are gone.
   // The number of evicted entries will be different now.
@@ -4634,8 +4622,8 @@ TEST_P(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
   // evicted.
   for (int j = 1; j <= evicted_count; ++j) {
     result = OpenEntry(keys[j]);
-    ASSERT_TRUE(result.has_value());
-    EXPECT_FALSE(result->has_value());
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), SqlPersistentStore::Error::kNotFound);
   }
 
   EXPECT_NE(store_->GetEvictionUrgency(),
@@ -5112,7 +5100,6 @@ TEST_P(SqlPersistentStoreTest, SimulateDbFailure) {
 
   open_result = OpenEntry(kKey);
   ASSERT_TRUE(open_result.has_value());
-  ASSERT_TRUE(open_result->has_value());
 }
 
 TEST_P(SqlPersistentStoreTest, AfterRazeAndPoisoned) {
@@ -5440,14 +5427,13 @@ TEST_P(SqlPersistentStoreTest, ResumeEvictionRespectsExcludedResIds) {
   // The excluded entry should still exist.
   auto open_result = OpenEntry(existing_entry_key);
   ASSERT_TRUE(open_result.has_value());
-  EXPECT_TRUE(open_result->has_value());
 
   // Another entry should be gone.
   const CacheEntryKey evicted_key(
       "key_" + base::NumberToString(existing_entry_index + 1));
   auto open_result_evicted = OpenEntry(evicted_key);
-  ASSERT_TRUE(open_result_evicted.has_value());
-  EXPECT_FALSE(open_result_evicted->has_value());
+  ASSERT_FALSE(open_result_evicted.has_value());
+  EXPECT_EQ(open_result_evicted.error(), SqlPersistentStore::Error::kNotFound);
 }
 
 TEST_P(SqlPersistentStoreTest, ResumeEvictionHandlesModifiedEntrySize) {
@@ -5483,8 +5469,8 @@ TEST_P(SqlPersistentStoreTest, ResumeEvictionHandlesModifiedEntrySize) {
 
   // Verify `existing_entry_key` is evicted.
   auto final_result = OpenEntry(existing_entry_key);
-  ASSERT_TRUE(final_result.has_value());
-  EXPECT_FALSE(final_result->has_value());
+  ASSERT_FALSE(final_result.has_value());
+  EXPECT_EQ(final_result.error(), SqlPersistentStore::Error::kNotFound);
 
   // Verify total size is correct (should be below low watermark).
   // The fact that key_0 was larger than expected should simply mean we freed
@@ -5761,15 +5747,14 @@ TEST_P(SqlPersistentStoreTest, DoomEntryWhileIndexLoading) {
   // 9. Verify that the doomed entries are gone and the other entry is still
   //    accessible.
   auto open_result1 = OpenEntry(kKey1);
-  ASSERT_TRUE(open_result1.has_value());
-  EXPECT_FALSE(open_result1->has_value());
+  ASSERT_FALSE(open_result1.has_value());
+  EXPECT_EQ(open_result1.error(), SqlPersistentStore::Error::kNotFound);
   auto open_result2 = OpenEntry(kKey2);
   ASSERT_TRUE(open_result2.has_value());
-  ASSERT_TRUE(open_result2->has_value());
-  EXPECT_EQ((*open_result2)->res_id, res_id2);
+  EXPECT_EQ(open_result2->res_id, res_id2);
   auto open_result3 = OpenEntry(kKey3);
-  ASSERT_TRUE(open_result3.has_value());
-  EXPECT_FALSE(open_result3->has_value());
+  ASSERT_FALSE(open_result3.has_value());
+  EXPECT_EQ(open_result3.error(), SqlPersistentStore::Error::kNotFound);
 }
 
 TEST_P(SqlPersistentStoreTest,
@@ -5838,8 +5823,7 @@ TEST_P(SqlPersistentStoreTest, DoomEntryRecoversIndexOnDbFailure) {
   // The entry should still be openable.
   auto open_result = OpenEntry(kKey);
   ASSERT_TRUE(open_result.has_value());
-  ASSERT_TRUE(open_result->has_value());
-  EXPECT_EQ(open_result.value()->res_id, res_id);
+  EXPECT_EQ(open_result->res_id, res_id);
 
   // Doom the entry again. This time it should succeed.
   ASSERT_EQ(DoomEntry(kKey, res_id), SqlPersistentStore::Error::kOk);
@@ -5850,8 +5834,8 @@ TEST_P(SqlPersistentStoreTest, DoomEntryRecoversIndexOnDbFailure) {
 
   // The entry should not be openable.
   open_result = OpenEntry(kKey);
-  ASSERT_TRUE(open_result.has_value());
-  EXPECT_FALSE(open_result->has_value());
+  ASSERT_FALSE(open_result.has_value());
+  EXPECT_EQ(open_result.error(), SqlPersistentStore::Error::kNotFound);
 }
 
 // Tests that when `DoomEntry` is called with a `res_id` that is present in the
@@ -5887,8 +5871,7 @@ TEST_P(SqlPersistentStoreTest, DoomEntryRecoversIndexOnNotFound) {
   EXPECT_EQ(GetEntryCount(), 1);
   auto open_result = OpenEntry(kExistingKey);
   ASSERT_TRUE(open_result.has_value());
-  ASSERT_TRUE(open_result->has_value());
-  EXPECT_EQ((*open_result)->res_id, res_id);
+  EXPECT_EQ(open_result->res_id, res_id);
 }
 
 TEST_P(SqlPersistentStoreTest,
@@ -6095,14 +6078,13 @@ TEST_P(SqlPersistentStoreTest, StartEvictionEvictsLargerEntriesFirst) {
 
   // Verify the larger entry is gone.
   auto open_large = OpenEntry(large_key);
-  ASSERT_TRUE(open_large.has_value());
-  EXPECT_FALSE(open_large->has_value());
+  ASSERT_FALSE(open_large.has_value());
+  EXPECT_EQ(open_large.error(), SqlPersistentStore::Error::kNotFound);
 
   // Verify smaller entries are still there.
   for (const auto& key : keys) {
     auto open_result = OpenEntry(key);
     ASSERT_TRUE(open_result.has_value());
-    EXPECT_TRUE(open_result->has_value());
   }
 }
 
@@ -6147,14 +6129,13 @@ void SqlPersistentStoreTestBase::RunStartEvictionEvictsOlderEntriesFirstTest() {
 
   // Verify the oldest entry (key0) is gone.
   auto open_oldest = OpenEntry(keys[0]);
-  ASSERT_TRUE(open_oldest.has_value());
-  EXPECT_FALSE(open_oldest->has_value());
+  ASSERT_FALSE(open_oldest.has_value());
+  EXPECT_EQ(open_oldest.error(), SqlPersistentStore::Error::kNotFound);
 
   // Verify newest entries are still there.
   for (int i = 1; i < 10; ++i) {
     auto open_result = OpenEntry(keys[i]);
     ASSERT_TRUE(open_result.has_value());
-    EXPECT_TRUE(open_result->has_value());
   }
 }
 
@@ -6243,13 +6224,12 @@ TEST_P(SqlPersistentStoreTest, StartEvictionPrioritizesHighPriorityEntries) {
   // Verify the high priority entry is still there.
   auto open_high = OpenEntry(high_priority_key);
   ASSERT_TRUE(open_high.has_value());
-  EXPECT_TRUE(open_high->has_value());
 
   // Verify one of the low priority entries is gone.
   int gone_count = 0;
   for (const auto& key : low_priority_keys) {
     auto open_result = OpenEntry(key);
-    if (open_result.has_value() && !open_result->has_value()) {
+    if (!open_result.has_value()) {
       gone_count++;
     }
   }
@@ -6324,13 +6304,12 @@ TEST_P(SqlPersistentStoreTest,
   // Verify the high priority entry is still there.
   auto open_high = OpenEntry(high_priority_key);
   ASSERT_TRUE(open_high.has_value());
-  EXPECT_TRUE(open_high->has_value());
 
   // Verify one of the low priority entries is gone.
   int gone_count = 0;
   for (const auto& key : low_priority_keys) {
     auto open_result = OpenEntry(key);
-    if (open_result.has_value() && !open_result->has_value()) {
+    if (!open_result.has_value()) {
       gone_count++;
     }
   }
@@ -6389,8 +6368,7 @@ TEST_P(SqlPersistentStoreTest, EvictionCollectsMetadata) {
       // Verify that metadata is available after the first eviction.
       auto open_result = OpenEntry(key);
       ASSERT_TRUE(open_result.has_value());
-      ASSERT_TRUE(open_result->has_value());
-      auto res_id = (*open_result)->res_id;
+      auto res_id = open_result->res_id;
       auto metadata = store_->GetShardForTesting(key.hash())
                           .GetIndexForTesting()
                           ->GetEntryMetadataForTesting(key.hash(), res_id);
@@ -6399,12 +6377,12 @@ TEST_P(SqlPersistentStoreTest, EvictionCollectsMetadata) {
       EXPECT_EQ(metadata->last_used.InSecondsFSinceUnixEpoch(),
                 base::Time::FromSecondsSinceUnixEpoch(
                     static_cast<uint32_t>(
-                        (*open_result)->last_used.InSecondsFSinceUnixEpoch()))
+                        open_result->last_used.InSecondsFSinceUnixEpoch()))
                     .InSecondsFSinceUnixEpoch());
 
-      uint64_t expected_initial_size = (*open_result)->body_end;
-      if ((*open_result)->head) {
-        expected_initial_size += (*open_result)->head->capacity();
+      uint64_t expected_initial_size = open_result->body_end;
+      if (open_result->head) {
+        expected_initial_size += open_result->head->capacity();
       }
       uint64_t expected_usage = expected_initial_size + key.string().size();
       EXPECT_EQ(metadata->bytes_usage, ((expected_usage + 255) >> 8) << 8);
@@ -6418,8 +6396,7 @@ TEST_P(SqlPersistentStoreTest, EvictionCollectsMetadata) {
   CacheEntryKey oldest_alive_key = alive_keys.front();
   auto open_oldest = OpenEntry(oldest_alive_key);
   ASSERT_TRUE(open_oldest.has_value());
-  ASSERT_TRUE(open_oldest->has_value());
-  auto oldest_res_id = (*open_oldest)->res_id;
+  auto oldest_res_id = open_oldest->res_id;
 
   // Advance clock so the entry gets a newer last_used time.
   base::Time new_last_used = base::Time::Now() + base::Seconds(10);
@@ -6442,11 +6419,10 @@ TEST_P(SqlPersistentStoreTest, EvictionCollectsMetadata) {
   CacheEntryKey second_oldest_key = alive_keys[1];
   auto open_second = OpenEntry(second_oldest_key);
   ASSERT_TRUE(open_second.has_value());
-  ASSERT_TRUE(open_second->has_value());
-  auto res_id = (*open_second)->res_id;
-  auto initial_size = (*open_second)->body_end;
-  if ((*open_second)->head) {
-    initial_size += (*open_second)->head->capacity();
+  auto res_id = open_second->res_id;
+  auto initial_size = open_second->body_end;
+  if (open_second->head) {
+    initial_size += open_second->head->capacity();
   }
 
   // We write some data to increase the size of the second oldest entry.
@@ -6567,7 +6543,7 @@ TEST_P(SqlPersistentStoreTest, InMemoryEvictionRespectsPriority) {
 
   CacheEntryKey oldest_alive_key = alive_keys.front();
   auto open_oldest = OpenEntry(oldest_alive_key);
-  auto oldest_res_id = (*open_oldest)->res_id;
+  auto oldest_res_id = open_oldest->res_id;
 
   base::Time new_last_used = base::Time::Now() + base::Seconds(10);
   task_environment_.AdvanceClock(base::Seconds(10));
@@ -6638,7 +6614,7 @@ TEST_P(SqlPersistentStoreTest, InMemoryEvictionRespectsExcludedResIds) {
 
   CacheEntryKey oldest_alive_key = alive_keys.front();
   auto open_oldest = OpenEntry(oldest_alive_key);
-  auto oldest_res_id = (*open_oldest)->res_id;
+  auto oldest_res_id = open_oldest->res_id;
 
   task_environment_.AdvanceClock(base::Seconds(1));
   while (GetSizeOfAllEntries() <= kHighWatermark) {
@@ -6996,9 +6972,8 @@ TEST_P(SqlPersistentStoreIncrementalVacuumTest,
   for (int i : {0, 9}) {
     auto open_result = OpenEntry(keys[i]);
     ASSERT_TRUE(open_result.has_value());
-    ASSERT_TRUE(open_result->has_value());
 
-    auto& entry_info = **open_result;
+    auto& entry_info = *open_result;
     EXPECT_EQ(entry_info.res_id, res_ids[i]);
     EXPECT_EQ(entry_info.body_end, static_cast<int64_t>(datas[i].size()));
 
@@ -7017,8 +6992,8 @@ TEST_P(SqlPersistentStoreIncrementalVacuumTest,
   // 7. Verify middle entries (key_1 to key_8) are indeed deleted.
   for (int i = 1; i <= 8; ++i) {
     auto open_result = OpenEntry(keys[i]);
-    ASSERT_TRUE(open_result.has_value());
-    EXPECT_FALSE(open_result->has_value());  // Should be nullopt (not found)
+    ASSERT_FALSE(open_result.has_value());
+    EXPECT_EQ(open_result.error(), SqlPersistentStore::Error::kNotFound);
   }
 }
 
@@ -7199,11 +7174,10 @@ TEST_P(SqlPersistentStoreSharedCacheTest, MoveBlobsToSharedCache) {
   // Verify OpenEntry returns the entry with shared_cache_resource_id populated.
   auto open_result = OpenEntry(kKey);
   ASSERT_TRUE(open_result.has_value());
-  ASSERT_TRUE(open_result->has_value());
-  EXPECT_TRUE((*open_result)->shared_cache_resource_id.has_value());
-  EXPECT_EQ((*open_result)->shared_cache_resource_id->db_id,
+  EXPECT_TRUE(open_result->shared_cache_resource_id.has_value());
+  EXPECT_EQ(open_result->shared_cache_resource_id->db_id,
             kSharedResourceId.db_id);
-  EXPECT_EQ((*open_result)->shared_cache_resource_id->row_id,
+  EXPECT_EQ(open_result->shared_cache_resource_id->row_id,
             kSharedResourceId.row_id);
 
   // Verify OpenNextEntry returns the entry with shared_cache_resource_id
@@ -7444,8 +7418,7 @@ TEST_P(SqlPersistentStoreSharedCacheTest,
   // its shared cache resource deleted from SqlSharedCacheIsolatedDatabase.
   for (const auto& entry : shared_cache_entries) {
     auto open_result = OpenEntry(entry.key);
-    ASSERT_TRUE(open_result.has_value());
-    bool entry_exists_in_store = open_result->has_value();
+    bool entry_exists_in_store = open_result.has_value();
 
     if (!entry_exists_in_store) {
       VerifySharedCacheEntryDeleted(handle, entry.key, entry.row_id);

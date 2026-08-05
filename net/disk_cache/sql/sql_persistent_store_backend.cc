@@ -67,7 +67,7 @@ using HashAndResIdList = SqlPersistentStore::HashAndResIdList;
 using EntryInfoOrError = SqlPersistentStore::EntryInfoOrError;
 using EntryInfoOrErrorAndStoreStatus =
     SqlPersistentStore::EntryInfoOrErrorAndStoreStatus;
-using OptionalEntryInfoOrError = SqlPersistentStore::OptionalEntryInfoOrError;
+
 using ErrorAndStoreStatus = SqlPersistentStore::ErrorAndStoreStatus;
 using HashAndResIdListOrErrorAndStoreStatus =
     SqlPersistentStore::HashAndResIdListOrErrorAndStoreStatus;
@@ -116,14 +116,7 @@ void PopulateTraceDetails(const EntryInfo& entry_info,
   dict.Add("head_size", entry_info.head ? entry_info.head->size() : 0);
   dict.Add("opened", entry_info.opened);
 }
-void PopulateTraceDetails(const std::optional<EntryInfo>& entry_info,
-                          perfetto::TracedDictionary& dict) {
-  if (entry_info) {
-    PopulateTraceDetails(*entry_info, dict);
-  } else {
-    dict.Add("entry_info", "not found");
-  }
-}
+
 void PopulateTraceDetails(const SqlPersistentStore::EntryMetadata& metadata,
                           perfetto::TracedDictionary& dict) {
   dict.Add("res_id", metadata.res_id.value());
@@ -616,11 +609,11 @@ EntryInfoOrError SqlPersistentStore::Backend::OpenOrCreateEntryInternal(
   }
   // Try to open first.
   auto open_result = OpenEntryInternal(key);
-  if (open_result.has_value() && open_result->has_value()) {
-    return std::move(*open_result.value());
+  if (open_result.has_value()) {
+    return std::move(*open_result);
   }
-  // If opening failed with an error, propagate that error.
-  if (!open_result.has_value()) {
+  // If opening failed with an error other than kNotFound, propagate that error.
+  if (open_result.error() != Error::kNotFound) {
     return base::unexpected(open_result.error());
   }
   // If the entry was not found, try to create a new one.
@@ -629,7 +622,7 @@ EntryInfoOrError SqlPersistentStore::Backend::OpenOrCreateEntryInternal(
                              corruption_detected);
 }
 
-OptionalEntryInfoOrError SqlPersistentStore::Backend::OpenEntry(
+EntryInfoOrError SqlPersistentStore::Backend::OpenEntry(
     const CacheEntryKey& key,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
@@ -652,7 +645,7 @@ OptionalEntryInfoOrError SqlPersistentStore::Backend::OpenEntry(
   return result;
 }
 
-OptionalEntryInfoOrError SqlPersistentStore::Backend::OpenEntryInternal(
+EntryInfoOrError SqlPersistentStore::Backend::OpenEntryInternal(
     const CacheEntryKey& key) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
     return base::unexpected(db_error);
@@ -666,7 +659,7 @@ OptionalEntryInfoOrError SqlPersistentStore::Backend::OpenEntryInternal(
     // results, or an error occurred.
     if (db_.GetErrorCode() == static_cast<int>(sql::SqliteResultCode::kDone)) {
       // The query completed successfully but found no matching entry.
-      return std::nullopt;
+      return base::unexpected(Error::kNotFound);
     }
     // An unexpected database error occurred.
     return base::unexpected(Error::kFailedToExecute);
@@ -734,11 +727,12 @@ EntryInfoOrError SqlPersistentStore::Backend::CreateEntryInternal(
   }
   if (run_existance_check) {
     auto open_result = OpenEntryInternal(key);
-    if (open_result.has_value() && open_result->has_value()) {
+    if (open_result.has_value()) {
       return base::unexpected(Error::kAlreadyExists);
     }
-    // If opening failed with an error, propagate that error.
-    if (!open_result.has_value()) {
+    // If opening failed with an error other than kNotFound, propagate that
+    // error.
+    if (open_result.error() != Error::kNotFound) {
       return base::unexpected(open_result.error());
     }
   }

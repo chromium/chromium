@@ -223,9 +223,9 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
               SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
   }
 
-  SqlPersistentStore::OptionalEntryInfoOrError OpenStoreEntry(
+  SqlPersistentStore::EntryInfoOrError OpenStoreEntry(
       const CacheEntryKey& key) {
-    base::test::TestFuture<SqlPersistentStore::OptionalEntryInfoOrError> future;
+    base::test::TestFuture<SqlPersistentStore::EntryInfoOrError> future;
     store_->OpenEntry(key, future.GetCallback());
     async_task_manager_.RunUntilAllTasksCompleteForTest();
     return future.Take();
@@ -237,12 +237,9 @@ class SqlSharedCacheTest : public testing::TestWithParam<bool> {
       SqlSharedCacheRowId expected_row_id) {
     auto open_result = OpenStoreEntry(key);
     ASSERT_TRUE(open_result.has_value());
-    ASSERT_TRUE(open_result.value().has_value());
-    ASSERT_TRUE(open_result.value()->shared_cache_resource_id.has_value());
-    EXPECT_EQ(open_result.value()->shared_cache_resource_id->db_id,
-              expected_db_id);
-    EXPECT_EQ(open_result.value()->shared_cache_resource_id->row_id,
-              expected_row_id);
+    ASSERT_TRUE(open_result->shared_cache_resource_id.has_value());
+    EXPECT_EQ(open_result->shared_cache_resource_id->db_id, expected_db_id);
+    EXPECT_EQ(open_result->shared_cache_resource_id->row_id, expected_row_id);
   }
 
   base::test::ScopedFeatureList feature_list_;

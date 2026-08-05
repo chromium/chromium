@@ -244,7 +244,7 @@ void SqlPersistentStore::OpenOrCreateEntry(const CacheEntryKey& key,
 }
 
 void SqlPersistentStore::OpenEntry(const CacheEntryKey& key,
-                                   OptionalEntryInfoOrErrorCallback callback) {
+                                   EntryInfoOrErrorCallback callback) {
   GetShard(key).OpenEntry(key, std::move(callback));
 }
 
