@@ -186,29 +186,33 @@ base::Value NotConditionToValue(
   return ConditionToValue(*not_condition.condition);
 }
 
+base::DictValue SafeURLPatternToValue(const blink::SafeUrlPattern& pattern) {
+  base::DictValue url_pattern_value;
+#define TO_VALUE(type, type_name)                       \
+  do {                                                  \
+    auto value = ConvertToPatternString(pattern, type); \
+    url_pattern_value.Set(type_name, value);            \
+  } while (0)
+
+  TO_VALUE(URLPatternFieldType::kProtocol, "protocol");
+  TO_VALUE(URLPatternFieldType::kUsername, "username");
+  TO_VALUE(URLPatternFieldType::kPassword, "password");
+  TO_VALUE(URLPatternFieldType::kHostname, "hostname");
+  TO_VALUE(URLPatternFieldType::kPort, "port");
+  TO_VALUE(URLPatternFieldType::kPathname, "pathname");
+  TO_VALUE(URLPatternFieldType::kSearch, "search");
+  TO_VALUE(URLPatternFieldType::kHash, "hash");
+#undef TO_VALUE
+  return url_pattern_value;
+}
+
 base::Value ConditionToValue(
     const blink::ServiceWorkerRouterCondition& condition) {
   base::DictValue out_c;
   const auto& [url_pattern, request, running_status, or_condition,
                not_condition] = condition.get();
   if (url_pattern) {
-    base::DictValue url_pattern_value;
-#define TO_VALUE(type, type_name)                            \
-  do {                                                       \
-    auto value = ConvertToPatternString(*url_pattern, type); \
-    url_pattern_value.Set(type_name, value);                 \
-  } while (0)
-
-    TO_VALUE(URLPatternFieldType::kProtocol, "protocol");
-    TO_VALUE(URLPatternFieldType::kUsername, "username");
-    TO_VALUE(URLPatternFieldType::kPassword, "password");
-    TO_VALUE(URLPatternFieldType::kHostname, "hostname");
-    TO_VALUE(URLPatternFieldType::kPort, "port");
-    TO_VALUE(URLPatternFieldType::kPathname, "pathname");
-    TO_VALUE(URLPatternFieldType::kSearch, "search");
-    TO_VALUE(URLPatternFieldType::kHash, "hash");
-#undef TO_VALUE
-      out_c.Set("urlPattern", std::move(url_pattern_value));
+    out_c.Set("urlPattern", SafeURLPatternToValue(*url_pattern));
   }
   if (request) {
     out_c.Set("request", RequestToValue(*request));
