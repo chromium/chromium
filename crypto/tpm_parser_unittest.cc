@@ -363,8 +363,7 @@ TEST(TpmCppParserTest, ParseCertifyResponse_BadMagic) {
   auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob, 0, 0x11223344);
 
   EXPECT_THAT(ParseCertifyResponse(resp, kChallenge),
-              ErrorIs(CertifyResponseError(
-                  CertifyResponseError::Type::kBadMagicNumber)));
+              ErrorIs(TpmParseError(TpmParseError::Type::kBadMagicNumber)));
 }
 
 TEST(TpmCppParserTest, ParseCertifyResponse_ChallengeMismatch) {
@@ -379,8 +378,7 @@ TEST(TpmCppParserTest, ParseCertifyResponse_ChallengeMismatch) {
 
   static constexpr uint8_t kWrongChallenge[] = {9, 9, 9, 9};
   EXPECT_THAT(ParseCertifyResponse(resp, kWrongChallenge),
-              ErrorIs(CertifyResponseError(
-                  CertifyResponseError::Type::kChallengeMismatch)));
+              ErrorIs(TpmParseError(TpmParseError::Type::kChallengeMismatch)));
 }
 
 TEST(TpmCppParserTest, ParseCertifyResponse_TpmError) {
@@ -394,9 +392,9 @@ TEST(TpmCppParserTest, ParseCertifyResponse_TpmError) {
   auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob,
                                        0x100);  // TPM error code 0x100
 
-  EXPECT_THAT(ParseCertifyResponse(resp, kChallenge),
-              ErrorIs(CertifyResponseError(
-                  CertifyResponseError::Type::kTpmErrorResponse, 0x100)));
+  EXPECT_THAT(
+      ParseCertifyResponse(resp, kChallenge),
+      ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
 }
 
 }  // namespace crypto::tpm

@@ -21,13 +21,13 @@
 
 namespace crypto::tpm {
 
-// Various errors returned during TPM certify response parsing.
+// Various errors returned during TPM response parsing.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// NOTE: Since the certify response parsing happens completely on the Rust side,
+// NOTE: Since the response parsing happens completely on the Rust side,
 // this is a strict subset of the enum defined in tpm.rs. We purposefully drop
 // the kOk option, so that it's a true error enum.
-struct CRYPTO_EXPORT CertifyResponseError {
+struct CRYPTO_EXPORT TpmParseError {
   // LINT.IfChange(TpmCertifyParseResult)
   enum class Type : uint8_t {
     kBufferTooSmall = 1,
@@ -44,22 +44,20 @@ struct CRYPTO_EXPORT CertifyResponseError {
   // Only populated if `type` is `Type::kTpmErrorResponse`.
   const std::optional<uint32_t> tpm_error_code;
 
-  explicit CertifyResponseError(
-      Type type,
-      std::optional<uint32_t> tpm_error_code = std::nullopt)
+  explicit TpmParseError(Type type,
+                         std::optional<uint32_t> tpm_error_code = std::nullopt)
       : type(type), tpm_error_code(tpm_error_code) {
     CHECK_EQ(type == Type::kTpmErrorResponse, tpm_error_code.has_value());
   }
 
-  friend bool operator==(const CertifyResponseError&,
-                         const CertifyResponseError&) = default;
+  friend bool operator==(const TpmParseError&, const TpmParseError&) = default;
 };
 
 template <typename T>
-using CertifyResponseErrorOr = base::expected<T, CertifyResponseError>;
+using TpmParseErrorOr = base::expected<T, TpmParseError>;
 
-inline constexpr auto kNoCertifyResponseErrorForMetrics =
-    static_cast<CertifyResponseError::Type>(0);
+inline constexpr auto kNoTpmParseErrorForMetrics =
+    static_cast<TpmParseError::Type>(0);
 
 // Various errors returned during TPM signature verification.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -120,7 +118,7 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildCertifyCommand(
 // * `response_blob` - The raw byte response from the TPM2_Certify command.
 // * `challenge` - The challenge expected in the attestation's extra data to
 // prevent replay.
-CRYPTO_EXPORT CertifyResponseErrorOr<CertifyResponse> ParseCertifyResponse(
+CRYPTO_EXPORT TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
     base::span<const uint8_t> response_blob,
     base::span<const uint8_t> challenge);
 

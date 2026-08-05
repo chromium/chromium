@@ -686,11 +686,11 @@ class AttestationKeyWin : public WinKeyImpl<UnexportableAttestationKey> {
     }
 
     // 5. Parse in Rust by going through the C++ shim.
-    const tpm::CertifyResponseErrorOr<tpm::CertifyResponse> parsed_or_error =
+    const tpm::TpmParseErrorOr<tpm::CertifyResponse> parsed_or_error =
         tpm::ParseCertifyResponse(base::span(resp).first(resp_len), challenge);
 
     auto parse_error = parsed_or_error.error_or(
-        tpm::CertifyResponseError(tpm::kNoCertifyResponseErrorForMetrics));
+        tpm::TpmParseError(tpm::kNoTpmParseErrorForMetrics));
     base::UmaHistogramEnumeration(
         "Crypto.TPMOperation.Win.TpmCertifyParse.Result", parse_error.type);
     base::UmaHistogramSparse(

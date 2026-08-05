@@ -46,30 +46,28 @@ SignatureErrorOr<void> MapSignatureParseResult(SignatureParseResult result) {
   NOTREACHED();
 }
 
-CertifyResponseErrorOr<void> MapCertifyParseResult(
-    const RawCertifyResponse& response) {
-  switch (response.result) {
+TpmParseErrorOr<void> MapParseResult(ParseResult result,
+                                     uint32_t tpm_response_code) {
+  switch (result) {
     case ParseResult::Ok:
       return base::ok();
     case ParseResult::BufferTooSmall:
       return base::unexpected(
-          CertifyResponseError(CertifyResponseError::Type::kBufferTooSmall));
+          TpmParseError(TpmParseError::Type::kBufferTooSmall));
     case ParseResult::TrailingBytes:
       return base::unexpected(
-          CertifyResponseError(CertifyResponseError::Type::kTrailingBytes));
+          TpmParseError(TpmParseError::Type::kTrailingBytes));
     case ParseResult::TpmErrorResponse:
-      return base::unexpected(
-          CertifyResponseError(CertifyResponseError::Type::kTpmErrorResponse,
-                               response.tpm_response_code));
+      return base::unexpected(TpmParseError(
+          TpmParseError::Type::kTpmErrorResponse, tpm_response_code));
     case ParseResult::BadMagicNumber:
       return base::unexpected(
-          CertifyResponseError(CertifyResponseError::Type::kBadMagicNumber));
+          TpmParseError(TpmParseError::Type::kBadMagicNumber));
     case ParseResult::WrongType:
-      return base::unexpected(
-          CertifyResponseError(CertifyResponseError::Type::kWrongType));
+      return base::unexpected(TpmParseError(TpmParseError::Type::kWrongType));
     case ParseResult::ChallengeMismatch:
       return base::unexpected(
-          CertifyResponseError(CertifyResponseError::Type::kChallengeMismatch));
+          TpmParseError(TpmParseError::Type::kChallengeMismatch));
   }
   NOTREACHED();
 }
@@ -151,18 +149,19 @@ std::vector<uint8_t> BuildCertifyCommand(uint32_t object_handle,
       object_handle, sign_handle, base::SpanToRustSlice(challenge)));
 }
 
-CertifyResponseErrorOr<CertifyResponse> ParseCertifyResponse(
+TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
     base::span<const uint8_t> response_blob,
     base::span<const uint8_t> challenge) {
   RawCertifyResponse raw_response = parse_certify_response(
       base::SpanToRustSlice(response_blob), base::SpanToRustSlice(challenge));
 
-  return MapCertifyParseResult(raw_response).transform([&] {
-    return CertifyResponse{
-        .statement = base::ToVector(raw_response.statement),
-        .signature = base::ToVector(raw_response.signature),
-    };
-  });
+  return MapParseResult(raw_response.result, raw_response.tpm_response_code)
+      .transform([&] {
+        return CertifyResponse{
+            .statement = base::ToVector(raw_response.statement),
+            .signature = base::ToVector(raw_response.signature),
+        };
+      });
 }
 
 SignatureErrorOr<SignatureAlgorithms> GetSignatureAlgorithms(
