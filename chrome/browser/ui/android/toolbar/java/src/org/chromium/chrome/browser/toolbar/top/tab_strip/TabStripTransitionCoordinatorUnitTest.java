@@ -1320,6 +1320,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 int newHeight,
                 int topPadding,
                 boolean applyScrimOverlay,
+                boolean isTabStripSuppressed,
                 Runnable transitionStartedCallback) {
             this.heightRequested = newHeight;
             this.applyScrimOverlay = applyScrimOverlay;

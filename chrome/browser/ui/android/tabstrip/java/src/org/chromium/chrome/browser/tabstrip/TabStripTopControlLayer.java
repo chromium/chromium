@@ -40,9 +40,10 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
     private final ControlContainer mControlContainer;
     private final SettableNonNullObservableSupplier<Integer> mSupplier;
     private final @Nullable TokenHolder mLockTopControlsTokenJar;
-    private @Nullable Callback<Boolean> mTransitionFinishedCallback;
 
     private int mLockTopControlsToken = TokenHolder.INVALID_TOKEN;
+    private boolean mIsTabStripSuppressed;
+    private @Nullable Callback<Boolean> mTransitionFinishedCallback;
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
     // Not null after #initializeWithNative.
@@ -57,6 +58,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         public final int targetHeight;
         public final int topPadding;
         public final boolean applyScrimOverlay;
+        public final boolean isVerticalTabToggle;
         public final Runnable transitionStartedCallback;
         public final boolean hasAnimation;
         public final @TopControlVisibility int visibility;
@@ -68,11 +70,13 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
                 int targetHeight,
                 int topPadding,
                 boolean applyScrimOverlay,
+                boolean isVerticalTabToggle,
                 Runnable transitionStartedCallback) {
             this.startHeight = startHeight;
             this.targetHeight = targetHeight;
             this.topPadding = topPadding;
             this.applyScrimOverlay = applyScrimOverlay;
+            this.isVerticalTabToggle = isVerticalTabToggle;
             this.transitionStartedCallback = transitionStartedCallback;
 
             hasAnimation = calculateHasAnimation(startHeight, targetHeight, applyScrimOverlay);
@@ -243,15 +247,33 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
             int newHeight,
             int topPadding,
             boolean applyScrimOverlay,
+            boolean isTabStripSuppressed,
             Runnable transitionStartedCallback) {
         prepForTransitionRequested(
-                newHeight, topPadding, applyScrimOverlay, transitionStartedCallback);
+                newHeight,
+                topPadding,
+                applyScrimOverlay,
+                isTabStripSuppressed,
+                transitionStartedCallback);
         // TODO(crbug.com/41481630): Supplier can have an inconsistent value with
         //  mToolbar.getTabStripHeight().
         mSupplier.set(newHeight);
 
         if (isInTransition() && mTransitionState.targetHeight != mTransitionState.startHeight) {
             mTopControlsStacker.requestLayerUpdateSync(mTransitionState.hasAnimation);
+            // onBrowserControlsOffsetUpdate() can be frozen if a tab is actively loading
+            // (!tab.isUserInteractable()). To prevent the transition from hanging indefinitely and
+            // blocking V <-> H slide animations, synchronously complete the transition immediately.
+            // Re-check isInTransition() in case the transition was finished synchronously by
+            // earlier steps.
+            if (isInTransition()
+                    && mTransitionState.isVerticalTabToggle
+                    && mBrowserControls.getTopControlOffset() == 0) {
+                if (mTransitionState.checkIsFirstUpdate()) {
+                    handleTransitionStart();
+                }
+                handleTransitionFinished();
+            }
         }
     }
 
@@ -264,8 +286,12 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
             int newHeight,
             int topPadding,
             boolean applyScrimOverlay,
+            boolean isTabStripSuppressed,
             Runnable onHeightTransitionStartCallback) {
         if (mTabStrip == null && !canTransitionWithoutTabStrip()) return;
+
+        boolean isVerticalTabToggle = (isTabStripSuppressed != mIsTabStripSuppressed);
+        mIsTabStripSuppressed = isTabStripSuppressed;
 
         if (mTransitionState != null) {
             notifyTransitionFinished(false);
@@ -285,6 +311,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
                         newHeight,
                         topPadding,
                         applyScrimOverlay,
+                        isVerticalTabToggle,
                         onHeightTransitionStartCallback);
     }
 
