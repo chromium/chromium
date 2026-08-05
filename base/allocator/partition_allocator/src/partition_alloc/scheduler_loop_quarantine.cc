@@ -115,27 +115,33 @@ PA_ALWAYS_INLINE void BatchFreeQueue<true>::Purge() {
 
     auto size_details = root_->SlotSpanToBucketSizeDetails(entry.slot_span);
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    auto* metadata = PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-        entry.slot_start, size_details.slot_size);
-    if (metadata->IsAlive()) {
-      // Since `FreeNoHooksImmediateInternal()` checks double-free, see if
-      // the object is still alive.
-      root_->FreeNoHooksImmediateInternal<FreeFlags::kSchedulerLoopQuarantine |
-                                          FreeFlags::kNoHooks>(
-          entry.slot_start.Tag(), entry.slot_span, {}, size_details);
-    } else {
-      // We will check whether the object's refcount is equal to zero or not.
-      // If the refcount is equal to zero, provide the object for miracle
-      // object's SchedulerLoopQuarantineBranch.
-      if (metadata->HasNonZeroRefs()) {
-        // Set quarantine request bit. `FreeAfterBrpQuarantine()` will
-        // invoke miracle object's `SchedulerLoopQuarantine` for the object.
-        metadata->SetQuarantineRequest();
+    if (root_->brp_enabled()) {
+      auto* metadata = PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
+          entry.slot_start, size_details.slot_size);
+      if (metadata->IsAlive()) {
+        // Since `FreeNoHooksImmediateInternal()` checks double-free, see if
+        // the object is still alive.
+        root_->FreeNoHooksImmediateInternal<
+            FreeFlags::kSchedulerLoopQuarantine | FreeFlags::kNoHooks>(
+            entry.slot_start.Tag(), entry.slot_span, {}, size_details);
       } else {
-        // Directly invoke miracle object's `SchedulerLoopQuarantine` here.
-        root_->SchedulerLoopQuarantine(entry.slot_start.Tag(), entry.slot_span,
-                                       size_details);
+        // We will check whether the object's refcount is equal to zero or not.
+        // If the refcount is equal to zero, provide the object for miracle
+        // object's SchedulerLoopQuarantineBranch.
+        if (metadata->HasNonZeroRefs()) {
+          // Set quarantine request bit. `FreeAfterBrpQuarantine()` will
+          // invoke miracle object's `SchedulerLoopQuarantine` for the object.
+          metadata->SetQuarantineRequest();
+        } else {
+          // Directly invoke miracle object's `SchedulerLoopQuarantine` here.
+          root_->SchedulerLoopQuarantine(entry.slot_start.Tag(),
+                                         entry.slot_span, size_details);
+        }
       }
+    } else {
+      // `metadata` is not available. Invoke miracle object's quarantine here.
+      root_->SchedulerLoopQuarantine(entry.slot_start.Tag(), entry.slot_span,
+                                     size_details);
     }
 #else
     root_->SchedulerLoopQuarantine(entry.slot_start.Tag(), entry.slot_span,
