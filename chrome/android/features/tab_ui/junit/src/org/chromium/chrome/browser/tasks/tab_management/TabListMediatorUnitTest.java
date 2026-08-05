@@ -118,7 +118,7 @@ import org.chromium.chrome.browser.actor.ui.ActorUiTabController.HandoffButtonSt
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripTabUnderlineManager;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -6071,47 +6071,47 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testGlicIndicatorManager_NullInGridMode() {
+    public void testTabUnderlineManager_NullInGridMode() {
         GlicEnabling.setEnabledForTesting(true);
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
-        assertNull(mMediator.getOrInitGlicIndicatorManagerForTesting(mTab1));
+        assertNull(mMediator.getOrInitTabUnderlineManagerForTesting(mTab1));
     }
 
     @Test
-    public void testGlicIndicatorManager_NullInIncognito() {
+    public void testTabUnderlineManager_NullInIncognito() {
         GlicEnabling.setEnabledForTesting(true);
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.VERTICAL);
         when(mTab1.isIncognito()).thenReturn(true);
-        assertNull(mMediator.getOrInitGlicIndicatorManagerForTesting(mTab1));
+        assertNull(mMediator.getOrInitTabUnderlineManagerForTesting(mTab1));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS)
-    public void testGlicIndicatorManager_NullWhenFlagsDisabled() {
+    public void testTabUnderlineManager_NullWhenFlagsDisabled() {
         GlicEnabling.setEnabledForTesting(false);
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.VERTICAL);
         when(mTab1.isIncognito()).thenReturn(false);
-        assertNull(mMediator.getOrInitGlicIndicatorManagerForTesting(mTab1));
+        assertNull(mMediator.getOrInitTabUnderlineManagerForTesting(mTab1));
     }
 
     @Test
-    public void testGlicObserver_UpdatesModel() {
+    public void testTabUnderlineObserver_UpdatesModel() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.VERTICAL);
         initAndAssertAllProperties();
 
-        StripTabUnderlineManager.Observer observer = mMediator.getGlicObserverForTesting();
+        TabUnderlineManager.Observer observer = mMediator.getTabUnderlineObserverForTesting();
         assertNotNull(observer);
 
         assertFalse(mModelList.get(0).model.get(TabProperties.IS_GLIC_ACTIVE));
 
-        observer.onIndicatorStateChanged(TAB1_ID, true);
+        observer.onIndicatorStateChanged(TAB1_ID, /* isActive= */ true);
         assertTrue(mModelList.get(0).model.get(TabProperties.IS_GLIC_ACTIVE));
 
-        observer.onIndicatorStateChanged(TAB1_ID, false);
+        observer.onIndicatorStateChanged(TAB1_ID, /* isActive= */ false);
         assertFalse(mModelList.get(0).model.get(TabProperties.IS_GLIC_ACTIVE));
 
         // Ensure no NPE occurs when an invalid or unknown tab ID is updated.
-        observer.onIndicatorStateChanged(Tab.INVALID_TAB_ID, true);
+        observer.onIndicatorStateChanged(Tab.INVALID_TAB_ID, /* isActive= */ true);
     }
 
     private void setUpTabGroupCardDescriptionString() {

@@ -19,27 +19,22 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Manages the native C++ TabUnderlineController objects for Android tab UI surfaces.
- *
- * <p>TODO(crbug.com/509226293): Consider renaming to GlicTabIndicatorManager since this class
- * broadcasts Glic indicator state to HTS, Vertical Tabs, and GTS.
- */
+/** Manages the native C++ TabUnderlineController objects across Android tab UI surfaces. */
 @JNINamespace("android")
 @NullMarked
-public class StripTabUnderlineManager {
-    /** An observer for Glic tab indicator state changes across Android UI surfaces. */
+public class TabUnderlineManager {
+    /** An observer for tab underline state changes across Android UI surfaces. */
     public interface Observer {
         /**
-         * Called when the Glic indicator state changes for a tab.
+         * Called when the tab underline state changes for a tab.
          *
          * @param tabId The ID of the tab whose indicator state changed.
-         * @param isUnderlined Whether the Glic indicator should be active/visible.
+         * @param isActive Whether the indicator should be active/visible.
          */
-        void onIndicatorStateChanged(int tabId, boolean isUnderlined);
+        void onIndicatorStateChanged(int tabId, boolean isActive);
 
         /**
-         * Called when the Glic indicator animation cycle should be reset for a tab.
+         * Called when the tab underline animation cycle should be reset for a tab.
          *
          * @param tabId The ID of the tab whose animation cycle should be reset.
          */
@@ -54,10 +49,10 @@ public class StripTabUnderlineManager {
     private long mNativePtr;
     private boolean mContextualTasksBridgeInitialized;
 
-    public StripTabUnderlineManager(WindowAndroid windowAndroid) {
+    public TabUnderlineManager(WindowAndroid windowAndroid) {
         mWindowAndroid = windowAndroid;
         mContextualTasksBridgeObserver = this::onContextualTasksBridgeReady;
-        mNativePtr = StripTabUnderlineManagerJni.get().init(this);
+        mNativePtr = TabUnderlineManagerJni.get().init(this);
 
         if (ChromeFeatureList.sContextualTasks.isEnabled()) {
             ContextualTasksBridge.getSupplier(mWindowAndroid)
@@ -87,12 +82,13 @@ public class StripTabUnderlineManager {
 
     public void destroy() {
         mObservers.clear();
+        mTabsPendingContextualTasksBridge.clear();
         if (ChromeFeatureList.sContextualTasks.isEnabled()) {
             ContextualTasksBridge.getSupplier(mWindowAndroid)
                     .removeObserver(mContextualTasksBridgeObserver);
         }
         if (mNativePtr != 0) {
-            StripTabUnderlineManagerJni.get().destroy(mNativePtr);
+            TabUnderlineManagerJni.get().destroy(mNativePtr);
             mNativePtr = 0;
         }
     }
@@ -109,12 +105,12 @@ public class StripTabUnderlineManager {
 
     /** Track a tab in the native manager. */
     public void registerTab(Tab tab) {
-        if (mNativePtr == 0 || tab == null) return;
+        if (mNativePtr == 0) return;
         if (!mContextualTasksBridgeInitialized) {
             mTabsPendingContextualTasksBridge.add(tab);
             return;
         }
-        StripTabUnderlineManagerJni.get().registerTab(mNativePtr, tab);
+        TabUnderlineManagerJni.get().registerTab(mNativePtr, tab);
     }
 
     /** Stop tracking a tab. */
@@ -122,7 +118,7 @@ public class StripTabUnderlineManager {
         if (mNativePtr == 0) return;
         mTabsPendingContextualTasksBridge.removeIf(tab -> tab.getId() == tabId);
         if (mContextualTasksBridgeInitialized) {
-            StripTabUnderlineManagerJni.get().unregisterTab(mNativePtr, tabId);
+            TabUnderlineManagerJni.get().unregisterTab(mNativePtr, tabId);
         }
     }
 
@@ -142,12 +138,12 @@ public class StripTabUnderlineManager {
 
     @NativeMethods
     interface Natives {
-        long init(StripTabUnderlineManager caller);
+        long init(TabUnderlineManager caller);
 
-        void destroy(long nativeStripTabUnderlineManager);
+        void destroy(long nativeTabUnderlineManager);
 
-        void registerTab(long nativeStripTabUnderlineManager, Tab tab);
+        void registerTab(long nativeTabUnderlineManager, Tab tab);
 
-        void unregisterTab(long nativeStripTabUnderlineManager, int tabId);
+        void unregisterTab(long nativeTabUnderlineManager, int tabId);
     }
 }

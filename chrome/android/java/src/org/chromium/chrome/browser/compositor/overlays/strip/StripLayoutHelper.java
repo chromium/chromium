@@ -713,8 +713,8 @@ public class StripLayoutHelper
     private final List<QueuedIph> mQueuedIphList = new ArrayList<>();
 
     private final StripLayoutTabDelegate mTabDelegate;
-    private @Nullable StripTabUnderlineManager mStripTabUnderlineManager;
-    private StripTabUnderlineManager.@Nullable Observer mTabUnderlineObserver;
+    private @Nullable TabUnderlineManager mTabUnderlineManager;
+    private TabUnderlineManager.@Nullable Observer mTabUnderlineObserver;
 
     // Pinned tabs.
     private boolean mIsPinnedOnlyStripRecorded;
@@ -877,12 +877,12 @@ public class StripLayoutHelper
         if (!mIncognito
                 && (GlicEnabling.isEnabledByFlags()
                         || ChromeFeatureList.sContextualTasks.isEnabled())) {
-            mStripTabUnderlineManager = new StripTabUnderlineManager(windowAndroid);
+            mTabUnderlineManager = new TabUnderlineManager(windowAndroid);
             mTabUnderlineObserver =
-                    new StripTabUnderlineManager.Observer() {
+                    new TabUnderlineManager.Observer() {
                         @Override
-                        public void onIndicatorStateChanged(int tabId, boolean isUnderlined) {
-                            setTabUnderline(tabId, isUnderlined);
+                        public void onIndicatorStateChanged(int tabId, boolean isActive) {
+                            setTabUnderline(tabId, isActive);
                         }
 
                         @Override
@@ -890,7 +890,7 @@ public class StripLayoutHelper
                             resetTabUnderlineAnimationCycle(tabId);
                         }
                     };
-            mStripTabUnderlineManager.addObserver(mTabUnderlineObserver);
+            mTabUnderlineManager.addObserver(mTabUnderlineObserver);
         }
 
         mIsFirstLayoutPass = true;
@@ -936,13 +936,13 @@ public class StripLayoutHelper
             mTabStripContextMenuCoordinator.destroy();
             mTabStripContextMenuCoordinator = null;
         }
-        if (mStripTabUnderlineManager != null) {
+        if (mTabUnderlineManager != null) {
             if (mTabUnderlineObserver != null) {
-                mStripTabUnderlineManager.removeObserver(mTabUnderlineObserver);
+                mTabUnderlineManager.removeObserver(mTabUnderlineObserver);
                 mTabUnderlineObserver = null;
             }
-            mStripTabUnderlineManager.destroy();
-            mStripTabUnderlineManager = null;
+            mTabUnderlineManager.destroy();
+            mTabUnderlineManager = null;
         }
     }
 
@@ -1563,11 +1563,11 @@ public class StripLayoutHelper
     }
 
     private void registerTabsWithUnderlineManager() {
-        if (mStripTabUnderlineManager == null || mModel == null) return;
+        if (mTabUnderlineManager == null || mModel == null) return;
         for (int i = 0; i < mModel.getCount(); i++) {
             Tab tab = mModel.getTabAt(i);
             if (tab != null) {
-                mStripTabUnderlineManager.registerTab(tab);
+                mTabUnderlineManager.registerTab(tab);
             }
         }
     }
@@ -1949,8 +1949,8 @@ public class StripLayoutHelper
             if (stripTab != null && !stripTab.isDying()) {
                 mClosingTabs.add(stripTab);
             }
-            if (mStripTabUnderlineManager != null) {
-                mStripTabUnderlineManager.unregisterTab(tab.getId());
+            if (mTabUnderlineManager != null) {
+                mTabUnderlineManager.unregisterTab(tab.getId());
             }
         }
         if (!mClosingTabs.isEmpty()) {
@@ -2009,8 +2009,8 @@ public class StripLayoutHelper
         Tab tab = getTabById(id);
         boolean collapsed = false;
         if (tab != null) {
-            if (mStripTabUnderlineManager != null) {
-                mStripTabUnderlineManager.registerTab(tab);
+            if (mTabUnderlineManager != null) {
+                mTabUnderlineManager.registerTab(tab);
             }
             Token tabGroupId = tab.getTabGroupId();
             updateGroupTextAndSharedState(tabGroupId);
@@ -6034,7 +6034,7 @@ public class StripLayoutHelper
                 dragStartPointF.x, dragStartPointF.y, clickedTab, ReorderType.START_DRAG_DROP);
     }
 
-    @Nullable StripTabUnderlineManager getStripTabUnderlineManagerForTesting() {
-        return mStripTabUnderlineManager;
+    @Nullable TabUnderlineManager getTabUnderlineManagerForTesting() {
+        return mTabUnderlineManager;
     }
 }

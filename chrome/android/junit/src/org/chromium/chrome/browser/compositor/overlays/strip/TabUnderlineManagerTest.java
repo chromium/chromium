@@ -35,23 +35,23 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.WindowAndroid;
 
-/** Unit tests for {@link StripTabUnderlineManager}. */
+/** Unit tests for {@link TabUnderlineManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS)
-public class StripTabUnderlineManagerTest {
+public class TabUnderlineManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private StripTabUnderlineManager.Observer mObserver;
+    @Mock private TabUnderlineManager.Observer mObserver;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private StripTabUnderlineManager.Natives mMockJni;
+    @Mock private TabUnderlineManager.Natives mMockJni;
     @Mock private ContextualTasksBridge mContextualTasksBridge;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
 
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
-    private StripTabUnderlineManager mManager;
+    private TabUnderlineManager mManager;
 
     private static final long NATIVE_PTR = 12345L;
     private static final int TAB_ID_1 = 1;
@@ -60,20 +60,20 @@ public class StripTabUnderlineManagerTest {
 
     @Before
     public void setUp() {
-        StripTabUnderlineManagerJni.setInstanceForTesting(mMockJni);
+        TabUnderlineManagerJni.setInstanceForTesting(mMockJni);
         when(mMockJni.init(any())).thenReturn(NATIVE_PTR);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
         when(mTab1.getId()).thenReturn(TAB_ID_1);
         when(mTab2.getId()).thenReturn(TAB_ID_2);
         when(mTab3.getId()).thenReturn(TAB_ID_3);
 
-        mManager = new StripTabUnderlineManager(mWindowAndroid);
+        mManager = new TabUnderlineManager(mWindowAndroid);
         mManager.addObserver(mObserver);
     }
 
     @After
     public void tearDown() {
-        StripTabUnderlineManagerJni.setInstanceForTesting(null);
+        TabUnderlineManagerJni.setInstanceForTesting(null);
     }
 
     @Test
@@ -122,10 +122,10 @@ public class StripTabUnderlineManagerTest {
     @Test
     public void testSetUnderlineState() {
         mManager.setUnderlineState(TAB_ID_1, /* isUnderlined= */ true);
-        verify(mObserver).onIndicatorStateChanged(TAB_ID_1, /* isUnderlined= */ true);
+        verify(mObserver).onIndicatorStateChanged(TAB_ID_1, /* isActive= */ true);
 
         mManager.setUnderlineState(TAB_ID_1, /* isUnderlined= */ false);
-        verify(mObserver).onIndicatorStateChanged(TAB_ID_1, /* isUnderlined= */ false);
+        verify(mObserver).onIndicatorStateChanged(TAB_ID_1, /* isActive= */ false);
     }
 
     @Test

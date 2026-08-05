@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/compositor/strip_tab_underline_manager.h"
+#include "chrome/browser/android/compositor/tab_underline_manager.h"
 
-#include "chrome/android/chrome_jni_headers/StripTabUnderlineManager_jni.h"
+#include "chrome/android/chrome_jni_headers/TabUnderlineManager_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace android {
 
-class StripTabUnderlineManager::UiDelegateImpl
+class TabUnderlineManager::UiDelegateImpl
     : public glic::TabUnderlineController::UiDelegate {
  public:
-  UiDelegateImpl(StripTabUnderlineManager* manager, int tab_id)
+  UiDelegateImpl(TabUnderlineManager* manager, int tab_id)
       : manager_(manager), tab_id_(tab_id) {}
   ~UiDelegateImpl() override = default;
 
   void Show() override {
     is_showing_ = true;
-    manager_->SetUnderlineState(tab_id_, true);
+    manager_->SetUnderlineState(tab_id_, /*is_underlined=*/true);
   }
 
   void StopShowing() override {
     is_showing_ = false;
-    manager_->SetUnderlineState(tab_id_, false);
+    manager_->SetUnderlineState(tab_id_, /*is_underlined=*/false);
   }
 
   void ResetAnimationCycle() override {
@@ -39,34 +39,32 @@ class StripTabUnderlineManager::UiDelegateImpl
   bool IsShowing() const override { return is_showing_; }
 
  private:
-  raw_ptr<StripTabUnderlineManager> manager_;
+  raw_ptr<TabUnderlineManager> manager_;
   int tab_id_;
   bool is_showing_ = false;
 };
 
-StripTabUnderlineManager::StripTabUnderlineManager(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj)
+TabUnderlineManager::TabUnderlineManager(JNIEnv* env,
+                                         const jni_zero::JavaRef<jobject>& obj)
     : java_obj_(env, obj) {}
 
-StripTabUnderlineManager::~StripTabUnderlineManager() = default;
+TabUnderlineManager::~TabUnderlineManager() = default;
 
-StripTabUnderlineManager::TabUnderlineContext::TabUnderlineContext() = default;
+TabUnderlineManager::TabIndicatorContext::TabIndicatorContext() = default;
 
-StripTabUnderlineManager::TabUnderlineContext::~TabUnderlineContext() = default;
+TabUnderlineManager::TabIndicatorContext::~TabIndicatorContext() = default;
 
-StripTabUnderlineManager::TabUnderlineContext::TabUnderlineContext(
+TabUnderlineManager::TabIndicatorContext::TabIndicatorContext(
     std::unique_ptr<glic::TabUnderlineController> c,
     std::unique_ptr<UiDelegateImpl> d)
     : delegate(std::move(d)), controller(std::move(c)) {}
 
-void StripTabUnderlineManager::Destroy(JNIEnv* env) {
+void TabUnderlineManager::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void StripTabUnderlineManager::RegisterTab(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& jtab) {
+void TabUnderlineManager::RegisterTab(JNIEnv* env,
+                                      const jni_zero::JavaRef<jobject>& jtab) {
   // TODO(crbug.com/500128552): Maybe switch to the UserDataHost pattern instead
   // of maintaining a map here.
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, jtab);
@@ -93,28 +91,27 @@ void StripTabUnderlineManager::RegisterTab(
   tracked_tabs_.try_emplace(tab_id, std::move(controller), std::move(delegate));
 }
 
-void StripTabUnderlineManager::UnregisterTab(JNIEnv* env, int32_t tab_id) {
+void TabUnderlineManager::UnregisterTab(JNIEnv* env, int32_t tab_id) {
   tracked_tabs_.erase(tab_id);
 }
 
-void StripTabUnderlineManager::SetUnderlineState(int tab_id,
-                                                 bool is_underlined) {
+void TabUnderlineManager::SetUnderlineState(int tab_id, bool is_underlined) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_StripTabUnderlineManager_setUnderlineState(env, java_obj_, tab_id,
-                                                  is_underlined);
+  Java_TabUnderlineManager_setUnderlineState(env, java_obj_, tab_id,
+                                             is_underlined);
 }
 
-void StripTabUnderlineManager::ResetAnimationCycle(int tab_id) {
+void TabUnderlineManager::ResetAnimationCycle(int tab_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_StripTabUnderlineManager_resetAnimationCycle(env, java_obj_, tab_id);
+  Java_TabUnderlineManager_resetAnimationCycle(env, java_obj_, tab_id);
 }
 
-static int64_t JNI_StripTabUnderlineManager_Init(
+static int64_t JNI_TabUnderlineManager_Init(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(new StripTabUnderlineManager(env, obj));
+  return reinterpret_cast<intptr_t>(new TabUnderlineManager(env, obj));
 }
 
 }  // namespace android
 
-DEFINE_JNI(StripTabUnderlineManager)
+DEFINE_JNI(TabUnderlineManager)

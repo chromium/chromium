@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_STRIP_TAB_UNDERLINE_MANAGER_H_
-#define CHROME_BROWSER_ANDROID_COMPOSITOR_STRIP_TAB_UNDERLINE_MANAGER_H_
+#ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_TAB_UNDERLINE_MANAGER_H_
+#define CHROME_BROWSER_ANDROID_COMPOSITOR_TAB_UNDERLINE_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -15,13 +15,13 @@
 
 namespace android {
 
-class StripTabUnderlineManager {
+class TabUnderlineManager {
  public:
-  StripTabUnderlineManager(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
-  ~StripTabUnderlineManager();
+  TabUnderlineManager(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
+  ~TabUnderlineManager();
 
-  StripTabUnderlineManager(const StripTabUnderlineManager&) = delete;
-  StripTabUnderlineManager& operator=(const StripTabUnderlineManager&) = delete;
+  TabUnderlineManager(const TabUnderlineManager&) = delete;
+  TabUnderlineManager& operator=(const TabUnderlineManager&) = delete;
 
   // Destroy the native manager.
   void Destroy(JNIEnv* env);
@@ -32,19 +32,21 @@ class StripTabUnderlineManager {
   // Unregister a tab from being tracked.
   void UnregisterTab(JNIEnv* env, int32_t tab_id);
 
+  // Sets whether the tab has an active underline.
   void SetUnderlineState(int tab_id, bool is_underlined);
 
+  // Resets the underline animation cycle for the tab.
   void ResetAnimationCycle(int tab_id);
 
  private:
   class UiDelegateImpl;
 
-  struct TabUnderlineContext {
-    TabUnderlineContext();
-    TabUnderlineContext(
+  struct TabIndicatorContext {
+    TabIndicatorContext();
+    TabIndicatorContext(
         std::unique_ptr<glic::TabUnderlineController> controller,
         std::unique_ptr<UiDelegateImpl> delegate);
-    ~TabUnderlineContext();
+    ~TabIndicatorContext();
 
     // Destroying the delegate after the controller ensures the controller can
     // safely reference its delegate during teardown.
@@ -53,9 +55,9 @@ class StripTabUnderlineManager {
   };
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-  std::map<int, TabUnderlineContext> tracked_tabs_;
+  std::map<int, TabIndicatorContext> tracked_tabs_;
 };
 
 }  // namespace android
 
-#endif  // CHROME_BROWSER_ANDROID_COMPOSITOR_STRIP_TAB_UNDERLINE_MANAGER_H_
+#endif  // CHROME_BROWSER_ANDROID_COMPOSITOR_TAB_UNDERLINE_MANAGER_H_

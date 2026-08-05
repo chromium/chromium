@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripTabUnderlineManager;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -441,7 +441,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private View.AccessibilityDelegate mAccessibilityDelegate;
     private int mCurrentSpanCount;
     private @Nullable OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
-    private @Nullable StripTabUnderlineManager mGlicIndicatorManager;
+    private @Nullable TabUnderlineManager mTabUnderlineManager;
 
     private final ActorUiTabController.Observer mActorObserver =
             new ActorUiTabController.Observer() {
@@ -467,8 +467,8 @@ public class TabListMediator implements TabListNotificationHandler {
                 }
             };
 
-    private final StripTabUnderlineManager.Observer mGlicObserver =
-            new StripTabUnderlineManager.Observer() {
+    private final TabUnderlineManager.Observer mTabUnderlineObserver =
+            new TabUnderlineManager.Observer() {
                 @Override
                 public void onIndicatorStateChanged(int tabId, boolean isActive) {
                     PropertyModel model = mModelList.getModelFromTabId(tabId);
@@ -2047,9 +2047,9 @@ public class TabListMediator implements TabListNotificationHandler {
             mRailCollapseStateSupplier.removeObserver(mRailCollapseStateObserver);
         }
 
-        if (mGlicIndicatorManager != null) {
-            mGlicIndicatorManager.destroy();
-            mGlicIndicatorManager = null;
+        if (mTabUnderlineManager != null) {
+            mTabUnderlineManager.destroy();
+            mTabUnderlineManager = null;
         }
     }
 
@@ -2169,21 +2169,21 @@ public class TabListMediator implements TabListNotificationHandler {
                 : null;
     }
 
-    /** Gets or lazily initializes the Glic underline indicator manager. */
-    private @Nullable StripTabUnderlineManager getOrInitGlicIndicatorManager(Tab tab) {
+    /** Gets or lazily initializes the tab underline manager. */
+    private @Nullable TabUnderlineManager getOrInitTabUnderlineManager(Tab tab) {
         boolean isGlicOrContextualTasksEnabled =
                 GlicEnabling.isEnabledByFlags() || ChromeFeatureList.sContextualTasks.isEnabled();
         if (mMode != TabListMode.VERTICAL || tab.isIncognito() || !isGlicOrContextualTasksEnabled) {
             return null;
         }
-        if (mGlicIndicatorManager == null) {
+        if (mTabUnderlineManager == null) {
             WindowAndroid windowAndroid = tab.getWindowAndroid();
             if (windowAndroid != null) {
-                mGlicIndicatorManager = new StripTabUnderlineManager(windowAndroid);
-                mGlicIndicatorManager.addObserver(mGlicObserver);
+                mTabUnderlineManager = new TabUnderlineManager(windowAndroid);
+                mTabUnderlineManager.addObserver(mTabUnderlineObserver);
             }
         }
-        return mGlicIndicatorManager;
+        return mTabUnderlineManager;
     }
 
     @TabActionState
@@ -3123,9 +3123,9 @@ public class TabListMediator implements TabListNotificationHandler {
             }
         }
 
-        StripTabUnderlineManager glicIndicatorManager = getOrInitGlicIndicatorManager(tab);
-        if (glicIndicatorManager != null) {
-            glicIndicatorManager.registerTab(tab);
+        TabUnderlineManager tabUnderlineManager = getOrInitTabUnderlineManager(tab);
+        if (tabUnderlineManager != null) {
+            tabUnderlineManager.registerTab(tab);
         }
     }
 
@@ -3135,8 +3135,8 @@ public class TabListMediator implements TabListNotificationHandler {
         ActorUiTabController controller = ActorUiTabController.from(tab);
         if (controller != null) controller.removeObserver(mActorObserver);
 
-        if (mGlicIndicatorManager != null) {
-            mGlicIndicatorManager.unregisterTab(tab.getId());
+        if (mTabUnderlineManager != null) {
+            mTabUnderlineManager.unregisterTab(tab.getId());
         }
     }
 
@@ -3839,11 +3839,11 @@ public class TabListMediator implements TabListNotificationHandler {
         ResettersForTesting.register(() -> mComponentId = oldValueId);
     }
 
-    @Nullable StripTabUnderlineManager getOrInitGlicIndicatorManagerForTesting(Tab tab) {
-        return getOrInitGlicIndicatorManager(tab);
+    @Nullable TabUnderlineManager getOrInitTabUnderlineManagerForTesting(Tab tab) {
+        return getOrInitTabUnderlineManager(tab);
     }
 
-    StripTabUnderlineManager.Observer getGlicObserverForTesting() {
-        return mGlicObserver;
+    TabUnderlineManager.Observer getTabUnderlineObserverForTesting() {
+        return mTabUnderlineObserver;
     }
 }

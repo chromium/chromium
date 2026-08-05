@@ -237,7 +237,7 @@ public class StripLayoutHelperTest {
     @Mock private Bitmap mAvatarBitmap;
     @Mock TabStripIphController mController;
     @Mock private TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
-    @Mock private StripTabUnderlineManager.Natives mStripTabUnderlineMock;
+    @Mock private TabUnderlineManager.Natives mTabUnderlineMock;
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
@@ -324,7 +324,7 @@ public class StripLayoutHelperTest {
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
         mSharedGroupTestHelper = new SharedGroupTestHelper(mCollaborationService);
 
-        StripTabUnderlineManagerJni.setInstanceForTesting(mStripTabUnderlineMock);
+        TabUnderlineManagerJni.setInstanceForTesting(mTabUnderlineMock);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
     }
 
@@ -7626,24 +7626,23 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC)
-    public void testStripTabUnderlineManagerObserver() {
+    public void testTabUnderlineManagerObserver() {
         initializeTest(/* rtl= */ false, /* incognito= */ false, /* tabIndex= */ 0);
         int tabId = mModel.getTabAt(0).getId();
 
-        StripTabUnderlineManager manager =
-                mStripLayoutHelper.getStripTabUnderlineManagerForTesting();
-        assertNotNull(
-                "StripTabUnderlineManager should be initialized when Glic is enabled", manager);
+        TabUnderlineManager manager = mStripLayoutHelper.getTabUnderlineManagerForTesting();
+        assertNotNull("TabUnderlineManager should be initialized when Glic is enabled", manager);
 
         // Notify via the manager (simulating native JNI callback).
         manager.setUnderlineState(tabId, /* isUnderlined= */ true);
         assertTrue(
-                "Tab should be underlined when StripTabUnderlineManager notifies observer",
+                "Tab should show underline indicator when TabUnderlineManager notifies observer",
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0].isUnderlinedForTesting());
 
         manager.setUnderlineState(tabId, /* isUnderlined= */ false);
         assertFalse(
-                "Tab should not be underlined when StripTabUnderlineManager notifies observer",
+                "Tab should not show underline indicator when TabUnderlineManager notifies"
+                        + " observer",
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0].isUnderlinedForTesting());
     }
 
