@@ -24,7 +24,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isUserSignedIn="${this.isUserSignedIn_}"
           .enableOpenInNewTabButton="${this.isAiPage_ && !this.isErrorPageVisible_}"
           .onboardingTooltipShowing="${this.onboardingTooltipShowing_}"
-          .lensSearchTooltipShowing="${this.lensSearchTooltipShowing_}"
+          .lensSearchTooltipShowing="${this.lensSearchTooltipTarget_ !== null}"
           @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
     </div>
@@ -54,11 +54,15 @@ export function getHtml(this: ContextualTasksAppElement) {
       </h1>
     </div>
 <if expr="not is_android">
-    ${this.showLensSearchTooltip_ ? html`
-      <contextual-tasks-lens-search-tooltip id="lensSearchTooltip"
-          @lens-search-tooltip-dismissed="${this.onLensSearchTooltipDismissed_}">
-      </contextual-tasks-lens-search-tooltip>
-    ` : ''}
+    <contextual-tasks-info-tooltip id="lensSearchTooltip"
+        .target="${this.lensSearchTooltipTarget_}"
+        .container="${this.composeboxElement_}"
+        title-text="$i18n{lensSearchTooltipTitle}"
+        body-text="$i18n{lensSearchTooltipBody}"
+        close-button-type="icon"
+        horizontal-align="right"
+        @tooltip-dismissed="${this.onLensSearchTooltipDismissed_}">
+    </contextual-tasks-info-tooltip>
 
     ${this.showSmartTabSharingTryItIph_ ? html`
       <contextual-tasks-banner-promo id="stsTryItPromo"
@@ -115,6 +119,17 @@ export function getHtml(this: ContextualTasksAppElement) {
         @onboarding-tooltip-dismissed="${this.onOnboardingTooltipDismissed_}">
     </contextual-tasks-onboarding-tooltip>
   ` : ''}
+</if>
+<if expr="not is_android">
+    <contextual-tasks-info-tooltip id="askGTooltip"
+        .target="${this.askGTooltipTarget_}"
+        .container="${this.composeboxElement_}"
+        title-text="$i18n{askGFirstRunTitle}"
+        body-text="$i18n{askGFirstRunBody}"
+        close-button-type="icon"
+        horizontal-align="left"
+        @tooltip-dismissed="${this.onAskGTooltipDismissed_}">
+    </contextual-tasks-info-tooltip>
 </if>
   <!--_html_template_end_-->`;
 }

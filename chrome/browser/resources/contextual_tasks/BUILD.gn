@@ -66,8 +66,6 @@ build_webui("build") {
     ts_files += [
       "banner_promo.html.ts",
       "banner_promo.ts",
-      "lens_search_tooltip.html.ts",
-      "lens_search_tooltip.ts",
     ]
   }
   if (!is_android || enable_webui_contextual_tasks_composebox) {
@@ -77,6 +75,8 @@ build_webui("build") {
       "contextual_tasks_inner_composebox.html.ts",
       "contextual_tasks_inner_composebox.ts",
       "contextual_tasks_inner_composebox_context_menu.html.ts",
+      "info_tooltip.html.ts",
+      "info_tooltip.ts",
       "onboarding_tooltip.html.ts",
       "onboarding_tooltip.ts",
       "window_manager.ts",
@@ -97,15 +97,13 @@ build_webui("build") {
     "toolbar_app.css",
   ]
   if (!is_android) {
-    css_files += [
-      "banner_promo.css",
-      "lens_search_tooltip.css",
-    ]
+    css_files += [ "banner_promo.css" ]
   }
   if (!is_android || enable_webui_contextual_tasks_composebox) {
     css_files += [
       "composebox.css",
       "contextual_tasks_inner_composebox.css",
+      "info_tooltip.css",
       "onboarding_tooltip.css",
     ]
   }

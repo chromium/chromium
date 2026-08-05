@@ -901,6 +901,7 @@ error-page {
 }
 
 #onboardingTooltip,
+#askGTooltip,
 #lensSearchTooltip {
   inset: 0;
   pointer-events: none;

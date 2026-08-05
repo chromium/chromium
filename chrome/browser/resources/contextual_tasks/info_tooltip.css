@@ -1,0 +1,95 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+cr-tooltip {
+  --paper-tooltip-delay-in: 300ms;
+  --paper-tooltip-delay-out: 0ms;
+  --paper-tooltip-opacity: 1.0;
+  margin-top: -20px;
+  pointer-events: all;
+}
+
+cr-tooltip::part(tooltip) {
+  border-radius: 8px;
+  /* Use drop-shadow filter so the caret also gets a shadow. */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+  padding: 16px;
+  max-width: 300px;
+  width: var(--info-tooltip-width, auto);
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 16px;
+  position: relative;
+}
+
+:host([is-coins-enabled]) cr-tooltip {
+  max-width: none;
+  padding-inline-start: 36px;
+  margin-top: -5px;
+}
+
+/* Caret for Left-aligned Tooltips (copied from onboarding_tooltip.css) */
+:host([horizontal-align='left']) cr-tooltip::part(tooltip)::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  /* Aligns the caret to the chip thumbnail */
+  inset-inline-start: 12.5px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: var(--paper-tooltip-background) transparent transparent
+    transparent;
+}
+
+/* Caret for Right-aligned Tooltips (copied from lens_search_tooltip.css) */
+:host([horizontal-align='right']) cr-tooltip::part(tooltip)::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  inset-inline-end: 16px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: var(--paper-tooltip-background) transparent transparent
+    transparent;
+}
+
+/* Close Icon Button absolute positioning */
+#closeBtn {
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  --cr-icon-button-size: 24px;
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  margin: 0;
+}
+
+/* Add padding to prevent text from overlapping with absolute positioned close icon button */
+:host([close-button-type='icon']) cr-tooltip::part(tooltip) {
+  padding-inline-end: 48px;
+}
+
+.tooltip-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.tooltip-title {
+  font-weight: 500;
+}
+
+#buttons {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+}
