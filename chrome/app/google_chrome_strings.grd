@@ -1528,6 +1528,9 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE" desc="Title of the QR Code bubble showing a code for the user to sign in on their phone.">
         Sign in to Chrome on your phone
       </message>
+      <message name="IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_QR_CODE_ALT_TEXT" desc="Accessibility label for the QR code image in the cross-device sign-in promo bubble.">
+        QR code to sign in to Chrome as <ph name="USER_NAME">$1<ex>Elisa Beckett</ex></ph>
+      </message>
 
       <!-- App list -->
       <if expr="is_chromeos">

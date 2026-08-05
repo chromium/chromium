@@ -137,6 +137,7 @@ CrossDeviceSigninQrBubbleUI::CrossDeviceSigninQrBubbleUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"title", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE},
       {"subtitle", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE},
+      {"qrCodeAltText", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_QR_CODE_ALT_TEXT},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
   source->EnableReplaceI18nInJS();
