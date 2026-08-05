@@ -2362,17 +2362,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
 #endif
 }
 
-// TODO(crbug.com/512876414): Re-enable on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_testInvokeWaitsForNotifyPanelWillOpen \
-  DISABLED_testInvokeWaitsForNotifyPanelWillOpen
-#else
-#define MAYBE_testInvokeWaitsForNotifyPanelWillOpen \
-  testInvokeWaitsForNotifyPanelWillOpen
-#endif
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
-                       MAYBE_testInvokeWaitsForNotifyPanelWillOpen) {
-  ASSERT_OK(OpenGlicForActiveTab());
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInvokeWaitsForNotifyPanelWillOpen) {
   GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
   options.target.surface = DefaultSurface{
       GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
