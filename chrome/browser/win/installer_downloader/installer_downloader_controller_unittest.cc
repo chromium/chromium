@@ -44,11 +44,6 @@ using ::testing::StrictMock;
 namespace installer_downloader {
 namespace {
 
-// A simple, valid template: IIDGUID and STATS are placeholders that the
-// production code will substitute.
-constexpr char kUrlTemplate[] =
-    "https://example.com/installer.exe?iid=IIDGUID&stats=STATS&lang=LANGUAGE";
-
 class MockInstallerDownloaderModel : public InstallerDownloaderModel {
  public:
   MOCK_METHOD(void,
