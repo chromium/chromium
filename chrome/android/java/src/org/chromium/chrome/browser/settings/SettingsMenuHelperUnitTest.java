@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,13 +15,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.fragment.app.Fragment;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -26,7 +35,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -52,14 +60,17 @@ public class SettingsMenuHelperUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private SettingsMenuHelper.Delegate mDelegate;
-    @Mock private Toolbar mToolbar;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private Activity mActivity;
 
+    // Some tests require a real (non-mock) Toolbar.
+    private Toolbar mToolbar;
+
     @Before
     public void setUp() {
         mActivityScenarios.getScenario().onActivity(activity -> mActivity = activity);
+        mToolbar = new Toolbar(mActivity);
         when(mDelegate.getHelpAndFeedbackLauncher()).thenReturn(mHelpAndFeedbackLauncher);
     }
 
@@ -188,8 +199,13 @@ public class SettingsMenuHelperUnitTest {
                 /* isMultiColumn= */ true,
                 /* isMainSettings= */ true);
 
-        verify(mToolbar).setNavigationIcon(R.drawable.app_icon_32dp);
-        verify(mToolbar).setNavigationOnClickListener(null);
+        assertEquals(
+                R.drawable.app_icon_32dp,
+                shadowOf(mToolbar.getNavigationIcon()).getCreatedFromResId());
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertFalse(navigationButton.isClickable());
+        assertFalse(navigationButton.hasOnClickListeners());
     }
 
     @Test
@@ -203,12 +219,15 @@ public class SettingsMenuHelperUnitTest {
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);
 
-        verify(mToolbar).setNavigationIcon(R.drawable.ic_arrow_back_24dp);
-        ArgumentCaptor<View.OnClickListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnClickListener.class);
-        verify(mToolbar).setNavigationOnClickListener(listenerCaptor.capture());
+        assertEquals(
+                R.drawable.ic_arrow_back_24dp,
+                shadowOf(mToolbar.getNavigationIcon()).getCreatedFromResId());
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertTrue(navigationButton.isClickable());
+        assertTrue(navigationButton.hasOnClickListeners());
 
-        listenerCaptor.getValue().onClick(null);
+        navigationButton.performClick();
         verify(activity).onBackPressed();
     }
 
@@ -223,8 +242,13 @@ public class SettingsMenuHelperUnitTest {
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ true);
 
-        verify(mToolbar).setNavigationIcon(R.drawable.app_icon_32dp);
-        verify(mToolbar).setNavigationOnClickListener(null);
+        assertEquals(
+                R.drawable.app_icon_32dp,
+                shadowOf(mToolbar.getNavigationIcon()).getCreatedFromResId());
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertFalse(navigationButton.isClickable());
+        assertFalse(navigationButton.hasOnClickListeners());
     }
 
     @Test
@@ -240,12 +264,16 @@ public class SettingsMenuHelperUnitTest {
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);
 
-        verify(mToolbar).setNavigationIcon(R.drawable.ic_arrow_back_24dp);
-        ArgumentCaptor<View.OnClickListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnClickListener.class);
-        verify(mToolbar).setNavigationOnClickListener(listenerCaptor.capture());
+        assertEquals(
+                R.drawable.ic_arrow_back_24dp,
+                shadowOf(mToolbar.getNavigationIcon()).getCreatedFromResId());
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertTrue(navigationButton.isClickable());
+        assertTrue(navigationButton.hasOnClickListeners());
+        assertNotNull(shadowOf(navigationButton).getOnClickListener());
 
-        listenerCaptor.getValue().onClick(null);
+        navigationButton.performClick();
         verify(activity).onBackPressed();
     }
 
@@ -258,6 +286,62 @@ public class SettingsMenuHelperUnitTest {
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);
 
-        verify(mToolbar).setNavigationIcon(null);
+        assertNull(mToolbar.getNavigationIcon());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateNavigationIcon_LogoAccessibility() {
+        // Update the navigation icon to be the Chrome logo.
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar,
+                mActivity,
+                /* show= */ true,
+                /* isMultiColumn= */ false,
+                /* isMainSettings= */ true);
+
+        // The navigation button should be reported as an image view for screen readers.
+        View navigationButton = getNavigationButton();
+        assertFalse(navigationButton.isClickable());
+        AccessibilityDelegateCompat delegate =
+                ViewCompat.getAccessibilityDelegate(navigationButton);
+        assertNotNull(delegate);
+        AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(navigationButton, info);
+        assertEquals(ImageView.class.getName(), info.getClassName());
+        assertEquals(
+                mActivity.getString(R.string.app_name), navigationButton.getContentDescription());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateNavigationIcon_BackButtonAccessibility() {
+        // Update the navigation icon to be a back button.
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar,
+                mActivity,
+                /* show= */ true,
+                /* isMultiColumn= */ false,
+                /* isMainSettings= */ false);
+
+        // The navigation button should be a clickable back button for screen readers.
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertTrue(navigationButton.isClickable());
+        assertNull(ViewCompat.getAccessibilityDelegate(navigationButton));
+        assertEquals(mActivity.getString(R.string.back), navigationButton.getContentDescription());
+    }
+
+    /** Returns the navigation button on the toolbar. */
+    private View getNavigationButton() {
+        for (int i = 0; i < mToolbar.getChildCount(); i++) {
+            View child = mToolbar.getChildAt(i);
+            if (child instanceof ImageButton) {
+                return child;
+            }
+        }
+        throw new IllegalStateException("No navigation button found.");
     }
 }

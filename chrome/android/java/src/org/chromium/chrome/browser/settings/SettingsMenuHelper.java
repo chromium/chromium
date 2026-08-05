@@ -9,8 +9,14 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -165,15 +171,50 @@ public class SettingsMenuHelper {
                 }
                 toolbar.setNavigationOnClickListener(null);
                 toolbar.setNavigationContentDescription(activity.getString(R.string.app_name));
+
+                // Ensure TalkBack announces this a non-clickable icon. Must occur after icon is
+                // set.
+                View navigationButton = getNavigationButtonView(toolbar);
+                navigationButton.setClickable(false);
+                ViewCompat.setAccessibilityDelegate(
+                        navigationButton,
+                        new AccessibilityDelegateCompat() {
+                            @Override
+                            public void onInitializeAccessibilityNodeInfo(
+                                    View host, AccessibilityNodeInfoCompat info) {
+                                super.onInitializeAccessibilityNodeInfo(host, info);
+                                info.setClassName(ImageView.class.getName());
+                            }
+                        });
             } else {
                 // Show a back button.
                 toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
                 toolbar.setNavigationOnClickListener(v -> activity.onBackPressed());
                 toolbar.setNavigationContentDescription(activity.getString(R.string.back));
+
+                // Ensure TalkBack announces this as a button. Must occur after icon is set.
+                View navigationButton = getNavigationButtonView(toolbar);
+                navigationButton.setClickable(true);
+                ViewCompat.setAccessibilityDelegate(navigationButton, null);
             }
         } else {
+            // Clear any custom accessibility delegate. Must occur before clearing the icon.
+            if (toolbar.getNavigationIcon() != null) {
+                View navigationButton = getNavigationButtonView(toolbar);
+                ViewCompat.setAccessibilityDelegate(navigationButton, null);
+            }
             // Hide the icon.
             toolbar.setNavigationIcon(null);
         }
+    }
+
+    private static View getNavigationButtonView(Toolbar toolbar) {
+        for (int i = 0; i < toolbar.getChildCount(); i++) {
+            View child = toolbar.getChildAt(i);
+            if (child instanceof ImageButton) {
+                return child;
+            }
+        }
+        throw new IllegalStateException("Toolbar has no navigation button");
     }
 }
