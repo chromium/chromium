@@ -16,6 +16,10 @@
 #include "media/base/audio_parameters.h"
 #include "media/filters/audio_renderer_algorithm.h"
 
+// TODO(crbug.com/538634417): Remove after compiler update.
+#include "base/memory/raw_ptr.h"
+static_assert(sizeof(base::raw_ptr<uint8_t>) > 0);
+
 namespace chromecast {
 namespace media {
 
