@@ -309,8 +309,8 @@ void CloudPolicyManager::CreateComponentCloudPolicyService(
   // and most of the rest doesn't need the blocking behaviour. Also
   // ComponentCloudPolicyService's |backend_task_runner| and |cache| must live
   // on the same task runner.
-  const auto task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  const auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   std::unique_ptr<ResourceCache> resource_cache(new ResourceCache(
       policy_cache_path, task_runner, /* max_cache_size */ std::nullopt));
   component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
