@@ -6,7 +6,9 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -57,6 +59,17 @@ class FrameCookieAccessObserver : public content::WebContentsObserver {
 class BtmBounceTrackingDevToolsIssueTest
     : public content::TestDevToolsProtocolClient,
       public PlatformBrowserTest {
+ public:
+  BtmBounceTrackingDevToolsIssueTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+
  protected:
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
@@ -103,6 +116,9 @@ class BtmBounceTrackingDevToolsIssueTest
     DetachProtocolClient();
     PlatformBrowserTest::TearDownOnMainThread();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BtmBounceTrackingDevToolsIssueTest,

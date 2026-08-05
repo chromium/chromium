@@ -6,6 +6,8 @@
  * @fileoverview Test suite for chrome://sample-system-web-app.
  */
 
+GEN('#include "base/test/scoped_feature_list.h"');
+GEN('#include "chrome/browser/ui/omnibox/omnibox_next_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/config/coverage/buildflags.h"');
 
@@ -25,6 +27,14 @@ var SampleSystemWebAppUIBrowserTest = class extends testing.Test {
   /** @override */
   get isAsync() {
     return true;
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      disabled: ['omnibox::internal::kWebUIOmniboxPopup',
+                 'omnibox::internal::kWebUIOmniboxAimPopup']
+    };
   }
 };
 
@@ -105,6 +115,14 @@ var SampleSystemWebAppUIUntrustedBrowserTest = class extends testing.Test {
   /** @override */
   get isAsync() {
     return true;
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      disabled: ['omnibox::internal::kWebUIOmniboxPopup',
+                 'omnibox::internal::kWebUIOmniboxAimPopup']
+    };
   }
 };
 

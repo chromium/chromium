@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
@@ -169,6 +170,16 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
 
 class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
  public:
+  TabSearchPageHandlerTest() {
+    webui_omnibox_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     web_contents_ = content::WebContents::Create(
@@ -299,6 +310,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
   content::TestWebUI web_ui_;
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
   raw_ptr<Profile, DanglingUntriaged> profile2_;
   std::unique_ptr<Browser> browser2_;
   std::unique_ptr<Browser> browser3_;

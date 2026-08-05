@@ -487,6 +487,7 @@ static_library("test_support") {
       "//chrome/browser",
       "//chrome/browser:browser_features",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/omnibox",
       "//chrome/test:test_support",
       "//components/policy/core/common:test_support",
       "//content/public/browser",

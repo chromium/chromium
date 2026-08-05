@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -340,6 +341,11 @@ class DiceWebSigninInterceptionBubblePixelTest
     } else {
       disabled_features.push_back(switches::kSigninInterceptGraphicUpdate);
     }
+
+    // TODO(crbug.com/452061489): Remove this and fix the test failures while
+    // WebUI Omnibox is enabled.
+    disabled_features.push_back(omnibox::internal::kWebUIOmniboxPopup);
+    disabled_features.push_back(omnibox::internal::kWebUIOmniboxAimPopup);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

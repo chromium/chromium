@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_PROTOCOL_TEST_SUPPORT_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_PROTOCOL_TEST_SUPPORT_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 
@@ -21,6 +22,8 @@ class DevToolsProtocolTestBase : public PlatformBrowserTest,
   void TearDownOnMainThread() override;
 
   virtual content::WebContents* web_contents();
+
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_PROTOCOL_TEST_SUPPORT_H_

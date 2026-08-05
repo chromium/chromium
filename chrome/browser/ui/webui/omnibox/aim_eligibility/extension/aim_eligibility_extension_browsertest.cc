@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/extension/aim_eligibility_extension_bridge.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -41,8 +42,14 @@ class AimEligibilityExtensionBrowserTest : public ExtensionApiTest {
  public:
   AimEligibilityExtensionBrowserTest() {
     ComponentLoader::EnableBackgroundExtensionsForTesting();
-    scoped_feature_list_.InitAndEnableFeature(
-        omnibox::kAimEligibilityComponentExtension);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {omnibox::kAimEligibilityComponentExtension},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
   ~AimEligibilityExtensionBrowserTest() override = default;
 

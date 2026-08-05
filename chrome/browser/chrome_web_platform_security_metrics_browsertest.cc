@@ -15,6 +15,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -164,6 +165,10 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         network::features::kLocalNetworkAccessChecks,
         // Disabling this flag just to test that the flag is working.
         blink::features::kRemoveCharsetAutoDetectionForISO2022JP,
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        omnibox::internal::kWebUIOmniboxPopup,
+        omnibox::internal::kWebUIOmniboxAimPopup,
     };
   }
 

@@ -59,6 +59,7 @@ if (enable_extensions_core) {
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/ui/omnibox",
       "//chrome/common:constants",
       "//components/omnibox/browser:test_support",
       "//components/omnibox/common",

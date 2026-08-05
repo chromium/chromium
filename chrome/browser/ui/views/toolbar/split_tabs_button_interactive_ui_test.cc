@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
@@ -135,6 +136,10 @@ class SplitTabButtonInteractiveTest
       features.push_back(::features::kWebUIReloadButton);
       features.push_back(::features::kWebUISplitTabsButton);
     }
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove these.
+    features.push_back(omnibox::internal::kWebUIOmniboxPopup);
+    features.push_back(omnibox::internal::kWebUIOmniboxAimPopup);
     return features;
   }
 

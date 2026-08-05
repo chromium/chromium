@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/private_ai/common/private_ai_logger.h"
@@ -30,8 +31,14 @@ namespace {
 class ConnectionFactoryImplBrowserTest : public PlatformBrowserTest {
  public:
   ConnectionFactoryImplBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kPrivateAi, {{kPrivateAiApiKey.name, "test-api-key"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{kPrivateAi, {{kPrivateAiApiKey.name, "test-api-key"}}}},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
   ~ConnectionFactoryImplBrowserTest() override = default;
 

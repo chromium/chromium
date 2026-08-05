@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_context.h"
@@ -86,7 +87,13 @@ class RendererStartupHelperBrowserTest : public InProcessBrowserTest {
         &webui_controller_factory_);
 
     feature_list_.InitWithFeatures(
-        {blink::features::kInitialWebUIWithoutExtensions}, {});
+        /*enabled_features=*/
+        {blink::features::kInitialWebUIWithoutExtensions},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
 
  protected:

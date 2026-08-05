@@ -63,6 +63,7 @@ class HeadlessModeProtocolBrowserTest
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
   TestMetaInfo test_meta_info_;
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 };

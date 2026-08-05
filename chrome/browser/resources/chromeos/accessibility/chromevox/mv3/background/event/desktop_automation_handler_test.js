@@ -10,6 +10,26 @@ GEN_INCLUDE(['../../testing/fake_objects.js']);
  * Test fixture for DesktopAutomationHandler.
  */
 ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
+  // TODO(crbug.com/452061489): Fix tests for when WebUI Omnibox is enabled
+  // and then remove `testGenCppIncludes()` and `featureList()`.
+  /** @override */
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
+    GEN(`
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+    `);
+  }
+
+  get featureList() {
+    return {
+      enabled: ['features::kAccessibilityManifestV3ChromeVox'],
+      disabled: [
+        'omnibox::internal::kWebUIOmniboxPopup',
+        'omnibox::internal::kWebUIOmniboxAimPopup',
+      ],
+    };
+  }
+
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

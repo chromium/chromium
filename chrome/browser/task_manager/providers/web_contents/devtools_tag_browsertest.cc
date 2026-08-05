@@ -95,20 +95,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DevToolsTaskIsProvided) {
   MockWebContentsTaskManager task_manager;
   EXPECT_TRUE(task_manager.tasks().empty());
   // Browser tests start with a single tab.
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(3U, tags_manager()->tracked_tags().size());
 
   task_manager.StartObserving();
 
   // The pre-existing tab is provided.
-  EXPECT_EQ(1U, task_manager.tasks().size());
+  EXPECT_EQ(3U, task_manager.tasks().size());
 
   LoadTestPage(kTestPage1);
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
-  EXPECT_EQ(1U, task_manager.tasks().size());
+  EXPECT_EQ(3U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(3U, task_manager.tasks().size());
 
   OpenDevToolsWindow(true);
-  EXPECT_EQ(2U, tags_manager()->tracked_tags().size());
-  ASSERT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(4U, tags_manager()->tracked_tags().size());
+  ASSERT_EQ(4U, task_manager.tasks().size());
 
   const Task* task = task_manager.tasks().back();
   EXPECT_EQ(Task::RENDERER, task->GetType());
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DevToolsTaskIsProvided) {
   // WebContents (its js may update its title).
   const int64_t task_id = task->task_id();
   LoadTestPage(kTestPage2);
-  EXPECT_EQ(2U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(4U, tags_manager()->tracked_tags().size());
   if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
     // When ProactivelySwapBrowsingInstance or RenderDocument is enabled on
     // same-site main frame navigations, the navigation above will result in a
@@ -125,26 +125,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DevToolsTaskIsProvided) {
     // in the tasks list).
     EXPECT_NE(task_id, task_manager.tasks().back()->task_id());
     EXPECT_NE(task, task_manager.tasks().back());
-    EXPECT_EQ(task_id, task_manager.tasks()[0]->task_id());
-    EXPECT_EQ(task, task_manager.tasks()[0]);
+    EXPECT_EQ(task_id, task_manager.tasks()[2]->task_id());
+    EXPECT_EQ(task, task_manager.tasks()[2]);
   } else {
     EXPECT_EQ(task_id, task_manager.tasks().back()->task_id());
     EXPECT_EQ(task, task_manager.tasks().back());
   }
-  EXPECT_NE(task_manager.tasks()[0]->title(),
-            task_manager.tasks()[1]->title());
+  EXPECT_NE(task_manager.tasks()[2]->title(),
+            task_manager.tasks()[3]->title());
   // If back/forward cache is enabled, the task for the previous page
   // will still be around.
   EXPECT_EQ(
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3U : 2U,
+      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 5U : 4U,
       task_manager.tasks().size());
 
   // Close the DevTools window.
   CloseDevToolsWindow();
-  EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
+  EXPECT_EQ(3U, tags_manager()->tracked_tags().size());
 
   EXPECT_EQ(
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 2U : 1U,
+      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 4U : 3U,
       task_manager.tasks().size());
 }
 

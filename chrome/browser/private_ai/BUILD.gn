@@ -63,6 +63,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ui/omnibox",
     "//chrome/test:test_support",
     "//components/private_ai",
     "//components/private_ai:proto",

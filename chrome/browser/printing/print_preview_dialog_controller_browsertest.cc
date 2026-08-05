@@ -395,17 +395,17 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   SetUpPrintingScenario();
 
   // This test starts with two tabs open.
-  EXPECT_EQ(2U, GetTrackedTags().size());
+  EXPECT_EQ(4U, GetTrackedTags().size());
 
   PrintPreview();
-  EXPECT_EQ(3U, GetTrackedTags().size());
+  EXPECT_EQ(5U, GetTrackedTags().size());
 
   // Create a task manager and expect the pre-existing print previews are
   // provided.
   task_manager::MockWebContentsTaskManager task_manager;
   EXPECT_TRUE(task_manager.tasks().empty());
   task_manager.StartObserving();
-  ASSERT_EQ(3U, task_manager.tasks().size());
+  ASSERT_EQ(5U, task_manager.tasks().size());
   const task_manager::Task* pre_existing_task = task_manager.tasks().back();
   EXPECT_EQ(task_manager::Task::RENDERER, pre_existing_task->GetType());
   const std::u16string pre_existing_title = pre_existing_task->title();
@@ -419,14 +419,14 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   // preview is displayed will cancel the print preview and hence the task
   // manager shouldn't show a printing task.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  EXPECT_EQ(2U, GetTrackedTags().size());
-  EXPECT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(4U, GetTrackedTags().size());
+  EXPECT_EQ(4U, task_manager.tasks().size());
 
   // Now start another print preview after the had already been created and
   // validated that a corresponding task is reported.
   PrintPreview();
-  EXPECT_EQ(3U, GetTrackedTags().size());
-  ASSERT_EQ(3U, task_manager.tasks().size());
+  EXPECT_EQ(5U, GetTrackedTags().size());
+  ASSERT_EQ(5U, task_manager.tasks().size());
   const task_manager::Task* task = task_manager.tasks().back();
   EXPECT_EQ(task_manager::Task::RENDERER, task->GetType());
   const std::u16string title = task->title();

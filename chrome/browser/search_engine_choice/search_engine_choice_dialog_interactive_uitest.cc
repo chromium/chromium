@@ -14,6 +14,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -103,6 +104,16 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonDisabled);
 class SearchEngineChoiceDialogInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
+  SearchEngineChoiceDialogInteractiveUiTest() {
+    webui_omnibox_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+
   auto PressJsButton(const ui::ElementIdentifier web_contents_id,
                      const DeepQuery& button_query) {
     // This can close/navigate the current page, so don't wait for success.
@@ -168,6 +179,7 @@ class SearchEngineChoiceDialogInteractiveUiTest
               /*force_chrome_build=*/true);
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 // TODO(crbug.com/431780231): Flaky on mac bots and chromeOS bots.

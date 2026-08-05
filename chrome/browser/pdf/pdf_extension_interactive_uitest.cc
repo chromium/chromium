@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,6 +66,18 @@ class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
   PDFExtensionInteractiveUITest()
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 
+  void SetUpInProcessBrowserTestFixture() override {
+    PDFExtensionTestBase::SetUpInProcessBrowserTestFixture();
+
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove this.
+    webui_omnibox_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PDFExtensionTestBase::SetUpCommandLine(command_line);
 
@@ -85,6 +99,9 @@ class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
   }
 
   bool UseOopif() const override { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 class TabChangedWaiter : public TabStripModelObserver {

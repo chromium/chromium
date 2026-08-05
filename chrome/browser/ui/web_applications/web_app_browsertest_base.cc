@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -57,7 +58,9 @@
 namespace web_app {
 
 WebAppBrowserTestBase::WebAppBrowserTestBase()
-    : WebAppBrowserTestBase({}, {}) {}
+    : WebAppBrowserTestBase({},
+                            {omnibox::internal::kWebUIOmniboxPopup,
+                             omnibox::internal::kWebUIOmniboxAimPopup}) {}
 
 WebAppBrowserTestBase::WebAppBrowserTestBase(
     const std::vector<base::test::FeatureRef>& enabled_features,

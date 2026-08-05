@@ -6,6 +6,8 @@
  * @fileoverview Test suite for chrome://color-internals/
  */
 
+GEN('#include "base/test/scoped_feature_list.h"');
+GEN('#include "chrome/browser/ui/omnibox/omnibox_next_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const HOST_ORIGIN = 'chrome://color-internals';
@@ -24,6 +26,14 @@ var ColorInternalsUIBrowserTest = class extends testing.Test {
   get isAsync() {
     return true;
   }
+
+  /** @override */
+  get featureList() {
+    return {
+      disabled: ['omnibox::internal::kWebUIOmniboxPopup',
+                 'omnibox::internal::kWebUIOmniboxAimPopup']
+    };
+  }
 };
 
 // Tests that chrome://color-internals loads successfully.
@@ -39,7 +49,7 @@ TEST_F('ColorInternalsUIBrowserTest', 'HasChromeSchemeURL', async () => {
 TEST_F('ColorInternalsUIBrowserTest', 'BuildsTokenTable', async () => {
   await import('chrome://webui-test/chromeos/mojo_webui_test_support.js');
   const {assertNotEquals} = await import('chrome://webui-test/chai_assert.js');
-  const table = document.querySelector('table');
+  const table = document.querySelector('table');ColorInternalsUIBrowserTest
   assertNotEquals(table.tBodies[0].rows.length, 0);
   testDone();
 });

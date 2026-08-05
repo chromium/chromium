@@ -6,6 +6,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
@@ -52,8 +53,13 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kDocumentPictureInPictureAPI);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kDocumentPictureInPictureAPI},
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove the two omnibox features.
+        /*disabled_features=*/
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
 
     // Disable animation for stability.
     animation_duration_ =

@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -2820,9 +2821,13 @@ class SiteIsolationForOAuthSitesBrowserTest
   SiteIsolationForOAuthSitesBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures(
+        /*enabled_features=*/
         {login_detection::kLoginDetection,
          site_isolation::features::kSiteIsolationForOAuthSites},
-        {features::kSitePerProcess});
+        /*disabled_features=*/
+        {features::kSitePerProcess,
+         omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
 
   using IsolatedOriginSource =

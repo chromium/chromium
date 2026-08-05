@@ -17,6 +17,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/test/base/autocomplete_change_observer.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -983,8 +984,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
 class UnscopedOmniboxApiTest : public OmniboxApiTest {
  public:
   UnscopedOmniboxApiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExperimentalOmniboxLabs);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {extensions_features::kExperimentalOmniboxLabs},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
 
   // Helper function to set the stop timer duration for the autocomplete

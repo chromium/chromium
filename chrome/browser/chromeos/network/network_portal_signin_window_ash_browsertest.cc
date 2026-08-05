@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -18,7 +19,18 @@
 
 namespace chromeos {
 
-using NetworkPortalSigninWindowAshBrowserTest = InProcessBrowserTest;
+class NetworkPortalSigninWindowAshBrowserTest : public InProcessBrowserTest {
+ public:
+  NetworkPortalSigninWindowAshBrowserTest() {
+    // TODO(crbug.com/452061489): Fix the tests that fail when WebUI Omnibox is
+    // enabled and then remove this.
+    webui_omnibox_feature_list_.InitFromCommandLine(
+        "", "WebUIOmniboxPopup,WebUIOmniboxAimPopup");
+  }
+
+ protected:
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
                        IsCaptivePortalWindow) {

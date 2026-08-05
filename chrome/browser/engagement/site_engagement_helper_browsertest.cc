@@ -8,9 +8,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/site_engagement/content/engagement_type.h"
@@ -63,7 +65,16 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
   SiteEngagementHelperBrowserTest()
       : prerender_helper_(
             base::BindRepeating(&SiteEngagementHelperBrowserTest::web_contents,
-                                base::Unretained(this))) {}
+                                base::Unretained(this))) {
+    webui_omnibox_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+
   ~SiteEngagementHelperBrowserTest() override = default;
 
   // InProcessBrowserTest:
@@ -103,6 +114,7 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::HistogramTester histogram_tester_;
   raw_ptr<TestOneShotTimer, AcrossTasksDanglingUntriaged> input_tracker_timer_;

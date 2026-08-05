@@ -2515,6 +2515,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/extensions:test_support",
     "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/webui/extensions:browser_tests",
     "//chrome/browser/ui/zoom",
