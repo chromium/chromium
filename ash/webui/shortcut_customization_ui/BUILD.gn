@@ -54,6 +54,7 @@ source_set("unit_tests") {
     "backend/accelerator_layout_table_unittest.cc",
     "backend/search/search_concept_registry_unittest.cc",
     "backend/search/search_handler_unittest.cc",
+    "backend/text_accelerator_part_unittest.cc",
     "shortcuts_app_manager_unittest.cc",
   ]
 
