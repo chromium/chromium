@@ -464,6 +464,18 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="MultistepFilter.UserBehaviorAfterIgnore"
+    enum="MultistepFilterUserBehaviorAfterIgnore" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records user manual filtering behavior on the same site after they ignored
+    or dismissed a Multistep Filter suggestion. Recorded when the user manually
+    applies filters (same or different) or leaves the site/closes the tab
+    without filtering.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

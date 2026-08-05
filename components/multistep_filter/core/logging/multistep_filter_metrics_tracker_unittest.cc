@@ -62,6 +62,13 @@ void SetupAcceptedAndLandedSession(MultistepFilterMetricsTracker& tracker,
   tracker.OnNavigationFinished(landing_metadata);
 }
 
+void SetupIgnoredSuggestionSession(MultistepFilterMetricsTracker& tracker,
+                                   const UrlFilterSuggestion& suggestion) {
+  TriggerInitialNavigation(tracker);
+  tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+  tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kIgnored);
+}
+
 void SetupPostSuggestionApplicationSession(
     MultistepFilterMetricsTracker& tracker,
     const UrlFilterSuggestion& suggestion) {
@@ -1534,6 +1541,237 @@ TEST_F(MultistepFilterMetricsTrackerTest, SessionIdsMatch) {
   ASSERT_NE(nullptr, app_session_id);
 
   EXPECT_EQ(*ui_session_id, *app_session_id);
+}
+
+// Tests that the post-ignore session is flushed with kDidNotFilterFurther when
+// the tab is closed.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostIgnore_DidNotFilterFurther_TabClosed) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+      MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther, 1);
+}
+
+// Tests that the post-ignore session is flushed with kDidNotFilterFurther when
+// the user navigates away.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostIgnore_DidNotFilterFurther_NavigateAway) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://different.com");
+    tracker.OnNavigationFinished(metadata);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+      MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther, 1);
+}
+
+// Tests that the post-ignore session is flushed with kAppliedSameFilters when
+// the user navigates to a page that matches the suggestion.
+TEST_F(MultistepFilterMetricsTrackerTest, PostIgnore_AppliedSameFilters) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestionWithAttributes(
+      "SEARCH_ACCOMMODATIONS",
+      {{"DATE_CHECKIN", "2026-07-20"}, {"LOCATION_DESTINATION", "Paris"}});
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url =
+        GURL("https://trigger.com/search?checkin=2026-07-20&dest=Paris");
+    tracker.OnNavigationFinished(metadata);
+    FilterAnnotation annotation(
+        base::Uuid::GenerateRandomV4(), "SEARCH_ACCOMMODATIONS", "trigger.com",
+        base::Time::Now(),
+        {FilterAttribute("DATE_CHECKIN", "2026-07-20"),
+         FilterAttribute("LOCATION_DESTINATION", "Paris")});
+    tracker.OnExtractionFinished(metadata, annotation);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+      MultistepFilterUserBehaviorAfterIgnore::kAppliedSameFilters, 1);
+}
+
+// Tests that the post-ignore session is flushed with kAppliedDifferentFilters
+// when the user navigates to a page that has the same keys but different values
+// as the suggestion.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostIgnore_AppliedSameKeysDifferentValues) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestionWithAttributes(
+      "SEARCH_ACCOMMODATIONS",
+      {{"DATE_CHECKIN", "2026-07-20"}, {"LOCATION_DESTINATION", "Paris"}});
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url =
+        GURL("https://trigger.com/search?checkin=2026-07-22&dest=London");
+    tracker.OnNavigationFinished(metadata);
+    FilterAnnotation annotation(
+        base::Uuid::GenerateRandomV4(), "SEARCH_ACCOMMODATIONS", "trigger.com",
+        base::Time::Now(),
+        {FilterAttribute("DATE_CHECKIN", "2026-07-22"),
+         FilterAttribute("LOCATION_DESTINATION", "London")});
+    tracker.OnExtractionFinished(metadata, annotation);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+      MultistepFilterUserBehaviorAfterIgnore::kAppliedDifferentFilters, 1);
+}
+
+// Tests that the post-ignore session is flushed with kAppliedDifferentFilters
+// when the user navigates to a page that has a subset of the keys from the
+// suggestion.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostIgnore_AppliedDifferentFilters_Subset) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestionWithAttributes(
+      "SEARCH_ACCOMMODATIONS",
+      {{"DATE_CHECKIN", "2026-07-20"}, {"LOCATION_DESTINATION", "Paris"}});
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://trigger.com/search?checkin=2026-07-20");
+    tracker.OnNavigationFinished(metadata);
+
+    FilterAnnotation annotation(
+        base::Uuid::GenerateRandomV4(), "SEARCH_ACCOMMODATIONS", "trigger.com",
+        base::Time::Now(), {FilterAttribute("DATE_CHECKIN", "2026-07-20")});
+    tracker.OnExtractionFinished(metadata, annotation);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+      MultistepFilterUserBehaviorAfterIgnore::kAppliedDifferentFilters, 1);
+}
+
+// Tests that the post-ignore session is flushed with kAppliedSameFilters when
+// the user navigates to a page that has a superset of the keys from the
+// suggestion.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostIgnore_AppliedSupersetFilters_IsSameFilters) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestionWithAttributes(
+      "SEARCH_ACCOMMODATIONS", {{"DATE_CHECKIN", "2026-07-20"}});
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url =
+        GURL("https://trigger.com/search?checkin=2026-07-20&dest=Paris");
+    tracker.OnNavigationFinished(metadata);
+
+    FilterAnnotation annotation(
+        base::Uuid::GenerateRandomV4(), "SEARCH_ACCOMMODATIONS", "trigger.com",
+        base::Time::Now(),
+        {FilterAttribute("DATE_CHECKIN", "2026-07-20"),
+         FilterAttribute("LOCATION_DESTINATION", "Paris")});
+    tracker.OnExtractionFinished(metadata, annotation);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+      MultistepFilterUserBehaviorAfterIgnore::kAppliedSameFilters, 1);
+}
+
+// Tests that the post-ignore session is not flushed with kDidNotFilterFurther
+// when the user navigates to within the same page.
+TEST_F(MultistepFilterMetricsTrackerTest, PostIgnore_PreservedSamePage) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://trigger.com/page");
+    metadata.prev_url = GURL("https://trigger.com/page");
+    metadata.is_same_document_navigation = true;
+    tracker.OnNavigationFinished(metadata);
+    tracker.OnExtractionFinished(metadata, std::nullopt);
+    histogram_tester.ExpectTotalCount(
+        kMultistepFilterUserBehaviorAfterIgnoreHistogram, 0);
+    FilterNavigationMetadata metadata2 = CreateDefaultMetadata();
+    metadata2.url = GURL("https://different.com");
+    tracker.OnNavigationFinished(metadata2);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+      MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther, 1);
+}
+
+// Tests that the post-ignore session is flushed with kDidNotFilterFurther when
+// the user navigates to an error page.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostIgnore_DidNotFilterFurther_ErrorPage) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://trigger.com/search");
+    metadata.is_error_page_navigation = true;
+    tracker.OnNavigationFinished(metadata);
+    histogram_tester.ExpectUniqueSample(
+        kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+        MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther, 1);
+  }
+}
+
+// Tests that the post-ignore session is flushed with kDidNotFilterFurther when
+// the user navigates to a filter-initiated navigation.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostIgnore_DidNotFilterFurther_FilterInitiatedNavigation) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion);
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://trigger.com/search");
+    metadata.was_filter_initiated_navigation = true;
+    metadata.applied_suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+    tracker.OnNavigationFinished(metadata);
+    histogram_tester.ExpectUniqueSample(
+        kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+        MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther, 1);
+  }
+}
+
+// Tests that the post-ignore session is flushed with kDidNotFilterFurther when
+// a new suggestion is shown and ignored (overwriting the active session).
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostIgnore_OverwrittenByNewIgnoredSuggestion) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion1 = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  UrlFilterSuggestion suggestion2 = CreateSuggestion("SEARCH_FLIGHTS");
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupIgnoredSuggestionSession(tracker, suggestion1);
+    RetentionStateSnapshot snapshot;
+    tracker.OnSuggestionShown(suggestion2, snapshot);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kIgnored);
+    histogram_tester.ExpectBucketCount(
+        kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+        MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther, 1);
+  }
+  histogram_tester.ExpectTotalCount(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram,
+      MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther, 2);
 }
 
 }  // namespace

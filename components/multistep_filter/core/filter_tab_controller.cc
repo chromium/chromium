@@ -130,7 +130,7 @@ void LogSuggestionApplicationOutcome(
 
   std::string_view outcome_str =
       SuggestionApplicationResultToString(result.outcome);
-  if (result.outcome == SuggestionApplicationResult::kFailedAttributeMismatch) {
+  if (!result.missing_keys.empty()) {
     MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
                          LogEventType::kSuggestionApplied,
                          metadata.url.GetHost())
@@ -349,6 +349,8 @@ void FilterTabController::OnExtractionFinished(
     std::optional<FilterAnnotation> annotation) {
   LogSuggestionApplicationOutcome(log_router_, metrics_tracker_, metadata,
                                   metadata.applied_suggestion, annotation);
+  metrics_tracker_.OnExtractionFinished(metadata, annotation);
+
   if (observer_for_test_) {
     observer_for_test_->OnExtractionFinishedForTest(  // IN-TEST
         annotation ? std::optional(annotation->id) : std::nullopt);

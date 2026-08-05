@@ -82,6 +82,25 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterTaskType) -->
 
+<!-- LINT.IfChange(MultistepFilterUserBehaviorAfterIgnore) -->
+
+<enum name="MultistepFilterUserBehaviorAfterIgnore">
+  <int value="0" label="DidNotFilterFurther">
+    User did not apply any filters manually after ignoring a Multistep filter
+    suggestion cue.
+  </int>
+  <int value="1" label="AppliedSameFilters">
+    User manually applied the exact same filters after ignoring a Multistep
+    filter suggestion cue.
+  </int>
+  <int value="2" label="AppliedDifferentFilters">
+    User manually applied different filters after ignoring a Multistep filter
+    suggestion cue.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterUserBehaviorAfterIgnore) -->
+
 <!-- LINT.IfChange(SuggestionApplicationResult) -->
 
 <enum name="SuggestionApplicationResult">

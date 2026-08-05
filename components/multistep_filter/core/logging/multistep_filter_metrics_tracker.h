@@ -145,6 +145,13 @@ class MultistepFilterMetricsTracker {
     kSessionOverride,
   };
 
+  // Tracks the lifecycle of a suggestion impression that was ignored or
+  // dismissed by the user (i.e. not accepted).
+  struct IgnoredImpressionTracker {
+    // The suggestion that was shown to the user and ignored or dismissed.
+    UrlFilterSuggestion suggestion;
+  };
+
   MultistepFilterMetricsTracker();
   MultistepFilterMetricsTracker(const MultistepFilterMetricsTracker&) = delete;
   MultistepFilterMetricsTracker& operator=(
@@ -187,10 +194,20 @@ class MultistepFilterMetricsTracker {
   // a failure).
   void OnSuggestionApplicationFinished(SuggestionApplicationResult result);
 
+  // Triggered when the filter attributes are extracted from the landing
+  // page. This is used to determine whether the user applied filters on the
+  // landing page after ignoring a multistep filter suggestion.
+  void OnExtractionFinished(const FilterNavigationMetadata& metadata,
+                            const std::optional<FilterAnnotation>& annotation);
+
  private:
   // Internal helper to calculate and flush metrics for pending suggestion UI
   // sessions.
   void FlushSuggestionUiSession(SuggestionUserDecision final_decision);
+
+  // Internal helper to flush metrics for ignored suggestion impressions.
+  void FlushIgnoredImpressionSession(
+      MultistepFilterUserBehaviorAfterIgnore outcome);
 
   // Internal helper to flush metrics for the suggestion application and
   // engagement session (e.g. on tab close, new navigation, or extraction
@@ -231,6 +248,16 @@ class MultistepFilterMetricsTracker {
   // if the navigation was aborted or not filter-initiated.
   std::optional<PendingSuggestionApplicationMetrics>
       pending_suggestion_application_metrics_;
+
+  // An ignored impression session begins when a suggestion is ignored or
+  // dismissed. It tracks the suggestion that was ignored. The session is
+  // flushed (logging the post-ignore outcome) when:
+  // - The tab is closed.
+  // - A navigation occurs to an error page, a different host, or is
+  //   filter-initiated.
+  // - OnExtractionFinished is called (for manual same-host filtering check).
+  // - A new suggestion is ignored (overwriting the active ignored session).
+  std::optional<IgnoredImpressionTracker> ignored_impression_;
 };
 
 }  // namespace multistep_filter

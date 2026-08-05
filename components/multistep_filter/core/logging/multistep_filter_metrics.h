@@ -67,6 +67,17 @@ enum class MultistepFilterPostSuggestionApplicationUserEngagement {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterPostSuggestionApplicationUserEngagement)
 
+// LINT.IfChange(MultistepFilterUserBehaviorAfterIgnore)
+// Records the user's manual filtering behavior after ignoring or dismissing
+// a Multistep Filter suggestion.
+enum class MultistepFilterUserBehaviorAfterIgnore {
+  kDidNotFilterFurther = 0,
+  kAppliedSameFilters = 1,
+  kAppliedDifferentFilters = 2,
+  kMaxValue = kAppliedDifferentFilters,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterUserBehaviorAfterIgnore)
+
 // LINT.IfChange(MultistepFilterRetentionState)
 // If you add a new retention state here, also update `GetRetentionState` and
 // `ForEachActiveRetentionSlice` in `multistep_filter_metrics_util.h/cc`.
@@ -162,6 +173,9 @@ inline constexpr char kMultistepFilterTimeSuggestionShownToAcceptedHistogram[] =
 inline constexpr char
     kMultistepFilterPostSuggestionApplicationUserEngagementHistogram[] =
         "MultistepFilter.PostSuggestionApplication.UserEngagement";
+
+inline constexpr char kMultistepFilterUserBehaviorAfterIgnoreHistogram[] =
+    "MultistepFilter.UserBehaviorAfterIgnore";
 
 // Synthetic trial names and groups.
 inline constexpr char kMultistepFilterEvalsSyntheticTrialName[] =

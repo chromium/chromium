@@ -20,6 +20,7 @@
 #include "components/multistep_filter/core/logging/multistep_filter_metrics_util.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
+#include "components/multistep_filter/core/verification/filter_application_verifier.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -413,6 +414,10 @@ MultistepFilterMetricsTracker::~MultistepFilterMetricsTracker() {
         SuggestionApplicationSessionFlushTrigger::kTabClosed,
         base::TimeTicks::Now());
   }
+  if (ignored_impression_.has_value()) {
+    FlushIgnoredImpressionSession(
+        MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther);
+  }
 }
 
 void MultistepFilterMetricsTracker::OnNavigationFinished(
@@ -465,6 +470,16 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
       FlushSuggestionUiSession(SuggestionUserDecision::kIgnored);
     } else {
       current_ui_session_->is_preserved_same_page = true;
+    }
+  }
+
+  if (ignored_impression_.has_value()) {
+    bool is_same_host =
+        metadata.url.host() == ignored_impression_->suggestion.triggering_host;
+    if (metadata.is_error_page_navigation || !is_same_host ||
+        metadata.was_filter_initiated_navigation) {
+      FlushIgnoredImpressionSession(
+          MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther);
     }
   }
 }
@@ -531,6 +546,13 @@ void MultistepFilterMetricsTracker::OnSuggestionUserInteraction(
     case SuggestionUserDecision::kDismissed:
     case SuggestionUserDecision::kSettingsOpened:
     case SuggestionUserDecision::kIgnored:
+      if (ignored_impression_.has_value()) {
+        FlushIgnoredImpressionSession(
+            MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther);
+      }
+      ignored_impression_ = IgnoredImpressionTracker{
+          .suggestion = current_ui_session_->suggestion,
+      };
       break;
   }
   current_ui_session_->user_decision = decision;
@@ -559,6 +581,45 @@ void MultistepFilterMetricsTracker::OnSuggestionApplicationFinished(
     FlushSuggestionApplicationSession(
         SuggestionApplicationSessionFlushTrigger::kApplicationFailure,
         base::TimeTicks::Now());
+  }
+}
+
+void MultistepFilterMetricsTracker::OnExtractionFinished(
+    const FilterNavigationMetadata& metadata,
+    const std::optional<FilterAnnotation>& annotation) {
+  if (!ignored_impression_.has_value()) {
+    return;
+  }
+
+  FilterApplicationVerifier::Result result = FilterApplicationVerifier::Verify(
+      ignored_impression_->suggestion, annotation);
+
+  bool is_same_page =
+      metadata.is_same_document_navigation || metadata.url == metadata.prev_url;
+
+  switch (result.outcome) {
+    case SuggestionApplicationResult::kAllFiltersApplied:
+      FlushIgnoredImpressionSession(
+          MultistepFilterUserBehaviorAfterIgnore::kAppliedSameFilters);
+      break;
+    case SuggestionApplicationResult::kFailedAttributeMismatch:
+    case SuggestionApplicationResult::kFailedCountMismatch:
+      FlushIgnoredImpressionSession(
+          MultistepFilterUserBehaviorAfterIgnore::kAppliedDifferentFilters);
+      break;
+    case SuggestionApplicationResult::kFailedNoExtractedAnnotations:
+      // If the user reloaded or navigated within the same document, they are
+      // still on the target page and might manually apply filters later. Delay
+      // logging kDidNotFilterFurther until they navigate away.
+      if (!is_same_page) {
+        FlushIgnoredImpressionSession(
+            MultistepFilterUserBehaviorAfterIgnore::kDidNotFilterFurther);
+      }
+      break;
+    case SuggestionApplicationResult::kNotAllFiltersApplied:
+    case SuggestionApplicationResult::kAbandonedBeforeVerification:
+    case SuggestionApplicationResult::kFailedErrorPage:
+      NOTREACHED();
   }
 }
 
@@ -634,6 +695,13 @@ void MultistepFilterMetricsTracker::MaybeFlushSessionOnNavigation(
     trigger = kNavigationFromPageContext;
   }
   FlushSuggestionApplicationSession(trigger, metadata.navigation_start_time);
+}
+
+void MultistepFilterMetricsTracker::FlushIgnoredImpressionSession(
+    MultistepFilterUserBehaviorAfterIgnore outcome) {
+  base::UmaHistogramEnumeration(
+      kMultistepFilterUserBehaviorAfterIgnoreHistogram, outcome);
+  ignored_impression_.reset();
 }
 
 }  // namespace multistep_filter
