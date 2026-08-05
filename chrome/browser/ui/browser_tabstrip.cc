@@ -13,9 +13,11 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +27,16 @@
 
 namespace chrome {
 
+GURL GetNewTabURL(const BrowserWindowInterface* browser) {
+  if (browser) {
+    if (auto* const app_browser_controller =
+            web_app::AppBrowserController::From(browser)) {
+      return app_browser_controller->GetAppNewTabUrl();
+    }
+  }
+  return ChromeUINewTabURLAsGURL();
+}
+
 content::WebContents* AddAndReturnTabAt(
     BrowserWindowInterface* browser,
     const GURL& url,
@@ -32,9 +44,7 @@ content::WebContents* AddAndReturnTabAt(
     bool foreground,
     std::optional<tab_groups::TabGroupId> group,
     bool pinned) {
-  const GURL resolved_url =
-      url.is_empty() ? browser->GetBrowserForMigrationOnly()->GetNewTabURL()
-                     : url;
+  const GURL resolved_url = url.is_empty() ? GetNewTabURL(browser) : url;
   NavigateParams params(browser, resolved_url, ui::PAGE_TRANSITION_TYPED);
   params.disposition = foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                   : WindowOpenDisposition::NEW_BACKGROUND_TAB;

@@ -495,44 +495,11 @@ base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Browser, Creation and initial parameters (forwarded to BrowserInitState):
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, State Storage and Retrieval for UI:
-
-GURL Browser::GetNewTabURL() const {
-  if (auto* const app_browser_controller =
-          web_app::AppBrowserController::From(this)) {
-    return app_browser_controller->GetAppNewTabUrl();
-  }
-  return chrome::ChromeUINewTabURLAsGURL();
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // Browser, OnBeforeUnload handling:
 
 void Browser::NotifyWindowCloseCancelled(
     BrowserWindowInterface::ClosingStatus status) {
   browser_close_cancelled_callback_list_.Notify(this, status);
-}
-
-BrowserWindowInterface* Browser::GetBrowserForOpeningWebUi() {
-  if (GetType() != BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
-    return this;
-  }
-
-  if (!opener_browser_) {
-    auto* opener_web_contents =
-        PictureInPictureWindowManager::GetInstance()->GetWebContents();
-    // We should always have an opener web contents if the current browser is a
-    // picture-in-picture type.
-    DCHECK(opener_web_contents);
-    opener_browser_ =
-        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            opener_web_contents);
-  }
-
-  return opener_browser_;
 }
 
 std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {

@@ -20,9 +20,16 @@ class NativeTheme;
 class ThemeProvider;
 }  // namespace ui
 
+class BrowserWindowInterface;
 class GURL;
 
 namespace webui {
+
+// Returns the BrowserWindowInterface that should be used for opening WebUI.
+// If `browser` is a picture-in-picture window, this will return the opener
+// browser window interface if it exists.
+BrowserWindowInterface* GetBrowserForOpeningWebUi(
+    BrowserWindowInterface* browser);
 
 // These methods should not be used. Instead, browser-related state should be
 // passed from the owner of the WebUI instance to the WebUIController instance.

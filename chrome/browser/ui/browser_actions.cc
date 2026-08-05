@@ -171,6 +171,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webui/inspect/inspect_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -1222,8 +1223,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                  actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 BrowserWindowInterface* const browser_for_opening_webui =
-                    bwi->GetBrowserForMigrationOnly()
-                        ->GetBrowserForOpeningWebUi();
+                    webui::GetBrowserForOpeningWebUi(bwi);
                 if (is_incognito) {
                   chrome::ShowIncognitoClearBrowsingDataDialog(
                       browser_for_opening_webui);

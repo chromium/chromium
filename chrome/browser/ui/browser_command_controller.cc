@@ -100,6 +100,7 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/ui/webui/inspect/inspect_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -1238,15 +1239,15 @@ void BrowserCommandController::HandleCommandWithDisposition(
       ToggleCaretBrowsing(browser_);
       break;
     case IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS:
-      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+      ShowSettingsSubPage(webui::GetBrowserForOpeningWebUi(browser_),
                           chrome::kPeopleSubPage);
       break;
     case IDC_RECENT_TABS_SEE_DEVICE_TABS:
-      ShowHistorySubPage(browser_->GetBrowserForOpeningWebUi(),
+      ShowHistorySubPage(webui::GetBrowserForOpeningWebUi(browser_),
                          kChromeUIHistorySyncedTabs);
       break;
     case IDC_SHOW_BOOKMARK_MANAGER:
-      ShowBookmarkManager(browser_->GetBrowserForOpeningWebUi());
+      ShowBookmarkManager(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_SHOW_BOOKMARK_SIDE_PANEL:
       browser_->GetFeatures().side_panel_ui()->Show(
@@ -1260,7 +1261,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
       ShowAvatarMenu(browser_);
       break;
     case IDC_SHOW_HISTORY:
-      ShowHistory(browser_->GetBrowserForOpeningWebUi());
+      ShowHistory(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL:
       browser_->GetFeatures().side_panel_ui()->Show(
@@ -1272,7 +1273,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
           SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_SHOW_DOWNLOADS:
-      ShowDownloads(browser_->GetBrowserForOpeningWebUi());
+      ShowDownloads(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_SHOW_COMMENTS_SIDE_PANEL:
       browser_->GetFeatures().side_panel_ui()->Show(
@@ -1280,36 +1281,36 @@ void BrowserCommandController::HandleCommandWithDisposition(
       break;
     case IDC_MANAGE_EXTENSIONS:
     case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
-      ShowExtensions(browser_->GetBrowserForOpeningWebUi());
+      ShowExtensions(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
-      ShowExtensions(browser_->GetBrowserForOpeningWebUi());
+      ShowExtensions(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
     case IDC_FIND_EXTENSIONS:
       ShowWebStore(browser_, extension_urls::kAppMenuUtmSource);
       break;
     case IDC_PERFORMANCE:
-      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+      ShowSettingsSubPage(webui::GetBrowserForOpeningWebUi(browser_),
                           chrome::kPerformanceSubPage);
       break;
     case IDC_OPTIONS:
-      ShowSettings(browser_->GetBrowserForOpeningWebUi());
+      ShowSettings(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_EDIT_SEARCH_ENGINES:
-      ShowSearchEngineSettings(browser_->GetBrowserForOpeningWebUi());
+      ShowSearchEngineSettings(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_VIEW_PASSWORDS:
       NavigateToManagePasswordsPage(
-          browser_->GetBrowserForOpeningWebUi(),
+          webui::GetBrowserForOpeningWebUi(browser_),
           password_manager::ManagePasswordsReferrer::kChromeMenuItem);
       break;
     case IDC_CLEAR_BROWSING_DATA: {
       if (profile()->IsIncognitoProfile()) {
         ShowIncognitoClearBrowsingDataDialog(
-            browser_->GetBrowserForOpeningWebUi());
+            webui::GetBrowserForOpeningWebUi(browser_));
       } else {
-        ShowClearBrowsingDataDialog(browser_->GetBrowserForOpeningWebUi());
+        ShowClearBrowsingDataDialog(webui::GetBrowserForOpeningWebUi(browser_));
       }
 #if !BUILDFLAG(IS_ANDROID)
       ui::ElementContext context =
@@ -1332,13 +1333,13 @@ void BrowserCommandController::HandleCommandWithDisposition(
       ToggleRequestTabletSite(browser_);
       break;
     case IDC_ABOUT:
-      ShowAboutChrome(browser_->GetBrowserForOpeningWebUi());
+      ShowAboutChrome(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_UPGRADE_DIALOG:
       OpenUpdateChromeDialog(browser_);
       break;
     case IDC_OPEN_SAFETY_HUB:
-      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+      ShowSettingsSubPage(webui::GetBrowserForOpeningWebUi(browser_),
                           chrome::kSafetyHubSubPage);
       break;
     case IDC_HELP_PAGE_VIA_KEYBOARD:

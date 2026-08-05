@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -676,7 +677,7 @@ void MaybeRegisterChromeFeaturePromos(
                   content::WebContents* web_contents =
                       tab_strip_model->GetActiveWebContents();
                   if (web_contents &&
-                      web_contents->GetURL() != browser->GetNewTabURL()) {
+                      web_contents->GetURL() != chrome::GetNewTabURL(browser)) {
                     NavigateParams params(browser->GetProfile(),
                                           chrome::ChromeUINewTabPageURLAsGURL(),
                                           ui::PAGE_TRANSITION_LINK);

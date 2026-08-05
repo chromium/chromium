@@ -32,6 +32,7 @@ source_set("impl") {
   deps = [
     ":util",
     "//base",
+    "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",

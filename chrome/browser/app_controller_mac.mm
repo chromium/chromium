@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -201,8 +202,7 @@ BrowserWindowInterface* ActivateBrowser(Profile* profile) {
       collection ? collection->GetLastActiveBrowser() : nullptr;
 
   if (browser) {
-    browser =
-        browser->GetBrowserForMigrationOnly()->GetBrowserForOpeningWebUi();
+    browser = webui::GetBrowserForOpeningWebUi(browser);
   }
 
   if (browser) {
