@@ -19,32 +19,49 @@ struct AnchorElementPointerData {
 };
 
 // Interface for sending the URL from the renderer side to browser process.
+// A URL a link-selection heuristic fired for, plus whether the renderer
+// already enacted a speculation candidate for it (see `renderer_enacted` on
+// AnchorElementInteractionHost's methods).
+struct AnchorElementInteractionTarget {
+  url.mojom.Url url;
+  bool renderer_enacted;
+};
+
 interface AnchorElementInteractionHost {
     // On pointer down events for anchor elements that are part of the HTTP family,
     // the renderer calls OnPointerDown to pass the URL to the browser process.
     // In the browser process, the URL gets preloaded.
-    OnPointerDown(url.mojom.Url target);
+    //
+    // When SpeculationRulesRendererSideHeuristics is enabled the renderer picks
+    // and enacts matching speculation candidates itself, and reports that via
+    // `renderer_enacted` so that the browser doesn't preload (or record a
+    // preloading prediction for) the same interaction twice.
+    OnPointerDown(url.mojom.Url target, bool renderer_enacted);
 
     // After the user hovers over qualified anchor elements for a short time,
     // the renderer calls OnPointerHoverEager to pass the URL to the browser
     // process. In the browser process, the URL gets preloaded.
     OnPointerHoverEager(url.mojom.Url target,
-                        AnchorElementPointerData mouse_data);
+                        AnchorElementPointerData mouse_data,
+                        bool renderer_enacted);
 
     // After the user hovers over qualified anchor elements for a longer time,
     // the renderer calls OnPointerHoverModerate to pass the URL to the browser
     // process. In the browser process, the URL gets preloaded.
     OnPointerHoverModerate(url.mojom.Url target,
-                           AnchorElementPointerData mouse_data);
+                           AnchorElementPointerData mouse_data,
+                           bool renderer_enacted);
 
     // The renderer calls OnModerateViewportHeuristicTriggered for selected
     // anchor elements that are part of the HTTP family, in the viewport, and
     // meet certain other criteria used by the heuristic.
-    OnModerateViewportHeuristicTriggered(url.mojom.Url target);
+    OnModerateViewportHeuristicTriggered(url.mojom.Url target,
+                                         bool renderer_enacted);
 
     // The renderer calls OnEagerViewportHeuristicTriggered for selected anchor
     // elements that are part of the HTTP family, in the viewport, and meet
     // certain other criteria used by the heuristic. This function accepts
-    // multiple target URLs at once to reduce the number of IPC calls.
-    OnEagerViewportHeuristicTriggered(array<url.mojom.Url> targets);
+    // multiple targets at once to reduce the number of IPC calls.
+    OnEagerViewportHeuristicTriggered(
+        array<AnchorElementInteractionTarget> targets);
 };

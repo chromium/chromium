@@ -5,6 +5,7 @@
 #include "content/browser/preloading/preloading_decider.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -25,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace content {
 
@@ -43,6 +45,10 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
             // Disable the memory requirement of Prerender2 so the test can run
             // on any bot.
             {blink::features::kPrerender2MemoryControls},
+            // These tests cover the moderate hover heuristic. The eager one
+            // fires first on a real hover, which would be a second, unrelated
+            // heuristic firing for the same anchor.
+            {blink::features::kPreloadingEagerHoverHeuristics},
         });
 
     ContentBrowserTest::SetUp();
@@ -73,6 +79,38 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
         web_contents()->GetPrimaryMainFrame());
     ASSERT_TRUE(preloading_decider);
     EXPECT_TRUE(preloading_decider->HasCandidatesForTesting());
+  }
+
+  // Sends a real pointerdown over the element, so that the renderer's
+  // AnchorElementInteractionTracker sees it. Deliberately only a mouse down:
+  // a full click would navigate.
+  void SimulateMouseDownOnElement(std::string_view id) {
+    SimulateMouseEvent(web_contents(), blink::WebInputEvent::Type::kMouseDown,
+                       blink::WebMouseEvent::Button::kLeft,
+                       gfx::ToFlooredPoint(GetCenterCoordinatesOfElementWithId(
+                           web_contents(), id)));
+  }
+
+  // Moves the mouse onto the element, which makes the renderer start its hover
+  // dwell timer. Moves straight there rather than via another element: pausing
+  // over a second anchor for longer than a dwell threshold would start its
+  // hover heuristic as well, and record an extra preloading prediction.
+  void SimulateMouseHoverOnElement(std::string_view id) {
+    SimulateMouseEvent(web_contents(), blink::WebInputEvent::Type::kMouseMove,
+                       gfx::ToFlooredPoint(GetCenterCoordinatesOfElementWithId(
+                           web_contents(), id)));
+  }
+
+  // Interaction heuristics are handled by the renderer, so enactment only
+  // happens after a round trip. It is done once the candidate is no longer on
+  // standby.
+  [[nodiscard]] bool WaitUntilEnacted(const GURL& url,
+                                      blink::mojom::SpeculationAction action) {
+    auto* preloading_decider = PreloadingDecider::GetOrCreateForCurrentDocument(
+        web_contents()->GetPrimaryMainFrame());
+    return base::test::RunUntil([&]() {
+      return !preloading_decider->IsOnStandByForTesting(url, action);
+    });
   }
 
  private:
@@ -160,30 +198,32 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
 
   std::string next_page_id;
   GURL next_page_url;
+  blink::mojom::SpeculationAction action;
   switch (type()) {
     case PreloadingType::kPrefetch:
       next_page_id = "b";
       next_page_url = GetTestURL("/title1.html?b");
+      action = blink::mojom::SpeculationAction::kPrefetch;
       break;
     case PreloadingType::kPrerender:
       next_page_id = "c";
       next_page_url = GetTestURL("/title1.html?c");
+      action = blink::mojom::SpeculationAction::kPrerender;
       break;
     default:
       FAIL();
   }
 
-  // Trigger the non-immediate predictor.
+  // Trigger the non-immediate predictor. The pointer heuristics run in the
+  // renderer, so drive them with real input rather than by calling
+  // PreloadingDecider directly.
   auto* preloading_decider = PreloadingDecider::GetOrCreateForCurrentDocument(
       web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
   if (predictor() == preloading_predictor::kUrlPointerDownOnAnchor) {
-    preloading_decider->OnPointerDown(next_page_url);
+    SimulateMouseDownOnElement(next_page_id);
   } else if (predictor() == preloading_predictor::kUrlPointerHoverOnAnchor) {
-    preloading_decider->OnPointerHover(
-        next_page_url,
-        blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0),
-        blink::mojom::SpeculationEagerness::kModerate);
+    SimulateMouseHoverOnElement(next_page_id);
   } else if (predictor() ==
              preloading_predictor::kPreloadingHeuristicsMLModel) {
     preloading_decider->OnPreloadingHeuristicsModelDone(next_page_url,
@@ -191,6 +231,8 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
   } else {
     FAIL();
   }
+  // Enactment is asynchronous when it is driven from the renderer.
+  ASSERT_TRUE(WaitUntilEnacted(next_page_url, action));
 
   TestNavigationObserver nav_observer(web_contents());
   EXPECT_TRUE(
@@ -380,7 +422,11 @@ IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest,
   TestNavigationObserver nav_observer(new_tab_url);
   nav_observer.StartWatchingNewWebContents();
 
-  preloading_decider->OnPointerDown(new_tab_url);
+  // The pointerdown heuristic runs in the renderer, so drive it with real
+  // input and wait for the resulting enactment.
+  SimulateMouseDownOnElement("d");
+  ASSERT_TRUE(WaitUntilEnacted(new_tab_url,
+                               blink::mojom::SpeculationAction::kPrerender));
 
   EXPECT_TRUE(ExecJs(web_contents(), "document.getElementById('d').click()"));
   nav_observer.Wait();
@@ -448,7 +494,10 @@ IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest, PredictionWithoutAttempt) {
   ASSERT_TRUE(preloading_decider);
 
   TestNavigationObserver nav_observer(web_contents());
-  preloading_decider->OnPointerDown(GetTestURL("/title1.html?a"));
+  // No speculation rule covers this anchor, so the renderer has nothing to
+  // enact and the browser records the prediction itself.
+  preloading_decider->OnPointerDown(GetTestURL("/title1.html?a"),
+                                    /*renderer_enacted=*/false);
   EXPECT_TRUE(ExecJs(web_contents(), "document.getElementById('a').click()"));
   nav_observer.Wait();
 

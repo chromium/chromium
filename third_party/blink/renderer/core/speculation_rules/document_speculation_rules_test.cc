@@ -206,7 +206,7 @@ TEST_F(DocumentSpeculationRulesTest, PointerDownHeuristicEnactsCandidate) {
   EXPECT_TRUE(mock_host().last_enacted_candidates().empty());
 
   // A pointerdown on the URL enacts the matching non-immediate candidate.
-  document_speculation_rules.OnPointerDownHeuristic(url);
+  EXPECT_TRUE(document_speculation_rules.OnPointerDownHeuristic(url));
   document_speculation_rules.FlushMojoMessageForTesting();
 
   const auto& enacted = mock_host().last_enacted_candidates();
@@ -243,8 +243,8 @@ TEST_F(DocumentSpeculationRulesTest,
   ASSERT_EQ(document_speculation_rules.sent_candidates().size(), 2u);
   EXPECT_TRUE(mock_host().last_enacted_candidates().empty());
 
-  document_speculation_rules.OnHoverHeuristic(
-      url, mojom::blink::SpeculationEagerness::kModerate);
+  EXPECT_TRUE(document_speculation_rules.OnHoverHeuristic(
+      url, mojom::blink::SpeculationEagerness::kModerate));
   document_speculation_rules.FlushMojoMessageForTesting();
 
   const auto& enacted = mock_host().last_enacted_candidates();
@@ -277,7 +277,7 @@ TEST_F(DocumentSpeculationRulesTest,
   document_speculation_rules.AddRuleSet(rule_set);
   ProcessAllRuleSets(document_speculation_rules);
 
-  document_speculation_rules.OnPointerDownHeuristic(url);
+  EXPECT_FALSE(document_speculation_rules.OnPointerDownHeuristic(url));
   document_speculation_rules.FlushMojoMessageForTesting();
 
   EXPECT_TRUE(mock_host().last_enacted_candidates().empty());
@@ -311,8 +311,8 @@ TEST_F(DocumentSpeculationRulesTest,
 
   // A pointerdown on /p?a=2 differs only in the non-varying "a" param, so it
   // matches the candidate under No-Vary-Search and enacts it.
-  document_speculation_rules.OnPointerDownHeuristic(
-      KURL("https://example.com/p?a=2"));
+  EXPECT_TRUE(document_speculation_rules.OnPointerDownHeuristic(
+      KURL("https://example.com/p?a=2")));
   document_speculation_rules.FlushMojoMessageForTesting();
 
   const auto& enacted = mock_host().last_enacted_candidates();
@@ -346,8 +346,8 @@ TEST_F(DocumentSpeculationRulesTest,
 
   // A pointerdown on /p?b=2 differs in a param that the No-Vary-Search hint
   // does not cover, so it does not match the candidate.
-  document_speculation_rules.OnPointerDownHeuristic(
-      KURL("https://example.com/p?b=2"));
+  EXPECT_FALSE(document_speculation_rules.OnPointerDownHeuristic(
+      KURL("https://example.com/p?b=2")));
   document_speculation_rules.FlushMojoMessageForTesting();
 
   EXPECT_TRUE(mock_host().last_enacted_candidates().empty());

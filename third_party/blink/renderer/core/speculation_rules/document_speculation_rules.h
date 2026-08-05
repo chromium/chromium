@@ -96,11 +96,14 @@ class CORE_EXPORT DocumentSpeculationRules final
     return activated_candidates_;
   }
 
-  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
-  void OnPointerDownHeuristic(const KURL& url);
-  void OnHoverHeuristic(const KURL& url,
-                        mojom::blink::SpeculationEagerness triggered_eagerness);
-  void OnViewportHeuristic(
+  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics). Each
+  // returns whether a candidate was enacted, which the caller reports to the
+  // browser so that it doesn't handle the same interaction as well.
+  [[nodiscard]] bool OnPointerDownHeuristic(const KURL& url);
+  [[nodiscard]] bool OnHoverHeuristic(
+      const KURL& url,
+      mojom::blink::SpeculationEagerness triggered_eagerness);
+  [[nodiscard]] bool OnViewportHeuristic(
       const KURL& url,
       mojom::blink::SpeculationEagerness triggered_eagerness);
 
@@ -120,7 +123,8 @@ class CORE_EXPORT DocumentSpeculationRules final
   // Shared implementation for the renderer-driven heuristics above: asks the
   // browser to enact every sent candidate whose URL equals `url` and whose
   // eagerness is in `eagernesses`, attributing the enactment to `heuristic`.
-  void EnactMatchingCandidates(
+  // Returns whether any candidate was enacted.
+  [[nodiscard]] bool EnactMatchingCandidates(
       const KURL& url,
       const Vector<mojom::blink::SpeculationEagerness>& eagernesses,
       mojom::blink::SpeculationHeuristic heuristic);

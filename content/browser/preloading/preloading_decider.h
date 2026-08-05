@@ -46,21 +46,26 @@ class CONTENT_EXPORT PreloadingDecider
   ~PreloadingDecider() override;
 
   // Receives and processes on pointer down event for 'url' target link.
-  void OnPointerDown(const GURL& url);
+  // `renderer_enacted` is whether the renderer already enacted a speculation
+  // candidate for this interaction; see AnchorElementInteractionHost.
+  void OnPointerDown(const GURL& url, bool renderer_enacted);
 
   // Receives and processes on pointer hover event for 'url' target link.
   void OnPointerHover(const GURL& url,
                       blink::mojom::AnchorElementPointerDataPtr mouse_data,
-                      blink::mojom::SpeculationEagerness target_eagerness);
+                      blink::mojom::SpeculationEagerness target_eagerness,
+                      bool renderer_enacted);
 
   //  Receives and processes ML model score for 'url' target link.
   void OnPreloadingHeuristicsModelDone(const GURL& url, float score);
 
   // Receives and processes `url` selected by "moderate" viewport heuristic.
-  void OnModerateViewportHeuristicTriggered(const GURL& url);
+  void OnModerateViewportHeuristicTriggered(const GURL& url,
+                                            bool renderer_enacted);
 
   // Receives and processes `url` selected by "eager" viewport heuristic.
-  void OnEagerViewportHeuristicTriggered(const GURL& url);
+  void OnEagerViewportHeuristicTriggered(const GURL& url,
+                                         bool renderer_enacted);
 
   // Sets the new preloading decider observer for testing and returns the old
   // one.
@@ -205,14 +210,6 @@ class CONTENT_EXPORT PreloadingDecider
   FRIEND_TEST_ALL_PREFIXES(PreloadingDeciderTest,
                            SpeculationRulesTagsMergingForNVSMatchWithNullTags);
 
-  // Returns true if a candidate is on standby that the renderer's heuristic for
-  // `enacting_predictor` will enact, meaning the renderer (not the browser)
-  // owns the preloading attempt for `url`.
-  bool HasCandidateForRendererHeuristic(
-      const GURL& url,
-      const PreloadingPredictor& enacting_predictor,
-      EagernessSet eagerness_to_exclude) const;
-
   // Handles a link-selection heuristic whose candidate enactment has moved to
   // the renderer (kSpeculationRulesRendererSideHeuristics). The renderer only
   // enacts when a speculation candidate matches, so this records the preloading
@@ -220,8 +217,7 @@ class CONTENT_EXPORT PreloadingDecider
   void HandleRendererOwnedHeuristic(
       const GURL& url,
       const PreloadingPredictor& enacting_predictor,
-      bool fallback_to_preconnect,
-      EagernessSet eagerness_to_exclude);
+      bool fallback_to_preconnect);
 
   // This helper function encapsulates the shared logic for finding all
   // suitable candidates matching a lookup key, including No-Vary-Search logic.

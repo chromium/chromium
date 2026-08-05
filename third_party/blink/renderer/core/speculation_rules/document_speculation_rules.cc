@@ -694,10 +694,10 @@ mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
   return host_.get();
 }
 
-void DocumentSpeculationRules::OnPointerDownHeuristic(const KURL& url) {
+bool DocumentSpeculationRules::OnPointerDownHeuristic(const KURL& url) {
   if (!base::FeatureList::IsEnabled(
           features::kSpeculationRulesRendererSideHeuristics)) {
-    return;
+    return false;
   }
   // Mirrors PreloadingDecider::BehaviorConfig::pointer_down_eagerness_.
   Vector<mojom::blink::SpeculationEagerness> eagernesses = {
@@ -706,31 +706,32 @@ void DocumentSpeculationRules::OnPointerDownHeuristic(const KURL& url) {
   if (base::FeatureList::IsEnabled(features::kPreloadingEagerHoverHeuristics)) {
     eagernesses.push_back(mojom::blink::SpeculationEagerness::kEager);
   }
-  EnactMatchingCandidates(url, eagernesses,
-                          mojom::blink::SpeculationHeuristic::kPointerDown);
+  return EnactMatchingCandidates(
+      url, eagernesses, mojom::blink::SpeculationHeuristic::kPointerDown);
 }
 
-void DocumentSpeculationRules::OnHoverHeuristic(
+bool DocumentSpeculationRules::OnHoverHeuristic(
     const KURL& url,
     mojom::blink::SpeculationEagerness triggered_eagerness) {
   if (!base::FeatureList::IsEnabled(
           features::kSpeculationRulesRendererSideHeuristics)) {
-    return;
+    return false;
   }
   // A hover that reaches the `triggered_eagerness` dwell threshold enacts only
   // candidates registered at exactly that eagerness, matching
   // PreloadingDecider::OnPointerHover (which excludes all other eagerness
   // levels for a given hover event).
-  EnactMatchingCandidates(url, {triggered_eagerness},
-                          mojom::blink::SpeculationHeuristic::kPointerHover);
+  return EnactMatchingCandidates(
+      url, {triggered_eagerness},
+      mojom::blink::SpeculationHeuristic::kPointerHover);
 }
 
-void DocumentSpeculationRules::OnViewportHeuristic(
+bool DocumentSpeculationRules::OnViewportHeuristic(
     const KURL& url,
     mojom::blink::SpeculationEagerness triggered_eagerness) {
   if (!base::FeatureList::IsEnabled(
           features::kSpeculationRulesRendererSideHeuristics)) {
-    return;
+    return false;
   }
   // The moderate/eager viewport heuristics each enact candidates at exactly
   // their eagerness (matching PreloadingDecider's kModerateViewportHeuristic /
@@ -739,10 +740,10 @@ void DocumentSpeculationRules::OnViewportHeuristic(
       triggered_eagerness == mojom::blink::SpeculationEagerness::kEager
           ? mojom::blink::SpeculationHeuristic::kViewportEager
           : mojom::blink::SpeculationHeuristic::kViewportModerate;
-  EnactMatchingCandidates(url, {triggered_eagerness}, heuristic);
+  return EnactMatchingCandidates(url, {triggered_eagerness}, heuristic);
 }
 
-void DocumentSpeculationRules::EnactMatchingCandidates(
+bool DocumentSpeculationRules::EnactMatchingCandidates(
     const KURL& url,
     const Vector<mojom::blink::SpeculationEagerness>& eagernesses,
     mojom::blink::SpeculationHeuristic heuristic) {
@@ -756,7 +757,7 @@ void DocumentSpeculationRules::EnactMatchingCandidates(
 
   mojom::blink::SpeculationHost* host = GetHost();
   if (!host) {
-    return;
+    return false;
   }
   // A heuristic can match several candidates for the same URL (e.g. a
   // `conservative` and a `moderate` rule, both enacted on pointerdown). Enact
@@ -774,7 +775,7 @@ void DocumentSpeculationRules::EnactMatchingCandidates(
   auto candidates_bucket =
       sent_candidates_by_match_key_.find(CandidateUrlMatchKey(url));
   if (candidates_bucket == sent_candidates_by_match_key_.end()) {
-    return;
+    return false;
   }
 
   Vector<Enactment> enactments;
@@ -808,6 +809,7 @@ void DocumentSpeculationRules::EnactMatchingCandidates(
     host->EnactCandidate(std::move(mojom_candidate), heuristic);
     MarkCandidateActivated(candidate);
   }
+  return !enactments.empty();
 }
 
 void DocumentSpeculationRules::MarkCandidateActivated(

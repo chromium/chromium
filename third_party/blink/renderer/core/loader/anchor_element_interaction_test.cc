@@ -67,39 +67,52 @@ class MockAnchorElementInteractionHost
     std::optional<bool> is_mouse_pointer;
     std::optional<double> mouse_velocity;
     std::optional<bool> is_eager;
+    bool renderer_enacted = false;
   };
   std::vector<Call> calls_;
 
  private:
-  void OnPointerDown(const KURL& target) override {
-    calls_.push_back({.url = target, .type = PointerEventType::kOnPointerDown});
+  void OnPointerDown(const KURL& target, bool renderer_enacted) override {
+    calls_.push_back({.url = target,
+                      .type = PointerEventType::kOnPointerDown,
+                      .renderer_enacted = renderer_enacted});
   }
-  void OnPointerHoverEager(
-      const KURL& target,
-      mojom::blink::AnchorElementPointerDataPtr mouse_data) override {
+  void OnPointerHoverEager(const KURL& target,
+                           mojom::blink::AnchorElementPointerDataPtr mouse_data,
+                           bool renderer_enacted) override {
     calls_.push_back({.url = target,
                       .type = PointerEventType::kOnPointerHover,
                       .is_mouse_pointer = mouse_data->is_mouse_pointer,
                       .mouse_velocity = mouse_data->mouse_velocity,
-                      .is_eager = true});
+                      .is_eager = true,
+                      .renderer_enacted = renderer_enacted});
   }
   void OnPointerHoverModerate(
       const KURL& target,
-      mojom::blink::AnchorElementPointerDataPtr mouse_data) override {
+      mojom::blink::AnchorElementPointerDataPtr mouse_data,
+      bool renderer_enacted) override {
     calls_.push_back({.url = target,
                       .type = PointerEventType::kOnPointerHover,
                       .is_mouse_pointer = mouse_data->is_mouse_pointer,
                       .mouse_velocity = mouse_data->mouse_velocity,
-                      .is_eager = false});
+                      .is_eager = false,
+                      .renderer_enacted = renderer_enacted});
   }
-  void OnModerateViewportHeuristicTriggered(const KURL& target) override {
-    calls_.push_back(
-        {.url = target, .type = PointerEventType::kNone, .is_eager = false});
+  void OnModerateViewportHeuristicTriggered(const KURL& target,
+                                            bool renderer_enacted) override {
+    calls_.push_back({.url = target,
+                      .type = PointerEventType::kNone,
+                      .is_eager = false,
+                      .renderer_enacted = renderer_enacted});
   }
-  void OnEagerViewportHeuristicTriggered(const Vector<KURL>& targets) override {
-    for (const KURL& url : targets) {
-      calls_.push_back(
-          {.url = url, .type = PointerEventType::kNone, .is_eager = true});
+  void OnEagerViewportHeuristicTriggered(
+      Vector<mojom::blink::AnchorElementInteractionTargetPtr> targets)
+      override {
+    for (const auto& target : targets) {
+      calls_.push_back({.url = KURL(target->url),
+                        .type = PointerEventType::kNone,
+                        .is_eager = true,
+                        .renderer_enacted = target->renderer_enacted});
     }
   }
 

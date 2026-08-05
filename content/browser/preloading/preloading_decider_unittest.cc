@@ -370,7 +370,8 @@ TEST_F(PreloadingDeciderTest, RendererSideHoverDoesNotEnactCandidateInBrowser) {
 
   preloading_decider->OnPointerHover(
       url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
-      blink::mojom::SpeculationEagerness::kModerate);
+      blink::mojom::SpeculationEagerness::kModerate,
+      /*renderer_enacted=*/false);
 
   EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
   EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
@@ -426,12 +427,12 @@ class PreloadingDeciderPointerEventHeuristicsTest
     auto call_pointer_event_handler = [&](const GURL& url) {
       switch (event_type) {
         case EventType::kPointerDown:
-          preloading_decider->OnPointerDown(url);
+          preloading_decider->OnPointerDown(url, /*renderer_enacted=*/false);
           break;
         case EventType::kPointerHover:
           preloading_decider->OnPointerHover(
               url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
-              eagerness);
+              eagerness, /*renderer_enacted=*/false);
           break;
       }
     };
@@ -553,12 +554,12 @@ TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
   auto call_pointer_event_handler = [&](const GURL& url) {
     switch (event_type) {
       case EventType::kPointerDown:
-        preloading_decider->OnPointerDown(url);
+        preloading_decider->OnPointerDown(url, /*renderer_enacted=*/false);
         break;
       case EventType::kPointerHover:
         preloading_decider->OnPointerHover(
             url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
-            eagerness);
+            eagerness, /*renderer_enacted=*/false);
         break;
     }
   };
@@ -705,7 +706,7 @@ TEST_F(PreloadingDeciderTest,
   // pointer-down.
   preloading_decider->UpdateSpeculationCandidates(candidates);
   const auto& prefetches = GetPrefetchService()->prefetches_;
-  preloading_decider->OnPointerDown(url);
+  preloading_decider->OnPointerDown(url, /*renderer_enacted=*/false);
 
   ASSERT_TRUE(prefetches[0]->request().speculation_rules_tags());
   EXPECT_EQ(prefetches[0]
@@ -750,7 +751,8 @@ TEST_F(PreloadingDeciderTest,
           /*is_mouse_pointer=*/true,
           /*mouse_velocity=*/75.0,
           /*mouse_acceleration=*/0.0),
-      blink::mojom::SpeculationEagerness::kModerate);
+      blink::mojom::SpeculationEagerness::kModerate,
+      /*renderer_enacted=*/false);
 
   ASSERT_TRUE(prefetches[0]->request().speculation_rules_tags());
   EXPECT_EQ(prefetches[0]
@@ -937,7 +939,7 @@ TEST_P(PreloadingDeciderWithParameterizedSpeculationActionTest,
   // Add conservative preloading candidate and preload on pointer-down.
   preloading_decider->UpdateSpeculationCandidates(candidates);
   EXPECT_EQ(0u, GetNumOfExistingPreloads());
-  preloading_decider->OnPointerDown(url);
+  preloading_decider->OnPointerDown(url, /*renderer_enacted=*/false);
   EXPECT_EQ(1u, GetNumOfExistingPreloads());
 
   // Simulate discard of non-immediate preload.
@@ -945,7 +947,7 @@ TEST_P(PreloadingDeciderWithParameterizedSpeculationActionTest,
   EXPECT_EQ(0u, GetNumOfExistingPreloads());
 
   // Trigger preload for same URL again, it should succeed.
-  preloading_decider->OnPointerDown(url);
+  preloading_decider->OnPointerDown(url, /*renderer_enacted=*/false);
   EXPECT_EQ(1u, GetNumOfExistingPreloads());
 
   // Simulate discard of non-immediate preload.
@@ -1038,7 +1040,7 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_NonImmediateCandidateRemoval) {
   ASSERT_EQ(1u, prefetches.size());
   EXPECT_EQ(prefetches[0]->GetURL(), url_1);
 
-  preloading_decider->OnPointerDown(url_2);
+  preloading_decider->OnPointerDown(url_2, /*renderer_enacted=*/false);
 
   ASSERT_EQ(2u, prefetches.size());
   EXPECT_TRUE(prefetches[0]);
@@ -1061,7 +1063,7 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_NonImmediateCandidateRemoval) {
   ASSERT_EQ(2u, prefetches.size());
   EXPECT_FALSE(prefetches[0]);
 
-  preloading_decider->OnPointerDown(url_2);
+  preloading_decider->OnPointerDown(url_2, /*renderer_enacted=*/false);
 
   ASSERT_EQ(3u, prefetches.size());
   EXPECT_TRUE(prefetches[2]);
@@ -1118,7 +1120,8 @@ TEST_F(PreloadingDeciderTest,
           /*is_mouse_pointer=*/true,
           /*mouse_velocity=*/50.0,
           /*mouse_acceleration=*/0.0),
-      /*is_eager=*/blink::mojom::SpeculationEagerness::kModerate);
+      /*is_eager=*/blink::mojom::SpeculationEagerness::kModerate,
+      /*renderer_enacted=*/false);
 
   GURL url2{"https://www.google.com"};
   preloading_decider->OnPointerHover(
@@ -1127,7 +1130,8 @@ TEST_F(PreloadingDeciderTest,
           /*is_mouse_pointer=*/true,
           /*mouse_velocity=*/75.0,
           /*mouse_acceleration=*/0.0),
-      /*is_eager=*/blink::mojom::SpeculationEagerness::kModerate);
+      /*is_eager=*/blink::mojom::SpeculationEagerness::kModerate,
+      /*renderer_enacted=*/false);
 
   // Navigate to `url2`.
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url2);
@@ -1167,7 +1171,7 @@ TEST_F(PreloadingDeciderTest,
 
   // No speculation rules at all, as on an ordinary page with a plain anchor.
   const GURL url = GetSameOriginUrl("/no_rules.html");
-  preloading_decider->OnPointerDown(url);
+  preloading_decider->OnPointerDown(url, /*renderer_enacted=*/false);
 
   ASSERT_TRUE(preconnect_delegate->Target().has_value());
   EXPECT_EQ(preconnect_delegate->Target().value(), url);
@@ -1198,7 +1202,7 @@ TEST_F(PreloadingDeciderTest, PointerDownDefersToRendererWhenCandidateMatches) {
                     blink::mojom::SpeculationEagerness::kConservative));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnPointerDown(url);
+  preloading_decider->OnPointerDown(url, /*renderer_enacted=*/true);
 
   EXPECT_FALSE(preconnect_delegate->Target().has_value());
   EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 0u);
@@ -1223,7 +1227,8 @@ TEST_F(PreloadingDeciderTest, PointerHoverPredictsWhenRendererHasNoCandidate) {
   const GURL url = GetSameOriginUrl("/no_rules.html");
   preloading_decider->OnPointerHover(
       url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
-      blink::mojom::SpeculationEagerness::kModerate);
+      blink::mojom::SpeculationEagerness::kModerate,
+      /*renderer_enacted=*/false);
 
   EXPECT_FALSE(preconnect_delegate->Target().has_value());
   EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 1u);
@@ -1253,7 +1258,9 @@ TEST_F(PreloadingDeciderTest,
                     blink::mojom::SpeculationEagerness::kModerate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/true);
 
   // The renderer enacts this one, and records the prediction when it does.
   EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
@@ -1278,7 +1285,9 @@ TEST_F(PreloadingDeciderTest,
       PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
 
   const GURL url = GetSameOriginUrl("/no_rules.html");
-  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/false);
 
   EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
   EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 1u);
@@ -1303,7 +1312,9 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/false);
   const auto& prefetches = GetPrefetchService()->prefetches_;
   EXPECT_TRUE(prefetches.empty());
 }
@@ -1329,7 +1340,9 @@ TEST_F(
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/false);
   const auto& prefetches = GetPrefetchService()->prefetches_;
   ASSERT_EQ(prefetches.size(), 1u);
   EXPECT_EQ(prefetches[0]->GetURL(), url);
@@ -1366,7 +1379,9 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnEagerViewportHeuristicTriggered(url);
+  preloading_decider->OnEagerViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/false);
   const auto& prefetches = GetPrefetchService()->prefetches_;
   ASSERT_EQ(prefetches.size(), 1u);
   EXPECT_EQ(prefetches[0]->GetURL(), url);
@@ -1404,7 +1419,9 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/false);
   ASSERT_EQ(mock_prerender.Get()->prerenders_.size(), 1u);
   EXPECT_EQ(mock_prerender.Get()->prerenders_[0].url, url);
 }
@@ -1428,7 +1445,9 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnEagerViewportHeuristicTriggered(url);
+  preloading_decider->OnEagerViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/false);
   ASSERT_EQ(mock_prerender.Get()->prerenders_.size(), 1u);
   EXPECT_EQ(mock_prerender.Get()->prerenders_[0].url, url);
 }
@@ -1454,8 +1473,12 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnModerateViewportHeuristicTriggered(url);
-  preloading_decider->OnEagerViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/false);
+  preloading_decider->OnEagerViewportHeuristicTriggered(
+      url,
+      /*renderer_enacted=*/false);
   const auto& prefetches = GetPrefetchService()->prefetches_;
   EXPECT_TRUE(prefetches.empty());
 }
@@ -1527,7 +1550,8 @@ TEST_P(PreloadingDeciderMLModelTest, UseHoverHeuristicWhenNoMLModelPresent) {
   // to the decisions of the hover heuristic.
   preloading_decider->OnPointerHover(
       url, blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0),
-      blink::mojom::SpeculationEagerness::kModerate);
+      blink::mojom::SpeculationEagerness::kModerate,
+      /*renderer_enacted=*/false);
   EXPECT_EQ(1u, prefetches.size());
 }
 
@@ -1686,10 +1710,11 @@ TEST_F(PreloadingDeciderMLModelActiveTest, ModelSupersedesHoverHeuristic) {
   // should not prefetch based on the hover heuristic either.
   preloading_decider->OnPointerHover(
       url, blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0),
-      blink::mojom::SpeculationEagerness::kModerate);
+      blink::mojom::SpeculationEagerness::kModerate,
+      /*renderer_enacted=*/false);
   EXPECT_TRUE(prefetches.empty());
   // But once we have a stronger signal like pointer down, we should prefetch.
-  preloading_decider->OnPointerDown(url);
+  preloading_decider->OnPointerDown(url, /*renderer_enacted=*/false);
   EXPECT_EQ(1u, prefetches.size());
 }
 
