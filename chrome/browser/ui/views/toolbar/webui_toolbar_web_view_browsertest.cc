@@ -3092,8 +3092,14 @@ class WebUIToolbarWebViewButtonVisibilityTest
     : public WebUIToolbarWebViewBrowserTest,
       public testing::WithParamInterface<ButtonVisibilityToggleTestParam> {};
 
+// TODO(crbug.com/540745897): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TogglesVisibility DISABLED_TogglesVisibility
+#else
+#define MAYBE_TogglesVisibility TogglesVisibility
+#endif
 IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewButtonVisibilityTest,
-                       TogglesVisibility) {
+                       MAYBE_TogglesVisibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   const auto& param = GetParam();
 
