@@ -62,12 +62,28 @@ source_set("contextual_search") {
 if (!is_android) {
   source_set("unit_tests") {
     testonly = true
-    sources = [ "searchbox_context_data_unittest.cc" ]
+    sources = [
+      "desktop_query_contextualizer_delegate_unittest.cc",
+      "searchbox_context_data_unittest.cc",
+    ]
     deps = [
       ":contextual_search",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/contextual_search",
+      "//chrome/browser/contextual_tasks",
+      "//chrome/browser/contextual_tasks:test_support",
+      "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/tab_list:test_support",
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/actions:actions",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_unit",
       "//components/omnibox/browser:mojo_bindings",
+      "//components/tabs:public",
+      "//components/tabs:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
       "//testing/gtest",
       "//third_party/omnibox_proto",
       "//url",
