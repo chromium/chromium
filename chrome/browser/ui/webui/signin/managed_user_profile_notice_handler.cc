@@ -146,12 +146,9 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
         std::move(std::get<signin::DeviceSignalsDisclaimerCallback>(
             create_param->process_user_choice_callback));
   }
-  CHECK(
-      browser_ ||
-      (type_ !=
-           ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation ||
-       // TODO(crbug.com/490053225): Clean this "||" up
-       type_ == ManagedUserProfileNoticeUI::ScreenType::kProfilePicker));
+  CHECK(browser_ ||
+        type_ !=
+            ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation);
   if (browser_) {
     browser_did_close_subscription_ = browser_->RegisterBrowserDidClose(
         base::BindRepeating(&ManagedUserProfileNoticeHandler::OnBrowserDidClose,
