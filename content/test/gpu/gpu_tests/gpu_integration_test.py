@@ -317,6 +317,9 @@ class GpuIntegrationTest(
         # TODO(crbug.com/458424927): Remove this once the feature no longer
         # causes trace_test speed regression on Android devices.
         '--disable-features=AndroidWarmUpSpareRendererWithTimeout',
+        # TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+        # Omnibox is enabled and then remove this.
+        '--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup',
     ]
     if cls._SuiteSupportsParallelTests():
       # When running tests in parallel, windows can be treated as occluded if a
