@@ -139,6 +139,32 @@ TEST_F(DelegatedTaskRunnerTest, ProcessLaunchFailure) {
             DelegatedTaskStatus::kProcessLaunchFailure);
 }
 
+TEST_F(DelegatedTaskRunnerTest, PehValidationFailure) {
+  base::HistogramTester histogram_tester;
+  auto mock_launcher = std::make_unique<MockPehLauncher>();
+  EXPECT_CALL(*mock_launcher, GetBinaryPath())
+      .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
+  EXPECT_CALL(*mock_launcher, IsBinaryVerified(_)).WillOnce(Return(false));
+  EXPECT_CALL(*mock_launcher, LaunchProcess(_, _)).Times(0);
+
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
+  base::test::TestFuture<DelegatedTaskResult> future;
+
+  runner->Run(std::move(task), future.GetCallback());
+
+  auto result = future.Get();
+  EXPECT_FALSE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.error(),
+            DelegatedTaskStatus::kPehValidationFailure);
+
+  histogram_tester.ExpectUniqueSample(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Status",
+      DelegatedTaskStatus::kPehValidationFailure, 1);
+  histogram_tester.ExpectTotalCount(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Duration", 1);
+}
+
 TEST_F(DelegatedTaskRunnerTest, SuccessAndCommandLineVerification) {
   base::HistogramTester histogram_tester;
   auto mock_launcher = std::make_unique<MockPehLauncher>();

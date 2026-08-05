@@ -6,7 +6,10 @@
 
 namespace platform_experience {
 
-MockPehLauncher::MockPehLauncher() = default;
+MockPehLauncher::MockPehLauncher() {
+  ON_CALL(*this, IsBinaryVerified(::testing::_))
+      .WillByDefault(::testing::Return(true));
+}
 
 MockPehLauncher::~MockPehLauncher() = default;
 

@@ -56,6 +56,8 @@ class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
  private:
   void OnProcessLaunched(base::Process process);
   void OnBinaryPathRetrieved(const base::FilePath& peh_binary_path);
+  void OnBinaryVerificationComplete(const base::FilePath& peh_binary_path,
+                                    bool is_verified);
 
   void CleanupAndReturnResult(
       DelegatedTaskExitCodeOrStatus exit_code_or_status);

@@ -6,10 +6,14 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/platform_experience/delegated_tasks/peh_switches.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -98,6 +102,20 @@ TEST_F(PehLauncherTest, GetBinaryPathSystemInstall_Found) {
                                      .Append(L"platform_experience_helper.exe");
 
   EXPECT_EQ(path, expected_path);
+}
+
+TEST_F(PehLauncherTest, IsBinaryVerified) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_file = temp_dir.GetPath().Append(L"fake.exe");
+  ASSERT_TRUE(base::WriteFile(temp_file, ""));
+
+  PehLauncher launcher;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(NDEBUG)
+  EXPECT_FALSE(launcher.IsBinaryVerified(temp_file));
+#else
+  EXPECT_TRUE(launcher.IsBinaryVerified(temp_file));
+#endif
 }
 
 }  // namespace

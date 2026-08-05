@@ -39,6 +39,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Task Timeout"/>
   <int value="7" label="Invalid Task Type"/>
   <int value="8" label="Invalid Args"/>
+  <int value="9" label="PEH Validation Failure"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/platform_experience/delegated_tasks/delegated_task.h:DelegatedTaskStatus) -->

@@ -80,7 +80,6 @@ void DelegatedTaskRunner::Run(std::unique_ptr<DelegatedTask> task,
                      base::unexpected(DelegatedTaskStatus::kTaskTimeout)),
       task_->GetTimeout());
 
-  // TODO(b/525018453): Verify the binary after fetching the path.
   peh_launcher_.AsyncCall(&PehLauncher::GetBinaryPath)
       .Then(base::BindOnce(&DelegatedTaskRunner::OnBinaryPathRetrieved,
                            weak_factory_.GetWeakPtr()));
@@ -90,6 +89,21 @@ void DelegatedTaskRunner::OnBinaryPathRetrieved(
     const base::FilePath& peh_binary_path) {
   if (peh_binary_path.empty()) {
     CleanupAndReturnResult(base::unexpected(DelegatedTaskStatus::kPehNotFound));
+    return;
+  }
+
+  peh_launcher_.AsyncCall(&PehLauncher::IsBinaryVerified)
+      .WithArgs(peh_binary_path)
+      .Then(base::BindOnce(&DelegatedTaskRunner::OnBinaryVerificationComplete,
+                           weak_factory_.GetWeakPtr(), peh_binary_path));
+}
+
+void DelegatedTaskRunner::OnBinaryVerificationComplete(
+    const base::FilePath& peh_binary_path,
+    bool is_verified) {
+  if (!is_verified) {
+    CleanupAndReturnResult(
+        base::unexpected(DelegatedTaskStatus::kPehValidationFailure));
     return;
   }
 

@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/win/trust_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/install_static/install_util.h"
 
@@ -40,6 +41,10 @@ base::FilePath PehLauncher::GetBinaryPath() {
     return base::FilePath();
   }
   return path;
+}
+
+bool PehLauncher::IsBinaryVerified(const base::FilePath& binary_path) {
+  return base::win::IsBinaryTrusted(binary_path);
 }
 
 base::Process PehLauncher::LaunchProcess(const base::CommandLine& cmd_line,
