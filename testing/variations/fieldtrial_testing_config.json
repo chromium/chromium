@@ -9129,24 +9129,6 @@
             ]
         }
     ],
-    "DevToolsDurableMessages": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DevToolsEnableDurableMessages",
-                    "enable_features": [
-                        "DevToolsEnableDurableMessages"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeviceBoundSessionCredentialsMac": [
         {
             "platforms": [
