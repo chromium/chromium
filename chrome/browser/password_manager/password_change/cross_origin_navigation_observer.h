@@ -26,6 +26,14 @@ class CrossOriginNavigationObserver : public content::WebContentsObserver {
       const content::LoadCommittedDetails& load_details) override;
   bool IsSameOrAffiliatedDomain(const GURL& url) const;
 
+#if defined(UNIT_TEST)
+  void TriggerCrossOriginNavigationForTesting() {
+    if (on_cross_origin_navigation_detected_) {
+      std::move(on_cross_origin_navigation_detected_).Run();
+    }
+  }
+#endif
+
  private:
   void OnPSLExtensionsReceived(const GURL& initial_url,
                                std::vector<std::string> psl_extension_list);

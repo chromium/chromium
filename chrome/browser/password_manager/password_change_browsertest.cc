@@ -317,8 +317,9 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
   }
 
   void MockSuccessfulSubmitButtonClick(PasswordChangeDelegate* delegate) {
-    SetWebContents(
-        static_cast<PasswordChangeDelegateImpl*>(delegate)->executor());
+    SetWebContents(static_cast<PasswordChangeDelegateImpl*>(delegate)
+                       ->actuator()
+                       ->GetExecutorWebContents());
 
     base::RunLoop run_loop;
     MockOptimizationGuideKeyedService* optimization_service =
@@ -441,7 +442,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   content::WebContents* web_contents =
-      static_cast<PasswordChangeDelegateImpl*>(delegate)->executor();
+      static_cast<PasswordChangeDelegateImpl*>(delegate)
+          ->actuator()
+          ->GetExecutorWebContents();
   // Start observing web_contents where password change happens.
   SetWebContents(web_contents);
   PasswordsNavigationObserver observer(web_contents);
@@ -470,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
 
   // Start observing web_contents where password change happens.
   auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
-  SetWebContents(delegate_impl->executor());
+  SetWebContents(delegate_impl->actuator()->GetExecutorWebContents());
   PasswordsNavigationObserver observer(WebContents());
   EXPECT_TRUE(observer.Wait());
 
@@ -864,7 +867,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   GURL url = https_test_server().GetURL(kDifferentHost,
                                         "/password/simple_password.html");
   (void)content::NavigateToURL(
-      static_cast<PasswordChangeDelegateImpl*>(delegate.get())->executor(),
+      static_cast<PasswordChangeDelegateImpl*>(delegate.get())
+          ->actuator()
+          ->GetExecutorWebContents(),
       url);
 
   EXPECT_TRUE(base::test::RunUntil([&delegate]() {
@@ -1132,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWhenLoggedOut) {
 
   auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
   // Verify that the background tab was not created yet.
-  EXPECT_FALSE(delegate_impl->executor());
+  EXPECT_FALSE(delegate_impl->actuator()->GetExecutorWebContents());
   EXPECT_TRUE(delegate_impl->login_checker());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);

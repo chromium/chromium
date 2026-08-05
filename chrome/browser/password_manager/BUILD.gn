@@ -245,7 +245,10 @@ source_set("impl") {
     sources += [
       "generated_password_leak_detection_pref.cc",
       "generated_password_leak_detection_pref.h",
+      "password_change/password_change_actuator.h",
       "password_change/password_change_from_checkup_delegate.cc",
+      "password_change/script_password_change_actuator.cc",
+      "password_change/script_password_change_actuator.h",
       "password_change_delegate_impl.cc",
       "password_change_delegate_impl.h",
       "remote_actor/remote_actor_credential_sharing_impl.cc",
@@ -490,6 +493,7 @@ source_set("unit_tests") {
   } else {
     sources += [
       "generated_password_leak_detection_pref_unittest.cc",
+      "password_change/script_password_change_actuator_unittest.cc",
       "password_change_delegate_impl_unittest.cc",
       "remote_actor/remote_actor_credential_sharing_impl_unittest.cc",
     ]
@@ -504,6 +508,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/passwords:impl",
       "//chrome/browser/ui/passwords:test_support_ui",
       "//components/optimization_guide/core",
+      "//components/optimization_guide/core:model_execution_test_support",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/signin/public/identity_manager:test_support",
       "//components/tabs:test_support",
