@@ -93,9 +93,9 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   // Remove all rules registries of the given rules_registry_id.
   void RemoveRulesRegistriesByID(int rules_registry_id);
 
-  // Accessors for each type of rules registry.
+  // Returns the ContentRulesRegistry, or null if declarative content is
+  // unavailable or Shutdown() has already released the registries.
   ContentRulesRegistry* content_rules_registry() const {
-    CHECK(content_rules_registry_);
     return content_rules_registry_;
   }
 
@@ -164,10 +164,10 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   // We own the parts of the registries which need to run on the UI thread.
   std::vector<std::unique_ptr<RulesCacheDelegate>> cache_delegates_;
 
-  // Weak pointer into rule_registries_ to make it easier to handle content rule
-  // conditions.
-  raw_ptr<ContentRulesRegistry, AcrossTasksDanglingUntriaged>
-      content_rules_registry_ = nullptr;
+  // Non-owning pointer into rule_registries_ to make it easier to handle
+  // content rule conditions. Reset in Shutdown() before the registries are
+  // released.
+  raw_ptr<ContentRulesRegistry> content_rules_registry_ = nullptr;
 
   // Listen to extension load, unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

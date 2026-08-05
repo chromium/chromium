@@ -48,6 +48,11 @@ void RulesRegistryService::Shutdown() {
     registry->OnShutdown();
   }
 
+  // Clearing `rule_registries_` releases the last reference to the
+  // ContentRulesRegistry and destroys it. Reset the non-owning pointer first so
+  // it does not dangle.
+  content_rules_registry_ = nullptr;
+
   // Release the references to all registries.
   rule_registries_.clear();
 }

@@ -167,7 +167,12 @@ void TabHelper::InvokeForContentRulesRegistries(const Func& func) {
   RulesRegistryService* rules_registry_service =
       RulesRegistryService::Get(profile_);
   if (rules_registry_service) {
-    func(rules_registry_service->content_rules_registry());
+    // The service can remain accessible after its registries are released
+    // during profile teardown.
+    if (ContentRulesRegistry* content_rules_registry =
+            rules_registry_service->content_rules_registry()) {
+      func(content_rules_registry);
+    }
     if (profile_->IsOffTheRecord()) {
       // The original profile's content rules registry handles rules for
       // spanning extensions in incognito profiles, so invoke it also.
@@ -176,7 +181,11 @@ void TabHelper::InvokeForContentRulesRegistries(const Func& func) {
       DCHECK_NE(rules_registry_service,
                 original_profile_rules_registry_service);
       if (original_profile_rules_registry_service) {
-        func(original_profile_rules_registry_service->content_rules_registry());
+        if (ContentRulesRegistry* original_content_rules_registry =
+                original_profile_rules_registry_service
+                    ->content_rules_registry()) {
+          func(original_content_rules_registry);
+        }
       }
     }
   }

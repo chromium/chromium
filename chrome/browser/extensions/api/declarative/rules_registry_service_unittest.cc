@@ -116,6 +116,18 @@ TEST_F(RulesRegistryServiceTest, TestConstructionAndMultiThreading) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(RulesRegistryServiceTest, ContentRulesRegistryClearedOnShutdown) {
+  TestingProfile profile;
+  RulesRegistryService registry_service(&profile);
+  ASSERT_TRUE(registry_service.content_rules_registry());
+
+  // Shutdown() releases the last reference to the ContentRulesRegistry.
+  // Consumers such as TabHelper can still reach the service afterwards, so the
+  // accessor must report null instead of handing out a dangling pointer.
+  registry_service.Shutdown();
+  EXPECT_FALSE(registry_service.content_rules_registry());
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // This test relies on declarativeWebRequest, which is deprecated and will not
 // be supported on desktop Android. We can't just replace it with
