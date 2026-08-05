@@ -332,7 +332,6 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     CHECK_GE(usage_breakdown->indexedDatabase, 0, base::NotFatalUntil::M148);
     CHECK_GE(usage_breakdown->serviceWorker, 0, base::NotFatalUntil::M148);
     CHECK_GE(usage_breakdown->serviceWorkerCache, 0, base::NotFatalUntil::M148);
-    CHECK_GE(usage_breakdown->webSql, 0, base::NotFatalUntil::M148);
 
     usage_ = usage;
     usage_breakdown_ = std::move(usage_breakdown);
