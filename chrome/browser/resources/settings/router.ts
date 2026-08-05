@@ -23,7 +23,6 @@ export interface SettingsRoutes {
   AI_SUGGESTIONS: Route;
   APPEARANCE: Route;
   AUTOFILL: Route;
-  AUTOFILL_AI: Route;
   BASIC: Route;
   CAPTIONS: Route;
   CLEAR_BROWSER_DATA: Route;

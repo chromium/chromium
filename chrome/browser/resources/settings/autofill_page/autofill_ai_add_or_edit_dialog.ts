@@ -47,10 +47,10 @@ export interface SettingsAutofillAiAddOrEditDialogElement {
   };
 }
 
-const SettingsAutofillAiSectionElementBase = I18nMixin(PolymerElement);
+const SettingsAutofillAiAddOrEditDialogElementBase = I18nMixin(PolymerElement);
 
 export class SettingsAutofillAiAddOrEditDialogElement extends
-    SettingsAutofillAiSectionElementBase {
+    SettingsAutofillAiAddOrEditDialogElementBase {
   static get is() {
     return 'settings-autofill-ai-add-or-edit-dialog';
   }

@@ -131,10 +131,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiEntriesList) {
   RunTest("settings/autofill_ai_entries_list_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiSection) {
-  RunTest("settings/autofill_ai_section_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiAddOrEditDialog) {
   RunTest("settings/autofill_ai_add_or_edit_dialog_test.js", "mocha.run()");
 }

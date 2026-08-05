@@ -9,7 +9,6 @@ import './ai_page/history_search_page.js';
 import './ai_page/offer_writing_help_page.js';
 import './ai_page/skills_page.js';
 import './appearance_page/appearance_fonts_page.js';
-import './autofill_page/autofill_ai_section.js';
 import './autofill_page/autofill_section.js';
 import './autofill_page/identity_docs_page.js';
 import './autofill_page/shopping_page.js';
@@ -174,7 +173,6 @@ export {SettingsAddressEditDialogElement} from './autofill_page/address_edit_dia
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
 export {SettingsAutofillAiAddOrEditDialogElement} from './autofill_page/autofill_ai_add_or_edit_dialog.js';
 export {SettingsAutofillAiEntriesListElement} from './autofill_page/autofill_ai_entries_list.js';
-export {SettingsAutofillAiSectionElement} from './autofill_page/autofill_ai_section.js';
 export {AutofillManagerImpl} from './autofill_page/autofill_manager_proxy.js';
 export type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
 export {AutofillAddressOptInChange, SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
