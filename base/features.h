@@ -75,6 +75,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kLibraryPrefetcherOnlyOrderedText);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseTerminationStatusMemoryExhaustion);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kUtfConversionAsciiFastPath);
+
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kUserBlockingAboveNormalPriority);
 BASE_EXPORT BASE_DECLARE_FEATURE(kRetryCreateFileMappingOnCommitLimit);

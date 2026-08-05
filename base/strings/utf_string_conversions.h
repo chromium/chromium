@@ -95,6 +95,11 @@ std::u16string ASCIIToUTF16(char (&str)[N]) {
   return ASCIIToUTF16(std::string_view(str));
 }
 
+namespace strings_internal {
+// Initializes features for this module. See `base::features::Init()`.
+BASE_EXPORT void InitializeUtfStringConversionsFeatures();
+}  // namespace strings_internal
+
 }  // namespace base
 
 #endif  // BASE_STRINGS_UTF_STRING_CONVERSIONS_H_

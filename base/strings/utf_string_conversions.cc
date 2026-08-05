@@ -7,12 +7,16 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <atomic>
 #include <concepts>
 #include <ostream>
 #include <string_view>
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -22,6 +26,12 @@
 namespace base {
 
 namespace {
+
+std::atomic_bool g_is_fast_ascii_enabled{false};
+
+bool IsFastConversionForASCIIEnabled() {
+  return g_is_fast_ascii_enabled.load(std::memory_order_relaxed);
+}
 
 constexpr base_icu::UChar32 kErrorCodePoint = 0xFFFD;
 
@@ -104,10 +114,23 @@ template <typename DestChar>
 bool DoUTFConversion(const char* src,
                      size_t src_len,
                      DestChar* dest,
-                     size_t* dest_len) {
+                     size_t* dest_len,
+                     bool fast_ascii) {
   bool success = true;
 
   for (size_t i = 0; i < src_len;) {
+    if (fast_ascii && UNSAFE_TODO(static_cast<uint8_t>(src[i])) <= 0x7F) {
+      // If the next codepoint is ASCII, it's likely that there are more ASCII
+      // characters following it. Find the end of this ASCII range and directly
+      // perform a widening copy instead of passing it to the full decoder.
+      size_t ascii_len = FindFirstNonASCII(
+          UNSAFE_TODO(std::string_view(src + i, src_len - i)));
+      UNSAFE_TODO(std::copy_n(src + i, ascii_len, dest + *dest_len));
+      i += ascii_len;
+      *dest_len += ascii_len;
+      continue;
+    }
+
     base_icu::UChar32 code_point;
     UNSAFE_TODO(CBU8_NEXT(reinterpret_cast<const uint8_t*>(src), i, src_len,
                           code_point));
@@ -127,7 +150,8 @@ template <typename DestChar>
 bool DoUTFConversion(const char16_t* src,
                      size_t src_len,
                      DestChar* dest,
-                     size_t* dest_len) {
+                     size_t* dest_len,
+                     bool fast_ascii) {
   bool success = true;
 
   auto ConvertSingleChar = [&success](char16_t in) -> base_icu::UChar32 {
@@ -139,10 +163,19 @@ bool DoUTFConversion(const char16_t* src,
   };
 
   size_t i = 0;
-
-  // Always have another symbol in order to avoid checking boundaries in the
-  // middle of the surrogate pair.
   while (i + 1 < src_len) {
+    if (fast_ascii && UNSAFE_TODO(src[i]) <= 0x7F) {
+      // If the next codepoint is ASCII, it's likely that there are more ASCII
+      // characters following it. Find the end of this ASCII range and directly
+      // perform a copy instead of passing it to the full decoder.
+      size_t ascii_len = FindFirstNonASCII(
+          UNSAFE_TODO(std::u16string_view(src + i, src_len - i)));
+      UNSAFE_TODO(std::copy_n(src + i, ascii_len, dest + *dest_len));
+      i += ascii_len;
+      *dest_len += ascii_len;
+      continue;
+    }
+
     base_icu::UChar32 code_point;
 
     if (UNSAFE_TODO(CBU16_IS_LEAD(src[i])) &&
@@ -174,7 +207,8 @@ template <typename DestChar>
 bool DoUTFConversion(const wchar_t* src,
                      size_t src_len,
                      DestChar* dest,
-                     size_t* dest_len) {
+                     size_t* dest_len,
+                     bool fast_ascii) {
   bool success = true;
 
   for (size_t i = 0; i < src_len; ++i) {
@@ -198,6 +232,51 @@ bool DoUTFConversion(const wchar_t* src,
 
 template <typename InputString, typename DestString>
 bool UTFConversion(const InputString& src_str, DestString* dest_str) {
+  const bool fast_ascii = IsFastConversionForASCIIEnabled();
+  if (fast_ascii) {
+    // Find the first non ASCII character in this string. If there isn't any,
+    // the string can just be directly copied to the destination. Otherwise, we
+    // can copy the ASCII preamble to the destination and keep processing the
+    // rest of the string. This is more performant for full ASCII string than
+    // just passing to DoUTFConversion (which also has an ASCII fast path)
+    // because it allows allocating a destination string of the exact right size
+    // instead of allocating a string able to fit the worst case destination
+    // size and shrinking.
+    size_t first_non_ascii = FindFirstNonASCII(src_str);
+    if (first_non_ascii == src_str.length()) {
+      dest_str->assign_range(src_str);
+      return true;
+    }
+
+    size_t src_len = src_str.length();
+    size_t remaining_len = src_len - first_non_ascii;
+    size_t max_dest_len =
+        first_non_ascii +
+        remaining_len * size_coefficient_v<typename InputString::value_type,
+                                           typename DestString::value_type>;
+
+    dest_str->resize(max_dest_len);
+    std::copy_n(src_str.data(), first_non_ascii, dest_str->begin());
+
+    // SAFETY: dest_str is of length max_dest_len, which is at least large
+    // enough to contain the ASCII preamble + the worst case result of the
+    // decoding operation. max_dest_len is guaranteed to be larger than
+    // first_non_ascii, so dest_str->data() + first_non_ascii is safe, and the
+    // resulting pointer points to a buffer that is guaranteed to be large
+    // enough to contain the result of the decoding operation. This code uses
+    // direct pointer arithmetic for performance.
+    auto* dest = UNSAFE_BUFFERS(dest_str->data() + first_non_ascii);
+    size_t dest_len = 0;
+
+    // SAFETY: See other UNSAFE_BUFFERS call above.
+    bool res = DoUTFConversion(UNSAFE_BUFFERS(src_str.data() + first_non_ascii),
+                               remaining_len, dest, &dest_len, fast_ascii);
+
+    dest_str->resize(first_non_ascii + dest_len);
+    dest_str->shrink_to_fit();
+    return res;
+  }
+
   if (IsStringASCII(src_str)) {
     dest_str->assign(src_str.begin(), src_str.end());
     return true;
@@ -214,7 +293,8 @@ bool UTFConversion(const InputString& src_str, DestString* dest_str) {
   size_t src_len = src_str.length();
   size_t dest_len = 0;
 
-  bool res = DoUTFConversion(src_str.data(), src_len, dest, &dest_len);
+  bool res =
+      DoUTFConversion(src_str.data(), src_len, dest, &dest_len, fast_ascii);
 
   dest_str->resize(dest_len);
   dest_str->shrink_to_fit();
@@ -365,5 +445,19 @@ std::string WideToASCII(std::wstring_view wide) {
   return std::string(wide.begin(), wide.end());
 }
 #endif  // defined(WCHAR_T_IS_16_BIT)
+
+namespace strings_internal {
+
+void InitializeUtfStringConversionsFeatures() {
+  // Some targets (like the v8 snapshot creator) use this UTF conversion code
+  // without setting up the feature list. It's fine for UTF8 decoding to be
+  // slightly slower until the feature list is ready.
+  g_is_fast_ascii_enabled.store(
+      FeatureList::GetInstance() &&
+          FeatureList::IsEnabled(features::kUtfConversionAsciiFastPath),
+      std::memory_order_relaxed);
+}
+
+}  // namespace strings_internal
 
 }  // namespace base

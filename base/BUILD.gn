@@ -4074,6 +4074,12 @@ test("base_unittests") {
     "Base64UrlTest.FuzzBase64UrlDecode",
     "Base64UrlTest.FuzzBase64UrlEncode",
     "JSONReaderTest.CanParseAnythingWithoutCrashing",
+    "UTFStringConversionsTest.UTF16ToUTF8FastPathMatchesLegacy",
+    "UTFStringConversionsTest.UTF16ToWideFastPathMatchesLegacy",
+    "UTFStringConversionsTest.UTF8ToUTF16FastPathMatchesLegacy",
+    "UTFStringConversionsTest.UTF8ToWideFastPathMatchesLegacy",
+    "UTFStringConversionsTest.WideToUTF8FastPathMatchesLegacy",
+    "UTFStringConversionsTest.WideToUTF16FastPathMatchesLegacy",
   ]
 
   defines = []
