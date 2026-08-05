@@ -1646,6 +1646,10 @@ network::mojom::NetworkContext* StoragePartitionImpl::GetNetworkContext() {
   return network_context_owner_->network_context.get();
 }
 
+bool StoragePartitionImpl::IsNetworkContextInitialized() {
+  return network_context_owner_->network_context.is_bound();
+}
+
 cert_verifier::mojom::CertVerifierServiceUpdater*
 StoragePartitionImpl::GetCertVerifierServiceUpdater() {
   DCHECK(initialized_);

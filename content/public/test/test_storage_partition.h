@@ -67,6 +67,7 @@ class TestStoragePartition : public StoragePartition {
     network_context_ = context;
   }
   network::mojom::NetworkContext* GetNetworkContext() override;
+  bool IsNetworkContextInitialized() override;
   cert_verifier::mojom::CertVerifierServiceUpdater*
   GetCertVerifierServiceUpdater() override;
 

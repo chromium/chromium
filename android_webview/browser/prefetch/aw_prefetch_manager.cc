@@ -22,6 +22,7 @@
 #include "base/check_is_test.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/prefetch_deduplication_utils.h"
 #include "content/public/browser/preload_pipeline_info.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 
@@ -436,6 +438,9 @@ int AwPrefetchManager::StartRequest(
         should_bypass_http_cache);
   } else {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    bool was_blocked = !browser_context_->GetDefaultStoragePartition()
+                            ->IsNetworkContextInitialized();
+    base::ElapsedTimer timer;
     prefetch_handle = browser_context_->StartBrowserPrefetchRequest(
         pf_url, AW_PREFETCH_METRICS_SUFFIX, javascript_enabled,
         expected_no_vary_search,
@@ -450,6 +455,8 @@ int AwPrefetchManager::StartRequest(
         base::FeatureList::IsEnabled(
             kWebViewPrefetchDisableBlockUntilHeadTimeout),
         should_bypass_http_cache);
+    AwBrowserContext::RecordNetworkContextInitializationBlocking(
+        "Prefetch", timer.Elapsed(), was_blocked);
   }
 
   if (IsWebViewPrefetchOffTheMainThreadEnabled()) {

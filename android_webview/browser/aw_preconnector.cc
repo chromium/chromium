@@ -9,11 +9,14 @@
 #include <memory>
 #include <optional>
 
+#include "android_webview/browser/aw_browser_context.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/preconnect_request.h"
+#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/socket/next_proto.h"
@@ -120,6 +123,10 @@ bool AwPreconnector::Preconnect(JNIEnv* env, const GURL& url) {
 
   std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
 
+  bool was_blocked = !browser_context_->GetDefaultStoragePartition()
+                          ->IsNetworkContextInitialized();
+  base::ElapsedTimer timer;
+
   // Preconnection initiated at the Profile level is out of scope of connection
   // allowlists, so there is no associated frame/document context to restrict.
   // See https://wicg.github.io/connection-allowlists/#threat-model. Hence
@@ -129,6 +136,9 @@ bool AwPreconnector::Preconnect(JNIEnv* env, const GURL& url) {
       /*storage_partition_config=*/nullptr,
       network::GetNoOpNetworkRestrictionsId(), std::move(keepalive_config),
       std::move(observer));
+
+  AwBrowserContext::RecordNetworkContextInitializationBlocking(
+      "Preconnect", timer.Elapsed(), was_blocked);
 
   TRACE_EVENT1("android_webview", "Preconnect::Begin", "url", url);
 

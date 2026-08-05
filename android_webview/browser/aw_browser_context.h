@@ -266,6 +266,13 @@ class AwBrowserContext : public content::BrowserContext,
   }
   AwPrefetchManager& GetPrefetchManager() { return *prefetch_manager_.get(); }
 
+  // Records UMA metrics for cases where an operation was blocked waiting for
+  // NetworkContext initialization.
+  static void RecordNetworkContextInitializationBlocking(
+      std::string_view operation_detail,
+      base::TimeDelta duration,
+      bool was_blocked);
+
   std::vector<std::string> SetCrossOriginIsolatedAllowList(
       JNIEnv* env,
       const std::vector<std::string>& origin_patterns);

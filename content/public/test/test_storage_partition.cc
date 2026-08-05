@@ -29,6 +29,11 @@ const base::FilePath& TestStoragePartition::GetPath() const {
 network::mojom::NetworkContext* TestStoragePartition::GetNetworkContext() {
   return network_context_;
 }
+
+bool TestStoragePartition::IsNetworkContextInitialized() {
+  return network_context_ != nullptr;
+}
+
 cert_verifier::mojom::CertVerifierServiceUpdater*
 TestStoragePartition::GetCertVerifierServiceUpdater() {
   return nullptr;

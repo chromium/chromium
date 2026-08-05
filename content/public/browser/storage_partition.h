@@ -102,6 +102,10 @@ class CONTENT_EXPORT StoragePartition {
   // caller should not hold onto this pointer beyond the same message loop task.
   virtual network::mojom::NetworkContext* GetNetworkContext() = 0;
 
+  // Returns true if the NetworkContext for this partition has already been
+  // initialized.
+  virtual bool IsNetworkContextInitialized() = 0;
+
   virtual cert_verifier::mojom::CertVerifierServiceUpdater*
   GetCertVerifierServiceUpdater() = 0;
 

@@ -9356,6 +9356,45 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.WebView.Startup.{Operation}BlockedByNetworkContextInit"
+    enum="Boolean" expires_after="2027-02-01">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether a {Operation} operation in WebView was blocked waiting for
+    synchronous NetworkContext initialization.
+
+    Only measured in Android WebView.
+  </summary>
+  <token key="Operation">
+    <variant name="Navigation" summary="navigation URLLoaderFactory creation"/>
+    <variant name="Other" summary="non-navigation URLLoaderFactory creation"/>
+    <variant name="Preconnect" summary="Profile#preconnect call"/>
+    <variant name="Prefetch" summary="prefetch request"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Android.WebView.Startup.{Operation}BlockedByNetworkContextInit.Duration"
+    units="ms" expires_after="2027-02-01">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the duration that a {Operation} operation in WebView was blocked
+    waiting for synchronous NetworkContext initialization. Recorded only when
+    blocked.
+
+    Only measured in Android WebView.
+  </summary>
+  <token key="Operation">
+    <variant name="Navigation" summary="navigation URLLoaderFactory creation"/>
+    <variant name="Other" summary="non-navigation URLLoaderFactory creation"/>
+    <variant name="Preconnect" summary="Profile#preconnect call"/>
+    <variant name="Prefetch" summary="prefetch request"/>
+  </token>
+</histogram>
+
+<histogram
     name="Android.WebView.Static.GetDefaultUserAgentCalledOnUiThreadIfChromiumNotStarted"
     enum="Boolean" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>

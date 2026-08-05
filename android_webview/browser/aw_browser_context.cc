@@ -54,9 +54,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/download/public/common/in_progress_download_manager.h"
@@ -931,9 +933,16 @@ AwBrowserContext::CreateURLLoaderFactory() {
   url_loader_factory_params->is_orb_enabled = false;
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory;
 
+  bool was_blocked =
+      !GetDefaultStoragePartition()->IsNetworkContextInitialized();
+  base::ElapsedTimer timer;
+
   GetDefaultStoragePartition()->GetNetworkContext()->CreateURLLoaderFactory(
       factory.InitWithNewPipeAndPassReceiver(),
       std::move(url_loader_factory_params));
+
+  RecordNetworkContextInitializationBlocking("Other", timer.Elapsed(),
+                                             was_blocked);
 
   return factory;
 }
@@ -969,6 +978,22 @@ std::vector<std::string> AwBrowserContext::GetCrossOriginIsolatedAllowList(
 bool AwBrowserContext::AllowCrossOriginIsolatedApis(
     const url::Origin& origin) const {
   return cross_origin_allow_list_matcher_->Matches(origin);
+}
+
+void AwBrowserContext::RecordNetworkContextInitializationBlocking(
+    std::string_view operation_detail,
+    base::TimeDelta duration,
+    bool was_blocked) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Android.WebView.Startup.", operation_detail,
+                    "BlockedByNetworkContextInit"}),
+      was_blocked);
+  if (was_blocked) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Android.WebView.Startup.", operation_detail,
+                      "BlockedByNetworkContextInit.Duration"}),
+        duration);
+  }
 }
 
 }  // namespace android_webview
