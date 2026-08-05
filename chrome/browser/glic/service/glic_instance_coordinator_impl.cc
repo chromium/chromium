@@ -413,10 +413,48 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceWithGlicWebContents(
   return nullptr;
 }
 
+bool GlicInstanceCoordinatorImpl::MaybeInvoke(BrowserWindowInterface* bwi,
+                                              mojom::InvocationSource source) {
+  if (!bwi && GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
+    return false;
+  }
+  BrowserWindowInterface* target_bwi =
+      bwi ? bwi : GetActiveGlicEligibleBrowser(profile_);
+  if (!target_bwi) {
+    return false;
+  }
+
+  bool panel_closed = !IsPanelShowingForBrowser(*target_bwi);
+  bool fre_override_compatible =
+      !GlicEnabling::HasConsentedForProfile(profile_);
+
+  if (fre_override_compatible && panel_closed &&
+      base::FeatureList::IsEnabled(features::kGlicMessageFirstFre)) {
+    GlicInvokeOptions options(source);
+    if (auto* active_tab = TabListInterface::From(target_bwi)->GetActiveTab()) {
+      options.target = Target(*active_tab);
+    }
+    options.fre_override = mojom::FreOverride::kTrustFirstInline;
+    Invoke(std::move(options));
+    return true;
+  }
+
+  return false;
+}
 
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
                                          bool prevent_close,
                                          mojom::InvocationSource source) {
+  CHECK(GlicEnabling::ShouldShowGlicButton(profile_));
+
+  // TODO(b/542727532): Follow up on whether MaybeInvoke is still needed and
+  // remove if possible.
+  if (MaybeInvoke(browser, source)) {
+    return;
+  }
+
+  service()->enabling().MaybeRecordRecoveryOnInteraction();
+
   if (!browser) {
     if (!GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
 #if !BUILDFLAG(IS_ANDROID)

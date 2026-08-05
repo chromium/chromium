@@ -307,6 +307,8 @@ class GlicInstanceCoordinatorImpl
   void RestoreTab(content::WebContents* web_contents,
                   const GlicRestoredState& state);
 
+  bool MaybeInvoke(BrowserWindowInterface* bwi, mojom::InvocationSource source);
+
   // A unique ID for this coordinator, used to generate unique instance IDs.
   const uint64_t coordinator_uid_;
 

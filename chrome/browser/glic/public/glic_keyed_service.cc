@@ -234,45 +234,9 @@ void GlicKeyedService::Shutdown() {
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
                                 mojom::InvocationSource source) {
-  // Glic may be disabled for certain user profiles (the user is browsing in
-  // incognito or guest mode, policy, etc). In those cases, the entry points to
-  // this method should already have been removed.
-  CHECK(GlicEnabling::ShouldShowGlicButton(profile_));
-
-  if (MaybeInvoke(bwi, source)) {
-    return;
-  }
-
-  enabling().MaybeRecordRecoveryOnInteraction();
   instance_coordinator().Toggle(
       bwi ? bwi : GetActiveGlicEligibleBrowser(profile_), prevent_close,
       source);
-}
-
-bool GlicKeyedService::MaybeInvoke(BrowserWindowInterface* bwi,
-                                   mojom::InvocationSource source) {
-  BrowserWindowInterface* target_bwi =
-      bwi ? bwi : GetActiveGlicEligibleBrowser(profile_);
-  if (!target_bwi) {
-    return false;
-  }
-
-  bool panel_closed = !IsPanelShowingForBrowser(*target_bwi);
-  bool fre_override_compatible =
-      !GlicEnabling::HasConsentedForProfile(profile_);
-
-  if (fre_override_compatible && panel_closed &&
-      base::FeatureList::IsEnabled(features::kGlicMessageFirstFre)) {
-    GlicInvokeOptions options(source);
-    if (auto* active_tab = TabListInterface::From(target_bwi)->GetActiveTab()) {
-      options.target = Target(*active_tab);
-    }
-    options.fre_override = mojom::FreOverride::kTrustFirstInline;
-    Invoke(std::move(options));
-    return true;
-  }
-
-  return false;
 }
 
 base::WeakPtr<GlicInstance> GlicKeyedService::InvokeWithAutoSubmit(

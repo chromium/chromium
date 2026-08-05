@@ -251,8 +251,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
           GetZeroStateSuggestionsForFocusedTabCallback callback,
       std::vector<std::string> returned_suggestions);
 
-  bool MaybeInvoke(BrowserWindowInterface* bwi, mojom::InvocationSource source);
-
   void InitializeAfterConstruction();
 
   void FinishPreload(GlicPrewarmingChecksResult reason);
