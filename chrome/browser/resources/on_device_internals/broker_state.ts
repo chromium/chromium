@@ -20,7 +20,8 @@ const MANIFEST_CRITERIA_NAMES = [
   'Enabled by user setting',
   'Enough VRAM',
   'Device Capable',
-  'Disk space available',
+  'Enough disk space to install',
+  'Enough disk space to retain',
 ];
 
 export class OnDeviceInternalsBrokerStateElement extends CrLitElement {

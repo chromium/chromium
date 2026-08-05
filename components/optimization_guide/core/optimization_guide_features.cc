@@ -531,13 +531,17 @@ bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
   return GetDiskSpaceRequiredForOnDeviceModelInstall() <= free_disk_space_bytes;
 }
 
+base::ByteSize GetDiskSpaceRequiredForOnDeviceModelRetain() {
+  return base::MiBU(
+      base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
+          kOptimizationGuideOnDeviceModel,
+          "on_device_model_free_space_mb_required_to_retain",
+          base::GiBU(5).InMiB())));
+}
+
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
     base::ByteSize free_disk_space_bytes) {
-  return base::MiBU(base::saturated_cast<uint64_t>(
-             base::GetFieldTrialParamByFeatureAsInt(
-                 kOptimizationGuideOnDeviceModel,
-                 "on_device_model_free_space_mb_required_to_retain",
-                 base::GiBU(5).InMiB()))) >= free_disk_space_bytes;
+  return GetDiskSpaceRequiredForOnDeviceModelRetain() >= free_disk_space_bytes;
 }
 
 BASE_FEATURE(kOnDeviceModelCachesDiskSpaceCheck,

@@ -358,6 +358,10 @@ base::TimeDelta GetOnDeviceModelRetentionTime();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::ByteSize GetDiskSpaceRequiredForOnDeviceModelInstall();
 
+// Return the disk space required to retain the on device model.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::ByteSize GetDiskSpaceRequiredForOnDeviceModelRetain();
+
 // Whether there is enough free disk space to allow on-device model
 // installation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

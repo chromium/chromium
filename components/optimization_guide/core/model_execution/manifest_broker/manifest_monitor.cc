@@ -187,21 +187,38 @@ std::vector<mojom::BrokerPropertyInfoPtr> ManifestMonitor::GetBrokerProperties()
       "Manifest Path",
       manifest_dir_.has_value() ? manifest_dir_->AsUTF8Unsafe() : "N/A"));
 
-  std::string disk_space_string = "N/A";
+  std::string disk_space_install_string = "N/A";
+  std::string disk_space_retain_string = "N/A";
   if (free_space_.has_value()) {
-    base::ByteSize disk_space_required =
+    base::ByteSize disk_space_install_required =
         features::GetDiskSpaceRequiredForOnDeviceModelInstall();
+    base::ByteSize disk_space_retain_required =
+        features::GetDiskSpaceRequiredForOnDeviceModelRetain();
     base::ByteSize disk_space_available = *free_space_;
-    bool is_available =
+
+    bool is_install_available =
+        features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
+            *free_space_);
+    bool is_retain_available =
         !features::IsFreeDiskSpaceTooLowForOnDeviceModelInstall(*free_space_);
-    disk_space_string = base::StrCat(
-        {is_available ? "true" : "false", " (",
+
+    disk_space_install_string = base::StrCat(
+        {is_install_available ? "true" : "false", " (",
          base::NumberToString(disk_space_available.InMiB()), " MiB available, ",
-         base::NumberToString(disk_space_required.InMiB()), " MiB required)"});
+         base::NumberToString(disk_space_install_required.InMiB()),
+         " MiB required)"});
+
+    disk_space_retain_string = base::StrCat(
+        {is_retain_available ? "true" : "false", " (",
+         base::NumberToString(disk_space_available.InMiB()), " MiB available, ",
+         base::NumberToString(disk_space_retain_required.InMiB()),
+         " MiB required)"});
   }
 
-  properties.push_back(mojom::BrokerPropertyInfo::New("Disk space available",
-                                                      disk_space_string));
+  properties.push_back(mojom::BrokerPropertyInfo::New(
+      "Enough disk space to install", disk_space_install_string));
+  properties.push_back(mojom::BrokerPropertyInfo::New(
+      "Enough disk space to retain", disk_space_retain_string));
   properties.push_back(mojom::BrokerPropertyInfo::New(
       "Manifest Loaded", manifest_.has_value() ? "true" : "false"));
   return properties;
