@@ -1067,6 +1067,12 @@ inline constexpr char kAutofillEnableEwalletNewAccountLinkingDescription[] =
     "When enabled, Chrome will sync eWallet creation options for unlinked "
     "ewallets.";
 
+inline constexpr char kAutofillEnableExpandIbanRegexPatternName[] =
+    "Enable Expand IBAN Regex Pattern";
+inline constexpr char kAutofillEnableExpandIbanRegexPatternDescription[] =
+    "When enabled, IBAN regex pattern matching is expanded to support more "
+    "formats.";
+
 inline constexpr char kAutofillEnableGradientGoogleLogosName[] =
     "Enable gradient-style GPay and Wallet logos";
 inline constexpr char kAutofillEnableGradientGoogleLogosDescription[] =

@@ -7966,6 +7966,8 @@ from previous Chrome versions.
   <int value="-2063014275" label="enable-web-bluetooth"/>
   <int value="-2062872298" label="market-url-for-testing"/>
   <int value="-2062373123" label="WebPaymentsModifiers:enabled"/>
+  <int value="-2061909587"
+      label="AutofillEnableExpandIbanRegexPattern:enabled"/>
   <int value="-2061363134"
       label="AutofillSaveCreditCardUsesStrikeSystemV2:disabled"/>
   <int value="-2060484800"
@@ -16514,6 +16516,7 @@ from previous Chrome versions.
   <int value="632340413" label="network-settings-config"/>
   <int value="632456816" label="HistoryClustersOnDeviceClustering:enabled"/>
   <int value="632631179" label="ArcIdleManager:enabled"/>
+  <int value="632642555" label="AutofillEnableExpandIbanRegexPattern:disabled"/>
   <int value="632974582" label="UniversalKeyboardHandling:enabled"/>
   <int value="633317946" label="TabGroupHoverCards:enabled"/>
   <int value="633442161" label="ExperimentalUi:disabled"/>

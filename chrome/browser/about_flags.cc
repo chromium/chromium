@@ -13648,6 +13648,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDuiPrerenderingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kOmniboxDuiPrerendering)},
 
+    {"autofill-enable-expand-iban-regex-pattern",
+     flag_descriptions::kAutofillEnableExpandIbanRegexPatternName,
+     flag_descriptions::kAutofillEnableExpandIbanRegexPatternDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableExpandIbanRegexPattern)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
