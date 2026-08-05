@@ -146,9 +146,7 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 GPU::GPU(NavigatorBase& navigator)
     : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>(
-          GatherWGSLLanguageFeatures())),
-      mappable_buffer_handles_(
-          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
+          GatherWGSLLanguageFeatures())) {}
 
 GPU::~GPU() = default;
 
@@ -179,14 +177,6 @@ void GPU::ContextDestroyed() {
       buffer->DetachMappedArrayBuffers(isolate);
     }
   }
-  // GPUBuffer::~GPUBuffer and GPUBuffer::destroy will remove wgpu::Buffers from
-  // |mappable_buffer_handles_|.
-  // However, there may be GPUBuffers that were removed from mappable_buffers_
-  // for which ~GPUBuffer has not run yet. These GPUBuffers and their
-  // DOMArrayBuffer mappings are no longer reachable from JS, so we don't need
-  // to detach them, but we do need to eagerly destroy the wgpu::Buffer so that
-  // its shared memory is freed before the context is completely destroyed.
-  mappable_buffer_handles_->ClearAndDestroyAll();
   dawn_control_client_->Destroy();
 }
 
@@ -430,19 +420,10 @@ wgpu::TextureFormat GPU::GetPreferredCanvasFormat() {
 
 void GPU::TrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffers_.insert(buffer);
-  mappable_buffer_handles_->insert(buffer->GetHandle());
 }
 
 void GPU::UntrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffers_.erase(buffer);
-  mappable_buffer_handles_->erase(buffer->GetHandle());
-}
-
-void BoxedMappableWGPUBufferHandles::ClearAndDestroyAll() {
-  for (const wgpu::Buffer& b : contents_) {
-    b.Destroy();
-  }
-  contents_.clear();
 }
 
 void GPU::SetDawnControlClientHolderForTesting(

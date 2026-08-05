@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -25,6 +26,21 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace blink {
+
+template <>
+struct HashTraits<wgpu::Buffer> : GenericHashTraits<wgpu::Buffer> {
+  STATIC_ONLY(HashTraits);
+  static unsigned GetHash(const wgpu::Buffer& buffer) {
+    return HashPointer(buffer.Get());
+  }
+  static bool Equal(const wgpu::Buffer& a, const wgpu::Buffer& b) {
+    return a.Get() == b.Get();
+  }
+
+  static constexpr bool kEmptyValueIsZero = true;
+  static std::nullptr_t EmptyValue() { return nullptr; }
+  static std::nullptr_t DeletedValue() { return nullptr; }
+};
 
 namespace scheduler {
 class EventLoop;
@@ -70,9 +86,14 @@ class PLATFORM_EXPORT DawnControlClientHolder
   void TrackMailboxTexture(base::WeakPtr<WebGPUMailboxTexture>);
   void UntrackMailboxTexture(base::WeakPtr<WebGPUMailboxTexture>);
 
+  void TrackMappableBuffer(const wgpu::Buffer& buffer);
+  void UntrackMappableBuffer(const wgpu::Buffer& buffer);
+
  private:
   friend class RefCounted<DawnControlClientHolder>;
   ~DawnControlClientHolder();
+
+  void DestroyMappableBuffers();
 
   bool context_lost_ = false;
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
@@ -80,6 +101,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   scoped_refptr<gpu::webgpu::APIChannel> api_channel_;
   WebGPURecyclableResourceCache recyclable_resource_cache_;
   Vector<base::WeakPtr<WebGPUMailboxTexture>> mailbox_textures_;
+  HashSet<wgpu::Buffer> mappable_buffers_;
 
   base::WeakPtrFactory<DawnControlClientHolder> weak_ptr_factory_{this};
 };
