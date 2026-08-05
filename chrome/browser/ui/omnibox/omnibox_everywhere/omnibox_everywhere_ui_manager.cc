@@ -33,6 +33,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -120,7 +121,9 @@ SkRegion ComputeDraggableRegion(
 
 OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
     ContentsWrapperFactory contents_wrapper_factory)
-    : contents_wrapper_factory_(std::move(contents_wrapper_factory)) {
+    : contents_wrapper_factory_(std::move(contents_wrapper_factory)),
+      unhandled_keyboard_event_handler_(
+          std::make_unique<views::UnhandledKeyboardEventHandler>()) {
 #if defined(USE_AURA)
   event_handler_ = std::make_unique<OmniboxEverywhereEventHandlerAura>(*this);
 #endif
@@ -466,7 +469,7 @@ void OmniboxEverywhereUIManager::DraggableRegionsChanged(
 bool OmniboxEverywhereUIManager::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+  return unhandled_keyboard_event_handler_->HandleKeyboardEvent(
       event, widget_ ? widget_->GetFocusManager() : nullptr);
 }
 

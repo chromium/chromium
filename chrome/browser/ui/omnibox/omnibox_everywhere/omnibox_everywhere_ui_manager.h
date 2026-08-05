@@ -19,11 +19,14 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Profile;
+
+namespace views {
+class UnhandledKeyboardEventHandler;
+}
 
 namespace omnibox_everywhere {
 
@@ -149,7 +152,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_navigating_ = false;
   std::optional<SkRegion> draggable_region_;
 
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+  std::unique_ptr<views::UnhandledKeyboardEventHandler>
+      unhandled_keyboard_event_handler_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
