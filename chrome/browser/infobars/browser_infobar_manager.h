@@ -62,7 +62,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
  private:
   // Returns the approved priority for an InfoBar.
-  InfoBarPriority GetApprovedPriority(
+  InfoBarDelegate::InfobarPriority GetApprovedPriority(
       infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
   void OnActiveTabChanged(BrowserWindowInterface* browser);

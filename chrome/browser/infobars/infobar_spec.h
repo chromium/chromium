@@ -30,12 +30,6 @@ enum class InfoBarScope {
   kGlobal,
 };
 
-enum class InfoBarPriority {
-  kDefault,
-  kHigh,
-  kCriticalSecurity,
-};
-
 // InfoBarSpec defines an InfoBar's appearance and behavior.
 class InfoBarSpec {
  public:
@@ -69,7 +63,7 @@ class InfoBarSpec {
   }
   const std::u16string& link_text() const { return link_text_; }
   const GURL& link_navigation_url() const { return link_navigation_url_; }
-  InfoBarPriority priority() const { return priority_; }
+  InfoBarDelegate::InfobarPriority priority() const { return priority_; }
   InfoBarScope scope() const { return scope_; }
   const gfx::VectorIcon* icon() const { return icon_; }
   int icon_id() const { return icon_id_; }
@@ -102,7 +96,8 @@ class InfoBarSpec {
   InlineLinkCallback inline_link_callback_;
   std::u16string link_text_;
   GURL link_navigation_url_;
-  InfoBarPriority priority_ = InfoBarPriority::kDefault;
+  InfoBarDelegate::InfobarPriority priority_ =
+      InfoBarDelegate::InfobarPriority::kDefault;
   InfoBarScope scope_ = InfoBarScope::kTab;
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   int icon_id_ = 0;
@@ -135,7 +130,7 @@ class InfoBarSpec::Builder {
   Builder& SetIconId(int icon_id);
 
   Builder& SetScope(InfoBarScope scope);
-  Builder& SetPriority(InfoBarPriority priority);
+  Builder& SetPriority(InfoBarDelegate::InfobarPriority priority);
   Builder& SetExpireOnNavigation(bool expire_on_navigation);
   Builder& SetShouldHideInFullscreen(bool should_hide_in_fullscreen);
   Builder& SetShouldAnimate(bool should_animate);

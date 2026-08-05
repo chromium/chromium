@@ -107,7 +107,7 @@ void RegisterInfoBars() {
             .SetLinkNavigationUrl(
                 GURL("chrome://connection-monitoring-detected/"))
             .SetScope(InfoBarScope::kTab)
-            .SetPriority(InfoBarPriority::kCriticalSecurity)
+            .SetPriority(InfoBarDelegate::InfobarPriority::kCriticalSecurity)
             .SetExpireOnNavigation(false)
             .SetDismissAction(
                 base::BindRepeating([](content::WebContents* web_contents) {

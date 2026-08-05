@@ -18,7 +18,7 @@ TEST_F(InfoBarSpecTest, BuildDefaultSpec) {
       InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR).Build();
 
   EXPECT_EQ(spec.identifier(), InfoBarDelegate::TEST_INFOBAR);
-  EXPECT_EQ(spec.priority(), InfoBarPriority::kDefault);
+  EXPECT_EQ(spec.priority(), InfoBarDelegate::InfobarPriority::kDefault);
   EXPECT_EQ(spec.scope(), InfoBarScope::kTab);
   EXPECT_EQ(spec.icon(), nullptr);
   EXPECT_EQ(spec.icon_id(), 0);
@@ -54,25 +54,27 @@ TEST_F(InfoBarSpecTest, BuildCustomSpec) {
       [](bool* called, content::WebContents*) { *called = true; },
       &dismiss_called);
 
-  InfoBarSpec spec = InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR)
-                         .SetMessageText(message)
-                         .SetLinkText(link)
-                         .SetLinkNavigationUrl(url)
-                         .SetScope(InfoBarScope::kGlobal)
-                         .SetPriority(InfoBarPriority::kHigh)
-                         .SetIconId(123)
-                         .SetExpireOnNavigation(false)
-                         .AddOkButton(ok_label, ok_cb)
-                         .AddCancelButton(cancel_label, cancel_cb)
-                         .SetDismissAction(dismiss_cb)
-                         .Build();
+  InfoBarSpec spec =
+      InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR)
+          .SetMessageText(message)
+          .SetLinkText(link)
+          .SetLinkNavigationUrl(url)
+          .SetScope(InfoBarScope::kGlobal)
+          .SetPriority(InfoBarDelegate::InfobarPriority::kCriticalSecurity)
+          .SetIconId(123)
+          .SetExpireOnNavigation(false)
+          .AddOkButton(ok_label, ok_cb)
+          .AddCancelButton(cancel_label, cancel_cb)
+          .SetDismissAction(dismiss_cb)
+          .Build();
 
   EXPECT_EQ(spec.identifier(), InfoBarDelegate::TEST_INFOBAR);
   EXPECT_EQ(spec.message_text(), message);
   EXPECT_EQ(spec.link_text(), link);
   EXPECT_EQ(spec.link_navigation_url(), url);
   EXPECT_EQ(spec.scope(), InfoBarScope::kGlobal);
-  EXPECT_EQ(spec.priority(), InfoBarPriority::kHigh);
+  EXPECT_EQ(spec.priority(),
+            InfoBarDelegate::InfobarPriority::kCriticalSecurity);
   EXPECT_EQ(spec.icon_id(), 123);
   EXPECT_FALSE(spec.expire_on_navigation());
   EXPECT_EQ(spec.ok_button_label(), ok_label);

@@ -117,6 +117,10 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
 
   bool IsCloseable() const override { return spec_.is_closeable(); }
 
+  InfoBarDelegate::InfobarPriority GetPriority() const override {
+    return spec_.priority();
+  }
+
  private:
   content::WebContents* GetWebContents() {
     if (!infobar()) {
@@ -345,13 +349,13 @@ void BrowserInfoBarManager::OnManagerWillBeDestroyed(
   }
 }
 
-InfoBarPriority BrowserInfoBarManager::GetApprovedPriority(
+InfoBarDelegate::InfobarPriority BrowserInfoBarManager::GetApprovedPriority(
     infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
   auto it = registered_specs_.find(identifier);
   if (it != registered_specs_.end()) {
     return it->second.priority();
   }
-  return InfoBarPriority::kDefault;
+  return InfoBarDelegate::InfobarPriority::kDefault;
 }
 
 void BrowserInfoBarManager::OnActiveTabChanged(

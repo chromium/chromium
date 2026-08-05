@@ -72,7 +72,7 @@ InfoBarSpec::Builder& InfoBarSpec::Builder::SetScope(InfoBarScope scope) {
 }
 
 InfoBarSpec::Builder& InfoBarSpec::Builder::SetPriority(
-    InfoBarPriority priority) {
+    InfoBarDelegate::InfobarPriority priority) {
   spec_.priority_ = priority;
   return *this;
 }
