@@ -8153,6 +8153,24 @@ bool ChromeContentBrowserClient::
 #endif
 }
 
+bool ChromeContentBrowserClient::
+    ShouldServiceWorkerRequireForegroundPriorityDuringStartup(
+        const GURL& script_url) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Extension service workers are frequently started headlessly to service
+  // events (e.g. the webRequest/declarativeNetRequest APIs) with no controllee
+  // or other foreground signal. Give their render process foreground priority
+  // while the worker starts so it does not starve at background priority (which
+  // maps to EcoQoS on Windows) and miss its start timeout
+  // (crbug.com/484218883).
+  return base::FeatureList::IsEnabled(
+             features::kServiceWorkerForegroundOnExtensionStartup) &&
+         script_url.SchemeIs(extensions::kExtensionScheme);
+#else
+  return false;
+#endif
+}
+
 void ChromeContentBrowserClient::
     GrantAdditionalRequestPrivilegesToWorkerProcess(int child_id,
                                                     const GURL& script_url) {

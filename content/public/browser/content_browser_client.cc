@@ -1639,6 +1639,12 @@ bool ContentBrowserClient::ShouldServiceWorkerInheritPolicyContainerFromCreator(
   return url.SchemeIsLocal();
 }
 
+bool ContentBrowserClient::
+    ShouldServiceWorkerRequireForegroundPriorityDuringStartup(
+        const GURL& script_url) {
+  return false;
+}
+
 void ContentBrowserClient::GrantAdditionalRequestPrivilegesToWorkerProcess(
     int child_id,
     const GURL& script_url) {}

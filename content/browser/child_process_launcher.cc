@@ -400,9 +400,17 @@ bool RenderProcessPriority::is_background() const {
       return false;
     }
     // TODO(351953350): Migrate this logic to the performance manager.
-    if (boost_for_loading || boost_for_discard) {
+    // A foreground service worker (e.g. a starting extension service worker,
+    // which has no performance manager worker node / vote yet) exposes its
+    // foreground signal only through this flag. Honor it even when a priority
+    // override is present; otherwise the process stays at the overridden
+    // background priority and the worker can starve and miss its start
+    // timeout (crbug.com/484218883).
+    if (boost_for_loading || boost_for_discard ||
+        has_foreground_service_worker) {
       return false;
     }
+
     return *priority_override == base::Process::Priority::kBestEffort;
   }
 #endif
@@ -421,7 +429,12 @@ base::Process::Priority RenderProcessPriority::GetProcessPriority() const {
       return base::Process::Priority::kUserBlocking;
     }
     // TODO(351953350): Migrate this logic to the performance manager.
-    if (boost_for_loading || boost_for_discard) {
+    // See is_background(): a foreground service worker (including a starting
+    // extension service worker) must not be left at the overridden background
+    // priority, or it can starve and miss its start timeout
+    // (crbug.com/484218883).
+    if (boost_for_loading || boost_for_discard ||
+        has_foreground_service_worker) {
       return base::Process::Priority::kUserBlocking;
     }
     return *priority_override;

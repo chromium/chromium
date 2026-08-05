@@ -2842,6 +2842,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
       const GURL& url);
 
+  // Returns true if a service worker with the given `script_url` that is
+  // currently starting up should be given foreground process priority for the
+  // duration of startup. This lets the embedder keep workers that are started
+  // headlessly (e.g. extension service workers servicing events such as
+  // webRequest/declarativeNetRequest, which often have no controllee or other
+  // foreground signal) from being starved at background priority before they
+  // finish starting. The boost is re-evaluated and dropped once the worker
+  // finishes starting or stops. See https://crbug.com/484218883.
+  virtual bool ShouldServiceWorkerRequireForegroundPriorityDuringStartup(
+      const GURL& script_url);
+
   // Allows the embedder to grant `child_id` access to additional origins.
   // This is needed for Service Workers running in non-web-safe origins.
   // This will only be called if the worker process is locked to the same

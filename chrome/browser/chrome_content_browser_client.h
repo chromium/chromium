@@ -979,6 +979,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
   bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
       const GURL& url) override;
+  bool ShouldServiceWorkerRequireForegroundPriorityDuringStartup(
+      const GURL& script_url) override;
   void GrantAdditionalRequestPrivilegesToWorkerProcess(
       int child_id,
       const GURL& script_url) override;

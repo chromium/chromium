@@ -3354,6 +3354,24 @@ bool ServiceWorkerVersion::ShouldRequireForegroundPriority(
     ChildProcessId worker_process_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // Some service workers are started headlessly to handle events with no
+  // controllee or other foreground signal (e.g. extension service workers
+  // servicing the webRequest/declarativeNetRequest APIs). Without one, the
+  // worker's render process is left at background priority while it is
+  // STARTING; under heavy system load it can then fail to finish top-level
+  // script evaluation before the start timeout, be torn down, and retry
+  // indefinitely (crbug.com/484218883). Let the embedder decide whether such a
+  // worker should be given foreground priority for the duration of startup so
+  // it can make progress. This is re-evaluated (and the boost dropped) when the
+  // worker reaches RUNNING (EmbeddedWorkerInstance::OnStarted) or stops.
+  if (running_status() == blink::EmbeddedWorkerStatus::kStarting &&
+      GetContentClient()
+          ->browser()
+          ->ShouldServiceWorkerRequireForegroundPriorityDuringStartup(
+              script_url_)) {
+    return true;
+  }
+
   // Currently FetchEvents are the only type of event we need to really process
   // at foreground priority.  If the service worker does not have a FetchEvent
   // handler then we can always allow it to go to the background.
