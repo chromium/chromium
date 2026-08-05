@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -85,7 +86,7 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
         name, base::BindOnce([]() -> views::View* {
           OmniboxEverywhereController* controller =
               g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-          return controller->ui_manager()->widget()->GetContentsView();
+          return controller->ui_manager()->widget_delegate()->GetContentsView();
         }));
   }
 
@@ -106,7 +107,9 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
               OmniboxEverywhereController* controller =
                   g_browser_process->GetFeatures()
                       ->omnibox_everywhere_controller();
-              return controller->ui_manager()->widget()->GetContentsView();
+              return controller->ui_manager()
+                  ->widget_delegate()
+                  ->GetContentsView();
             })),
         WaitForStateChange(web_contents_id, search_input_loaded));
   }

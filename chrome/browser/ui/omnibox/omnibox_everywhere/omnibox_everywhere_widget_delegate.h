@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_WIDGET_DELEGATE_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_WIDGET_DELEGATE_H_
 
+#include <optional>
+
+#include "third_party/skia/include/core/SkRegion.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace omnibox_everywhere {
@@ -19,6 +23,19 @@ class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
   OmniboxEverywhereWidgetDelegate& operator=(
       const OmniboxEverywhereWidgetDelegate&) = delete;
   ~OmniboxEverywhereWidgetDelegate() override;
+
+  void SetDraggableRegion(std::optional<SkRegion> region);
+  bool IsPointInDraggableRegion(const gfx::Point& point) const;
+
+  int NonClientHitTest(const gfx::Point& point) const;
+
+  // views::WidgetDelegate:
+  bool ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView child,
+      const gfx::Point& location) override;
+
+ private:
+  std::optional<SkRegion> draggable_region_;
 };
 
 }  // namespace omnibox_everywhere

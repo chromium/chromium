@@ -17,8 +17,6 @@ source_set("prefs") {
 source_set("omnibox_everywhere") {
   sources = [
     "omnibox_everywhere_controller.cc",
-    "omnibox_everywhere_event_handler.cc",
-    "omnibox_everywhere_event_handler.h",
     "omnibox_everywhere_ui_manager.cc",
     "omnibox_everywhere_ui_manager.h",
     "omnibox_everywhere_widget_delegate.cc",
@@ -50,6 +48,12 @@ source_set("omnibox_everywhere") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
+  if (use_aura) {
+    sources += [
+      "omnibox_everywhere_event_handler_aura.cc",
+      "omnibox_everywhere_event_handler_aura.h",
+    ]
+  }
   if (is_mac) {
     sources += [
       "omnibox_everywhere_mac_utils.h",
@@ -64,9 +68,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "omnibox_everywhere_controller_unittest.cc",
-    "omnibox_everywhere_event_handler_unittest.cc",
     "omnibox_everywhere_ui_manager_unittest.cc",
   ]
+  if (use_aura) {
+    sources += [ "omnibox_everywhere_event_handler_aura_unittest.cc" ]
+  }
   deps = [
     ":omnibox_everywhere",
     ":prefs",
