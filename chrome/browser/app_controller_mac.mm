@@ -112,6 +112,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -123,6 +124,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/handoff/handoff_manager.h"
 #include "components/handoff/handoff_utility.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -1640,6 +1642,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
           enable = YES;
           break;
         case IDC_NEW_INCOGNITO_WINDOW:
+        case IDC_NEW_ISOLATED_WINDOW:
           enable = _menuState->IsCommandEnabled(tag) ? canOpenNewBrowser : NO;
           break;
         default:
@@ -1764,6 +1767,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
                              IDC_FOCUS_SEARCH);
       break;
     case IDC_NEW_INCOGNITO_WINDOW:
+    case IDC_NEW_ISOLATED_WINDOW:
       CreateBrowser(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
       break;
     case IDC_RESTORE_TAB:
@@ -1935,6 +1939,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   _menuState->UpdateCommandEnabled(IDC_NEW_TAB, true);
   _menuState->UpdateCommandEnabled(IDC_NEW_WINDOW, true);
   _menuState->UpdateCommandEnabled(IDC_NEW_INCOGNITO_WINDOW, true);
+  _menuState->UpdateCommandEnabled(IDC_NEW_ISOLATED_WINDOW, true);
   _menuState->UpdateCommandEnabled(IDC_OPEN_FILE, true);
   _menuState->UpdateCommandEnabled(IDC_CLEAR_BROWSING_DATA, true);
   _menuState->UpdateCommandEnabled(IDC_RESTORE_TAB, false);
@@ -2167,6 +2172,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     return dockMenu;
   }
 
+  bool isolated_mode_enabled =
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+          *profile->GetPrefs(), chrome::GetChannel());
+
   if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
       policy::IncognitoModeAvailability::kDisabled) {
     titleStr = l10n_util::GetNSStringWithFixup(IDS_NEW_INCOGNITO_WINDOW_MAC);
@@ -2175,6 +2184,17 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
                                keyEquivalent:@""];
     item.target = self;
     item.tag = IDC_NEW_INCOGNITO_WINDOW;
+    item.enabled = [self validateUserInterfaceItem:item];
+    [dockMenu addItem:item];
+  }
+
+  if (isolated_mode_enabled) {
+    titleStr = l10n_util::GetNSStringWithFixup(IDS_NEW_ISOLATED_WINDOW_MAC);
+    item = [[NSMenuItem alloc] initWithTitle:titleStr
+                                      action:@selector(commandFromDock:)
+                               keyEquivalent:@""];
+    item.target = self;
+    item.tag = IDC_NEW_ISOLATED_WINDOW;
     item.enabled = [self validateUserInterfaceItem:item];
     [dockMenu addItem:item];
   }
@@ -2216,6 +2236,46 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
 
   _profilePrefRegistrar.reset();
+
+  // Update Incognito and Isolated Mode menu items based on enterprise policy.
+  // Isolated Mode replaces standard Incognito for enterprise users, but they
+  // offer different privacy guarantees. To highlight this distinction, we
+  // keep the Incognito item visible, but disabled, rather than hiding it,
+  // making it clear that Isolated Mode is active instead.
+  NSMenuItem* fileMenuItem = [NSApp.mainMenu itemWithTag:kMacFileMenuId];
+  if (fileMenuItem && fileMenuItem.hasSubmenu) {
+    NSMenu* fileMenu = fileMenuItem.submenu;
+    NSMenuItem* incognitoItem = [fileMenu itemWithTag:IDC_NEW_INCOGNITO_WINDOW];
+    NSMenuItem* isolatedItem = [fileMenu itemWithTag:IDC_NEW_ISOLATED_WINDOW];
+
+    if (incognitoItem && isolatedItem) {
+      bool isolated_mode_enabled =
+          profile && enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+                         *profile->GetPrefs(), chrome::GetChannel());
+
+      // Toggle visibility of Isolated Mode item based on policy.
+      isolatedItem.hidden = !isolated_mode_enabled;
+
+      // Both modes logically share the same keyboard shortcut (Cmd+Shift+N) and
+      // the same underlying function to open the window (which opens a browser
+      // with the primary OTR profile, behaving differently based on policy).
+      // To avoid confusion, assign the shortcut to the active/enabled item
+      // and clear it from the other.
+      NSMenuItem* targetItem =
+          isolated_mode_enabled ? isolatedItem : incognitoItem;
+      NSMenuItem* sourceItem =
+          isolated_mode_enabled ? incognitoItem : isolatedItem;
+
+      if (sourceItem.keyEquivalent.length > 0) {
+        targetItem.keyEquivalent = sourceItem.keyEquivalent;
+        targetItem.keyEquivalentModifierMask =
+            sourceItem.keyEquivalentModifierMask;
+
+        sourceItem.keyEquivalent = @"";
+        sourceItem.keyEquivalentModifierMask = 0;
+      }
+    }
+  }
 
   NSMenuItem* bookmarkItem = [NSApp.mainMenu itemWithTag:kBookmarksMenuId];
   BOOL hidden = bookmarkItem.hidden;

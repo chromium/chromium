@@ -2061,8 +2061,7 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
 
   command_updater->UpdateCommandEnabled(
       IDC_NEW_INCOGNITO_WINDOW,
-      incognito_availability != policy::IncognitoModeAvailability::kDisabled &&
-          !profile->IsGuestSession());
+      IncognitoModePrefs::IsIncognitoAllowed(profile));
 
   command_updater->UpdateCommandEnabled(IDC_NEW_ISOLATED_WINDOW,
                                         isolated_mode_enabled);

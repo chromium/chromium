@@ -141,6 +141,9 @@ NSMenuItem* BuildFileMenu(NSApplication* nsapp,
               Item(IDS_NEW_INCOGNITO_WINDOW_MAC)
                   .command_id(IDC_NEW_INCOGNITO_WINDOW)
                   .remove_if(is_pwa),
+              Item(IDS_NEW_ISOLATED_WINDOW_MAC)
+                  .command_id(IDC_NEW_ISOLATED_WINDOW)
+                  .remove_if(is_pwa),
               Item(IDS_REOPEN_CLOSED_TABS_MAC)
                   .command_id(IDC_RESTORE_TAB)
                   .remove_if(is_pwa),
