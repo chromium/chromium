@@ -73,7 +73,8 @@ bool IsEmpty(const mojom::LargestContentfulPaintTiming& timing) {
 }
 
 bool IsEmpty(const mojom::MonotonicPaintTiming& timing) {
-  return !timing.first_paint && !timing.first_contentful_paint;
+  return !timing.first_paint && !timing.first_contentful_paint &&
+         !timing.first_contentful_paint_submitted;
 }
 
 bool IsEmpty(const mojom::SoftNavigationMetrics& timing) {

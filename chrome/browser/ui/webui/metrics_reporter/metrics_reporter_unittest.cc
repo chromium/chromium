@@ -255,3 +255,68 @@ TEST_F(WebUIMetricsReporterTest,
 
   run_loop.Run();
 }
+
+TEST(WebUIMetricsReporterUnboundTest, HasMarkBeforeRemoteCreated) {
+  content::BrowserTaskEnvironment task_environment;
+  TestMetricsReporter metrics_reporter;
+
+  base::RunLoop run_loop;
+  bool has_mark_called = false;
+  metrics_reporter.HasMark(
+      "test_mark",
+      base::BindOnce(
+          [](base::OnceClosure quit_closure, bool* called, bool has_mark) {
+            *called = true;
+            EXPECT_TRUE(has_mark);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &has_mark_called));
+
+  EXPECT_FALSE(has_mark_called);
+
+  testing::StrictMock<MockPageMetrics> page_metrics;
+  EXPECT_CALL(page_metrics, OnGetMark("test_mark", _))
+      .WillOnce([](const std::string& mark,
+                   MetricsReporter::OnGetMarkCallback callback) {
+        std::move(callback).Run(base::Seconds(1));
+      });
+
+  metrics_reporter.OnPageRemoteCreated(page_metrics.BindAndGetRemote());
+  run_loop.Run();
+
+  EXPECT_TRUE(has_mark_called);
+
+  // Should not crash before remote created.
+  metrics_reporter.ClearMark("test_mark");
+}
+
+TEST(WebUIMetricsReporterUnboundTest, MeasureBeforeRemoteCreated) {
+  content::BrowserTaskEnvironment task_environment;
+  TestMetricsReporter metrics_reporter;
+
+  base::RunLoop run_loop;
+  bool measure_called = false;
+  metrics_reporter.Measure("test_mark", base::TimeTicks() + base::Seconds(2),
+                           base::BindOnce(
+                               [](base::OnceClosure quit_closure, bool* called,
+                                  base::TimeDelta delta) {
+                                 *called = true;
+                                 EXPECT_EQ(delta, base::Seconds(1));
+                                 std::move(quit_closure).Run();
+                               },
+                               run_loop.QuitClosure(), &measure_called));
+
+  EXPECT_FALSE(measure_called);
+
+  testing::StrictMock<MockPageMetrics> page_metrics;
+  EXPECT_CALL(page_metrics, OnGetMark("test_mark", _))
+      .WillOnce([](const std::string& mark,
+                   MetricsReporter::OnGetMarkCallback callback) {
+        std::move(callback).Run(base::Seconds(1));
+      });
+
+  metrics_reporter.OnPageRemoteCreated(page_metrics.BindAndGetRemote());
+  run_loop.Run();
+
+  EXPECT_TRUE(measure_called);
+}

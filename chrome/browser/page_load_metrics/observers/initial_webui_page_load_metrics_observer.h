@@ -15,6 +15,7 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+class MetricsReporter;
 class WaapUIMetricsService;
 class InitialWebUIWindowMetricsManager;
 
@@ -101,10 +102,50 @@ class InitialWebUIPageLoadMetricsObserver
   // The service is guaranteed to be non-null.
   WaapUIMetricsService* service() const;
 
-
+  MetricsReporter& GetMetricsReporter();
 
   // Returns the MetricsManager for the current window.
   InitialWebUIWindowMetricsManager* GetMetricsManager() const;
+
+  // Initiates an asynchronous query chain to fetch WebUI frontend timing data
+  // (marked in JS via user timing marks) and records them to UKM once all are
+  // collected.
+  void RecordRendererMilestones();
+
+  // Temporary container to accumulate WebUI timing data during the
+  // asynchronous fetching sequence.
+  struct TimingData;
+
+  // Queries each timing mark in `mark_names` in parallel. Uses a BarrierClosure
+  // to invoke `OnRendererMilestonesRecorded` once all marks have been checked
+  // and measured.
+  void FetchMarks(std::unique_ptr<TimingData> data,
+                  const std::vector<std::string>& mark_names,
+                  base::TimeTicks navigation_start);
+
+  void FetchMark(const std::string& mark_name,
+                 TimingData* data_ptr,
+                 base::TimeTicks navigation_start,
+                 base::OnceClosure barrier);
+
+  // Callback triggered after checking for the existence of `mark_name`.
+  // If the mark is found, initiates the measurement; otherwise, invokes the
+  // barrier closure.
+  void OnMarkChecked(const std::string& mark_name,
+                     TimingData* data_ptr,
+                     base::TimeTicks navigation_start,
+                     base::OnceClosure barrier,
+                     bool has_mark);
+
+  // Callback triggered after measuring the timing duration for `mark_name`.
+  // Saves the duration value and invokes the barrier closure.
+  void OnMarkMeasured(const std::string& mark_name,
+                      TimingData* data_ptr,
+                      base::OnceClosure barrier,
+                      base::TimeDelta delta);
+
+  // Writes all successfully fetched WebUI timing marks from `data` to UKM.
+  void OnRendererMilestonesRecorded(std::unique_ptr<TimingData> data);
 
   // Total CPU wall time used by the page while in the foreground.
   base::TimeDelta total_foreground_cpu_time_;
@@ -141,6 +182,8 @@ class InitialWebUIPageLoadMetricsObserver
 
   // True if we have already recorded the one-time metrics.
   bool metrics_recorded_ = false;
+
+  base::WeakPtrFactory<InitialWebUIPageLoadMetricsObserver> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_INITIAL_WEBUI_PAGE_LOAD_METRICS_OBSERVER_H_

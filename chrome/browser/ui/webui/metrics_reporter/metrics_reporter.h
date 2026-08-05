@@ -66,6 +66,11 @@ class MetricsReporter : public metrics_reporter::mojom::PageMetricsHost {
   std::map<std::string, base::TimeTicks> marks_;
 
   mojo::Remote<metrics_reporter::mojom::PageMetrics> page_;
+  // Holds the pending receiver for `page_` until `OnPageRemoteCreated()` is
+  // called, at which point the pipes are fused. This allows early timing
+  // queries to be buffered in the Mojo pipe during startup.
+  mojo::PendingReceiver<metrics_reporter::mojom::PageMetrics> page_receiver_;
+
   mojo::Receiver<metrics_reporter::mojom::PageMetricsHost> host_{this};
 };
 

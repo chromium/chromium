@@ -900,6 +900,14 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
       timing->monotonic_paint_timing->first_contentful_paint =
           perf.FirstContentfulPaintAsMonotonicTime();
     }
+    if (!perf.FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+             .is_null()) {
+      if (!timing->monotonic_paint_timing) {
+        timing->monotonic_paint_timing = mojom::MonotonicPaintTiming::New();
+      }
+      timing->monotonic_paint_timing->first_contentful_paint_submitted =
+          perf.FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
+    }
   }
 
   return Timing(std::move(timing), monotonic_timing);

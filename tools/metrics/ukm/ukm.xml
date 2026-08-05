@@ -11406,6 +11406,31 @@ be describing additional metrics about the same event.
       could be evicted by Android anytime after that happens.
     </summary>
   </metric>
+  <metric name="PaintTiming.FirstContentfulPaintSubmittedMs">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time the first contentful paint was rendered by Blink and
+      submitted to the compositor (but not yet presented on screen).
+    </summary>
+  </metric>
+  <metric name="PaintTiming.JsCompositionCompleteMs">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time Lit DOM composition completes.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.JsResourcesLoadedMs">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time WebUI JS resources have evaluated.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.LoadTimeDataReadMs">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time loadTimeData initial state is parsed.
+    </summary>
+  </metric>
   <metric name="PaintTiming.NavigationToFirstContentfulPaint">
     <summary>
       Measures the time in milliseconds from navigation timing's navigation

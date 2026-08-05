@@ -116,6 +116,9 @@ struct MonotonicPaintTiming {
 
   // Time when the first contentful thing (image, text, etc.) is painted.
   mojo_base.mojom.TimeTicks? first_contentful_paint;
+
+  // Time when the first contentful paint was submitted to compositor.
+  mojo_base.mojom.TimeTicks? first_contentful_paint_submitted;
 };
 
 // TimeDeltas below represent durations of time during the page load.
