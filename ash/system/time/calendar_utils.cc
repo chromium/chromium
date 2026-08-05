@@ -113,8 +113,8 @@ std::u16string GetDayIntOfMonth(const base::Time local_date) {
 }
 
 std::u16string GetMonthNameAndDayOfMonth(const base::Time date) {
-  return calendar_utils::FormatDate(
-      DateHelper::GetInstance()->month_day_formatter(), date);
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      date, base::i18n::datetime_options::MD::Long());
 }
 
 std::u16string GetTwelveHourClockTime(const base::Time date) {

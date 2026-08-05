@@ -77,8 +77,6 @@ class DateHelper : public LocaleChangeObserver,
   // 7:00, which is Mar 31st 00:00 PST.
   ASH_EXPORT base::Time GetLocalMidnight(base::Time date);
 
-  icu::SimpleDateFormat& month_day_formatter() { return month_day_formatter_; }
-
   icu::SimpleDateFormat& month_day_year_formatter() {
     return month_day_year_formatter_;
   }
@@ -164,9 +162,6 @@ class DateHelper : public LocaleChangeObserver,
   // (For example: different languages are set in different accounts, and the
   // login screen will use the owener's locale setting.)
   void OnLocaleChanged() override;
-
-  // Formatter for getting the month name and day of month.
-  icu::SimpleDateFormat month_day_formatter_;
 
   // Formatter for getting the month name, day of month, and year.
   icu::SimpleDateFormat month_day_year_formatter_;
