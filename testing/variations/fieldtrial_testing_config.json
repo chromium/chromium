@@ -15142,7 +15142,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithSessionRestore",
+                    "params": {
+                        "StartupDelayIncludesSessionRestore": "true"
+                    },
                     "enable_features": [
                         "ImprovedStartupBestEffortDelay"
                     ]
