@@ -117,7 +117,9 @@ void TabDragSession::OnInputEvent(const TabDragInputEvent& event) {
       EndSession();
       break;
     case TabDragInputEvent::Type::kMoved:
-      HandleMovedEvent(event.screen_point);
+      if (drag_mode_ != DragMode::kDetachedWindow) {
+        HandleMovedEvent(event.screen_point);
+      }
       break;
   }
 }
