@@ -744,8 +744,6 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
       pre_tai_run_loop_ = std::make_unique<base::RunLoop>();
     }
 
-    void RunMakeCredentialWithLargeBlobSupport(std::string* out_b64);
-
     void WaitForDelegateDestruction() {
       destruction_run_loop_->Run();
       destruction_run_loop_ = std::make_unique<base::RunLoop>();
