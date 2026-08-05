@@ -307,7 +307,7 @@ TEST_F(PointerTest, SetCursor) {
   const viz::CompositorRenderPass* last_render_pass;
   {
     viz::SurfaceId surface_id =
-        *pointer->host_window()->layer()->AsSurface()->GetSurfaceId();
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -324,7 +324,7 @@ TEST_F(PointerTest, SetCursor) {
   // Verify that adjustment to hotspot resulted in new frame.
   {
     viz::SurfaceId surface_id =
-        *pointer->host_window()->layer()->AsSurface()->GetSurfaceId();
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -398,7 +398,7 @@ TEST_F(PointerTest, SetCursorType) {
 
   {
     viz::SurfaceId surface_id =
-        *pointer->host_window()->layer()->AsSurface()->GetSurfaceId();
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -477,7 +477,7 @@ TEST_F(PointerTest, MAYBE_SetCursorAndSetCursorType) {
 
   {
     viz::SurfaceId surface_id =
-        *pointer->host_window()->layer()->AsSurface()->GetSurfaceId();
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -498,7 +498,7 @@ TEST_F(PointerTest, MAYBE_SetCursorAndSetCursorType) {
 
   {
     viz::SurfaceId surface_id =
-        *pointer->host_window()->layer()->AsSurface()->GetSurfaceId();
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -2179,7 +2179,7 @@ TEST_F(PointerTest, SetCursorWithSurfaceChange) {
   test::WaitForLastFrameAck(pointer.get());
 
   // Pointer should have a surface by now.
-  ASSERT_TRUE(pointer->host_window()->layer()->AsSurface()->GetSurfaceId());
+  ASSERT_TRUE(pointer->host_window()->layer()->GetSurfaceId());
 
   // Immediately set a green cursor with the small size.
   constexpr gfx::Size kSmallBufferSize(10, 10);

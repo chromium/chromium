@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInMirror) {
         mirror->GetMirrorWindowForDisplayIdForTest(secondary_id);
     EXPECT_TRUE(mirror_window->layer()->HasExternalContent());
     EXPECT_EQ(primary_root->GetSurfaceId(),
-              *mirror_window->layer()->AsSurface()->GetSurfaceId());
+              mirror_window->layer()->external_content_surface_id());
   }
 }
 
@@ -156,6 +156,6 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInUnified) {
             display.id());
     EXPECT_TRUE(mirror_window->layer()->HasExternalContent());
     EXPECT_EQ(primary_root->GetSurfaceId(),
-              *mirror_window->layer()->AsSurface()->GetSurfaceId());
+              mirror_window->layer()->external_content_surface_id());
   }
 }

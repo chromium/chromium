@@ -34,7 +34,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAura
   }
 
   // DelegatedFrameHostClient implementation.
-  ui::LayerSurface* GetDelegatedFrameHostLayer() const override;
+  ui::Layer* DelegatedFrameHostGetLayer() const override;
   bool DelegatedFrameHostIsVisible() const override;
   SkColor DelegatedFrameHostGetGutterColor() const override;
   void OnFrameTokenChanged(uint32_t frame_token,

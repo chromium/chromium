@@ -3161,10 +3161,10 @@ TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorMatchesCompositorFrame) {
   metadata.root_background_color = SkColors::kRed;
   view_->SetRenderFrameMetadata(metadata);
   view_->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks::Now());
-  auto* parent_layer = view_->GetNativeView()->layer()->AsSurface();
+  auto* parent_layer = view_->GetNativeView()->layer()->AsSolidColor();
 
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), parent_layer->bounds());
-  EXPECT_EQ(SkColors::kRed, parent_layer->GetBackgroundColor());
+  EXPECT_EQ(SkColors::kRed, parent_layer->background_color());
 }
 
 // Tests background setting priority.
@@ -3258,16 +3258,12 @@ TEST_F(RenderWidgetHostViewAuraTest, DeviceScaleFactorChanges) {
   view_->SetSize(gfx::Size(300, 300));
   ASSERT_TRUE(view_->HasPrimarySurface());
   EXPECT_EQ(gfx::Size(300, 300), view_->window_->layer()->size());
-  viz::SurfaceId initial_surface_id =
-      *view_->window_->layer()->AsSurface()->GetSurfaceId();
-  EXPECT_EQ(
-      nullptr,
-      view_->window_->layer()->AsSurface()->GetOldestAcceptableFallback());
+  viz::SurfaceId initial_surface_id = *view_->window_->layer()->GetSurfaceId();
+  EXPECT_EQ(nullptr, view_->window_->layer()->GetOldestAcceptableFallback());
 
   // Resizing should update the primary SurfaceId.
   aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(2.0f);
-  viz::SurfaceId new_surface_id =
-      *view_->window_->layer()->AsSurface()->GetSurfaceId();
+  viz::SurfaceId new_surface_id = *view_->window_->layer()->GetSurfaceId();
   EXPECT_NE(new_surface_id, initial_surface_id);
   EXPECT_EQ(gfx::Size(300, 300), view_->window_->layer()->bounds().size());
 }
@@ -3379,16 +3375,11 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   UNSAFE_TODO(views[1])->SetSize(size2);
   // Show it, it should block until we give it a frame.
   UNSAFE_TODO(views[1])->ShowWithVisibility(PageVisibilityState::kVisible);
-  ASSERT_TRUE(UNSAFE_TODO(views[1])
-                  ->window_->layer()
-                  ->AsSurface()
-                  ->GetOldestAcceptableFallback());
+  ASSERT_TRUE(
+      UNSAFE_TODO(views[1])->window_->layer()->GetOldestAcceptableFallback());
   EXPECT_EQ(
-      *UNSAFE_TODO(views[1])
-           ->window_->layer()
-           ->AsSurface()
-           ->GetOldestAcceptableFallback(),
-      *UNSAFE_TODO(views[1])->window_->layer()->AsSurface()->GetSurfaceId());
+      *UNSAFE_TODO(views[1])->window_->layer()->GetOldestAcceptableFallback(),
+      *UNSAFE_TODO(views[1])->window_->layer()->GetSurfaceId());
 
   for (size_t i = 0; i < renderer_count; ++i)
     UNSAFE_TODO(views[i])->Destroy();
@@ -5917,11 +5908,9 @@ TEST_F(RenderWidgetHostViewAuraTest, DropFallbackIfResizedWhileHidden) {
   view_->Hide();
   view_->SetSize(gfx::Size(54, 32));
   view_->ShowWithVisibility(PageVisibilityState::kVisible);
-  ASSERT_TRUE(
-      view_->window_->layer()->AsSurface()->GetOldestAcceptableFallback());
-  EXPECT_EQ(
-      *view_->window_->layer()->AsSurface()->GetOldestAcceptableFallback(),
-      *view_->window_->layer()->AsSurface()->GetSurfaceId());
+  ASSERT_TRUE(view_->window_->layer()->GetOldestAcceptableFallback());
+  EXPECT_EQ(*view_->window_->layer()->GetOldestAcceptableFallback(),
+            *view_->window_->layer()->GetSurfaceId());
 }
 
 // If a tab is hidden and shown without being resized in the meantime, the
@@ -5933,15 +5922,13 @@ TEST_F(RenderWidgetHostViewAuraTest, DontDropFallbackIfNotResizedWhileHidden) {
   // Force fallback being set.
   view_->DidNavigate();
   view_->ResetFallbackToFirstNavigationSurface();
-  ASSERT_TRUE(
-      view_->window_->layer()->AsSurface()->GetOldestAcceptableFallback());
+  ASSERT_TRUE(view_->window_->layer()->GetOldestAcceptableFallback());
   viz::SurfaceId fallback =
-      *view_->window_->layer()->AsSurface()->GetOldestAcceptableFallback();
+      *view_->window_->layer()->GetOldestAcceptableFallback();
   view_->Hide();
   view_->ShowWithVisibility(PageVisibilityState::kVisible);
-  ASSERT_TRUE(
-      view_->window_->layer()->AsSurface()->GetOldestAcceptableFallback());
-  EXPECT_EQ(fallback, *view_->window_->layer()->AsSurface()->GetSurfaceId());
+  ASSERT_TRUE(view_->window_->layer()->GetOldestAcceptableFallback());
+  EXPECT_EQ(fallback, *view_->window_->layer()->GetSurfaceId());
 }
 
 // Check that TakeFallbackContentFrom() copies the fallback SurfaceId and
@@ -5960,9 +5947,8 @@ TEST_F(RenderWidgetHostViewAuraTest, TakeFallbackContent) {
   // Call TakeFallbackContentFrom(). The second view should obtain a fallback
   // from the first view.
   view2->TakeFallbackContentFrom(view_);
-  EXPECT_EQ(
-      view_->window_->layer()->AsSurface()->GetSurfaceId()->ToSmallestId(),
-      *view2->window_->layer()->AsSurface()->GetOldestAcceptableFallback());
+  EXPECT_EQ(view_->window_->layer()->GetSurfaceId()->ToSmallestId(),
+            *view2->window_->layer()->GetOldestAcceptableFallback());
 
   DestroyView(view2);
 }
@@ -5989,19 +5975,12 @@ TEST_F(RenderWidgetHostViewAuraTest, TakeFallbackContentForPrerender) {
   ASSERT_FALSE(prerender_view->delegated_frame_host_client_
                    ->DelegatedFrameHostIsVisible());
   prerender_view->SetSize(gfx::Size(50, 50));
-  ASSERT_FALSE(prerender_view->window_->layer()
-                   ->AsSurface()
-                   ->GetOldestAcceptableFallback());
+  ASSERT_FALSE(prerender_view->window_->layer()->GetOldestAcceptableFallback());
 
   prerender_view->TakeFallbackContentFrom(old_view);
-  ASSERT_TRUE(prerender_view->window_->layer()
-                  ->AsSurface()
-                  ->GetOldestAcceptableFallback());
-  EXPECT_EQ(
-      old_view->window_->layer()->AsSurface()->GetSurfaceId()->ToSmallestId(),
-      *(prerender_view->window_->layer()
-            ->AsSurface()
-            ->GetOldestAcceptableFallback()));
+  ASSERT_TRUE(prerender_view->window_->layer()->GetOldestAcceptableFallback());
+  EXPECT_EQ(old_view->window_->layer()->GetSurfaceId()->ToSmallestId(),
+            *(prerender_view->window_->layer()->GetOldestAcceptableFallback()));
 
   DestroyView(prerender_view);
   DestroyView(old_view);

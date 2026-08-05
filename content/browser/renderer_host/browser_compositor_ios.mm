@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/begin_frame_source_ios.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_factory.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -38,10 +37,10 @@ BrowserCompositorIOS::BrowserCompositorIOS(
     : client_(client),
       accelerated_widget_(accelerated_widget),
       weak_factory_(this) {
-  root_layer_ = std::make_unique<ui::LayerSurface>();
+  root_layer_ = std::make_unique<ui::LayerSolidColor>();
   // Ensure that this layer draws nothing when it does not not have delegated
   // content (otherwise this solid color will be flashed during navigation).
-  root_layer_->SetBackgroundColor(SkColors::kRed);
+  root_layer_->SetColor(SkColors::kRed);
   delegated_frame_host_ = std::make_unique<DelegatedFrameHost>(
       frame_sink_id, this, /*should_register_frame_sink_id=*/true);
 
@@ -280,7 +279,7 @@ void BrowserCompositorIOS::TakeFallbackContentFrom(
 ////////////////////////////////////////////////////////////////////////////////
 // DelegatedFrameHost, public:
 
-ui::LayerSurface* BrowserCompositorIOS::GetDelegatedFrameHostLayer() const {
+ui::Layer* BrowserCompositorIOS::DelegatedFrameHostGetLayer() const {
   return root_layer_.get();
 }
 
