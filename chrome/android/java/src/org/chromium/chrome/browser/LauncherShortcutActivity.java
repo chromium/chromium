@@ -225,11 +225,14 @@ public class LauncherShortcutActivity extends Activity {
         intent.setPackage(context.getPackageName());
         intent.setClass(context, LauncherShortcutActivity.class);
 
+        // Note: setRank(0) ensures this shortcut appears before shortcuts added by
+        // OtherDevicesShortcutController.
         return new ShortcutInfo.Builder(context, shortcutId)
                 .setShortLabel(context.getString(labelResId))
                 .setLongLabel(
                         sLabelForTesting != null ? sLabelForTesting : context.getString(labelResId))
                 .setIcon(Icon.createWithResource(context, iconResId))
+                .setRank(0)
                 .setIntent(intent)
                 .build();
     }

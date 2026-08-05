@@ -244,11 +244,11 @@ public class OtherDevicesShortcutController implements Destroyable {
             // TODO(crbug.com/484887324): Consider filtering out devices which won't show up in the
             // "Recent Tabs" page - this may happen if a device has no eligible open tabs.
 
-            // LauncherShortcutActivity may create up to 2 dynamic shortcuts, which should always
-            // appear before the STTS shortcuts.
+            // LauncherShortcutActivity may create a dynamic shortcut (with rank 0), which should
+            // always appear before the STTS shortcuts, so start at rank 1 here.
             // TODO(crbug.com/484887324): Introduce a common manager class for all dynamic
             // shortcuts.
-            int nextRank = 2;
+            int nextRank = 1;
             // Limit the number of devices to avoid overcrowding the share sheet and the launcher.
             // The list of devices is sorted, so the most-recently-used devices will be used for
             // shortcuts.
