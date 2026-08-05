@@ -59,6 +59,8 @@
 @property(nonatomic, strong, readonly) GeminiConsentHeader* header;
 // Whether the consent rows are collapsible.
 @property(nonatomic, assign, readonly) BOOL collapsible;
+// Whether the configuration enforces strict legal consent.
+@property(nonatomic, assign, readonly) BOOL useStrict;
 
 // Factory method to build a configuration. Most notably, the number of rows
 // and their order might change depending on the parameters.

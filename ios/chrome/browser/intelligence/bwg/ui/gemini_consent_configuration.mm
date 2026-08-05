@@ -68,13 +68,15 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 - (instancetype)initWithRows:(NSArray<GeminiConsentRow*>*)rows
                     footnote:(NSAttributedString*)footnote
                       header:(GeminiConsentHeader*)header
-                 collapsible:(BOOL)collapsible {
+                 collapsible:(BOOL)collapsible
+                   useStrict:(BOOL)useStrict {
   self = [super init];
   if (self) {
     _rows = [rows copy];
     _footnote = [footnote copy];
     _header = header;
     _collapsible = collapsible;
+    _useStrict = useStrict;
   }
   return self;
 }
@@ -93,7 +95,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
       return [[GeminiConsentConfiguration alloc] initWithRows:rows
                                                      footnote:nil
                                                        header:[self liveHeader]
-                                                  collapsible:NO];
+                                                  collapsible:NO
+                                                    useStrict:NO];
     }
     case GeminiFirstRunType::kNewUser: {
       NSArray<GeminiConsentRow*>* rows =
@@ -108,7 +111,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
       return [[GeminiConsentConfiguration alloc] initWithRows:rows
                                                      footnote:footnote
                                                        header:nil
-                                                  collapsible:useStrict];
+                                                  collapsible:useStrict
+                                                    useStrict:useStrict];
     }
   }
 }
@@ -216,8 +220,9 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   NSString* title = l10n_util::GetNSString(
       useStrict ? IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE_STRICT
                 : IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE);
-  NSString* text =
-      l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_SHARE_TAB_BODY);
+  NSString* text = l10n_util::GetNSString(
+      useStrict ? IDS_IOS_GEMINI_CONSENT_SHARE_TAB_BODY_STRICT
+                : IDS_IOS_GEMINI_CONSENT_SHARE_TAB_BODY);
   NSAttributedString* body =
       [[NSAttributedString alloc] initWithString:text
                                       attributes:[self defaultTextAttributes]];
@@ -272,8 +277,7 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   NSAttributedString* body =
       [self attributedTextForBody:text
                           actions:@[
-                            kGeminiDataGovernanceNormalChoicesLinkAction,
-                            kGeminiDataGovernanceNormalLocationLinkAction
+                            kGeminiActivityLinkAction, kGeminiChoicesLinkAction
                           ]];
   GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
                                                            title:title
@@ -287,7 +291,7 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   UIImage* icon =
       SymbolWithConfiguration(SymbolHistory, [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
-      IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE);
+      IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_TITLE);
 
   NSMutableAttributedString* body = [[NSMutableAttributedString alloc] init];
 
@@ -322,9 +326,15 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   NSString* text2 = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_2);
   NSAttributedString* paragraph2 =
-      [self attributedTextForBody:text2
-                          actions:@[ kGeminiDataGovernanceStrictLinkAction ]];
+      [self attributedTextForBody:text2 actions:@[ kGeminiActivityLinkAction ]];
   [body appendAttributedString:paragraph2];
+  [[body mutableString] appendString:@"\n\n"];
+
+  NSString* text3 = l10n_util::GetNSString(
+      IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_3);
+  [body appendAttributedString:[[NSAttributedString alloc]
+                                   initWithString:text3
+                                       attributes:defaultAttrs]];
 
   GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
                                                            title:title
@@ -404,23 +414,39 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   BOOL isKorea =
       country &&
       [country caseInsensitiveCompare:kSouthKoreaCountryCode] == NSOrderedSame;
-  NSString* baseText = l10n_util::GetNSString(
-      isKorea ? IDS_IOS_GEMINI_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA
-              : IDS_IOS_GEMINI_CONSENT_FOOTNOTE_TEXT);
+  int baseTextID =
+      isKorea
+          ? (useStrict ? IDS_IOS_GEMINI_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_STRICT
+                       : IDS_IOS_GEMINI_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA)
+          : (useStrict ? IDS_IOS_GEMINI_CONSENT_FOOTNOTE_TEXT_STRICT
+                       : IDS_IOS_GEMINI_CONSENT_FOOTNOTE_TEXT);
+  NSString* baseText = l10n_util::GetNSString(baseTextID);
 
-  NSArray<NSString*>* actions = isKorea ? @[
-    kGeminiFirstFootnoteLinkAction,
-    kGeminiKoreanTermsLinkAction,
-    kGeminiSecondFootnoteLinkAction,
-  ] : @[
-    kGeminiFirstFootnoteLinkAction,
-    kGeminiSecondFootnoteLinkAction,
-  ];
+  NSArray<NSString*>* actions =
+      isKorea ? (useStrict ? @[
+        kGeminiFirstFootnoteLinkAction,
+        kGeminiKoreanTermsLinkAction,
+        kGeminiSecondFootnoteLinkAction,
+        kGeminiActivityLinkAction,
+        kGeminiChoicesLinkAction,
+      ] : @[
+        kGeminiFirstFootnoteLinkAction,
+        kGeminiKoreanTermsLinkAction,
+        kGeminiSecondFootnoteLinkAction,
+      ])
+              : (useStrict ? @[
+                kGeminiChoicesLinkAction,
+                kGeminiFirstFootnoteLinkAction,
+                kGeminiSecondFootnoteLinkAction,
+              ] : @[
+                kGeminiFirstFootnoteLinkAction,
+                kGeminiSecondFootnoteLinkAction,
+              ]);
 
   NSMutableAttributedString* footnote =
       [[self attributedTextForFooter:baseText actions:actions] mutableCopy];
 
-  if ([country isEqualToString:kUSCountryCode]) {
+  if ([country isEqualToString:kUSCountryCode] && !useStrict) {
     NSString* addition = l10n_util::GetNSString(
         IDS_IOS_GEMINI_CONSENT_FOOTNOTE_US_ONLY_ADDITION);
     [[footnote mutableString] appendString:@" "];

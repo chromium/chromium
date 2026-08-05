@@ -54,8 +54,8 @@ const CGFloat kInsetAdjustment = 20;
 // Scroll view that contains the horizontal stack view for transitions.
 @property(nonatomic, strong) UIScrollView* horizontalScrollView;
 
-// Returns the button stack configuration for promo or consent.
-+ (ButtonStackConfiguration*)buttonsConfigurationForPromo:(BOOL)promo;
+// Returns the button stack configuration for the promo screen.
++ (ButtonStackConfiguration*)buttonsConfigurationForPromo;
 
 @end
 
@@ -91,8 +91,11 @@ const CGFloat kInsetAdjustment = 20;
                  firstRunType:(GeminiFirstRunType)firstRunType
          consentConfiguration:
              (GeminiConsentConfiguration*)consentConfiguration {
-  ButtonStackConfiguration* configuration = [GeminiFirstRunWrapperViewController
-      buttonsConfigurationForPromo:showPromo];
+  ButtonStackConfiguration* configuration =
+      showPromo
+          ? [GeminiFirstRunWrapperViewController buttonsConfigurationForPromo]
+          : [GeminiConsentViewController
+                buttonStackConfigurationForConfiguration:consentConfiguration];
 
   self = [super initWithConfiguration:configuration];
   if (self) {
@@ -443,28 +446,23 @@ const CGFloat kInsetAdjustment = 20;
 }
 
 // Generates the configuration required by `ButtonStackViewController` for the
-// primary & secondary actions. Buttons customization should all happen here.
-+ (ButtonStackConfiguration*)buttonsConfigurationForPromo:(BOOL)promo {
+// promo screen's primary & secondary actions.
++ (ButtonStackConfiguration*)buttonsConfigurationForPromo {
   ButtonStackConfiguration* configuration =
       [[ButtonStackConfiguration alloc] init];
-  if (promo) {
-    configuration.primaryActionString =
-        l10n_util::GetNSString(IDS_IOS_BWG_PROMO_PRIMARY_BUTTON);
-    configuration.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_BWG_PROMO_SECONDARY_BUTTON);
-  } else {
-    configuration.primaryActionString =
-        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
-    configuration.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
-  }
+  configuration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_PRIMARY_BUTTON);
+  configuration.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_SECONDARY_BUTTON);
   return configuration;
 }
 
 - (void)updateButtonConfiguration {
   BOOL onPromo = _currentChildViewController == _promoViewController;
-  ButtonStackConfiguration* configuration = [GeminiFirstRunWrapperViewController
-      buttonsConfigurationForPromo:onPromo];
+  ButtonStackConfiguration* configuration =
+      onPromo
+          ? [GeminiFirstRunWrapperViewController buttonsConfigurationForPromo]
+          : [_consentViewController buttonStackConfiguration];
   [self updateConfiguration:configuration];
 }
 

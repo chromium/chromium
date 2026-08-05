@@ -20,6 +20,10 @@
     : UIViewController <GeminiFirstRunViewControllerProtocol,
                         GeminiFirstRunStep>
 
+// Returns the button stack configuration for `configuration`.
++ (ButtonStackConfiguration*)buttonStackConfigurationForConfiguration:
+    (GeminiConsentConfiguration*)configuration;
+
 // Initializer with the layout configuration.
 - (instancetype)initWithConfiguration:(GeminiConsentConfiguration*)configuration
     NS_DESIGNATED_INITIALIZER;

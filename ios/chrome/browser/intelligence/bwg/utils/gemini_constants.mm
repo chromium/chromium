@@ -15,16 +15,11 @@ const char kURLOnLastInteractionDictKey[] = "url_on_last_interaction";
 // Consent row links for the new FRE.
 const char kDataGovernanceManagedLinkURL[] =
     "https://support.google.com/a/answer/15706919";
-const char kDataGovernanceStrictLinkURL[] =
-    "https://support.google.com/gemini?p=privacy_notice";
-const char kDataGovernanceNormalLocationLinkURL[] =
+const char kActivityLinkURL[] = "https://myactivity.google.com/product/gemini";
+const char kChoicesLinkURL[] =
     "https://support.google.com/gemini/answer/"
-    "13594961?hl=en#location_info&zippy=%2Cwhat-location-information-do-gemini-"
-    "apps-collect-why-and-how-is-it-used";
-const char kDataGovernanceNormalChoicesLinkURL[] =
-    "https://support.google.com/gemini/answer/"
-    "13594961?visit_id=638773303691545173-4156329828&p=activity_settings&rd=1#"
-    "config_settings";
+    "13594961?visit_id=639210347224714317-2286050145&p=activity_settings&rd=1#"
+    "pn_config_settings&zippy=%2Cconfiguring-your-settings";
 const char kConnectedServicesLinkURL[] =
     "https://support.google.com/gemini/answer/13594961";
 
@@ -62,12 +57,8 @@ const char kWatchLinkURL[] = "https://support.google.com/gemini?p=about_ai";
 // Action identifiers for links in the new FRE Gemini consent rows.
 NSString* const kGeminiDataGovernanceManagedLinkAction =
     @"GeminiDataGovernanceManagedLinkAction";
-NSString* const kGeminiDataGovernanceStrictLinkAction =
-    @"GeminiDataGovernanceStrictLinkAction";
-NSString* const kGeminiDataGovernanceNormalLocationLinkAction =
-    @"GeminiDataGovernanceNormalLocationLinkAction";
-NSString* const kGeminiDataGovernanceNormalChoicesLinkAction =
-    @"GeminiDataGovernanceNormalChoicesLinkAction";
+NSString* const kGeminiActivityLinkAction = @"GeminiActivityLinkAction";
+NSString* const kGeminiChoicesLinkAction = @"GeminiChoicesLinkAction";
 NSString* const kGeminiConnectedServicesLinkAction =
     @"GeminiConnectedServicesLinkAction";
 

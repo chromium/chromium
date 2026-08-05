@@ -75,14 +75,23 @@ const CGFloat kHeaderIconSizeMultiplier = 0.55;
   return GeminiFirstRunStepIdentifier::kConsent;
 }
 
-- (ButtonStackConfiguration*)buttonStackConfiguration {
-  ButtonStackConfiguration* configuration =
++ (ButtonStackConfiguration*)buttonStackConfigurationForConfiguration:
+    (GeminiConsentConfiguration*)configuration {
+  ButtonStackConfiguration* buttonConfiguration =
       [[ButtonStackConfiguration alloc] init];
-  configuration.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
-  configuration.secondaryActionString =
+  BOOL useStrictButton =
+      IsGeminiUpdatedConsentEnabled() && configuration.useStrict;
+  buttonConfiguration.primaryActionString = l10n_util::GetNSString(
+      useStrictButton ? IDS_IOS_GEMINI_CONSENT_PRIMARY_BUTTON_STRICT
+                      : IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
+  buttonConfiguration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
-  return configuration;
+  return buttonConfiguration;
+}
+
+- (ButtonStackConfiguration*)buttonStackConfiguration {
+  return [GeminiConsentViewController
+      buttonStackConfigurationForConfiguration:_configuration];
 }
 
 - (void)stepDidBecomeActive {
@@ -256,15 +265,10 @@ const CGFloat kHeaderIconSizeMultiplier = 0.55;
   } else if ([actionString
                  isEqualToString:kGeminiDataGovernanceManagedLinkAction]) {
     [self.mutator openNewTabWithURL:GURL(kDataGovernanceManagedLinkURL)];
-  } else if ([actionString
-                 isEqualToString:kGeminiDataGovernanceStrictLinkAction]) {
-    [self.mutator openNewTabWithURL:GURL(kDataGovernanceStrictLinkURL)];
-  } else if ([actionString isEqualToString:
-                               kGeminiDataGovernanceNormalChoicesLinkAction]) {
-    [self.mutator openNewTabWithURL:GURL(kDataGovernanceNormalChoicesLinkURL)];
-  } else if ([actionString isEqualToString:
-                               kGeminiDataGovernanceNormalLocationLinkAction]) {
-    [self.mutator openNewTabWithURL:GURL(kDataGovernanceNormalLocationLinkURL)];
+  } else if ([actionString isEqualToString:kGeminiActivityLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kActivityLinkURL)];
+  } else if ([actionString isEqualToString:kGeminiChoicesLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kChoicesLinkURL)];
   } else if ([actionString
                  isEqualToString:kGeminiConnectedServicesLinkAction]) {
     [self.mutator openNewTabWithURL:GURL(kConnectedServicesLinkURL)];

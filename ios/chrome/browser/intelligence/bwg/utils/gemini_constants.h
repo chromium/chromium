@@ -257,9 +257,8 @@ extern const char kURLOnLastInteractionDictKey[];
 
 // Consent row links for the new Gemini First Run.
 extern const char kDataGovernanceManagedLinkURL[];
-extern const char kDataGovernanceStrictLinkURL[];
-extern const char kDataGovernanceNormalLocationLinkURL[];
-extern const char kDataGovernanceNormalChoicesLinkURL[];
+extern const char kActivityLinkURL[];
+extern const char kChoicesLinkURL[];
 extern const char kConnectedServicesLinkURL[];
 
 // Consent row links for the old First Run experience.
@@ -282,9 +281,8 @@ extern const char kWatchLinkURL[];
 
 // Action identifiers for links in the new Gemini First Run consent rows.
 extern NSString* const kGeminiDataGovernanceManagedLinkAction;
-extern NSString* const kGeminiDataGovernanceStrictLinkAction;
-extern NSString* const kGeminiDataGovernanceNormalLocationLinkAction;
-extern NSString* const kGeminiDataGovernanceNormalChoicesLinkAction;
+extern NSString* const kGeminiActivityLinkAction;
+extern NSString* const kGeminiChoicesLinkAction;
 extern NSString* const kGeminiConnectedServicesLinkAction;
 
 // TODO(crbug.com/393204662): Remove these links once the old FRE is removed.
