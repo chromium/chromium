@@ -59,6 +59,8 @@ bool NewTabUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
       [[fallthrough]];
     case NTPResourceCache::GUEST:
       [[fallthrough]];
+    case NTPResourceCache::ISOLATED:
+      [[fallthrough]];
     case NTPResourceCache::NON_PRIMARY_OTR:
       return true;
   }

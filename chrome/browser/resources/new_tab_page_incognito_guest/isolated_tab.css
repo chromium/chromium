@@ -1,0 +1,15 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  background-color: rgb(248, 249, 250);
+  color: rgb(32, 33, 36);
+  font-size: 100%;
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}

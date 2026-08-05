@@ -49,6 +49,7 @@ class NTPResourceCache : public ThemeServiceObserver,
     NORMAL,
     INCOGNITO,
     GUEST,
+    ISOLATED,
     // The OTR profile that is not used for Incognito or Guest windows.
     NON_PRIMARY_OTR,
   };
@@ -88,6 +89,9 @@ class NTPResourceCache : public ThemeServiceObserver,
   void CreateNewTabIncognitoHTML(const content::WebContents::Getter& wc_getter);
   void CreateNewTabIncognitoCSS(const content::WebContents::Getter& wc_getter);
 
+  void CreateNewTabIsolatedHTML(const content::WebContents::Getter& wc_getter);
+  void CreateNewTabIsolatedCSS(const content::WebContents::Getter& wc_getter);
+
   void CreateNewTabGuestHTML();
 
   raw_ptr<Profile> profile_;
@@ -96,6 +100,8 @@ class NTPResourceCache : public ThemeServiceObserver,
   scoped_refptr<base::RefCountedMemory> new_tab_guest_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_css_;
+  scoped_refptr<base::RefCountedMemory> new_tab_isolated_html_;
+  scoped_refptr<base::RefCountedMemory> new_tab_isolated_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_non_primary_otr_html_;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>

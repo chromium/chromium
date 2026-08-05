@@ -35,6 +35,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
@@ -137,10 +138,14 @@ NTPResourceCache::WindowType NTPResourceCache::GetWindowType(Profile* profile) {
   if (profile->IsGuestSession()) {
     return GUEST;
   }
-  if (profile->IsIncognitoProfile()) {
-    return INCOGNITO;
-  }
-  if (profile->IsOffTheRecord()) {
+  if (profile->IsIncognitoProfile() || profile->IsOffTheRecord()) {
+    if (enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+            *profile->GetPrefs(), chrome::GetChannel())) {
+      return ISOLATED;
+    }
+    if (profile->IsIncognitoProfile()) {
+      return INCOGNITO;
+    }
     return NON_PRIMARY_OTR;
   }
 
@@ -169,6 +174,12 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(
       }
       return new_tab_incognito_html_.get();
 
+    case ISOLATED:
+      if (!new_tab_isolated_html_) {
+        CreateNewTabIsolatedHTML(wc_getter);
+      }
+      return new_tab_isolated_html_.get();
+
     case NON_PRIMARY_OTR:
       if (!new_tab_non_primary_otr_html_) {
         new_tab_non_primary_otr_html_ =
@@ -189,6 +200,13 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(
   // Guest mode doesn't have theme-related CSS.
   if (win_type == GUEST) {
     return nullptr;
+  }
+
+  if (win_type == ISOLATED) {
+    if (!new_tab_isolated_css_) {
+      CreateNewTabIsolatedCSS(wc_getter);
+    }
+    return new_tab_isolated_css_.get();
   }
 
   // Returns the cached CSS if it exists.
@@ -223,6 +241,8 @@ void NTPResourceCache::OnNativeThemeUpdated(ui::NativeTheme* updated_theme) {
 void NTPResourceCache::Invalidate() {
   new_tab_incognito_html_ = nullptr;
   new_tab_incognito_css_ = nullptr;
+  new_tab_isolated_html_ = nullptr;
+  new_tab_isolated_css_ = nullptr;
   new_tab_css_ = nullptr;
   new_tab_guest_html_ = nullptr;
 }
@@ -279,6 +299,33 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   ui::TemplateReplacementsFromDictionaryValue(localized_strings, &replacements);
   new_tab_incognito_html_ = base::MakeRefCounted<base::RefCountedString>(
       ReplaceTemplateExpressions(*incognito_tab_html, replacements));
+}
+
+void NTPResourceCache::CreateNewTabIsolatedHTML(
+    const content::WebContents::Getter& wc_getter) {
+  ui::TemplateReplacements replacements;
+  base::DictValue localized_strings;
+
+  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  webui::SetLoadTimeDataDefaults(app_locale, &replacements);
+
+  static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
+      isolated_tab_html(
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+              IDR_ISOLATED_TAB_HTML));
+  CHECK(*isolated_tab_html);
+  ui::TemplateReplacementsFromDictionaryValue(localized_strings, &replacements);
+  new_tab_isolated_html_ = base::MakeRefCounted<base::RefCountedString>(
+      ReplaceTemplateExpressions(*isolated_tab_html, replacements));
+}
+
+void NTPResourceCache::CreateNewTabIsolatedCSS(
+    const content::WebContents::Getter& wc_getter) {
+  static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
+      isolated_tab_css(
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+              IDR_INCOGNITO_TAB_THEME_CSS));
+  new_tab_isolated_css_ = *isolated_tab_css;
 }
 
 void NTPResourceCache::CreateNewTabGuestHTML() {
