@@ -1558,10 +1558,10 @@ public class VerticalTabListCoordinatorUnitTest {
         PropertyModel model = createTabPropertyModel();
         model.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
 
-        // When group contains all tabs in window (1 == 1), drag out is blocked.
+        // When group contains all tabs in window (1 == 1), drag out is delegated to
+        // TabSwitcherDragHandler to support multi-window drag.
         getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
-        verify(mMainTabSwitcherDragHandler, never())
-                .startGroupDragAction(any(), any(), any(), any());
+        verify(mMainTabSwitcherDragHandler).startGroupDragAction(any(), eq(groupId), any(), any());
     }
 
     @Test
@@ -1655,6 +1655,166 @@ public class VerticalTabListCoordinatorUnitTest {
 
         delegateCaptor.getValue().handleDragExit();
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testSinglePinnedTabDrag_SetsMinHeight() {
+        prepareMockPinnedTab(mMockTab1, TAB_ID_1, 0);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(1);
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, true);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
+
+        View container = mCoordinator.getView();
+        TabListRecyclerView pinnedRecyclerView =
+                container.findViewById(R.id.pinned_tabs_recycler_view);
+        int expectedMinHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_favicon_height);
+
+        delegate.handleDragStart(0f, 0f);
+        assertEquals(expectedMinHeight, pinnedRecyclerView.getMinimumHeight());
+
+        delegate.handleDragEnter();
+        assertEquals(0, pinnedRecyclerView.getMinimumHeight());
+
+        delegate.handleDragExit();
+        assertEquals(expectedMinHeight, pinnedRecyclerView.getMinimumHeight());
+
+        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ true);
+        assertEquals(0, pinnedRecyclerView.getMinimumHeight());
+
+        delegate.handleDragStart(0f, 0f);
+        assertEquals(expectedMinHeight, pinnedRecyclerView.getMinimumHeight());
+        delegate.handleInternalDragEnd();
+        assertEquals(0, pinnedRecyclerView.getMinimumHeight());
+    }
+
+    @Test
+    @SmallTest
+    public void testSingleRegularTabDrag_SetsMinHeight() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(0);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, false);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
+
+        View container = mCoordinator.getView();
+        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
+        int expectedMinHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_favicon_height);
+
+        delegate.handleDragStart(0f, 0f);
+        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
+
+        delegate.handleDragEnter();
+        assertEquals(0, mainRecyclerView.getMinimumHeight());
+
+        delegate.handleDragExit();
+        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
+
+        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ true);
+        assertEquals(0, mainRecyclerView.getMinimumHeight());
+
+        delegate.handleDragStart(0f, 0f);
+        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
+        delegate.handleInternalDragEnd();
+        assertEquals(0, mainRecyclerView.getMinimumHeight());
+    }
+
+    @Test
+    @SmallTest
+    public void testMultiTabDrag_DoesNotSetMinHeight() {
+        prepareMockPinnedTab(mMockTab1, TAB_ID_1, 0);
+        prepareMockPinnedTab(mMockTab2, TAB_ID_2, 1);
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, true);
+
+        View container = mCoordinator.getView();
+        TabListRecyclerView pinnedRecyclerView =
+                container.findViewById(R.id.pinned_tabs_recycler_view);
+        SimpleRecyclerViewAdapter pinnedAdapter =
+                (SimpleRecyclerViewAdapter) pinnedRecyclerView.getAdapter();
+        pinnedAdapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, model));
+        pinnedAdapter
+                .getModelList()
+                .add(new MVCListAdapter.ListItem(UiType.TAB, createTabPropertyModel()));
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
+
+        delegate.handleDragStart(0f, 0f);
+        assertEquals(0, pinnedRecyclerView.getMinimumHeight());
+
+        PropertyModel regModel = createTabPropertyModel();
+        regModel.set(TabProperties.TAB_ID, TAB_ID_1);
+        regModel.set(TabProperties.IS_PINNED, false);
+
+        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter mainAdapter =
+                (SimpleRecyclerViewAdapter) mainRecyclerView.getAdapter();
+        mainAdapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, regModel));
+        mainAdapter
+                .getModelList()
+                .add(new MVCListAdapter.ListItem(UiType.TAB, createTabPropertyModel()));
+
+        delegate.handleDragStart(0f, 0f);
+        assertEquals(0, mainRecyclerView.getMinimumHeight());
+    }
+
+    @Test
+    @SmallTest
+    public void testRegularTabDragHandler_AttachedToContainerAndNewTabButton() {
+        createCoordinator();
+
+        View container = mCoordinator.getView();
+        Object listenerInfo = ReflectionHelpers.getField(container, "mListenerInfo");
+        assertNotNull(listenerInfo);
+        View.OnDragListener containerListener =
+                ReflectionHelpers.getField(listenerInfo, "mOnDragListener");
+        assertEquals(mMainTabSwitcherDragHandler, containerListener);
+
+        View newTabButton = container.findViewById(R.id.new_tab_button);
+        assertNotNull("new_tab_button should exist in the layout", newTabButton);
+        Object newTabListenerInfo = ReflectionHelpers.getField(newTabButton, "mListenerInfo");
+        assertNotNull(newTabListenerInfo);
+        View.OnDragListener newTabButtonListener =
+                ReflectionHelpers.getField(newTabListenerInfo, "mOnDragListener");
+        assertEquals(mMainTabSwitcherDragHandler, newTabButtonListener);
     }
 
     // =============================================================================================
