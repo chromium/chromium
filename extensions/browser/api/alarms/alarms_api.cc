@@ -207,14 +207,13 @@ ExtensionFunction::ResponseAction AlarmsGetFunction::Run() {
   std::string name = params->name.value_or(kDefaultAlarmName);
   AlarmManager::Get(browser_context())
       ->GetAlarm(extension_id(), name,
-                 base::BindOnce(&AlarmsGetFunction::Callback, this, name));
+                 base::BindOnce(&AlarmsGetFunction::Callback, this));
 
   // GetAlarm might have already responded.
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void AlarmsGetFunction::Callback(const std::string& name,
-                                 extensions::Alarm* alarm) {
+void AlarmsGetFunction::Callback(extensions::Alarm* alarm) {
   if (alarm) {
     Respond(ArgumentList(alarms::Get::Results::Create(*alarm->js_alarm)));
   } else {
@@ -247,14 +246,14 @@ ExtensionFunction::ResponseAction AlarmsClearFunction::Run() {
   std::string name = params->name.value_or(kDefaultAlarmName);
   AlarmManager::Get(browser_context())
       ->RemoveAlarm(extension_id(), name,
-                    base::BindOnce(&AlarmsClearFunction::Callback, this, name));
+                    base::BindOnce(&AlarmsClearFunction::Callback, this));
 
   // RemoveAlarm might have already responded.
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void AlarmsClearFunction::Callback(const std::string& name, bool success) {
-  Respond(WithArguments(success));
+void AlarmsClearFunction::Callback(bool removed) {
+  Respond(WithArguments(removed));
 }
 
 ExtensionFunction::ResponseAction AlarmsClearAllFunction::Run() {

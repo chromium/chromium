@@ -45,7 +45,7 @@ class AlarmsGetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Callback(const std::string& name, Alarm* alarm);
+  void Callback(Alarm* alarm);
   DECLARE_EXTENSION_FUNCTION("alarms.get", ALARMS_GET)
 };
 
@@ -69,7 +69,7 @@ class AlarmsClearFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Callback(const std::string& name, bool success);
+  void Callback(bool removed);
   DECLARE_EXTENSION_FUNCTION("alarms.clear", ALARMS_CLEAR)
 };
 

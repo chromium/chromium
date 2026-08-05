@@ -143,8 +143,7 @@ AlarmNameLength AlarmNameLengthToBucket(size_t length) {
   return AlarmNameLength::kLarge;
 }
 
-AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
-                                        base::TimeDelta min_delay,
+AlarmManager::AlarmList AlarmsFromValue(base::TimeDelta min_delay,
                                         const base::ListValue& list) {
   AlarmManager::AlarmList alarms;
   const int max_to_create = std::min(base::saturated_cast<int>(list.size()),
@@ -191,11 +190,10 @@ AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
   return alarms;
 }
 
-base::ListValue AlarmsToValue(const AlarmManager::AlarmList& alarms,
-                              bool only_persistent) {
+base::ListValue PersistentAlarmsToValue(const AlarmManager::AlarmList& alarms) {
   base::ListValue list;
   for (const auto& item : alarms) {
-    if (only_persistent && !item.js_alarm->persist_across_sessions) {
+    if (!item.js_alarm->persist_across_sessions) {
       continue;
     }
     base::DictValue alarm = item.js_alarm->ToValue();
@@ -435,13 +433,10 @@ void AlarmManager::WriteToStorage(const ExtensionId& extension_id) {
     return;
   }
 
-  base::Value alarms;
   auto list = alarms_.find(extension_id);
-  if (list != alarms_.end()) {
-    alarms = base::Value(AlarmsToValue(list->second, /*only_persistent=*/true));
-  } else {
-    alarms = base::Value(AlarmsToValue(AlarmList(), /*only_persistent=*/true));
-  }
+  base::Value alarms =
+      base::Value(list != alarms_.end() ? PersistentAlarmsToValue(list->second)
+                                        : PersistentAlarmsToValue(AlarmList()));
   storage->SetExtensionValue(extension_id, kRegisteredAlarms,
                              std::move(alarms));
 }
@@ -450,8 +445,7 @@ void AlarmManager::ReadFromStorage(const ExtensionId& extension_id,
                                    base::TimeDelta min_delay,
                                    std::optional<base::Value> value) {
   if (value && value->is_list()) {
-    AlarmList alarm_states =
-        AlarmsFromValue(extension_id, min_delay, value->GetList());
+    AlarmList alarm_states = AlarmsFromValue(min_delay, value->GetList());
     for (auto& alarm : alarm_states) {
       // We should never read a non-persistent alarm from storage.
       CHECK(alarm.js_alarm->persist_across_sessions);
