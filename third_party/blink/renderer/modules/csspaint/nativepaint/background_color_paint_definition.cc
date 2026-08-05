@@ -124,6 +124,16 @@ Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     return nullptr;
   }
 
+  // Once downgraded, the animation is not compositable. Setting the animation
+  // as compositor pending will trigger updating the status to kNeedsRepaint,
+  // which in turn triggers a new decision.
+  NativePaintWorkletData::CompositedPaintStatus status =
+      npw_data->GetCompositedPaintStatus();
+  if (status == NativePaintWorkletData::CompositedPaintStatus::kNotComposited ||
+      status == NativePaintWorkletData::CompositedPaintStatus::kNoAnimation) {
+    return nullptr;
+  }
+
   Animation* candidate = npw_data->GetAnimation();
   if (!candidate) {
     return nullptr;

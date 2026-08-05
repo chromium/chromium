@@ -1197,4 +1197,80 @@ TEST_F(BackgroundColorPaintDefinitionTest, AnimationCurve) {
   EXPECT_EQ(color_curve->GetTypedKeyframe(1).value, Color(0, 128, 0));
 }
 
+TEST_F(BackgroundColorPaintDefinitionTest, EnforceCompositingDecision) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+     @keyframes fade-bg {
+       from { background-color: black; }
+       to { background-color: transparent; }
+     }
+     #target {
+      width: 100px;
+      height: 100px;
+      animation: fade-bg 1s forwards;
+    }
+    #ancestor {
+      filter: blur(5px);
+    }
+    @keyframes blur-filter {
+        to { filter: blur(0px); }
+    }
+    #ancestor.update {
+      animation: blur-filter 1s forwards;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="target"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* target = GetElementById("target");
+  Element* ancestor = GetElementById("ancestor");
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  // Not compositable due to a blur animation on a non-composited ancestor.
+  Animation* fade_animation = GetAnimation(target);
+  ASSERT_TRUE(fade_animation);
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_TRUE(fade_animation->GetCompositingDecisionState().disposition &
+              CompositorAnimations::kUnsupportedCSSProperty);
+  EXPECT_FALSE(fade_animation->HasActiveAnimationsOnCompositor());
+
+  ancestor->classList().add({"update"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  Animation* blur_animation = GetAnimation(ancestor);
+  ASSERT_TRUE(blur_animation);
+
+  // The blur is now in a composited layer and the background fade animation
+  // could be composited. Nonetheless, until the animation is marked as
+  // compositor pending, the decision sticks.
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_TRUE(fade_animation->GetCompositingDecisionState().disposition &
+              CompositorAnimations::kUnsupportedCSSProperty);
+  EXPECT_FALSE(fade_animation->HasActiveAnimationsOnCompositor());
+
+  fade_animation->SetCompositorPending(
+      Animation::CompositorPendingReason::kPendingRestart);
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_EQ(fade_animation->GetCompositingDecisionState().disposition,
+            CompositorAnimations::kNoFailure);
+  EXPECT_TRUE(fade_animation->HasActiveAnimationsOnCompositor());
+
+  // Once cancelled the fade animation can no longer be composited.
+  // The background fade animation gets downgraded in the next Paint call.
+  // Though a "no" decision is sticky, a "yes" decision is not.
+  blur_animation->cancel();
+  EXPECT_TRUE(fade_animation->HasActiveAnimationsOnCompositor());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(fade_animation->HasActiveAnimationsOnCompositor());
+}
+
 }  // namespace blink
