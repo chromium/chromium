@@ -49,6 +49,8 @@ namespace disk_cache {
 
 class BackendCleanupTracker;
 class SqlAsyncTaskManager;
+class SqlSharedCacheBlobHandle;
+class SqlSharedCacheHandle;
 class SqlSharedCacheManager;
 
 // This class serves as the main entry point for the SQL-based disk cache's
@@ -158,6 +160,15 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     scoped_refptr<net::GrowableIOBuffer> head;
     // The resource ID of the shared cache database where the blobs are stored.
     std::optional<SqlSharedCacheResourceId> shared_cache_resource_id;
+
+    // The shared cache handle and blob handle for accessing shared cache blobs.
+    // Populated automatically for `OpenEntry` and `OpenOrCreateEntry` when
+    // `shared_cache_resource_id` is present.
+    // Note: These handles are omitted (left null) in `OpenNextEntry` for
+    // performance reasons to avoid asynchronous fetch overhead during
+    // iteration.
+    scoped_refptr<SqlSharedCacheHandle> shared_cache_handle;
+    scoped_refptr<SqlSharedCacheBlobHandle> shared_cache_blob_handle;
 
     // True if the entry was opened, false if it was newly created.
     bool opened = false;
@@ -689,6 +700,27 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // resources were deleted from the store shards, so that corresponding entries
   // in the shared cache database can be cleaned up.
   void OnSharedCacheResourcesDeleted(std::vector<SqlSharedCacheResourceId> ids);
+
+  enum class OpenEntryMode { kOpenEntry, kOpenOrCreateEntry };
+
+  // Called when shard opening for `key` finishes. If successful and
+  // `shared_cache_resource_id` is present on the entry, populates
+  // `shared_cache_handle` and `shared_cache_blob_handle`.
+  // If fetching shared cache handles fails, deletes the existing entry from the
+  // store, and depending on `mode`, either recreates a new entry
+  // (kOpenOrCreateEntry) or returns kNotFound (kOpenEntry).
+  void OnOpenEntryFinished(CacheEntryKey key,
+                           OpenEntryMode mode,
+                           EntryInfoOrErrorCallback callback,
+                           EntryInfoOrError result);
+
+  // Handles failure when retrieving shared cache handles or blob handles.
+  // Deletes the invalid entry from the store, and depending on `mode`, either
+  // recreates a new entry (kOpenOrCreateEntry) or returns kNotFound
+  // (kOpenEntry).
+  void OnSharedCacheFetchFailed(const CacheEntryKey& key,
+                                OpenEntryMode mode,
+                                EntryInfoOrErrorCallback callback);
 
   // Wraps an ErrorCallback to handle deletion of a single shared cache
   // resource. When the shard operation completes successfully, if a shared

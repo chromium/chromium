@@ -7045,6 +7045,9 @@ class SqlPersistentStoreSharedCacheTest
     auto create_res = CreateEntry(key);
     EXPECT_TRUE(create_res.has_value());
     SqlPersistentStore::ResId res_id = create_res->res_id;
+    WriteDataAndAssertSuccess(key, res_id, /*old_body_end=*/0, /*offset=*/0,
+                              std::string(kTestBodySize, 'a'),
+                              /*truncate=*/false);
 
     // Insert entry into shared cache isolated database.
     auto headers = base::MakeRefCounted<net::IOBufferWithSize>(kTestHeaderSize);
@@ -7142,8 +7145,37 @@ TEST_P(SqlPersistentStoreSharedCacheTest, MoveBlobsToSharedCache) {
             static_cast<int64_t>(kKey.string().size() + kData.size()));
 
   // Manually move blobs to shared cache.
-  const SqlSharedCacheResourceId kSharedResourceId{SqlSharedCacheDbId(12345),
-                                                   SqlSharedCacheRowId(67890)};
+  auto* manager = store_->shared_cache_manager_for_testing();
+  ASSERT_TRUE(manager);
+  net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
+                               net::SchemefulSite(GURL("https://bar.test")));
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> handle_future;
+  manager->GetCacheByNik(nik, /*require_shared_cache_db_id=*/true,
+                         handle_future.GetCallback());
+  scoped_refptr<SqlSharedCacheHandle> handle = handle_future.Take();
+  ASSERT_TRUE(handle);
+  ASSERT_TRUE((*handle)->shared_cache_db_id().has_value());
+  SqlSharedCacheDbId db_id = *(*handle)->shared_cache_db_id();
+
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  auto body = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
+  body->span().copy_from(base::as_byte_span(kData));
+
+  base::test::TestFuture<base::expected<SqlSharedCacheRowId,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      insert_future;
+  (*handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
+      .WithArgs(kKey, headers, kData.size(), body)
+      .Then(insert_future.GetCallback());
+  FlushPendingTask();
+  auto insert_res = insert_future.Take();
+  ASSERT_TRUE(insert_res.has_value());
+  SqlSharedCacheRowId row_id = *insert_res;
+
+  const SqlSharedCacheResourceId kSharedResourceId{db_id, row_id};
   base::test::TestFuture<SqlPersistentStore::Error> move_future;
   store_->MoveBlobsToSharedCache(kKey, res_id, kSharedResourceId,
                                  move_future.GetCallback());
@@ -7424,6 +7456,114 @@ TEST_P(SqlPersistentStoreSharedCacheTest,
       VerifySharedCacheEntryDeleted(handle, entry.key, entry.row_id);
     }
   }
+}
+
+TEST_P(SqlPersistentStoreSharedCacheTest,
+       OpenEntryPopulatesSharedCacheHandles) {
+  auto entry_data = PrepareLiveSharedCacheEntry();
+
+  auto open_entry_res = OpenEntry(entry_data.key);
+  ASSERT_TRUE(open_entry_res.has_value());
+  EXPECT_TRUE(open_entry_res->shared_cache_handle);
+  EXPECT_TRUE(open_entry_res->shared_cache_blob_handle);
+}
+
+TEST_P(SqlPersistentStoreSharedCacheTest,
+       OpenOrCreateEntryPopulatesSharedCacheHandles) {
+  auto entry_data = PrepareLiveSharedCacheEntry();
+
+  auto open_or_create_res = OpenOrCreateEntry(entry_data.key);
+  ASSERT_TRUE(open_or_create_res.has_value());
+  EXPECT_TRUE(open_or_create_res->shared_cache_handle);
+  EXPECT_TRUE(open_or_create_res->shared_cache_blob_handle);
+}
+
+TEST_P(SqlPersistentStoreSharedCacheTest,
+       OpenEntryDeletesEntryAndReturnsNotFoundOnSharedCacheFailure) {
+  auto entry_data = PrepareLiveSharedCacheEntry();
+
+  // Delete the row from the isolated database so that GetBlobHandle will fail.
+  (*entry_data.handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::DeleteEntry)
+      .WithArgs(entry_data.row_id);
+  FlushPendingTask();
+
+  // OpenEntry should detect failure, delete entry from store, and return
+  // kNotFound.
+  auto open_entry_res = OpenEntry(entry_data.key);
+  ASSERT_FALSE(open_entry_res.has_value());
+  EXPECT_EQ(open_entry_res.error(), SqlPersistentStore::Error::kNotFound);
+
+  // Subsequent OpenEntry should also return kNotFound.
+  auto re_open_res = OpenEntry(entry_data.key);
+  ASSERT_FALSE(re_open_res.has_value());
+  EXPECT_EQ(re_open_res.error(), SqlPersistentStore::Error::kNotFound);
+}
+
+TEST_P(SqlPersistentStoreSharedCacheTest,
+       OpenOrCreateEntryRecreatesEntryOnSharedCacheFailure) {
+  auto entry_data = PrepareLiveSharedCacheEntry();
+
+  // Delete the row from the isolated database so that GetBlobHandle will fail.
+  (*entry_data.handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::DeleteEntry)
+      .WithArgs(entry_data.row_id);
+  FlushPendingTask();
+
+  // OpenOrCreateEntry should detect failure, delete old entry, and recreate a
+  // new one.
+  auto open_or_create_res = OpenOrCreateEntry(entry_data.key);
+  ASSERT_TRUE(open_or_create_res.has_value());
+  EXPECT_NE(open_or_create_res->res_id, entry_data.res_id);
+  EXPECT_FALSE(open_or_create_res->opened);
+  EXPECT_FALSE(open_or_create_res->shared_cache_resource_id.has_value());
+  EXPECT_FALSE(open_or_create_res->shared_cache_handle);
+  EXPECT_FALSE(open_or_create_res->shared_cache_blob_handle);
+}
+
+TEST_P(SqlPersistentStoreSharedCacheTest, OpenEntryGetCacheByDbIdFailure) {
+  auto entry_data = PrepareLiveSharedCacheEntry();
+
+  // Change the shared_cache_db_id on the entry to a non-existent db_id (9999)
+  // so that GetCacheByDbId will fail and return a null handle.
+  base::test::TestFuture<SqlPersistentStore::Error> move_future;
+  store_->MoveBlobsToSharedCache(
+      entry_data.key, entry_data.res_id,
+      SqlSharedCacheResourceId{SqlSharedCacheDbId(9999), entry_data.row_id},
+      move_future.GetCallback());
+  EXPECT_EQ(move_future.Get(), SqlPersistentStore::Error::kOk);
+
+  // OpenEntry should detect GetCacheByDbId failure (!handle), delete entry
+  // from store, and return kNotFound.
+  auto open_entry_res = OpenEntry(entry_data.key);
+  ASSERT_FALSE(open_entry_res.has_value());
+  EXPECT_EQ(open_entry_res.error(), SqlPersistentStore::Error::kNotFound);
+}
+
+TEST_P(SqlPersistentStoreSharedCacheTest,
+       OpenOrCreateEntryGetCacheByDbIdFailure) {
+  auto entry_data = PrepareLiveSharedCacheEntry();
+
+  // Change the shared_cache_db_id on the entry to a non-existent db_id (9999)
+  // so that GetCacheByDbId will fail and return a null handle.
+  base::test::TestFuture<SqlPersistentStore::Error> move_future;
+  store_->MoveBlobsToSharedCache(
+      entry_data.key, entry_data.res_id,
+      SqlSharedCacheResourceId{SqlSharedCacheDbId(9999), entry_data.row_id},
+      move_future.GetCallback());
+  EXPECT_EQ(move_future.Get(), SqlPersistentStore::Error::kOk);
+
+  // OpenOrCreateEntry should detect GetCacheByDbId failure (!handle), delete
+  // old entry, and recreate a new one.
+  auto open_or_create_res = OpenOrCreateEntry(entry_data.key);
+  ASSERT_TRUE(open_or_create_res.has_value());
+  EXPECT_NE(open_or_create_res->res_id, entry_data.res_id);
+  EXPECT_FALSE(open_or_create_res->opened);
+  EXPECT_FALSE(open_or_create_res->shared_cache_resource_id.has_value());
+  EXPECT_FALSE(open_or_create_res->shared_cache_handle);
+  EXPECT_FALSE(open_or_create_res->shared_cache_blob_handle);
 }
 
 }  // namespace disk_cache

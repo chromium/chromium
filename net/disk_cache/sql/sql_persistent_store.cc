@@ -240,12 +240,118 @@ void SqlPersistentStore::OnShardInitialized(
 
 void SqlPersistentStore::OpenOrCreateEntry(const CacheEntryKey& key,
                                            EntryInfoOrErrorCallback callback) {
-  GetShard(key).OpenOrCreateEntry(key, std::move(callback));
+  GetShard(key).OpenOrCreateEntry(
+      key,
+      base::BindOnce(&SqlPersistentStore::OnOpenEntryFinished,
+                     weak_factory_.GetWeakPtr(), key,
+                     OpenEntryMode::kOpenOrCreateEntry, std::move(callback)));
 }
 
 void SqlPersistentStore::OpenEntry(const CacheEntryKey& key,
                                    EntryInfoOrErrorCallback callback) {
-  GetShard(key).OpenEntry(key, std::move(callback));
+  GetShard(key).OpenEntry(
+      key, base::BindOnce(&SqlPersistentStore::OnOpenEntryFinished,
+                          weak_factory_.GetWeakPtr(), key,
+                          OpenEntryMode::kOpenEntry, std::move(callback)));
+}
+
+void SqlPersistentStore::OnOpenEntryFinished(CacheEntryKey key,
+                                             OpenEntryMode mode,
+                                             EntryInfoOrErrorCallback callback,
+                                             EntryInfoOrError result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+  EntryInfo entry_info = std::move(*result);
+
+  // If the entry does not use shared cache or manager is missing, return
+  // `entry_info` immediately.
+  if (!entry_info.shared_cache_resource_id.has_value() ||
+      !shared_cache_manager_) {
+    std::move(callback).Run(std::move(entry_info));
+    return;
+  }
+
+  SqlSharedCacheDbId db_id = entry_info.shared_cache_resource_id->db_id;
+  SqlSharedCacheRowId row_id = entry_info.shared_cache_resource_id->row_id;
+  int body_size = base::saturated_cast<int>(entry_info.body_end);
+
+  // Asynchronously fetch the SqlSharedCacheHandle for `db_id`.
+  shared_cache_manager_->GetCacheByDbId(
+      db_id,
+      base::BindOnce(
+          [](base::WeakPtr<SqlPersistentStore> weak_ptr, CacheEntryKey key,
+             SqlSharedCacheRowId row_id, int body_size, EntryInfo entry_info,
+             OpenEntryMode mode, EntryInfoOrErrorCallback callback,
+             scoped_refptr<SqlSharedCacheHandle> handle) {
+            if (!weak_ptr) {
+              return;
+            }
+            if (!handle || !(*handle)) {
+              weak_ptr->OnSharedCacheFetchFailed(key, mode,
+                                                 std::move(callback));
+              return;
+            }
+            entry_info.shared_cache_handle = handle;
+            // Asynchronously fetch the SqlSharedCacheBlobHandle for `row_id`.
+            (*handle)->GetBlobHandle(
+                key, row_id, body_size,
+                base::BindOnce(
+                    [](base::WeakPtr<SqlPersistentStore> weak_ptr,
+                       CacheEntryKey key, EntryInfo entry_info,
+                       OpenEntryMode mode, EntryInfoOrErrorCallback callback,
+                       base::expected<scoped_refptr<SqlSharedCacheBlobHandle>,
+                                      SqlSharedCacheIsolatedDatabase::Error>
+                           blob_handle_result) {
+                      if (!weak_ptr) {
+                        return;
+                      }
+                      if (!blob_handle_result.has_value()) {
+                        weak_ptr->OnSharedCacheFetchFailed(key, mode,
+                                                           std::move(callback));
+                        return;
+                      }
+                      entry_info.shared_cache_blob_handle =
+                          std::move(*blob_handle_result);
+                      std::move(callback).Run(std::move(entry_info));
+                    },
+                    weak_ptr, key, std::move(entry_info), mode,
+                    std::move(callback)));
+          },
+          weak_factory_.GetWeakPtr(), key, row_id, body_size,
+          std::move(entry_info), mode, std::move(callback)));
+}
+
+void SqlPersistentStore::OnSharedCacheFetchFailed(
+    const CacheEntryKey& key,
+    OpenEntryMode mode,
+    EntryInfoOrErrorCallback callback) {
+  // Shared cache handle or blob handle retrieval failed. Delete the invalid
+  // live entry from the store shard.
+  DeleteLiveEntry(
+      key,
+      base::BindOnce(
+          [](base::WeakPtr<SqlPersistentStore> weak_ptr, CacheEntryKey key,
+             OpenEntryMode mode, EntryInfoOrErrorCallback callback,
+             Error error) {
+            if (!weak_ptr) {
+              return;
+            }
+            switch (mode) {
+              case OpenEntryMode::kOpenOrCreateEntry:
+                // For OpenOrCreateEntry: now that the invalid entry has
+                // been deleted, recreate a brand new entry for `key`.
+                weak_ptr->CreateEntry(key, base::Time::Now(),
+                                      std::move(callback));
+                break;
+              case OpenEntryMode::kOpenEntry:
+                // For OpenEntry: return kNotFound.
+                std::move(callback).Run(base::unexpected(Error::kNotFound));
+                break;
+            }
+          },
+          weak_factory_.GetWeakPtr(), key, mode, std::move(callback)));
 }
 
 void SqlPersistentStore::CreateEntry(const CacheEntryKey& key,
