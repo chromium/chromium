@@ -4646,8 +4646,17 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     auto checked_output_width = base::CheckedNumeric<int32_t>(output_shape[2]);
     auto checked_indirection_buffer_size =
         base::CheckedNumeric<int32_t>(sizeof(void*));
-    if (webnn::IsDepthwiseConv2d(input_channels, output_channels,
-                                 conv2d.groups)) {
+    // XNNPACK only takes the dwconv path when a dwconv ukernel exists for
+    // the kernel size, i.e. kernel_size <= max(primary_tile). Otherwise it
+    // falls back to igemm path even for depthwise convolutions, so the igemm
+    // formulas must be used to bound the indirection and packed weights
+    // buffer sizes.
+    const bool uses_dwconv_path =
+        webnn::IsDepthwiseConv2d(input_channels, output_channels,
+                                 conv2d.groups) &&
+        checked_kernel_size.ValueOrDefault(
+            std::numeric_limits<int32_t>::max()) <= kMaxPrimaryTile;
+    if (uses_dwconv_path) {
       // dwconv path: sizeof(void*) * (primary_tile - kernel_size +
       //     output_height * (kernel_size + (output_width - 1) * step_width *
       //     kernel_height))
@@ -4682,8 +4691,7 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
 
     // Check XNNPACK packed weights buffer size to prevent overflow.
     // See third_party/xnnpack/src/src/operators/convolution-nhwc.c.
-    if (webnn::IsDepthwiseConv2d(input_channels, output_channels,
-                                 conv2d.groups)) {
+    if (uses_dwconv_path) {
       // dwconv path: aligned_total_weights_size = round_up_po2(
       //   (primary_tile * filter_element_size + bias_element_size +
       //   extra_weights_bytes) * c_stride, XNN_ALLOCATION_ALIGNMENT)

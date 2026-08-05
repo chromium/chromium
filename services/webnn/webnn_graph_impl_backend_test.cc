@@ -373,7 +373,8 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeGraphWithTransposeAndTwoOutputs",
       "BuildAndComputeGraphWithTransposeAndTwoReshape",
 #endif  // !BUILDFLAG(IS_WIN)
-      "BuildAndComputeGraphWithTwoOutputs", "BuildAndComputeGraphWithTwoRelu",
+      "BuildAndComputeGraphWithTwoOutputs",
+      "BuildAndComputeGraphWithTwoRelu",
       "BuildAndComputeGraphWithTwoReshape",
       "BuildAndComputeGraphWithTwoTranspose",
       "BuildAndComputeMultipleOperatorGemm",
@@ -394,13 +395,18 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeSingleOperatorTanh",
       "BuildGemmWithReshapedConstantOperand",
 #if !BUILDFLAG(IS_WIN)
-      "BuildMaxPoolingAsFirstOperator", "BuildMaxPoolingAsSecondOperator",
+      "BuildMaxPoolingAsFirstOperator",
+      "BuildMaxPoolingAsSecondOperator",
       "BuildMaxPoolingAsThirdOperator",
 #endif  // !BUILDFLAG(IS_WIN)
       "BuildMultipleConstantsAppendingInputs",
       "BuildMultipleInputsAppendingConstants",
       "BuildSingleOperatorLayerNormalization",
-      "BuildOneInputAndOneConstantOperand", "DestroyContextDuringBuild",
+      "BuildOneInputAndOneConstantOperand",
+#if !BUILDFLAG(IS_WIN)
+      "Conv2dIgemmPackedWeightsOverflow",
+#endif  // !BUILDFLAG(IS_WIN)
+      "DestroyContextDuringBuild",
       // "FuseStandaloneActivationIntoBatchNormalization",
       // "FuseStandaloneActivationIntoConv2d",
       "FuseStandaloneActivationIntoElementWiseBinaryAdd",
@@ -3783,6 +3789,46 @@ TEST_P(WebNNGraphImplBackendTest,
         {-88, -79, -73, -67, -76, -67, -46, -37, -28, -49, -37, -1, 8,
          17,  -19, -7,  44,  53,  62,  11,  -28, 11,  17,  23,  -16});
   }
+}
+
+// Regression test: depthwise conv2d with kernel_size > kMaxPrimaryTile (25)
+// causes XNNPACK to use the igemm path instead of dwconv. With large groups
+// the igemm packed-weights size overflows int32_t.
+TEST_P(WebNNGraphImplBackendTest, Conv2dIgemmPackedWeightsOverflow) {
+  // groups chosen so that igemm packed weights =
+  //   ((26 * RoundUp(1,8) * 4) + 12) * RoundUp(1,128) * groups
+  //   = 108032 * 19879 > INT32_MAX.
+  constexpr uint32_t kGroups = 19879;
+  constexpr uint32_t kFilterHeight = 26;
+  constexpr uint32_t kFilterWidth = 1;
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  OperandId input_operand_id =
+      builder.BuildInput("input", {1, kFilterHeight, kFilterWidth, kGroups},
+                         OperandDataType::kFloat32);
+
+  std::vector<float> filter_data(kFilterHeight * kFilterWidth * kGroups, 0.0f);
+  OperandId filter_operand_id = builder.BuildConstant(
+      {1, kFilterHeight, kFilterWidth, kGroups}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, filter_data));
+
+  OperandId output_operand_id = builder.BuildOutput(
+      "output", {1, 1, 1, kGroups}, OperandDataType::kFloat32);
+
+  builder.BuildConv2d(mojom::Conv2d::Kind::kDirect, input_operand_id,
+                      filter_operand_id, output_operand_id,
+                      BuildConv2dAttributes{.groups = kGroups},
+                      /*bias_operand_id=*/std::nullopt);
+
+  std::vector<float> input_data(kFilterHeight * kFilterWidth * kGroups, 0.0f);
+  base::flat_map<std::string, base::span<const float>> named_inputs;
+  named_inputs.insert({"input", input_data});
+
+  std::ignore = BuildAndCompute(
+      context(), std::move(remote), builder.TakeGraphInfo(),
+      std::move(named_inputs), BuildAndComputeExpectation::kCreateGraphFailure);
 }
 
 TEST_P(WebNNGraphImplBackendTest, DestroyContextDuringBuild) {
