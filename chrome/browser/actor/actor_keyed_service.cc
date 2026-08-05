@@ -51,6 +51,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/actor_container_config_slot.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -445,6 +446,18 @@ void ActorKeyedService::NotifyTaskStateChanged(ActorTask& task) {
   }
 
   task_state_change_callback_list_.Notify(task);
+}
+
+base::CallbackListSubscription
+ActorKeyedService::AddTaskVisibilityChangedCallback(
+    TaskVisibilityChangedCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return task_visibility_change_callback_list_.Add(std::move(callback));
+}
+
+void ActorKeyedService::NotifyTaskVisibilityChanged(ActorTask& task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  task_visibility_change_callback_list_.Notify(task);
 }
 
 void ActorKeyedService::RequestTabObservation(

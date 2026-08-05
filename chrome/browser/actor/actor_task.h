@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "chrome/common/glic_enums.mojom.h"
+#include "components/actor/core/actor_ui_mode.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
@@ -292,6 +293,13 @@ class ActorTask : public base::SupportsUserData {
 
   ActorKeyedService& actor_keyed_service() const { return service_.get(); }
 
+  bool has_visible_tab() const { return has_visible_tab_; }
+  bool is_in_pip() const { return is_in_pip_; }
+#if BUILDFLAG(IS_ANDROID)
+  void SetIsInPip(bool is_in_pip);
+#endif
+  ActorUiMode GetUiMode() const;
+
   // These observations will be added to the final ActionsResult returned by the
   // task. This is currently only used by the load and extract content tool. A
   // check ensures that feature is enabled.
@@ -427,6 +435,7 @@ class ActorTask : public base::SupportsUserData {
   base::ElapsedTimer visibility_timer_;
   // Whether any of the controlled tabs is visible.
   bool has_visible_tab_ = false;
+  bool is_in_pip_ = false;
   // Total time this task has been actuating while a tab was visible.
   base::TimeDelta total_time_visible_;
   // Total time this task has been actuating with no tabs visible.

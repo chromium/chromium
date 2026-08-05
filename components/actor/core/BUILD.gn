@@ -48,6 +48,7 @@ source_set("core") {
     "actor_metrics.h",
     "actor_switches.cc",
     "actor_switches.h",
+    "actor_ui_mode.h",
     "actor_util.cc",
     "actor_util.h",
     "journal_details_builder.cc",

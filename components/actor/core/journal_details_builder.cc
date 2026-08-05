@@ -14,6 +14,28 @@ JournalDetailsBuilder::JournalDetailsBuilder() = default;
 JournalDetailsBuilder::JournalDetailsBuilder(JournalDetailsBuilder&&) = default;
 JournalDetailsBuilder::~JournalDetailsBuilder() = default;
 
+namespace {
+std::string_view ActorUiModeToString(ActorUiMode mode) {
+  switch (mode) {
+    case ActorUiMode::kForeground:
+      return "Foreground";
+    case ActorUiMode::kBackground:
+      return "Background";
+    case ActorUiMode::kPip:
+      return "Pip";
+  }
+  NOTREACHED();
+}
+}  // namespace
+
+JournalDetailsBuilder& JournalDetailsBuilder::AddUiState(ActorUiMode mode) & {
+  return Add("ui_state", ActorUiModeToString(mode));
+}
+JournalDetailsBuilder JournalDetailsBuilder::AddUiState(ActorUiMode mode) && {
+  AddUiState(mode);
+  return std::move(*this);
+}
+
 std::string_view JournalEntryTypeToString(mojom::JournalEntryType type) {
   switch (type) {
     case mojom::JournalEntryType::kBegin:

@@ -31,10 +31,12 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_ui_mode.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -212,6 +214,21 @@ base::WeakPtr<ActorTask> ActorTask::GetWeakPtr() {
 
 Profile* ActorTask::GetProfile() const {
   return service_->GetProfile();
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void ActorTask::SetIsInPip(bool is_in_pip) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  is_in_pip_ = is_in_pip;
+}
+#endif
+
+ActorUiMode ActorTask::GetUiMode() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_in_pip_) {
+    return ActorUiMode::kPip;
+  }
+  return has_visible_tab_ ? ActorUiMode::kForeground : ActorUiMode::kBackground;
 }
 
 void ActorTask::SetState(State new_state) {
@@ -786,6 +803,8 @@ void ActorTask::UpdateVisibilityTimes() {
 }
 
 void ActorTask::RecomputeHasVisibleTab() {
+  // TODO(crbug.com/540512932): Track full window minimization and complete
+  // window occlusion in addition to WebContents visibility.
   bool has_any_visible_tab = false;
   for (const auto& [handle, controlled_state] : controlled_tabs_) {
     if (controlled_state->web_contents() &&
@@ -803,6 +822,7 @@ void ActorTask::RecomputeHasVisibleTab() {
   if (delegate_) {
     delegate_->OnTaskTabsVisibilityChanged(id_, has_visible_tab_);
   }
+  service_->NotifyTaskVisibilityChanged(*this);
 }
 
 void ActorTask::ResetToObserveTabsSet() {

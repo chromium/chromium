@@ -13,6 +13,7 @@
 
 #include "base/hash/hash.h"
 #include "base/strings/to_string.h"
+#include "components/actor/core/actor_ui_mode.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 
@@ -55,6 +56,9 @@ class JournalDetailsBuilder {
         mojom::JournalDetails::New("error", base::ToString(value)));
     return *this;
   }
+
+  JournalDetailsBuilder& AddUiState(ActorUiMode mode) &;
+  JournalDetailsBuilder AddUiState(ActorUiMode mode) &&;
 
   std::vector<mojom::JournalDetailsPtr> Build() && {
     return std::move(details_);

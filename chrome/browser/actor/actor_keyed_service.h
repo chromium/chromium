@@ -167,6 +167,27 @@ class ActorKeyedService : public KeyedService,
 
   void NotifyTaskStateChanged(ActorTask& task);
 
+  // Notifies subscribers when the visibility of tabs controlled by an active
+  // ActorTask changes (when `task.has_visible_tab()` toggles between true and
+  // false).
+  //
+  // Note on scope and visibility semantics:
+  // - Scope: This strictly tracks tabs under active control by an ActorTask; it
+  //   does not monitor unassociated browser tabs, nor is it triggered by
+  //   Picture-in-Picture (PiP) transitions (which are managed per-task via
+  //   `ActorTask::SetIsInPip()`).
+  // - Definition of "Visible": Evaluates whether any controlled tab's
+  //   WebContents reports `content::Visibility::VISIBLE`. A tab partially
+  //   occluded by an overlapping window or overlay remains VISIBLE; switching
+  //   to another tab transitions the task to not visible.
+  //   TODO(crbug.com/540512932): Full window minimization and complete window
+  //   occlusion are not yet tracked.
+  using TaskVisibilityChangedCallback =
+      base::RepeatingCallback<void(ActorTask&)>;
+  base::CallbackListSubscription AddTaskVisibilityChangedCallback(
+      TaskVisibilityChangedCallback callback);
+  void NotifyTaskVisibilityChanged(ActorTask& task);
+
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
   const ActorTask* GetActingActorTaskForWebContents(
@@ -250,6 +271,9 @@ class ActorKeyedService : public KeyedService,
   std::map<TaskId, std::unique_ptr<ActorTask>> pending_delete_tasks_;
 
   TaskId::Generator next_task_id_;
+
+  base::RepeatingCallbackList<void(ActorTask&)>
+      task_visibility_change_callback_list_;
 
   base::RepeatingCallbackList<void(ActorTask&)>
       task_state_change_callback_list_;
