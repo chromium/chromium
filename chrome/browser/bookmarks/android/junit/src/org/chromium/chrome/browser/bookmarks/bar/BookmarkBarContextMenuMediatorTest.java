@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -40,6 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -87,149 +86,148 @@ public class BookmarkBarContextMenuMediatorTest {
     @Test
     @SmallTest
     public void testBookmarkItem() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
         BookmarkId bookmarkId =
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-
         ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
-        assertNotNull(list);
 
-        PropertyModel openTab = getMenuItem(list, R.string.contextmenu_open_in_new_tab);
-        assertNotNull(openTab);
-        assertTrue(openTab.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openNewWindow = getMenuItem(list, R.string.contextmenu_open_in_new_window);
-        assertNotNull(openNewWindow);
-        assertTrue(openNewWindow.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openIncognito =
-                getMenuItem(list, R.string.contextmenu_open_in_incognito_window);
-        assertNotNull(openIncognito);
-        assertTrue(openIncognito.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel edit = getMenuItem(list, R.string.contextmenu_edit_bookmark_ellipsis);
-        assertNotNull(edit);
-        assertTrue(edit.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel move = getMenuItem(list, R.string.bookmark_item_move);
-        assertNotNull(move);
-        assertTrue(move.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel delete = getMenuItem(list, R.string.bookmark_item_delete);
-        assertNotNull(delete);
-        assertTrue(delete.get(ListMenuItemProperties.ENABLED));
+        assertMenuStructure(
+                list,
+                enabled(R.string.contextmenu_open_in_new_tab),
+                enabled(R.string.contextmenu_open_in_new_window),
+                enabled(R.string.contextmenu_open_in_incognito_window),
+                divider(),
+                enabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                enabled(R.string.bookmark_item_move),
+                divider(),
+                enabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                enabled(R.string.contextmenu_show_bookmarks_bar));
     }
 
     @Test
     @SmallTest
     public void testFolder_Empty() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
         BookmarkId folderId =
                 mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Empty Folder");
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-
         ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
-        assertNotNull(list);
 
-        // Verify "Open all" options are disabled.
-        PropertyModel openTab = getMenuItem(list, R.string.contextmenu_open_all);
-        assertNotNull(openTab);
-        assertFalse(openTab.get(ListMenuItemProperties.ENABLED));
-
-        // Verify "Edit" / "Move" / "Delete" are enabled for normal folders.
-        PropertyModel edit = getMenuItem(list, R.string.contextmenu_edit_bookmark_ellipsis);
-        assertNotNull(edit);
-        assertTrue(edit.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel delete = getMenuItem(list, R.string.bookmark_item_delete);
-        assertNotNull(delete);
-        assertTrue(delete.get(ListMenuItemProperties.ENABLED));
+        assertMenuStructure(
+                list,
+                disabled(R.string.contextmenu_open_all),
+                disabled(R.string.contextmenu_open_all_in_new_window),
+                disabled(R.string.contextmenu_open_all_in_incognito_window),
+                disabled(R.string.contextmenu_open_all_in_new_tab_group),
+                divider(),
+                enabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                enabled(R.string.bookmark_item_move),
+                divider(),
+                enabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                enabled(R.string.contextmenu_show_bookmarks_bar));
     }
 
     @Test
     @SmallTest
     public void testFolder_SingleBookmark() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
         BookmarkId folderId =
                 mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Folder");
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-
         ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
-        assertNotNull(list);
 
-        PropertyModel openAll = getMenuItem(list, R.plurals.contextmenu_open_all_plural, 1);
-        assertNotNull(openAll);
-        assertTrue(openAll.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openNewWindow =
-                getMenuItem(list, R.plurals.contextmenu_open_all_in_new_window_plural, 1);
-        assertNotNull(openNewWindow);
-        assertTrue(openNewWindow.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openIncognito =
-                getMenuItem(list, R.plurals.contextmenu_open_all_in_incognito_window_plural, 1);
-        assertNotNull(openIncognito);
-        assertTrue(openIncognito.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openTabGroup =
-                getMenuItem(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
-        assertNotNull(openTabGroup);
-        assertTrue(openTabGroup.get(ListMenuItemProperties.ENABLED));
+        assertMenuStructure(
+                list,
+                enabledPlural(R.plurals.contextmenu_open_all_plural, 1),
+                enabledPlural(R.plurals.contextmenu_open_all_in_new_window_plural, 1),
+                enabledPlural(R.plurals.contextmenu_open_all_in_incognito_window_plural, 1),
+                enabledPlural(R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1),
+                divider(),
+                enabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                enabled(R.string.bookmark_item_move),
+                divider(),
+                enabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                enabled(R.string.contextmenu_show_bookmarks_bar));
     }
 
     @Test
     @SmallTest
     public void testFolder_MultipleBookmarks() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
         BookmarkId folderId =
                 mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Folder");
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark 1", JUnitTestGURLs.URL_1);
         mBookmarkModel.addBookmark(folderId, 1, "Child Bookmark 2", JUnitTestGURLs.URL_2);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-
         ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
-        assertNotNull(list);
 
-        PropertyModel openAll = getMenuItem(list, R.plurals.contextmenu_open_all_plural, 2);
-        assertNotNull(openAll);
-        assertTrue(openAll.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openNewWindow =
-                getMenuItem(list, R.plurals.contextmenu_open_all_in_new_window_plural, 2);
-        assertNotNull(openNewWindow);
-        assertTrue(openNewWindow.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openIncognito =
-                getMenuItem(list, R.plurals.contextmenu_open_all_in_incognito_window_plural, 2);
-        assertNotNull(openIncognito);
-        assertTrue(openIncognito.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openTabGroup =
-                getMenuItem(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 2);
-        assertNotNull(openTabGroup);
-        assertTrue(openTabGroup.get(ListMenuItemProperties.ENABLED));
+        assertMenuStructure(
+                list,
+                enabledPlural(R.plurals.contextmenu_open_all_plural, 2),
+                enabledPlural(R.plurals.contextmenu_open_all_in_new_window_plural, 2),
+                enabledPlural(R.plurals.contextmenu_open_all_in_incognito_window_plural, 2),
+                enabledPlural(R.plurals.contextmenu_open_all_in_new_tab_group_plural, 2),
+                divider(),
+                enabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                enabled(R.string.bookmark_item_move),
+                divider(),
+                enabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                enabled(R.string.contextmenu_show_bookmarks_bar));
     }
 
     @Test
     @SmallTest
     public void testDesktopRootFolder_DisabledActions() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
         BookmarkItem desktopItem =
                 mBookmarkModel.getBookmarkById(mBookmarkModel.getDesktopFolderId());
-
         ModelList list = mMediator.buildContextMenuModelList(desktopItem, mBookmarkModel);
-        assertNotNull(list);
 
-        // Verify "Edit" / "Move" / "Delete" are present but disabled for Bookmarks Bar root folder.
-        PropertyModel edit = getMenuItem(list, R.string.contextmenu_edit_bookmark_ellipsis);
-        assertNotNull(edit);
-        assertFalse(edit.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel move = getMenuItem(list, R.string.bookmark_item_move);
-        assertNotNull(move);
-        assertFalse(move.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel delete = getMenuItem(list, R.string.bookmark_item_delete);
-        assertNotNull(delete);
-        assertFalse(delete.get(ListMenuItemProperties.ENABLED));
+        assertMenuStructure(
+                list,
+                disabled(R.string.contextmenu_open_all),
+                disabled(R.string.contextmenu_open_all_in_new_window),
+                disabled(R.string.contextmenu_open_all_in_incognito_window),
+                disabled(R.string.contextmenu_open_all_in_new_tab_group),
+                divider(),
+                disabled(R.string.contextmenu_edit_bookmark_ellipsis),
+                disabled(R.string.bookmark_item_move),
+                divider(),
+                disabled(R.string.bookmark_item_delete),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                enabled(R.string.contextmenu_show_bookmarks_bar));
     }
 
     @Test
@@ -238,26 +236,19 @@ public class BookmarkBarContextMenuMediatorTest {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
 
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
-        assertNotNull(list);
 
-        PropertyModel addPage = getMenuItem(list, R.string.contextmenu_add_page);
-        assertNotNull(addPage);
-        assertTrue(addPage.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel addFolder = getMenuItem(list, R.string.contextmenu_add_folder);
-        assertNotNull(addFolder);
-        assertTrue(addFolder.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openManager = getMenuItem(list, R.string.contextmenu_open_bookmarks_manager);
-        assertNotNull(openManager);
-        assertTrue(openManager.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel showBar = getMenuItem(list, R.string.contextmenu_show_bookmarks_bar);
-        assertNotNull(showBar);
-        assertTrue(showBar.get(ListMenuItemProperties.ENABLED));
-
-        assertNull(getMenuItem(list, R.string.contextmenu_always_hide_bookmarks_bar));
-        assertNull(getMenuItem(list, R.string.contextmenu_always_show_bookmarks_bar));
+        assertMenuStructure(
+                list,
+                disabled(R.string.contextmenu_open_all),
+                disabled(R.string.contextmenu_open_all_in_new_window),
+                disabled(R.string.contextmenu_open_all_in_incognito_window),
+                disabled(R.string.contextmenu_open_all_in_new_tab_group),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                enabled(R.string.contextmenu_show_bookmarks_bar));
     }
 
     @Test
@@ -267,34 +258,21 @@ public class BookmarkBarContextMenuMediatorTest {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
 
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
-        assertNotNull(list);
 
-        PropertyModel addPage = getMenuItem(list, R.string.contextmenu_add_page);
-        assertNotNull(addPage);
-        assertTrue(addPage.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel addFolder = getMenuItem(list, R.string.contextmenu_add_folder);
-        assertNotNull(addFolder);
-        assertTrue(addFolder.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel openManager = getMenuItem(list, R.string.contextmenu_open_bookmarks_manager);
-        assertNotNull(openManager);
-        assertTrue(openManager.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel hideBar = getMenuItem(list, R.string.contextmenu_always_hide_bookmarks_bar);
-        assertNotNull(hideBar);
-        assertTrue(hideBar.get(ListMenuItemProperties.ENABLED));
-
-        PropertyModel alwaysShowBar =
-                getMenuItem(list, R.string.contextmenu_always_show_bookmarks_bar);
-        assertNotNull(alwaysShowBar);
-        assertTrue(alwaysShowBar.get(ListMenuItemProperties.ENABLED));
-
-        assertNull(getMenuItem(list, R.string.contextmenu_show_bookmarks_bar));
-
-        assertNull(getMenuItem(list, R.string.contextmenu_edit_bookmark_ellipsis));
-        assertNull(getMenuItem(list, R.string.bookmark_item_move));
-        assertNull(getMenuItem(list, R.string.bookmark_item_delete));
+        assertMenuStructure(
+                list,
+                disabled(R.string.contextmenu_open_all),
+                disabled(R.string.contextmenu_open_all_in_new_window),
+                disabled(R.string.contextmenu_open_all_in_incognito_window),
+                disabled(R.string.contextmenu_open_all_in_new_tab_group),
+                divider(),
+                enabled(R.string.contextmenu_add_page),
+                enabled(R.string.contextmenu_add_folder),
+                divider(),
+                enabled(R.string.contextmenu_open_bookmarks_manager),
+                divider(),
+                enabled(R.string.contextmenu_always_hide_bookmarks_bar),
+                enabled(R.string.contextmenu_always_show_bookmarks_bar));
     }
 
     // Tests for actions of the items in the context menu.
@@ -404,5 +382,64 @@ public class BookmarkBarContextMenuMediatorTest {
             }
         }
         return null;
+    }
+
+    // Helper class and methods to verify presence and ordering of menu items.
+
+    private static class ExpectedItem {
+        public final String title;
+        public final boolean isDivider;
+        public final boolean isEnabled;
+
+        ExpectedItem(String title, boolean isDivider, boolean isEnabled) {
+            this.title = title;
+            this.isDivider = isDivider;
+            this.isEnabled = isEnabled;
+        }
+    }
+
+    private ExpectedItem divider() {
+        return new ExpectedItem(/* title= */ null, true, false);
+    }
+
+    private ExpectedItem enabled(int titleResId) {
+        return new ExpectedItem(mActivity.getString(titleResId), false, true);
+    }
+
+    private ExpectedItem disabled(int titleResId) {
+        return new ExpectedItem(mActivity.getString(titleResId), false, false);
+    }
+
+    private ExpectedItem enabledPlural(int pluralResId, int quantity) {
+        return new ExpectedItem(
+                mActivity.getResources().getQuantityString(pluralResId, quantity, quantity),
+                false,
+                true);
+    }
+
+    private void assertMenuStructure(ModelList list, ExpectedItem... expectedItems) {
+        assertEquals("Menu item count mismatch!", expectedItems.length, list.size());
+
+        for (int i = 0; i < expectedItems.length; i++) {
+            ExpectedItem expected = expectedItems[i];
+            ListItem actual = list.get(i);
+
+            if (expected.isDivider) {
+                assertEquals(
+                        "Index " + i + " should be a DIVIDER", ListItemType.DIVIDER, actual.type);
+            } else {
+                assertEquals(
+                        "Index " + i + " should be a MENU_ITEM",
+                        ListItemType.MENU_ITEM,
+                        actual.type);
+
+                String actualTitle = actual.model.get(ListMenuItemProperties.TITLE).toString();
+                assertEquals("Title mismatch at index " + i, expected.title, actualTitle);
+                assertEquals(
+                        "Enabled state mismatch for: " + expected.title,
+                        expected.isEnabled,
+                        actual.model.get(ListMenuItemProperties.ENABLED));
+            }
+        }
     }
 }
