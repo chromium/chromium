@@ -903,8 +903,8 @@ TEST_F(BlobRegistryImplTest, Register_ValidBytesAsFile) {
   size_t expected_file_count =
       1 + kData.size() / kTestBlobStorageMaxFileSizeBytes;
   EXPECT_EQ(0u, reply_request_count_);
-  EXPECT_EQ(0u, stream_request_count_);
-  EXPECT_EQ(expected_file_count, file_request_count_);
+  EXPECT_EQ(1u, stream_request_count_);
+  EXPECT_EQ(0u, file_request_count_);
 
   auto snapshot = handle->CreateSnapshot();
   EXPECT_EQ(expected_file_count, snapshot->items().size());

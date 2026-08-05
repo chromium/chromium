@@ -9,12 +9,16 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
+#include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 
@@ -255,115 +259,297 @@ class DataPipeTransportStrategy : public BlobTransportStrategy {
   size_t current_source_offset_ = 0;
 };
 
-// Transport strategy that requests all data through files.
+// Transport strategy that stores all data in page files. Bytes are streamed
+// over data pipes and written to the files locally so that the page files
+// remain private to this process.
 class FileTransportStrategy : public BlobTransportStrategy {
  public:
   FileTransportStrategy(BlobDataBuilder* builder,
                         ResultCallback result_callback,
                         const BlobStorageLimits& limits)
       : BlobTransportStrategy(builder, std::move(result_callback)),
-        limits_(limits) {}
+        limits_(limits),
+        reply_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+        file_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
+
+  ~FileTransportStrategy() override {
+    if (!files_.empty()) {
+      file_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce([](std::vector<base::File>) {}, std::move(files_)));
+    }
+  }
 
   void AddBytesElement(
       blink::mojom::DataElementBytes* bytes,
       const mojo::Remote<blink::mojom::BytesProvider>& data) override {
+    if (bytes->length == 0) {
+      return;
+    }
+    Element element;
+    element.provider = data.get();
+    element.length = bytes->length;
     uint64_t source_offset = 0;
     while (source_offset < bytes->length) {
-      if (current_file_size_ >= limits_.max_file_size ||
-          file_requests_.empty()) {
+      if (current_file_size_ >= limits_.max_file_size || file_count_ == 0) {
         current_file_size_ = 0;
-        current_file_index_++;
-        file_requests_.push_back(std::vector<Request>());
+        file_count_++;
       }
 
       // Make sure no single file gets too big, but do use up all the available
       // space in all but the last file.
-      uint64_t element_size =
+      uint64_t segment_size =
           std::min(bytes->length - source_offset,
                    limits_.max_file_size - current_file_size_);
-      BlobDataBuilder::FutureFile future_file = builder_->AppendFutureFile(
-          current_file_size_, element_size, file_requests_.size() - 1);
+      element.future_files.push_back(builder_->AppendFutureFile(
+          current_file_size_, segment_size, file_count_ - 1));
+      element.segments.push_back(
+          Segment{file_count_ - 1, current_file_size_, segment_size});
 
-      num_unresolved_requests_++;
-      file_requests_.back().push_back(Request{
-          data.get(), source_offset, element_size, std::move(future_file)});
-
-      source_offset += element_size;
-      current_file_size_ += element_size;
+      source_offset += segment_size;
+      current_file_size_ += segment_size;
     }
+    elements_.push_back(std::move(element));
   }
 
   void BeginTransport(
       std::vector<BlobMemoryController::FileCreationInfo> file_infos) override {
-    if (file_requests_.empty()) {
+    if (elements_.empty()) {
       std::move(result_callback_).Run(BlobStatus::DONE);
       return;
     }
-    DCHECK_EQ(file_infos.size(), file_requests_.size());
-    for (size_t file_index = 0; file_index < file_requests_.size();
-         ++file_index) {
-      auto& requests = file_requests_[file_index];
-      uint64_t file_offset = 0;
-      for (size_t i = 0; i < requests.size(); ++i) {
-        auto& request = requests[i];
-        base::File file = i == requests.size() - 1
-                              ? std::move(file_infos[file_index].file)
-                              : file_infos[file_index].file.Duplicate();
-        // base::Unretained is safe because |this| is guaranteed (by the
-        // contract that code using BlobTransportStrategy should adhere to) to
-        // outlive the BytesProvider.
-        request.provider->RequestAsFile(
-            request.source_offset, request.source_size, std::move(file),
-            file_offset,
-            base::BindOnce(&FileTransportStrategy::OnReply,
-                           base::Unretained(this),
-                           std::move(request.future_file),
-                           file_infos[file_index].file_reference));
-        file_offset += request.source_size;
-      }
+    DCHECK_EQ(file_infos.size(), file_count_);
+    file_references_.reserve(file_infos.size());
+    files_.reserve(file_infos.size());
+    for (auto& info : file_infos) {
+      file_references_.push_back(std::move(info.file_reference));
+      files_.push_back(std::move(info.file));
     }
+    NextElementOrDone();
   }
 
  private:
-  void OnReply(BlobDataBuilder::FutureFile future_file,
-               scoped_refptr<ShareableFileReference> file_reference,
-               std::optional<base::Time> time_file_modified) {
-    if (!time_file_modified) {
-      // Writing to the file failed in the renderer.
-      std::move(result_callback_).Run(BlobStatus::ERR_FILE_WRITE_FAILED);
+  // A contiguous run of bytes from one element to be written to one file.
+  struct Segment {
+    size_t file_index;
+    uint64_t file_offset;
+    uint64_t size;
+  };
+
+  struct Element {
+    raw_ptr<blink::mojom::BytesProvider> provider;
+    uint64_t length = 0;
+    // Segments are ordered by source offset and cover the whole element.
+    std::vector<Segment> segments;
+    // One entry per segment.
+    std::vector<BlobDataBuilder::FutureFile> future_files;
+  };
+
+  using StreamWrittenCallback =
+      base::OnceCallback<void(std::vector<base::File>, uint64_t bytes_written)>;
+
+  // Runs on |file_runner_|. Reads from a data pipe and writes the bytes to the
+  // page files according to |segments|. Self-deletes when done.
+  class StreamToFilesWriter {
+   public:
+    static void CreateAndStart(
+        std::vector<base::File> files,
+        mojo::ScopedDataPipeConsumerHandle pipe,
+        std::vector<Segment> segments,
+        uint64_t expected_size,
+        scoped_refptr<base::SequencedTaskRunner> reply_runner,
+        StreamWrittenCallback callback) {
+      new StreamToFilesWriter(std::move(files), std::move(pipe),
+                              std::move(segments), expected_size,
+                              std::move(reply_runner), std::move(callback));
+    }
+
+   private:
+    StreamToFilesWriter(std::vector<base::File> files,
+                        mojo::ScopedDataPipeConsumerHandle pipe,
+                        std::vector<Segment> segments,
+                        uint64_t expected_size,
+                        scoped_refptr<base::SequencedTaskRunner> reply_runner,
+                        StreamWrittenCallback callback)
+        : files_(std::move(files)),
+          pipe_(std::move(pipe)),
+          watcher_(FROM_HERE,
+                   mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+                   base::SequencedTaskRunner::GetCurrentDefault()),
+          segments_(std::move(segments)),
+          expected_size_(expected_size),
+          reply_runner_(std::move(reply_runner)),
+          callback_(std::move(callback)) {
+      watcher_.Watch(pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                     MOJO_WATCH_CONDITION_SATISFIED,
+                     base::BindRepeating(&StreamToFilesWriter::OnReadable,
+                                         base::Unretained(this)));
+      watcher_.ArmOrNotify();
+    }
+
+    void OnReadable(MojoResult result, const mojo::HandleSignalsState& state) {
+      while (bytes_written_ < expected_size_) {
+        base::span<const uint8_t> buffer;
+        MojoResult read_result =
+            pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
+        if (read_result == MOJO_RESULT_SHOULD_WAIT) {
+          watcher_.ArmOrNotify();
+          return;
+        }
+        if (read_result != MOJO_RESULT_OK) {
+          // The producer closed the pipe before we received all the data.
+          break;
+        }
+
+        size_t consumed = 0;
+        while (consumed < buffer.size() && segment_index_ < segments_.size()) {
+          const Segment& segment = segments_[segment_index_];
+          uint64_t remaining_in_segment = segment.size - segment_offset_;
+          size_t chunk = static_cast<size_t>(std::min<uint64_t>(
+              buffer.size() - consumed, remaining_in_segment));
+          std::optional<size_t> written = files_[segment.file_index].Write(
+              segment.file_offset + segment_offset_,
+              buffer.subspan(consumed, chunk));
+          if (!written.has_value() || *written != chunk) {
+            pipe_->EndReadData(consumed);
+            Done();
+            return;
+          }
+          consumed += chunk;
+          bytes_written_ += chunk;
+          segment_offset_ += chunk;
+          if (segment_offset_ == segment.size) {
+            segment_index_++;
+            segment_offset_ = 0;
+          }
+        }
+        pipe_->EndReadData(consumed);
+      }
+      Done();
+    }
+
+    void Done() {
+      reply_runner_->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback_), std::move(files_),
+                                    bytes_written_));
+      delete this;
+    }
+
+    std::vector<base::File> files_;
+    mojo::ScopedDataPipeConsumerHandle pipe_;
+    mojo::SimpleWatcher watcher_;
+    const std::vector<Segment> segments_;
+    const uint64_t expected_size_;
+    scoped_refptr<base::SequencedTaskRunner> reply_runner_;
+    StreamWrittenCallback callback_;
+
+    size_t segment_index_ = 0;
+    uint64_t segment_offset_ = 0;
+    uint64_t bytes_written_ = 0;
+  };
+
+  void NextElementOrDone() {
+    if (current_element_ >= elements_.size()) {
+      file_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &FileTransportStrategy::FinalizeFilesOnFileSequence,
+              std::move(files_), reply_runner_,
+              base::BindOnce(&FileTransportStrategy::OnFilesFinalized,
+                             weak_factory_.GetWeakPtr())));
       return;
     }
 
-    bool populate_result =
-        future_file.Populate(std::move(file_reference), *time_file_modified);
-    DCHECK(populate_result);
+    Element& element = elements_[current_element_];
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes = static_cast<uint32_t>(
+        std::min<uint64_t>(element.length, limits_.max_shared_memory_size));
+    if (CreateDataPipe(&options, producer_handle, consumer_handle) !=
+        MOJO_RESULT_OK) {
+      DVLOG(1) << "Unable to create data pipe for blob transfer.";
+      std::move(result_callback_).Run(BlobStatus::ERR_OUT_OF_MEMORY);
+      return;
+    }
 
-    if (--num_unresolved_requests_ == 0)
-      std::move(result_callback_).Run(BlobStatus::DONE);
+    element.provider->RequestAsStream(std::move(producer_handle));
+    file_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&StreamToFilesWriter::CreateAndStart, std::move(files_),
+                       std::move(consumer_handle), element.segments,
+                       element.length, reply_runner_,
+                       base::BindOnce(&FileTransportStrategy::OnElementWritten,
+                                      weak_factory_.GetWeakPtr())));
+  }
+
+  void OnElementWritten(std::vector<base::File> files, uint64_t bytes_written) {
+    files_ = std::move(files);
+    if (bytes_written < elements_[current_element_].length) {
+      std::move(result_callback_).Run(BlobStatus::ERR_FILE_WRITE_FAILED);
+      return;
+    }
+    current_element_++;
+    NextElementOrDone();
+  }
+
+  static void FinalizeFilesOnFileSequence(
+      std::vector<base::File> files,
+      scoped_refptr<base::SequencedTaskRunner> reply_runner,
+      base::OnceCallback<void(std::vector<base::Time>)> callback) {
+    std::vector<base::Time> mtimes;
+    mtimes.reserve(files.size());
+    for (auto& file : files) {
+      base::File::Info info;
+      if (!file.IsValid() || !file.Flush() || !file.GetInfo(&info)) {
+        mtimes.clear();
+        break;
+      }
+      mtimes.push_back(info.last_modified);
+    }
+    reply_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(mtimes)));
+  }
+
+  void OnFilesFinalized(std::vector<base::Time> mtimes) {
+    if (mtimes.size() != file_references_.size()) {
+      std::move(result_callback_).Run(BlobStatus::ERR_FILE_WRITE_FAILED);
+      return;
+    }
+    for (Element& element : elements_) {
+      DCHECK_EQ(element.segments.size(), element.future_files.size());
+      for (size_t i = 0; i < element.segments.size(); ++i) {
+        size_t file_index = element.segments[i].file_index;
+        bool populate_result = element.future_files[i].Populate(
+            file_references_[file_index], mtimes[file_index]);
+        DCHECK(populate_result);
+      }
+    }
+    std::move(result_callback_).Run(BlobStatus::DONE);
   }
 
   const BlobStorageLimits limits_;
+  scoped_refptr<base::SequencedTaskRunner> reply_runner_;
+  scoped_refptr<base::SequencedTaskRunner> file_runner_;
 
   // State used to assign bytes elements to individual files.
-  // The index of the first file that still has available space.
-  size_t current_file_index_ = 0;
+  size_t file_count_ = 0;
   // How big the current file already is.
   uint64_t current_file_size_ = 0;
 
-  struct Request {
-    // The BytesProvider to request this particular bit of data from.
-    raw_ptr<blink::mojom::BytesProvider> provider;
-    // Offset into the BytesProvider of the data to request.
-    uint64_t source_offset;
-    // Size of the bytes to request.
-    uint64_t source_size;
-    // Future file the data should be populated into.
-    BlobDataBuilder::FutureFile future_file;
-  };
-  // For each file, a list of requests involving that file.
-  std::vector<std::vector<Request>> file_requests_;
+  std::vector<Element> elements_;
+  size_t current_element_ = 0;
 
-  size_t num_unresolved_requests_ = 0;
+  // Populated in BeginTransport. |files_| is moved to |file_runner_| while a
+  // write is in progress and moved back when it completes.
+  std::vector<base::File> files_;
+  std::vector<scoped_refptr<ShareableFileReference>> file_references_;
+
+  base::WeakPtrFactory<FileTransportStrategy> weak_factory_{this};
 };
 
 }  // namespace
