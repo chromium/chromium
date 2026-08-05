@@ -81,6 +81,8 @@ source_set("tasks_handling") {
   sources = [
     "task_orchestrator.mm",
     "task_request.mm",
+    "task_request_for_standard_url_context.h",
+    "task_request_for_standard_url_context.mm",
     "task_request_for_widget_url_context.h",
     "task_request_for_widget_url_context.mm",
     "task_request_for_xcallback_url_context.h",
@@ -115,7 +117,9 @@ source_set("tasks_handling") {
     "//ios/chrome/browser/credential_exchange/model:credential_import_manager_swift",
     "//ios/chrome/browser/credential_provider/model:features",
     "//ios/chrome/browser/default_browser/model",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intents/model:constants",
     "//ios/chrome/browser/intents/model:intent_type",
     "//ios/chrome/browser/intents/model:user_activity_browser_agent",

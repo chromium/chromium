@@ -7,12 +7,14 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -199,5 +201,57 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackURLMetrics) {
                                         test_case.expected_action, 1);
     histogram_tester.ExpectUniqueSample(kAppLaunchSource,
                                         AppLaunchSource::X_CALLBACK, 1);
+  }
+}
+
+// Tests that External Action URLs correctly parse path components, handle
+// feature flags, and log IOS.ExternalAction metrics and user actions.
+TEST_F(TaskRequestForURLContextTest, TestExternalActionMetrics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kAppStoreInAppEvents, kAppSwitcherAISummarization}, {});
+
+  struct TestCase {
+    NSString* url_string;
+    IOSExternalAction expected_action;
+    const char* expected_user_action;
+  } test_cases[] = {
+      {@"googlechrome://ChromeExternalAction",
+       IOSExternalAction::ACTION_INVALID, nullptr},
+      {@"googlechrome://ChromeExternalAction/OpenNTP",
+       IOSExternalAction::ACTION_OPEN_NTP,
+       "MobileExternalActionURLOpenedWithOpenNTP"},
+      {@"googlechrome://ChromeExternalAction/DefaultBrowserSettings",
+       IOSExternalAction::ACTION_DEFAULT_BROWSER_SETTINGS,
+       "MobileExternalActionURLOpenedWithDefaultBrowserSettings"},
+      {@"googlechrome://ChromeExternalAction/appstoregeminipromo",
+       IOSExternalAction::ACTION_APP_STORE_GEMINI_PROMO,
+       "MobileExternalActionURLOpenedWithAppStoreGeminiPromo"},
+      {@"googlechrome://ChromeExternalAction/appswitchertesting",
+       IOSExternalAction::ACTION_START_GEMINI_AI_SUMMARIZATION, nullptr},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    base::UserActionTester user_action_tester;
+    NSURL* url = [NSURL URLWithString:test_case.url_string];
+    UIOpenURLContext* context = CreateMockURLContext(url);
+
+    TaskRequestForURLContext* request =
+        [TaskRequestForURLContext taskRequestWithURLContext:context
+                                                 sceneState:scene_state_
+                                                isColdStart:YES];
+    EXPECT_NE(request, nil);
+
+    histogram_tester.ExpectUniqueSample(kExternalActionHistogram,
+                                        test_case.expected_action, 1);
+    histogram_tester.ExpectUniqueSample(kAppLaunchSource,
+                                        AppLaunchSource::EXTERNAL_ACTION, 1);
+    EXPECT_EQ(
+        user_action_tester.GetActionCount("MobileExternalActionURLOpened"), 1);
+    if (test_case.expected_user_action) {
+      EXPECT_EQ(
+          user_action_tester.GetActionCount(test_case.expected_user_action), 1);
+    }
   }
 }

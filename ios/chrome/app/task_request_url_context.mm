@@ -19,6 +19,7 @@
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/app/task_request_for_standard_url_context.h"
 #import "ios/chrome/app/task_request_for_widget_url_context.h"
 #import "ios/chrome/app/task_request_for_xcallback_url_context.h"
 #import "ios/chrome/app/task_request_private.h"
@@ -173,9 +174,10 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
                 sceneState:sceneState
                isColdStart:isColdStart];
   }
-  return [[TaskRequestForURLContext alloc] initWithURLContext:URLContext
-                                                   sceneState:sceneState
-                                                  isColdStart:isColdStart];
+  return
+      [[TaskRequestForStandardURLContext alloc] initWithURLContext:URLContext
+                                                        sceneState:sceneState
+                                                       isColdStart:isColdStart];
 }
 
 - (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
