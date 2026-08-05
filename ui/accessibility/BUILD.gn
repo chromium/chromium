@@ -589,6 +589,16 @@ if (is_android) {
     ]
   }
 
+  android_library("ui_accessibility_test_support_java") {
+    testonly = true
+    sources = [ "android/javatests/src/org/chromium/ui/accessibility/AccessibilityStateTestHelper.java" ]
+    deps = [
+      ":ax_base_java",
+      "//base:base_java",
+      "//build/android:build_java",
+    ]
+  }
+
   robolectric_library("ui_accessibility_junit_test_support") {
     testonly = true
     sources = [ "android/javatests/src/org/chromium/ui/accessibility/AccessibilityStateJUnitTestHelper.java" ]
@@ -598,6 +608,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//third_party/mockito:mockito_java",
     ]
+    public_deps = [ ":ui_accessibility_test_support_java" ]
   }
 
   robolectric_library("ui_accessibility_junit_tests") {

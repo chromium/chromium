@@ -47,7 +47,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl.DragTargetType;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -104,8 +104,8 @@ public class DragAndDropDelegateImplUnitTest {
     @After
     public void tearDown() {
         mDropDataProviderImpl.onDragEnd(false);
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(false);
     }
 
     @Test
@@ -295,7 +295,7 @@ public class DragAndDropDelegateImplUnitTest {
                         /* dragObjRectWidth= */ 100,
                         /* dragObjRectHeight= */ 200));
 
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
         Assert.assertFalse(
                 "Drag and drop should not start when isTouchExplorationEnabled=true.",
                 mDragAndDropDelegateImpl.startDragAndDrop(
@@ -308,8 +308,8 @@ public class DragAndDropDelegateImplUnitTest {
                         /* dragObjRectWidth= */ 100,
                         /* dragObjRectHeight= */ 200));
 
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
         Assert.assertFalse(
                 "Drag and drop should not start when isPerformGesturesEnabled=true.",
                 mDragAndDropDelegateImpl.startDragAndDrop(
@@ -682,27 +682,27 @@ public class DragAndDropDelegateImplUnitTest {
 
         // A11y default setting with isTouchExplorationEnabled=false and
         // isPerformGesturesEnabled=true on XR
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
         Assert.assertTrue(
                 "Drag and drop should start.", calllStartDragAndDrop(shadowImage, dropData));
 
         // A11y setting with isTouchExplorationEnabled=true and isPerformGesturesEnabled=false on XR
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(false);
         Assert.assertTrue(
                 "Drag and drop should start.", calllStartDragAndDrop(shadowImage, dropData));
 
         // A11y setting with isTouchExplorationEnabled=true and isPerformGesturesEnabled=true on XR
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
         Assert.assertTrue(
                 "Drag and drop should start.", calllStartDragAndDrop(shadowImage, dropData));
 
         // A11y setting with isTouchExplorationEnabled=false and isPerformGesturesEnabled=false on
         // XR
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(false);
         Assert.assertTrue(
                 "Drag and drop should start.", calllStartDragAndDrop(shadowImage, dropData));
     }

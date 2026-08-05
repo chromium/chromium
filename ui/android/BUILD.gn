@@ -930,6 +930,7 @@ robolectric_library("ui_android_junit_tests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/accessibility:ax_base_java",
+    "//ui/accessibility:ui_accessibility_junit_test_support",
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",

@@ -90,7 +90,7 @@ public class AccessibilityStateTest {
     @After
     public void tearDown() throws Exception {
         mCloseableMocks.close();
-        AccessibilityState.uninitializeForTesting();
+        AccessibilityState.setDelegateForTesting(null);
     }
 
     private AccessibilityServiceInfo createPasswordManagerServiceInfoWithFlags(int flags) {
@@ -557,7 +557,7 @@ public class AccessibilityStateTest {
                 .onAnimatorDurationScaleChanged();
 
         // Verify that observer is not notified when activity is resumed after uninitialization.
-        AccessibilityState.uninitializeForTesting();
+        AccessibilityState.setDelegateForTesting(null);
         ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.PAUSED);
         ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.RESUMED);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();

@@ -269,6 +269,10 @@ public class AccessibilityState {
         sListeners.add(listener);
     }
 
+    public static Set<Listener> getListeners() {
+        return sListeners;
+    }
+
     public static boolean isComplexUserInteractionServiceEnabled() {
         return getDelegate().isComplexUserInteractionServiceEnabled();
     }
