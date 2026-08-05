@@ -23,4 +23,6 @@ found in the LICENSE file.
     <dimen name="stts_drag_handlebar_margin">6dp</dimen>
     <dimen name="stts_sheet_padding">22dp</dimen>
     <dimen name="stts_sheet_margin">16dp</dimen>
+    <dimen name="stts_enhanced_list_item_height">74dp</dimen>
+    <dimen name="stts_fading_edge_length">24dp</dimen>
 </resources>

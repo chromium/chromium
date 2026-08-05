@@ -8,73 +8,76 @@ found in the LICENSE file.
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:ignore="UselessParent">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/drag_handlebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="@dimen/stts_sheet_margin"
+        android:layout_marginStart="@dimen/stts_sheet_margin"
+        android:layout_marginTop="@dimen/stts_drag_handlebar_margin"
+        android:layout_marginBottom="@dimen/stts_drag_handlebar_margin"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/drag_handlebar" />
+
+    <TextView
+        android:id="@+id/sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/drag_handlebar"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:text="@string/send_tab_to_self_enhanced_title"
+        android:accessibilityHeading="true"
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sheet_item_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_below="@id/sheet_title"
+        android:layout_marginHorizontal="@dimen/stts_sheet_margin"
+        android:clipToPadding="false" />
 
-        <ImageView
-            android:id="@+id/drag_handlebar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginEnd="@dimen/stts_sheet_margin"
-            android:layout_marginStart="@dimen/stts_sheet_margin"
-            android:layout_marginTop="@dimen/stts_drag_handlebar_margin"
-            android:layout_marginBottom="@dimen/stts_drag_handlebar_margin"
-            android:importantForAccessibility="no"
-            app:srcCompat="@drawable/drag_handlebar" />
-
-        <TextView
-            android:id="@+id/sheet_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:text="@string/send_tab_to_self_enhanced_title"
-            android:accessibilityHeading="true"
-            android:textAppearance="@style/TextAppearance.Headline.Primary" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/sheet_item_list"
+    <LinearLayout
+        android:id="@+id/bottom_actions_block"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sheet_item_list"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/stts_sheet_margin"
+        android:paddingTop="12dp"
+        android:paddingBottom="@dimen/stts_sheet_margin">
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/send_button"
+            style="@style/FilledButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/stts_sheet_margin"
-            android:clipToPadding="false"
-            android:divider="@null" />
-
+            android:enabled="false"
+            android:text="@string/send_tab_to_self_send_button" />
         <LinearLayout
-            android:id="@+id/bottom_actions_block"
+            android:id="@+id/manage_devices_block"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="@dimen/stts_sheet_margin"
-            android:paddingTop="16dp"
-            android:paddingBottom="24dp">
-            <org.chromium.ui.widget.ButtonCompat
-                android:id="@+id/send_button"
-                style="@style/FilledButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                android:text="@string/send_tab_to_self_send_button" />
+            android:visibility="gone">
             <View
+                android:id="@+id/manage_devices_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="24dp"
-                android:background="?attr/colorSurfaceVariant" />
+                android:layout_marginTop="@dimen/stts_sheet_margin"
+                android:background="@drawable/divider_line_bg" />
             <TextView
                 android:id="@+id/manage_devices_link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:background="?attr/selectableItemBackground"
                 android:focusable="true"
                 android:minHeight="48dp"
@@ -84,4 +87,5 @@ found in the LICENSE file.
                         "@style/TextAppearance.TextLarge.Primary" />
         </LinearLayout>
     </LinearLayout>
+
 </RelativeLayout>

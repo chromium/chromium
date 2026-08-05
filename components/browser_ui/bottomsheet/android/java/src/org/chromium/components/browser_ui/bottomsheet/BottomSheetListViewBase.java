@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -60,7 +59,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     public static final int MAX_FULLY_VISIBLE_LIST_ITEM_COUNT = 3;
 
     private final BottomSheetController mBottomSheetController;
-    private final RelativeLayout mContentView;
+    private final View mContentView;
     private final BottomSheetRecyclerScrollListener mScrollListener;
     private final boolean mSuppressCollectionA11y;
     private @Nullable Callback<Integer> mDismissHandler;
@@ -91,6 +90,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                         return;
                     }
                     super.onSheetStateChanged(newState, reason);
+                    BottomSheetListViewBase.this.onSheetStateChanged(newState, reason);
                     if (newState == BottomSheetController.SheetState.FULL) {
                         // The list of items should be scrollable in full state.
                         assumeNonNull(mSheetItemListView).suppressLayout(false);
@@ -98,8 +98,8 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                             && mScrollListener.isScrolledToTop()) {
                         // The list of items should not be scrollable when the sheet transitions
                         // into half state if it's scrolled to the top. If the list is currently
-                        // scrolled away from the top, it should stay scrolled in half state until
-                        // the user scrolls to the top.
+                        // scrolled away from the top, it should stay scrolled in half state
+                        // until the user scrolls to the top.
                         assumeNonNull(mSheetItemListView).suppressLayout(true);
                     }
                     if (newState != BottomSheetController.SheetState.HIDDEN) return;
@@ -166,7 +166,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
      */
     public BottomSheetListViewBase(
             BottomSheetController bottomSheetController,
-            RelativeLayout contentView,
+            View contentView,
             Boolean suppressCollectionA11y) {
         mBottomSheetController = bottomSheetController;
         mContentView = contentView;
@@ -174,6 +174,10 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
 
         mScrollListener = new BottomSheetRecyclerScrollListener(mBottomSheetController);
         mSuppressCollectionA11y = suppressCollectionA11y;
+    }
+
+    protected BottomSheetController getBottomSheetController() {
+        return mBottomSheetController;
     }
 
     @Override
@@ -310,11 +314,25 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
         return totalHeight;
     }
 
-    private static @Px int getHeightWithMarginsPx(@Nullable View view, boolean shouldPeek) {
+    /**
+     * Computes the measured height of the view plus its top and bottom margins. Note: Views that
+     * are View.GONE or hidden in specific sheet states (e.g. during layout in half state when
+     * estimating full state height) have a measured height of 0.
+     *
+     * @param view The view to measure.
+     * @return The height in pixels, or 0 if the view is null.
+     */
+    protected static @Px int getHeightWithMarginsPx(@Nullable View view) {
         if (view == null) {
             return 0;
         }
-        assert view.getMeasuredHeight() > 0 : "View hasn't been measured.";
+        return getHeightWithMarginsPx(view, /* shouldPeek= */ false);
+    }
+
+    protected static @Px int getHeightWithMarginsPx(@Nullable View view, boolean shouldPeek) {
+        if (view == null) {
+            return 0;
+        }
         return getMarginsPx(view, /* excludeBottomMargin= */ shouldPeek)
                 + (shouldPeek ? view.getMeasuredHeight() / 2 : view.getMeasuredHeight());
     }
@@ -343,6 +361,8 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     protected void removeObserver(BottomSheetObserver observer) {
         mBottomSheetController.removeObserver(observer);
     }
+
+    protected void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {}
 
     protected boolean isFullyExtended() {
         return mBottomSheetController.getCurrentOffset()

@@ -63,7 +63,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class SendTabToSelfCoordinator
         implements BottomSheetSigninAndHistorySyncCoordinator.Delegate {
-
     /**
      * Waits for Sync to download the list of target devices after sign-in. Aborts if the user
      * dismisses the sign-in bottom sheet ("account picker") before success.
@@ -391,13 +390,6 @@ public class SendTabToSelfCoordinator
         mView = new EnhancedTargetDevicePickerView(mContext, mBottomSheetController);
 
         PropertyModel model = EnhancedTargetDevicePickerProperties.createDefaultModel();
-
-        // TODO(crbug.com/530535526): The bottom sheet UI currently doesn't support scrolling well.
-        // As a temporary workaround, truncate the list to 4 devices, which will fit onto almost all
-        // screens without scrolling.
-        if (targetDevices.size() > 4) {
-            targetDevices = targetDevices.subList(0, 4);
-        }
 
         new EnhancedTargetDevicePickerMediator(
                 mUrl, mTitle, targetDevices, mProfile, mTabProvider, model, mEntryPoint);

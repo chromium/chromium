@@ -111,6 +111,50 @@ public class EnhancedTargetDevicePickerMediatorTest {
                         EnhancedTargetDevicePickerProperties.DeviceItemProperties.IS_SELECTED));
     }
 
+    /**
+     * Tests that populating more than 4 devices retains all devices in the property model for full
+     * sheet expansion.
+     */
+    @Test
+    public void testPopulateModelWithoutTruncation() {
+        TargetDeviceInfo device3 =
+                new TargetDeviceInfo("Device 3", "guid_3", FormFactor.TABLET, "3 days ago");
+        TargetDeviceInfo device4 =
+                new TargetDeviceInfo("Device 4", "guid_4", FormFactor.PHONE, "4 days ago");
+        TargetDeviceInfo device5 =
+                new TargetDeviceInfo("Device 5", "guid_5", FormFactor.DESKTOP, "5 days ago");
+        TargetDeviceInfo device6 =
+                new TargetDeviceInfo("Device 6", "guid_6", FormFactor.TABLET, "6 days ago");
+        createMediator(Arrays.asList(mDevice1, mDevice2, device3, device4, device5, device6));
+
+        ModelList deviceList = mModel.get(EnhancedTargetDevicePickerProperties.DEVICE_LIST);
+        assertEquals(6, deviceList.size());
+
+        ListItem item5 = deviceList.get(4);
+        TargetDeviceInfo info5 =
+                item5.model.get(
+                        EnhancedTargetDevicePickerProperties.DeviceItemProperties.DEVICE_INFO);
+        assertEquals("Device 5", info5.deviceName);
+        assertEquals("guid_5", info5.cacheGuid);
+
+        ListItem item6 = deviceList.get(5);
+        TargetDeviceInfo info6 =
+                item6.model.get(
+                        EnhancedTargetDevicePickerProperties.DeviceItemProperties.DEVICE_INFO);
+        assertEquals("Device 6", info6.deviceName);
+        assertEquals("guid_6", info6.cacheGuid);
+        assertEquals(
+                mDevice1.cacheGuid,
+                mModel.get(EnhancedTargetDevicePickerProperties.SELECTED_DEVICE_ID));
+        assertTrue(
+                deviceList
+                        .get(0)
+                        .model
+                        .get(
+                                EnhancedTargetDevicePickerProperties.DeviceItemProperties
+                                        .IS_SELECTED));
+    }
+
     @Test
     public void testDeviceSelectionUpdate() {
         createMediator(Arrays.asList(mDevice1, mDevice2));
@@ -160,5 +204,85 @@ public class EnhancedTargetDevicePickerMediatorTest {
                         any(),
                         eq(ShareEntryPoint.SHARE_SHEET));
         assertFalse(mModel.get(EnhancedTargetDevicePickerProperties.VISIBLE));
+    }
+
+    /**
+     * Tests that populating with a large list of devices handles auto-selection without
+     * NullPointerException or out-of-bounds indexing.
+     */
+    @Test
+    public void testPopulateModelWithManyDevices_autoSelectsFirstDevice() {
+        TargetDeviceInfo device1 =
+                new TargetDeviceInfo("Device 1", "guid_1", FormFactor.PHONE, "Just now");
+        TargetDeviceInfo device2 =
+                new TargetDeviceInfo("Device 2", "guid_2", FormFactor.PHONE, "Just now");
+        TargetDeviceInfo device3 =
+                new TargetDeviceInfo("Device 3", "guid_3", FormFactor.PHONE, "Just now");
+        TargetDeviceInfo device4 =
+                new TargetDeviceInfo("Device 4", "guid_4", FormFactor.PHONE, "Just now");
+        TargetDeviceInfo device5 =
+                new TargetDeviceInfo("Device 5", "guid_5", FormFactor.PHONE, "Just now");
+
+        // Simulate passing 5 devices.
+        createMediator(Arrays.asList(device1, device2, device3, device4, device5));
+
+        ModelList deviceList = mModel.get(EnhancedTargetDevicePickerProperties.DEVICE_LIST);
+        assertEquals(5, deviceList.size());
+
+        // Verify the first device is safely auto-selected without NPE or indexing errors.
+        assertEquals("guid_1", mModel.get(EnhancedTargetDevicePickerProperties.SELECTED_DEVICE_ID));
+        assertTrue(
+                deviceList
+                        .get(0)
+                        .model
+                        .get(
+                                EnhancedTargetDevicePickerProperties.DeviceItemProperties
+                                        .IS_SELECTED));
+    }
+
+    /**
+     * Tests that populating with a mix of active and inactive/older devices retains all items and
+     * safely auto-selects the first active device.
+     */
+    @Test
+    public void testPopulateModelWithManyDevicesMixedActivity() {
+        TargetDeviceInfo device3 =
+                new TargetDeviceInfo("Device 3", "guid_3", FormFactor.PHONE, "Just now");
+        TargetDeviceInfo device4 =
+                new TargetDeviceInfo("Device 4", "guid_4", FormFactor.PHONE, "Just now");
+        TargetDeviceInfo device5 =
+                new TargetDeviceInfo("Device 5", "guid_5", FormFactor.PHONE, "Just now");
+        TargetDeviceInfo device6 =
+                new TargetDeviceInfo("Device 6", "guid_6", FormFactor.PHONE, "Just now");
+        TargetDeviceInfo device7 =
+                new TargetDeviceInfo("Device 7", "guid_7", FormFactor.PHONE, "Just now");
+
+        // Simulate passing 2 active devices (from setUp) + 5 extra devices.
+        createMediator(
+                Arrays.asList(mDevice1, mDevice2, device3, device4, device5, device6, device7));
+
+        ModelList deviceList = mModel.get(EnhancedTargetDevicePickerProperties.DEVICE_LIST);
+        assertEquals(7, deviceList.size());
+
+        // Verify the first active device (mDevice1) is auto-selected.
+        assertEquals(
+                mDevice1.cacheGuid,
+                mModel.get(EnhancedTargetDevicePickerProperties.SELECTED_DEVICE_ID));
+        assertTrue(
+                deviceList
+                        .get(0)
+                        .model
+                        .get(
+                                EnhancedTargetDevicePickerProperties.DeviceItemProperties
+                                        .IS_SELECTED));
+        for (int i = 1; i < deviceList.size(); i++) {
+            assertFalse(
+                    deviceList
+                            .get(i)
+                            .model
+                            .get(
+                                    EnhancedTargetDevicePickerProperties.DeviceItemProperties
+                                            .IS_SELECTED));
+        }
     }
 }
