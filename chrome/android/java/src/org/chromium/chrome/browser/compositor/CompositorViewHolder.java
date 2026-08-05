@@ -1120,15 +1120,7 @@ public class CompositorViewHolder extends FrameLayout
      * @see #updateWebContentsSize(Tab, Integer)
      */
     void updateWebContentsSize() {
-        updateWebContentsSize(getCurrentTab(), /* widthOverride= */ null);
-    }
-
-    /**
-     * @see #updateWebContentsSize(Tab, Integer)
-     */
-    @VisibleForTesting
-    void updateWebContentsSize(@Nullable Tab tab) {
-        updateWebContentsSize(tab, /* widthOverride= */ null);
+        updateWebContentsSize(getCurrentTab());
     }
 
     /**
@@ -1140,11 +1132,9 @@ public class CompositorViewHolder extends FrameLayout
      * the Window, this method will force it to layout and use that size.
      *
      * @param tab {@link Tab} for which the size of the view is set.
-     * @param widthOverride The width that should be used for the web contents, regardless of
-     *     viewport size.
      */
     @VisibleForTesting
-    void updateWebContentsSize(@Nullable Tab tab, @Nullable Integer widthOverride) {
+    void updateWebContentsSize(@Nullable Tab tab) {
         if (tab == null) return;
 
         WebContents webContents = tab.getWebContents();
@@ -1152,7 +1142,7 @@ public class CompositorViewHolder extends FrameLayout
         if (webContents == null || view == null) return;
 
         Point viewportSize = getViewportSize();
-        int width = widthOverride != null ? widthOverride : viewportSize.x;
+        int width = viewportSize.x;
         int height = viewportSize.y;
 
         if (ChromeFeatureList.sVirtualKeyboardTransientInnerHeightFix.isEnabled()
@@ -1165,14 +1155,10 @@ public class CompositorViewHolder extends FrameLayout
 
         // The view size takes into account side-anchored UI whose width should be subtracted from
         // the view if they are visible, therefore shrinking the Blink-side view size.
-        //
-        // Note that a non-null widthOverride already considered side-anchored UI (see callers of
-        // this method), so we only need to consider side-anchored UI when widthOverride is null.
         int horizontalViewportInsets = 0;
         if ((AndroidSidePanelEnabledFn.isEnabled()
                         || VerticalTabUtils.isVerticalTabsEligible(mActivity))
-                && mSideUiStateProvider != null
-                && widthOverride == null) {
+                && mSideUiStateProvider != null) {
             SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
             horizontalViewportInsets =
                     sideUiSpecs.getWidth(AnchorSide.LEFT) + sideUiSpecs.getWidth(AnchorSide.RIGHT);
@@ -1310,7 +1296,6 @@ public class CompositorViewHolder extends FrameLayout
      *
      * @param viewportWidth Width of the viewport in px.
      * @param viewportHeight Height of the viewport in px.
-     * @param keyboardHeight Height of the keyboard in px.
      * @param webContents Active WebContent for which this event needs to be fired.
      */
     private void notifyVirtualKeyboardOverlayGeometryChangeEvent(
