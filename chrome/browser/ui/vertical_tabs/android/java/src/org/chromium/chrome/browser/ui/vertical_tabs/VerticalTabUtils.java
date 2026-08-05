@@ -265,4 +265,11 @@ public class VerticalTabUtils {
         assert false : "Invalid entry point or direction";
         return LayoutToggleSourceAndDirection.ENABLE_APP_MENU;
     }
+
+    /** Resets Vertical Tabs SharedPreferences. For testing use only. */
+    public static void resetSharedPrefsForTesting() {
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
+    }
 }
