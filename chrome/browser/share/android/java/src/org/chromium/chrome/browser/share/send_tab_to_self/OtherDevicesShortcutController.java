@@ -38,7 +38,10 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync_device_info.FormFactor;
 
 import java.util.ArrayList;
@@ -244,6 +247,12 @@ public class OtherDevicesShortcutController implements Destroyable {
             // TODO(crbug.com/484887324): Consider filtering out devices which won't show up in the
             // "Recent Tabs" page - this may happen if a device has no eligible open tabs.
 
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(mProfile);
+            AccountInfo accountInfo =
+                    identityManager != null ? identityManager.getPrimaryAccountInfo() : null;
+            String givenName = accountInfo != null ? accountInfo.getGivenName() : null;
+
             // LauncherShortcutActivity may create a dynamic shortcut (with rank 0), which should
             // always appear before the STTS shortcuts, so start at rank 1 here.
             // TODO(crbug.com/484887324): Introduce a common manager class for all dynamic
@@ -282,6 +291,14 @@ public class OtherDevicesShortcutController implements Destroyable {
                 shortcutExtras.putString(EXTRA_DEVICE_GUID, device.cacheGuid);
                 shortcutExtras.putString(EXTRA_DEVICE_NAME, device.deviceName);
 
+                String longLabel =
+                        !TextUtils.isEmpty(givenName)
+                                ? mContext.getString(
+                                        R.string.send_tab_to_self_device_shortcut_long_label,
+                                        givenName,
+                                        device.deviceName)
+                                : device.deviceName;
+
                 // The ID passed to the constructor will become EXTRA_SHORTCUT_ID in the received
                 // Intent.
                 String id = SHORTCUT_ID_PREFIX + device.cacheGuid;
@@ -289,8 +306,7 @@ public class OtherDevicesShortcutController implements Destroyable {
                         new ShortcutInfo.Builder(mContext, id)
                                 // Common fields:
                                 .setShortLabel(device.deviceName)
-                                // TODO(crbug.com/484887324): Include the email in the long label?
-                                .setLongLabel(device.deviceName)
+                                .setLongLabel(longLabel)
                                 .setIcon(icon)
                                 // For launcher shortcut:
                                 .setIntent(intent)

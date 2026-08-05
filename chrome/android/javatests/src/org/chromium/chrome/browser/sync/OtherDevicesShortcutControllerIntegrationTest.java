@@ -47,6 +47,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SessionHeader;
@@ -270,7 +271,10 @@ public class OtherDevicesShortcutControllerIntegrationTest {
                                     OtherDevicesShortcutController.SHORTCUT_ID_PREFIX
                                             + REMOTE_GUID));
                     Criteria.checkThat(shortcuts.get(0).getShortLabel(), Matchers.is(REMOTE_NAME));
-                    Criteria.checkThat(shortcuts.get(0).getLongLabel(), Matchers.is(REMOTE_NAME));
+                    Criteria.checkThat(
+                            shortcuts.get(0).getLongLabel(),
+                            Matchers.is(
+                                    TestAccounts.ACCOUNT1.getGivenName() + " • " + REMOTE_NAME));
                 });
 
         // Update the DeviceInfo entity. This should update the shortcut too.
@@ -281,7 +285,9 @@ public class OtherDevicesShortcutControllerIntegrationTest {
                     List<ShortcutInfo> shortcuts = getSttsShortcuts();
                     Criteria.checkThat(shortcuts.size(), Matchers.is(1));
                     Criteria.checkThat(shortcuts.get(0).getShortLabel(), Matchers.is("New Name"));
-                    Criteria.checkThat(shortcuts.get(0).getLongLabel(), Matchers.is("New Name"));
+                    Criteria.checkThat(
+                            shortcuts.get(0).getLongLabel(),
+                            Matchers.is(TestAccounts.ACCOUNT1.getGivenName() + " • New Name"));
                 });
 
         // Delete the device info. This should remove the shortcut.

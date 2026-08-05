@@ -73,4 +73,7 @@
   <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST" desc = "Text for a toast indicating that the tab could not be sent because of a generic error." formatter_data="android_java">
     Something went wrong. Try again.
   </message>
+  <message name="IDS_SEND_TAB_TO_SELF_DEVICE_SHORTCUT_LONG_LABEL" desc="Long label for a dynamic shortcut representing another device belonging to the user." formatter_data="android_java">
+    <ph name="USER_GIVEN_NAME">%1$s<ex>Elisa</ex></ph> • <ph name="DEVICE_NAME">%2$s<ex>Pixel 9</ex></ph>
+  </message>
 </grit-part>
