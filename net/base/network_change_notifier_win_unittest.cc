@@ -703,12 +703,12 @@ TEST_F(NetworkChangeNotifierWinDeferredInitTest,
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_WIFI, GetCurrentConnectionType());
 }
 
-// Same as above, but verifies the case where the deferred computation resolves
-// to CONNECTION_NONE (offline). Observers that registered before the async
-// computation completes will have seen CONNECTION_UNKNOWN (online) and will not
-// be notified of the transition to offline until a real network change occurs.
+// Verifies the case where the deferred computation resolves to CONNECTION_NONE
+// (offline). The constructor optimistically reported CONNECTION_UNKNOWN
+// (online), and NotifyAddrChange() may never fire on a machine with no network,
+// so observers must be told about the correction.
 TEST_F(NetworkChangeNotifierWinDeferredInitTest,
-       DeferredComputationToOfflineDoesNotNotifyObservers) {
+       DeferredComputationToOfflineNotifiesObservers) {
   SetMockConnectionType(base::BindRepeating(
       []() { return NetworkChangeNotifier::CONNECTION_NONE; }));
 
@@ -716,11 +716,11 @@ TEST_F(NetworkChangeNotifierWinDeferredInitTest,
             GetCurrentConnectionType());
 
   TestConnectionTypeObserver connection_type_observer;
+  connection_type_observer.SetExpectedConnectionTypeChange(
+      NetworkChangeNotifier::CONNECTION_NONE, base::Time::Now());
 
   StartWatchingAndSucceed();
 
-  // Even though the actual type is CONNECTION_NONE (offline), no notification
-  // is sent. This is by design: the deferred initial computation is silent.
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE, GetCurrentConnectionType());
 }
 

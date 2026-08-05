@@ -102,6 +102,12 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
 
   void SetCurrentConnectionType(ConnectionType connection_type);
 
+  // Handles the result of the initial connection type computation deferred by
+  // the constructor when kDeferConnectionTypeAtStartup is enabled. Caches the
+  // type, and notifies observers if it turns out the machine is offline, since
+  // the constructor optimistically assumed it was online.
+  void OnInitialConnectionTypeComputed(ConnectionType connection_type);
+
   // Notifies IP address change observers of a change immediately, and notifies
   // network state change observers on a delay.  Must only be called on the
   // sequence |this| was created on.
