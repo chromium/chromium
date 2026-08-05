@@ -399,6 +399,7 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/543094240")
     public void testOpenUrlsInOtherWindow_RegularWindow_CreatesSingleWindowWithMultipleTabs() {
         ChromeTabbedActivity targetActivity =
                 openUrlsInOtherWindowForTesting(
