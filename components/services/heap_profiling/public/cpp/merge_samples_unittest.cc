@@ -11,11 +11,11 @@ namespace {
 
 TEST(MergeSamplesTest, MergeSamples) {
   using Sample = base::SamplingHeapProfiler::Sample;
-  Sample sample1(/*size=*/5, /*total=*/100, /*ordinal=*/1);
+  Sample sample1(/*size=*/5, /*total=*/100);
   sample1.stack = {reinterpret_cast<void*>(0x1), reinterpret_cast<void*>(0x2)};
-  Sample sample2(/*size=*/6, /*total=*/102, /*ordinal=*/2);
+  Sample sample2(/*size=*/6, /*total=*/102);
   sample2.stack = {reinterpret_cast<void*>(0x1), reinterpret_cast<void*>(0x3)};
-  Sample sample3(/*size=*/7, /*total=*/105, /*ordinal=*/3);
+  Sample sample3(/*size=*/7, /*total=*/105);
   sample3.stack = {reinterpret_cast<void*>(0x1), reinterpret_cast<void*>(0x2)};
 
   std::vector<Sample> samples = {sample1, sample2, sample3};

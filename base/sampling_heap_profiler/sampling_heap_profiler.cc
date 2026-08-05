@@ -134,16 +134,19 @@ StackUnwinder ChooseStackUnwinder() {
 
 }  // namespace
 
-SamplingHeapProfiler::Sample::Sample(size_t size,
-                                     size_t total,
-                                     uint32_t ordinal)
-    : size(size), total(total), ordinal(ordinal) {}
+SamplingHeapProfiler::Sample::Sample(size_t size, size_t total)
+    : size(size), total(total) {}
+
+SamplingHeapProfiler::Sample::~Sample() = default;
 
 SamplingHeapProfiler::Sample::Sample(const Sample&) = default;
-SamplingHeapProfiler::Sample::~Sample() = default;
+
+SamplingHeapProfiler::Sample& SamplingHeapProfiler::Sample::operator=(
+    const Sample&) = default;
 
 SamplingHeapProfiler::SamplingHeapProfiler()
     : churn_profiler_(base::WrapUnique(new SamplingHeapChurnProfiler())) {}
+
 SamplingHeapProfiler::~SamplingHeapProfiler() {
   if (record_thread_names_.load(std::memory_order_acquire)) {
     base::ThreadIdNameManager::GetInstance()->RemoveObserver(this);
@@ -267,7 +270,7 @@ void SamplingHeapProfiler::SampleAdded(void* address,
   DCHECK(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
   uint32_t previous_last =
       last_sample_ordinal_.fetch_add(1, std::memory_order_acq_rel);
-  Sample sample(size, total, previous_last + 1);
+  Sample sample(size, total);
   sample.allocator = type;
   CaptureNativeStack(context, &sample);
   AutoLock lock(mutex_);
@@ -285,7 +288,9 @@ void SamplingHeapProfiler::SampleAdded(void* address,
   // the sampling heap profiler failed to observe the destruction -- possibly
   // because the sampling heap profiler was temporarily disabled. We should
   // override the old entry.
-  samples_.insert_or_assign(address, std::move(sample));
+  samples_.insert_or_assign(
+      address,
+      OrderedSample{.sample = std::move(sample), .ordinal = previous_last + 1});
 }
 
 void SamplingHeapProfiler::CaptureNativeStack(const char* context,
@@ -320,7 +325,7 @@ void SamplingHeapProfiler::SampleRemoved(void* address) {
   auto it = samples_.find(address);
   if (it != samples_.end()) {
     if (churn_profiler_->ShouldRecordAllocFree()) {
-      churn_profiler_->RecordAllocFree(std::move(it->second));
+      churn_profiler_->RecordAllocFree(std::move(it->second.sample));
     }
     samples_.erase(it);
   }
@@ -337,10 +342,9 @@ std::vector<SamplingHeapProfiler::Sample> SamplingHeapProfiler::GetSamples(
   AutoLock lock(mutex_);
   std::vector<Sample> samples;
   samples.reserve(samples_.size());
-  for (auto& it : samples_) {
-    Sample& sample = it.second;
-    if (sample.ordinal > start_ordinal) {
-      samples.push_back(sample);
+  for (const auto& [address, ordered_sample] : samples_) {
+    if (ordered_sample.ordinal > start_ordinal) {
+      samples.push_back(ordered_sample.sample);
     }
   }
   return samples;
