@@ -5,8 +5,9 @@ module golden;
 
 interface Primary {
   enum NestedEnum {
-    kThis,
-    kThat,
+    kThis = 1,
+    kThat = 5,
+    kAnother,
   };
 
   GetEnum(string name) => (NestedEnum result);

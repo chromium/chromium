@@ -67,6 +67,18 @@ extension ObjectGroup {
 }
 
 ///
+/// Enumerations
+///
+extension ILType {
+    fileprivate static let jsGoldenPrimary_NestedEnum: ILType = .intEnumeration(
+        ofName: "golden.Primary_NestedEnum",
+        withValues: [1, 5, 6])
+    fileprivate static let jsGoldenExternalEnum: ILType = .intEnumeration(
+        ofName: "golden.ExternalEnum",
+        withValues: [0])
+}
+
+///
 /// Generators
 ///
 // TODO(crbug.com/500386713) Consider using mojoBuiltins or another list instead of regex
@@ -179,6 +191,8 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryPendingReceiver,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
+        .jsGoldenPrimary_NestedEnum,
+        .jsGoldenExternalEnum,
     ] + commonMojoEnumerations,
     additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil

@@ -1,0 +1,11 @@
+extension ILType {
+{%- for enum in enums %}
+    fileprivate static let {{enum|format_il_type}}: ILType = .intEnumeration(
+        ofName: "{{enum|fully_qualified_name}}",
+        withValues: [
+            {%- for field in enum.fields -%}
+            {{field.numeric_value}}{% if not loop.last %}, {% endif %}
+            {%- endfor -%}
+        ])
+{%- endfor %}
+}

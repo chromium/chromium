@@ -54,6 +54,7 @@ class Generator(generator.Generator):
     self.interface_remotes = {}
     self.interface_receivers = {}
     self.arrays = {}
+    self.enums = {}
 
   def GetFilters(self):
     return {
@@ -81,6 +82,7 @@ class Generator(generator.Generator):
         "interface_remotes": list(self.interface_remotes.values()),
         "interface_receivers": list(self.interface_receivers.values()),
         "arrays": list(self.arrays.values()),
+        "enums": list(self.enums.values()),
     }
 
   def _IsIgnoredType(self, kind):
@@ -92,7 +94,9 @@ class Generator(generator.Generator):
     if self._IsIgnoredType(kind):
       return
 
-    if mojom.IsArrayKind(kind):
+    if mojom.IsEnumKind(kind):
+      self._CollectEnum(kind)
+    elif mojom.IsArrayKind(kind):
       self._CollectArray(kind, is_in_js)
     elif mojom.IsAnyInterfaceKind(kind):
       self._CollectInterface(kind, is_in_js)
@@ -103,6 +107,10 @@ class Generator(generator.Generator):
       return
     self.arrays[name] = array
     self._CollectInterfaceAndTypes(array.kind, is_in_js)
+
+  def _CollectEnum(self, enum):
+    name = self._FormatUniqueName(enum)
+    self.enums[name] = enum
 
   # Marks the interface as a remote or receiver depending on which "side"
   # (JS or browser) the interface is used from. The `is_in_js` parameter

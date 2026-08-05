@@ -85,6 +85,9 @@ let mojo{{primary.name}}Profile = Profile(
 {%- endfor %}
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
+{%- for enum in enums %}
+        .{{enum|format_il_type}},
+{%- endfor %}
     ] + commonMojoEnumerations,
     additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil
