@@ -11,6 +11,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/test/bind.h"
 #import "components/page_content_annotations/core/page_content_annotations_common.h"
+#import "services/metrics/public/cpp/ukm_source_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -30,6 +31,7 @@ TEST_F(ClassificationRequestTrackerTest, EnqueueAndDrainPending) {
       url1,
       "Title 1",
       "Content 1",
+      ukm::SourceId(),
       base::BindLambdaForTesting(
           [&](const std::vector<page_content_annotations::Category>& res) {
             callback1_called = true;
@@ -39,6 +41,7 @@ TEST_F(ClassificationRequestTrackerTest, EnqueueAndDrainPending) {
       url2,
       "Title 2",
       "Content 2",
+      ukm::SourceId(),
       base::BindLambdaForTesting(
           [&](const std::vector<page_content_annotations::Category>& res) {}),
   });
@@ -106,6 +109,7 @@ TEST_F(ClassificationRequestTrackerTest, CancelAll) {
       url1,
       "Title",
       "Content",
+      ukm::SourceId(),
       base::BindLambdaForTesting(
           [&](const std::vector<page_content_annotations::Category>& res) {
             pending_callback_called = true;
@@ -145,6 +149,7 @@ TEST_F(ClassificationRequestTrackerTest, EnqueuePendingCapped) {
         GURL("https://example.com/" + base::NumberToString(i)),
         "Title " + base::NumberToString(i),
         "Content " + base::NumberToString(i),
+        ukm::SourceId(),
         base::BindLambdaForTesting(
             [&](const std::vector<page_content_annotations::Category>& res) {
               EXPECT_TRUE(res.empty());

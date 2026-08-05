@@ -1,12 +1,16 @@
 include_rules = [
-  "+components/keyed_service",
+  "+components/keyed_service/core",
+  "+components/keyed_service/ios",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/page_content_annotations/core",
   "+components/passage_embeddings/core",
+  "+components/ukm/ios",
   "+ios/chrome/browser/intelligence/proto_wrappers",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/web/public",
-  "+services/passage_embeddings",
+  "+services/metrics/public/cpp/ukm_source_id.h",
+  "+services/passage_embeddings/passage_embedder.h",
+  "+services/passage_embeddings/public/mojom",
 ]

@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/page_content_annotations/core/simple_page_content_verbalization.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -153,14 +154,17 @@ void OnDeviceCategoryClassifierTabHelper::OnPageContextExtracted(
   InProcessCategoryClassificationService* service =
       InProcessCategoryClassificationService::GetForProfile(profile);
   if (service) {
+    ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state_);
     auto callback = base::BindOnce(
         &OnDeviceCategoryClassifierTabHelper::OnCategoriesClassified,
-        weak_ptr_factory_.GetWeakPtr());
-    service->ClassifyPageContext(url, title, page_content, std::move(callback));
+        weak_ptr_factory_.GetWeakPtr(), source_id);
+    service->ClassifyPageContext(url, title, page_content, source_id,
+                                 std::move(callback));
   }
 }
 
 void OnDeviceCategoryClassifierTabHelper::OnCategoriesClassified(
+    ukm::SourceId source_id,
     const std::vector<page_content_annotations::Category>& categories) {
   // Stub for CL 2.
 }

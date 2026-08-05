@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "services/metrics/public/cpp/ukm_source_id.h"
 
 @class PageContextWrapper;
 
@@ -35,6 +36,7 @@ class OnDeviceCategoryClassifierTabHelper
 
  private:
   friend class web::WebStateUserData<OnDeviceCategoryClassifierTabHelper>;
+  friend class OnDeviceCategoryClassifierTabHelperTest;
 
   explicit OnDeviceCategoryClassifierTabHelper(web::WebState* web_state);
 
@@ -52,6 +54,7 @@ class OnDeviceCategoryClassifierTabHelper
   // Invoked asynchronously when the category classification model has finished
   // executing and returns the scores.
   void OnCategoriesClassified(
+      ukm::SourceId source_id,
       const std::vector<page_content_annotations::Category>& categories);
 
   raw_ptr<web::WebState> web_state_ = nullptr;

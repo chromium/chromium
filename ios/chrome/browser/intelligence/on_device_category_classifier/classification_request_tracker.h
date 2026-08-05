@@ -11,6 +11,7 @@
 #import "base/containers/flat_map.h"
 #import "base/functional/callback.h"
 #import "components/page_content_annotations/core/page_content_annotations_common.h"
+#import "services/metrics/public/cpp/ukm_source_id.h"
 #import "url/gurl.h"
 
 // Tracks pending classification requests queued before model load and
@@ -24,6 +25,7 @@ class ClassificationRequestTracker {
     GURL url;
     std::string title;
     std::string page_content;
+    ukm::SourceId source_id = ukm::kInvalidSourceId;
     ClassificationCallback callback;
   };
 

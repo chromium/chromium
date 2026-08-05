@@ -22,11 +22,13 @@ source_set("on_device_category_classifier") {
     "//components/optimization_guide/core:features",
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/passage_embeddings",
   ]
 }
@@ -35,6 +37,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "classification_request_tracker_unittest.mm",
+    "in_process_category_classification_service_unittest.mm",
     "on_device_category_classifier_tab_helper_unittest.mm",
     "passage_embedder_model_loader_unittest.mm",
   ]
@@ -49,6 +52,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
