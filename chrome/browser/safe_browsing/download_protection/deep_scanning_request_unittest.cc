@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -60,6 +62,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -518,10 +521,13 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
 
 class DeepScanningRequestTest : public testing::Test {
  public:
-  void SetUp() override {
+  DeepScanningRequestTest() {
     SetFeatures(
         /*enabled=*/{safe_browsing::kEnhancedFieldsForSecOps},
         /*disabled=*/{});
+  }
+
+  void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(profile_manager_->SetUp());
@@ -1923,6 +1929,91 @@ TEST_F(DeepScanningReportingTest, ReportForceSaveToGDrive) {
 
   EXPECT_EQ(DownloadCheckResult::FORCE_SAVE_TO_GDRIVE, last_result_);
 }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+class DeepScanningReportingAutomationTest : public DeepScanningReportingTest {
+ public:
+  DeepScanningReportingAutomationTest() {
+    scoped_features_.InitWithFeatures(
+        {enterprise_data_protection::kEnableForceDownloadToCloud,
+         safe_browsing::kEnhancedFieldsForSecOps},
+        {});
+  }
+
+  void SetUp() override {
+    DeepScanningReportingTest::SetUp();
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableAutomation);
+    content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_,
+                                                     web_contents_.get());
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_features_;
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+TEST_F(DeepScanningReportingAutomationTest,
+       ReportForceSaveToGDriveBypassesDialogWithAutomation) {
+  base::RunLoop run_loop;
+
+  DeepScanningRequest request(
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      DownloadCheckResult::SAFE,
+      base::BindRepeating(
+          [](DeepScanningRequestTest* test, base::RepeatingClosure quit_closure,
+             DownloadCheckResult result) {
+            test->SetLastResult(result);
+            if (result != DownloadCheckResult::ASYNC_SCANNING) {
+              quit_closure.Run();
+            }
+          },
+          base::Unretained(this), run_loop.QuitClosure()),
+      &download_protection_service_, settings().value(),
+      /*password=*/std::nullopt);
+
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
+
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = dlp_result->add_triggered_rules();
+  dlp_rule->set_action(
+      enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
+  dlp_rule->set_force_save_to_cloud_destination(
+      enterprise_connectors::TriggeredRule::CORP_G_DRIVE);
+  dlp_rule->set_rule_name("dlp_rule");
+  dlp_rule->set_rule_id("0");
+
+  download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
+      response);
+  download_protection_service_.GetFakeBinaryUploadService()
+      ->SetExpectedFinalAction(
+          enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop validator_run_loop;
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
+
+  auto expected_event = CreateDlpSensitiveDataEventForForceSaveToCloud(
+      /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+      /*user_name=*/kUserName,
+      /*file_name=*/download_path_.AsUTF8Unsafe(),
+      /*destination=*/"Google Drive");
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
+  request.Start();
+
+  run_loop.Run();
+  validator_run_loop.Run();
+
+  EXPECT_EQ(DownloadCheckResult::FORCE_SAVE_TO_GDRIVE, last_result_);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 class ForceSaveToCloudPrioritizationTest
     : public DeepScanningReportingTest,
