@@ -186,6 +186,15 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testAllTestsAreRegistered) {
+  AssertAllTestsRegistered(
+      {"GlicExperimentalTriggeringMessageHandlerBrowserTest",
+       "GlicExperimentalTriggeringMetadataEnabledBrowserTest",
+       "GlicExperimentalTriggeringMetadataDisabledBrowserTest",
+       "GlicExperimentalTriggeringOpenWindowTest"});
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                        testGetExperimentalTriggeringUpdates) {
   OptIn();
   base::HistogramTester histogram_tester;

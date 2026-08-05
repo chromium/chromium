@@ -104,10 +104,6 @@ class TriggeringUpdatesTest extends ApiTestFixtureBase {
     });
   }
 
-  async testHandlesStopActuationRequestNoMatchingUpdatesHandler() {
-    // No-op.
-  }
-
   async testRelaysParentConversationMetadataUpdated() {
     await runUntil(() => client.isSubscribed);
     const contextPromise = new Promise<any>(resolve => {
