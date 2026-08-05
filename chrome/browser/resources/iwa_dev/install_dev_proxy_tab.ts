@@ -28,11 +28,6 @@ export class IwaDevInstallDevProxyTabElement extends IwaDevInstallTabElement {
   protected accessor url_: string = '';
   protected accessor urlError_: string = '';
 
-  override reset() {
-    this.url_ = '';
-    this.urlError_ = '';
-  }
-
   override isValid(): boolean {
     return !!this.url_;
   }

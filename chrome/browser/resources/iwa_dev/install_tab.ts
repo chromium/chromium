@@ -4,22 +4,23 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './install_tab.css.js';
+
 /**
  * Abstract base class for all tab sub-components in the IWA installation
  * dialog.
  */
 export abstract class IwaDevInstallTabElement extends CrLitElement {
+  static override get styles() {
+    return getCss();
+  }
+
   /**
    * Notifies parent component of the tab's current validity state.
    */
   protected notifyValidChanged() {
     this.fire('valid-changed', {isValid: this.isValid()});
   }
-
-  /**
-   * Resets the tab's internal input values and error state back to defaults.
-   */
-  abstract reset(): void;
 
   /**
    * Returns true if the form inputs within the tab are currently valid for

@@ -119,6 +119,7 @@ export class IwaDevInstallDialogElement extends CrLitElement {
 
   protected onTabValidChanged_(e: CustomEvent<{isValid: boolean}>) {
     this.isCurrentTabValid_ = e.detail.isValid;
+    this.installationError_ = '';
   }
 }
 

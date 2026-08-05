@@ -25,6 +25,7 @@
   flex-grow: 1;
   font-size: 0.85rem;
   gap: 4px;
+  margin-inline-end: 8px;
   overflow: hidden;
 }
 

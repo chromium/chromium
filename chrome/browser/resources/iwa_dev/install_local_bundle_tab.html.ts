@@ -9,9 +9,9 @@ import type {IwaDevInstallLocalBundleTabElement} from './install_local_bundle_ta
 export function getHtml(this: IwaDevInstallLocalBundleTabElement) {
   // clang-format off
   return html`
-<p>
-  Click "Install" below to select a signed web bundle (.swbn) via the
-  OS file picker.
-</p>
+<div class="placeholder-message">
+  Click "Install" below to select a signed web bundle (.swbn)<br>
+  via the OS file picker.
+</div>
 `;
 }

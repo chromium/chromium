@@ -28,8 +28,6 @@ export class IwaDevInstallLocalBundleTabElement extends
 
   accessor disabled: boolean = false;
 
-  override reset() {}
-
   override isValid(): boolean {
     return true;
   }
