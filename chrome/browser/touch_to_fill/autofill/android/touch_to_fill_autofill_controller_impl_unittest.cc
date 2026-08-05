@@ -11,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -150,6 +152,65 @@ TEST_F(TouchToFillAutofillControllerImplTest, ShowNoticePassesToTheView) {
   EXPECT_CALL(*mock_view_, ShowPersonalContextNotice);
   EXPECT_TRUE(autofill_controller().ShowPersonalContextNotice(
       std::move(mock_view_), ttf_delegate().GetWeakPointer()));
+}
+
+TEST_F(TouchToFillAutofillControllerImplTest, HideCallsView) {
+  MockTouchToFillAutofillView* view = mock_view_.get();
+  autofill_controller().ShowPersonalContextNotice(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer());
+
+  EXPECT_CALL(*view, Hide);
+  autofill_controller().Hide();
+}
+
+TEST_F(TouchToFillAutofillControllerImplTest, HideWithoutViewIsSafe) {
+  EXPECT_NO_FATAL_FAILURE(autofill_controller().Hide());
+}
+
+TEST_F(TouchToFillAutofillControllerImplTest, OnNoticeAcknowledgedIsCalled) {
+  autofill_controller().ShowPersonalContextNotice(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer());
+
+  EXPECT_CALL(ttf_delegate(), OnNoticeAcknowledged);
+  autofill_controller().OnNoticeAcknowledged();
+}
+
+TEST_F(TouchToFillAutofillControllerImplTest, OnSettingsLinkClickedIsCalled) {
+  autofill_controller().ShowPersonalContextNotice(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer());
+
+  EXPECT_CALL(ttf_delegate(), OnSettingsLinkClicked);
+  autofill_controller().OnSettingsLinkClicked();
+}
+
+TEST_F(TouchToFillAutofillControllerImplTest, OnDismissedIsCalled) {
+  autofill_controller().ShowPersonalContextNotice(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer());
+
+  EXPECT_CALL(ttf_delegate(), OnDismissed);
+  autofill_controller().OnDismissed();
+}
+
+TEST_F(TouchToFillAutofillControllerImplTest, EventsWithoutDelegateAreSafe) {
+  autofill_controller().ShowPersonalContextNotice(std::move(mock_view_),
+                                                  /*delegate=*/nullptr);
+
+  EXPECT_NO_FATAL_FAILURE(autofill_controller().OnNoticeAcknowledged());
+  EXPECT_NO_FATAL_FAILURE(autofill_controller().OnSettingsLinkClicked());
+  EXPECT_NO_FATAL_FAILURE(autofill_controller().OnDismissed());
+}
+
+TEST_F(TouchToFillAutofillControllerImplTest, DriverCreatedSetsDelegate) {
+  autofill_manager().set_touch_to_fill_autofill_delegate(nullptr);
+  EXPECT_FALSE(autofill_manager().touch_to_fill_autofill_delegate());
+
+  ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(driver);
+  autofill_controller().OnContentAutofillDriverCreated(
+      autofill_client().GetAutofillDriverFactory(), *driver);
+
+  EXPECT_TRUE(autofill_manager().touch_to_fill_autofill_delegate());
 }
 
 }  // namespace
