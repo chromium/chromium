@@ -60,7 +60,7 @@ public class GpmBrowserOptionsHelper {
         return browserOptions;
     }
 
-    private static final @Nullable String getChannel() {
+    private static @Nullable String getChannel() {
         if (VersionInfo.isCanaryBuild()) {
             return "canary";
         }
@@ -80,7 +80,7 @@ public class GpmBrowserOptionsHelper {
         return null;
     }
 
-    private static final boolean isIncognito(@Nullable RenderFrameHost frameHost) {
+    private static boolean isIncognito(@Nullable RenderFrameHost frameHost) {
         if (sIsIncognitoForTesting != null) return sIsIncognitoForTesting;
         if (frameHost == null) return false;
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(frameHost);

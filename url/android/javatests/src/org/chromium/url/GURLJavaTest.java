@@ -161,7 +161,7 @@ public class GURLJavaTest {
     @Test
     @SuppressWarnings(value = "AuthLeak")
     public void testSerialization() {
-        GURL cases[] = {
+        GURL[] cases = {
             // Common Standard URLs.
             new GURL("https://www.google.com"),
             new GURL("https://www.google.com/"),

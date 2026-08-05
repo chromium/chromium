@@ -28,5 +28,5 @@ public interface SmartClipProvider {
 
     /** Register a handler to handle smart clip data once extraction is done. */
     @UsedByReflection("ExternalOemSupport")
-    void setSmartClipResultHandler(final Handler resultHandler);
+    void setSmartClipResultHandler(Handler resultHandler);
 }

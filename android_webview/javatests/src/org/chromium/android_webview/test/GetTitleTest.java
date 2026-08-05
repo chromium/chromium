@@ -55,7 +55,7 @@ public class GetTitleTest extends AwParameterizedTest {
         mAwContents = testContainerView.getAwContents();
     }
 
-    private static final String getHtml(String title) {
+    private static String getHtml(String title) {
         StringBuilder html = new StringBuilder();
         html.append("<html><head>");
         if (title != null) {

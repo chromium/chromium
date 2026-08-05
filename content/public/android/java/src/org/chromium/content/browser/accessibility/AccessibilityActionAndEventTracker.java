@@ -391,8 +391,9 @@ public class AccessibilityActionAndEventTracker {
         if (nodeDescription == null) nodeDescription = toStringOrNull(info.getContentDescription());
         if (nodeDescription == null) nodeDescription = toStringOrNull(info.getHintText());
         if (nodeDescription == null) nodeDescription = toStringOrNull(info.getPaneTitle());
-        if (nodeDescription == null)
+        if (nodeDescription == null) {
             nodeDescription = toStringOrNull(info.getSupplementalDescription());
+        }
 
         if (nodeDescription != null && !nodeDescription.isEmpty()) {
             if (sb.length() > 0) {

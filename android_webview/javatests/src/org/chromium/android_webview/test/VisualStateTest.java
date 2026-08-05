@@ -588,7 +588,7 @@ public class VisualStateTest extends AwParameterizedTest {
                         AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
-    private static final LoadUrlParams createTestPageUrl(String backgroundColor) {
+    private static LoadUrlParams createTestPageUrl(String backgroundColor) {
         return LoadUrlParams.createLoadDataParams(
                 "<html><body bgcolor=" + backgroundColor + "></body></html>", "text/html", false);
     }

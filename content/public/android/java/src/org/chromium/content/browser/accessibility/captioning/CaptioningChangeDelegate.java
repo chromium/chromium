@@ -143,7 +143,7 @@ public class CaptioningChangeDelegate {
 
         // The list of fonts are obtained from apps/Settings/res/values/arrays.xml
         // in Android settings app.
-        String fonts[] = { // Fonts in Lollipop and above
+        String[] fonts = { // Fonts in Lollipop and above
             "", "sans-serif", "sans-serif-condensed", "sans-serif-monospace", "serif",
             "serif-monospace", "casual", "cursive", "sans-serif-smallcaps", "monospace"
         };

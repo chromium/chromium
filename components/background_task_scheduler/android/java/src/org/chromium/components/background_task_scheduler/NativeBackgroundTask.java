@@ -140,11 +140,11 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
      * <c>true</c>.
      *
      * @param startWithNativeRunnable A runnable that will execute #onStartTaskWithNative, after the
-     *    native is loaded.
+     *     native is loaded.
      * @param rescheduleRunnable A runnable that will be called to reschedule the task in case
-     *    native initialization fails.
+     *     native initialization fails.
      */
-    private final void runWithNative(
+    private void runWithNative(
             final Runnable startWithNativeRunnable, final Runnable rescheduleRunnable) {
         if (isNativeLoadedInFullBrowserMode()) {
             mRunningInMinimalBrowserMode = false;

@@ -164,6 +164,6 @@ public class ContentTypeParametersParserTest {
     }
 
     private interface ThrowingRunnable {
-        public void run() throws Throwable;
+        void run() throws Throwable;
     }
 }

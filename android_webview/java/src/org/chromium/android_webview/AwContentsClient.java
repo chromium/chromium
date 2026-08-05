@@ -169,11 +169,11 @@ public abstract class AwContentsClient {
     public abstract void onReceivedSslError(Callback<Boolean> callback, SslError error);
 
     public abstract void onReceivedClientCertRequest(
-            final AwContentsClientBridge.ClientCertificateRequestCallback callback,
-            final String[] keyTypes,
-            final Principal[] principals,
-            final String host,
-            final int port);
+            AwContentsClientBridge.ClientCertificateRequestCallback callback,
+            String[] keyTypes,
+            Principal[] principals,
+            String host,
+            int port);
 
     public abstract void onReceivedLoginRequest(String realm, String account, String args);
 

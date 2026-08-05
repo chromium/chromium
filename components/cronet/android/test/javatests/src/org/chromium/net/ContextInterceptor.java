@@ -19,7 +19,7 @@ public interface ContextInterceptor {
      *
      * @param context the original Context to be replaced
      * @return the new Context. Typically this would forward most calls to the original context, for
-     * example using {@link ContextWrapper}.
+     *     example using {@link ContextWrapper}.
      */
-    public Context interceptContext(Context context);
+    Context interceptContext(Context context);
 }

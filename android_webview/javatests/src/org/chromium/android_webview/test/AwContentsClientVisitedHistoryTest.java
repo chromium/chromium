@@ -127,7 +127,7 @@ public class AwContentsClientVisitedHistoryTest extends AwParameterizedTest {
         AwContents awContents = testView.getAwContents();
 
         final String path = "/testGetVisitedHistoryExerciseCodePath.html";
-        final String visitedLinks[] = {"http://foo.com", "http://bar.com", null};
+        final String[] visitedLinks = {"http://foo.com", "http://bar.com", null};
         final String html = "<a src=\"http://foo.com\">foo</a><a src=\"http://bar.com\">bar</a>";
 
         TestWebServer webServer = TestWebServer.start();

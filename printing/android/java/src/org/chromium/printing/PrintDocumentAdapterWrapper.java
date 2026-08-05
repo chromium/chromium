@@ -43,10 +43,10 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
                 @Nullable Bundle metadata);
 
         void onWrite(
-                final PageRange[] ranges,
-                final ParcelFileDescriptor destination,
-                final CancellationSignal cancellationSignal,
-                final PrintDocumentAdapterWrapper.WriteResultCallbackWrapper callback);
+                PageRange[] ranges,
+                ParcelFileDescriptor destination,
+                CancellationSignal cancellationSignal,
+                PrintDocumentAdapterWrapper.WriteResultCallbackWrapper callback);
 
         void onFinish();
     }

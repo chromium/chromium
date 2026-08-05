@@ -44,7 +44,7 @@ public final class SharedObservable<T> implements Observable<T> {
      * updated only as long as there are any observers subscribed to |this|.
      */
     @Override
-    public final Scope subscribe(Observer<? super T> observer) {
+    public Scope subscribe(Observer<? super T> observer) {
         addObserver();
         return mCache.subscribe(observer).and(this::removeObserver);
     }
@@ -57,7 +57,7 @@ public final class SharedObservable<T> implements Observable<T> {
      * incurring extra overhead by adding more layers of caching and subscription-counting.
      */
     @Override
-    public final SharedObservable<T> share() {
+    public SharedObservable<T> share() {
         return this;
     }
 

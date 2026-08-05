@@ -22,7 +22,7 @@ public class NativeBrowserTest {
 
     // Set the command line flags to be passed to the C++ main() method. Each
     // browser tests Activity should ensure these are included.
-    public static final String BROWSER_TESTS_FLAGS[] = {
+    public static final String[] BROWSER_TESTS_FLAGS = {
         // switches::kSingleProcessTests
         "--single-process-tests"
     };

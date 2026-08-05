@@ -149,9 +149,9 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
     private static void removeTestAccounts() {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         AccountManager am = AccountManager.get(activity);
-        String features[] = {HttpNegotiateConstants.SPNEGO_FEATURE};
+        String[] features = {HttpNegotiateConstants.SPNEGO_FEATURE};
         try {
-            Account accounts[] =
+            Account[] accounts =
                     am.getAccountsByTypeAndFeatures(ACCOUNT_TYPE, features, null, null).getResult();
             for (Account account : accounts) {
                 // Deprecated, but the replacement not available on Android JB.

@@ -598,8 +598,9 @@ public class NtpCustomizationUtils {
 
     /** Returns whether a white background should be applied on fake search box. */
     public static boolean shouldApplyWhiteBackgroundOnSearchBox() {
-        if (ChromeFeatureList.sNtpAurora.isEnabled() && !OmniboxCapabilities.isDesktopPlatform())
+        if (ChromeFeatureList.sNtpAurora.isEnabled() && !OmniboxCapabilities.isDesktopPlatform()) {
             return true;
+        }
 
         return shouldApplyWhiteBackgroundOnComposeplate();
     }

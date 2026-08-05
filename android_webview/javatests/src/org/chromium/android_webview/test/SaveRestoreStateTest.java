@@ -60,14 +60,14 @@ public class SaveRestoreStateTest extends AwParameterizedTest {
     private TestWebServer mWebServer;
 
     private static final int NUM_NAVIGATIONS = 3;
-    private static final String TITLES[] = {
+    private static final String[] TITLES = {
         "page 1 title foo", "page 2 title bar", "page 3 title baz"
     };
-    private static final String PATHS[] = {
+    private static final String[] PATHS = {
         "/p1foo.html", "/p2bar.html", "/p3baz.html",
     };
 
-    private String mUrls[];
+    private String[] mUrls;
 
     public SaveRestoreStateTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

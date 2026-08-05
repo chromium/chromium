@@ -57,17 +57,18 @@ public abstract class UserRecoverableErrorHandler {
     }
 
     /**
-     * This method is invoked by {@link #handleError(Context, int)} to do the
-     * work appropriate for the subclass on the UI thread.
+     * This method is invoked by {@link #handleError(Context, int)} to do the work appropriate for
+     * the subclass on the UI thread.
+     *
      * @param context the context in which the error was encountered
      * @param errorCode the error code from Google Play Services
      */
-    protected abstract void handle(final Context context, final int errorCode);
+    protected abstract void handle(Context context, int errorCode);
 
     /** A handler that does nothing. */
     public static final class Silent extends UserRecoverableErrorHandler {
         @Override
-        protected final void handle(final Context context, final int errorCode) {}
+        protected void handle(final Context context, final int errorCode) {}
     }
 
     /**

@@ -183,7 +183,7 @@ public class TraceEvent implements AutoCloseable {
         // Called from within the begin/end methods only.
         // This method can only execute on the looper thread, because that is
         // the only thread that is permitted to call Looper.myqueue().
-        private final void syncIdleMonitoring() {
+        private void syncIdleMonitoring() {
             if (sEnabled && !mIdleMonitorAttached) {
                 // approximate start time for computational purposes
                 mLastIdleStartedAt = TimeUtils.elapsedRealtimeMillis();
@@ -198,7 +198,7 @@ public class TraceEvent implements AutoCloseable {
         }
 
         @Override
-        final void beginHandling(final String line) {
+        void beginHandling(final String line) {
             // Close-out any prior 'idle' period before starting new task.
             if (mNumTasksSinceLastIdle == 0) {
                 TraceEvent.end(IDLE_EVENT_NAME);
@@ -209,7 +209,7 @@ public class TraceEvent implements AutoCloseable {
         }
 
         @Override
-        final void endHandling(final String line) {
+        void endHandling(final String line) {
             final long elapsed = TimeUtils.elapsedRealtimeMillis() - mLastWorkStartedAt;
             if (elapsed > MIN_INTERESTING_DURATION_MILLIS) {
                 traceAndLog(Log.WARN, "observed a task that took " + elapsed + "ms: " + line);
@@ -226,7 +226,7 @@ public class TraceEvent implements AutoCloseable {
         }
 
         @Override
-        public final boolean queueIdle() {
+        public boolean queueIdle() {
             final long now = TimeUtils.elapsedRealtimeMillis();
             if (mLastIdleStartedAt == 0) mLastIdleStartedAt = now;
             final long elapsed = now - mLastIdleStartedAt;
@@ -830,7 +830,7 @@ public class TraceEvent implements AutoCloseable {
         private long mLastDumpTs;
 
         @Override
-        public final boolean queueIdle() {
+        public boolean queueIdle() {
             final long now = TimeUtils.elapsedRealtimeMillis();
             if (mLastDumpTs == 0 || (now - mLastDumpTs) > MIN_VIEW_DUMP_INTERVAL_MILLIS) {
                 mLastDumpTs = now;

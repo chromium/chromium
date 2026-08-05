@@ -89,8 +89,8 @@ public class CronetTestFramework implements AutoCloseable {
      * <p>The builder itself isn't exposed directly as a getter to tests to stress out ownership and
      * make accidental local access less likely.
      */
-    public static interface CronetBuilderPatch {
-        public void apply(ExperimentalCronetEngine.Builder builder) throws Exception;
+    public interface CronetBuilderPatch {
+        void apply(ExperimentalCronetEngine.Builder builder) throws Exception;
     }
 
     // This is the Context that Cronet will use. The specific Context instance can never change

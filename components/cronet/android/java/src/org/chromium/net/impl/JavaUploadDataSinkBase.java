@@ -292,7 +292,7 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
      *
      * @param error the {@link Throwable} to process
      */
-    protected abstract void processUploadError(final Throwable error);
+    protected abstract void processUploadError(Throwable error);
 
     /**
      * Called when a successful read has occurred and there is new data in the {@code mBuffer} to

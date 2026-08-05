@@ -13,7 +13,7 @@ import java.util.Objects;
 @NullMarked
 public class SpellingMarker {
     // LINT.IfChange(SpellCheckDecoration)
-    /** Values from spellcheck::Decoration on the C++ side * */
+    /** Values from spellcheck::Decoration on the C++ side */
     public @interface Decoration {
         public static final int SPELLING = 0;
         public static final int GRAMMAR = 1;

@@ -257,7 +257,7 @@ public class FencedFrameTest extends AwParameterizedTest {
         Assert.assertTrue(fencedFrameObserver.waitForEvent(WAIT_TIMEOUT_MS));
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
 
-        int expectedQuadrantColors[] = {
+        int[] expectedQuadrantColors = {
             Color.rgb(255, 0, 0),
             Color.rgb(0, 255, 0),
             Color.rgb(0, 0, 255),

@@ -92,7 +92,7 @@ public final class RectUtils {
     }
 
     private static void insertSorted(
-            VerticalSegment arr[], int n, VerticalSegment verticalSegment, int capacity) {
+            VerticalSegment[] arr, int n, VerticalSegment verticalSegment, int capacity) {
         assert n < capacity;
 
         int i;
@@ -106,7 +106,7 @@ public final class RectUtils {
     }
 
     private static int deleteElement(
-            VerticalSegment arr[], int n, VerticalSegment verticalSegment) {
+            VerticalSegment[] arr, int n, VerticalSegment verticalSegment) {
         int pos = Arrays.binarySearch(arr, 0, n, verticalSegment);
         if (pos < 0) {
             return -1;
@@ -120,7 +120,7 @@ public final class RectUtils {
     }
 
     private static int getCoverageOfVerticalSegments(
-            VerticalSegment vSegments[], int numVerticalSegments) {
+            VerticalSegment[] vSegments, int numVerticalSegments) {
         int scanCount = 0;
         int coveredPixels = 0;
         int start = -1;
@@ -137,11 +137,11 @@ public final class RectUtils {
         return coveredPixels;
     }
 
-    private static HorizontalSegment sHorizontalSegments[];
-    private static VerticalSegment sVerticalSegments[];
+    private static HorizontalSegment[] sHorizontalSegments;
+    private static VerticalSegment[] sVerticalSegments;
     private static final VerticalSegment sVerticalSegment1 = new VerticalSegment();
     private static final VerticalSegment sVerticalSegment2 = new VerticalSegment();
-    private static Rect sClippedRects[];
+    private static Rect[] sClippedRects;
 
     /*
             This is a 2d extension of the 1d range intersection problem.

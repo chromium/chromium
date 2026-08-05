@@ -498,10 +498,10 @@ public abstract class UrlRequest {
      * Queries the status of the request.
      *
      * @param listener a {@link StatusListener} that will be invoked with the request's current
-     * status. {@code listener} will be invoked back on the {@link Executor} passed in when the
-     * request was created.
+     *     status. {@code listener} will be invoked back on the {@link Executor} passed in when the
+     *     request was created.
      */
-    public abstract void getStatus(final StatusListener listener);
+    public abstract void getStatus(StatusListener listener);
 
     // Note:  There are deliberately no accessors for the results of the request
     // here. Having none removes any ambiguity over when they are populated,

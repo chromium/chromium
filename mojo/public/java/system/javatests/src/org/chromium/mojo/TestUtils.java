@@ -14,7 +14,7 @@ public final class TestUtils {
 
     /** Returns a new direct ByteBuffer of the given size with random (but reproducible) data. */
     public static ByteBuffer newRandomBuffer(int size) {
-        byte bytes[] = new byte[size];
+        byte[] bytes = new byte[size];
         RANDOM.setSeed(size);
         RANDOM.nextBytes(bytes);
         ByteBuffer data = ByteBuffer.allocateDirect(size);

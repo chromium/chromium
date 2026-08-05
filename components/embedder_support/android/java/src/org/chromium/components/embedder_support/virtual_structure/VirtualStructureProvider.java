@@ -16,6 +16,5 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public interface VirtualStructureProvider {
 
-    void provideVirtualStructureForWebContents(
-            final ViewStructure structure, WebContents webContents);
+    void provideVirtualStructureForWebContents(ViewStructure structure, WebContents webContents);
 }

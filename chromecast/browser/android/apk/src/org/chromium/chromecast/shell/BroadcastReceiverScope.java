@@ -47,6 +47,6 @@ public class BroadcastReceiverScope implements Scope {
 
     /** Functional interface to handle received Intents. */
     public interface IntentReceivedCallback {
-        public void onReceive(Intent intent);
+        void onReceive(Intent intent);
     }
 }

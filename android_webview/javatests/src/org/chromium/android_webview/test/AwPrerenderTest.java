@@ -483,7 +483,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                         }));
     }
 
-    private final String encodeUrl(String url) {
+    private String encodeUrl(String url) {
         try {
             return URLEncoder.encode(url, "UTF-8");
         } catch (UnsupportedEncodingException e) {

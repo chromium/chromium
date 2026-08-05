@@ -53,19 +53,20 @@ public class Clipboard {
         }
 
         /**
-         * Saves the given set of image bytes and provides that URI to a callback for
-         * sharing the image.
+         * Saves the given set of image bytes and provides that URI to a callback for sharing the
+         * image.
          *
          * @param imageData The image data to be shared in |fileExtension| format.
          * @param fileExtension File extension which |imageData| encoded to.
          * @param callback A provided callback function which will act on the generated URI.
          */
         void storeImageAndGenerateUri(
-                final byte[] imageData, String fileExtension, Callback<Uri> callback);
+                byte[] imageData, String fileExtension, Callback<Uri> callback);
 
         /**
-         * Store the last image uri and its timestamp we put in the sytstem clipboard.
-         * On Android O and O_MR1, URI is stored for revoking permissions later.
+         * Store the last image uri and its timestamp we put in the sytstem clipboard. On Android O
+         * and O_MR1, URI is stored for revoking permissions later.
+         *
          * @param clipboardFileMetadata The metadata needs to be stored.
          */
         void storeLastCopiedImageMetadata(ClipboardFileMetadata clipboardFileMetadata);

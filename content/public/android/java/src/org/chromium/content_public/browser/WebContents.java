@@ -458,7 +458,7 @@ public interface WebContents extends Parcelable {
     void requestSmartClipExtract(int x, int y, int width, int height);
 
     /** Register a handler to handle smart clip data once extraction is done. */
-    void setSmartClipResultHandler(final Handler smartClipHandler);
+    void setSmartClipResultHandler(Handler smartClipHandler);
 
     /**
      * Set the handler that provides stylus handwriting recognition.

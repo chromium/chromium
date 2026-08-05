@@ -376,7 +376,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         setRequestPropertyInternal(key, value, true);
     }
 
-    private final void setRequestPropertyInternal(String key, String value, boolean overwrite) {
+    private void setRequestPropertyInternal(String key, String value, boolean overwrite) {
         if (connected) {
             throw new IllegalStateException(
                     "Cannot modify request property after connection is made.");

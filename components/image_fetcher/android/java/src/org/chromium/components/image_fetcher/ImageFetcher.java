@@ -297,7 +297,7 @@ public abstract class ImageFetcher {
      *     with null result if fetching fails.
      */
     public abstract void fetchGif(
-            final ImageFetcher.Params params, Callback<ImageDataFetchResult> callback);
+            ImageFetcher.Params params, Callback<ImageDataFetchResult> callback);
 
     /**
      * Fetches the image based on customized parameters specified.
@@ -306,7 +306,7 @@ public abstract class ImageFetcher {
      * @param callback The function which will be called when the image is ready; will be called
      *     with null result if fetching fails;
      */
-    public abstract void fetchImage(final Params params, Callback<@Nullable Bitmap> callback);
+    public abstract void fetchImage(Params params, Callback<@Nullable Bitmap> callback);
 
     /**
      * Fetches the image based on customized parameters specified. This has the same functionality
@@ -317,7 +317,7 @@ public abstract class ImageFetcher {
      *     with null imageBitmap field in the ImageFetchResult if fetching fails;
      */
     public abstract void fetchImageWithRequestMetadata(
-            final Params params, Callback<ImageFetchResult> callback);
+            Params params, Callback<ImageFetchResult> callback);
 
     /** Clear the cache of any bitmaps that may be in-memory. */
     public abstract void clear();

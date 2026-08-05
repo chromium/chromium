@@ -313,7 +313,7 @@ public class ChildConnectionAllocatorTest {
         assertNotNull(connection);
         assertEquals(1, allocator.allocatedConnectionsCountForTesting());
 
-        final ChildProcessConnection newConnection[] = new ChildProcessConnection[2];
+        final ChildProcessConnection[] newConnection = new ChildProcessConnection[2];
         Runnable allocate1 =
                 () -> {
                     newConnection[0] =

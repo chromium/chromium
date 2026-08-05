@@ -129,7 +129,7 @@ public class ValidationTestUtilTest {
 
         // Test some failure cases.
         {
-            String error_inputs[] = {
+            String[] error_inputs = {
                 "/ hello world",
                 "[u1]x",
                 "[u2]-1000",

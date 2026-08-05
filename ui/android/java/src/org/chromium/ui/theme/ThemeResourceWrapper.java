@@ -32,9 +32,7 @@ public class ThemeResourceWrapper {
     /** Observe the theme resource changes provided by the wrapper. */
     public interface ThemeObserver {
 
-        /**
-         * Called when the theme / resource is changed from the source.
-         * */
+        /** Called when the theme / resource is changed from the source. */
         void onThemeResourceChanged(ThemeResourceWrapper source);
     }
 
