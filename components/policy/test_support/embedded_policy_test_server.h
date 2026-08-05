@@ -115,9 +115,6 @@ class EmbeddedPolicyTestServer {
   std::unique_ptr<net::test_server::HttpResponse>
   HandleExternalPolicyDataRequest(const GURL& request);
 
-  net::test_server::EmbeddedTestServer http_server_;
-  std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;
-
   // ServerState contains all the fields that represent the server state.
   struct ServerState;
   std::unique_ptr<ServerState> server_state_;
@@ -125,6 +122,9 @@ class EmbeddedPolicyTestServer {
   // TODO(b/275564884): Combine the remote commands state with the server state.
   // Separate because fake_dm_server clears server_state_ on each handler call.
   std::unique_ptr<RemoteCommandsState> remote_commands_state_;
+
+  std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;
+  net::test_server::EmbeddedTestServer http_server_;
 };
 
 }  // namespace policy
