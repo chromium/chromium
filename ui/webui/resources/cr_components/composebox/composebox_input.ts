@@ -37,6 +37,7 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   static override get properties() {
     return {
+      composeboxSkillsEnabled: {type: Boolean, reflect: true},
       disableCaretColorAnimation: {type: Boolean, reflect: true},
       showDropdown: {type: Boolean},
       inputPlaceholder: {type: String},
@@ -51,6 +52,7 @@ export class ComposeboxInputElement extends I18nMixinLit
     };
   }
 
+  accessor composeboxSkillsEnabled: boolean = false;
   accessor disableCaretColorAnimation: boolean = false;
   accessor showDropdown: boolean = false;
   accessor inputPlaceholder: string = '';
