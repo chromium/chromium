@@ -927,7 +927,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     IsolatedOriginEntry(const url::Origin& origin,
                         bool applies_to_future_browsing_instances,
                         BrowsingInstanceId browsing_instance_id,
-                        BrowserContext* browser_context,
+                        const base::UnguessableToken& browser_context_id,
                         bool isolate_all_subdomains,
                         IsolatedOriginSource source);
     // Copyable and movable.
@@ -940,11 +940,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // Allow this class to be used as a key in STL.
     bool operator<(const IsolatedOriginEntry& other) const {
       return std::tie(origin_, applies_to_future_browsing_instances_,
-                      browsing_instance_id_, browser_context_,
+                      browsing_instance_id_, browser_context_id_,
                       isolate_all_subdomains_, source_) <
              std::tie(other.origin_,
                       other.applies_to_future_browsing_instances_,
-                      other.browsing_instance_id_, other.browser_context_,
+                      other.browsing_instance_id_, other.browser_context_id_,
                       other.isolate_all_subdomains_, source_);
     }
 
@@ -953,7 +953,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
              applies_to_future_browsing_instances_ ==
                  other.applies_to_future_browsing_instances_ &&
              browsing_instance_id_ == other.browsing_instance_id_ &&
-             browser_context_ == other.browser_context_ &&
+             browser_context_id_ == other.browser_context_id_ &&
              isolate_all_subdomains_ == other.isolate_all_subdomains_ &&
              source_ == other.source_;
     }
@@ -962,9 +962,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     bool AppliesToAllBrowserContexts() const;
 
     // True if (1) this entry is associated with the same profile as
-    // |browser_context|, or (2) this entry applies to all profiles.  May be
+    // |browser_context_id|, or (2) this entry applies to all profiles.  May be
     // used on UI or IO threads.
-    bool MatchesProfile(BrowserContext* browser_context) const;
+    bool MatchesProfile(const base::UnguessableToken& browser_context_id) const;
 
     // True if this entry applies to the BrowsingInstance specified by
     // `browsing_instance_id`.  See `applies_to_future_browsing_instances_` and
@@ -984,7 +984,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       return browsing_instance_id_;
     }
 
-    const BrowserContext* browser_context() const { return browser_context_; }
+    const base::UnguessableToken& browser_context_id() const {
+      return browser_context_id_;
+    }
 
     bool isolate_all_subdomains() const { return isolate_all_subdomains_; }
 
@@ -1007,9 +1009,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     BrowsingInstanceId browsing_instance_id_;
 
     // Optional information about the profile where the isolated origin
-    // applies. This may only be used on the UI thread. If this is null,
+    // applies. This may only be used on the UI thread. If this is empty,
     // then the isolated origin applies globally to all profiles.
-    raw_ptr<BrowserContext> browser_context_;
+    base::UnguessableToken browser_context_id_;
 
     // True if origins at this or lower level should be treated as distinct
     // isolated origins, effectively isolating all domains below a given domain,

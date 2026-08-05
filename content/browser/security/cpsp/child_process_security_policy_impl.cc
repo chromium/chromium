@@ -1088,14 +1088,14 @@ ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::IsolatedOriginEntry(
     const url::Origin& origin,
     bool applies_to_future_browsing_instances,
     BrowsingInstanceId browsing_instance_id,
-    BrowserContext* browser_context,
+    const base::UnguessableToken& browser_context_id,
     bool isolate_all_subdomains,
     IsolatedOriginSource source)
     : origin_(origin),
       applies_to_future_browsing_instances_(
           applies_to_future_browsing_instances),
       browsing_instance_id_(browsing_instance_id),
-      browser_context_(browser_context),
+      browser_context_id_(browser_context_id),
       isolate_all_subdomains_(isolate_all_subdomains),
       source_(source) {}
 
@@ -1118,20 +1118,18 @@ ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::~IsolatedOriginEntry() =
 
 bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::
     AppliesToAllBrowserContexts() const {
-  return !browser_context_;
+  return browser_context_id_.is_empty();
 }
 
 bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::MatchesProfile(
-    BrowserContext* browser_context) const {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-
+    const base::UnguessableToken& browser_context_id) const {
   // Globally isolated origins aren't associated with any particular profile
   // and should apply to all profiles.
   if (AppliesToAllBrowserContexts()) {
     return true;
   }
 
-  return browser_context_ == browser_context;
+  return browser_context_id_ == browser_context_id;
 }
 
 bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::
@@ -3023,6 +3021,10 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
   // whether you should be using SiteInfo::Create() instead.
   GURL key(SiteInfo::GetSiteForOrigin(origin_to_add));
 
+  base::UnguessableToken browser_context_id =
+      browser_context ? browser_context->UniqueToken()
+                      : base::UnguessableToken::Null();
+
   // Check if the origin to be added already exists, in which case it may not
   // need to be added again.
   bool should_add = true;
@@ -3035,7 +3037,7 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
     }
     // If the added origin already exists for the same BrowserContext and
     // covers the same BrowsingInstances, don't re-add it.
-    if (entry.browser_context() == browser_context) {
+    if (entry.browser_context_id() == browser_context_id) {
       if (entry.applies_to_future_browsing_instances() &&
           entry.browsing_instance_id() <= browsing_instance_id) {
         // If the existing entry applies to future BrowsingInstances, and it
@@ -3075,9 +3077,10 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
   }
 
   if (should_add) {
-    IsolatedOriginEntry entry(
-        std::move(origin_to_add), applies_to_future_browsing_instances,
-        browsing_instance_id, browser_context, isolate_all_subdomains, source);
+    IsolatedOriginEntry entry(std::move(origin_to_add),
+                              applies_to_future_browsing_instances,
+                              browsing_instance_id, browser_context_id,
+                              isolate_all_subdomains, source);
     isolated_origins_[key].emplace_back(std::move(entry));
   }
 }
@@ -3086,12 +3089,14 @@ void ChildProcessSecurityPolicyImpl::RemoveStateForBrowserContext(
     const BrowserContext& browser_context) {
   {
     base::AutoLock isolated_origins_lock(isolated_origins_lock_);
+    const base::UnguessableToken browser_context_id =
+        browser_context.UniqueToken();
 
     for (auto& iter : isolated_origins_) {
       std::erase_if(iter.second,
-                    [&browser_context](const IsolatedOriginEntry& entry) {
+                    [&browser_context_id](const IsolatedOriginEntry& entry) {
                       // Remove if BrowserContext matches.
-                      return (entry.browser_context() == &browser_context);
+                      return (entry.browser_context_id() == browser_context_id);
                     });
     }
 
@@ -3167,9 +3172,9 @@ std::vector<url::Origin> ChildProcessSecurityPolicyImpl::GetIsolatedOrigins(
       // not associated with a profile (i.e., which apply globally to the
       // entire browser).
       bool matches_profile =
-          browser_context
-              ? isolated_origin_entry.MatchesProfile(browser_context)
-              : isolated_origin_entry.AppliesToAllBrowserContexts();
+          browser_context ? isolated_origin_entry.MatchesProfile(
+                                browser_context->UniqueToken())
+                          : isolated_origin_entry.AppliesToAllBrowserContexts();
       if (!matches_profile) {
         continue;
       }
@@ -3314,7 +3319,7 @@ bool ChildProcessSecurityPolicyImpl::
       // If this isolated origin applies only to a specific profile, don't
       // use it for a different profile.
       if (!isolated_origin_entry.MatchesProfile(
-              isolation_context.browser_context())) {
+              isolation_context.browser_context()->UniqueToken())) {
         continue;
       }
 
