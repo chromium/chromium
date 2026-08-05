@@ -45,6 +45,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
@@ -84,6 +85,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for the {@link BookmarkBarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
 public class BookmarkBarMediatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

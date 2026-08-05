@@ -4243,6 +4243,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_SHOW_BOOKMARKS_BAR" desc="Menu item for showing the bookmarks bar. [CHAR_LIMIT=27]">
         Show bookmarks bar
       </message>
+      <message name="IDS_CONTEXTMENU_ALWAYS_HIDE_BOOKMARKS_BAR" desc="Menu item for always hiding the bookmarks bar. [CHAR_LIMIT=27]" translateable="false">
+        Always hide
+      </message>
+      <message name="IDS_CONTEXTMENU_ALWAYS_SHOW_BOOKMARKS_BAR" desc="Menu item for always showing the bookmarks bar. [CHAR_LIMIT=27]" translateable="false">
+        Always show
+      </message>
       <message name="IDS_CONTEXTMENU_EDIT_BOOKMARK_ELLIPSIS" desc="Menu item for editing a bookmark from the context menu. [CHAR_LIMIT=27]">
         Edit…
       </message>

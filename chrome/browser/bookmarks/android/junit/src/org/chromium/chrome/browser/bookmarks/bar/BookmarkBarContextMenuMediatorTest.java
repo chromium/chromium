@@ -30,9 +30,12 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -46,6 +49,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for the {@link BookmarkBarContextMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
 public class BookmarkBarContextMenuMediatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -274,7 +278,7 @@ public class BookmarkBarContextMenuMediatorTest {
 
     @Test
     @SmallTest
-    public void testEmptySpaceContextMenu() {
+    public void testEmptySpaceContextMenu_NtpFeatureDisabled() {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
 
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
@@ -296,6 +300,42 @@ public class BookmarkBarContextMenuMediatorTest {
         assertNotNull(showBar);
         assertTrue(showBar.get(ListMenuItemProperties.ENABLED));
 
+        assertNull(getMenuItem(list, R.string.contextmenu_always_hide_bookmarks_bar));
+        assertNull(getMenuItem(list, R.string.contextmenu_always_show_bookmarks_bar));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testEmptySpaceContextMenu_NtpFeatureEnabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+        assertNotNull(list);
+
+        PropertyModel addPage = getMenuItem(list, R.string.contextmenu_add_page);
+        assertNotNull(addPage);
+        assertTrue(addPage.get(ListMenuItemProperties.ENABLED));
+
+        PropertyModel addFolder = getMenuItem(list, R.string.contextmenu_add_folder);
+        assertNotNull(addFolder);
+        assertTrue(addFolder.get(ListMenuItemProperties.ENABLED));
+
+        PropertyModel openManager = getMenuItem(list, R.string.contextmenu_open_bookmarks_manager);
+        assertNotNull(openManager);
+        assertTrue(openManager.get(ListMenuItemProperties.ENABLED));
+
+        PropertyModel hideBar = getMenuItem(list, R.string.contextmenu_always_hide_bookmarks_bar);
+        assertNotNull(hideBar);
+        assertTrue(hideBar.get(ListMenuItemProperties.ENABLED));
+
+        PropertyModel alwaysShowBar =
+                getMenuItem(list, R.string.contextmenu_always_show_bookmarks_bar);
+        assertNotNull(alwaysShowBar);
+        assertTrue(alwaysShowBar.get(ListMenuItemProperties.ENABLED));
+
+        assertNull(getMenuItem(list, R.string.contextmenu_show_bookmarks_bar));
+
         assertNull(getMenuItem(list, R.string.contextmenu_edit_bookmark_ellipsis));
         assertNull(getMenuItem(list, R.string.bookmark_item_move));
         assertNull(getMenuItem(list, R.string.bookmark_item_delete));
@@ -316,6 +356,60 @@ public class BookmarkBarContextMenuMediatorTest {
         delete.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
 
         verify(mContextMenuDelegate).deleteBookmark(eq(bookmarkId));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testVisibilityControlClickListeners_NtpFeatureDisabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+
+        // The "Show bookmarks bar" option should be present, but not the tri-state options.
+        PropertyModel showBar = getMenuItem(list, R.string.contextmenu_show_bookmarks_bar);
+        PropertyModel alwaysHide =
+                getMenuItem(list, R.string.contextmenu_always_hide_bookmarks_bar);
+        PropertyModel alwaysShow =
+                getMenuItem(list, R.string.contextmenu_always_show_bookmarks_bar);
+        assertNotNull(showBar);
+        assertNull(alwaysHide);
+        assertNull(alwaysShow);
+
+        // Clicking "Show bookmarks bar" should toggle the setting and dismiss.
+        showBar.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+        verify(mContextMenuDelegate).toggleBookmarksBar();
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testAlwaysHideClickListener_NtpFeatureEnabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+
+        PropertyModel alwaysHide =
+                getMenuItem(list, R.string.contextmenu_always_hide_bookmarks_bar);
+        assertNotNull(alwaysHide);
+
+        alwaysHide.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+        verify(mContextMenuDelegate).toggleBookmarksBar();
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testAlwaysShowClickListener_NtpFeatureEnabled() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+
+        PropertyModel alwaysShow =
+                getMenuItem(list, R.string.contextmenu_always_show_bookmarks_bar);
+        assertNotNull(alwaysShow);
+
+        alwaysShow.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+        verify(mContextMenuDelegate).toggleBookmarksBar();
         verify(mDismissRunnable).run();
     }
 }

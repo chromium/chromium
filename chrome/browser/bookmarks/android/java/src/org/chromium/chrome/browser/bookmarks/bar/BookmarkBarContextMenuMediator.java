@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -303,9 +304,30 @@ class BookmarkBarContextMenuMediator {
      * the bookmarks bar, which may appear in different ways based on feature flags.
      */
     private void addVisibilityControlActions(ModelList listItems, boolean isIncognito) {
+        // When the tri-state feature flag is not enabled, we use the v1 simple toggle.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)) {
+            listItems.add(
+                    buildContextMenuItem(
+                            mContext.getString(R.string.contextmenu_show_bookmarks_bar),
+                            R.drawable.material_ic_check_24dp,
+                            isIncognito,
+                            /* enabled= */ true,
+                            v -> toggleBookmarksBar()));
+            return;
+        }
+
+        // If the tri-state feature flag is enabled, we will use multiple options.
+        listItems.add(BasicListMenu.buildMenuDivider(isIncognito));
         listItems.add(
                 buildContextMenuItem(
-                        mContext.getString(R.string.contextmenu_show_bookmarks_bar),
+                        mContext.getString(R.string.contextmenu_always_hide_bookmarks_bar),
+                        /* iconResId= */ 0,
+                        isIncognito,
+                        /* enabled= */ true,
+                        v -> toggleBookmarksBar()));
+        listItems.add(
+                buildContextMenuItem(
+                        mContext.getString(R.string.contextmenu_always_show_bookmarks_bar),
                         R.drawable.material_ic_check_24dp,
                         isIncognito,
                         /* enabled= */ true,
