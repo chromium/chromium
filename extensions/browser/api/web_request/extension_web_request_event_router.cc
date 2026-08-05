@@ -564,6 +564,9 @@ WebRequestEventRouter::EventListener::~EventListener() = default;
 struct WebRequestEventRouter::BlockedRequest {
   BlockedRequest() = default;
 
+  // The BrowserContext that the blocked request belongs to.
+  raw_ptr<content::BrowserContext> browser_context = nullptr;
+
   // Information about the request that is being blocked. Not owned.
   raw_ptr<const WebRequestInfo> request = nullptr;
 
@@ -632,7 +635,6 @@ struct WebRequestEventRouter::BlockedRequest {
 namespace {
 
 helpers::EventResponseDelta CalculateDelta(
-    content::BrowserContext* browser_context,
     WebRequestEventRouter::BlockedRequest* blocked_request,
     WebRequestEventRouter::EventResponse* response,
     int extra_info_spec) {
@@ -645,7 +647,7 @@ helpers::EventResponseDelta CalculateDelta(
       net::HttpRequestHeaders* old_headers = blocked_request->request_headers;
       net::HttpRequestHeaders* new_headers = response->request_headers.get();
       return helpers::CalculateOnBeforeSendHeadersDelta(
-          browser_context, response->extension_id,
+          blocked_request->browser_context, response->extension_id,
           response->extension_install_time, response->cancel, old_headers,
           new_headers, extra_info_spec);
     }
@@ -986,12 +988,12 @@ int WebRequestEventRouter::OnBeforeRequest(
       const DNRRequestAction& action = actions[0];
       switch (action.type) {
         case DNRRequestAction::Type::BLOCK:
-          ClearPendingCallbacks(browser_context, *request);
+          ClearPendingCallbacks(*request);
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
           return net::ERR_BLOCKED_BY_CLIENT;
         case DNRRequestAction::Type::COLLAPSE:
-          ClearPendingCallbacks(browser_context, *request);
+          ClearPendingCallbacks(*request);
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
           *should_collapse_initiator = true;
@@ -1003,7 +1005,7 @@ int WebRequestEventRouter::OnBeforeRequest(
           break;
         case DNRRequestAction::Type::REDIRECT:
         case DNRRequestAction::Type::UPGRADE:
-          ClearPendingCallbacks(browser_context, *request);
+          ClearPendingCallbacks(*request);
           DCHECK_EQ(1u, actions.size());
           DCHECK(action.redirect_url);
           OnDNRActionMatched(browser_context, *request, action);
@@ -1203,12 +1205,12 @@ int WebRequestEventRouter::OnHeadersReceived(
 
       switch (action.type) {
         case DNRRequestAction::Type::BLOCK:
-          ClearPendingCallbacks(browser_context, *request);
+          ClearPendingCallbacks(*request);
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
           return net::ERR_BLOCKED_BY_CLIENT;
         case DNRRequestAction::Type::COLLAPSE:
-          ClearPendingCallbacks(browser_context, *request);
+          ClearPendingCallbacks(*request);
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
           *should_collapse_initiator = true;
@@ -1228,7 +1230,7 @@ int WebRequestEventRouter::OnHeadersReceived(
           break;
         case DNRRequestAction::Type::REDIRECT:
         case DNRRequestAction::Type::UPGRADE:
-          ClearPendingCallbacks(browser_context, *request);
+          ClearPendingCallbacks(*request);
           DCHECK_EQ(1u, actions.size());
           DCHECK(action.redirect_url);
           OnDNRActionMatched(browser_context, *request, action);
@@ -1449,7 +1451,7 @@ void WebRequestEventRouter::OnCompleted(
   DCHECK(!GetAndSetSignaled(browser_context, request->id,
                             EventTypes::kOnCompleted));
 
-  ClearPendingCallbacks(browser_context, *request);
+  ClearPendingCallbacks(*request);
 
   int extra_info_spec = 0;
   RawListeners listeners = GetMatchingListeners(
@@ -1504,7 +1506,7 @@ void WebRequestEventRouter::OnErrorOccurred(
   DCHECK(!GetAndSetSignaled(browser_context, request->id,
                             EventTypes::kOnErrorOccurred));
 
-  ClearPendingCallbacks(browser_context, *request);
+  ClearPendingCallbacks(*request);
 
   int extra_info_spec = 0;
   RawListeners listeners = GetMatchingListeners(
@@ -1529,16 +1531,15 @@ void WebRequestEventRouter::OnErrorOccurred(
 void WebRequestEventRouter::OnRequestWillBeDestroyed(
     content::BrowserContext* browser_context,
     const WebRequestInfo* request) {
-  ClearPendingCallbacks(browser_context, *request);
+  ClearPendingCallbacks(*request);
   GetSignaledRequestIDTracker(browser_context).ClearRequest(request->id);
   GetExtensionWebRequestTimeTracker().LogRequestEndTime(request->id,
                                                         base::TimeTicks::Now());
 }
 
 void WebRequestEventRouter::ClearPendingCallbacks(
-    content::BrowserContext* browser_context,
     const WebRequestInfo& request) {
-  ClearBlockedRequest(browser_context, request.id);
+  ClearBlockedRequest(request.id);
 }
 
 bool WebRequestEventRouter::DispatchEvent(
@@ -1877,8 +1878,13 @@ void WebRequestEventRouter::OnEventHandled(
     int worker_thread_id,
     int64_t service_worker_version_id,
     std::unique_ptr<EventResponse> response) {
-  BrowserContextData& context_data =
-      data_[GetBrowserContextID(browser_context)];
+  auto data_it = data_.find(GetBrowserContextID(browser_context));
+  if (data_it == data_.end()) {
+    // The listener's context has already been shut down, and a late response
+    // should not reinstantiate its data.
+    return;
+  }
+  BrowserContextData& context_data = data_it->second;
   // TODO(crbug.com/379869738): Remove FromUnsafeValue.
   EventListener::ID id(
       browser_context, extension_id, sub_event_name,
@@ -1913,7 +1919,7 @@ void WebRequestEventRouter::OnEventHandled(
   // blocking listeners have responded. See crbug.com/412695438.
   if (listener->IsBlocking() &&
       listener->blocked_requests.erase(request_id) > 0) {
-    DecrementBlockCount(browser_context, extension_id, event_name, request_id,
+    DecrementBlockCount(extension_id, event_name, request_id,
                         std::move(response), listener->extra_info_spec);
   }
 }
@@ -1945,8 +1951,8 @@ void WebRequestEventRouter::OnEventHandledForTarget(
   }
 
   if (response) {
-    AppendResponseDelta(browser_context, *responding_target->blocked_request,
-                        extension_id, event_name, *response, extra_info_spec);
+    AppendResponseDelta(*responding_target->blocked_request, extension_id,
+                        event_name, *response, extra_info_spec);
   }
   // Do not resolve the target here; `OnEventHandlingDone()` will resolve it
   // once all matching listeners in the target context have handled the event.
@@ -1981,8 +1987,7 @@ void WebRequestEventRouter::OnEventHandlingDone(
   // pipe, all responses from `OnEventHandledForTarget()` have already been
   // appended. Resolve the target to apply the collected responses and unblock
   // the request if no other blocking sources remain.
-  ResolvePendingTarget(browser_context, blocked_request, target_key, event_name,
-                       request_id);
+  ResolvePendingTarget(blocked_request, target_key, event_name, request_id);
 }
 
 // static
@@ -2058,7 +2063,7 @@ WebRequestEventRouter::FindTargetForResponse(
     int worker_thread_id,
     int64_t service_worker_version_id) {
   BlockedRequest* blocked_request =
-      GetBlockedRequestForEvent(&browser_context, request_id, event_name);
+      GetBlockedRequestForEvent(request_id, event_name);
   if (!blocked_request) {
     return std::nullopt;
   }
@@ -2083,17 +2088,15 @@ void WebRequestEventRouter::OnTargetCannotDispatch(
   }
 
   BlockedRequest* blocked_request =
-      GetBlockedRequestForEvent(browser_context, request_id, event_name);
+      GetBlockedRequestForEvent(request_id, event_name);
   if (!blocked_request) {
     return;
   }
 
-  ResolvePendingTarget(browser_context, *blocked_request, dispatch_key,
-                       event_name, request_id);
+  ResolvePendingTarget(*blocked_request, dispatch_key, event_name, request_id);
 }
 
 void WebRequestEventRouter::ResolvePendingTarget(
-    content::BrowserContext* browser_context,
     BlockedRequest& blocked_request,
     const DispatchTargetKey& target_key,
     const std::string& event_name,
@@ -2116,24 +2119,23 @@ void WebRequestEventRouter::ResolvePendingTarget(
     // require some additional tracking on the browser side.
     return;
   }
-  DecrementBlockCount(browser_context, extension_id, event_name, request_id,
+  DecrementBlockCount(extension_id, event_name, request_id,
                       /*response=*/nullptr,
                       /*extra_info_spec=*/0);
 }
 
 void WebRequestEventRouter::AppendResponseDelta(
-    content::BrowserContext* browser_context,
     BlockedRequest& blocked_request,
     const ExtensionId& extension_id,
     const std::string& event_name,
     EventResponse& response,
     int extra_info_spec) {
-  helpers::EventResponseDelta delta = CalculateDelta(
-      browser_context, &blocked_request, &response, extra_info_spec);
+  helpers::EventResponseDelta delta =
+      CalculateDelta(&blocked_request, &response, extra_info_spec);
 
   activity_monitor::OnWebRequestApiUsed(
-      browser_context, extension_id, blocked_request.request->url,
-      blocked_request.is_incognito, event_name,
+      blocked_request.browser_context, extension_id,
+      blocked_request.request->url, blocked_request.is_incognito, event_name,
       SummarizeResponseDelta(event_name, delta));
 
   blocked_request.response_deltas.push_back(std::move(delta));
@@ -2502,9 +2504,8 @@ void WebRequestEventRouter::CleanUpForListener(EventListener& listener,
   // TODO(crbug.com/40107353): This likely won't be sufficient, since it
   // means requests can leak through.
   for (uint64_t blocked_request_id : listener.blocked_requests) {
-    DecrementBlockCount(listener.id.browser_context, listener.id.extension_id,
-                        event_name, blocked_request_id, nullptr,
-                        0 /* extra_info_spec */);
+    DecrementBlockCount(listener.id.extension_id, event_name,
+                        blocked_request_id, nullptr, 0 /* extra_info_spec */);
   }
   listener.blocked_requests.clear();
 
@@ -2693,6 +2694,10 @@ void WebRequestEventRouter::DecrementSecurityInfoListenerCount(
 void WebRequestEventRouter::OnBrowserContextShutdown(
     content::BrowserContext* browser_context) {
   data_.erase(GetBrowserContextID(browser_context));
+  // Drop the blocked requests that `browser_context` owns.
+  std::erase_if(blocked_requests_, [browser_context](const auto& entry) {
+    return entry.second.browser_context == browser_context;
+  });
 }
 
 size_t WebRequestEventRouter::GetListenerCountForTesting(
@@ -2701,6 +2706,14 @@ size_t WebRequestEventRouter::GetListenerCountForTesting(
   return data_[GetBrowserContextID(browser_context)]
       .active_listeners[event_name]
       .size();
+}
+
+size_t WebRequestEventRouter::GetBlockedRequestCountForTesting(  // IN-TEST
+    content::BrowserContext* browser_context) const {
+  return std::ranges::count_if(
+      blocked_requests_, [browser_context](const auto& entry) {
+        return entry.second.browser_context == browser_context;
+      });
 }
 
 size_t WebRequestEventRouter::GetInactiveListenerCount(
@@ -2750,47 +2763,37 @@ bool WebRequestEventRouter::HasAnySecurityInfoListenerImpl(
   return iter != data_.end() && iter->second.security_info_listeners_count > 0;
 }
 
-WebRequestEventRouter::BlockedRequestMap&
-WebRequestEventRouter::GetBlockedRequestMap(
-    content::BrowserContext* browser_context) {
-  // Blocked requests are stored in the data for the regular context.
-  // TODO(crbug.com/40279375): Blocked requests should be isolated to
-  // a particular BrowserContext and not shared between the main and
-  // OTR contexts.
-  if (browser_context->IsOffTheRecord()) {
-    browser_context = GetCrossBrowserContext(browser_context);
-  }
-  return data_[GetBrowserContextID(browser_context)].blocked_requests;
-}
-
-void WebRequestEventRouter::ClearBlockedRequest(
-    content::BrowserContext* browser_context,
-    uint64_t id) {
-  GetBlockedRequestMap(browser_context).erase(id);
+void WebRequestEventRouter::ClearBlockedRequest(uint64_t id) {
+  blocked_requests_.erase(id);
 }
 
 WebRequestEventRouter::BlockedRequest&
 WebRequestEventRouter::GetOrAddBlockedRequest(
     content::BrowserContext* browser_context,
     uint64_t id) {
-  return GetBlockedRequestMap(browser_context)[id];
+  CHECK(browser_context);
+  auto [it, inserted] = blocked_requests_.try_emplace(id);
+  if (inserted) {
+    it->second.browser_context = browser_context;
+  } else {
+    // Request IDs are unique across the BrowserContexts that share this
+    // router, so an existing entry must belong to the same BrowserContext.
+    CHECK_EQ(it->second.browser_context, browser_context);
+  }
+  return it->second;
 }
 
 WebRequestEventRouter::BlockedRequest* WebRequestEventRouter::GetBlockedRequest(
-    content::BrowserContext* browser_context,
     uint64_t id) {
-  BlockedRequestMap& blocked_requests = GetBlockedRequestMap(browser_context);
-  auto it = blocked_requests.find(id);
-  return it == blocked_requests.end() ? nullptr : &it->second;
+  auto it = blocked_requests_.find(id);
+  return it == blocked_requests_.end() ? nullptr : &it->second;
 }
 
 WebRequestEventRouter::BlockedRequest*
 WebRequestEventRouter::GetBlockedRequestForEvent(
-    content::BrowserContext* browser_context,
     uint64_t request_id,
     const std::string& event_name) {
-  BlockedRequest* blocked_request =
-      GetBlockedRequest(browser_context, request_id);
+  BlockedRequest* blocked_request = GetBlockedRequest(request_id);
   if (!blocked_request ||
       blocked_request->event != GetEventTypeFromEventName(event_name)) {
     // A response may address a request that is:
@@ -2984,7 +2987,6 @@ void WebRequestEventRouter::GetMatchingListenersForRequest(
 }
 
 void WebRequestEventRouter::DecrementBlockCount(
-    content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& event_name,
     uint64_t request_id,
@@ -2993,8 +2995,7 @@ void WebRequestEventRouter::DecrementBlockCount(
   // It's possible that this request was deleted, or cancelled by a previous
   // event handler or handled by Declarative Net Request API. If so, ignore this
   // response.
-  BlockedRequest* blocked_request =
-      GetBlockedRequest(browser_context, request_id);
+  BlockedRequest* blocked_request = GetBlockedRequest(request_id);
   if (!blocked_request) {
     return;
   }
@@ -3006,8 +3007,8 @@ void WebRequestEventRouter::DecrementBlockCount(
   CHECK_GE(num_blocking_sources, 0);
 
   if (response) {
-    AppendResponseDelta(browser_context, *blocked_request, extension_id,
-                        event_name, *response, extra_info_spec);
+    AppendResponseDelta(*blocked_request, extension_id, event_name, *response,
+                        extra_info_spec);
   }
 
   if (num_blocking_sources == 0) {
@@ -3015,7 +3016,8 @@ void WebRequestEventRouter::DecrementBlockCount(
     // source is decremented: each pending target holds exactly one blocking
     // source until it is resolved.
     DCHECK(blocked_request->pending_targets.empty());
-    ExecuteDeltas(browser_context, blocked_request->request, true);
+    ExecuteDeltas(blocked_request->browser_context, blocked_request->request,
+                  true);
     // Note: `blocked_request` can be deleted here, depending on the outcome
     // of ExecuteDeltas(). Use the cached `request_event` and `request_id`
     // instead of using `blocked_request`.
@@ -3046,8 +3048,10 @@ int WebRequestEventRouter::ExecuteDeltas(
     content::BrowserContext* browser_context,
     const WebRequestInfo* request,
     bool call_callback) {
-  BlockedRequest& blocked_request =
-      GetOrAddBlockedRequest(browser_context, request->id);
+  BlockedRequest* blocked_request_ptr = GetBlockedRequest(request->id);
+  CHECK(blocked_request_ptr);
+  BlockedRequest& blocked_request = *blocked_request_ptr;
+  CHECK_EQ(blocked_request.browser_context, browser_context);
   CHECK_EQ(0, blocked_request.num_blocking_sources);
   helpers::EventResponseDeltas& deltas = blocked_request.response_deltas;
   base::TimeDelta block_time =
@@ -3157,7 +3161,7 @@ int WebRequestEventRouter::ExecuteDeltas(
     net::CompletionOnceCallback callback = std::move(blocked_request.callback);
     // Ensure that request is removed before callback because the callback
     // might trigger the next event.
-    ClearBlockedRequest(browser_context, request->id);
+    ClearBlockedRequest(request->id);
     if (call_callback) {
       std::move(callback).Run(rv);
     }
@@ -3165,7 +3169,7 @@ int WebRequestEventRouter::ExecuteDeltas(
     auto callback = std::move(blocked_request.before_send_headers_callback);
     // Ensure that request is removed before callback because the callback
     // might trigger the next event.
-    ClearBlockedRequest(browser_context, request->id);
+    ClearBlockedRequest(request->id);
     if (call_callback) {
       std::move(callback).Run(request_headers_removed, request_headers_set, rv);
     }
@@ -3180,12 +3184,12 @@ int WebRequestEventRouter::ExecuteDeltas(
     }
 
     AuthCallback callback = std::move(blocked_request.auth_callback);
-    ClearBlockedRequest(browser_context, request->id);
+    ClearBlockedRequest(request->id);
     if (call_callback) {
       std::move(callback).Run(response);
     }
   } else {
-    ClearBlockedRequest(browser_context, request->id);
+    ClearBlockedRequest(request->id);
   }
   return rv;
 }
@@ -3294,8 +3298,7 @@ void WebRequestEventRouter::OnRulesRegistryReady(void* browser_context_id,
 
   // It's possible that this request was deleted, or cancelled by a previous
   // event handler. If so, ignore this response.
-  BlockedRequest* blocked_request =
-      GetBlockedRequest(browser_context, request_id);
+  BlockedRequest* blocked_request = GetBlockedRequest(request_id);
   if (!blocked_request) {
     return;
   }
@@ -3303,8 +3306,8 @@ void WebRequestEventRouter::OnRulesRegistryReady(void* browser_context_id,
   ProcessDeclarativeRules(browser_context, event_name, blocked_request->request,
                           request_stage,
                           blocked_request->original_response_headers.get());
-  DecrementBlockCount(browser_context, std::string(), event_name, request_id,
-                      nullptr, 0 /* extra_info_spec */);
+  DecrementBlockCount(std::string(), event_name, request_id, nullptr,
+                      0 /* extra_info_spec */);
 }
 
 bool WebRequestEventRouter::GetAndSetSignaled(

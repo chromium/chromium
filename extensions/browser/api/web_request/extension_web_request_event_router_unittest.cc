@@ -16,10 +16,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/process_map.h"
@@ -272,6 +275,20 @@ class CapturingEventRouter : public TestEventRouter {
   std::vector<std::unique_ptr<Event>> events_;
 };
 
+// Builds a browser-initiated main-frame navigation request.
+std::unique_ptr<WebRequestInfo> CreateRequest(uint64_t request_id) {
+  WebRequestInfoInitParams params;
+  params.id = request_id;
+  params.url = GURL("http://example.com/");
+  params.method = "GET";
+  params.is_navigation_request = true;
+  params.web_request_type = WebRequestResourceType::MAIN_FRAME;
+  params.is_async = true;
+  auto request = std::make_unique<WebRequestInfo>(std::move(params));
+  request->dnr_actions.emplace();
+  return request;
+}
+
 class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
  public:
   static constexpr const char* kExtensionName = "Test Extension";
@@ -371,20 +388,6 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
   Event::DispatchTarget ActiveDispatchTarget() {
     return {render_process_host_->GetID(), kWorkerThreadId,
             kServiceWorkerVersionId};
-  }
-
-  // Builds a browser-initiated main-frame navigation request.
-  std::unique_ptr<WebRequestInfo> CreateRequest(uint64_t request_id) {
-    WebRequestInfoInitParams params;
-    params.id = request_id;
-    params.url = GURL("http://example.com/");
-    params.method = "GET";
-    params.is_navigation_request = true;
-    params.web_request_type = WebRequestResourceType::MAIN_FRAME;
-    params.is_async = true;
-    auto request = std::make_unique<WebRequestInfo>(std::move(params));
-    request->dnr_actions.emplace();
-    return request;
   }
 
   // Starts the blocking "onBeforeSendHeaders" stage.
@@ -669,6 +672,234 @@ TEST_F(WebRequestEventRouterContextDispatchTest,
   FinishHandling(request->id);
   ASSERT_TRUE(result_.has_value());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, *result_);
+}
+
+// Tests for blocked requests that cross between the regular context and its
+// off-the-record context. A spanning-mode extension has its listeners in the
+// regular context but observes and blocks requests from both.
+// TODO(andreaorru): the level of simulation we need here in these unittests may
+// be fragile. Rewrite these as browser tests with "real" extensions.
+class WebRequestEventRouterCrossBrowserContextTest : public ExtensionsTest {
+ public:
+  static constexpr int kRenderProcessId = 1;
+
+  WebRequestEventRouterCrossBrowserContextTest() {
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kWebRequestPerContextEventDispatch);
+  }
+
+ protected:
+  void SetUp() override {
+    ExtensionsTest::SetUp();
+
+    user_prefs::UserPrefs::Set(browser_context(), pref_service());
+    user_prefs::UserPrefs::Set(incognito_context(), pref_service());
+
+    extension_ = ExtensionBuilder("Spanning Extension")
+                     .AddHostPermission("<all_urls>")
+                     .Build();
+    ExtensionRegistry::Get(browser_context())->AddEnabled(extension_);
+    ExtensionPrefs::Get(browser_context())
+        ->SetIsIncognitoEnabled(extension_->id(), true);
+
+    WebRequestEventRouter::OnOTRBrowserContextCreated(browser_context(),
+                                                      incognito_context());
+  }
+
+  void TearDown() override {
+    if (!otr_destroyed_) {
+      DestroyOTRContext();
+    }
+    ExtensionsTest::TearDown();
+  }
+
+  // Simulates the destruction notification for the off-the-record context.
+  void DestroyOTRContext() {
+    WebRequestEventRouter::OnOTRBrowserContextDestroyed(browser_context(),
+                                                        incognito_context());
+    otr_destroyed_ = true;
+  }
+
+  WebRequestEventRouter* router() {
+    return WebRequestEventRouter::Get(browser_context());
+  }
+
+  std::string event_name() {
+    return extension_web_request_api_constants::kOnBeforeSendHeadersEvent;
+  }
+
+  std::string sub_event_name() { return event_name() + "/1"; }
+
+  // Registers a blocking listener for the extension in `listener_context`.
+  void AddBlockingListener(content::BrowserContext* listener_context) {
+    ASSERT_TRUE(router()->AddEventListener(
+        listener_context, extension_->id(), extension_->name(), event_name(),
+        sub_event_name(), WebRequestEventRouter::RequestFilter(),
+        ExtraInfoSpec::BLOCKING, kRenderProcessId, /*web_view_instance_id=*/0,
+        kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
+        /*is_lazy=*/false));
+  }
+
+  // Removes the listener that `AddBlockingListener()` registered.
+  void RemoveBlockingListener(content::BrowserContext* listener_context) {
+    router()->UpdateActiveListenerForTesting(
+        listener_context, WebRequestEventRouter::ListenerUpdateType::kRemove,
+        extension_->id(), sub_event_name(),
+        content::ChildProcessId(kRenderProcessId), kMainThreadId,
+        blink::mojom::kInvalidServiceWorkerVersionId);
+  }
+
+  // Starts the blocking "onBeforeSendHeaders" stage for `request` in
+  // `context`. The completion callback stores its error code in `result_`.
+  int StartOnBeforeSendHeaders(content::BrowserContext* context,
+                               const WebRequestInfo* request) {
+    return router()->OnBeforeSendHeaders(
+        context, request,
+        base::BindLambdaForTesting(
+            [this](const std::set<std::string>& removed_headers,
+                   const std::set<std::string>& set_headers,
+                   int error_code) { result_ = error_code; }),
+        &headers_);
+  }
+
+  // Simulates the extension's response from the regular context, where the
+  // spanning extension's renderer lives.
+  void Respond(uint64_t request_id, bool cancel) {
+    auto response = std::make_unique<WebRequestEventRouter::EventResponse>(
+        extension_->id(), base::Time::Now());
+    response->cancel = cancel;
+    router()->OnEventHandled(browser_context(), extension_->id(), event_name(),
+                             sub_event_name(), request_id, kRenderProcessId,
+                             /*web_view_instance_id=*/0, kMainThreadId,
+                             blink::mojom::kInvalidServiceWorkerVersionId,
+                             std::move(response));
+  }
+
+  std::optional<int> result_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ExtensionsAPIClient api_client_;
+  scoped_refptr<const Extension> extension_;
+  net::HttpRequestHeaders headers_;
+  bool otr_destroyed_ = false;
+};
+
+// A blocked request from the off-the-record context must be resolved by the
+// spanning extension's response, which arrives with the regular context.
+TEST_F(WebRequestEventRouterCrossBrowserContextTest,
+       CrossContextBlockedRequestHandled) {
+  // Block an incognito request on a listener in the regular context.
+  AddBlockingListener(browser_context());
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            StartOnBeforeSendHeaders(incognito_context(), request.get()));
+
+  // The blocked request belongs to the off-the-record context.
+  EXPECT_EQ(1u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+  EXPECT_EQ(0u, router()->GetBlockedRequestCountForTesting(browser_context()));
+
+  // The extension cancels the request; its response arrives with the regular
+  // context and must resolve the entry owned by incognito.
+  Respond(/*request_id=*/1, /*cancel=*/true);
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, *result_);
+  EXPECT_EQ(0u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+
+  router()->OnRequestWillBeDestroyed(incognito_context(), request.get());
+}
+
+// Removal of the blocking listener (in the regular context) must unblock the
+// pending off-the-record request.
+TEST_F(WebRequestEventRouterCrossBrowserContextTest,
+       CrossContextBlockedRequestListenerRemoved) {
+  AddBlockingListener(browser_context());
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            StartOnBeforeSendHeaders(incognito_context(), request.get()));
+
+  // Removing the only blocking listener must resolve the request, with no
+  // changes applied.
+  RemoveBlockingListener(browser_context());
+
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
+  EXPECT_EQ(0u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+
+  router()->OnRequestWillBeDestroyed(incognito_context(), request.get());
+}
+
+// Each blocked request is owned by exactly the BrowserContext its request
+// came from.
+TEST_F(WebRequestEventRouterCrossBrowserContextTest,
+       BlockedRequestsAreIsolatedPerContext) {
+  // Block one request from each context on the same listener.
+  AddBlockingListener(browser_context());
+  std::unique_ptr<WebRequestInfo> regular_request = CreateRequest(1);
+  std::unique_ptr<WebRequestInfo> otr_request = CreateRequest(2);
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            StartOnBeforeSendHeaders(browser_context(), regular_request.get()));
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            StartOnBeforeSendHeaders(incognito_context(), otr_request.get()));
+
+  // Each context owns exactly its own blocked request.
+  EXPECT_EQ(1u, router()->GetBlockedRequestCountForTesting(browser_context()));
+  EXPECT_EQ(1u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+
+  // Resolving the regular request must not touch the incognito one.
+  Respond(/*request_id=*/1, /*cancel=*/false);
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
+  EXPECT_EQ(0u, router()->GetBlockedRequestCountForTesting(browser_context()));
+  EXPECT_EQ(1u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+
+  // Resolving the incognito request removes its entry.
+  result_.reset();
+  Respond(/*request_id=*/2, /*cancel=*/false);
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
+  EXPECT_EQ(0u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+
+  router()->OnRequestWillBeDestroyed(browser_context(), regular_request.get());
+  router()->OnRequestWillBeDestroyed(incognito_context(), otr_request.get());
+}
+
+// Shutdown of the off-the-record context must drop exactly its own blocked
+// requests. A late response for a dropped request is a no-op.
+TEST_F(WebRequestEventRouterCrossBrowserContextTest,
+       BlockedRequestClearedOnOTRShutdown) {
+  AddBlockingListener(browser_context());
+  std::unique_ptr<WebRequestInfo> regular_request = CreateRequest(1);
+  std::unique_ptr<WebRequestInfo> otr_request = CreateRequest(2);
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            StartOnBeforeSendHeaders(browser_context(), regular_request.get()));
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            StartOnBeforeSendHeaders(incognito_context(), otr_request.get()));
+
+  // Destroying the off-the-record context drops its blocked request and only
+  // that one.
+  DestroyOTRContext();
+  EXPECT_EQ(0u,
+            router()->GetBlockedRequestCountForTesting(incognito_context()));
+  EXPECT_EQ(1u, router()->GetBlockedRequestCountForTesting(browser_context()));
+
+  // A late response for the dropped off-the-record request must not run its
+  // callback.
+  Respond(/*request_id=*/2, /*cancel=*/false);
+  EXPECT_FALSE(result_.has_value());
+
+  // The regular context's blocked request is unaffected.
+  Respond(/*request_id=*/1, /*cancel=*/false);
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
+
+  router()->OnRequestWillBeDestroyed(browser_context(), regular_request.get());
 }
 
 }  // namespace extensions

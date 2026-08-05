@@ -247,6 +247,9 @@ class WebRequestEventRouter : public KeyedService {
                                 const WebRequestInfo* request);
 
   // Called when an event listener handles a blocking event and responds.
+  // `browser_context` is the responding listener's context; the blocked
+  // request may belong to the cross browser context (a spanning-mode
+  // extension responding to an off-the-record request).
   void OnEventHandled(content::BrowserContext* browser_context,
                       const ExtensionId& extension_id,
                       const std::string& event_name,
@@ -263,7 +266,9 @@ class WebRequestEventRouter : public KeyedService {
   // It does NOT resolve the target: resolution is signaled separately by
   // `OnEventHandlingDone()`, because the context may have multiple listeners
   // for the same parent event name. `extra_info_spec` holds the options the
-  // responding listener was registered with.
+  // responding listener was registered with. `browser_context` is the
+  // responding target's context; the blocked request may belong to the
+  // cross browser context.
   void OnEventHandledForTarget(content::BrowserContext* browser_context,
                                const ExtensionId& extension_id,
                                const std::string& event_name,
@@ -278,6 +283,8 @@ class WebRequestEventRouter : public KeyedService {
   // Called when a renderer context has finished handling a blocking event
   // for `request_id`, after all of its matching listeners have settled.
   // Resolves the pending dispatch target identified by the context.
+  // `browser_context` is the responding target's context; the blocked
+  // request may belong to the cross browser context.
   void OnEventHandlingDone(content::BrowserContext* browser_context,
                            const ExtensionId& extension_id,
                            const std::string& event_name,
@@ -350,6 +357,11 @@ class WebRequestEventRouter : public KeyedService {
   // Get the number of listeners - for testing only.
   size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
                                     const std::string& event_name);
+
+  // Get the number of blocked requests owned by `browser_context` - for
+  // testing only.
+  size_t GetBlockedRequestCountForTesting(
+      content::BrowserContext* browser_context) const;
 
   size_t GetInactiveListenerCount(content::BrowserContext* browser_context,
                                   const std::string& event_name);
@@ -621,11 +633,6 @@ class WebRequestEventRouter : public KeyedService {
     // `RulesRegistryService::kDefaultRulesRegistryID` is used.
     std::map<int, scoped_refptr<WebRequestRulesRegistry>> rules_registries;
 
-    // A map of network requests that are waiting for at least one event handler
-    // to respond. Blocked requests are stored on the regular BrowserContext for
-    // both it and any off-the-record BrowserContext that exists.
-    BlockedRequestMap blocked_requests;
-
     SignaledRequestIDTracker signaled_request_id_tracker;
   };
 
@@ -727,8 +734,7 @@ class WebRequestEventRouter : public KeyedService {
 
   // Ensures that future callbacks for `request` are ignored so that it can be
   // destroyed safely.
-  void ClearPendingCallbacks(content::BrowserContext* browser_context,
-                             const WebRequestInfo& request);
+  void ClearPendingCallbacks(const WebRequestInfo& request);
 
   bool DispatchEvent(content::BrowserContext* browser_context,
                      const WebRequestInfo* request,
@@ -792,8 +798,7 @@ class WebRequestEventRouter : public KeyedService {
   // Resolves a pending target by erasing it from `blocked_request` and
   // decrementing the blocking count (which resumes the request if no blocking
   // sources remain). Does nothing if no such target remains.
-  void ResolvePendingTarget(content::BrowserContext* browser_context,
-                            BlockedRequest& blocked_request,
+  void ResolvePendingTarget(BlockedRequest& blocked_request,
                             const DispatchTargetKey& target_key,
                             const std::string& event_name,
                             uint64_t request_id);
@@ -801,8 +806,7 @@ class WebRequestEventRouter : public KeyedService {
   // Converts `response` into an EventResponseDelta clamped by the permissions
   // in `extra_info_spec`, logs the API usage to the activity monitor, and
   // appends the delta to `blocked_request`.
-  void AppendResponseDelta(content::BrowserContext* browser_context,
-                           BlockedRequest& blocked_request,
+  void AppendResponseDelta(BlockedRequest& blocked_request,
                            const ExtensionId& extension_id,
                            const std::string& event_name,
                            EventResponse& response,
@@ -841,19 +845,18 @@ class WebRequestEventRouter : public KeyedService {
   // count reaches 0, we stop blocking the request and proceed it using the
   // method requested by the extension with the highest precedence. Precedence
   // is decided by extension install time.
-  void DecrementBlockCount(content::BrowserContext* browser_context,
-                           const ExtensionId& extension_id,
+  void DecrementBlockCount(const ExtensionId& extension_id,
                            const std::string& event_name,
                            uint64_t request_id,
                            std::unique_ptr<EventResponse> response,
                            int extra_info_spec);
 
-  // Processes the generated deltas from blocked_requests_ on the specified
-  // request. If `call_callback` is true, the callback registered in
-  // `blocked_requests_` is called.
-  // The function returns the error code for the network request. This is
-  // mostly relevant in case the caller passes `call_callback` = false
-  // and wants to return the correct network error code themself.
+  // Processes the generated deltas from `blocked_requests_` on the specified
+  // request. `browser_context` is the context that owns the blocked request. If
+  // `call_callback` is true, the callback registered in `blocked_requests_` is
+  // called. The function returns the error code for the network request. This
+  // is mostly relevant in case the caller passes `call_callback` = false and
+  // wants to return the correct network error code themself.
   int ExecuteDeltas(content::BrowserContext* browser_context,
                     const WebRequestInfo* request,
                     bool call_callback);
@@ -925,10 +928,6 @@ class WebRequestEventRouter : public KeyedService {
   // Helper for |HasAnySecurityInfoListener()|.
   bool HasAnySecurityInfoListenerImpl(content::BrowserContext* browser_context);
 
-  // Returns the instance of the BlockedRequestMap for `browser_context`.
-  BlockedRequestMap& GetBlockedRequestMap(
-      content::BrowserContext* browser_context);
-
   // Returns the instance of the SignaledRequestIDTracker for
   // `browser_context`, if the BrowserContext exists in the
   // BrowserContextData map. Otherwise, it returns nullptr.
@@ -947,31 +946,33 @@ class WebRequestEventRouter : public KeyedService {
         .signaled_request_id_tracker;
   }
 
-  // Clears any entries in the BlockedRequestMap for `browser_context` with
-  // `id`.
-  void ClearBlockedRequest(content::BrowserContext* browser_context,
-                           uint64_t id);
+  // Clears the entry in `blocked_requests_` with `id`, if any.
+  void ClearBlockedRequest(uint64_t id);
 
-  // Gets the entry in the BlockedRequestMap for `browser_context` with `id`.
-  // The entry is created if it doesn't exist.
+  // Gets the entry in `blocked_requests_` with `id`. The entry is created if
+  // it doesn't exist, owned by `browser_context` (the context the request
+  // belongs to). An existing entry must be owned by `browser_context`.
   BlockedRequest& GetOrAddBlockedRequest(
       content::BrowserContext* browser_context,
       uint64_t id);
 
-  // Gets the existing entry in the BlockedRequestMap for `browser_context`
-  // with `id`. The entry is not created if it doesn't exist.
-  BlockedRequest* GetBlockedRequest(content::BrowserContext* browser_context,
-                                    uint64_t id);
+  // Gets the existing entry in `blocked_requests_` with `id`. The entry is
+  // not created if it doesn't exist.
+  BlockedRequest* GetBlockedRequest(uint64_t id);
 
   // Returns the blocked request identified by `request_id` if it is currently
   // waiting on the stage named `event_name`, or nullptr otherwise.
-  BlockedRequest* GetBlockedRequestForEvent(
-      content::BrowserContext* browser_context,
-      uint64_t request_id,
-      const std::string& event_name);
+  BlockedRequest* GetBlockedRequestForEvent(uint64_t request_id,
+                                            const std::string& event_name);
 
   // A map of data associated with given BrowserContexts.
   DataMap data_;
+
+  // The network requests that are waiting for at least one event handler to
+  // respond, keyed by request ID. IDs are unique across the BrowserContexts
+  // that share this router, and a response can arrive from the cross browser
+  // context, so entries record their owning context and lookup is by ID only.
+  BlockedRequestMap blocked_requests_;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 
