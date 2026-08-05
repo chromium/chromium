@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.ViewGroup;
@@ -326,5 +327,24 @@ public class ImprovedBookmarkRowRenderTest {
                     mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, coordinator.getView());
                 });
         mRenderTestRule.render(mContentView, "normal_with_price_tracking_disabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testSoftwareCanvasRendering() throws IOException {
+        Bitmap bitmap =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Bitmap b =
+                                    Bitmap.createBitmap(
+                                            mContentView.getWidth(),
+                                            mContentView.getHeight(),
+                                            Bitmap.Config.ARGB_8888);
+                            Canvas c = new Canvas(b);
+                            mContentView.draw(c);
+                            return b;
+                        });
+        mRenderTestRule.compareForResult(bitmap, "software_canvas");
     }
 }

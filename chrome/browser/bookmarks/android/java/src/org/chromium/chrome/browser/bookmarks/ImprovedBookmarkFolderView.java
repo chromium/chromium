@@ -22,7 +22,7 @@ import androidx.annotation.StyleRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
 /**
  * Draws the image at the start of a bookmark folder row. This may contains elements from the
@@ -30,23 +30,20 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
  */
 @NullMarked
 public class ImprovedBookmarkFolderView extends FrameLayout {
-    private final RoundedCornerOutlineProvider mPrimaryImageOutline;
-    private final RoundedCornerOutlineProvider mSecondaryImageOutline;
+    private final int mOuterRadius;
+    private final int mInnerRadius;
 
-    private final RoundedCornerOutlineProvider mChildTextBackgroundOutlineOneImageTop;
-    private final RoundedCornerOutlineProvider mChildTextBackgroundOutlineOneImageBot;
-    private final RoundedCornerOutlineProvider mChildTextContainerOutlineOneImage;
-    private final RoundedCornerOutlineProvider mChildTextContainerOutlineTwoImages;
-
-    private ImageView mPrimaryImage;
-    private View mNoImagePlaceholder;
+    private RoundedCornerImageView mPrimaryImage;
+    private RoundedCornerImageView mNoImagePlaceholder;
     private ImageView mStartIcon;
     private ViewGroup mSecondaryImageContainer;
-    private ImageView mSecondaryImage;
+    private RoundedCornerImageView mSecondaryImage;
 
     private View mChildCountBackgroundOneImage;
-    private View mChildCountBackgroundTwoImages;
-    private View mChildCountContainer;
+    private RoundedCornerImageView mChildCountBackgroundOneImageTop;
+    private RoundedCornerImageView mChildCountBackgroundOneImageBot;
+    private RoundedCornerImageView mChildCountBackgroundTwoImages;
+    private RoundedCornerImageView mChildCountContainer;
     private TextView mChildCount;
 
     /** Constructor for inflating from XML. */
@@ -54,27 +51,10 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
         super(context, attrs);
 
         Resources resources = context.getResources();
-        int outerRadius =
+        mOuterRadius =
                 resources.getDimensionPixelSize(R.dimen.improved_bookmark_row_outer_corner_radius);
-        int innerRadius =
+        mInnerRadius =
                 resources.getDimensionPixelSize(R.dimen.improved_bookmark_row_inner_corner_radius);
-
-        mPrimaryImageOutline = new RoundedCornerOutlineProvider(outerRadius);
-
-        mSecondaryImageOutline = new RoundedCornerOutlineProvider(outerRadius);
-        mSecondaryImageOutline.setRoundingEdges(false, true, true, false);
-
-        mChildTextBackgroundOutlineOneImageTop = new RoundedCornerOutlineProvider(innerRadius);
-        mChildTextBackgroundOutlineOneImageTop.setRoundingEdges(true, true, false, false);
-
-        mChildTextBackgroundOutlineOneImageBot = new RoundedCornerOutlineProvider(outerRadius);
-        mChildTextBackgroundOutlineOneImageBot.setRoundingEdges(false, false, true, true);
-
-        mChildTextContainerOutlineOneImage = new RoundedCornerOutlineProvider(innerRadius);
-        mChildTextContainerOutlineOneImage.setRoundingEdges(true, true, false, false);
-
-        mChildTextContainerOutlineTwoImages = new RoundedCornerOutlineProvider(outerRadius);
-        mChildTextContainerOutlineTwoImages.setRoundingEdges(false, false, true, true);
     }
 
     @Override
@@ -82,50 +62,44 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
         super.onFinishInflate();
 
         final Context context = getContext();
+        Resources resources = context.getResources();
+        int outerRadius =
+                resources.getDimensionPixelSize(R.dimen.improved_bookmark_row_outer_corner_radius);
         final @ColorInt int surfaceColor = SemanticColorUtils.getColorSurface(context);
         final @ColorInt int colorSurfaceContainerLow =
                 SemanticColorUtils.getColorSurfaceContainerLow(context);
 
         mPrimaryImage = findViewById(R.id.primary_image);
-        mPrimaryImage.setOutlineProvider(mPrimaryImageOutline);
-        mPrimaryImage.setClipToOutline(true);
+        mPrimaryImage.setRoundedCorners(outerRadius, outerRadius, outerRadius, outerRadius);
 
         mNoImagePlaceholder = findViewById(R.id.no_image_placeholder_background);
-        mNoImagePlaceholder.setOutlineProvider(mPrimaryImageOutline);
-        mNoImagePlaceholder.setClipToOutline(true);
+        mNoImagePlaceholder.setRoundedCorners(outerRadius, outerRadius, outerRadius, outerRadius);
 
         mStartIcon = findViewById(R.id.no_image_placeholder_image);
 
         mSecondaryImage = findViewById(R.id.secondary_image);
-        mSecondaryImage.setOutlineProvider(mSecondaryImageOutline);
-        mSecondaryImage.setClipToOutline(true);
+        mSecondaryImage.setRoundedCorners(0, outerRadius, 0, 0);
 
         mSecondaryImageContainer = findViewById(R.id.secondary_image_container);
         mSecondaryImageContainer.setBackgroundColor(surfaceColor);
 
         // Setup the background for the child count view when there's one image present.
         mChildCountBackgroundOneImage = findViewById(R.id.child_count_background_one_image);
-        View childCountBackgroundOneImageTop =
-                findViewById(R.id.child_count_background_one_image_top);
-        childCountBackgroundOneImageTop.setBackgroundColor(colorSurfaceContainerLow);
-        childCountBackgroundOneImageTop.setOutlineProvider(mChildTextBackgroundOutlineOneImageTop);
-        childCountBackgroundOneImageTop.setClipToOutline(true);
-        View childCountBackgroundOneImageBot =
-                findViewById(R.id.child_count_background_one_image_bot);
-        childCountBackgroundOneImageBot.setBackgroundColor(colorSurfaceContainerLow);
-        childCountBackgroundOneImageBot.setOutlineProvider(mChildTextBackgroundOutlineOneImageBot);
-        childCountBackgroundOneImageBot.setClipToOutline(true);
+        mChildCountBackgroundOneImageTop = findViewById(R.id.child_count_background_one_image_top);
+        mChildCountBackgroundOneImageTop.setRoundedCorners(mInnerRadius, 0, 0, 0);
+        mChildCountBackgroundOneImageTop.setRoundedFillColor(colorSurfaceContainerLow);
+        mChildCountBackgroundOneImageBot = findViewById(R.id.child_count_background_one_image_bot);
+        mChildCountBackgroundOneImageBot.setRoundedCorners(0, 0, 0, mOuterRadius);
+        mChildCountBackgroundOneImageBot.setRoundedFillColor(colorSurfaceContainerLow);
 
         // Setup the background for the child count view when there's two images present.
         mChildCountBackgroundTwoImages = findViewById(R.id.child_count_background_two_images);
-        mChildCountBackgroundTwoImages.setBackgroundColor(colorSurfaceContainerLow);
-        mChildCountBackgroundTwoImages.setOutlineProvider(mChildTextContainerOutlineTwoImages);
-        mChildCountBackgroundTwoImages.setClipToOutline(true);
+        mChildCountBackgroundTwoImages.setRoundedCorners(0, 0, 0, mOuterRadius);
+        mChildCountBackgroundTwoImages.setRoundedFillColor(colorSurfaceContainerLow);
 
         // The container which separates the child text from the images.
         mChildCountContainer = findViewById(R.id.child_count_container);
-        mChildCountContainer.setBackgroundColor(surfaceColor);
-        mChildCountContainer.setClipToOutline(true);
+        mChildCountContainer.setRoundedFillColor(surfaceColor);
 
         mChildCount = findViewById(R.id.child_count_text);
     }
@@ -139,7 +113,7 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
     }
 
     void setStartAreaBackgroundColor(@ColorInt int color) {
-        mNoImagePlaceholder.setBackgroundColor(color);
+        mNoImagePlaceholder.setRoundedFillColor(color);
     }
 
     void setStartImageDrawablePair(Pair<Drawable, Drawable> drawablePair) {
@@ -149,6 +123,7 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
     void setStartImageDrawables(
             @Nullable Drawable primaryDrawable, @Nullable Drawable secondaryDrawable) {
         mNoImagePlaceholder.setVisibility(View.GONE);
+        mStartIcon.setVisibility(View.GONE);
         mPrimaryImage.setVisibility(View.GONE);
         mSecondaryImageContainer.setVisibility(View.GONE);
         mChildCountBackgroundOneImage.setVisibility(View.GONE);
@@ -158,6 +133,7 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
         if (primaryDrawable == null && secondaryDrawable == null) {
             // Placeholder folder image case.
             mNoImagePlaceholder.setVisibility(View.VISIBLE);
+            mStartIcon.setVisibility(View.VISIBLE);
         } else if (primaryDrawable != null && secondaryDrawable == null) {
             // 1-image case.
             mPrimaryImage.setImageDrawable(primaryDrawable);
@@ -189,9 +165,9 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
     private void updateChildCountContainer(int numberOfImages) {
         mChildCountContainer.setVisibility(numberOfImages == 0 ? View.GONE : View.VISIBLE);
         if (numberOfImages == 1) {
-            mChildCountContainer.setOutlineProvider(mChildTextContainerOutlineOneImage);
+            mChildCountContainer.setRoundedCorners(mInnerRadius, 0, 0, 0);
         } else if (numberOfImages == 2) {
-            mChildCountContainer.setOutlineProvider(mChildTextContainerOutlineTwoImages);
+            mChildCountContainer.setRoundedCorners(0, 0, 0, mOuterRadius);
         }
     }
 }
