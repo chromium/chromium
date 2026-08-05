@@ -11,6 +11,7 @@ import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
 import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/search/animated_glow.js';
+import '//resources/cr_components/composebox/composebox_voice_search.js';
 
 import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -74,7 +75,7 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
   protected accessor profileAvatarUrl_: string =
       loadTimeData.getString('profileAvatarUrl');
 
-  protected onVoiceSearchClick_() {
+  override onVoiceSearchButtonClick() {
     this.dispatchEvent(
         new Event('open-voice-search', {bubbles: true, composed: true}));
   }
@@ -187,6 +188,13 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     return false;
+  }
+
+  setInputText(text: string) {
+    const inputElem = this.getInputElement();
+    if (inputElem) {
+      inputElem.input = text;
+    }
   }
 
   playGlowAnimation() {

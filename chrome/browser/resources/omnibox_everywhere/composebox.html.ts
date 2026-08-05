@@ -142,12 +142,14 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                 </div>
               ` : ''}
               <div id="actionButtons">
+                ${this.shouldShowVoiceSearch() ? html`
                 <div class="searchbox-icon-button-container voice">
                   <button id="voiceSearchButton" class="searchbox-icon-button"
-                      @click="${this.onVoiceSearchClick_}"
+                      @click="${this.onVoiceSearchButtonClick}"
                       title="${this.i18n('voiceSearchButtonLabel')}">
                   </button>
                 </div>
+                ` : ''}
                 <div class="searchbox-icon-button-container lens">
                   <button id="lensSearchButton" class="searchbox-icon-button"
                       @click="${this.onLensSearchClick_}"

@@ -34,3 +34,77 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   display: block;
   margin: 0;
 }
+
+#dialogAnchor {
+  anchor-name: --dialog-anchor;
+  inset-inline-start: 0;
+  position: absolute;
+  top: 0;
+}
+
+#voiceSearchDialog {
+  --color-composebox-submit-button-background: var(
+      --color-new-tab-page-composebox-submit-button-background, #1a73e8);
+  --color-composebox-submit-button-icon: white;
+  --cr-composebox-submit-border-radius: 100px;
+  --cr-composebox-submit-height: 36px;
+  --cr-composebox-submit-icon-offset: 0;
+  --cr-composebox-submit-icon-size: 24px;
+  --cr-composebox-submit-width: 48px;
+  background: var(--color-composebox-background, #fff);
+  border: none;
+  border-radius: 28px;
+  bottom: auto;
+  box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
+  height: 128px;
+  inset-inline-start: anchor(start);
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  position-anchor: --dialog-anchor;
+  top: anchor(top);
+  width: 100%;
+  z-index: 1000;
+}
+
+#voiceSearchDialog::backdrop {
+  display: none;
+}
+
+#voiceSearchCardContainer {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+/* TODO(b/540973063): Consolidate shared voice search styles across NTP and
+ * Omnibox Everywhere. */
+#voiceSearch {
+  --composebox-cancel-button-top: 10px;
+  --composebox-voice-search-top-padding: 9px;
+  --voice-bottom-actions-bottom: 12px;
+  --voice-bottom-actions-inset-inline-end: 12px;
+  --voice-search-minimum-height: 128px;
+  height: 100%;
+  width: 100%;
+}
+
+#voiceSearch::part(voice-stop-button) {
+  position: relative;
+}
+
+#voiceSearch::part(submit) {
+  position: relative;
+}
+
+#voiceSearchGlow {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+#voiceSearchGlow::part(full-container-overlay) {
+  min-block-size: 0;
+  position: absolute;
+}

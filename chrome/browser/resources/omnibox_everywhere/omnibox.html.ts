@@ -83,18 +83,30 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           </cr-composebox-file-inputs>
         </div>
         <div id="actionButtons">
+          ${
+              this.showVoiceAndLensButtons_(
+                  this.searchboxVoiceSearchEnabled_) ?
+              html`
           <div class="searchbox-icon-button-container voice">
             <button id="voiceSearchButton" class="searchbox-icon-button"
-                @click="${this.onVoiceSearchClick_}"
+                @click="${this.onVoiceSearchButtonClick_}"
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </button>
           </div>
+          ` :
+              ''}
+          ${
+              this.showVoiceAndLensButtons_(
+                  this.searchboxLensSearchEnabled_) ?
+              html`
           <div class="searchbox-icon-button-container lens">
             <button id="lensSearchButton" class="searchbox-icon-button"
                 @click="${this.onLensSearchClick_}"
                 title="${this.i18n('lensSearchButtonLabel')}">
             </button>
           </div>
+          ` :
+              ''}
         </div>
       </div>
     </div>
