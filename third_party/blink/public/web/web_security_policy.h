@@ -153,6 +153,11 @@ class BLINK_EXPORT WebSecurityPolicy {
   // ChildProcessSecurityPolicy or browser-side scheme registration.
   static void RegisterURLSchemeAsWebUIBundledBytecode(const WebString&);
 
+  // Registers a URL scheme as a direct launch scheme (e.g. "google-chrome").
+  // Navigations to direct launch schemes from web contexts are disallowed in
+  // Blink and will fail to load.
+  static void RegisterURLSchemeAsDirectLaunch(const WebString&);
+
  private:
   WebSecurityPolicy() = delete;
 };

@@ -200,6 +200,11 @@ class PLATFORM_EXPORT SchemeRegistry {
       const String& scheme);
   static bool SchemeSupportsWebUIBundledBytecode(const String& scheme);
 
+  // Schemes used for direct launch targeting the current browser instance.
+  static void RegisterURLSchemeAsDirectLaunch(const String& scheme);
+  static void RemoveURLSchemeAsDirectLaunchForTest(const String& scheme);
+  static bool IsDirectLaunchScheme(const String& scheme);
+
  private:
   static const URLSchemesSet& LocalSchemes();
 };

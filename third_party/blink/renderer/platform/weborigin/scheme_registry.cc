@@ -110,6 +110,7 @@ class URLSchemesRegistry final {
   URLSchemesSet web_ui_schemes;
   URLSchemesSet code_cache_with_hashing_schemes;
   URLSchemesSet webui_bundled_bytecode_schemes;
+  URLSchemesSet direct_launch_schemes;
 
  private:
   friend const URLSchemesRegistry& GetURLSchemesRegistry();
@@ -522,6 +523,24 @@ bool SchemeRegistry::SchemeSupportsWebUIBundledBytecode(const String& scheme) {
   DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return GetURLSchemesRegistry().webui_bundled_bytecode_schemes.Contains(
       scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsDirectLaunch(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
+  GetMutableURLSchemesRegistry().direct_launch_schemes.insert(scheme);
+}
+
+void SchemeRegistry::RemoveURLSchemeAsDirectLaunchForTest(
+    const String& scheme) {
+  GetMutableURLSchemesRegistryForTest().direct_launch_schemes.erase(scheme);
+}
+
+bool SchemeRegistry::IsDirectLaunchScheme(const String& scheme) {
+  if (scheme.empty()) {
+    return false;
+  }
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
+  return GetURLSchemesRegistry().direct_launch_schemes.Contains(scheme);
 }
 
 }  // namespace blink

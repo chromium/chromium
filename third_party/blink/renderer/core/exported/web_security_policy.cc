@@ -175,4 +175,9 @@ void WebSecurityPolicy::RegisterURLSchemeAsWebUIBundledBytecode(
   SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(scheme);
 }
 
+void WebSecurityPolicy::RegisterURLSchemeAsDirectLaunch(
+    const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsDirectLaunch(scheme);
+}
+
 }  // namespace blink

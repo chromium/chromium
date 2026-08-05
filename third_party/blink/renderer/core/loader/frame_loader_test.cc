@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 namespace blink {
 
@@ -289,6 +290,33 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
                 /*can_navigate_top_without_user_gesture=*/true,
                 /*cross_origin_isolation_enabled_by_dip=*/false),
             local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
+}
+
+TEST_F(FrameLoaderSimTest, DirectLaunchSchemeBlocked) {
+  const String kScheme("google-chrome");
+  SchemeRegistry::RegisterURLSchemeAsDirectLaunch(kScheme);
+
+  SimRequest main_request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_request.Complete(
+      "<a id='link' "
+      "href='google-chrome:https://example.com/dest.html'>link</a>");
+
+  auto* anchor =
+      To<HTMLAnchorElement>(GetDocument().getElementById(AtomicString("link")));
+  ASSERT_NE(anchor, nullptr);
+
+  anchor->click();
+
+  // Verify navigation was synchronously blocked in Blink, logged a security
+  // error, and did not initiate a provisional load.
+  EXPECT_TRUE(ConsoleMessages().Contains(
+      "Not allowed to navigate to direct-launch scheme 'google-chrome' from "
+      "web contexts."));
+  EXPECT_FALSE(GetDocument().GetFrame()->Loader().HasProvisionalNavigation());
+  EXPECT_EQ(GetDocument().Url(), KURL("https://example.com/test.html"));
+
+  SchemeRegistry::RemoveURLSchemeAsDirectLaunchForTest(kScheme);
 }
 
 }  // namespace blink

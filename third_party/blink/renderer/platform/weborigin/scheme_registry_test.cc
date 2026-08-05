@@ -203,5 +203,16 @@ TEST_F(SchemeRegistryTest, BundledWebUIBytecode) {
       SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kChromeUIScheme));
 }
 
+TEST_F(SchemeRegistryTest, DirectLaunchScheme) {
+  const String kScheme("google-chrome");
+  EXPECT_FALSE(SchemeRegistry::IsDirectLaunchScheme(kScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsDirectLaunch(kScheme);
+  EXPECT_TRUE(SchemeRegistry::IsDirectLaunchScheme(kScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsDirectLaunchForTest(kScheme);
+  EXPECT_FALSE(SchemeRegistry::IsDirectLaunchScheme(kScheme));
+}
+
 }  // namespace
 }  // namespace blink
