@@ -5,10 +5,10 @@
 import {OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxInputState, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
-import {SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {RenderType, SelectionLineState, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
@@ -645,9 +645,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertTrue(searchbox.dropdownIsVisible);
 
     // Focus stays inside wrapper.
-    const matchesEl = searchbox.$.matches;
     searchbox.$.inputWrapper.dispatchEvent(new FocusEvent('focusout', {
-      relatedTarget: matchesEl,
+      relatedTarget: searchbox.$.matches,
       bubbles: true,
       composed: true,
     }));
@@ -1046,26 +1045,46 @@ suite('OmniboxPopupSearchboxTest', function() {
        handler.getArgs('logEscapeAction')[0]);
  });
 
- test('SecondarySideAttributesPassedToDropdown', async () => {
-   const matchesEl = searchbox.$.matches;
-   assertTrue(!!matchesEl);
+ test('SecondarySideShows', async () => {
+   // Ensure `canShowSecondarySide` is set to true.
+   searchbox.canShowSecondarySide = true;
+   await microtasksFinished();
 
-   // Verify initial values.
-   assertEquals(
-       searchbox.canShowSecondarySide,
-       matchesEl.hasAttribute('can-show-secondary-side'));
-   assertFalse(matchesEl.hasAttribute('has-secondary-side'));
+   const matches = [
+     createSearchMatchForTesting({suggestionGroupId: 1}),
+     createSearchMatchForTesting({suggestionGroupId: 100}),
+   ];
+   const suggestionGroupsMap = {
+     1: {
+       header: 'Primary',
+       renderType: RenderType.kDefaultVertical,
+       sideType: SideType.kDefaultPrimary,
+     },
+     100: {
+       header: 'Secondary',
+       renderType: RenderType.kDefaultVertical,
+       sideType: SideType.kSecondary,
+     },
+   };
 
-   // Dispatch secondary side status change from dropdown.
-   matchesEl.dispatchEvent(new CustomEvent('has-secondary-side-changed', {
-     detail: {value: true},
-     bubbles: true,
-     composed: true,
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     sequenceId: 1001,
+     input: 'test',
+     matches: matches,
+     suggestionGroupsMap: suggestionGroupsMap,
    }));
    await microtasksFinished();
 
    assertTrue(searchbox.hasSecondarySide);
-   assertTrue(matchesEl.hasAttribute('has-secondary-side'));
+
+   // Verify `secondary-side` element is rendered and visible.
+   assertTrue(isVisible($$(searchbox.$.matches, '.secondary-side')));
+
+   // Verify secondary side is hidden when `canShowSecondarySide` is false.
+   searchbox.canShowSecondarySide = false;
+   await microtasksFinished();
+   assertFalse(isVisible($$(searchbox.$.matches, '.secondary-side')));
  });
 
  test('OpensAimPopupWhenComposeButtonClicked', async () => {

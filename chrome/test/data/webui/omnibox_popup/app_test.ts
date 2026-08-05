@@ -9,7 +9,7 @@ import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, Searchbo
 import type {OmniboxPopupAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -175,6 +175,49 @@ suite('AppTest', function() {
 
     // Ensure dropdown hides.
     assertFalse(isVisible(app.getDropdown()));
+  });
+
+  test('SecondarySideShows', async () => {
+    // Ensure `canShowSecondarySide` is set to true.
+    app.canShowSecondarySide = true;
+    await microtasksFinished();
+
+    const matches = [
+      createSearchMatchForTesting({suggestionGroupId: 1}),
+      createSearchMatchForTesting({suggestionGroupId: 100}),
+    ];
+    const suggestionGroupsMap = {
+      1: {
+        header: 'Primary',
+        renderType: RenderType.kDefaultVertical,
+        sideType: SideType.kDefaultPrimary,
+      },
+      100: {
+        header: 'Secondary',
+        renderType: RenderType.kDefaultVertical,
+        sideType: SideType.kSecondary,
+      },
+    };
+
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: 'test',
+          matches: matches,
+          suggestionGroupsMap: suggestionGroupsMap,
+        }));
+    await microtasksFinished();
+
+    assertTrue(app.hasSecondarySide);
+
+    // Verify `secondary-side` element is rendered and visible.
+    const dropdown = $$(app, 'cr-searchbox-dropdown');
+    assertTrue(!!dropdown);
+    assertTrue(isVisible($$(dropdown, '.secondary-side')));
+
+    // Verify secondary side is hidden when `canShowSecondarySide` is false.
+    app.canShowSecondarySide = false;
+    await microtasksFinished();
+    assertFalse(isVisible($$(dropdown, '.secondary-side')));
   });
 
   suite('TallSearchbox', () => {
