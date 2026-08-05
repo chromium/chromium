@@ -8,7 +8,6 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** Manager interface for the tab bottom sheet. */
 @NullMarked
@@ -29,11 +28,7 @@ public interface TabBottomSheetManager extends Destroyable {
     /** Attempts to close the Tab BottomSheet. */
     void tryToCloseBottomSheet(boolean animate);
 
-    /** Sets the model for the peek view. */
-    void setPeekViewModel(PropertyModel model);
 
-    /** Removes the model for the peek view. */
-    void removePeekViewModel();
 
     /**
      * Sets whether the bottom sheet is expanded.

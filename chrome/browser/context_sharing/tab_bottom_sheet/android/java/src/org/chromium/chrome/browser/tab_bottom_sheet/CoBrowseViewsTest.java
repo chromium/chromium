@@ -73,6 +73,7 @@ public class CoBrowseViewsTest {
                         mWebUi,
                         mFusebox,
                         Color.WHITE,
+                        null,
                         null);
     }
 
@@ -107,7 +108,8 @@ public class CoBrowseViewsTest {
                         mWebUi,
                         mFusebox,
                         Color.WHITE,
-                        mMockContentProvider);
+                        mMockContentProvider,
+                        null);
 
         View view = coBrowseViews.getView();
         View handleBar = view.findViewById(R.id.handle_bar);
@@ -178,7 +180,8 @@ public class CoBrowseViewsTest {
                         mWebUi,
                         mFusebox,
                         Color.WHITE,
-                        mMockContentProvider);
+                        mMockContentProvider,
+                        null);
         assertEquals(mMockContentProvider, coBrowseViews.getContentProvider());
     }
 
@@ -196,7 +199,7 @@ public class CoBrowseViewsTest {
     }
 
     @Test
-    public void testPlaceholder_isPlaceholderSetUpTrue() {
+    public void testPlaceholder_usePlaceholderTrue() {
         when(mMockContentProvider.setupPlaceholderView(any())).thenReturn(true);
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
         CoBrowseViews coBrowseViews =
@@ -207,13 +210,14 @@ public class CoBrowseViewsTest {
                         mWebUi,
                         mFusebox,
                         Color.WHITE,
-                        mMockContentProvider);
+                        mMockContentProvider,
+                        null);
         assertTrue(coBrowseViews.isPlaceholderSetUp());
         verify(mMockContentProvider).setupPlaceholderView(any());
     }
 
     @Test
-    public void testPlaceholder_isPlaceholderSetUpFalse() {
+    public void testPlaceholder_usePlaceholderFalse() {
         when(mMockContentProvider.setupPlaceholderView(any())).thenReturn(false);
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
         CoBrowseViews coBrowseViews =
@@ -224,7 +228,8 @@ public class CoBrowseViewsTest {
                         mWebUi,
                         mFusebox,
                         Color.WHITE,
-                        mMockContentProvider);
+                        mMockContentProvider,
+                        null);
         assertTrue(!coBrowseViews.isPlaceholderSetUp());
         verify(mMockContentProvider).setupPlaceholderView(any());
     }
@@ -242,7 +247,8 @@ public class CoBrowseViewsTest {
                         mWebUi,
                         mFusebox,
                         Color.WHITE,
-                        mMockContentProvider);
+                        mMockContentProvider,
+                        null);
 
         View placeholderView = rootView.findViewById(R.id.empty_placeholder_container);
         assertEquals(View.VISIBLE, placeholderView.getVisibility());

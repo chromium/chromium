@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
-
 import android.text.TextUtils;
 
 import org.chromium.base.Log;
@@ -13,20 +12,15 @@ import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider.TabSelectionDelegate;
+import org.chromium.chrome.browser.tab_bottom_sheet.PeekViewManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetPeekProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** The Coordinator for the Actor Control component. */
+/** Concrete implementation of PeekViewManager for Actor Control. */
 @NullMarked
-public class ActorControlCoordinator implements ActorControlStateTracker.Observer {
-
-    /** Delegate for handling tab selection. */
-    @FunctionalInterface
-    public interface TabSelectionDelegate {
-        void switchToTab(int tabId);
-    }
-
+public class ActorControlCoordinator implements PeekViewManager, ActorControlStateTracker.Observer {
     private static final String TAG = "ActorControlCoordin";
 
     private final ActorControlMediator mMediator;
@@ -34,6 +28,7 @@ public class ActorControlCoordinator implements ActorControlStateTracker.Observe
     private final TabBottomSheetManager mTabBottomSheetManager;
     private final TabSelectionDelegate mTabSelectionDelegate;
     private final ActorControlStateTracker mStateTracker;
+
     private PeekViewUiState mPeekViewUiState = PeekViewUiState.DEFAULT;
 
     /**
@@ -49,8 +44,8 @@ public class ActorControlCoordinator implements ActorControlStateTracker.Observe
             ActorControlStateTracker stateTracker,
             TabSelectionDelegate tabSelectionDelegate) {
         mTabBottomSheetManager = tabBottomSheetManager;
-        mTabSelectionDelegate = tabSelectionDelegate;
         mStateTracker = stateTracker;
+        mTabSelectionDelegate = tabSelectionDelegate;
 
         mModel =
                 new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
@@ -66,7 +61,6 @@ public class ActorControlCoordinator implements ActorControlStateTracker.Observe
 
         mMediator = new ActorControlMediator(mModel);
 
-        mTabBottomSheetManager.setPeekViewModel(mModel);
         mStateTracker.addObserver(this);
     }
 
@@ -118,12 +112,6 @@ public class ActorControlCoordinator implements ActorControlStateTracker.Observe
     private void clearPeekViewContent() {
         mPeekViewUiState = PeekViewUiState.DEFAULT;
         mMediator.setContent("", PeekViewUiState.DEFAULT);
-    }
-
-    /** Cleans up component */
-    public void destroy() {
-        mStateTracker.removeObserver(this);
-        mTabBottomSheetManager.removePeekViewModel();
     }
 
     /** Called when the actor control button is clicked. */
@@ -183,6 +171,16 @@ public class ActorControlCoordinator implements ActorControlStateTracker.Observe
     /** Called when the peek view is clicked. */
     /* package */ void onPeekViewClicked() {
         mTabBottomSheetManager.setSheetExpanded(true);
+    }
+
+    @Override
+    public PropertyModel getModel() {
+        return mModel;
+    }
+
+    @Override
+    public void destroy() {
+        mStateTracker.removeObserver(this);
     }
 
     /**

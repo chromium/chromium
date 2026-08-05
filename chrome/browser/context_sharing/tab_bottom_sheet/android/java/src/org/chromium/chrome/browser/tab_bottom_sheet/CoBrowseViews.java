@@ -43,6 +43,7 @@ public class CoBrowseViews {
     private final @TabBottomSheetClientType int mClientType;
     private final @CoBrowseContainerType int mContainerType;
     private final @Nullable CoBrowseComponentProvider mContentProvider;
+    private final @Nullable PeekViewManager mPeekViewManager;
     private @Nullable View mPeekView;
     private boolean mIsPlaceholderSetUp;
     private @Nullable View mPlaceholderView;
@@ -61,6 +62,7 @@ public class CoBrowseViews {
      * @param fusebox The fusebox for the view.
      * @param backgroundColor The background color for the view.
      * @param contentProvider The provider for custom sheet content implementations.
+     * @param peekViewManager The manager for the peek view.
      */
     public CoBrowseViews(
             View containerView,
@@ -69,7 +71,8 @@ public class CoBrowseViews {
             @Nullable TabBottomSheetWebUi webUi,
             @Nullable ContextualTasksFusebox fusebox,
             @ColorInt int backgroundColor,
-            @Nullable CoBrowseComponentProvider contentProvider) {
+            @Nullable CoBrowseComponentProvider contentProvider,
+            @Nullable PeekViewManager peekViewManager) {
         mClientType = clientType;
         mContainerType = containerType;
         mWebUi = webUi;
@@ -77,10 +80,17 @@ public class CoBrowseViews {
         mBackgroundColor = backgroundColor;
         mContainerView = containerView;
         mContentProvider = contentProvider;
+        mPeekViewManager = peekViewManager;
+
         mWebContentsSupplier.set(getWebContents());
         populateViewHierarchy();
         updateForContainerType();
         setupPlaceholder();
+    }
+
+    /** Returns the peek view manager if one was specified, null otherwise. */
+    public @Nullable PeekViewManager getPeekViewManager() {
+        return mPeekViewManager;
     }
 
     /** Returns the custom content provider if one was specified, null otherwise. */

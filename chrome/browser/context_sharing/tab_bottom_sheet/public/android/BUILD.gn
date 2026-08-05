@@ -23,14 +23,17 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseComponentProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/PeekViewManager.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManager.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetPeekProperties.java",
   ]
   deps = [
     "//base:base_java",
+    "//base:supplier_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",

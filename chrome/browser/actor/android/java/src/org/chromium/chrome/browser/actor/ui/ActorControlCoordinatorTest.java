@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicInstanceHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider.TabSelectionDelegate;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetPeekProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -72,7 +73,7 @@ public class ActorControlCoordinatorTest {
     @Mock private GlicInstanceHelper.Natives mGlicInstanceHelperNatives;
     @Mock private Tab mTab;
     @Mock private ActorTask mActorTask;
-    @Mock private ActorControlCoordinator.TabSelectionDelegate mTabSelectionDelegate;
+    @Mock private TabSelectionDelegate mTabSelectionDelegate;
 
     private Activity mActivity;
     private ActorControlStateTracker mStateTracker;
@@ -176,9 +177,6 @@ public class ActorControlCoordinatorTest {
         assertEquals(
                 state.buttonHorizontalPaddingResId,
                 mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING_ID));
-        assertEquals(
-                state.buttonContentDescriptionResId,
-                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION_ID));
     }
 
     private void performActorControlClick() {
@@ -198,7 +196,7 @@ public class ActorControlCoordinatorTest {
         assertNotNull(mModel);
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED));
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED));
-        verify(mTabBottomSheetManager).setPeekViewModel(any());
+        assertEquals(mModel, mCoordinator.getModel());
     }
 
     @Test
@@ -567,7 +565,6 @@ public class ActorControlCoordinatorTest {
         mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, TASK_TITLE);
 
         performActorControlClick();
-
 
         verify(mTabBottomSheetManager).setSheetExpanded(true);
         assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));

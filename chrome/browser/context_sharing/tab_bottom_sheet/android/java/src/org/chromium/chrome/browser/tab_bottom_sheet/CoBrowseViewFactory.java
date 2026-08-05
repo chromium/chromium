@@ -15,7 +15,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -27,6 +29,10 @@ import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinatorSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -47,6 +53,8 @@ public class CoBrowseViewFactory {
     private final SnackbarManager mSnackbarManager;
     private final ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     private final SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
+    private final NullableObservableSupplier<Tab> mActivityTabProvider;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     /**
      * Factory responsible for creating co-browse content.
@@ -62,6 +70,8 @@ public class CoBrowseViewFactory {
      *     menu on the ThinWebView.
      * @param selectionDropdownMenuDelegate The {@link SelectionDropdownMenuDelegate} to handle
      *     selection dropdown menus.
+     * @param activityTabProvider The supplier for the active tab.
+     * @param tabModelSelectorSupplier The supplier for the active tab model selector.
      */
     public CoBrowseViewFactory(
             Activity activity,
@@ -71,7 +81,9 @@ public class CoBrowseViewFactory {
             ActivityLifecycleDispatcher lifecycleDispatcher,
             SnackbarManager snackbarManager,
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
+            SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+            NullableObservableSupplier<Tab> activityTabProvider,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivity = activity;
         mFuseboxConfig = fuseboxConfig;
         mProfileSupplier = profileSupplier;
@@ -80,6 +92,8 @@ public class CoBrowseViewFactory {
         mSnackbarManager = snackbarManager;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
+        mActivityTabProvider = activityTabProvider;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
         TabBottomSheetUtils.attachFactoryToWindow(windowAndroid, this);
     }
@@ -171,6 +185,23 @@ public class CoBrowseViewFactory {
 
         webUi.setWebContents(webContents, false);
 
+        PeekViewManager peekViewManager = null;
+        TabBottomSheetManager manager = TabBottomSheetUtils.getManagerFromWindow(mWindowAndroid);
+        if (bottomSheetContentProvider != null && manager != null) {
+            peekViewManager =
+                    bottomSheetContentProvider.createPeekViewManager(
+                            manager,
+                            mProfileSupplier,
+                            mActivityTabProvider,
+                            (tabId) -> {
+                                TabModelSelector selector = mTabModelSelectorSupplier.get();
+                                if (selector != null) {
+                                    TabModelUtils.selectTabById(
+                                            selector, tabId, TabSelectionType.FROM_USER);
+                                }
+                            });
+        }
+
         return new CoBrowseViews(
                 containerView,
                 clientType,
@@ -178,7 +209,8 @@ public class CoBrowseViewFactory {
                 webUi,
                 fusebox,
                 backgroundColor,
-                bottomSheetContentProvider);
+                bottomSheetContentProvider,
+                peekViewManager);
     }
 
     @CalledByNative

@@ -16,32 +16,16 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.ActorControlCoordinator.TabSelectionDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 /** Interface providing specialized components for different client features. */
 @NullMarked
-public interface CoBrowseComponentProvider {
-    /** Delegate to handle tab selection. */
-    interface TabSelectionDelegate {
-        /** Switches to the specified tab. */
-        void switchToTab(int tabId);
-    }
-
+public interface TabBottomSheetComponentProvider {
     /** Destroys the component provider and releases any resources. */
     @CalledByNative
     default void destroy() {}
-
-    /**
-     * Sets up the placeholder view.
-     *
-     * @param placeholder The placeholder view to set up.
-     * @return Whether the placeholder view was successfully set up.
-     */
-    default boolean setupPlaceholderView(TextViewWithCompoundDrawables placeholder) {
-        return false;
-    }
 
     /**
      * Instantiates a new instance of {@link TabBottomSheetContent}.
@@ -51,18 +35,18 @@ public interface CoBrowseComponentProvider {
      * @param backgroundColor The background color of the sheet.
      * @param peekViewHeight The height of the peek view in pixels.
      * @param peekViewContainerId The resource ID for the peek view container.
+     * @param emptyPlaceholderContainerId The resource ID for the empty placeholder container.
      * @param onBackPressed Callback run when the back button/swipe is triggered.
-     * @return A custom or default {@link TabBottomSheetContent}, or null if not used.
+     * @return A non-null custom or default {@link TabBottomSheetContent}.
      */
-    default @Nullable TabBottomSheetContent createContent(
+    TabBottomSheetContent createContent(
             View contentView,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
-            Runnable onBackPressed) {
-        return null;
-    }
+            @IdRes int emptyPlaceholderContainerId,
+            Runnable onBackPressed);
 
     /**
      * Instantiates a new instance of {@link PeekViewManager}.

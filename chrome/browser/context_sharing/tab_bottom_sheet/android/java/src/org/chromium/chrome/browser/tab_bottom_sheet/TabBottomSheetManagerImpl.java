@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -179,11 +178,12 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
             };
     private @Nullable CurrentTabObserver mCurrentTabObserver;
 
-    private @Nullable View mPeekView;
+    private @Nullable TabBottomSheetPeekView mPeekView;
+    private @Nullable PeekViewManager mPeekViewManager;
+    private @Nullable PropertyModelChangeProcessor mPeekViewChangeProcessor;
     private @Nullable MonotonicObservableSupplier<ManualFillingComponent>
             mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mCurrentManualFillingComponent;
-
     private @Nullable NullableObservableSupplier<Tab> mActivePlaybackTabSupplier;
     private @Nullable Runnable mReadAloudStopPlaybackCallback;
     private final Callback<@Nullable Tab> mActivePlaybackTabObserver =
@@ -282,6 +282,20 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
             boolean startsExpanded) {
         // Close any existing bottom sheet before showing a new one.
         tryToCloseBottomSheet(/* animate= */ false);
+        clearPeekView();
+
+        mPeekViewManager = coBrowseViews.getPeekViewManager();
+        if (mPeekViewManager != null) {
+            PropertyModel model = mPeekViewManager.getModel();
+
+            mPeekView =
+                    (TabBottomSheetPeekView)
+                            LayoutInflater.from(mContext)
+                                    .inflate(R.layout.tab_bottom_sheet_peek_layout, null, false);
+            mPeekViewChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            model, mPeekView, TabBottomSheetPeekViewBinder::bind);
+        }
         mTabBottomSheetCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,
@@ -336,33 +350,6 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                 // The bottom sheet is showing. Close it and send a onClose event back to native.
                 mIsCloseFromNative = true;
                 mTabBottomSheetCoordinator.closeBottomSheet(animate);
-            }
-        }
-    }
-
-    @Override
-    public void setPeekViewModel(PropertyModel model) {
-        assert mPeekView == null : "Peek view is already set.";
-        TabBottomSheetPeekView peekView =
-                (TabBottomSheetPeekView)
-                        LayoutInflater.from(mContext)
-                                .inflate(R.layout.tab_bottom_sheet_peek_layout, null, false);
-        PropertyModelChangeProcessor.create(model, peekView, TabBottomSheetPeekViewBinder::bind);
-        mPeekView = peekView;
-
-        if (mTabBottomSheetCoordinator != null) {
-            mTabBottomSheetCoordinator.attachPeekView(mPeekView);
-        }
-    }
-
-    @Override
-    public void removePeekViewModel() {
-        // We only support one peek view at a time, so we just remove it if it exists.
-        if (mPeekView != null) {
-            View peekView = mPeekView;
-            mPeekView = null;
-            if (mTabBottomSheetCoordinator != null) {
-                mTabBottomSheetCoordinator.removePeekView(peekView);
             }
         }
     }
@@ -423,6 +410,8 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         mIsCloseFromNative = true;
 
         mCallbackController.destroy();
+
+        clearPeekView();
 
         // Destroy the coordinator in case the manager is abruptly destroyed before hiding the
         // bottom sheet.
@@ -591,5 +580,17 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                         mIsSuppressedByAutofill = false;
                     }
                 });
+    }
+
+    private void clearPeekView() {
+        if (mPeekViewChangeProcessor != null) {
+            mPeekViewChangeProcessor.destroy();
+            mPeekViewChangeProcessor = null;
+        }
+        if (mPeekViewManager != null) {
+            mPeekViewManager.destroy();
+            mPeekViewManager = null;
+        }
+        mPeekView = null;
     }
 }

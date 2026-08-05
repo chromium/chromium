@@ -13,17 +13,28 @@ import androidx.annotation.Px;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 /** Concrete test implementation of {@link CoBrowseComponentProvider} for automated testing. */
 @NullMarked
 public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider {
     static boolean sUsePlaceholder;
+    static @Nullable PeekViewManager sPeekViewManager;
 
     public static void setUsePlaceholderForTesting(boolean usePlaceholder) {
         ResettersForTesting.register(() -> sUsePlaceholder = false);
         sUsePlaceholder = usePlaceholder;
+    }
+
+    public static void setPeekViewManager(@Nullable PeekViewManager peekViewManager) {
+        ResettersForTesting.register(() -> sPeekViewManager = null);
+        sPeekViewManager = peekViewManager;
     }
 
     @CalledByNative
@@ -49,5 +60,14 @@ public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider 
                 peekViewHeight,
                 peekViewContainerId,
                 onBackPressed);
+    }
+
+    @Override
+    public @Nullable PeekViewManager createPeekViewManager(
+            TabBottomSheetManager tabBottomSheetManager,
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
+            TabSelectionDelegate tabSelectionDelegate) {
+        return sPeekViewManager;
     }
 }
