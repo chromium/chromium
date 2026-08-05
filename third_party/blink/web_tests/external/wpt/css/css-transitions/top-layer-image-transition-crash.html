@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class=test-wait>
-<link rel=author href="mailto:jarhar@chromium.org">
-<link rel=help href="https://issues.chromium.org/issues/496524440">
+<html class="test-wait">
+<link rel="author" href="mailto:jarhar@chromium.org">
+<link rel="help" href="https://issues.chromium.org/issues/496524440">
+<link rel="help" href="https://issues.chromium.org/525810815">
 
 <dialog></dialog>
 
 <style>
 dialog {
   background-image: paint(source-out);
+  -webkit-mask-box-image: paint(source-out);
 }
 dialog.animate {
   transition: overlay 2s allow-discrete, display 2s allow-discrete;

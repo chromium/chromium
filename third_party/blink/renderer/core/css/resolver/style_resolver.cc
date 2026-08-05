@@ -2982,6 +2982,16 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     return false;
   }
 
+  // If the base style was generated for 'display: none', resources (StyleImage
+  // etc) may still be pending. Animating the 'display' property in such a case
+  // can produce a computed style with pending resources. See also comment in
+  // `StyleResolverState::LoadPendingResources`.
+  if (base_style->Display() == EDisplay::kNone) {
+    if (CSSAnimations::IsAnimatingDisplayProperty(element_animations)) {
+      return false;
+    }
+  }
+
   return true;
 }
 
