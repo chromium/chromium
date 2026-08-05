@@ -950,7 +950,7 @@ public class StripLayoutHelper
             Context context, boolean incognito, Resources res) {
         float width =
                 ChromeFeatureList.sTabSearchForDesktop.isEnabled()
-                        ? BUTTON_TOUCH_TARGET_SIZE_DP
+                        ? BUTTON_BACKGROUND_SIZE_DP
                         : 0.f;
         TintedCompositorButton button =
                 new TintedCompositorButton(
@@ -1258,7 +1258,12 @@ public class StripLayoutHelper
 
     private void updateMargins(boolean recalculateTabWidth) {
         // Reserve space for tab search button if it is visible at the start of the strip.
-        mReservedStartMargin = mTabSearchButton.isVisible() ? mTabSearchButton.getWidth() : 0.f;
+        // Subtracting 10dp from BUTTON_TOUCH_TARGET_SIZE_DP guarantees a touch target gap of
+        // exactly 6dp between the button and the first tab on both desktop and non-desktop:
+        // (BUTTON_TOUCH_TARGET_SIZE_DP - 10dp) + FOLIO_FOOT_LENGTH_DP (16dp tab start touch target
+        // inset) - BUTTON_TOUCH_TARGET_SIZE_DP = 6dp.
+        mReservedStartMargin =
+                mTabSearchButton.isVisible() ? BUTTON_TOUCH_TARGET_SIZE_DP - 10.f : 0.f;
         if (LocalizationUtils.isLayoutRtl()) {
             mLeftMargin = mReservedEndMargin + mLeftPadding;
             mRightMargin = mReservedStartMargin + mRightPadding;
