@@ -10,8 +10,6 @@ found in the LICENSE file.
     android:id="@+id/selection_mode_number"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
     android:visibility="gone" >
 
     <TextView
