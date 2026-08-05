@@ -167,7 +167,17 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
     return;
   }
 
-  const size_t size = screenshot->SetCache(this);
+  const size_t size = screenshot->GetUncompressedSize();
+  if (size > manager_->GetMaxCacheSize()) {
+    transition_data.set_cache_hit_or_miss_reason(
+        NavigationTransitionData::CacheHitOrMissReason::
+            kCacheMissSizeExceedsLimit);
+    // This was probably caused by some transitory layout issues. This
+    // screenshot will not be useful (crbug.com/538409653).
+    return;
+  }
+
+  screenshot->SetCache(this);
 
   entry->SetUserData(NavigationEntryScreenshot::kUserDataKey,
                      std::move(screenshot));

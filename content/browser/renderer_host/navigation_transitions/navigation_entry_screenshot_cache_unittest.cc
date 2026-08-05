@@ -362,6 +362,35 @@ TEST_F(NavigationEntryScreenshotCacheTest, RemoveFailedScreenshot) {
   ASSERT_TRUE(GetManager()->IsEmpty());
 }
 
+// Test that a screenshot whose uncompressed size is larger than the maximum
+// cache size is not cached and sets kCacheMissSizeExceedsLimit.
+TEST_F(NavigationEntryScreenshotCacheTest, ScreenshotSizeExceedsCacheLimit) {
+  RestoreEntriesToTab(tab1(), /*id_start=*/1, /*id_end=*/10,
+                      /*last_committed_index=*/9);
+
+  // Set a budget smaller than the uncompressed size of one test screenshot
+  // (which is 64 bytes for a 4x4 N32 bitmap).
+  GetManager()->SetMemoryBudgetForTesting(10U);
+
+  CacheScreenshot(tab1(), 1, SK_ColorRED);
+  ASSERT_TRUE(GetManager()->IsEmpty());
+  ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 0U);
+  AssertEntryHasNoScreenshot(tab1(), 1);
+  AssertEntryCacheHitOrMissReason(
+      tab1(), 1,
+      NavigationTransitionData::CacheHitOrMissReason::
+          kCacheMissSizeExceedsLimit);
+
+  // Increasing the budget to accommodate the screenshot should allow it to be
+  // cached.
+  GetManager()->SetMemoryBudgetForTesting(64U);
+  CacheScreenshot(tab1(), 2, SK_ColorGREEN);
+  ASSERT_FALSE(GetManager()->IsEmpty());
+  ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U);
+  AssertBitmapOfColor(GetScreenshot(tab1(), 2), SK_ColorGREEN);
+  ASSERT_TRUE(GetManager()->IsEmpty());
+}
+
 // Test that screenshot eviction works in basic one-tab case.
 TEST_F(NavigationEntryScreenshotCacheTest, CacheEvictionOneTab) {
   const auto cache_size = 128U;

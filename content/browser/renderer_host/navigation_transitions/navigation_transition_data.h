@@ -98,7 +98,10 @@ class NavigationTransitionData {
     // A screenshot was captured into a texture, but the read back failed.
     kCacheMissFailedReadBack = 20,
 
-    kMaxValue = kCacheMissFailedReadBack
+    // The screenshot size exceeds the maximum cache size.
+    kCacheMissSizeExceedsLimit = 21,
+
+    kMaxValue = kCacheMissSizeExceedsLimit
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationTransitionCacheHitOrMissReason)
 

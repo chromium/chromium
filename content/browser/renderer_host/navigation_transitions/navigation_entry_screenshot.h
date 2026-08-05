@@ -242,6 +242,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // destroyed.
   scoped_refptr<cc::slim::TextureLayer> CreateTextureLayer();
 
+  size_t GetUncompressedSize() const;
+
   // Returns true if the screenshot is being managed by a cache. This is not the
   // case when it's being displayed in the UI.
   bool is_cached() const { return cache_ != nullptr; }
