@@ -15,6 +15,7 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -62,6 +63,7 @@ export class ContextualEntrypointButtonElement extends
       energyEffectAnimationEnabled: {type: Boolean, reflect: true},
       disableFallbackGlifAnimation: {type: Boolean},
       smartTabSharingActive: {type: Boolean},
+      entrypointAriaLabel_: {type: String},
       isLensSearchbox_: {
         type: Boolean,
         reflect: true,
@@ -83,6 +85,7 @@ export class ContextualEntrypointButtonElement extends
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor disableFallbackGlifAnimation: boolean = false;
   accessor smartTabSharingActive: boolean = false;
+  protected accessor entrypointAriaLabel_: string = '';
   protected accessor windowWidthBelowThreshold_: boolean = false;
   protected accessor isLensSearchbox_: boolean =
       loadTimeData.valueExists('isLensSearchbox') &&
@@ -137,6 +140,30 @@ export class ContextualEntrypointButtonElement extends
         this.showContextMenuDescription = !inToolMode;
       }
     }
+
+    if (changedProperties.has('sharedTabs') ||
+        changedProperties.has('restoredTabs') ||
+        changedProperties.has('smartTabSharingActive')) {
+      this.updateAriaLabel_();
+    }
+  }
+
+  private async updateAriaLabel_() {
+    const baseLabel = this.i18n('addContextTitle');
+    const tabCount = this.getTabs_().length;
+    if (tabCount === 0) {
+      this.entrypointAriaLabel_ = baseLabel;
+      return;
+    }
+
+    const sharingTabsStr =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'sharingTabs', tabCount);
+    this.entrypointAriaLabel_ = `${baseLabel}, ${sharingTabsStr}`;
+  }
+
+  protected getEntrypointAriaLabel_(): string {
+    return this.entrypointAriaLabel_ || this.i18n('addContextTitle');
   }
 
   protected onEntrypointClick_(e: Event) {
