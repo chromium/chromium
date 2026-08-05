@@ -2098,6 +2098,100 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_FALSE(result_value->is_none());
 }
 
+// Test that custom ARIA form controls capture standard placeholder attributes
+// in addition to aria-placeholder.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_AriaControlPlaceholder) {
+  const std::string html = R"(
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          [contenteditable="true"][placeholder]:empty::before {
+            content: attr(placeholder);
+            color: #888;
+            pointer-events: none;
+            display: block;
+          }
+          [contenteditable="true"][aria-placeholder]:empty::before {
+            content: attr(aria-placeholder);
+            color: #888;
+            pointer-events: none;
+            display: block;
+          }
+        </style>
+      </head>
+      <body style="margin: 0; padding: 20px;">
+        <div role="searchbox" contenteditable="true"
+             placeholder="Search destination"
+             style="width: 300px; height: 40px; border: 1px solid #ccc; padding: 8px; margin-bottom: 10px; display: block;"></div>
+        <div role="textbox" contenteditable="true"
+             aria-placeholder="Enter username"
+             style="width: 300px; height: 40px; border: 1px solid #ccc; padding: 8px; display: block;"></div>
+        <input type="text" aria-placeholder="Filter results"
+               style="width: 300px; height: 40px; border: 1px solid #ccc; padding: 8px; display: block;">
+        <textarea aria-placeholder="Enter description"
+                  style="width: 300px; height: 40px; border: 1px solid #ccc; padding: 8px; display: block;"></textarea>
+        <input type="text" placeholder="Primary placeholder" aria-placeholder="Secondary placeholder"
+               style="width: 300px; height: 40px; border: 1px solid #ccc; padding: 8px; display: block;">
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  EXPECT_FALSE(result_value->is_none());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 5u);
+
+  const base::DictValue& searchbox_node = (*root_children)[0].GetDict();
+  const std::string* searchbox_placeholder =
+      searchbox_node.FindStringByDottedPath(
+          "contentAttributes.formControlData.placeholder");
+  ASSERT_TRUE(searchbox_placeholder);
+  EXPECT_EQ(*searchbox_placeholder, "Search destination");
+
+  const base::DictValue& textbox_node = (*root_children)[1].GetDict();
+  const std::string* textbox_placeholder = textbox_node.FindStringByDottedPath(
+      "contentAttributes.formControlData.placeholder");
+  ASSERT_TRUE(textbox_placeholder);
+  EXPECT_EQ(*textbox_placeholder, "Enter username");
+
+  const base::DictValue& input_node = (*root_children)[2].GetDict();
+  const std::string* input_placeholder = input_node.FindStringByDottedPath(
+      "contentAttributes.formControlData.placeholder");
+  ASSERT_TRUE(input_placeholder);
+  EXPECT_EQ(*input_placeholder, "Filter results");
+
+  const base::DictValue& textarea_node = (*root_children)[3].GetDict();
+  const std::string* textarea_placeholder =
+      textarea_node.FindStringByDottedPath(
+          "contentAttributes.formControlData.placeholder");
+  ASSERT_TRUE(textarea_placeholder);
+  EXPECT_EQ(*textarea_placeholder, "Enter description");
+
+  const base::DictValue& precedence_node = (*root_children)[4].GetDict();
+  const std::string* precedence_placeholder =
+      precedence_node.FindStringByDottedPath(
+          "contentAttributes.formControlData.placeholder");
+  ASSERT_TRUE(precedence_placeholder);
+  EXPECT_EQ(*precedence_placeholder, "Primary placeholder");
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContextExtractorJavaScriptFeatureTest,
                          ::testing::Values(IPCExtractionMethod::kNative,
