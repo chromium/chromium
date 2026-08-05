@@ -237,28 +237,15 @@ ScriptPromise<IDLUndefined> IdentityProvider::resolve(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
-  std::unique_ptr<base::Value> token_base_value;
-  if (RuntimeEnabledFeatures::FedCmNonStringTokenEnabled()) {
-    std::unique_ptr<WebV8ValueConverter> converter =
-        Platform::Current()->CreateWebV8ValueConverter();
+  std::unique_ptr<WebV8ValueConverter> converter =
+      Platform::Current()->CreateWebV8ValueConverter();
 
-    token_base_value = converter->FromV8Value(token_value.V8Value(),
-                                              script_state->GetContext());
-    if (!token_base_value) {
-      resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
-                                       "Failed to convert token value.");
-      return promise;
-    }
-  } else {
-    String token_string;
-    if (!token_value.ToString(token_string)) {
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kDataError,
-          "Failed to convert token value to string.");
-      return promise;
-    }
-
-    token_base_value = std::make_unique<base::Value>(token_string.Utf8());
+  std::unique_ptr<base::Value> token_base_value =
+      converter->FromV8Value(token_value.V8Value(), script_state->GetContext());
+  if (!token_base_value) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                     "Failed to convert token value.");
+    return promise;
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);

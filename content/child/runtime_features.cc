@@ -163,8 +163,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kFedCmEmbedderInitiatedLogin), kDefault},
           {wf::EnableFedCmErrorAttribute,
            raw_ref(features::kFedCmErrorAttribute), kDefault},
-          {wf::EnableFedCmNonStringToken,
-           raw_ref(features::kFedCmNonStringToken), kDefault},
           {wf::EnableGamepadMultitouch,
            raw_ref(features::kEnableGamepadMultitouch)},
           {wf::EnableGamepadRawInputChangeEvent,

@@ -254,9 +254,6 @@ BASE_FEATURE(kEnforceSameDocumentOriginInvariants,
 BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables NonString Tokens
-BASE_FEATURE(kFedCmNonStringToken, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether FedCM preserves ports in well-known URLs during testing.
 // When enabled, well-known URLs retain the original port from the provider URL
 // instead of stripping it via eTLD+1 extraction. This is primarily used in

@@ -593,9 +593,6 @@ void OnTokenRequestParsed(
 
   const base::Value* token_value =
       can_use_response ? response->Find(kTokenKey) : nullptr;
-  if (!IsNonStringTokenEnabled() && token_value && !token_value->is_string()) {
-    token_value = nullptr;
-  }
 
   const std::string* issuance_token =
       can_use_response ? response->FindString(kIssuanceTokenKey) : nullptr;

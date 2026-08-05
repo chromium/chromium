@@ -1634,9 +1634,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestWithCORSError) {
 // Test that flexible token formats (JSON objects, primitives) are
 // properly handled
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestJsonObjectToken) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFedCmNonStringToken);
-
   FetchStatus fetch_status;
   TokenResult token_result;
 
@@ -1673,9 +1670,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestJsonObjectToken) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestNumberToken) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFedCmNonStringToken);
-
   FetchStatus fetch_status;
   TokenResult token_result;
 
@@ -1692,9 +1686,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestNumberToken) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestBooleanToken) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFedCmNonStringToken);
-
   FetchStatus fetch_status;
   TokenResult token_result;
 
@@ -1710,9 +1701,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestBooleanToken) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestNullToken) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFedCmNonStringToken);
-
   FetchStatus fetch_status;
   TokenResult token_result;
 
