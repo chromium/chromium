@@ -26,6 +26,14 @@
   return self;
 }
 
+- (instancetype)withActive:(BOOL)active {
+  return [[ActuationWorklogItem alloc] initWithTitle:self.title
+                                            subtitle:self.subtitle
+                                                icon:self.icon
+                                               style:self.style
+                                              active:active];
+}
+
 @end
 
 @implementation ActuationWorklogChip

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -37,14 +38,14 @@ const CGFloat kIconSize = 16.0;
 
   NSLayoutConstraint* _dotSizeConstraint;
 
-  BOOL _active;
-  ActuationWorklogItemStyle _style;
+  ActuationWorklogItem* _item;
   CAShapeLayer* _connectorLayer;
 }
 
 - (instancetype)init {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    self.clipsToBounds = YES;
     _connectorVisibility = ActuationWorklogConnectorVisibility::kNone;
 
     _connectorLayer = [CAShapeLayer layer];
@@ -94,10 +95,10 @@ const CGFloat kIconSize = 16.0;
 }
 
 - (void)configureWithItem:(ActuationWorklogItem*)item {
-  _active = item.isActive;
-  _style = item.style;
+  CHECK(item);
+  _item = item;
 
-  [self updateContentFromItem:item];
+  [self updateContent];
   [self updateCardStyleAndLayout];
   [self updateFontsAndColors];
   [self updateDotAppearance];
@@ -184,23 +185,37 @@ const CGFloat kIconSize = 16.0;
 
   NSDirectionalEdgeInsets insets = NSDirectionalEdgeInsetsMake(
       kSpacingTiny, kTimelineGutterWidth, kSpacingTiny, kSpacingLarge);
-  AddSameConstraintsWithInsets(_mainRowStack, self, insets);
+  [NSLayoutConstraint activateConstraints:@[
+    [_mainRowStack.topAnchor constraintEqualToAnchor:self.topAnchor
+                                            constant:insets.top],
+    [_mainRowStack.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                                constant:insets.leading],
+    [_mainRowStack.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
+                                                 constant:-insets.trailing],
+  ]];
+  NSLayoutConstraint* bottomConstraint =
+      [_mainRowStack.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
+                                                 constant:-insets.bottom];
+  bottomConstraint.priority = UILayoutPriorityDefaultHigh - 1;
+  bottomConstraint.active = YES;
+
   AddSameCenterConstraints(_iconView, _dotView);
   AddSquareConstraints(_iconView, kIconSize);
 }
 
 // Updates the string and images of subviews along with their visibility.
-- (void)updateContentFromItem:(ActuationWorklogItem*)item {
-  _titleLabel.text = item.title;
+- (void)updateContent {
+  _titleLabel.text = _item.title;
 
-  BOOL showSubtitle =
-      _style != ActuationWorklogItemStyle::kSimple && item.subtitle.length > 0;
+  BOOL showSubtitle = _item.style != ActuationWorklogItemStyle::kSimple &&
+                      _item.subtitle.length > 0;
   _subtitleLabel.hidden = !showSubtitle;
-  _subtitleLabel.text = showSubtitle ? item.subtitle : nil;
+  _subtitleLabel.text = showSubtitle ? _item.subtitle : nil;
 
-  BOOL hasIcon = (_style != ActuationWorklogItemStyle::kSimple) && item.icon;
+  BOOL hasIcon =
+      (_item.style != ActuationWorklogItemStyle::kSimple) && _item.icon;
   _iconView.image =
-      hasIcon ? [item.icon
+      hasIcon ? [_item.icon
                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               : nil;
   _iconView.hidden = !hasIcon;
@@ -210,7 +225,7 @@ const CGFloat kIconSize = 16.0;
 - (void)updateCardStyleAndLayout {
   self.backgroundColor = [UIColor clearColor];
 
-  BOOL isCard = (_style == ActuationWorklogItemStyle::kCard);
+  BOOL isCard = (_item.style == ActuationWorklogItemStyle::kCard);
 
   _mainRowStack.backgroundColor =
       isCard ? [UIColor colorNamed:kSecondaryBackgroundColor]
@@ -228,7 +243,7 @@ const CGFloat kIconSize = 16.0;
 
 // Updates the font and color based on the view style.
 - (void)updateFontsAndColors {
-  BOOL simpleStyle = (_style == ActuationWorklogItemStyle::kSimple);
+  BOOL simpleStyle = (_item.style == ActuationWorklogItemStyle::kSimple);
   _titleLabel.font =
       simpleStyle
           ? [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
@@ -237,23 +252,23 @@ const CGFloat kIconSize = 16.0;
                                       : [UIColor colorNamed:kTextPrimaryColor];
 }
 
-// Updates the icon/dot appearance based on the view style.
 - (void)updateDotAppearance {
   CGFloat dotSize;
-  BOOL showLargeDot = (_style != ActuationWorklogItemStyle::kSimple);
+  BOOL showLargeDot = (_item.style != ActuationWorklogItemStyle::kSimple);
+  BOOL active = _item.isActive;
 
   if (showLargeDot) {
     _dotView.backgroundColor = [UIColor colorNamed:kGrey200Color];
     dotSize = kDotSizeLabeled;
   } else {
-    _dotView.backgroundColor = _active ? [UIColor colorNamed:kSolidWhiteColor]
-                                       : [UIColor colorNamed:kGrey400Color];
-    dotSize = _active ? (kDotSizeSimple + kDotBorderWidth) : kDotSizeSimple;
+    _dotView.backgroundColor = active ? [UIColor colorNamed:kSolidWhiteColor]
+                                      : [UIColor colorNamed:kGrey400Color];
+    dotSize = active ? (kDotSizeSimple + kDotBorderWidth) : kDotSizeSimple;
   }
 
   _dotView.layer.cornerRadius = dotSize / 2.0;
   _dotView.layer.borderWidth =
-      (_active && !showLargeDot) ? kDotBorderWidth : 0.0;
+      (active && !showLargeDot) ? kDotBorderWidth : 0.0;
   _dotSizeConstraint.constant = dotSize;
 }
 

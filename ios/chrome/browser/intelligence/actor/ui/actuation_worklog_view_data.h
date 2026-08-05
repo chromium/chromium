@@ -31,9 +31,7 @@ enum class ActuationWorklogItemStyle {
 @property(nonatomic, strong, readonly) UIImage* icon;
 
 // True if this node is currently active.
-// TODO(crbug.com/532209191): Remove this property from the data model and
-// manage the active state solely inside the view layer.
-@property(nonatomic, assign, getter=isActive) BOOL active;
+@property(nonatomic, assign, readonly, getter=isActive) BOOL active;
 
 // The layout style of this node.
 @property(nonatomic, assign, readonly) ActuationWorklogItemStyle style;
@@ -46,6 +44,9 @@ enum class ActuationWorklogItemStyle {
                        active:(BOOL)active NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Returns a copy of the item with the active state updated.
+- (instancetype)withActive:(BOOL)active;
 
 @end
 

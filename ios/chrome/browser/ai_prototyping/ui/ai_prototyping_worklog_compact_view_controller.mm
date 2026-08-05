@@ -124,7 +124,7 @@ struct MockStepConfig {
                                            subtitle:config.subtitle
                                                icon:icon
                                               style:config.style
-                                             active:NO];
+                                             active:YES];
     [steps addObject:item];
   }
   _mockSteps = [steps copy];
@@ -205,21 +205,15 @@ struct MockStepConfig {
   ]];
 }
 
-// Advances the compact log simulation to the next step, managing the active
-// state of items and triggering the sliding transition if `animated` is `YES`.
+// Advances the compact log simulation to the next step, triggering the
+// sliding transition if `animated` is `YES`.
 - (void)appendNextMockStepAnimated:(BOOL)animated {
-  // Deactivate the previous step.
-  if (_currentMockIndex > 0) {
-    _mockSteps[_currentMockIndex - 1].active = NO;
-  }
-
   // Reset showcase cycle.
   if (_currentMockIndex >= _mockSteps.count) {
     _currentMockIndex = 0;
   }
 
   ActuationWorklogItem* item = _mockSteps[_currentMockIndex];
-  item.active = YES;
   _currentMockIndex++;
 
   [_worklogView transitionToItem:item animated:animated];
