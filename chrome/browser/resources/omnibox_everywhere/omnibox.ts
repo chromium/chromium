@@ -118,13 +118,14 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
         type: Boolean,
       },
+      fileContextEnabled_: {type: Boolean},
     };
   }
 
   accessor placeholderText: string = '';
   accessor isDraggingFile: boolean = false;
   protected dragAndDropHandler: DragAndDropHandler;
-  private dragAndDropEnabled_: boolean =
+  protected accessor fileContextEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
@@ -169,7 +170,7 @@ export class OmniboxEverywhereOmniboxElement extends
     this.pageHandler_ = browserProxy.handler;
     this.callbackRouter_ = browserProxy.callbackRouter;
     this.dragAndDropHandler =
-        new DragAndDropHandler(this, this.dragAndDropEnabled_);
+        new DragAndDropHandler(this, this.fileContextEnabled_);
   }
 
   override connectedCallback() {
@@ -353,6 +354,10 @@ export class OmniboxEverywhereOmniboxElement extends
   protected onFileChange_(e: CustomEvent<{files: FileList}>) {
     this.processFiles_(
         e.detail.files, ComposeboxContextAddedMethod.CONTEXT_MENU);
+  }
+
+  protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {
+    this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
   }
 
   protected processFiles_(

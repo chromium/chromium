@@ -20,6 +20,11 @@ void OrderOmniboxEverywhereFrontOnMac(views::Widget* widget) {
   [raw_window
       setCollectionBehavior:NSWindowCollectionBehaviorCanJoinAllSpaces |
                             NSWindowCollectionBehaviorFullScreenAuxiliary];
+  // Because Omnibox Everywhere can be invoked via a global shortcut while
+  // another application is active, explicitly activate the Chromium app so that
+  // key window focus is acquired and keyboard/clipboard events (e.g. Cmd+C,
+  // Cmd+V) are properly routed.
+  [NSApp activateIgnoringOtherApps:YES];
   [raw_window makeKeyAndOrderFront:nil];
 }
 

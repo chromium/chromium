@@ -28,7 +28,9 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           searchbox-icon="${this.searchboxIcon_}"
           .selectedMatch="${this.selectedMatch}"
           ?input-has-matches="${this.hasMatches()}"
+          ?allow-file-paste="${this.fileContextEnabled_}"
           @focusin="${this.onInputFocusin_}"
+          @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
           @input-focus-changed="${this.onInputFocusChanged}">
         ${
