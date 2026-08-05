@@ -33,9 +33,18 @@ def LoadPList(path):
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 26.6 (17F113) along with the macOS 26.5 SDK
-# (25F70, which is like macOS 26.5 25F71) and the Metal toolchain (17F109). To
-# build these packages, see comments in build/xcode_binaries.yaml.
+# Universal binaries from Xcode 26.6 (17F113) along with the macOS 26.5 SDK
+# (25F70, which is likely macOS 26.5 25F71) and the Metal toolchain (17F109).
+# This universal toolchain is required on Intel x86 Macs, as Xcode 27+ is
+# ARM-only.
+# DO NOT UPDATE unless you know what you are doing.
+UNIVERSAL_MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
+UNIVERSAL_MAC_BINARIES_TAG = 'c5txl4HTukDs4xiCybqz3zK9jxr4N4PwzHRNOhjBDOQC'
+
+# This contains binaries for the latest Xcode.
+# TODO: starting with Xcode 27, this would be ARM only. Change the below cipd
+# package to mac-arm64 and update the instance id accordingly.
+# To build these packages, see comments in build/xcode_binaries.yaml.
 #
 # To update the version numbers, open Xcode's "About Xcode" or run `xcodebuild
 # -version` for the Xcode version, and run `xcrun --show-sdk-version` and `xcrun
@@ -109,6 +118,14 @@ def PrintError(message):
   sys.stderr.flush()
 
 
+def ShouldUseUniversalXcode():
+  """Returns True if the machine is running Intel x86 macOS.
+
+  Xcode 27+ is ARM-only, so Intel x86 Macs must use universal Xcode 26.6.
+  """
+  return sys.platform == 'darwin' and platform.machine() == 'x86_64'
+
+
 def InstallXcodeBinaries():
   """Installs the Xcode binaries needed to build Chrome and accepts the license.
 
@@ -124,13 +141,21 @@ def InstallXcodeBinaries():
   # 'cipd ensure' is idempotent.
   args = ['cipd', 'ensure', '-root', binaries_root, '-ensure-file', '-']
 
+  if ShouldUseUniversalXcode():
+    print('Intel x86 Mac detected. Using universal Xcode 26.6 toolchain.')
+    sys.stdout.flush()
+    label = UNIVERSAL_MAC_BINARIES_LABEL
+    tag = UNIVERSAL_MAC_BINARIES_TAG
+  else:
+    label = MAC_BINARIES_LABEL
+    tag = MAC_BINARIES_TAG
+
   p = subprocess.Popen(args,
                        universal_newlines=True,
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
-  stdout, stderr = p.communicate(input=PARANOID_MODE + MAC_BINARIES_LABEL +
-                                 ' ' + MAC_BINARIES_TAG)
+  stdout, stderr = p.communicate(input=PARANOID_MODE + label + ' ' + tag)
   if p.returncode != 0:
     print(stdout)
     print(stderr)

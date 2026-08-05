@@ -55,6 +55,11 @@ declare_args() {
   # inside the SDK.
   mac_sdk_official_build_version = "25F70"
 
+  # The SDK version and build used for universal Xcode (e.g., Xcode 26.6), which
+  # is required on Intel x86 hosts since Xcode 27+ is ARM-only.
+  mac_sdk_official_universal_version = "26.5"
+  mac_sdk_official_universal_build_version = "25F70"
+
   # Production builds should use hermetic Xcode. If you want to do production
   # builds with system Xcode to test new SDKs, set this.
   # Don't set this on any bots.
@@ -133,8 +138,16 @@ if (use_system_xcode) {
     mac_bin_path = find_sdk_lines[1]
   }
 } else {
-  mac_sdk_version = mac_sdk_official_version
-  mac_sdk_build_version = mac_sdk_official_build_version
+  # When universal Xcode 26.6 is used (Xcode version < 27.0 / 2700), select the
+  # corresponding universal SDK version. This occurs on Intel x86 hosts, as
+  # Xcode 27+ is ARM-only.
+  if (xcode_version_int < 2700) {
+    mac_sdk_version = mac_sdk_official_universal_version
+    mac_sdk_build_version = mac_sdk_official_universal_build_version
+  } else {
+    mac_sdk_version = mac_sdk_official_version
+    mac_sdk_build_version = mac_sdk_official_build_version
+  }
   _dev = _hermetic_xcode_path + "/Contents/Developer"
   _sdk = "MacOSX${mac_sdk_version}.sdk"
   mac_sdk_path = _dev + "/Platforms/MacOSX.platform/Developer/SDKs/$_sdk"

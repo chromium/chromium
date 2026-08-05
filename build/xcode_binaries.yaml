@@ -63,8 +63,12 @@
 #
 # The ACLs for this package are determined by the directory structure. The
 # nomenclature mirrors that of the hermetic toolchain to avoid ACL duplication.
+#
+# Note: Starting with Xcode 27 (ARM-only), CIPD packages are published under
+# mac-arm64. Universal Xcode builds (e.g. 26.6, required for Intel x86 hosts)
+# reside under mac-amd64. See build/mac_toolchain.py for toolchain selection.
 
-package: infra_internal/ios/xcode/xcode_binaries/mac-amd64
+package: infra_internal/ios/xcode/xcode_binaries/mac-arm64
 description: A hermetic deployment of all Xcode binaries used to build Chromium.
 root: "xcode_binaries"
 data:
