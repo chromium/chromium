@@ -927,6 +927,8 @@
         tracker && tracker->ShouldTriggerHelpUI(
                        feature_engagement::kIPHiOSHomepageLensNewBadge);
     self.NTPRedesignViewController.useNewBadgeForLensButton = showLensBadge;
+    self.NTPRedesignViewController.layoutGuideCenter =
+        LayoutGuideCenterForBrowser(self.browser);
     [self configureMainViewControllerUsing:self.NTPRedesignViewController];
     return;
   }

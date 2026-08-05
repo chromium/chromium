@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 
+@class LayoutGuideCenter;
 @class NewTabPageHeaderView;
 @protocol NewTabPageMutator;
 @protocol NewTabPageContentDelegate;
@@ -31,6 +32,9 @@
 
 // Handler for header commands.
 @property(nonatomic, weak) id<NewTabPageHeaderCommands> headerCommandsHandler;
+
+// Layout guide center for referencing views.
+@property(nonatomic, weak) LayoutGuideCenter* layoutGuideCenter;
 
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;
