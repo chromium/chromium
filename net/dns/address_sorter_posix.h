@@ -9,7 +9,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -23,14 +22,14 @@
 
 namespace net {
 
+class ConnectPredictor;
 class ClientSocketFactory;
 
 // This implementation uses explicit policy to perform the sorting. It is not
 // thread-safe and always completes synchronously.
 class NET_EXPORT_PRIVATE AddressSorterPosix
     : public AddressSorter,
-      public NetworkChangeNotifier::IPAddressObserver,
-      public NetworkChangeNotifier::NetworkChangeObserver {
+      public NetworkChangeNotifier::IPAddressObserver {
  public:
   // Generic policy entry.
   struct PolicyEntry {
@@ -78,28 +77,14 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
             handles::NetworkHandle target_network,
             CallbackType callback) const override;
 
-  bool IsConnectCacheEmptyForTesting() const;
-
  private:
   friend class AddressSorterPosixTest;
   class SortContext;
 
-  // The cached result of a UDP connect() attempt to a specific destination IP
-  // subnet. Used by AddressSorterPosix to bypass socket creation and route
-  // discovery for subsequent requests to the same subnet.
-  struct ConnectResult {
-    // Errors here only reflect the state of the routing table, not the state of
-    // the remote host, so it is safe to reuse this cached value as long as the
-    // routing table has not changed.
-    int rv;
-    IPAddress source_address;
-  };
-
   // NetworkChangeNotifier::IPAddressObserver:
   void OnIPAddressChanged(
       NetworkChangeNotifier::IPAddressChangeType change_type) override;
-  // NetworkChangeNotifier::NetworkChangeObserver:
-  void OnNetworkChanged(NetworkChangeNotifier::ConnectionType type) override;
+
   // Fills |info| with values for |address| from policy tables.
   void FillPolicy(const IPAddress& address, SourceAddressInfo* info) const;
 
@@ -114,24 +99,18 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   PolicyTable label_table_;
   PolicyTable ipv4_scope_table_;
 
+  // An instance of ConnectPredictor may make predictions about what a connect()
+  // call would return without having to call it. SortContext objects contain
+  // pointers to Partitions owned by the ConnectPredictor, and so
+  // ConnectPredictor must outlive the SortContext objects.
+  std::unique_ptr<ConnectPredictor> connect_predictor_;
+
   // SortContext stores data for an outstanding Sort() that is completing
   // asynchronously. Mutable to allow pushing a new SortContext when Sort is
   // called. Since Sort can be called multiple times, a container is necessary
   // to track different SortContexts.
   mutable std::set<std::unique_ptr<SortContext>, base::UniquePtrComparator>
       sort_contexts_;
-
-  // Key type for the cache of results of UDP connect() calls. Includes the NAK
-  // to avoid cross-origin information leakage attacks, and the target network
-  // to avoid cross-network cache pollution.
-  using CacheKey =
-      std::tuple<IPAddress, NetworkAnonymizationKey, handles::NetworkHandle>;
-
-  // Cache of the result of UDP connect() calls. Cleared when a change to
-  // network interfaces is detected.
-  mutable base::LRUCache<CacheKey, ConnectResult> connect_cache_;
-
-  const bool caching_enabled_;
 
   THREAD_CHECKER(thread_checker_);
 };

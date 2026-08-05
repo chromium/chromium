@@ -33,6 +33,10 @@ source_set("dns") {
     "address_info.cc",
     "address_info.h",
     "address_sorter.h",
+    "connect_predictor.cc",
+    "connect_predictor.h",
+    "connect_predictor_lru_cache.cc",
+    "connect_predictor_lru_cache.h",
     "context_host_resolver.cc",
     "context_host_resolver.h",
     "dns_alias_utility.cc",
@@ -435,6 +439,7 @@ source_set("tests") {
   testonly = true
   sources = [
     "address_info_unittest.cc",
+    "connect_predictor_lru_cache_unittest.cc",
     "context_host_resolver_unittest.cc",
     "dns_alias_utility_unittest.cc",
     "dns_config_service_unittest.cc",

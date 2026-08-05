@@ -54,6 +54,19 @@ const base::FeatureParam<bool> kUseStaleConnectorsForOptimisticDns{
 
 BASE_FEATURE(kAddressSorterConnectCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(size_t,
+                   kAddressSorterConnectCacheMaxNetworks,
+                   &kAddressSorterConnectCache,
+                   2);
+BASE_FEATURE_PARAM(size_t,
+                   kAddressSorterConnectCacheMaxNaksPerNetwork,
+                   &kAddressSorterConnectCache,
+                   16);
+BASE_FEATURE_PARAM(size_t,
+                   kAddressSorterConnectCacheMaxPredictionsPerPartition,
+                   &kAddressSorterConnectCache,
+                   1024);
+
 BASE_FEATURE(kDnsTransactionDynamicTimeouts, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kDnsTransactionTimeoutMultiplier{

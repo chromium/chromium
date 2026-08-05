@@ -308,6 +308,12 @@ class AddressSorterPosixTest : public ::testing::Test {
     return info;
   }
 
+  void RunUntilNotificationsDelivered() {
+    // This will make the presubmit complain, but there doesn't seem to be a
+    // better way of doing this.
+    task_environment_->RunUntilIdle();
+  }
+
   TestSocketFactory socket_factory_;
   std::unique_ptr<AddressSorterPosix> sorter_;
   bool completed_ = false;
@@ -696,83 +702,6 @@ TEST_F(AddressSorterPosixCacheTest, CacheHitBypassesSocketCreation) {
   }
 }
 
-TEST_F(AddressSorterPosixCacheTest, CacheInvalidationOnIPAddressChanged) {
-  size_t socket_create_count = 0;
-  SetSocketCreateCallback(base::BindLambdaForTesting(
-      [&socket_create_count](TestUDPClientSocket* socket) {
-        socket_create_count++;
-      }));
-
-  AddMapping("10.0.0.1", "10.0.0.10");
-  IPEndPoint endpoint(ParseIP("10.0.0.1"), 80);
-
-  {
-    std::vector<IPEndPoint> sorted;
-    TestCompletionCallback callback;
-    sorter_->Sort({endpoint}, NetworkAnonymizationKey(),
-                  handles::kInvalidNetworkHandle,
-                  base::BindOnce(&OnSortComplete, std::ref(completed_), &sorted,
-                                 callback.callback()));
-    callback.WaitForResult();
-    EXPECT_EQ(socket_create_count, 1u);
-  }
-
-  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return sorter_->IsConnectCacheEmptyForTesting(); }));
-
-  {
-    socket_create_count = 0;
-    std::vector<IPEndPoint> sorted;
-    TestCompletionCallback callback;
-    sorter_->Sort({endpoint}, NetworkAnonymizationKey(),
-                  handles::kInvalidNetworkHandle,
-                  base::BindOnce(&OnSortComplete, std::ref(completed_), &sorted,
-                                 callback.callback()));
-    callback.WaitForResult();
-    EXPECT_EQ(socket_create_count, 1u);
-  }
-}
-
-TEST_F(AddressSorterPosixCacheTest, CacheInvalidationOnNetworkChanged) {
-  size_t socket_create_count = 0;
-  SetSocketCreateCallback(base::BindLambdaForTesting(
-      [&socket_create_count](TestUDPClientSocket* socket) {
-        socket_create_count++;
-      }));
-
-  AddMapping("10.0.0.1", "10.0.0.10");
-  IPEndPoint endpoint(ParseIP("10.0.0.1"), 80);
-
-  {
-    std::vector<IPEndPoint> sorted;
-    TestCompletionCallback callback;
-    sorter_->Sort({endpoint}, NetworkAnonymizationKey(),
-                  handles::kInvalidNetworkHandle,
-                  base::BindOnce(&OnSortComplete, std::ref(completed_), &sorted,
-                                 callback.callback()));
-    callback.WaitForResult();
-    EXPECT_EQ(socket_create_count, 1u);
-  }
-
-  NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-      NetworkChangeNotifier::CONNECTION_WIFI);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return sorter_->IsConnectCacheEmptyForTesting(); }));
-
-  {
-    socket_create_count = 0;
-    std::vector<IPEndPoint> sorted;
-    TestCompletionCallback callback;
-    sorter_->Sort({endpoint}, NetworkAnonymizationKey(),
-                  handles::kInvalidNetworkHandle,
-                  base::BindOnce(&OnSortComplete, std::ref(completed_), &sorted,
-                                 callback.callback()));
-    callback.WaitForResult();
-    EXPECT_EQ(socket_create_count, 1u);
-  }
-}
-
 TEST_F(AddressSorterPosixCacheTest, StatePartitioningByNAK) {
   size_t socket_create_count = 0;
   SetSocketCreateCallback(base::BindLambdaForTesting(
@@ -955,6 +884,40 @@ TEST_F(AddressSorterPosixCacheTest,
     callback.WaitForResult();
     EXPECT_EQ(socket_create_count, 2u);
   }
+}
+
+TEST_F(AddressSorterPosixCacheTest, NetworkChangeDuringSort) {
+  SetConnectMode(TestUDPClientSocket::ConnectMode::kAsynchronousManual);
+  std::vector<TestUDPClientSocket*> created_sockets;
+  SetSocketCreateCallback(base::BindRepeating(
+      [](std::vector<TestUDPClientSocket*>& created_sockets,
+         TestUDPClientSocket* socket) { created_sockets.push_back(socket); },
+      std::ref(created_sockets)));
+
+  AddMapping("::1", "::1");
+  AddMapping("::2", "::2");
+
+  IPEndPoint endpoint1(ParseIP("::1"), /*port=*/111);
+  IPEndPoint endpoint2(ParseIP("::2"), /*port=*/222);
+
+  std::vector<IPEndPoint> input = {endpoint1, endpoint2};
+  std::vector<IPEndPoint> sorted;
+  TestCompletionCallback callback;
+  sorter_->Sort(input, NetworkAnonymizationKey(),
+                handles::kInvalidNetworkHandle,
+                base::BindOnce(&OnSortComplete, std::ref(completed_), &sorted,
+                               callback.callback()));
+
+  ASSERT_EQ(created_sockets.size(), 2u);
+  created_sockets[0]->FinishConnect();
+  // Trigger OnNetworkChanged() to clear the cache.
+  NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      NetworkChangeNotifier::CONNECTION_UNKNOWN);
+  RunUntilNotificationsDelivered();
+  created_sockets[1]->FinishConnect();
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return completed_; }));
+  // We should not have crashed.
 }
 
 }  // namespace net

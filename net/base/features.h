@@ -49,6 +49,14 @@ NET_EXPORT extern const base::FeatureParam<bool>
 
 // Caches UDP connect() results in AddressSorterPosix.
 NET_EXPORT BASE_DECLARE_FEATURE(kAddressSorterConnectCache);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                      kAddressSorterConnectCacheMaxNetworks);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kAddressSorterConnectCacheMaxNaksPerNetwork);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kAddressSorterConnectCacheMaxPredictionsPerPartition);
 
 // Support for altering the parameters used for DNS transaction timeout. See
 // ResolveContext::SecureTransactionTimeout().

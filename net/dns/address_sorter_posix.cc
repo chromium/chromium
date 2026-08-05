@@ -37,6 +37,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
@@ -44,6 +45,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
+#include "net/dns/connect_predictor.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_client_socket.h"
@@ -267,32 +269,13 @@ bool CompareDestinations(const DestinationInfo& dst_a,
   return false;
 }
 
-// Masks the host-specific bits of the given IP address to group addresses
-// from the same subnet or prefix for connect caching.
-//
-// Specifically, this zero-masks the last octet of IPv4 and IPv4-mapped IPv6
-// addresses (masking to a /24 subnet), and zero-masks the lower 64 bits of
-// IPv6 addresses (masking to a /64 prefix). This aligns with standard internet
-// routing boundaries where route reachability and source address selection are
-// identical.
-IPAddress MaskIPAddress(const IPAddress& address) {
-  if (address.IsIPv4()) {
-    IPAddressBytes bytes = address.bytes();
-    bytes[3] = 0;
-    return IPAddress(bytes);
-  } else if (address.IsIPv6()) {
-    IPAddressBytes bytes = address.bytes();
-    if (address.IsIPv4MappedIPv6()) {
-      // Only mask the last byte, to match the IPv4 behavior.
-      bytes[15] = 0;
-      return IPAddress(bytes);
-    }
-    for (size_t i = 8; i < 16; ++i) {
-      bytes[i] = 0;
-    }
-    return IPAddress(bytes);
-  }
-  return address;
+base::WeakPtr<ConnectPredictor::Partition> GetPartition(
+    ConnectPredictor* connect_predictor,
+    handles::NetworkHandle target_network,
+    const NetworkAnonymizationKey& anonymization_key) {
+  return connect_predictor ? connect_predictor->GetPartition(target_network,
+                                                             anonymization_key)
+                           : nullptr;
 }
 
 }  // namespace
@@ -304,12 +287,14 @@ class AddressSorterPosix::SortContext {
               handles::NetworkHandle target_network,
               AddressSorter::CallbackType callback,
               const AddressSorterPosix* sorter,
+              base::WeakPtr<ConnectPredictor::Partition> partition,
               base::TimeTicks start_time)
       : num_endpoints_(in_num_endpoints),
         anonymization_key_(anonymization_key),
         target_network_(target_network),
         callback_(std::move(callback)),
         sorter_(sorter),
+        partition_(std::move(partition)),
         start_time_(start_time) {}
   SortContext(const SortContext&) = delete;
   SortContext& operator=(const SortContext&) = delete;
@@ -342,7 +327,7 @@ class AddressSorterPosix::SortContext {
   }
 
   void UseCacheResultWithInfo(DestinationInfo info,
-                              const ConnectResult& result) {
+                              const ConnectPredictor::ConnectResult& result) {
     if (result.rv == OK) {
       info.source_address = result.source_address;
     } else {
@@ -383,12 +368,11 @@ class AddressSorterPosix::SortContext {
       info.failed = true;
     }
 
-    if (sorter_->caching_enabled_) {
-      IPAddress masked_address = MaskIPAddress(info.endpoint.address());
-      CacheKey cache_key{masked_address, anonymization_key_, target_network_};
-      sorter_->connect_cache_.Put(
-          cache_key,
-          ConnectResult{rv, info.source_address.value_or(IPAddress())});
+    if (partition_) {
+      partition_->RecordResult(
+          info.endpoint.address(),
+          ConnectPredictor::ConnectResult{
+              rv, info.source_address.value_or(IPAddress())});
     }
 
     MaybeFinishSort();
@@ -456,35 +440,22 @@ class AddressSorterPosix::SortContext {
   AddressSorter::CallbackType callback_;
 
   raw_ptr<const AddressSorterPosix> sorter_;
+  base::WeakPtr<ConnectPredictor::Partition> partition_;
   const base::TimeTicks start_time_;
 };
-
-// Maximum size for the `connect_cache_`. Cache entries need to survive longer
-// than the DNS TTL to be useful. Some sites connect to 200+ different hosts,
-// and some hostnames resolve to 16 or more addresses, so this number needs to
-// be reasonably large. 4096 corresponds to about 350KB of memory usage.
-constexpr size_t kMaxCacheEntries = 4096;
 
 AddressSorterPosix::AddressSorterPosix(ClientSocketFactory* socket_factory)
     : socket_factory_(socket_factory),
       precedence_table_(LoadPolicy(kDefaultPrecedenceTable)),
       label_table_(LoadPolicy(kDefaultLabelTable)),
       ipv4_scope_table_(LoadPolicy(kDefaultIPv4ScopeTable)),
-      connect_cache_(kMaxCacheEntries),
-      caching_enabled_(
-          base::FeatureList::IsEnabled(features::kAddressSorterConnectCache)) {
+      connect_predictor_(ConnectPredictor::Create()) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
-  if (caching_enabled_) {
-    NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  }
   OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
 }
 
 AddressSorterPosix::~AddressSorterPosix() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (caching_enabled_) {
-    NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  }
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
 }
 
@@ -494,11 +465,13 @@ void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
                               CallbackType callback) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  auto partition =
+      GetPartition(connect_predictor_.get(), target_network, anonymization_key);
   // Calling base::TimeTicks::Now() before std::make_unique<>() permits us to
   // include the memory allocation overhead in the time measurement.
   auto [it, inserted] = sort_contexts_.insert(std::make_unique<SortContext>(
       endpoints.size(), anonymization_key, target_network, std::move(callback),
-      this, base::TimeTicks::Now()));
+      this, partition, base::TimeTicks::Now()));
   CHECK(inserted);
   auto* sort_context = it->get();
   for (const IPEndPoint& endpoint : endpoints) {
@@ -509,12 +482,11 @@ void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
         GetPolicyValue(precedence_table_, info.endpoint.address());
     info.label = GetPolicyValue(label_table_, info.endpoint.address());
 
-    if (caching_enabled_) {
-      IPAddress masked_address = MaskIPAddress(endpoint.address());
-      CacheKey cache_key{masked_address, anonymization_key, target_network};
-      auto cache_it = connect_cache_.Get(cache_key);
-      if (cache_it != connect_cache_.end()) {
-        sort_context->UseCacheResultWithInfo(std::move(info), cache_it->second);
+    if (partition) {
+      if (auto maybe_connect_result =
+              partition->Predict(info.endpoint.address())) {
+        sort_context->UseCacheResultWithInfo(std::move(info),
+                                             *maybe_connect_result);
         continue;
       }
     }
@@ -527,7 +499,6 @@ void AddressSorterPosix::OnIPAddressChanged(
     NetworkChangeNotifier::IPAddressChangeType change_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   source_map_.clear();
-  connect_cache_.Clear();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40263501): This always returns nullptr on ChromeOS.
   const AddressMapOwnerLinux* address_map_owner =
@@ -595,12 +566,6 @@ void AddressSorterPosix::OnIPAddressChanged(
 #endif
 }
 
-void AddressSorterPosix::OnNetworkChanged(
-    NetworkChangeNotifier::ConnectionType type) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  connect_cache_.Clear();
-}
-
 void AddressSorterPosix::FillPolicy(const IPAddress& address,
                                     SourceAddressInfo* info) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -611,11 +576,6 @@ void AddressSorterPosix::FillPolicy(const IPAddress& address,
 void AddressSorterPosix::FinishedSort(SortContext* sort_context) const {
   auto it = sort_contexts_.find(sort_context);
   sort_contexts_.erase(it);
-}
-
-bool AddressSorterPosix::IsConnectCacheEmptyForTesting() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return connect_cache_.empty();
 }
 
 // static
